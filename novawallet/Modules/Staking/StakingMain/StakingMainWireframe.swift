@@ -1,18 +1,6 @@
 import Foundation
 
 final class StakingMainWireframe: StakingMainWireframeProtocol {
-    func showAccountsSelection(from view: StakingMainViewProtocol?) {
-        guard let accountManagement = WalletSelectionViewFactory.createView() else {
-            return
-        }
-
-        let navigationController = FearlessNavigationController(
-            rootViewController: accountManagement.controller
-        )
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
     func showChainAssetSelection(
         from view: StakingMainViewProtocol?,
         selectedChainAssetId: ChainAssetId?,

@@ -8,6 +8,8 @@ final class CrowdloanTableHeaderView: UIView {
         return label
     }()
 
+    let walletSwitch = WalletSwitchControl()
+
     let chainSelectionView: DetailsTriangularedView = {
         let view = UIFactory.default.createChainAssetSelectionView()
         return view
@@ -63,17 +65,24 @@ final class CrowdloanTableHeaderView: UIView {
     }
 
     private func setupLayout() {
+        addSubview(walletSwitch)
+        walletSwitch.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(10.0)
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.size.equalTo(UIConstants.walletSwitchSize)
+        }
+
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(10)
-            make.height.equalTo(41)
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(walletSwitch.snp.leading).inset(-8.0)
+            make.centerY.equalTo(walletSwitch)
         }
 
         let chainBlur = TriangularedBlurView()
         addSubview(chainBlur)
         chainBlur.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(16)
+            make.top.equalTo(walletSwitch.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
         }
 

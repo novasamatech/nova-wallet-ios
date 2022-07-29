@@ -9,11 +9,7 @@ final class DAppListHeaderView: UICollectionViewCell {
         return label
     }()
 
-    let accountButton: RoundedButton = {
-        let button = RoundedButton()
-        button.applyIconStyle()
-        return button
-    }()
+    let walletSwitch = WalletSwitchControl()
 
     let decorationView: UIImageView = {
         let view = UIImageView()
@@ -107,24 +103,24 @@ final class DAppListHeaderView: UICollectionViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(accountButton)
-        accountButton.snp.makeConstraints { make in
+        contentView.addSubview(walletSwitch)
+        walletSwitch.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(10.0)
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.size.equalTo(UIConstants.navigationAccountIconSize)
+            make.size.equalTo(UIConstants.walletSwitchSize)
         }
 
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(accountButton.snp.leading).offset(-8.0)
-            make.centerY.equalTo(accountButton.snp.centerY)
+            make.trailing.equalTo(walletSwitch.snp.leading).offset(-8.0)
+            make.centerY.equalTo(walletSwitch.snp.centerY)
         }
 
         contentView.addSubview(decorationView)
         decorationView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(accountButton.snp.bottom).offset(16.0)
+            make.top.equalTo(walletSwitch.snp.bottom).offset(16.0)
         }
 
         decorationView.addSubview(decorationTitleLabel)

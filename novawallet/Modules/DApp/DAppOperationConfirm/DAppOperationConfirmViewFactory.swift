@@ -122,7 +122,7 @@ struct DAppOperationConfirmViewFactory {
             request: request,
             accountId: accountId,
             chain: chain,
-            keystore: Keychain()
+            signingWrapperFactory: SigningWrapperFactory()
         )
     }
 }
