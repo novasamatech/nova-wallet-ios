@@ -2,7 +2,6 @@ import UIKit
 import SoraFoundation
 
 final class ChangeWatchOnlyViewLayout: UIView {
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 12.0, left: 16.0, bottom: 0.0, right: 16.0)

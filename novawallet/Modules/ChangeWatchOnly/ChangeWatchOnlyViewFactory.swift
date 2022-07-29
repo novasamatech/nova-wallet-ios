@@ -2,13 +2,15 @@ import Foundation
 import SoraFoundation
 
 struct ChangeWatchOnlyViewFactory {
-    private static func createView(
+    static func createView(
         for wallet: MetaAccountModel,
-        chain: ChainModel, wireframe: ChangeWatchOnlyWireframeProtocol
+        chain: ChainModel
     ) -> ChangeWatchOnlyViewProtocol? {
         guard let interactor = createInteractor(for: wallet, chain: chain) else {
             return nil
         }
+
+        let wireframe = ChangeWatchOnlyWireframe()
 
         let localizationManager = LocalizationManager.shared
 

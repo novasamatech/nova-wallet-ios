@@ -56,7 +56,7 @@ final class ChangeWatchOnlyInteractor {
                 let newWallet = try replaceAccountOperation.extractNoCancellableResultData()
                 return [newWallet]
             }, {
-                return []
+                []
             })
         }
 

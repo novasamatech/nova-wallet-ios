@@ -60,6 +60,8 @@ final class ChangeWatchOnlyViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
+        rootView.addressInputView.locale = selectedLocale
+
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -154,6 +156,7 @@ extension ChangeWatchOnlyViewController: ChangeWatchOnlyViewProtocol {
 
     func didReceiveAddressInput(viewModel: InputViewModelProtocol) {
         rootView.addressInputView.bind(inputViewModel: viewModel)
+        rootView.addressTitleLabel.text = viewModel.title
 
         updateActionButtonState()
     }
