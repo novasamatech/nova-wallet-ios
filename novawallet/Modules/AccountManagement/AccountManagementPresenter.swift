@@ -4,6 +4,11 @@ import IrohaCrypto
 import SoraFoundation
 
 final class AccountManagementPresenter {
+    enum ChangeAccountOption: Int {
+        case createAccount
+        case importAccount
+    }
+
     weak var view: AccountManagementViewProtocol?
     var wireframe: AccountManagementWireframeProtocol!
     var interactor: AccountManagementInteractorInputProtocol!
@@ -115,45 +120,63 @@ final class AccountManagementPresenter {
 
     // MARK: - Bottom sheet display for secrets type
 
-    private func displaySecretsChangeActions(with title: String, for chain: ChainModel) {
-        let createAccountAction = createAccountCreateAction(for: chain)
-        let importAccountAction = createAccountImportAction(for: chain)
+    private func displaySecretsChangeActions(with title: LocalizableResource<String>, chain: ChainModel) {
+        guard let view = view else {
+            return
+        }
 
-        let actions: [ChainAddressDetailsModel] = [createAccountAction, importAccountAction]
+        let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
 
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+            return ActionManageViewModel(icon: R.image.iconPlusFilled(), title: title, details: nil)
+        }
 
-        let actionsViewModel = AlertPresentableViewModel(
+        let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.accountImportOptionTitle(preferredLanguages: locale.rLanguages)
+
+            return ActionManageViewModel(icon: R.image.iconImportWallet(), title: title, details: nil)
+        }
+
+        let context = ModalPickerClosureContext { [weak self] index in
+            switch ChangeAccountOption(rawValue: index) {
+            case .createAccount:
+                self?.activateCreateAccount(for: chain)
+            case .importAccount:
+                self?.activateImportAccount(for: chain)
+            case .none:
+                break
+            }
+        }
+
+        wireframe.presentActionsManage(
+            from: view,
+            actions: [createAction, importAction],
             title: title,
-            message: nil,
-            actions: actions,
-            closeAction: closeTitle
-        )
-
-        wireframe.present(
-            viewModel: actionsViewModel,
-            style: .actionSheet,
-            from: view
+            delegate: self,
+            context: context
         )
     }
 
     private func displaySecretsReplaceActions(for chain: ChainModel) {
-        let title = R.string.localizable.accountActionsChangeSheetTitle(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = LocalizableResource { locale in
+            R.string.localizable.accountActionsChangeSheetTitle(
+                chain.name,
+                preferredLanguages: locale.rLanguages
+            )
+        }
 
-        displaySecretsChangeActions(with: title, for: chain)
+        displaySecretsChangeActions(with: title, chain: chain)
     }
 
     private func displaySecretsNoAddressActions(for chain: ChainModel) {
-        let title = R.string.localizable.accountNotFoundActionsTitle(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        let title = LocalizableResource { locale in
+            R.string.localizable.accountNotFoundActionsTitle(
+                chain.name,
+                preferredLanguages: locale.rLanguages
+            )
+        }
 
-        displaySecretsChangeActions(with: title, for: chain)
+        displaySecretsChangeActions(with: title, chain: chain)
     }
 
     private func displaySecretsExistingAddressActions(
@@ -183,7 +206,7 @@ final class AccountManagementPresenter {
 
             let exportAction = ChainAddressDetailsAction(
                 title: exportAccountTitle,
-                icon: nil,
+                icon: R.image.iconActionExport(),
                 indicator: .navigation
             ) { [weak self] in
                 self?.interactor.requestExportOptions(metaAccount: wallet, chain: chain)
@@ -262,7 +285,7 @@ final class AccountManagementPresenter {
 
             return ChainAddressDetailsAction(
                 title: LocalizableResource { _ in explorer.name },
-                icon: nil,
+                icon: R.image.iconActionWeb(),
                 indicator: .navigation
             ) { [weak self] in
                 if let view = self?.view {
@@ -279,7 +302,7 @@ final class AccountManagementPresenter {
 
         return ChainAddressDetailsAction(
             title: copyTitle,
-            icon: nil,
+            icon: R.image.iconActionCopy(),
             indicator: .none
         ) { [weak self] in
             self?.activateCopyAddress(address)
@@ -296,7 +319,7 @@ final class AccountManagementPresenter {
 
         return ChainAddressDetailsAction(
             title: createAccountTitle,
-            icon: nil,
+            icon: R.image.iconActionChange(),
             indicator: .navigation
         ) { [weak self] in
             self?.activateChangeAccount(for: chain, walletType: walletType)
@@ -313,38 +336,10 @@ final class AccountManagementPresenter {
 
         return ChainAddressDetailsAction(
             title: addAccountTitle,
-            icon: nil,
+            icon: R.image.iconActionChange(),
             indicator: .navigation
         ) { [weak self] in
             self?.activateChangeAccount(for: chain, walletType: walletType)
-        }
-    }
-
-    private func createAccountCreateAction(for chain: ChainModel) -> ChainAddressDetailsAction {
-        let createAccountTitle = LocalizableResource { locale in
-            R.string.localizable.accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        return ChainAddressDetailsAction(
-            title: createAccountTitle,
-            icon: nil,
-            indicator: .navigation
-        ) { [weak self] in
-            self?.activateCreateAccount(for: chain)
-        }
-    }
-
-    private func createAccountImportAction(for chain: ChainModel) -> ChainAddressDetailsAction {
-        let importAccountTitle = LocalizableResource { locale in
-            R.string.localizable.accountImportOptionTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        return ChainAddressDetailsAction(
-            title: importAccountTitle,
-            icon: nil,
-            indicator: .navigation
-        ) { [weak self] in
-            self?.activateImportAccount(for: chain)
         }
     }
 }
@@ -476,6 +471,16 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
                 logger?.error("Did receive export error \(error)")
             }
         }
+    }
+}
+
+extension AccountManagementPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let context = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        context.process(selectedIndex: index)
     }
 }
 

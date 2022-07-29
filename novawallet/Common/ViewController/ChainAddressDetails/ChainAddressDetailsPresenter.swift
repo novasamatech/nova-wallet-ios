@@ -48,8 +48,10 @@ extension ChainAddressDetailsPresenter: ChainAddressDetailsPresenterProtocol {
     }
 
     func selectAction(at index: Int) {
-        wireframe.close(view: view)
+        guard let view = view else {
+            return
+        }
 
-        model.actions[index].onSelection()
+        wireframe.complete(view: view, action: model.actions[index])
     }
 }
