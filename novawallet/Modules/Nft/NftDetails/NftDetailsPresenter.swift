@@ -137,23 +137,9 @@ final class NftDetailsPresenter {
     }
 
     private func provideNetwork() {
-        let color: GradientModel
-
-        if
-            let colorString = chainAsset.chain.color,
-            let colorModel = gradientFactory.createFromString(colorString) {
-            color = colorModel
-        } else {
-            color = GradientModel.defaultGradient
-        }
-
         let imageViewModel = RemoteImageViewModel(url: chainAsset.chain.icon)
 
-        let viewModel = NetworkViewModel(
-            name: chainAsset.chain.name,
-            icon: imageViewModel,
-            gradient: color
-        )
+        let viewModel = NetworkViewModel(name: chainAsset.chain.name, icon: imageViewModel)
 
         view?.didReceive(networkViewModel: viewModel)
     }

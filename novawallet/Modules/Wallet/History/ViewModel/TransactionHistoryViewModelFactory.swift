@@ -135,7 +135,7 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let iconUrl = chainAsset.chain.icon
+        let iconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
 
         let command = OperationDetailsCommand(

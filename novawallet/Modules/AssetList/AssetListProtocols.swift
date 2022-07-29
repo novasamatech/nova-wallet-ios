@@ -34,8 +34,7 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didReceive(hidesZeroBalances: Bool)
 }
 
-protocol AssetListWireframeProtocol: AnyObject {
-    func showWalletList(from view: AssetListViewProtocol?)
+protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showAssetsManage(from view: AssetListViewProtocol?)
 

@@ -82,9 +82,16 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         if let refreshControl = rootView.tableView.refreshControl {
             refreshControl.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
         }
+
         rootView.headerView.chainSelectionView.addTarget(
             self,
             action: #selector(actionSelectChain),
+            for: .touchUpInside
+        )
+
+        rootView.headerView.walletSwitch.addTarget(
+            self,
+            action: #selector(actionWalletSwitch),
             for: .touchUpInside
         )
     }
@@ -120,6 +127,10 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
 
     @objc func actionSelectChain() {
         presenter.selectChain()
+    }
+
+    @objc func actionWalletSwitch() {
+        presenter.handleWalletSwitch()
     }
 }
 
@@ -223,6 +234,10 @@ extension CrowdloanListViewController: UITableViewDelegate {
 }
 
 extension CrowdloanListViewController: CrowdloanListViewProtocol {
+    func didReceive(walletSwitchViewModel: WalletSwitchViewModel) {
+        rootView.headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
+    }
+
     func didReceive(chainInfo: CrowdloansChainViewModel) {
         self.chainInfo = chainInfo
 

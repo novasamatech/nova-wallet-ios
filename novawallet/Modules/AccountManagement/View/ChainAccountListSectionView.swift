@@ -3,17 +3,10 @@ import SoraUI
 import SoraFoundation
 
 class ChainAccountListSectionView: UITableViewHeaderFooterView {
-    // FIXME: Remove bordered view
-    let borderView: BorderedContainerView = {
-        let view = UIFactory.default.createBorderedContainerView()
-        view.borderType = .none
-        return view
-    }()
-
     let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()!
+        label.font = .semiBoldCaps2
+        label.textColor = R.color.colorTransparentText()
         label.numberOfLines = 0
         return label
     }()
@@ -33,15 +26,9 @@ class ChainAccountListSectionView: UITableViewHeaderFooterView {
     }
 
     func setupLayout() {
-        contentView.addSubview(borderView)
-        borderView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
-
-        borderView.addSubview(descriptionLabel)
+        contentView.addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.bottom.equalToSuperview().inset(16.0)
             make.top.equalToSuperview().inset(16.0)
         }
     }
