@@ -856,3 +856,6 @@
 "common.select.wallet" = "Выберите кошелек";
 "common.tokens" = "Токены";
 "account.management.watch.only.hint" = "Это watch-only кошелек, Nova может показывать ваши балансы и другую информацию, но вы не можете осуществлять операции с этим кошельком";
+"common.chain.address.title" = "%@ адрес";
+"watch.only.account.change.details" = "Отслеживайте активность любого кошелька без приватного ключа в Nova Wallet";
+"common.invalid.address.format" = "%@ адрес имеет неверный формат";
