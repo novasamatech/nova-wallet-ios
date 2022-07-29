@@ -39,7 +39,7 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
 }
 
 protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting,
- ChainAddressDetailsPresentable {
+    ChainAddressDetailsPresentable, ActionsManagePresentable {
     func showCreateAccount(
         from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,

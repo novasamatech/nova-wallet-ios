@@ -1,8 +1,8 @@
 import Foundation
 import UIKit
 
-final class StakingManageTableViewCell: UITableViewCell, ModalPickerCellProtocol {
-    typealias Model = StakingManageViewModel
+final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol {
+    typealias Model = ActionManageViewModel
 
     var checkmarked: Bool {
         get { false }

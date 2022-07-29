@@ -8,5 +8,5 @@ protocol ChainAddressDetailsPresenterProtocol: AnyObject {
 }
 
 protocol ChainAddressDetailsWireframeProtocol: AnyObject {
-    func close(view: ChainAddressDetailsViewProtocol?)
+    func complete(view: ChainAddressDetailsViewProtocol, action: ChainAddressDetailsAction)
 }

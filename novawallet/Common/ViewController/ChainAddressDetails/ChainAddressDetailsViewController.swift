@@ -40,6 +40,9 @@ final class ChainAddressDetailsViewController: UIViewController, ViewHolder {
 
         for action in actions {
             let cell = rootView.addAction(for: action.indicator)
+
+            cell.addTarget(self, action: #selector(actionCell(_:)), for: .touchUpInside)
+
             cells.append(cell)
         }
 
@@ -63,8 +66,10 @@ final class ChainAddressDetailsViewController: UIViewController, ViewHolder {
         updateCells()
     }
 
-    private func actionCell(_ sender: StackActionCell) {
-        guard let index = cells.firstIndex(of: sender) else {
+    @objc private func actionCell(_ sender: UIControl) {
+        guard
+            let cell = sender as? StackActionCell,
+            let index = cells.firstIndex(of: cell) else {
             return
         }
 

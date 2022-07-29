@@ -12,7 +12,7 @@ enum ChainAddressDetailsMeasurement {
         )
     }
 
-    static let networkHeight: CGFloat = 22.0
+    static let networkHeight: CGFloat = 24.0
 
     static let cellHeight: CGFloat = 48.0
 
