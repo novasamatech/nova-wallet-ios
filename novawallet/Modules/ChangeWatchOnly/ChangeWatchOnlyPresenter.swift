@@ -70,7 +70,7 @@ extension ChangeWatchOnlyPresenter: ChangeWatchOnlyPresenterProtocol {
 
         provideAddressStateViewModel()
     }
-    
+
     func performScan() {
         wireframe.showAddressScan(from: view, delegate: self, context: nil)
     }
@@ -79,13 +79,13 @@ extension ChangeWatchOnlyPresenter: ChangeWatchOnlyPresenterProtocol {
         if let address = partialAddress, getAccountId() != nil {
             interactor.save(address: address)
         } else if let view = view {
-            wireframe.presentWrongChain(for: chain.name, from: view, locale: selectedLocale)
+            wireframe.presentInvalidAddress(from: view, chainName: chain.name, locale: selectedLocale)
         }
     }
 }
 
 extension ChangeWatchOnlyPresenter: ChangeWatchOnlyInteractorOutputProtocol {
-    func didSaveAddress(_ address: AccountAddress) {
+    func didSaveAddress(_: AccountAddress) {
         wireframe.complete(view: view)
     }
 
@@ -96,7 +96,7 @@ extension ChangeWatchOnlyPresenter: ChangeWatchOnlyInteractorOutputProtocol {
 }
 
 extension ChangeWatchOnlyPresenter: AddressScanDelegate {
-    func addressScanDidReceiveRecepient(address: AccountAddress, context: AnyObject?) {
+    func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
         wireframe.hideAddressScan(from: view)
 
         partialAddress = address
