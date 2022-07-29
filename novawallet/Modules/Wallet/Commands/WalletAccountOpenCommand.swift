@@ -4,30 +4,31 @@ import CommonWallet
 final class WalletAccountOpenCommand: WalletCommandProtocol {
     let address: String
     let locale: Locale
-    let explorers: [ChainModel.Explorer]?
+    let chain: ChainModel
 
     weak var commandFactory: WalletCommandFactoryProtocol?
 
     init(
         address: String,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
         self.address = address
-        self.explorers = explorers
+        self.chain = chain
         self.commandFactory = commandFactory
         self.locale = locale
     }
 
     func execute() throws {
-        let controller = UIAlertController.presentAccountOptions(
-            address,
-            explorers: explorers,
-            locale: locale,
+        guard let controller = AddressOptionsPresentableFactory.createAccountOptionsController(
+            address: address,
+            chain: chain,
             copyClosure: copyAddress,
             urlClosure: present(url:)
-        )
+        ) else {
+            return
+        }
 
         let command = commandFactory?.preparePresentationCommand(for: controller)
         command?.presentationStyle = .modal(inNavigation: false)

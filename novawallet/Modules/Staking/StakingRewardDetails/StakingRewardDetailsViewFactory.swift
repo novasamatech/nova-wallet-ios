@@ -31,8 +31,7 @@ final class StakingRewardDetailsViewFactory {
             input: input,
             viewModelFactory: viewModelFactory,
             timeleftFactory: timeleftFactory,
-            explorers: chainAsset.chain.explorers,
-            chainFormat: chainAsset.chain.chainFormat,
+            chain: chainAsset.chain,
             localizationManager: localizationManager
         )
         let view = StakingRewardDetailsViewController(
