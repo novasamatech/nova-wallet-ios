@@ -2,7 +2,11 @@ import Foundation
 import SoraFoundation
 
 extension InputViewModel {
-    static func createAccountInputViewModel(for value: String, required: Bool = true) -> InputViewModelProtocol {
+    static func createAccountInputViewModel(
+        for value: String,
+        title: String = "",
+        required: Bool = true
+    ) -> InputViewModelProtocol {
         let inputHandler = InputHandler(
             value: value,
             required: required,
@@ -10,7 +14,7 @@ extension InputViewModel {
             processor: TrimmingCharacterProcessor(charset: CharacterSet.whitespacesAndNewlines)
         )
 
-        let viewModel = InputViewModel(inputHandler: inputHandler)
+        let viewModel = InputViewModel(inputHandler: inputHandler, title: title)
         return viewModel
     }
 }
