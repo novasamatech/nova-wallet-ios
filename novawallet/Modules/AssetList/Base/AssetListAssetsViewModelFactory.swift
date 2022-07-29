@@ -126,21 +126,10 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let priceString = priceFormatter.value(for: locale).stringFromDecimal(value) ?? ""
 
-        let color: GradientModel
-
-        if
-            let colorString = chain.color,
-            let colorModel = cssColorFactory.createFromString(colorString) {
-            color = colorModel
-        } else {
-            color = GradientModel.defaultGradient
-        }
-
         return AssetListGroupViewModel(
             networkName: networkName,
             amount: .loaded(value: priceString),
             icon: iconViewModel,
-            color: color,
             assets: assetViewModels
         )
     }

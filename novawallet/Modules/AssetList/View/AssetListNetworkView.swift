@@ -34,12 +34,9 @@ final class AssetListNetworkView: UICollectionReusableView {
 
         chainView.nameLabel.text = viewModel.networkName
 
-        chainView.iconView.bind(
-            iconViewModel: viewModel.icon,
-            size: CGSize(width: 21.0, height: 21.0)
-        )
+        let networkViewModel = NetworkViewModel(name: viewModel.networkName, icon: viewModel.icon)
 
-        chainView.iconView.bind(gradient: viewModel.color)
+        chainView.bind(viewModel: networkViewModel)
     }
 
     private func setupLayout() {
