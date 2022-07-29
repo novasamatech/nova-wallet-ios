@@ -62,10 +62,69 @@ final class AccountManagementPresenter {
         view?.set(nameViewModel: nameViewModel)
     }
 
-    // MARK: - Bottom sheet display types
+    // MARK: - Bottom sheet display for watch only type
 
-    // 0. Change chain account
-    private func displayChangeActions(with title: String, for chain: ChainModel) {
+    private func displayWatchOnlyNoAddressActions(for chain: ChainModel) {
+        let title = R.string.localizable.accountNotFoundActionsTitle(
+            chain.name,
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        let addAction = createAccountAddAction(for: chain, walletType: .watchOnly)
+
+        let actions: [AlertPresentableAction] = [addAction]
+
+        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        let actionsViewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(
+            viewModel: actionsViewModel,
+            style: .actionSheet,
+            from: view
+        )
+    }
+
+    private func displayWatchOnlyExistingAddressActions(
+        for chain: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        guard let address = viewModel.address else { return }
+        let title = createTitleFrom(address)
+
+        var actions: [AlertPresentableAction] = []
+
+        let copyAction = createCopyAction(for: address)
+        actions.append(copyAction)
+
+        let explorerActions = createExplorerActions(for: chain, address: address)
+
+        actions.append(contentsOf: explorerActions)
+
+        let changeAccountAction = createAccountChangeAction(for: chain, walletType: .watchOnly)
+        actions.append(changeAccountAction)
+
+        let closeTitle = R.string.localizable
+            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        let actionsViewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(viewModel: actionsViewModel, style: .actionSheet, from: view)
+    }
+
+    // MARK: - Bottom sheet display for secrets type
+
+    private func displaySecretsChangeActions(with title: String, for chain: ChainModel) {
         let createAccountAction = createAccountCreateAction(for: chain)
         let importAccountAction = createAccountImportAction(for: chain)
 
@@ -88,25 +147,25 @@ final class AccountManagementPresenter {
         )
     }
 
-    private func displayReplaceActions(for chain: ChainModel) {
+    private func displaySecretsReplaceActions(for chain: ChainModel) {
         let title = R.string.localizable.accountActionsChangeSheetTitle(
             chain.name,
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        displayChangeActions(with: title, for: chain)
+        displaySecretsChangeActions(with: title, for: chain)
     }
 
-    private func displayNoAddressActions(for chain: ChainModel) {
+    private func displaySecretsNoAddressActions(for chain: ChainModel) {
         let title = R.string.localizable.accountNotFoundActionsTitle(
             chain.name,
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        displayChangeActions(with: title, for: chain)
+        displaySecretsChangeActions(with: title, for: chain)
     }
 
-    private func displayExistingAddressActions(
+    private func displaySecretsExistingAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
@@ -118,24 +177,11 @@ final class AccountManagementPresenter {
         let copyAction = createCopyAction(for: address)
         actions.append(copyAction)
 
-        let explorerActions: [AlertPresentableAction] = chain.explorers?.compactMap { explorer in
-            guard
-                let urlTemplate = explorer.account,
-                let url = try? RobinHood.EndpointBuilder(urlTemplate: urlTemplate)
-                .buildParameterURL(address) else {
-                return nil
-            }
-
-            return AlertPresentableAction(title: explorer.name) { [weak self] in
-                if let view = self?.view {
-                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
-                }
-            }
-        } ?? []
+        let explorerActions = createExplorerActions(for: chain, address: address)
 
         actions.append(contentsOf: explorerActions)
 
-        let changeAccountAction = createAccountChangeAction(for: chain)
+        let changeAccountAction = createAccountChangeAction(for: chain, walletType: .secrets)
         actions.append(changeAccountAction)
 
         let exportAccountTitle = R.string.localizable.commonExport(
@@ -173,8 +219,15 @@ final class AccountManagementPresenter {
         wireframe.presentSuccessNotification(title, from: view)
     }
 
-    private func activateChangeAccount(for chainModel: ChainModel) {
-        displayReplaceActions(for: chainModel)
+    private func activateChangeAccount(for chainModel: ChainModel, walletType: MetaAccountModelType) {
+        switch walletType {
+        case .secrets:
+            displaySecretsReplaceActions(for: chainModel)
+        case .watchOnly:
+            if let wallet = wallet {
+                wireframe.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chainModel)
+            }
+        }
     }
 
     private func activateCreateAccount(for chainModel: ChainModel) {
@@ -205,6 +258,23 @@ final class AccountManagementPresenter {
 
     // MARK: - Bottom sheet items creation
 
+    private func createExplorerActions(for chain: ChainModel, address: AccountAddress) -> [AlertPresentableAction] {
+        chain.explorers?.compactMap { explorer in
+            guard
+                let urlTemplate = explorer.account,
+                let url = try? RobinHood.EndpointBuilder(urlTemplate: urlTemplate)
+                .buildParameterURL(address) else {
+                return nil
+            }
+
+            return AlertPresentableAction(title: explorer.name) { [weak self] in
+                if let view = self?.view {
+                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+                }
+            }
+        } ?? []
+    }
+
     private func createCopyAction(for address: String) -> AlertPresentableAction {
         let copyTitle = R.string.localizable
             .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
@@ -213,11 +283,26 @@ final class AccountManagementPresenter {
         }
     }
 
-    private func createAccountChangeAction(for chain: ChainModel) -> AlertPresentableAction {
+    private func createAccountChangeAction(
+        for chain: ChainModel,
+        walletType: MetaAccountModelType
+    ) -> AlertPresentableAction {
         let createAccountTitle = R.string.localizable
             .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
         return AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateChangeAccount(for: chain)
+            self?.activateChangeAccount(for: chain, walletType: walletType)
+        }
+    }
+
+    private func createAccountAddAction(
+        for chain: ChainModel,
+        walletType: MetaAccountModelType
+    ) -> AlertPresentableAction {
+        let createAccountTitle = R.string.localizable.accountsAddAccount(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.activateChangeAccount(for: chain, walletType: walletType)
         }
     }
 
@@ -285,12 +370,23 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         let chainViewModel = viewModel[indexPath.section]
             .chainAccounts[indexPath.row]
 
-        guard let chainModel = chains[chainViewModel.chainId] else { return }
+        guard
+            let wallet = wallet,
+            let chainModel = chains[chainViewModel.chainId] else { return }
 
-        if chainViewModel.address == nil {
-            displayNoAddressActions(for: chainModel)
-        } else {
-            displayExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+        switch wallet.type {
+        case .secrets:
+            if chainViewModel.address == nil {
+                displaySecretsNoAddressActions(for: chainModel)
+            } else {
+                displaySecretsExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+            }
+        case .watchOnly:
+            if chainViewModel.address == nil {
+                displayWatchOnlyNoAddressActions(for: chainModel)
+            } else {
+                displayWatchOnlyExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+            }
         }
     }
 

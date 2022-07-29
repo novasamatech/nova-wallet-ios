@@ -53,6 +53,12 @@ protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable,
         isEthereumBased: Bool
     )
 
+    func showChangeWatchOnlyAccount(
+        from view: ControllerBackedProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel
+    )
+
     func showExportAccount(
         for wallet: MetaAccountModel,
         chain: ChainModel,
