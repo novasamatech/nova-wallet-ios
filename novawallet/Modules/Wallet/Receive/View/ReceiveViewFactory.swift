@@ -8,7 +8,6 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
     let accountId: AccountId
     let chain: ChainModel
     let assetInfo: AssetBalanceDisplayInfo
-    let explorers: [ChainModel.Explorer]?
     let localizationManager: LocalizationManagerProtocol
     var designScaleRatio = CGSize(width: 1.0, height: 1.0)
 
@@ -20,13 +19,11 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
         accountId: AccountId,
         chain: ChainModel,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.accountId = accountId
         self.chain = chain
         self.assetInfo = assetInfo
-        self.explorers = explorers
         self.localizationManager = localizationManager
     }
 
@@ -52,7 +49,7 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
         if let commandFactory = commandFactory {
             let command = WalletAccountOpenCommand(
                 address: address,
-                explorers: explorers,
+                chain: chain,
                 commandFactory: commandFactory,
                 locale: locale
             )

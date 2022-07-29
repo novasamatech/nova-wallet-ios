@@ -11,7 +11,7 @@ final class StakingBondMoreConfirmationPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
-    let explorers: [ChainModel.Explorer]?
+    let chain: ChainModel
     let logger: LoggerProtocol?
 
     private var balance: Decimal?
@@ -28,7 +28,7 @@ final class StakingBondMoreConfirmationPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -38,7 +38,7 @@ final class StakingBondMoreConfirmationPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
-        self.explorers = explorers
+        self.chain = chain
         self.logger = logger
     }
 
@@ -127,7 +127,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: locale
         )
     }

@@ -11,8 +11,7 @@ final class StakingRewardDetailsPresenter {
     private let input: StakingRewardDetailsInput
     private let viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol
     private let timeleftFactory: PayoutTimeViewModelFactoryProtocol
-    private let explorers: [ChainModel.Explorer]?
-    private let chainFormat: ChainFormat
+    private let chain: ChainModel
     private var priceData: PriceData?
 
     private var timer: CountdownTimer?
@@ -25,14 +24,12 @@ final class StakingRewardDetailsPresenter {
         input: StakingRewardDetailsInput,
         viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol,
         timeleftFactory: PayoutTimeViewModelFactoryProtocol,
-        explorers: [ChainModel.Explorer]?,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
         self.viewModelFactory = viewModelFactory
-        self.explorers = explorers
-        self.chainFormat = chainFormat
+        self.chain = chain
         self.timeleftFactory = timeleftFactory
         self.localizationManager = localizationManager
     }
@@ -96,13 +93,13 @@ extension StakingRewardDetailsPresenter: StakingRewardDetailsPresenterProtocol {
     func handleValidatorAccountAction() {
         guard
             let view = view,
-            let address = try? input.payoutInfo.validator.toAddress(using: chainFormat)
+            let address = try? input.payoutInfo.validator.toAddress(using: chain.chainFormat)
         else { return }
 
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: selectedLocale
         )
     }
