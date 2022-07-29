@@ -39,12 +39,12 @@ final class DAppListInteractor {
         phishingSyncService.throttle()
     }
 
-    private func provideAccountId() {
+    private func provideWallet() {
         guard let wallet = walletSettings.value else {
             return
         }
 
-        presenter?.didReceive(accountIdResult: .success(wallet.substrateAccountId))
+        presenter?.didReceive(walletResult: .success(wallet))
     }
 
     private func subscribeDApps() {
@@ -92,7 +92,7 @@ final class DAppListInteractor {
 
 extension DAppListInteractor: DAppListInteractorInputProtocol {
     func setup() {
-        provideAccountId()
+        provideWallet()
 
         subscribeDApps()
 
@@ -110,7 +110,7 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
 
 extension DAppListInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        provideAccountId()
+        provideWallet()
     }
 }
 

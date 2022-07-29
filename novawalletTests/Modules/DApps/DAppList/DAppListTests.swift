@@ -85,7 +85,7 @@ class DAppListTests: XCTestCase {
 
             stub.didCompleteRefreshing().thenDoNothing()
 
-            stub.didReceiveAccount(icon: any()).then { _ in
+            stub.didReceiveWalletSwitch(viewModel: any()).then { _ in
                 iconExpectation.fulfill()
             }
         }

@@ -4,7 +4,7 @@ final class SettingsSectionHeaderView: UITableViewHeaderFooterView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTransparentText()
-        label.font = .p3Paragraph
+        label.font = .semiBoldCaps2
         return label
     }()
 
@@ -24,7 +24,6 @@ final class SettingsSectionHeaderView: UITableViewHeaderFooterView {
     private func setupLayout() {
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(32)
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().inset(12)
         }

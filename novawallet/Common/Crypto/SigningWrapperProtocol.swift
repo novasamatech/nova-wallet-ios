@@ -2,7 +2,9 @@ import Foundation
 import IrohaCrypto
 import SubstrateSdk
 
-protocol SigningWrapperProtocol: IRSignatureCreatorProtocol {}
+protocol SignatureCreatorProtocol: IRSignatureCreatorProtocol {}
+
+protocol SigningWrapperProtocol: SignatureCreatorProtocol {}
 
 extension SigningWrapperProtocol {
     func signSr25519(_ originalData: Data, secretKeyData: Data, publicKeyData: Data) throws

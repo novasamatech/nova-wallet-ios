@@ -20,13 +20,12 @@ class StackNetworkCell: RowView<GenericTitleValueView<UILabel, UIStackView>> {
         }
     }
 
-    var chainView: GradientIconView = {
-        let view = GradientIconView()
-        view.backgroundView.cornerRadius = 6.0
+    var chainView: UIImageView = {
+        let view = UIImageView()
         return view
     }()
 
-    private var viewModel: StackCellViewModel?
+    private var iconViewModel: ImageViewModelProtocol?
 
     convenience init() {
         self.init(frame: .zero)
@@ -41,8 +40,10 @@ class StackNetworkCell: RowView<GenericTitleValueView<UILabel, UIStackView>> {
 
     func bind(viewModel: NetworkViewModel) {
         nameLabel.text = viewModel.name
-        chainView.bind(iconViewModel: viewModel.icon, size: iconSize)
-        chainView.bind(gradient: viewModel.gradient)
+
+        iconViewModel?.cancel(on: chainView)
+        iconViewModel = viewModel.icon
+        viewModel.icon?.loadImage(on: chainView, targetSize: iconSize, animated: true)
     }
 
     private func configureStyle() {

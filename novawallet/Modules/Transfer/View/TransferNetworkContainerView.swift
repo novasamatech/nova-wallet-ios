@@ -9,8 +9,8 @@ final class TransferNetworkContainerView: UIView {
     var horizontalSpacing: CGFloat = 6.0
     var verticalSpacing: CGFloat = 7.0
 
-    let originNetworkView = WalletChainView()
-    private(set) var destinationNetworkView: WalletChainControlView?
+    let originNetworkView = AssetListChainView()
+    private(set) var destinationNetworkView: AssetListChainControlView?
 
     var locale = Locale.current {
         didSet {
@@ -102,7 +102,7 @@ final class TransferNetworkContainerView: UIView {
         addSubview(label)
         toLabel = label
 
-        let destNetworkView = WalletChainControlView()
+        let destNetworkView = AssetListChainControlView()
         addSubview(destNetworkView)
         destinationNetworkView = destNetworkView
     }
