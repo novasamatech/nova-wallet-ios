@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -95,7 +95,7 @@
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="GybH55zsi5nAGybH55zsi5nA" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="18j-pV-YOn">
                                                 <rect key="frame" x="20" y="0.0" width="266" height="16"/>
                                                 <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
-                                                <color key="textColor" name="colorLightGray"/>
+                                                <color key="textColor" name="colorTransparentText"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -131,6 +131,9 @@
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="_changesContentOpacityWhenHighlighted" value="YES"/>
                                     <userDefinedRuntimeAttribute type="color" keyPath="_highlightedFillColor">
                                         <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="_iconTintColor">
+                                        <color key="value" name="colorWhite32"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
@@ -171,11 +174,14 @@
         <namedColor name="colorDarkGray">
             <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="colorLightGray">
-            <color red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="colorTransparentText">
+            <color red="1" green="1" blue="1" alpha="0.63999998569488525" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="colorWhite32">
+            <color red="1" green="1" blue="1" alpha="0.31999999284744263" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

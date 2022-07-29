@@ -195,7 +195,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func activateAccount() {
-        wireframe.showWalletSelection(from: view)
+        wireframe.showWalletSwitch(from: view)
     }
 
     func activateSearch() {

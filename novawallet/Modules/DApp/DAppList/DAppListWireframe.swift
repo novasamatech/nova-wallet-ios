@@ -1,18 +1,6 @@
 import Foundation
 
 final class DAppListWireframe: DAppListWireframeProtocol {
-    func showWalletSelection(from view: DAppListViewProtocol?) {
-        guard let accountManagement = WalletSelectionViewFactory.createView() else {
-            return
-        }
-
-        let navigationController = FearlessNavigationController(
-            rootViewController: accountManagement.controller
-        )
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
     func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate) {
         guard let searchView = DAppSearchViewFactory.createView(with: nil, delegate: delegate) else {
             return

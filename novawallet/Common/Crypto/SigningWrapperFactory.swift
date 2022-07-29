@@ -10,6 +10,8 @@ protocol SigningWrapperFactoryProtocol {
     func createSigningWrapper(
         for ethereumAccountResponse: MetaEthereumAccountResponse
     ) -> SigningWrapperProtocol
+
+    func createEthereumSigner(for ethereumAccountResponse: MetaEthereumAccountResponse) -> SignatureCreatorProtocol
 }
 
 final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
@@ -37,6 +39,15 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         switch ethereumAccountResponse.type {
         case .secrets:
             return SigningWrapper(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
+        case .watchOnly:
+            return NoKeysSigningWrapper()
+        }
+    }
+
+    func createEthereumSigner(for ethereumAccountResponse: MetaEthereumAccountResponse) -> SignatureCreatorProtocol {
+        switch ethereumAccountResponse.type {
+        case .secrets:
+            return EthereumSigner(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
         case .watchOnly:
             return NoKeysSigningWrapper()
         }
