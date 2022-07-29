@@ -22,6 +22,7 @@ protocol ChangeWatchOnlyInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol ChangeWatchOnlyWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable, AddressScanPresentable {
+protocol ChangeWatchOnlyWireframeProtocol: AlertPresentable, ErrorPresentable,
+    BaseErrorPresentable, AddressScanPresentable {
     func complete(view: ChangeWatchOnlyViewProtocol?)
 }
