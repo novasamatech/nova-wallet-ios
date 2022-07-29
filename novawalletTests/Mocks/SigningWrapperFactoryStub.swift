@@ -14,4 +14,8 @@ final class DummySigningWrapperFactory: SigningWrapperFactoryProtocol {
     ) -> SigningWrapperProtocol {
         try! DummySigner(cryptoType: MultiassetCryptoType.ethereumEcdsa)
     }
+
+    func createEthereumSigner(for ethereumAccountResponse: MetaEthereumAccountResponse) -> SignatureCreatorProtocol {
+        try! DummySigner(cryptoType: MultiassetCryptoType.ethereumEcdsa)
+    }
 }

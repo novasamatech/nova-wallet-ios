@@ -8,18 +8,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         self.walletUpdater = walletUpdater
     }
 
-    func showWalletList(from view: AssetListViewProtocol?) {
-        guard let accountManagement = WalletSelectionViewFactory.createView() else {
-            return
-        }
-
-        let navigationController = FearlessNavigationController(
-            rootViewController: accountManagement.controller
-        )
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
         guard let context = try? WalletContextFactory().createContext(for: chain, asset: asset) else {
             return

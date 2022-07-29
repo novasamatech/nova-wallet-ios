@@ -855,3 +855,4 @@
 "common.watch.only" = "Watch-only";
 "common.select.wallet" = "Select wallet";
 "common.tokens" = "Tokens";
+"account.management.watch.only.hint" = "This is watch-only wallet, Nova can show you balances and other information, but you cannot perform any transactions with this wallet";

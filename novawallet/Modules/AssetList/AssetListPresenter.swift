@@ -309,7 +309,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func selectWallet() {
-        wireframe.showWalletList(from: view)
+        wireframe.showWalletSwitch(from: view)
     }
 
     func selectAsset(for chainAssetId: ChainAssetId) {

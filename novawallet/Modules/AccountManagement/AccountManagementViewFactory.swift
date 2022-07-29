@@ -9,8 +9,6 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
     static func createView(for walletId: String) -> AccountManagementViewProtocol? {
         let wireframe = AccountManagementWireframe()
 
-        let view = AccountManagementViewController(nib: R.nib.accountManagementViewController)
-
         let iconGenerator = PolkadotIconGenerator()
         let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
 
@@ -32,6 +30,11 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
 
         let chainRepository = SubstrateRepositoryFactory().createChainRepository()
 
+        let view = AccountManagementViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
         let interactor = AccountManagementInteractor(
             walletRepository: AnyDataProviderRepository(walletRepository),
             chainRepository: chainRepository,
@@ -41,13 +44,10 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
             keystore: Keychain()
         )
 
-        view.presenter = presenter
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        view.localizationManager = LocalizationManager.shared
 
         return view
     }
