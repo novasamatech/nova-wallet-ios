@@ -4450,6 +4450,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func set(walletType: WalletsListSectionViewModel.SectionType)  {
+        
+    return cuckoo_manager.call("set(walletType: WalletsListSectionViewModel.SectionType)",
+            parameters: (walletType),
+            escapingParameters: (walletType),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.set(walletType: walletType))
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountManagementViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -4477,6 +4492,11 @@ import SoraFoundation
 	    func set<M1: Cuckoo.Matchable>(nameViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol)>] = [wrap(matchable: nameViewModel) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(nameViewModel: InputViewModelProtocol)", parameterMatchers: matchers))
+	    }
+	    
+	    func set<M1: Cuckoo.Matchable>(walletType: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(WalletsListSectionViewModel.SectionType)> where M1.MatchedType == WalletsListSectionViewModel.SectionType {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletsListSectionViewModel.SectionType)>] = [wrap(matchable: walletType) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementViewProtocol.self, method: "set(walletType: WalletsListSectionViewModel.SectionType)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -4517,6 +4537,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("set(nameViewModel: InputViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func set<M1: Cuckoo.Matchable>(walletType: M1) -> Cuckoo.__DoNotUse<(WalletsListSectionViewModel.SectionType), Void> where M1.MatchedType == WalletsListSectionViewModel.SectionType {
+	        let matchers: [Cuckoo.ParameterMatcher<(WalletsListSectionViewModel.SectionType)>] = [wrap(matchable: walletType) { $0 }]
+	        return cuckoo_manager.verify("set(walletType: WalletsListSectionViewModel.SectionType)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -4553,6 +4579,12 @@ import SoraFoundation
     
     
      func set(nameViewModel: InputViewModelProtocol)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func set(walletType: WalletsListSectionViewModel.SectionType)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
