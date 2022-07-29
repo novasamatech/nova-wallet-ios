@@ -1,6 +1,12 @@
 import Foundation
 
 final class AccountManagementWireframe: AccountManagementWireframeProtocol, AuthorizationPresentable {
+    func showChangeWatchOnlyAccount(
+        from _: ControllerBackedProtocol?,
+        wallet _: MetaAccountModel,
+        chain _: ChainModel
+    ) {}
+
     func showCreateAccount(
         from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,
