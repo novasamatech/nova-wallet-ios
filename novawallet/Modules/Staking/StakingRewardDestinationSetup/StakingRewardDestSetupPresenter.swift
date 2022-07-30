@@ -276,23 +276,27 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
     func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>) {
         switch result {
         case let .success(accounts):
-            let context = PrimitiveContextWrapper(value: accounts)
+            let operatableAccounts = accounts.filter { $0.chainAccount.type.canPerformOperations }
 
-            let title = LocalizableResource { locale in
-                R.string.localizable
-                    .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
+            if !operatableAccounts.isEmpty {
+                let context = PrimitiveContextWrapper(value: operatableAccounts)
+
+                let title = LocalizableResource { locale in
+                    R.string.localizable
+                        .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
+                }
+
+                let payoutAccount = rewardDestination?.payoutAccount
+
+                wireframe.presentAccountSelection(
+                    operatableAccounts,
+                    selectedAccountItem: payoutAccount,
+                    title: title,
+                    delegate: self,
+                    from: view,
+                    context: context
+                )
             }
-
-            let payoutAccount = rewardDestination?.payoutAccount
-
-            wireframe.presentAccountSelection(
-                accounts,
-                selectedAccountItem: payoutAccount,
-                title: title,
-                delegate: self,
-                from: view,
-                context: context
-            )
 
         case let .failure(error):
             logger?.error("Did receive accounts retrieval error: \(error)")
