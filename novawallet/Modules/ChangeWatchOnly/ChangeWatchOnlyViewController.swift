@@ -56,7 +56,7 @@ final class ChangeWatchOnlyViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.detailsLabel.text = R.string.localizable.watchOnlyAccountChangeDetails(
+        rootView.detailsLabel.text = R.string.localizable.createWatchOnlyDetails(
             preferredLanguages: selectedLocale.rLanguages
         )
 
