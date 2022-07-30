@@ -80,7 +80,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: chainAsset.assetDisplayInfo,
-            explorers: nil
+            chain: chainAsset.chain
         )
 
         presenter.view = view
