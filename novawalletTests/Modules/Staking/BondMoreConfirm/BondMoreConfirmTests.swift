@@ -121,7 +121,7 @@ class BondMoreConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             assetInfo: assetInfo,
-            explorers: nil
+            chain: chainAsset.chain
         )
 
         presenter.view = view
