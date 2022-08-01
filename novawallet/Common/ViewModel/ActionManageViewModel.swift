@@ -1,6 +1,6 @@
 import UIKit
 
-struct StakingManageViewModel {
+struct ActionManageViewModel {
     let icon: UIImage?
     let title: String
     let details: String?

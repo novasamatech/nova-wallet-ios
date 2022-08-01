@@ -74,7 +74,7 @@ extension ParaStkCollatorInfoPresenter: ValidatorInfoPresenterProtocol {
             wireframe.presentAccountOptions(
                 from: view,
                 address: address,
-                explorers: chain.explorers,
+                chain: chain,
                 locale: selectedLocale
             )
         }

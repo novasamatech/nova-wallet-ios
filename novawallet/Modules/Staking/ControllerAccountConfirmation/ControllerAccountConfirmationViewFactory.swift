@@ -29,7 +29,7 @@ struct ControllerAccountConfirmationViewFactory {
             assetInfo: assetInfo,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            explorers: chainAsset.chain.explorers
+            chain: chainAsset.chain
         )
 
         let view = ControllerAccountConfirmationVC(

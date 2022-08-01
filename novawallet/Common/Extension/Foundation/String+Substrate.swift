@@ -27,4 +27,14 @@ extension String {
 
         return replacedCamelCase
     }
+
+    var twoLineAddress: String {
+        let leftPartCount = count / 2
+
+        guard leftPartCount > 0 else {
+            return self
+        }
+
+        return prefix(leftPartCount) + "\n" + suffix(count - leftPartCount)
+    }
 }

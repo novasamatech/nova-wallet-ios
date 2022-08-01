@@ -139,7 +139,7 @@ final class ParaStkUnstakeConfirmPresenter {
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             locale: selectedLocale
         )
     }

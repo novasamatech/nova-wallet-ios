@@ -17,7 +17,7 @@ final class StakingPayoutConfirmationPresenter {
     private let payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     private let assetInfo: AssetBalanceDisplayInfo
-    private let explorers: [ChainModel.Explorer]?
+    private let chain: ChainModel
     private let logger: LoggerProtocol?
 
     init(
@@ -25,14 +25,14 @@ final class StakingPayoutConfirmationPresenter {
         payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.payoutConfirmViewModelFactory = payoutConfirmViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
-        self.explorers = explorers
+        self.chain = chain
         self.logger = logger
     }
 
@@ -119,7 +119,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: locale
         )
     }

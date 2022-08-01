@@ -173,7 +173,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             accountId: accountId,
             chain: chain,
             assetInfo: asset.displayInfo(with: chain.icon),
-            explorers: chain.explorers,
             localizationManager: localizationManager
         )
 

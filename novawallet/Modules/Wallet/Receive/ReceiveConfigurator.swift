@@ -25,7 +25,6 @@ final class ReceiveConfigurator: AdaptiveDesignable {
         accountId: AccountId,
         chain: ChainModel,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.assetInfo = assetInfo
@@ -34,7 +33,6 @@ final class ReceiveConfigurator: AdaptiveDesignable {
             accountId: accountId,
             chain: chain,
             assetInfo: assetInfo,
-            explorers: explorers,
             localizationManager: localizationManager
         )
 
