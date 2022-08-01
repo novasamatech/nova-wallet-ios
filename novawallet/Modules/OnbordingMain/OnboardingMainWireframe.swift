@@ -46,5 +46,14 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
         view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
     }
 
-    func showHardwareWalletCreate(from _: OnboardingMainViewProtocol?) {}
+    func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?) {
+        guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createView() else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            paritySignerWelcomeView.controller,
+            animated: true
+        )
+    }
 }
