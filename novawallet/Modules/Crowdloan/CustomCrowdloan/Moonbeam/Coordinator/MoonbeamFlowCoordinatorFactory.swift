@@ -19,9 +19,8 @@ struct MoonbeamFlowCoordinatorFactory {
             return nil
         }
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: selectedAccount.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
             accountResponse: accountResponse
         )
 

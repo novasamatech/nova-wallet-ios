@@ -283,8 +283,15 @@ final class AccountManagementPresenter {
                 return nil
             }
 
+            let title = LocalizableResource { locale in
+                R.string.localizable.commmonViewInFormat(
+                    explorer.name,
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+
             return ChainAddressDetailsAction(
-                title: LocalizableResource { _ in explorer.name },
+                title: title,
                 icon: R.image.iconActionWeb(),
                 indicator: .navigation
             ) { [weak self] in
