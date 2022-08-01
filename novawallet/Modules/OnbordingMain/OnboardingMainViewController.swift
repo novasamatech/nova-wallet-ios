@@ -53,6 +53,10 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
         let watchOnlySubtitle = R.string.localizable.welcomeWatchOnlySubtitle(preferredLanguages: languages)
         rootView.watchOnlyButton.bind(title: watchOnlyTitle, details: watchOnlySubtitle)
 
+        let hardwareWalletTitle = R.string.localizable.welcomeHardwareWalletTitle(preferredLanguages: languages)
+        let hardwareWalletSubtitle = R.string.localizable.welcomeHardwareWalletSubtitle(preferredLanguages: languages)
+        rootView.hardwareButton.bind(title: hardwareWalletTitle, details: hardwareWalletSubtitle)
+
         let termsText = R.string.localizable.onboardingTermsAndConditions1_v2_2_0(
             preferredLanguages: languages
         )
@@ -68,6 +72,7 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
         rootView.createButton.addTarget(self, action: #selector(actionSignup), for: .touchUpInside)
         rootView.importButton.addTarget(self, action: #selector(actionRestoreAccess), for: .touchUpInside)
         rootView.watchOnlyButton.addTarget(self, action: #selector(actionCreateWatchOnly), for: .touchUpInside)
+        rootView.hardwareButton.addTarget(self, action: #selector(actionHardwareWallet), for: .touchUpInside)
     }
 
     @objc private func actionSignup() {
@@ -92,6 +97,10 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
 
     @objc private func actionCreateWatchOnly() {
         presenter.activateWatchOnlyCreate()
+    }
+
+    @objc private func actionHardwareWallet() {
+        presenter.activateHardwareWalletCreate()
     }
 }
 
