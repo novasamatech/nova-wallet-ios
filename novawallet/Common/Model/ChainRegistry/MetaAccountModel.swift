@@ -4,6 +4,15 @@ import RobinHood
 enum MetaAccountModelType: UInt8 {
     case secrets
     case watchOnly
+
+    var canPerformOperations: Bool {
+        switch self {
+        case .secrets:
+            return true
+        case .watchOnly:
+            return false
+        }
+    }
 }
 
 struct MetaAccountModel: Equatable {
