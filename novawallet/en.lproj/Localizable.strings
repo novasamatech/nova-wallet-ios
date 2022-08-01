@@ -858,3 +858,12 @@
 "common.invalid.address.format" = "Invalid %@ address";
 "welcome.hardware.wallet.title" = "Connect hardware wallet";
 "welcome.hardware.wallet.subtitle" = "Use Parity Signer";
+"welcome.parity.signer.title" = "Add wallet from Parity Signer";
+"welcome.parity.signer.step1" = "Open Parity Signer application on your smartphone";
+"welcome.parity.signer.step1.highlighted" = "Open Parity Signer";
+"welcome.parity.signer.step2" = "Go to “Keys” tab. Select seed, then account you would like to add to Nova Wallet";
+"welcome.parity.signer.step2.highlighted" = "Go to “Keys” tab. Select seed, then account";
+"welcome.parity.signer.step2.details" = "Make sure to select top one";
+"welcome.parity.signer.step3" = "Parity Signer will provide you QR code to scan";
+"welcome.parity.signer.step3.highlighted" = "QR code to scan";
+"common.scan.qr.code" = "Scan QR code";
