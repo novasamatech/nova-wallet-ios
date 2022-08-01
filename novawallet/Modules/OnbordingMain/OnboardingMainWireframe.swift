@@ -45,4 +45,6 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
 
         view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
     }
+
+    func showHardwareWalletCreate(from _: OnboardingMainViewProtocol?) {}
 }

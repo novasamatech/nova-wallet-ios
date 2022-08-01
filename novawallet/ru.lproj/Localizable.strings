@@ -856,3 +856,5 @@
 "common.address.scan.message" = "Отсканируйте QR с адресом";
 "common.watch.only" = "Watch-only";
 "common.invalid.address.format" = "%@ адрес имеет неверный формат";
+"welcome.hardware.wallet.title" = "Подключить аппаратный кошелек";
+"welcome.hardware.wallet.subtitle" = "Используйте Parity Signer";

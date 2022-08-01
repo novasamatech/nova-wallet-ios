@@ -856,3 +856,5 @@
 "common.address.scan.message" = "Scan QR code with the address";
 "common.watch.only" = "Watch-only";
 "common.invalid.address.format" = "Invalid %@ address";
+"welcome.hardware.wallet.title" = "Connect hardware wallet";
+"welcome.hardware.wallet.subtitle" = "Use Parity Signer";
