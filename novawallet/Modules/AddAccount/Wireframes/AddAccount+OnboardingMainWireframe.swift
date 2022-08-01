@@ -27,6 +27,14 @@ extension AddAccount {
             }
         }
 
+        func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?) {
+            guard let watchOnlyView = CreateWatchOnlyViewFactory.createViewForAdding() else {
+                return
+            }
+
+            view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
+        }
+
         private func presentAccountRestore(
             from view: OnboardingMainViewProtocol?,
             secretSource: SecretSource

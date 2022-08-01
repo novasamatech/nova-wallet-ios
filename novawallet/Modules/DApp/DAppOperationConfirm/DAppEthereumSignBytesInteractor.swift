@@ -6,7 +6,7 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
     let chain: MetamaskChain
     let accountId: AccountId
-    let keystore: KeystoreProtocol
+    let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     private(set) var account: MetaEthereumAccountResponse?
 
@@ -14,12 +14,12 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
         request: DAppOperationRequest,
         accountId: AccountId,
         chain: MetamaskChain,
-        keystore: KeystoreProtocol
+        signingWrapperFactory: SigningWrapperFactoryProtocol
     ) {
         self.request = request
         self.accountId = accountId
         self.chain = chain
-        self.keystore = keystore
+        self.signingWrapperFactory = signingWrapperFactory
     }
 
     private func validateAndProvideConfirmationModel() {
@@ -90,11 +90,11 @@ extension DAppEthereumSignBytesInteractor: DAppOperationConfirmInteractorInputPr
         }
 
         do {
-            let signer = EthereumSigner(keystore: keystore, ethereumAccountResponse: account)
+            let signer = signingWrapperFactory.createEthereumSigner(for: account)
 
             let rawBytes = try prepareRawBytes()
 
-            let signature = try signer.sign(hashedData: rawBytes).rawData()
+            let signature = try signer.sign(rawBytes).rawData()
 
             let response = DAppOperationResponse(signature: signature)
 

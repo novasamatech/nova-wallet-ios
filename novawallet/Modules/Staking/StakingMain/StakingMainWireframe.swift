@@ -1,19 +1,6 @@
 import Foundation
 
 final class StakingMainWireframe: StakingMainWireframeProtocol {
-    func showAccountsSelection(from view: StakingMainViewProtocol?) {
-        guard let accountsView = WalletManagementViewFactory.createViewForSwitch() else {
-            return
-        }
-
-        accountsView.controller.hidesBottomBarWhenPushed = true
-
-        view?.controller.navigationController?.pushViewController(
-            accountsView.controller,
-            animated: true
-        )
-    }
-
     func showChainAssetSelection(
         from view: StakingMainViewProtocol?,
         selectedChainAssetId: ChainAssetId?,

@@ -16,7 +16,8 @@ enum AccountGenerator {
             substratePublicKey: Data.random(of: 32)!,
             ethereumAddress: Data.random(of: 20)!,
             ethereumPublicKey: Data.random(of: 32)!,
-            chainAccounts: chainAccounts
+            chainAccounts: chainAccounts,
+            type: .secrets
         )
     }
 

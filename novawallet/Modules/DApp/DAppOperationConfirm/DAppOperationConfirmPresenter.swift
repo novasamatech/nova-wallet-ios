@@ -169,7 +169,15 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
             wireframe.close(view: view)
 
         case let .failure(error):
-            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+            if error.isWatchOnlySigning {
+                guard let view = view else {
+                    return
+                }
+
+                wireframe.presentNoSigningView(from: view) { [weak self] in
+                    self?.interactor.reject()
+                }
+            } else if !wireframe.present(error: error, from: view, locale: selectedLocale) {
                 logger?.error("Response error: \(error)")
             }
         }

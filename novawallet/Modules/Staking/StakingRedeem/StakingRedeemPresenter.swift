@@ -10,7 +10,7 @@ final class StakingRedeemPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
-    let explorers: [ChainModel.Explorer]?
+    let chain: ChainModel
     let logger: LoggerProtocol?
 
     private var stakingLedger: StakingLedger?
@@ -29,7 +29,7 @@ final class StakingRedeemPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -38,7 +38,7 @@ final class StakingRedeemPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
-        self.explorers = explorers
+        self.chain = chain
         self.logger = logger
     }
 
@@ -143,7 +143,7 @@ extension StakingRedeemPresenter: StakingRedeemPresenterProtocol {
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: locale
         )
     }
@@ -262,8 +262,12 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         switch result {
         case .success:
             wireframe.complete(from: view)
-        case .failure:
-            wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+        case let .failure(error):
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+            }
         }
     }
 }

@@ -1,6 +1,24 @@
 import Foundation
 
 final class AccountManagementWireframe: AccountManagementWireframeProtocol, AuthorizationPresentable {
+    func showChangeWatchOnlyAccount(
+        from view: ControllerBackedProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel
+    ) {
+        guard let changeAccountView = ChangeWatchOnlyViewFactory.createView(
+            for: wallet,
+            chain: chain
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            changeAccountView.controller,
+            animated: true
+        )
+    }
+
     func showCreateAccount(
         from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,

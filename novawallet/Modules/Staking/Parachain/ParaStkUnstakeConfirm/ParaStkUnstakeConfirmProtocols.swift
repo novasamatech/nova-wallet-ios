@@ -28,6 +28,7 @@ protocol ParaStkUnstakeConfirmInteractorOutputProtocol: ParaStkBaseUnstakeIntera
 protocol ParaStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
-    FeeRetryable {
+    FeeRetryable,
+    NoSigningPresentable {
     func complete(on view: ParaStkUnstakeConfirmViewProtocol?, locale: Locale)
 }

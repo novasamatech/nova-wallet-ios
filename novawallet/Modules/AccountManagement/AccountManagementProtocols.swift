@@ -5,6 +5,7 @@ import SoraFoundation
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
     func set(nameViewModel: InputViewModelProtocol)
+    func set(walletType: WalletsListSectionViewModel.SectionType)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
@@ -37,7 +38,8 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
     )
 }
 
-protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting {
+protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting,
+    ChainAddressDetailsPresentable, ActionsManagePresentable {
     func showCreateAccount(
         from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,
@@ -50,6 +52,12 @@ protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable,
         wallet: MetaAccountModel,
         chainId: ChainModel.Id,
         isEthereumBased: Bool
+    )
+
+    func showChangeWatchOnlyAccount(
+        from view: ControllerBackedProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel
     )
 
     func showExportAccount(

@@ -52,7 +52,7 @@ struct AcalaContributionConfirmViewFactory {
             inputAmount: inputAmount,
             bonusRate: bonusRate,
             assetInfo: assetInfo,
-            explorers: chain.explorers,
+            chain: chain,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -104,10 +104,8 @@ struct AcalaContributionConfirmViewFactory {
 
         let feeProxy = ExtrinsicFeeProxy()
 
-        let keystore = Keychain()
-        let signingWrapper = SigningWrapper(
-            keystore: keystore,
-            metaId: selectedMetaAccount.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: selectedMetaAccount.metaId,
             accountResponse: accountResponse
         )
 

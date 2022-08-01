@@ -28,6 +28,6 @@ protocol StakingRewardDestConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRewardDestConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    StakingErrorPresentable, AddressOptionsPresentable {
+    StakingErrorPresentable, AddressOptionsPresentable, NoSigningPresentable {
     func complete(from view: StakingRewardDestConfirmViewProtocol?)
 }

@@ -50,7 +50,7 @@ struct CrowdloanContributionConfirmViewFactory {
             bonusRate: bonusService?.bonusRate,
             assetInfo: assetInfo,
             localizationManager: localizationManager,
-            explorers: chain.explorers,
+            chain: chain,
             logger: Logger.shared
         )
 
@@ -102,9 +102,9 @@ struct CrowdloanContributionConfirmViewFactory {
         let feeProxy = ExtrinsicFeeProxy()
 
         let keystore = Keychain()
-        let signingWrapper = SigningWrapper(
-            keystore: keystore,
-            metaId: selectedMetaAccount.metaId,
+
+        let signingWrapper = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
+            for: selectedMetaAccount.metaId,
             accountResponse: accountResponse
         )
 
