@@ -87,9 +87,8 @@ struct MoonbeamTermsViewFactory {
             storageFacade: SubstrateDataStorageFacade.shared
         )
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: selectedMetaAccount.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: selectedMetaAccount.metaId,
             accountResponse: accountResponse
         )
 

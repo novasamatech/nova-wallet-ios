@@ -104,10 +104,8 @@ struct AcalaContributionConfirmViewFactory {
 
         let feeProxy = ExtrinsicFeeProxy()
 
-        let keystore = Keychain()
-        let signingWrapper = SigningWrapper(
-            keystore: keystore,
-            metaId: selectedMetaAccount.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: selectedMetaAccount.metaId,
             accountResponse: accountResponse
         )
 

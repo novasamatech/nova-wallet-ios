@@ -69,7 +69,7 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
         )
 
         rootView.walletNameInputView.textField.attributedPlaceholder = placeholder
-        rootView.walletNameHintLabel.text = R.string.localizable.usernameExamples(
+        rootView.walletNameHintLabel.text = R.string.localizable.walletNicknameCreateCaption_v2_2_0(
             preferredLanguages: languages
         )
 

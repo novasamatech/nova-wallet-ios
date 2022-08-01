@@ -81,9 +81,8 @@ struct ControllerAccountConfirmationViewFactory {
             signingWrapperFactory: SigningWrapperFactory()
         )
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: metaAccount.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: metaAccount.metaId,
             accountResponse: selectedAccount
         )
 
