@@ -152,6 +152,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let assetDetailsConfigurator = AssetDetailsConfigurator(
             accountId: accountId,
+            accountType: chainAccountResponse.type,
             chainAsset: chainAsset,
             purchaseProvider: purchaseProvider,
             priceAsset: priceAsset,
@@ -172,7 +173,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             accountId: accountId,
             chain: chain,
             assetInfo: asset.displayInfo(with: chain.icon),
-            explorers: chain.explorers,
             localizationManager: localizationManager
         )
 

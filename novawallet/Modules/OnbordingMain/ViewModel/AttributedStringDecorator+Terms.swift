@@ -2,17 +2,17 @@ import UIKit
 
 extension CompoundAttributedStringDecorator {
     static func legal(for locale: Locale?) -> AttributedStringDecoratorProtocol {
-        let textColor = R.color.colorWhite()!
+        let textColor = R.color.colorWhite48()!
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: textColor,
-            .font: UIFont.p1Paragraph
+            .font: UIFont.regularFootnote
         ]
 
         let rangeDecorator = RangeAttributedStringDecorator(attributes: attributes)
 
         let highlightAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: R.color.colorWhite()!,
-            .font: UIFont.h5Title
+            .font: UIFont.regularFootnote
         ]
 
         let termsConditions = R.string.localizable

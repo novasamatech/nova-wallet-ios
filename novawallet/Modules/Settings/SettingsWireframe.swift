@@ -24,7 +24,7 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
     }
 
     func showAccountSelection(from view: ControllerBackedProtocol?) {
-        guard let accountManagement = WalletManagementViewFactory.createViewForSettings() else {
+        guard let accountManagement = WalletManageViewFactory.createViewForAdding() else {
             return
         }
 

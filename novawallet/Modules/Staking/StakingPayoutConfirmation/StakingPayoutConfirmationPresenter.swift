@@ -17,7 +17,7 @@ final class StakingPayoutConfirmationPresenter {
     private let payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     private let assetInfo: AssetBalanceDisplayInfo
-    private let explorers: [ChainModel.Explorer]?
+    private let chain: ChainModel
     private let logger: LoggerProtocol?
 
     init(
@@ -25,14 +25,14 @@ final class StakingPayoutConfirmationPresenter {
         payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.payoutConfirmViewModelFactory = payoutConfirmViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
-        self.explorers = explorers
+        self.chain = chain
         self.logger = logger
     }
 
@@ -64,7 +64,9 @@ final class StakingPayoutConfirmationPresenter {
     private func handle(error: Error) {
         let locale = view?.localizationManager?.selectedLocale
 
-        if !wireframe.present(error: error, from: view, locale: locale) {
+        if error.isWatchOnlySigning {
+            wireframe.presentDismissingNoSigningView(from: view)
+        } else if !wireframe.present(error: error, from: view, locale: locale) {
             _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
             logger?.error("Did receive error: \(error)")
         }
@@ -117,7 +119,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: locale
         )
     }

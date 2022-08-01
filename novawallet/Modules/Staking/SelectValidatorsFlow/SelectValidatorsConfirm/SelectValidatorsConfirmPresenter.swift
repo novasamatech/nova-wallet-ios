@@ -22,7 +22,7 @@ final class SelectValidatorsConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
-    let explorers: [ChainModel.Explorer]?
+    let chain: ChainModel
 
     init(
         interactor: SelectValidatorsConfirmInteractorInputProtocol,
@@ -31,7 +31,7 @@ final class SelectValidatorsConfirmPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -41,7 +41,7 @@ final class SelectValidatorsConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
         self.assetInfo = assetInfo
-        self.explorers = explorers
+        self.chain = chain
     }
 
     private func provideConfirmationState() {
@@ -96,7 +96,9 @@ final class SelectValidatorsConfirmPresenter {
     private func handle(error: Error) {
         let locale = view?.localizationManager?.selectedLocale
 
-        if let confirmError = error as? SelectValidatorsConfirmError {
+        if error.isWatchOnlySigning {
+            wireframe.presentDismissingNoSigningView(from: view)
+        } else if let confirmError = error as? SelectValidatorsConfirmError {
             guard let view = view else {
                 return
             }
@@ -137,7 +139,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
         wireframe.presentAccountOptions(
             from: view,
             address: state.wallet.address,
-            explorers: explorers,
+            chain: chain,
             locale: locale
         )
     }
@@ -153,7 +155,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
             wireframe.presentAccountOptions(
                 from: view,
                 address: account.address,
-                explorers: explorers,
+                chain: chain,
                 locale: locale
             )
         }

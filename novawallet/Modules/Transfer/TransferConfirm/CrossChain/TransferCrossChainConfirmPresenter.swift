@@ -148,7 +148,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: chain.explorers,
+            chain: chain,
             locale: selectedLocale
         )
     }
@@ -247,7 +247,11 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
         view?.didStopLoading()
 
-        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        if error.isWatchOnlySigning {
+            wireframe.presentDismissingNoSigningView(from: view)
+        } else {
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        }
     }
 }
 

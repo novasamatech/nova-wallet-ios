@@ -86,7 +86,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createWalletController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        guard let viewController = WalletListViewFactory.createView()?.controller else {
+        guard let viewController = AssetListViewFactory.createView()?.controller else {
             return nil
         }
 

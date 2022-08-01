@@ -294,6 +294,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
 extension CrowdloanListInteractor {
     func setup(with accountId: AccountId, chain: ChainModel) {
+        presenter.didReceive(wallet: selectedMetaAccount)
         presenter.didReceiveSelectedChain(result: .success(chain))
 
         subscribeToAccountInfo(for: accountId, chain: chain)

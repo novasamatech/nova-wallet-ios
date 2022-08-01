@@ -53,7 +53,7 @@ struct StakingUnbondConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             logger: Logger.shared
         )
     }
@@ -83,7 +83,8 @@ struct StakingUnbondConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)

@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import BigInt
+import SubstrateSdk
 
 final class CrowdloanListPresenter {
     weak var view: CrowdloanListViewProtocol?
@@ -20,6 +21,9 @@ final class CrowdloanListPresenter {
     private var contributionsResult: Result<CrowdloanContributionDict, Error>?
     private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
+    private var wallet: MetaAccountModel?
+
+    private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
 
     init(
         interactor: CrowdloanListInteractorInputProtocol,
@@ -39,6 +43,19 @@ final class CrowdloanListPresenter {
         let message = R.string.localizable
             .commonErrorNoDataRetrieved(preferredLanguages: selectedLocale.rLanguages)
         view?.didReceive(listState: .error(message: message))
+    }
+
+    private func updateWalletSwitchView() {
+        guard let wallet = wallet else {
+            return
+        }
+
+        let viewModel = walletSwitchViewModelFactory.createViewModel(
+            from: wallet.substrateAccountId,
+            walletType: wallet.type
+        )
+
+        view?.didReceive(walletSwitchViewModel: viewModel)
     }
 
     private func updateChainView() {
@@ -228,6 +245,10 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
         )
     }
 
+    func handleWalletSwitch() {
+        wireframe.showWalletSwitch(from: view)
+    }
+
     func handleYourContributions() {
         guard
             let chainResult = selectedChainResult,
@@ -335,6 +356,12 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
         accountInfoResult = result
         updateChainView()
+    }
+
+    func didReceive(wallet: MetaAccountModel) {
+        self.wallet = wallet
+
+        updateWalletSwitchView()
     }
 }
 

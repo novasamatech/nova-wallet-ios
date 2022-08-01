@@ -1,4 +1,4 @@
-name: Deploy to Staging
+name: Manual deploy to Firebase
 
 on:
   workflow_dispatch:
@@ -10,6 +10,14 @@ on:
         description: 'Firebase user group'
         default: 'external-users'
         required: true
+      config:
+        description: 'Configuration Dev/Staging'
+        default: Staging
+        required: true
+        type: choice
+        options:
+        - Staging
+        - Dev
   # release:
   #   types: [published]
 
@@ -38,12 +46,19 @@ jobs:
       - name: Install Cocoapods
         run: pod install --repo-update
 
+      - name: Set env BUILD_PROVISION_PROFILE_BASE64
+        run: |
+          if [[ ${{ github.event.inputs.config }} == 'Staging' ]]; then
+              echo "BUILD_PROVISION_PROFILE_BASE64=${{ secrets.STAGING_PROVISIONING_PROFILE_BASE64 }}" >> "$GITHUB_ENV"
+          else
+              echo "BUILD_PROVISION_PROFILE_BASE64=${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}" >> "$GITHUB_ENV"
+          fi
+
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
       - name: Install the Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ""
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.STAGING_PROVISIONING_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           # create variables
@@ -85,10 +100,15 @@ jobs:
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration Staging
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }}
 
-      - name: Export archive
+      - name: Export Staging archive
+        if: ${{ github.event.inputs.config == 'Staging' }}
         run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsStaging.plist
+
+      - name: Export Dev archive
+        if: ${{ github.event.inputs.config == 'Dev' }}
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsAdHoc.plist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -109,7 +129,18 @@ jobs:
           name: novawallet.ipa
           path: export
 
-      - name: Upload artifact to Firebase App Distribution
+      - name: Upload artifact to Firebase with Dev Id
+        if: ${{ github.event.inputs.config == 'Dev' }}
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: ${{ github.event.inputs.userGroup }}
+          file: export/novawallet.ipa
+          releaseNotes: ${{ github.event.head_commit.message }}
+
+      - name: Upload artifact to Firebase with Staging Id
+        if: ${{ github.event.inputs.config == 'Staging' }}
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}

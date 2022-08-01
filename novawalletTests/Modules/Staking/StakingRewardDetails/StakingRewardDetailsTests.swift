@@ -70,8 +70,7 @@ class StakingRewardDetailsTests: XCTestCase {
             input: input,
             viewModelFactory: viewModelFactory,
             timeleftFactory: timeleftFactory,
-            explorers: nil,
-            chainFormat: chain.chainFormat,
+            chain: chain,
             localizationManager: LocalizationManager.shared
         )
         presenter.wireframe = wireframe

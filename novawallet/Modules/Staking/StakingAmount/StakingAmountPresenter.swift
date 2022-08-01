@@ -258,15 +258,19 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
     func didReceive(accounts: [MetaChainAccountResponse]) {
         loadingPayouts = false
 
-        let context = PrimitiveContextWrapper(value: accounts)
+        let operatableAccounts = accounts.filter { $0.chainAccount.type.canPerformOperations }
 
-        wireframe.presentAccountSelection(
-            accounts,
-            selectedAccount: payoutAccount,
-            delegate: self,
-            from: view,
-            context: context
-        )
+        if !operatableAccounts.isEmpty {
+            let context = PrimitiveContextWrapper(value: operatableAccounts)
+
+            wireframe.presentAccountSelection(
+                operatableAccounts,
+                selectedAccount: payoutAccount,
+                delegate: self,
+                from: view,
+                context: context
+            )
+        }
     }
 
     func didReceive(price: PriceData?) {

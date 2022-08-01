@@ -15,6 +15,7 @@ struct ChainAccountResponse {
     let addressPrefix: UInt16
     let isEthereumBased: Bool
     let isChainAccount: Bool
+    let type: MetaAccountModelType
 }
 
 struct MetaEthereumAccountResponse {
@@ -23,6 +24,7 @@ struct MetaEthereumAccountResponse {
     let publicKey: Data
     let name: String
     let isChainAccount: Bool
+    let type: MetaAccountModelType
 }
 
 struct MetaChainAccountResponse {
@@ -92,7 +94,8 @@ extension MetaAccountModel {
                 cryptoType: cryptoType,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: request.isEthereumBased,
-                isChainAccount: true
+                isChainAccount: true,
+                type: type
             )
         }
 
@@ -109,7 +112,8 @@ extension MetaAccountModel {
                 cryptoType: MultiassetCryptoType.ethereumEcdsa,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: request.isEthereumBased,
-                isChainAccount: false
+                isChainAccount: false,
+                type: type
             )
         }
 
@@ -125,14 +129,17 @@ extension MetaAccountModel {
             cryptoType: cryptoType,
             addressPrefix: request.addressPrefix,
             isEthereumBased: false,
-            isChainAccount: false
+            isChainAccount: false,
+            type: type
         )
     }
 
     // Note that this query might return an account in another chain if it can't be found for provided chain
     func fetchByAccountId(_ accountId: AccountId, request: ChainAccountRequest) -> ChainAccountResponse? {
         if
-            let chainAccount = chainAccounts.first(where: { $0.chainId == request.chainId && $0.accountId == accountId }),
+            let chainAccount = chainAccounts.first(
+                where: { $0.chainId == request.chainId && $0.accountId == accountId }
+            ),
             let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) {
             return ChainAccountResponse(
                 chainId: chainAccount.chainId,
@@ -142,7 +149,8 @@ extension MetaAccountModel {
                 cryptoType: cryptoType,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: request.isEthereumBased,
-                isChainAccount: true
+                isChainAccount: true,
+                type: type
             )
         }
 
@@ -159,7 +167,8 @@ extension MetaAccountModel {
                 cryptoType: MultiassetCryptoType.ethereumEcdsa,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: request.isEthereumBased,
-                isChainAccount: false
+                isChainAccount: false,
+                type: type
             )
         }
 
@@ -175,7 +184,8 @@ extension MetaAccountModel {
                 cryptoType: cryptoType,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: false,
-                isChainAccount: false
+                isChainAccount: false,
+                type: type
             )
         }
 
@@ -191,7 +201,8 @@ extension MetaAccountModel {
                 cryptoType: cryptoType,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: request.isEthereumBased,
-                isChainAccount: true
+                isChainAccount: true,
+                type: type
             )
         }
 
@@ -205,7 +216,8 @@ extension MetaAccountModel {
                 address: address,
                 publicKey: chainAccount.publicKey,
                 name: name,
-                isChainAccount: true
+                isChainAccount: true,
+                type: type
             )
         }
 
@@ -221,7 +233,8 @@ extension MetaAccountModel {
             address: address,
             publicKey: publicKey,
             name: name,
-            isChainAccount: false
+            isChainAccount: false,
+            type: type
         )
     }
 

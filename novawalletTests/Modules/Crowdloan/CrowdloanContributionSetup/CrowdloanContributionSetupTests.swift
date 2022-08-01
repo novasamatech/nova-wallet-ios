@@ -177,7 +177,7 @@ class CrowdloanContributionSetupTests: XCTestCase {
             assetInfo: assetInfo,
             localizationManager: LocalizationManager.shared,
             bonusService: nil,
-            explorers: nil
+            chain: chain
         )
 
         interactor.presenter = presenter

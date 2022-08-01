@@ -108,7 +108,7 @@ final class SelectValidatorsConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             logger: Logger.shared
         )
 
@@ -156,9 +156,8 @@ final class SelectValidatorsConfirmViewFactory {
             operationManager: operationManager
         )
 
-        let signer = SigningWrapper(
-            keystore: keystore,
-            metaId: selectedMetaAccount.metaId,
+        let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
+            for: selectedMetaAccount.metaId,
             accountResponse: selectedMetaAccount.chainAccount
         )
 
@@ -207,9 +206,8 @@ final class SelectValidatorsConfirmViewFactory {
             operationManager: operationManager
         )
 
-        let signer = SigningWrapper(
-            keystore: keystore,
-            metaId: extrinsicSender.metaId,
+        let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
+            for: extrinsicSender.metaId,
             accountResponse: extrinsicSender.chainAccount
         )
 

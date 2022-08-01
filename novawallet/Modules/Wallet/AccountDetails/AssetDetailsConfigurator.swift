@@ -9,6 +9,7 @@ final class AssetDetailsConfigurator {
 
     init(
         accountId: AccountId,
+        accountType: MetaAccountModelType,
         chainAsset: ChainAsset,
         purchaseProvider: PurchaseProviderProtocol,
         priceAsset: WalletAsset,
@@ -20,7 +21,8 @@ final class AssetDetailsConfigurator {
             chainAsset: chainAsset,
             localizationManager: localizationManager,
             purchaseProvider: purchaseProvider,
-            selectedAccountId: accountId
+            selectedAccountId: accountId,
+            selectedAccountType: accountType
         )
 
         viewModelFactory = AssetDetailsViewModelFactory(

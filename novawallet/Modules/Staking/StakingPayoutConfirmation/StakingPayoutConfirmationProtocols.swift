@@ -34,6 +34,7 @@ protocol StakingPayoutConfirmationInteractorOutputProtocol: AnyObject {
 protocol StakingPayoutConfirmationWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     StakingErrorPresentable,
-    AddressOptionsPresentable {
+    AddressOptionsPresentable,
+    NoSigningPresentable {
     func complete(from view: StakingPayoutConfirmationViewProtocol?)
 }

@@ -29,7 +29,7 @@ final class AccountCreationHelper {
             cryptoType: cryptoType)
 
         let operation = MetaAccountOperationFactory(keystore: keychain)
-            .newMetaAccountOperation(request: request, mnemonic: mnemonic)
+            .newSecretsMetaAccountOperation(request: request, mnemonic: mnemonic)
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
@@ -55,7 +55,7 @@ final class AccountCreationHelper {
         )
 
         let operation = MetaAccountOperationFactory(keystore: keychain)
-            .newMetaAccountOperation(request: request)
+            .newSecretsMetaAccountOperation(request: request)
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
@@ -108,7 +108,7 @@ final class AccountCreationHelper {
         )
 
         let operation = MetaAccountOperationFactory(keystore: keychain)
-            .newMetaAccountOperation(request: request)
+            .newSecretsMetaAccountOperation(request: request)
 
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 

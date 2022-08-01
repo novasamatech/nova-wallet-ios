@@ -87,9 +87,8 @@ struct ParaStkRebondViewFactory {
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageRequestFactory)
 
-        let signer = SigningWrapper(
-            keystore: Keychain(),
-            metaId: selectedAccount.metaId,
+        let signer = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
             accountResponse: selectedAccount.chainAccount
         )
 

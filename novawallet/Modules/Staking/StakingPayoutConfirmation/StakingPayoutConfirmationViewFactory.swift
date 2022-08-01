@@ -32,7 +32,7 @@ final class StakingPayoutConfirmationViewFactory {
             payoutConfirmViewModelFactory: payoutConfirmViewModelFactory,
             dataValidatingFactory: dataValidationFactory,
             assetInfo: assetInfo,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             logger: Logger.shared
         )
 
@@ -95,9 +95,8 @@ final class StakingPayoutConfirmationViewFactory {
             engine: connection
         )
 
-        let signer = SigningWrapper(
-            keystore: keystore,
-            metaId: metaAccount.metaId,
+        let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
+            for: metaAccount.metaId,
             accountResponse: selectedAccount.chainAccount
         )
 

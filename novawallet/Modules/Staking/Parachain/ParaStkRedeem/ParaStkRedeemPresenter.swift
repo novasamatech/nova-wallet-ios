@@ -121,7 +121,7 @@ final class ParaStkRedeemPresenter {
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             locale: selectedLocale
         )
     }
@@ -255,9 +255,13 @@ extension ParaStkRedeemPresenter: ParaStkRedeemInteractorOutputProtocol {
             applyCurrentState()
             refreshFee()
 
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
-            logger.error("Extrinsic submission failed: \(error)")
+                logger.error("Extrinsic submission failed: \(error)")
+            }
         }
     }
 

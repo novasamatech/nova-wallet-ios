@@ -1,5 +1,5 @@
 protocol AssetsSearchViewProtocol: ControllerBackedProtocol {
-    func didReceiveGroups(state: WalletListGroupState)
+    func didReceiveGroups(state: AssetListGroupState)
 }
 
 protocol AssetsSearchPresenterProtocol: AnyObject {
@@ -9,9 +9,9 @@ protocol AssetsSearchPresenterProtocol: AnyObject {
     func cancel()
 }
 
-protocol AssetsSearchInteractorInputProtocol: WalletListBaseInteractorInputProtocol {}
+protocol AssetsSearchInteractorInputProtocol: AssetListBaseInteractorInputProtocol {}
 
-protocol AssetsSearchInteractorOutputProtocol: WalletListBaseInteractorOutputProtocol {}
+protocol AssetsSearchInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {}
 
 protocol AssetsSearchWireframeProtocol: AnyObject {
     func close(view: AssetsSearchViewProtocol?)
