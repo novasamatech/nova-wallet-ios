@@ -32,7 +32,7 @@ final class StakingPayoutConfirmationViewFactory {
             payoutConfirmViewModelFactory: payoutConfirmViewModelFactory,
             dataValidatingFactory: dataValidationFactory,
             assetInfo: assetInfo,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             logger: Logger.shared
         )
 

@@ -157,7 +157,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidating,
             assetInfo: assetInfo,
-            explorers: nil
+            chain: chainAsset.chain
         )
 
         presenter.view = view

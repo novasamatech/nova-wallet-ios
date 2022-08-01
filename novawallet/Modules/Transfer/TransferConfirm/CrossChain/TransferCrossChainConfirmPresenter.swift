@@ -148,7 +148,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: chain.explorers,
+            chain: chain,
             locale: selectedLocale
         )
     }

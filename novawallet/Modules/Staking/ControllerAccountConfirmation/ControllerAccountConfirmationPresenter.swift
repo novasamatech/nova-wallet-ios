@@ -13,7 +13,7 @@ final class ControllerAccountConfirmationPresenter {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let logger: LoggerProtocol?
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    private let explorers: [ChainModel.Explorer]?
+    private let chain: ChainModel
 
     private var stashAccountItem: MetaChainAccountResponse?
     private var fee: Decimal?
@@ -29,14 +29,14 @@ final class ControllerAccountConfirmationPresenter {
         assetInfo: AssetBalanceDisplayInfo,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.controllerAccountItem = controllerAccountItem
         self.assetInfo = assetInfo
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.explorers = explorers
+        self.chain = chain
         self.logger = logger
     }
 
@@ -120,7 +120,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationP
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: view.localizationManager?.selectedLocale ?? .current
         )
     }

@@ -43,7 +43,7 @@ class ValidatorInfoTests: XCTestCase {
             wireframe: wireframe,
             viewModelFactory: validatorInfoViewModelFactory,
             localizationManager: LocalizationManager.shared,
-            explorers: nil
+            chain: chainAsset.chain
         )
 
         presenter.view = view
@@ -105,7 +105,7 @@ class ValidatorInfoTests: XCTestCase {
             wireframe: wireframe,
             viewModelFactory: validatorInfoViewModelFactory,
             localizationManager: LocalizationManager.shared,
-            explorers: nil
+            chain: chainAsset.chain
         )
 
         presenter.view = view

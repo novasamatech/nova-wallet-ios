@@ -11,7 +11,7 @@ class CrowdloanContributionSetupPresenter {
     let contributionViewModelFactory: CrowdloanContributionViewModelFactoryProtocol
     let dataValidatingFactory: CrowdloanDataValidatorFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
-    let explorers: [ChainModel.Explorer]?
+    let chain: ChainModel
     let logger: LoggerProtocol?
 
     private var crowdloan: Crowdloan?
@@ -59,7 +59,7 @@ class CrowdloanContributionSetupPresenter {
         assetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol,
         bonusService: CrowdloanBonusServiceProtocol?,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -69,7 +69,7 @@ class CrowdloanContributionSetupPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.bonusService = bonusService
-        self.explorers = explorers
+        self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -356,7 +356,7 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: selectedLocale
         )
     }
