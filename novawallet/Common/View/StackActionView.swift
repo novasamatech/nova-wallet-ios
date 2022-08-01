@@ -16,7 +16,15 @@ final class StackActionView: UIView {
 
     private var internalDetailsView: BorderedLabelView?
 
-    let disclosureIndicatorView: UIView = {
+    var iconSize: CGFloat = 24.0 {
+        didSet {
+            iconImageView.snp.updateConstraints { make in
+                make.height.equalTo(iconSize)
+            }
+        }
+    }
+
+    let disclosureIndicatorView: UIImageView = {
         let imageView = UIImageView()
         let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTransparentText()!)
         imageView.image = icon
@@ -68,7 +76,7 @@ final class StackActionView: UIView {
         iconImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.size.equalTo(24)
+            make.size.equalTo(iconSize)
         }
 
         addSubview(titleLabel)

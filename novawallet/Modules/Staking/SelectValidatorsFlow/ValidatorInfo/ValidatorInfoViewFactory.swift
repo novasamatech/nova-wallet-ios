@@ -7,7 +7,7 @@ final class ValidatorInfoViewFactory {
     private static func createView(
         with interactor: ValidatorInfoInteractorBase,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?
+        chain: ChainModel
     ) -> ValidatorInfoViewProtocol? {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
@@ -24,7 +24,7 @@ final class ValidatorInfoViewFactory {
             wireframe: wireframe,
             viewModelFactory: validatorInfoViewModelFactory,
             localizationManager: localizationManager,
-            explorers: explorers,
+            chain: chain,
             logger: Logger.shared
         )
 
@@ -56,7 +56,7 @@ extension ValidatorInfoViewFactory {
         return createView(
             with: interactor,
             assetInfo: chainAsset.assetDisplayInfo,
-            explorers: chainAsset.chain.explorers
+            chain: chainAsset.chain
         )
     }
 
@@ -100,7 +100,7 @@ extension ValidatorInfoViewFactory {
         return createView(
             with: interactor,
             assetInfo: chainAsset.assetDisplayInfo,
-            explorers: chainAsset.chain.explorers
+            chain: chainAsset.chain
         )
     }
 }

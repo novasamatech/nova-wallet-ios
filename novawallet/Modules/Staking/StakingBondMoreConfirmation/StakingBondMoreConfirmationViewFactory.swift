@@ -19,7 +19,7 @@ struct StakingBondMoreConfirmViewFactory {
             wireframe: wireframe,
             amount: amount,
             assetInfo: state.settings.value.assetDisplayInfo,
-            explorers: state.settings.value.chain.explorers
+            chain: state.settings.value.chain
         )
 
         let view = StakingBondMoreConfirmationVC(
@@ -38,7 +38,7 @@ struct StakingBondMoreConfirmViewFactory {
         wireframe: StakingBondMoreConfirmationWireframeProtocol,
         amount: Decimal,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?
+        chain: ChainModel
     ) -> StakingBondMoreConfirmationPresenter {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
@@ -54,7 +54,7 @@ struct StakingBondMoreConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
-            explorers: explorers,
+            chain: chain,
             logger: Logger.shared
         )
     }

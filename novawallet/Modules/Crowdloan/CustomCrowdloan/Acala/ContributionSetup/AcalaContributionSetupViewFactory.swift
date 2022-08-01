@@ -79,7 +79,7 @@ struct AcalaContributionSetupViewFactory {
             assetInfo: assetInfo,
             localizationManager: localizationManager,
             bonusService: acalaService,
-            explorers: chain.explorers,
+            chain: chain,
             logger: Logger.shared
         )
 

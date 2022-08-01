@@ -52,7 +52,7 @@ struct AcalaContributionConfirmViewFactory {
             inputAmount: inputAmount,
             bonusRate: bonusRate,
             assetInfo: assetInfo,
-            explorers: chain.explorers,
+            chain: chain,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
