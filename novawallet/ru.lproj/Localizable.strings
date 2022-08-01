@@ -858,3 +858,12 @@
 "common.invalid.address.format" = "%@ адрес имеет неверный формат";
 "welcome.hardware.wallet.title" = "Подключить аппаратный кошелек";
 "welcome.hardware.wallet.subtitle" = "Используйте Parity Signer";
+"welcome.parity.signer.title" = "Добавить кошелек из Parity Signer";
+"welcome.parity.signer.step1" = "Запустите приложение Parity Signer на вашем смартфоне";
+"welcome.parity.signer.step1.highlighted" = "Запустите приложение Parity Signer";
+"welcome.parity.signer.step2" = "Перейдите во вкладку “Ключи”. Выберите сид, и затем аккаунт, который вы хотите добавить Nova Wallet";
+"welcome.parity.signer.step2.highlighted" = "Перейдите во вкладку “Ключи”. Выберите сид, и затем аккаунт";
+"welcome.parity.signer.step2.details" = "Удостоверьтесь, что выбран самый верхний";
+"welcome.parity.signer.step3" = "Parity Signer покажет QR код для сканирования";
+"welcome.parity.signer.step3.highlighted" = "QR код для сканирования";
+"common.scan.qr.code" = "Сканировать QR код";
