@@ -26,7 +26,7 @@ struct ControllerAccountViewFactory {
             applicationConfig: ApplicationConfig.shared,
             assetInfo: chainAsset.assetDisplayInfo,
             dataValidatingFactory: dataValidatingFactory,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             logger: Logger.shared
         )
 
@@ -67,7 +67,8 @@ struct ControllerAccountViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
         let storageRequestFactory = StorageRequestFactory(

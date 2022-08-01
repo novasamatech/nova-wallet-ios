@@ -3,7 +3,20 @@ import RobinHood
 import CoreData
 
 enum UserStorageParams {
-    static let modelVersion: UserStorageVersion = .version5
+    /**
+     *  Controls which version of the UserDataModel to use
+     *  and also allows to understand how to do migration.
+     *  If there are changes that need to be applied to the model
+     *  go ahead with the following steps:
+     *  - create new version of the UserDataModel (for example, MultiassetUserDataModel5);
+     *  - add new case to UserStorageVersion and set associated value to the data model version name;
+     *  - add transition to UserStorageVersion.nextVersion;
+     *  - if lightweight migration is not an option then add MigrationMapping
+     *  and implement migration policy;
+     *  - update mappings between CoreData Entities and App Models;
+     *  - switch version of UserStorageParams.modelVersion;
+     */
+    static let modelVersion: UserStorageVersion = .version6
     static let modelDirectory: String = "UserDataModel.momd"
     static let databaseName = "UserDataModel.sqlite"
 

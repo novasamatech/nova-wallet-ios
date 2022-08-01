@@ -10,7 +10,7 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
 
-    private var groupsState: WalletListGroupState = .list(groups: [])
+    private var groupsState: AssetListGroupState = .list(groups: [])
 
     init(presenter: AssetsSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -57,10 +57,10 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
     }
 
     private func setupCollectionView() {
-        rootView.collectionView.registerCellClass(WalletListAssetCell.self)
-        rootView.collectionView.registerCellClass(WalletListEmptyCell.self)
+        rootView.collectionView.registerCellClass(AssetListAssetCell.self)
+        rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
         rootView.collectionView.registerClass(
-            WalletListNetworkView.self,
+            AssetListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
 
@@ -115,7 +115,7 @@ extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
         case .assetGroup:
             return CGSize(
                 width: collectionView.frame.width,
-                height: WalletListMeasurement.assetHeaderHeight
+                height: AssetListMeasurement.assetHeaderHeight
             )
 
         case .technical:
@@ -179,9 +179,9 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
     private func provideEmptyStateCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
-    ) -> WalletListEmptyCell {
+    ) -> AssetListEmptyCell {
         let cell = collectionView.dequeueReusableCellWithType(
-            WalletListEmptyCell.self,
+            AssetListEmptyCell.self,
             for: indexPath
         )!
 
@@ -195,9 +195,9 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         indexPath: IndexPath,
         assetIndex: Int
-    ) -> WalletListAssetCell {
+    ) -> AssetListAssetCell {
         let assetCell = collectionView.dequeueReusableCellWithType(
-            WalletListAssetCell.self,
+            AssetListAssetCell.self,
             for: indexPath
         )!
 
@@ -229,7 +229,7 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
         let view = collectionView.dequeueReusableSupplementaryViewWithType(
-            WalletListNetworkView.self,
+            AssetListNetworkView.self,
             forSupplementaryViewOfKind: kind,
             for: indexPath
         )!
@@ -253,7 +253,7 @@ extension AssetsSearchViewController: UITextFieldDelegate {
 }
 
 extension AssetsSearchViewController: AssetsSearchViewProtocol {
-    func didReceiveGroups(state: WalletListGroupState) {
+    func didReceiveGroups(state: AssetListGroupState) {
         groupsState = state
 
         rootView.collectionView.reloadData()

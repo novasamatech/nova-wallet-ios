@@ -20,6 +20,8 @@ protocol WalletLocalStorageSubscriber where Self: AnyObject {
     func subscribeToAccountBalanceProvider(
         for accountId: AccountId
     ) -> StreamableProvider<AssetBalance>?
+
+    func subscribeAllBalancesProvider() -> StreamableProvider<AssetBalance>?
 }
 
 extension WalletLocalStorageSubscriber {
@@ -143,6 +145,41 @@ extension WalletLocalStorageSubscriber {
                 result: .failure(error),
                 accountId: accountId
             )
+
+            return
+        }
+
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
+        )
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return provider
+    }
+
+    func subscribeAllBalancesProvider() -> StreamableProvider<AssetBalance>? {
+        guard let provider = try? walletLocalSubscriptionFactory.getAllBalancesProvider() else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<AssetBalance>]) in
+            self?.walletLocalSubscriptionHandler.handleAllBalances(result: .success(changes))
+
+            return
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.walletLocalSubscriptionHandler.handleAllBalances(result: .failure(error))
 
             return
         }

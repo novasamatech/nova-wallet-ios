@@ -29,7 +29,7 @@ struct StakingRewardDestConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             logger: Logger.shared
         )
 
@@ -69,7 +69,8 @@ struct StakingRewardDestConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
         let storageFacade = UserDataStorageFacade.shared

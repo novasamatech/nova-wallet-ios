@@ -7,6 +7,7 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
     let localizationManager: LocalizationManagerProtocol
     let purchaseProvider: PurchaseProviderProtocol
     let selectedAccountId: AccountId
+    let selectedAccountType: MetaAccountModelType
 
     var commandFactory: WalletCommandFactoryProtocol?
 
@@ -14,12 +15,14 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
         purchaseProvider: PurchaseProviderProtocol,
-        selectedAccountId: AccountId
+        selectedAccountId: AccountId,
+        selectedAccountType: MetaAccountModelType
     ) {
         self.chainAsset = chainAsset
         self.localizationManager = localizationManager
         self.purchaseProvider = purchaseProvider
         self.selectedAccountId = selectedAccountId
+        self.selectedAccountType = selectedAccountType
     }
 
     func createView() -> BaseAccountDetailsContainingView {
@@ -92,18 +95,28 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
             sendCommand = nil
         }
 
-        let receiveCommand: WalletCommandProtocol = commandFactory.prepareReceiveCommand(for: assetId)
+        let receiveCommand: WalletCommandProtocol
+        let buyCommand: WalletCommandProtocol?
 
         let actions = purchaseProvider.buildPurchaseActions(
             for: chainAsset,
             accountId: selectedAccountId
         )
 
-        let buyCommand = actions.isEmpty ? nil :
-            WalletSelectPurchaseProviderCommand(
-                actions: actions,
-                commandFactory: commandFactory
-            )
+        switch selectedAccountType {
+        case .secrets:
+            receiveCommand = commandFactory.prepareReceiveCommand(for: assetId)
+
+            buyCommand = actions.isEmpty ? nil :
+                WalletSelectPurchaseProviderCommand(
+                    actions: actions,
+                    commandFactory: commandFactory
+                )
+
+        case .watchOnly:
+            receiveCommand = NoKeysCommand()
+            buyCommand = actions.isEmpty ? nil : NoKeysCommand()
+        }
 
         view.bindActions(send: sendCommand, receive: receiveCommand, buy: buyCommand)
     }

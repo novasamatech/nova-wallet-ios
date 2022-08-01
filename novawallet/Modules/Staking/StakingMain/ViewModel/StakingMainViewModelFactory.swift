@@ -3,7 +3,7 @@ import BigInt
 
 protocol StakingMainViewModelFactoryProtocol {
     func createMainViewModel(
-        from accountId: AccountId,
+        from wallet: MetaAccountModel,
         chainAsset: ChainAsset,
         balance: BigUInt?
     ) -> StakingMainViewModel
@@ -27,7 +27,7 @@ final class StakingMainViewModelFactory: StakingMainViewModelFactoryProtocol {
     }
 
     func createMainViewModel(
-        from accountId: AccountId,
+        from wallet: MetaAccountModel,
         chainAsset: ChainAsset,
         balance: BigUInt?
     ) -> StakingMainViewModel {
@@ -46,7 +46,8 @@ final class StakingMainViewModelFactory: StakingMainViewModelFactoryProtocol {
         }
 
         return StakingMainViewModel(
-            accountId: accountId,
+            accountId: wallet.substrateAccountId,
+            walletType: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
             chainName: chainAsset.chain.name,
             assetName: chainAsset.asset.name ?? chainAsset.chain.name,
             assetIcon: imageViewModel,

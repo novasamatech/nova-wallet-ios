@@ -7,6 +7,39 @@ import SubstrateSdk
 typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>
 
 enum ModalPickerFactory {
+    static func createActionsList(
+        title: LocalizableResource<String>,
+        actions: [LocalizableResource<ActionManageViewModel>],
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> UIViewController? {
+        let viewController: ModalPickerViewController<ActionManageTableViewCell, ActionManageViewModel>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+
+        viewController.selectedIndex = NSNotFound
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.headerBorderType = .none
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 48.0
+
+        viewController.viewModels = actions
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(actions.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
     static func createStakingManageSource(
         options: [StakingManageOption],
         delegate: ModalPickerViewControllerDelegate?,
@@ -16,7 +49,7 @@ enum ModalPickerFactory {
             return nil
         }
 
-        let viewController: ModalPickerViewController<StakingManageTableViewCell, StakingManageViewModel>
+        let viewController: ModalPickerViewController<ActionManageTableViewCell, ActionManageViewModel>
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = LocalizableResource { locale in
@@ -33,7 +66,7 @@ enum ModalPickerFactory {
 
         viewController.viewModels = options.map { option in
             LocalizableResource { locale in
-                StakingManageViewModel(
+                ActionManageViewModel(
                     icon: option.icon,
                     title: option.titleForLocale(locale, statics: nil),
                     details: nil

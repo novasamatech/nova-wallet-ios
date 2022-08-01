@@ -29,7 +29,7 @@ struct ControllerAccountConfirmationViewFactory {
             assetInfo: assetInfo,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            explorers: chainAsset.chain.explorers
+            chain: chainAsset.chain
         )
 
         let view = ControllerAccountConfirmationVC(
@@ -77,12 +77,12 @@ struct ControllerAccountConfirmationViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: metaAccount.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: metaAccount.metaId,
             accountResponse: selectedAccount
         )
 

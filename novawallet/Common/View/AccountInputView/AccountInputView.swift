@@ -43,6 +43,8 @@ class AccountInputView: BackgroundedContentControl {
 
     private(set) var mySelfButton: RoundedButton?
 
+    weak var delegate: AccountInputViewDelegate?
+
     let pasteButton: RoundedButton = {
         let button = RoundedButton()
         button.applyAccessoryStyle()
@@ -75,6 +77,14 @@ class AccountInputView: BackgroundedContentControl {
 
         return button
     }()
+
+    var localizablePlaceholder: LocalizableResource<String> = LocalizableResource { locale in
+        R.string.localizable.commonAddress(preferredLanguages: locale.rLanguages)
+    } {
+        didSet {
+            setupPlaceholder()
+        }
+    }
 
     private let stackView: UIStackView = {
         let view = UIStackView()
@@ -175,15 +185,7 @@ class AccountInputView: BackgroundedContentControl {
     }
 
     private func setupLocalization() {
-        let placeholder = R.string.localizable.commonAddress(preferredLanguages: locale.rLanguages)
-
-        textField.attributedPlaceholder = NSAttributedString(
-            string: placeholder,
-            attributes: [
-                .foregroundColor: R.color.colorWhite32()!,
-                .font: UIFont.regularSubheadline
-            ]
-        )
+        setupPlaceholder()
 
         pasteButton.imageWithTitleView?.title = R.string.localizable.commonPaste(
             preferredLanguages: locale.rLanguages
@@ -192,6 +194,18 @@ class AccountInputView: BackgroundedContentControl {
         setupMyselfLocalization()
 
         setNeedsLayout()
+    }
+
+    private func setupPlaceholder() {
+        let placeholder = localizablePlaceholder.value(for: locale)
+
+        textField.attributedPlaceholder = NSAttributedString(
+            string: placeholder,
+            attributes: [
+                .foregroundColor: R.color.colorWhite32()!,
+                .font: UIFont.regularSubheadline
+            ]
+        )
     }
 
     private func setupMyselfLocalization() {
@@ -413,12 +427,14 @@ class AccountInputView: BackgroundedContentControl {
             let pasteString = pasteboardService.pasteboard.string,
             let inputViewModel = inputViewModel,
             inputViewModel.inputHandler.value != pasteString {
-            let currentValue = inputViewModel.inputHandler.value as NSString
-            let currentLength = currentValue.length
+            let currentValue = inputViewModel.inputHandler.value
+            let currentLength = (currentValue as NSString).length
             let range = NSRange(location: 0, length: currentLength)
 
-            if inputViewModel.inputHandler.didReceiveReplacement(pasteString, for: range) {
-                textField.text = pasteString
+            _ = inputViewModel.inputHandler.didReceiveReplacement(pasteString, for: range)
+
+            if currentValue != inputViewModel.inputHandler.value {
+                textField.text = inputViewModel.inputHandler.value
                 sendActions(for: .editingChanged)
             }
 
@@ -466,7 +482,16 @@ extension AccountInputView: UITextFieldDelegate {
     }
 
     func textFieldShouldReturn(_: UITextField) -> Bool {
-        textField.resignFirstResponder()
+        if let delegate = delegate {
+            return delegate.accountInputViewShouldReturn(self)
+        } else {
+            textField.resignFirstResponder()
+            return true
+        }
+    }
+
+    func textFieldShouldBeginEditing(_: UITextField) -> Bool {
+        delegate?.accountInputViewWillStartEditing(self)
         return true
     }
 }

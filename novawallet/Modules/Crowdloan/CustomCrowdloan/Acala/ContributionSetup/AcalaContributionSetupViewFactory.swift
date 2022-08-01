@@ -42,9 +42,8 @@ struct AcalaContributionSetupViewFactory {
         }()
         guard let address = accountAddressDependingOnChain else { return nil }
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: selectedAccount.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
             accountResponse: accountResponse
         )
 
@@ -79,7 +78,7 @@ struct AcalaContributionSetupViewFactory {
             assetInfo: assetInfo,
             localizationManager: localizationManager,
             bonusService: acalaService,
-            explorers: chain.explorers,
+            chain: chain,
             logger: Logger.shared
         )
 

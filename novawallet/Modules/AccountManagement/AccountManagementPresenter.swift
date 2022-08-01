@@ -4,6 +4,11 @@ import IrohaCrypto
 import SoraFoundation
 
 final class AccountManagementPresenter {
+    enum ChangeAccountOption: Int {
+        case createAccount
+        case importAccount
+    }
+
     weak var view: AccountManagementViewProtocol?
     var wireframe: AccountManagementWireframeProtocol!
     var interactor: AccountManagementInteractorInputProtocol!
@@ -27,6 +32,15 @@ final class AccountManagementPresenter {
     }
 
     // MARK: - Updating functions
+
+    private func updateWalletType() {
+        guard let wallet = wallet else {
+            return
+        }
+
+        let walletType = WalletsListSectionViewModel.SectionType(walletType: wallet.type)
+        view?.set(walletType: walletType)
+    }
 
     private func updateChainViewModels() {
         guard let wallet = wallet else { return }
@@ -53,105 +67,162 @@ final class AccountManagementPresenter {
         view?.set(nameViewModel: nameViewModel)
     }
 
-    // MARK: - Bottom sheet display types
+    // MARK: - Bottom sheet display for watch only type
 
-    // 0. Change chain account
-    private func displayChangeActions(with title: String, for chain: ChainModel) {
-        let createAccountAction = createAccountCreateAction(for: chain)
-        let importAccountAction = createAccountImportAction(for: chain)
+    private func displayWatchOnlyNoAddressActions(for chain: ChainModel) {
+        guard let view = view else {
+            return
+        }
 
-        let actions: [AlertPresentableAction] = [createAccountAction, importAccountAction]
+        let addAction = createAccountAddAction(for: chain, walletType: .watchOnly)
 
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+        let actions: [ChainAddressDetailsAction] = [addAction]
 
-        let actionsViewModel = AlertPresentableViewModel(
-            title: title,
-            message: nil,
-            actions: actions,
-            closeAction: closeTitle
+        let model = ChainAddressDetailsModel(
+            address: nil,
+            chainName: chain.name,
+            chainIcon: chain.icon,
+            actions: actions
         )
 
-        wireframe.present(
-            viewModel: actionsViewModel,
-            style: .actionSheet,
-            from: view
-        )
+        wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
-    private func displayReplaceActions(for chain: ChainModel) {
-        let title = R.string.localizable.accountActionsChangeSheetTitle(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        displayChangeActions(with: title, for: chain)
-    }
-
-    private func displayNoAddressActions(for chain: ChainModel) {
-        let title = R.string.localizable.accountNotFoundActionsTitle(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        displayChangeActions(with: title, for: chain)
-    }
-
-    private func displayExistingAddressActions(
+    private func displayWatchOnlyExistingAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
-        guard let address = viewModel.address else { return }
-        let title = createTitleFrom(address)
+        guard let view = view, let address = viewModel.address else {
+            return
+        }
 
-        var actions: [AlertPresentableAction] = []
+        var actions: [ChainAddressDetailsAction] = []
 
         let copyAction = createCopyAction(for: address)
         actions.append(copyAction)
 
-        let explorerActions: [AlertPresentableAction] = chain.explorers?.compactMap { explorer in
-            guard
-                let urlTemplate = explorer.account,
-                let url = try? RobinHood.EndpointBuilder(urlTemplate: urlTemplate)
-                .buildParameterURL(address) else {
-                return nil
-            }
-
-            return AlertPresentableAction(title: explorer.name) { [weak self] in
-                if let view = self?.view {
-                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
-                }
-            }
-        } ?? []
+        let explorerActions = createExplorerActions(for: chain, address: address)
 
         actions.append(contentsOf: explorerActions)
 
-        let changeAccountAction = createAccountChangeAction(for: chain)
+        let changeAccountAction = createAccountChangeAction(for: chain, walletType: .watchOnly)
         actions.append(changeAccountAction)
 
-        let exportAccountTitle = R.string.localizable.commonExport(
-            preferredLanguages: selectedLocale.rLanguages
+        let model = ChainAddressDetailsModel(
+            address: viewModel.address,
+            chainName: chain.name,
+            chainIcon: chain.icon,
+            actions: actions
         )
 
+        wireframe.presentChainAddressDetails(from: view, model: model)
+    }
+
+    // MARK: - Bottom sheet display for secrets type
+
+    private func displaySecretsChangeActions(with title: LocalizableResource<String>, chain: ChainModel) {
+        guard let view = view else {
+            return
+        }
+
+        let createAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
+
+            return ActionManageViewModel(icon: R.image.iconPlusFilled(), title: title, details: nil)
+        }
+
+        let importAction: LocalizableResource<ActionManageViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.accountImportOptionTitle(preferredLanguages: locale.rLanguages)
+
+            return ActionManageViewModel(icon: R.image.iconImportWallet(), title: title, details: nil)
+        }
+
+        let context = ModalPickerClosureContext { [weak self] index in
+            switch ChangeAccountOption(rawValue: index) {
+            case .createAccount:
+                self?.activateCreateAccount(for: chain)
+            case .importAccount:
+                self?.activateImportAccount(for: chain)
+            case .none:
+                break
+            }
+        }
+
+        wireframe.presentActionsManage(
+            from: view,
+            actions: [createAction, importAction],
+            title: title,
+            delegate: self,
+            context: context
+        )
+    }
+
+    private func displaySecretsReplaceActions(for chain: ChainModel) {
+        let title = LocalizableResource { locale in
+            R.string.localizable.accountActionsChangeSheetTitle(
+                chain.name,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        displaySecretsChangeActions(with: title, chain: chain)
+    }
+
+    private func displaySecretsNoAddressActions(for chain: ChainModel) {
+        let title = LocalizableResource { locale in
+            R.string.localizable.accountNotFoundActionsTitle(
+                chain.name,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        displaySecretsChangeActions(with: title, chain: chain)
+    }
+
+    private func displaySecretsExistingAddressActions(
+        for chain: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        guard let view = view, let address = viewModel.address else { return }
+
+        var actions: [ChainAddressDetailsAction] = []
+
+        let copyAction = createCopyAction(for: address)
+        actions.append(copyAction)
+
+        let explorerActions = createExplorerActions(for: chain, address: address)
+
+        actions.append(contentsOf: explorerActions)
+
+        let changeAccountAction = createAccountChangeAction(for: chain, walletType: .secrets)
+        actions.append(changeAccountAction)
+
         if let wallet = wallet {
-            let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
+            let exportAccountTitle = LocalizableResource { locale in
+                R.string.localizable.commonExport(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+
+            let exportAction = ChainAddressDetailsAction(
+                title: exportAccountTitle,
+                icon: R.image.iconActionExport(),
+                indicator: .navigation
+            ) { [weak self] in
                 self?.interactor.requestExportOptions(metaAccount: wallet, chain: chain)
             }
 
             actions.append(exportAction)
         }
 
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
-
-        let actionsViewModel = AlertPresentableViewModel(
-            title: title,
-            message: nil,
-            actions: actions,
-            closeAction: closeTitle
+        let model = ChainAddressDetailsModel(
+            address: address,
+            chainName: chain.name,
+            chainIcon: chain.icon,
+            actions: actions
         )
 
-        wireframe.present(viewModel: actionsViewModel, style: .actionSheet, from: view)
+        wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
     // MARK: - Actions
@@ -164,8 +235,15 @@ final class AccountManagementPresenter {
         wireframe.presentSuccessNotification(title, from: view)
     }
 
-    private func activateChangeAccount(for chainModel: ChainModel) {
-        displayReplaceActions(for: chainModel)
+    private func activateChangeAccount(for chainModel: ChainModel, walletType: MetaAccountModelType) {
+        switch walletType {
+        case .secrets:
+            displaySecretsReplaceActions(for: chainModel)
+        case .watchOnly:
+            if let wallet = wallet {
+                wireframe.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chainModel)
+            }
+        }
     }
 
     private func activateCreateAccount(for chainModel: ChainModel) {
@@ -196,50 +274,80 @@ final class AccountManagementPresenter {
 
     // MARK: - Bottom sheet items creation
 
-    private func createCopyAction(for address: String) -> AlertPresentableAction {
-        let copyTitle = R.string.localizable
-            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
-        return AlertPresentableAction(title: copyTitle) { [weak self] in
+    private func createExplorerActions(for chain: ChainModel, address: AccountAddress) -> [ChainAddressDetailsAction] {
+        chain.explorers?.compactMap { explorer in
+            guard
+                let urlTemplate = explorer.account,
+                let url = try? RobinHood.EndpointBuilder(urlTemplate: urlTemplate)
+                .buildParameterURL(address) else {
+                return nil
+            }
+
+            let title = LocalizableResource { locale in
+                R.string.localizable.commmonViewInFormat(
+                    explorer.name,
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+
+            return ChainAddressDetailsAction(
+                title: title,
+                icon: R.image.iconActionWeb(),
+                indicator: .navigation
+            ) { [weak self] in
+                if let view = self?.view {
+                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+                }
+            }
+        } ?? []
+    }
+
+    private func createCopyAction(for address: String) -> ChainAddressDetailsAction {
+        let copyTitle = LocalizableResource { locale in
+            R.string.localizable.commonCopyAddress(preferredLanguages: locale.rLanguages)
+        }
+
+        return ChainAddressDetailsAction(
+            title: copyTitle,
+            icon: R.image.iconActionCopy(),
+            indicator: .none
+        ) { [weak self] in
             self?.activateCopyAddress(address)
         }
     }
 
-    private func createAccountChangeAction(for chain: ChainModel) -> AlertPresentableAction {
-        let createAccountTitle = R.string.localizable
-            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
-        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateChangeAccount(for: chain)
+    private func createAccountChangeAction(
+        for chain: ChainModel,
+        walletType: MetaAccountModelType
+    ) -> ChainAddressDetailsAction {
+        let createAccountTitle = LocalizableResource { locale in
+            R.string.localizable.accountActionsChangeTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        return ChainAddressDetailsAction(
+            title: createAccountTitle,
+            icon: R.image.iconActionChange(),
+            indicator: .navigation
+        ) { [weak self] in
+            self?.activateChangeAccount(for: chain, walletType: walletType)
         }
     }
 
-    private func createAccountCreateAction(for chain: ChainModel) -> AlertPresentableAction {
-        let createAccountTitle = R.string.localizable
-            .accountCreateOptionTitle(preferredLanguages: selectedLocale.rLanguages)
-        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateCreateAccount(for: chain)
+    private func createAccountAddAction(
+        for chain: ChainModel,
+        walletType: MetaAccountModelType
+    ) -> ChainAddressDetailsAction {
+        let addAccountTitle = LocalizableResource { locale in
+            R.string.localizable.accountsAddAccount(preferredLanguages: locale.rLanguages)
         }
-    }
 
-    private func createAccountImportAction(for chain: ChainModel) -> AlertPresentableAction {
-        let importAccountTitle = R.string.localizable
-            .accountImportOptionTitle(preferredLanguages: selectedLocale.rLanguages)
-        return AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.activateImportAccount(for: chain)
+        return ChainAddressDetailsAction(
+            title: addAccountTitle,
+            icon: R.image.iconActionChange(),
+            indicator: .navigation
+        ) { [weak self] in
+            self?.activateChangeAccount(for: chain, walletType: walletType)
         }
-    }
-
-    // MARK: - Utility functions
-
-    private func createTitleFrom(_ address: String) -> String {
-        var title = address
-
-        let offset = title.count / 2
-        title.insert(
-            contentsOf: String.returnKey,
-            at: title.index(title.startIndex, offsetBy: offset)
-        )
-
-        return title
     }
 }
 
@@ -276,12 +384,23 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         let chainViewModel = viewModel[indexPath.section]
             .chainAccounts[indexPath.row]
 
-        guard let chainModel = chains[chainViewModel.chainId] else { return }
+        guard
+            let wallet = wallet,
+            let chainModel = chains[chainViewModel.chainId] else { return }
 
-        if chainViewModel.address == nil {
-            displayNoAddressActions(for: chainModel)
-        } else {
-            displayExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+        switch wallet.type {
+        case .secrets:
+            if chainViewModel.address == nil {
+                displaySecretsNoAddressActions(for: chainModel)
+            } else {
+                displaySecretsExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+            }
+        case .watchOnly:
+            if chainViewModel.address == nil {
+                displayWatchOnlyNoAddressActions(for: chainModel)
+            } else {
+                displayWatchOnlyExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+            }
         }
     }
 
@@ -302,6 +421,8 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
             }
 
             self.wallet = wallet
+
+            updateWalletType()
             updateChainViewModels()
             updateNameViewModel()
 
@@ -357,6 +478,16 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
                 logger?.error("Did receive export error \(error)")
             }
         }
+    }
+}
+
+extension AccountManagementPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let context = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        context.process(selectedIndex: index)
     }
 }
 

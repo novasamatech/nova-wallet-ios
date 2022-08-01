@@ -11,7 +11,7 @@ final class StakingRebondConfirmationPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
-    let explorers: [ChainModel.Explorer]?
+    let chain: ChainModel
     let logger: LoggerProtocol?
 
     var inputAmount: Decimal? {
@@ -57,7 +57,7 @@ final class StakingRebondConfirmationPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
+        chain: ChainModel,
         logger: LoggerProtocol? = nil
     ) {
         self.variant = variant
@@ -67,7 +67,7 @@ final class StakingRebondConfirmationPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
-        self.explorers = explorers
+        self.chain = chain
         self.logger = logger
     }
 
@@ -157,7 +157,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationPresenter
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: explorers,
+            chain: chain,
             locale: locale
         )
     }
@@ -252,8 +252,12 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         switch result {
         case .success:
             wireframe.complete(from: view)
-        case .failure:
-            wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+        case let .failure(error):
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+            }
         }
     }
 }

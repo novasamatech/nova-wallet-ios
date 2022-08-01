@@ -31,7 +31,7 @@ class ControllerAccountTests: XCTestCase {
             applicationConfig: ApplicationConfig.shared,
             assetInfo: chainAsset.assetDisplayInfo,
             dataValidatingFactory: dataValidatingFactory,
-            explorers: nil
+            chain: chain
         )
         presenter.view = view
         dataValidatingFactory.view = view
@@ -79,7 +79,8 @@ class ControllerAccountTests: XCTestCase {
             cryptoType: .substrateEcdsa,
             addressPrefix: chain.addressPrefix,
             isEthereumBased: chain.isEthereumBased,
-            isChainAccount: false
+            isChainAccount: false,
+            type: .secrets
         )
 
         let metaAccountResponse = MetaChainAccountResponse(

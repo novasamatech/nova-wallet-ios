@@ -119,7 +119,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: chainAsset.chain.explorers,
+            chain: chainAsset.chain,
             locale: selectedLocale
         )
     }
@@ -179,7 +179,11 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
 
         view?.didStopLoading()
 
-        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        if error.isWatchOnlySigning {
+            wireframe.presentDismissingNoSigningView(from: view)
+        } else {
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        }
     }
 }
 
