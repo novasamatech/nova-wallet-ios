@@ -10,7 +10,9 @@ final class ParitySignerWelcomePresenter {
 }
 
 extension ParitySignerWelcomePresenter: ParitySignerWelcomePresenterProtocol {
-    func scanQr() {}
+    func scanQr() {
+        // TODO: Show qr scaner and handle result
+    }
 }
 
 extension ParitySignerWelcomePresenter: ParitySignerWelcomeInteractorOutputProtocol {}
