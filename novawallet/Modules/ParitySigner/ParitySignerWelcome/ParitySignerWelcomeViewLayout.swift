@@ -4,7 +4,7 @@ import SoraUI
 final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 12.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 12.0, left: 16.0, bottom: 8.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
@@ -20,6 +20,7 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
         label.font = .boldTitle2
+        label.numberOfLines = 0
         return label
     }()
 
@@ -102,7 +103,7 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
             make.height.equalTo(integrationImageHeight)
         }
 
-        containerView.stackView.setCustomSpacing(16.0, after: integrationImageView)
+        containerView.stackView.setCustomSpacing(32.0, after: integrationImageView)
 
         containerView.stackView.addArrangedSubview(step1)
 
@@ -125,12 +126,10 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
 
         step2DetailsContainerView.addSubview(step2DetailsImageView)
 
-        let step2ImageHeight = 66.0 * imageScaleRatio
-
         step2DetailsImageView.snp.makeConstraints { make in
             make.top.equalTo(step2DetailsView.snp.bottom).offset(6.0)
             make.leading.equalToSuperview().offset(step2DetailsOffset)
-            make.height.equalTo(step2ImageHeight)
+            make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalToSuperview()
         }
 
