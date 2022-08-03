@@ -16,11 +16,13 @@ final class WatchOnlyWalletOperationFactory: WatchOnlyWalletOperationFactoryProt
             let substrateAccountId = try request.substrateAddress.toAccountId()
             let evmAddress = try request.evmAddress?.toAccountId()
 
+            let substrateCryptoType = MultiassetCryptoType.sr25519.rawValue
+
             return MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: request.name,
                 substrateAccountId: substrateAccountId,
-                substrateCryptoType: 0,
+                substrateCryptoType: substrateCryptoType,
                 substratePublicKey: substrateAccountId,
                 ethereumAddress: evmAddress,
                 ethereumPublicKey: evmAddress,
@@ -38,11 +40,14 @@ final class WatchOnlyWalletOperationFactory: WatchOnlyWalletOperationFactoryProt
         ClosureOperation {
             let accountId = try newAddress.toAccountId(using: chain.chainFormat)
 
+            let cryptoType = chain.isEthereumBased ? MultiassetCryptoType.ethereumEcdsa :
+                MultiassetCryptoType.sr25519
+
             let chainAccount = ChainAccountModel(
                 chainId: chain.chainId,
                 accountId: accountId,
                 publicKey: accountId,
-                cryptoType: 0
+                cryptoType: cryptoType.rawValue
             )
 
             return wallet.replacingChainAccount(chainAccount)
