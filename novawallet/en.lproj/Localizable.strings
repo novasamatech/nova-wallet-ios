@@ -867,3 +867,5 @@
 "welcome.parity.signer.step3" = "Parity Signer will provide you QR code to scan";
 "welcome.parity.signer.step3.highlighted" = "QR code to scan";
 "common.scan.qr.code" = "Scan QR code";
+"parity.signer.scan.title" = "Scan the QR code\nfrom Parity Signer";
+"parity.signer.address.scan.error" = "Can't extract address from the QR code";

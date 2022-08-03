@@ -8,4 +8,6 @@ protocol ParitySignerWelcomeInteractorInputProtocol: AnyObject {}
 
 protocol ParitySignerWelcomeInteractorOutputProtocol: AnyObject {}
 
-protocol ParitySignerWelcomeWireframeProtocol: AnyObject {}
+protocol ParitySignerWelcomeWireframeProtocol: AnyObject {
+    func showScanQR(from view: ParitySignerWelcomeViewProtocol?)
+}
