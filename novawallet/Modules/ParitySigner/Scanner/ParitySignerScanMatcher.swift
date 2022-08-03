@@ -21,6 +21,10 @@ final class ParitySignerScanMatcher: ParitySignerScanMatcherProtocol {
             return nil
         }
 
-        return ParitySignerAddressScan(address: components[1], chainId: components[2])
+        guard let genesisHash = try? Data(hexString: components[2]) else {
+            return nil
+        }
+
+        return ParitySignerAddressScan(address: components[1], genesisHash: genesisHash)
     }
 }

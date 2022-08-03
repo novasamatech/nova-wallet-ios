@@ -8,6 +8,8 @@ protocol ChainAccountViewModelFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         for locale: Locale
     ) -> ChainAccountListViewModel
+
+    func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
 }
 
 final class ChainAccountViewModelFactory {
@@ -107,6 +109,27 @@ final class ChainAccountViewModelFactory {
 }
 
 extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
+    func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem {
+        let chainName = chain.name
+
+        let accountAddress: String?
+        let icon: DrawableIcon?
+
+        accountAddress = try? accountId.toAddress(using: chain.chainFormat)
+        icon = try? iconGenerator.generateFromAccountId(accountId)
+
+        let viewModel = ChainAccountViewModelItem(
+            chainId: chain.chainId,
+            name: chainName,
+            address: accountAddress,
+            warning: nil,
+            chainIconViewModel: RemoteImageViewModel(url: chain.icon),
+            accountIcon: icon
+        )
+
+        return viewModel
+    }
+
     func createViewModel(
         from wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel],

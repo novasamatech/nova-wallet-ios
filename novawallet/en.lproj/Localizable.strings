@@ -869,3 +869,5 @@
 "common.scan.qr.code" = "Scan QR code";
 "parity.signer.scan.title" = "Scan the QR code\nfrom Parity Signer";
 "parity.signer.address.scan.error" = "Can't extract address from the QR code";
+"parity.signer.addresses.title" = "Here are your accounts";
+"parity.signer.addresses.subtitle" = "Following accounts have been successfully read from Parity Signer";
