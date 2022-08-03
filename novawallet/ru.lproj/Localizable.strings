@@ -39,6 +39,7 @@
 "profile.title" = "Настройки";
 "profile.about.title" = "О приложении";
 "profile.language.title" = "Язык";
+"profile.currency.title" = "Валюта";
 "about.version" = "Версия";
 "about.contact.us" = "Свяжитесь с нами";
 "about.title" = "О приложении";

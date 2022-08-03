@@ -27,11 +27,15 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
 
     func createSectionViewModels(
         language: Language?,
+        currency: String?,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])] {
         [
             (.general, [createCommonViewViewModel(row: .wallets, locale: locale)]),
-            (.preferences, [createLanguageViewModel(from: language, locale: locale)]),
+            (.preferences, [
+                createValuableViewModel(row: .currency, value: currency, locale: locale),
+                createLanguageViewModel(from: language, locale: locale)
+            ]),
             (.security, [createCommonViewViewModel(row: .changePin, locale: locale)]),
             (.community, [
                 createCommonViewViewModel(row: .telegram, locale: locale),
@@ -75,5 +79,18 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         )
 
         return viewModel
+    }
+
+    private func createValuableViewModel(
+        row: SettingsRow,
+        value: String?,
+        locale: Locale
+    ) -> SettingsCellViewModel {
+        SettingsCellViewModel(
+            row: row,
+            title: row.title(for: locale),
+            icon: row.icon,
+            accessoryTitle: value
+        )
     }
 }

@@ -36,6 +36,8 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
         provideUserSettings()
+        // TODO: Implement
+        presenter?.didRecieve(currency: "USDT")
     }
 }
 

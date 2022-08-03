@@ -8,6 +8,7 @@ final class SettingsPresenter {
     let interactor: SettingsInteractorInputProtocol
     let wireframe: SettingsWireframeProtocol
     let logger: LoggerProtocol?
+    private var currency: String?
 
     private var wallet: MetaAccountModel?
 
@@ -32,6 +33,7 @@ final class SettingsPresenter {
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
             language: localizationManager?.selectedLanguage,
+            currency: currency,
             locale: locale
         )
         view?.reload(sections: sectionViewModels)
@@ -113,6 +115,9 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             show(url: config.termsURL)
         case .privacyPolicy:
             show(url: config.privacyPolicyURL)
+        case .currency:
+            break
+            // TODO: Add wireframe function
         }
     }
 
@@ -139,6 +144,14 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
         if !wireframe.present(error: error, from: view, locale: locale) {
             _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
+        }
+    }
+
+    func didRecieve(currency: String) {
+        self.currency = currency
+
+        if view?.isSetup == true {
+            updateView()
         }
     }
 }

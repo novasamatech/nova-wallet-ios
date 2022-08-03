@@ -3,6 +3,7 @@ import UIKit.UIImage
 
 enum SettingsRow {
     case wallets
+    case currency
     case language
     case changePin
     case telegram
@@ -19,31 +20,38 @@ enum SettingsRow {
 extension SettingsRow {
     // swiftlint:disable:next cyclomatic_complexity
     func title(for locale: Locale) -> String {
+        titleLocalizationAction(locale.rLanguages)
+    }
+
+    var titleLocalizationAction: ([String]?) -> String {
+        let strings = R.string.localizable.self
         switch self {
         case .wallets:
-            return R.string.localizable.profileWalletsTitle(preferredLanguages: locale.rLanguages)
+            return strings.profileWalletsTitle
+        case .currency:
+            return strings.profileCurrencyTitle
         case .language:
-            return R.string.localizable.profileLanguageTitle(preferredLanguages: locale.rLanguages)
+            return strings.profileLanguageTitle
         case .changePin:
-            return R.string.localizable.profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
+            return strings.profilePincodeChangeTitle
         case .telegram:
-            return R.string.localizable.aboutTelegram(preferredLanguages: locale.rLanguages)
+            return strings.aboutTelegram
         case .youtube:
-            return R.string.localizable.settingsYoutube(preferredLanguages: locale.rLanguages)
+            return strings.settingsYoutube
         case .twitter:
-            return R.string.localizable.settingsTwitter(preferredLanguages: locale.rLanguages)
+            return strings.settingsTwitter
         case .rateUs:
-            return R.string.localizable.settingsRateUs(preferredLanguages: locale.rLanguages)
+            return strings.settingsRateUs
         case .email:
-            return R.string.localizable.settingsEmail(preferredLanguages: locale.rLanguages)
+            return strings.settingsEmail
         case .website:
-            return R.string.localizable.aboutWebsite(preferredLanguages: locale.rLanguages)
+            return strings.aboutWebsite
         case .github:
-            return R.string.localizable.aboutGithub(preferredLanguages: locale.rLanguages)
+            return strings.aboutGithub
         case .terms:
-            return R.string.localizable.aboutTerms(preferredLanguages: locale.rLanguages)
+            return strings.aboutTerms
         case .privacyPolicy:
-            return R.string.localizable.aboutPrivacy(preferredLanguages: locale.rLanguages)
+            return strings.aboutPrivacy
         }
     }
 
@@ -51,6 +59,8 @@ extension SettingsRow {
         switch self {
         case .wallets:
             return R.image.iconWallets()
+        case .currency:
+            return R.image.iconCurrency()
         case .language:
             return R.image.iconLanguage()
         case .changePin:
