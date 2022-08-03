@@ -43,6 +43,10 @@ final class AccountTableViewCell: UITableViewCell {
         viewModel?.chainIconViewModel?.cancel(on: mainImageView)
     }
 
+    func setAccessoryActionEnabled(_ enabled: Bool) {
+        infoButton.isUserInteractionEnabled = enabled
+    }
+
     func bind(viewModel: ChainAccountViewModelItem) {
         self.viewModel?.chainIconViewModel?.cancel(on: mainImageView)
         mainImageView.image = nil
