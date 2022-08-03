@@ -11,7 +11,7 @@ final class ParitySignerWelcomePresenter {
 
 extension ParitySignerWelcomePresenter: ParitySignerWelcomePresenterProtocol {
     func scanQr() {
-        // TODO: Show qr scaner and handle result
+        wireframe.showScanQR(from: view)
     }
 }
 

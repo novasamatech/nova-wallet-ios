@@ -867,3 +867,5 @@
 "welcome.parity.signer.step3" = "Parity Signer покажет QR код для сканирования";
 "welcome.parity.signer.step3.highlighted" = "QR код для сканирования";
 "common.scan.qr.code" = "Сканировать QR код";
+"parity.signer.scan.title" = "Поднесите QR код\nиз Parity Signer";
+"parity.signer.address.scan.error" = "Не удается получить адрес из QR кода";

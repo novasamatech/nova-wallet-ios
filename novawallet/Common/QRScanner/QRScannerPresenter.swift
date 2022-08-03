@@ -2,13 +2,15 @@ import Foundation
 import AVFoundation
 import SoraFoundation
 
-class QRScannerPresenter {
+class QRScannerPresenter: QRScannerPresenterProtocol {
     weak var view: QRScannerViewProtocol?
 
     let qrScanService: QRCaptureServiceProtocol
     let qrExtractionService: QRExtractionServiceProtocol
     let wireframe: QRScannerWireframeProtocol
     let logger: LoggerProtocol?
+
+    private var isRunning: Bool = false
 
     init(
         wireframe: QRScannerWireframeProtocol,
@@ -25,6 +27,26 @@ class QRScannerPresenter {
     }
 
     deinit {
+        stopServiceIfNeeded()
+    }
+
+    private func startServiceIfNeeded() {
+        guard !isRunning else {
+            return
+        }
+
+        isRunning = true
+
+        qrScanService.start()
+    }
+
+    private func stopServiceIfNeeded() {
+        guard isRunning else {
+            return
+        }
+
+        isRunning = false
+
         qrScanService.stop()
     }
 
@@ -115,11 +137,17 @@ class QRScannerPresenter {
     func handle(code _: String) {
         fatalError("Child presenter must override")
     }
-}
 
-extension QRScannerPresenter: QRScannerPresenterProtocol {
     func setup() {
-        qrScanService.start()
+        startServiceIfNeeded()
+    }
+
+    func viewWillAppear() {
+        startServiceIfNeeded()
+    }
+
+    func viewDidDisappear() {
+        stopServiceIfNeeded()
     }
 
     func uploadGallery() {

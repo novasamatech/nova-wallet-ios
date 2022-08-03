@@ -6,9 +6,10 @@ import SoraFoundation
 final class QRScannerViewController: UIViewController, ViewHolder {
     typealias RootViewType = QRScannerViewLayout
 
-    let localizedTitle: LocalizableResource<String>
+    let localizedTitle: LocalizableResource<String>?
     let localizedMessage: LocalizableResource<String>
     let presenter: QRScannerPresenterProtocol
+    let settings: QRScannerViewSettings
 
     var messageVisibilityDuration: TimeInterval = 5.0
 
@@ -16,14 +17,16 @@ final class QRScannerViewController: UIViewController, ViewHolder {
     lazy var messageDissmisAnimator: BlockViewAnimatorProtocol = BlockViewAnimator()
 
     init(
-        title: LocalizableResource<String>,
+        title: LocalizableResource<String>?,
         message: LocalizableResource<String>,
         presenter: QRScannerPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        settings: QRScannerViewSettings = QRScannerViewSettings()
     ) {
         localizedTitle = title
         localizedMessage = message
         self.presenter = presenter
+        self.settings = settings
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -39,7 +42,7 @@ final class QRScannerViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = QRScannerViewLayout()
+        view = QRScannerViewLayout(settings: settings, frame: .zero)
     }
 
     override func viewDidLoad() {
@@ -51,16 +54,28 @@ final class QRScannerViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        presenter.viewWillAppear()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        presenter.viewDidDisappear()
+    }
+
     private func setupLocalization() {
-        title = localizedTitle.value(for: selectedLocale)
+        title = localizedTitle?.value(for: selectedLocale)
         rootView.titleLabel.text = localizedMessage.value(for: selectedLocale)
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.qrScanUploadGallery(
+        rootView.actionButton?.imageWithTitleView?.title = R.string.localizable.qrScanUploadGallery(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
 
     private func setupHandlers() {
-        rootView.actionButton.addTarget(
+        rootView.actionButton?.addTarget(
             self,
             action: #selector(actionUpload),
             for: .touchUpInside
