@@ -83,11 +83,19 @@ final class QRScannerViewController: UIViewController, ViewHolder {
     }
 
     private func configureVideoLayer(with captureSession: AVCaptureSession) {
-        let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        videoPreviewLayer.frame = view.layer.bounds
+        if let layer = rootView.qrFrameView.frameLayer as? AVCaptureVideoPreviewLayer {
+            if layer.session === captureSession {
+                return
+            }
 
-        rootView.qrFrameView.frameLayer = videoPreviewLayer
+            layer.session = captureSession
+        } else {
+            let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+            videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+            videoPreviewLayer.frame = view.layer.bounds
+
+            rootView.qrFrameView.frameLayer = videoPreviewLayer
+        }
     }
 
     // MARK: Message Management
