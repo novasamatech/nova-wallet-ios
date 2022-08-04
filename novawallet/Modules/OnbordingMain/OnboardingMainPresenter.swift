@@ -58,6 +58,10 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
     func activateWatchOnlyCreate() {
         wireframe.showWatchOnlyCreate(from: view)
     }
+
+    func activateHardwareWalletCreate() {
+        wireframe.showHardwareWalletCreate(from: view)
+    }
 }
 
 extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
