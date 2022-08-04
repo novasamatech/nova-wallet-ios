@@ -469,6 +469,7 @@
 		842806F52847A82500702F3A /* StackAccountSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842806F42847A82500702F3A /* StackAccountSelectionCell.swift */; };
 		84282288289AC80600163031 /* MultiValueView+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84282287289AC80600163031 /* MultiValueView+Factory.swift */; };
 		8428228A289B1E5C00163031 /* TableHeaderLayoutUpdatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84282289289B1E5C00163031 /* TableHeaderLayoutUpdatable.swift */; };
+		8428228D289B2D5300163031 /* BaseUsernameSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428228C289B2D5300163031 /* BaseUsernameSetupPresenter.swift */; };
 		84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */; };
 		8428765224ADDE0200D91AD8 /* SettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */; };
 		8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764724ADDE0200D91AD8 /* SettingsViewModelFactory.swift */; };
@@ -637,7 +638,6 @@
 		8436EDE225895804004D9E97 /* RampProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436EDE125895804004D9E97 /* RampProvider.swift */; };
 		8436EDE725895846004D9E97 /* PurchaseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436EDE625895846004D9E97 /* PurchaseProvider.swift */; };
 		8436EDEF25896722004D9E97 /* PurchaseAggregator+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436EDEE25896722004D9E97 /* PurchaseAggregator+Default.swift */; };
-		84378770264D1D2700E6AFD2 /* UsernameSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8437876F264D1D2700E6AFD2 /* UsernameSetupInteractor.swift */; };
 		8438C45B2655AC2600047E3F /* runtime-rococo.json in Resources */ = {isa = PBXBuildFile; fileRef = 8438C45A2655AC2600047E3F /* runtime-rococo.json */; };
 		8438E1D224BFAAD2001BDB13 /* JSONRPCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438E1D124BFAAD2001BDB13 /* JSONRPCTests.swift */; };
 		843910B0253ED36C00E3C217 /* ChainStorageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910AF253ED36C00E3C217 /* ChainStorageItem.swift */; };
@@ -2915,6 +2915,7 @@
 		842806F42847A82500702F3A /* StackAccountSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackAccountSelectionCell.swift; sourceTree = "<group>"; };
 		84282287289AC80600163031 /* MultiValueView+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultiValueView+Factory.swift"; sourceTree = "<group>"; };
 		84282289289B1E5C00163031 /* TableHeaderLayoutUpdatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableHeaderLayoutUpdatable.swift; sourceTree = "<group>"; };
+		8428228C289B2D5300163031 /* BaseUsernameSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUsernameSetupPresenter.swift; sourceTree = "<group>"; };
 		84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryFacade.swift; sourceTree = "<group>"; };
 		8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsPresenter.swift; sourceTree = "<group>"; };
 		8428764724ADDE0200D91AD8 /* SettingsViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModelFactory.swift; sourceTree = "<group>"; };
@@ -3083,7 +3084,6 @@
 		8436EDE125895804004D9E97 /* RampProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampProvider.swift; sourceTree = "<group>"; };
 		8436EDE625895846004D9E97 /* PurchaseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseProvider.swift; sourceTree = "<group>"; };
 		8436EDEE25896722004D9E97 /* PurchaseAggregator+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PurchaseAggregator+Default.swift"; sourceTree = "<group>"; };
-		8437876F264D1D2700E6AFD2 /* UsernameSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSetupInteractor.swift; sourceTree = "<group>"; };
 		8438C45A2655AC2600047E3F /* runtime-rococo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-rococo.json"; sourceTree = "<group>"; };
 		8438E1CF24BFAAD2001BDB13 /* novawalletIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = novawalletIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8438E1D124BFAAD2001BDB13 /* JSONRPCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPCTests.swift; sourceTree = "<group>"; };
@@ -6069,6 +6069,14 @@
 				846A68282746234000D1A47A /* ChainConnection.swift */,
 			);
 			path = ConnectionPool;
+			sourceTree = "<group>";
+		};
+		8428228B289B2D2D00163031 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				8428228C289B2D5300163031 /* BaseUsernameSetupPresenter.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		8428764224ADDE0200D91AD8 /* Settings */ = {
@@ -10863,11 +10871,11 @@
 		C7AEDB8341B78EC46F6F98DC /* UsernameSetup */ = {
 			isa = PBXGroup;
 			children = (
+				8428228B289B2D2D00163031 /* Base */,
 				CD098B40697FD6CC08F9A6AC /* UsernameSetupProtocols.swift */,
 				65AD15693E21C869DE1FDD17 /* UsernameSetupWireframe.swift */,
 				172B3E9BE51A339D7A09BDA3 /* UsernameSetupPresenter.swift */,
 				C74A2166B054240BD5D925B6 /* UsernameSetupViewFactory.swift */,
-				8437876F264D1D2700E6AFD2 /* UsernameSetupInteractor.swift */,
 				2AFF4B9F274D1E4D00D790B4 /* UsernameSetupViewController.swift */,
 				2AFF4BA1274D1E5C00D790B4 /* UsernameSetupViewLayout.swift */,
 			);
@@ -12887,6 +12895,7 @@
 				8467FCFC24E5C3BD005D486C /* URLHandlingService.swift in Sources */,
 				84FB1F6F2526AA6800E0242B /* TransactionHistoryViewModelFactory.swift in Sources */,
 				F40966BA26B297D6008CD244 /* AnalyticsSummaryRewardViewModel.swift in Sources */,
+				8428228D289B2D5300163031 /* BaseUsernameSetupPresenter.swift in Sources */,
 				842A736427DB31A3006EE1EA /* OperationRewardModel.swift in Sources */,
 				8487584727F1816300495306 /* QRExtractionService.swift in Sources */,
 				849013DB24A927E2008F705E /* Logger.swift in Sources */,
@@ -13825,7 +13834,6 @@
 				D3B48F82A875E301D749AC0B /* StakingUnbondConfirmViewController.swift in Sources */,
 				8472C5AE265CF9C500E2481B /* StakingRewardDestConfirmViewModel.swift in Sources */,
 				842A736227DB3032006EE1EA /* OperationExtrinsicModel.swift in Sources */,
-				84378770264D1D2700E6AFD2 /* UsernameSetupInteractor.swift in Sources */,
 				843E9B2827C83985009C143A /* AssetListNftsCell.swift in Sources */,
 				3E1462D9E1C0D490E81FD288 /* StakingUnbondConfirmViewFactory.swift in Sources */,
 				9B4BE26140C63E07C256CC97 /* StakingRedeemProtocols.swift in Sources */,
