@@ -84,11 +84,20 @@ final class ChainAccountViewModelFactory {
                 icon = nil
             }
 
+            let warning: String
+
+            switch wallet.type {
+            case .secrets, .watchOnly:
+                warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+            case .paritySigner:
+                warning = R.string.localizable.paritySignerNotSupportedChain(preferredLanguages: locale.rLanguages)
+            }
+
             return ChainAccountViewModelItem(
                 chainId: chainId,
                 name: chainName,
                 address: accountAddress,
-                warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
+                warning: warning,
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
                 accountIcon: icon
             )

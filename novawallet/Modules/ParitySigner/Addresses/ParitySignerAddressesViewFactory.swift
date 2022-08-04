@@ -2,13 +2,26 @@ import Foundation
 import SubstrateSdk
 
 struct ParitySignerAddressesViewFactory {
-    static func createView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
+    static func createOnboardingView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
+        createView(with: addressScan, wireframe: ParitySignerAddressesWireframe())
+    }
+
+    static func createAddAccountView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
+        createView(with: addressScan, wireframe: AddAccount.ParitySignerAddressesWireframe())
+    }
+
+    static func createSwitchAccountView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
+        createView(with: addressScan, wireframe: SwitchAccount.ParitySignerAddressesWireframe())
+    }
+
+    private static func createView(
+        with addressScan: ParitySignerAddressScan,
+        wireframe: ParitySignerAddressesWireframeProtocol
+    ) -> ParitySignerAddressesViewProtocol? {
         let interactor = ParitySignerAddressesInteractor(
             addressScan: addressScan,
             chainRegistry: ChainRegistryFacade.sharedRegistry
         )
-
-        let wireframe = ParitySignerAddressesWireframe()
 
         let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: PolkadotIconGenerator())
         let presenter = ParitySignerAddressesPresenter(
