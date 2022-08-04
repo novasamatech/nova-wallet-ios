@@ -34,4 +34,5 @@ struct ChainAccountViewModelItem {
     let warning: String?
     let chainIconViewModel: ImageViewModelProtocol?
     let accountIcon: DrawableIcon?
+    let hasAction: Bool
 }

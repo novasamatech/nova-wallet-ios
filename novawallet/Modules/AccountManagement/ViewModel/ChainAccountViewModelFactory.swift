@@ -48,7 +48,8 @@ final class ChainAccountViewModelFactory {
                 address: accountAddress,
                 warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
-                accountIcon: icon
+                accountIcon: icon,
+                hasAction: true
             )
 
             return viewModel
@@ -85,12 +86,15 @@ final class ChainAccountViewModelFactory {
             }
 
             let warning: String
+            let hasAction: Bool
 
             switch wallet.type {
             case .secrets, .watchOnly:
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+                hasAction = true
             case .paritySigner:
                 warning = R.string.localizable.paritySignerNotSupportedChain(preferredLanguages: locale.rLanguages)
+                hasAction = accountAddress != nil
             }
 
             return ChainAccountViewModelItem(
@@ -99,7 +103,8 @@ final class ChainAccountViewModelFactory {
                 address: accountAddress,
                 warning: warning,
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
-                accountIcon: icon
+                accountIcon: icon,
+                hasAction: hasAction
             )
         }.sorted { first, second in
             if
@@ -133,7 +138,8 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
             address: accountAddress,
             warning: nil,
             chainIconViewModel: RemoteImageViewModel(url: chain.icon),
-            accountIcon: icon
+            accountIcon: icon,
+            hasAction: true
         )
 
         return viewModel
