@@ -240,7 +240,10 @@ final class AccountManagementPresenter {
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
-    private func displayParitySignerExistingAddressActions(for chain: ChainModel, viewModel: ChainAccountViewModelItem) {
+    private func displayParitySignerExistingAddressActions(
+        for chain: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
         guard let view = view, let address = viewModel.address else {
             return
         }
