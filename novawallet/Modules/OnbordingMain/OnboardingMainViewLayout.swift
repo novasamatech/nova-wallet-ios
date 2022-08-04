@@ -36,6 +36,13 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
         return button
     }()
 
+    let hardwareButton: ButtonLargeControl = {
+        let button = ButtonLargeControl()
+        button.style = .secondary
+        button.iconView.image = R.image.iconHardwareWallet()
+        return button
+    }()
+
     let watchOnlyButton: ButtonLargeControl = {
         let button = ButtonLargeControl()
         button.style = .secondary
@@ -54,6 +61,7 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // swiftlint:disable:next function_body_length
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in make.edges.equalToSuperview() }
@@ -80,8 +88,8 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
             make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
         }
 
-        let bottomOffset = 60.0 * designScaleRatio.height
-        let topOffset = 60.0
+        let bottomOffset = 16.0
+        let topOffset = 24.0
         let buttonsBaseWidth = 335.0
         let buttonsWidth: CGFloat
 
@@ -98,9 +106,16 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
             make.width.equalTo(buttonsWidth)
         }
 
+        addSubview(hardwareButton)
+        hardwareButton.snp.makeConstraints { make in
+            make.bottom.equalTo(watchOnlyButton.snp.top).offset(-10)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(buttonsWidth)
+        }
+
         addSubview(importButton)
         importButton.snp.makeConstraints { make in
-            make.bottom.equalTo(watchOnlyButton.snp.top).offset(-10.0)
+            make.bottom.equalTo(hardwareButton.snp.top).offset(-10.0)
             make.centerX.equalToSuperview()
             make.width.equalTo(buttonsWidth)
         }
