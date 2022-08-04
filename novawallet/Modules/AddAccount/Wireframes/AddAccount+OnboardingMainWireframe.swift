@@ -35,6 +35,17 @@ extension AddAccount {
             view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
         }
 
+        func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?) {
+            guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createView() else {
+                return
+            }
+
+            view?.controller.navigationController?.pushViewController(
+                paritySignerWelcomeView.controller,
+                animated: true
+            )
+        }
+
         private func presentAccountRestore(
             from view: OnboardingMainViewProtocol?,
             secretSource: SecretSource
