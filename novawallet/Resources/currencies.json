@@ -1,0 +1,20 @@
+[
+  {
+    "code": "BTC",
+    "name": "Bitcoin",
+    "symbol": "₿",
+    "category": "fiat",
+    "popular": true,
+    "id": 0,
+    "coingeckoId": "btc"
+  },
+  {
+    "code": "BTC",
+    "name": "Bitcoin",
+    "symbol": "₿",
+    "category": "fiat",
+    "popular": true,
+    "id": 1,
+    "coingeckoId": "btc"
+  }
+]
