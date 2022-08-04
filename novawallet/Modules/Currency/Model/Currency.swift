@@ -13,7 +13,7 @@ struct Currency: Codable {
     let code: String
     let name: String
     let symbol: String?
-    let category: Category = .fiat
+    let category: Category
     let isPopular: Bool
     let coingeckoId: String
 
@@ -22,7 +22,7 @@ struct Currency: Codable {
         case code
         case name
         case symbol
-        // case category
+        case category
         case isPopular = "popular"
         case coingeckoId
     }

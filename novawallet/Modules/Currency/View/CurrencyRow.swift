@@ -36,7 +36,7 @@ final class CurrencyRow: UICollectionViewCell {
         setupLayout()
     }
 
-    //TODO: Simplify
+    // TODO: Simplify
     private func setupLayout() {
         let textStackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         textStackView.axis = .vertical
