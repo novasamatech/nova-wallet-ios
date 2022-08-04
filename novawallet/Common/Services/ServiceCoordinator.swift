@@ -25,10 +25,6 @@ final class ServiceCoordinator {
         self.assetsService = assetsService
         self.githubPhishingService = githubPhishingService
     }
-
-    private func setup(chainRegistry: ChainRegistryProtocol) {
-        chainRegistry.syncUp()
-    }
 }
 
 extension ServiceCoordinator: ServiceCoordinatorProtocol {
@@ -40,9 +36,6 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
     }
 
     func setup() {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        setup(chainRegistry: chainRegistry)
-
         githubPhishingService.setup()
         accountInfoService.setup()
         assetsService.setup()
