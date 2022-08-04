@@ -225,21 +225,6 @@ final class AccountManagementPresenter {
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
-    private func displayParitySignerNoAddressActions(for chain: ChainModel) {
-        guard let view = view else {
-            return
-        }
-
-        let model = ChainAddressDetailsModel(
-            address: nil,
-            chainName: chain.name,
-            chainIcon: chain.icon,
-            actions: []
-        )
-
-        wireframe.presentChainAddressDetails(from: view, model: model)
-    }
-
     private func displayParitySignerExistingAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
@@ -447,9 +432,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
                 displayWatchOnlyExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
         case .paritySigner:
-            if chainViewModel.address == nil {
-                displayParitySignerNoAddressActions(for: chainModel)
-            } else {
+            if chainViewModel.address != nil {
                 displayParitySignerExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
         }
