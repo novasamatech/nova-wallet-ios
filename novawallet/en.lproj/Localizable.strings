@@ -874,3 +874,8 @@
 "parity.signer.not.supported.chain" = "Not supported by Parity Signer";
 "parity.signer.details.hint" = "This wallet is paired with Parity Signer. Nova will help you to form any operations you want, and you will be requested to sign them using Parity Signer";
 "common.parity.signer" = "Parity Signer";
+"parity.signer.tx.title" = "Sign with Parity Signer";
+"parity.signer.tx.scan" = "Scan the QR code with the Parity Signer";
+"common.qr.code.valid.format" = "QR code is valid for %@";
+"common.qr.code.expired" = "QR code has expired";
+"parity.signer.tx.secondary.action" = "I have an error in Parity Signer";
