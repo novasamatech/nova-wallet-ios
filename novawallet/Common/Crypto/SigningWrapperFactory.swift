@@ -17,7 +17,13 @@ protocol SigningWrapperFactoryProtocol {
 final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     let keystore: KeystoreProtocol
 
-    init(keystore: KeystoreProtocol = Keychain()) {
+    let uiPresenter: TransactionSigningPresenting
+
+    init(
+        uiPresenter: TransactionSigningPresenting = TransactionSigningPresenter(),
+        keystore: KeystoreProtocol = Keychain()
+    ) {
+        self.uiPresenter = uiPresenter
         self.keystore = keystore
     }
 
@@ -31,7 +37,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return ParitySignerSigningWrapper()
+            return ParitySignerSigningWrapper(uiPresenter: uiPresenter)
         }
     }
 
@@ -44,7 +50,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return ParitySignerSigningWrapper()
+            return ParitySignerSigningWrapper(uiPresenter: uiPresenter)
         }
     }
 
@@ -55,7 +61,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return ParitySignerSigningWrapper()
+            return ParitySignerSigningWrapper(uiPresenter: uiPresenter)
         }
     }
 }
