@@ -12,12 +12,14 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
     weak var view: UIViewController?
 
     init(view: UIViewController? = nil) {
-        let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
-        self.view = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
+        self.view = view
     }
 
     func presentParitySignerFlow(for data: Data, completion: ParitySignerSigningClosure) {
-        guard let view = view else {
+        let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
+        let optionalController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
+
+        guard let controller = optionalController else {
             completion(.failure(CommonError.dataCorruption))
             return
         }
@@ -28,6 +30,6 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
 
         let navigationController = FearlessNavigationController(rootViewController: txQrView.controller)
 
-        view.present(navigationController, animated: true)
+        controller.present(navigationController, animated: true)
     }
 }
