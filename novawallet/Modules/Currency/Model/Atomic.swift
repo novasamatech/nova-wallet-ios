@@ -14,7 +14,7 @@ struct Atomic<Value> where Value: Initiable {
     private var value: Value
 
     init(defaultValue: Value) {
-        self.value = defaultValue
+        value = defaultValue
     }
 
     var wrappedValue: Value {
