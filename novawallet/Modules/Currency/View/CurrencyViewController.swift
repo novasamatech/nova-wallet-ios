@@ -1,4 +1,4 @@
-import UIKit
+import SoraFoundation
 
 final class CurrencyViewController: UIViewController, ViewHolder {
     typealias RootViewType = CurrencyViewLayout
