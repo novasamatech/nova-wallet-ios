@@ -25,12 +25,12 @@ extension CurrencyRepository: CurrencyRepositoryProtocol {
             return CompoundOperationWrapper.createWithResult(currencies)
         }
         let fetchOperation = fetchOperation(by: R.file.currenciesJson(), defaultValue: [])
-        let cacheOperation: BaseOperation<[Currency]> = ClosureOperation {
+        let cacheOperation: BaseOperation<[Currency]> = ClosureOperation { [weak self] in
             guard let result = try?
                 fetchOperation.extractNoCancellableResultData() else {
                 return []
             }
-            self.currencies = result
+            self?.currencies = result
             return result
         }
         cacheOperation.addDependency(fetchOperation)

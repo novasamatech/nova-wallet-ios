@@ -17,7 +17,9 @@ protocol UserCurrencyRepositoryProtocol {
 final class UserCurrencyRepository: UserCurrencyRepositoryProtocol {
     private let currencyRepository: CurrencyRepositoryProtocol
     private let settingManager: SettingsManagerProtocol
-    private(set) var currencies: [Currency] = []
+    
+    @Atomic(defaultValue: [])
+    private(set) var currencies: [Currency]
 
     init(
         currencyRepository: CurrencyRepositoryProtocol,
@@ -46,6 +48,9 @@ final class UserCurrencyRepository: UserCurrencyRepositoryProtocol {
                 return
             }
             self.currencies = currencies
+        }
+        allCurrenciesOperationWrapper.allOperations.forEach {
+            currentCurrencyOperation.addDependency($0)
         }
 
         return CompoundOperationWrapper(

@@ -1893,6 +1893,7 @@
 		8860F3E2289D4FFD00C0BF86 /* SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */; };
 		8860F3E4289D50BA00C0BF86 /* Array+SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */; };
 		8860F3E6289D5A6C00C0BF86 /* UserCurrencyRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E5289D5A6C00C0BF86 /* UserCurrencyRepository.swift */; };
+		8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E7289D7CF400C0BF86 /* Atomic.swift */; };
 		886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62FA66143B25AA70B02CE461 /* ExportSeedViewFactory.swift */; };
 		88E1E896289C021F00C123A8 /* CurrencyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E1E895289C021F00C123A8 /* CurrencyCollectionViewCell.swift */; };
 		88E1E898289C024400C123A8 /* UIView+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E1E897289C024400C123A8 /* UIView+Create.swift */; };
@@ -4353,6 +4354,7 @@
 		8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionProtocol.swift; sourceTree = "<group>"; };
 		8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SectionProtocol.swift"; sourceTree = "<group>"; };
 		8860F3E5289D5A6C00C0BF86 /* UserCurrencyRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCurrencyRepository.swift; sourceTree = "<group>"; };
+		8860F3E7289D7CF400C0BF86 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		889A825F58F5CB54118A9D35 /* SelectValidatorsStartWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartWireframe.swift; sourceTree = "<group>"; };
 		88E1E895289C021F00C123A8 /* CurrencyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCollectionViewCell.swift; sourceTree = "<group>"; };
 		88E1E897289C024400C123A8 /* UIView+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Create.swift"; sourceTree = "<group>"; };
@@ -10026,6 +10028,7 @@
 				8842105F289BBAE600306F2C /* CurrencyRepository.swift */,
 				88421063289BBD9100306F2C /* Currency.swift */,
 				8860F3E5289D5A6C00C0BF86 /* UserCurrencyRepository.swift */,
+				8860F3E7289D7CF400C0BF86 /* Atomic.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -12754,6 +12757,7 @@
 				F471897B26C29A78006487AD /* AnalyticsValidatorsPageSelector.swift in Sources */,
 				8482F63128101FB10006C3A0 /* DAppEthereumSignBytesInteractor.swift in Sources */,
 				8487583527F06AF300495306 /* QRScannerProtocols.swift in Sources */,
+				8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */,
 				8499FECF27BFA25100712589 /* NftType.swift in Sources */,
 				F40966C226B297D6008CD244 /* AnalyticsPeriod.swift in Sources */,
 				84EF8D40288FDA7700265346 /* WalletListLocalStorageSubscriptionHandler.swift in Sources */,

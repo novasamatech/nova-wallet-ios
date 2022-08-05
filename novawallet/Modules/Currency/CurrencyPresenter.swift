@@ -69,7 +69,7 @@ final class CurrencyPresenter {
         guard let view = view else {
             return
         }
-        currentViewModel.updateCells {
+        currentViewModel.updateCells { [selectedCurrencyId] in
             $0.isSelected = selectedCurrencyId == $0.id
         }
 
@@ -82,7 +82,6 @@ final class CurrencyPresenter {
 extension CurrencyPresenter: CurrencyPresenterProtocol {
     func setup() {
         interactor.setup()
-        updateView(currencies: [])
     }
 
     func didSelect(model: CurrencyViewSectionModel.CellModel) {
