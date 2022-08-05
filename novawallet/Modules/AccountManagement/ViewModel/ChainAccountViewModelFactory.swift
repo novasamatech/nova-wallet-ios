@@ -8,6 +8,8 @@ protocol ChainAccountViewModelFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         for locale: Locale
     ) -> ChainAccountListViewModel
+
+    func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem
 }
 
 final class ChainAccountViewModelFactory {
@@ -46,7 +48,8 @@ final class ChainAccountViewModelFactory {
                 address: accountAddress,
                 warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
-                accountIcon: icon
+                accountIcon: icon,
+                hasAction: true
             )
 
             return viewModel
@@ -82,13 +85,26 @@ final class ChainAccountViewModelFactory {
                 icon = nil
             }
 
+            let warning: String
+            let hasAction: Bool
+
+            switch wallet.type {
+            case .secrets, .watchOnly:
+                warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
+                hasAction = true
+            case .paritySigner:
+                warning = R.string.localizable.paritySignerNotSupportedChain(preferredLanguages: locale.rLanguages)
+                hasAction = accountAddress != nil
+            }
+
             return ChainAccountViewModelItem(
                 chainId: chainId,
                 name: chainName,
                 address: accountAddress,
-                warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
+                warning: warning,
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
-                accountIcon: icon
+                accountIcon: icon,
+                hasAction: hasAction
             )
         }.sorted { first, second in
             if
@@ -107,6 +123,28 @@ final class ChainAccountViewModelFactory {
 }
 
 extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
+    func createDefinedViewModelItem(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModelItem {
+        let chainName = chain.name
+
+        let accountAddress: String?
+        let icon: DrawableIcon?
+
+        accountAddress = try? accountId.toAddress(using: chain.chainFormat)
+        icon = try? iconGenerator.generateFromAccountId(accountId)
+
+        let viewModel = ChainAccountViewModelItem(
+            chainId: chain.chainId,
+            name: chainName,
+            address: accountAddress,
+            warning: nil,
+            chainIconViewModel: RemoteImageViewModel(url: chain.icon),
+            accountIcon: icon,
+            hasAction: true
+        )
+
+        return viewModel
+    }
+
     func createViewModel(
         from wallet: MetaAccountModel,
         chains: [ChainModel.Id: ChainModel],

@@ -25,7 +25,12 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
+    }
+
+    private func setupHandlers() {
+        rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
     }
 
     private func setupLocalization() {
@@ -79,6 +84,10 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
         )
 
         rootView.actionButton.invalidateLayout()
+    }
+
+    @objc private func actionProceed() {
+        presenter.scanQr()
     }
 }
 

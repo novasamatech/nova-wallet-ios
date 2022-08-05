@@ -5,41 +5,31 @@ import SoraKeystore
 final class UsernameSetupViewFactory: UsernameSetupViewFactoryProtocol {
     static func createViewForOnboarding() -> UsernameSetupViewProtocol? {
         let wireframe = UsernameSetupWireframe()
-        let interactor = UsernameSetupInteractor()
-        return createView(for: wireframe, interactor: interactor)
+        return createView(for: wireframe)
     }
 
     static func createViewForAdding() -> UsernameSetupViewProtocol? {
         let wireframe = AddAccount.UsernameSetupWireframe()
-        let interactor = UsernameSetupInteractor()
-        return createView(for: wireframe, interactor: interactor)
+        return createView(for: wireframe)
     }
 
     static func createViewForSwitch() -> UsernameSetupViewProtocol? {
         let wireframe = SwitchAccount.UsernameSetupWireframe()
-        let interactor = UsernameSetupInteractor()
 
-        return createView(for: wireframe, interactor: interactor)
+        return createView(for: wireframe)
     }
 
     private static func createView(
-        for wireframe: UsernameSetupWireframeProtocol,
-        interactor: UsernameSetupInteractor
+        for wireframe: UsernameSetupWireframeProtocol
     ) -> UsernameSetupViewProtocol? {
-        let localizationManager = LocalizationManager.shared
-        let presenter = UsernameSetupPresenter()
+        let presenter = UsernameSetupPresenter(wireframe: wireframe)
 
         let view = UserNameSetupViewController(
             presenter: presenter,
-            localizationManager: localizationManager
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
-        presenter.wireframe = wireframe
-        presenter.interactor = interactor
-        interactor.presenter = presenter
-
-        presenter.localizationManager = localizationManager
 
         return view
     }
