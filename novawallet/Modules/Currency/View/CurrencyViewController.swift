@@ -2,13 +2,10 @@ import UIKit
 
 final class CurrencyViewController: UIViewController, ViewHolder {
     typealias RootViewType = CurrencyViewLayout
+    typealias DataSource = UICollectionViewDiffableDataSource<CurrencyViewSectionModel, CurrencyCollectionViewCell.Model>
 
     let presenter: CurrencyPresenterProtocol
-    private lazy var dataSource = makeDataSource()
-    typealias DataSource = UICollectionViewDiffableDataSource<
-        CurrencyViewSectionModel,
-        CurrencyRow.Model
-    >
+    private lazy var dataSource = createDataSource()
 
     init(presenter: CurrencyPresenterProtocol) {
         self.presenter = presenter
@@ -22,61 +19,71 @@ final class CurrencyViewController: UIViewController, ViewHolder {
 
     override func loadView() {
         view = CurrencyViewLayout()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupCollectionView()
+        setupLocalization()
+        presenter.setup()
+    }
+
+    private func setupLocalization() {
+        title = R.string.localizable.currencyTitle()
+    }
+
+    private func setupCollectionView() {
         rootView.collectionView.dataSource = dataSource
         rootView.collectionView.delegate = self
-        rootView.collectionView.registerCellClass(CurrencyRow.self)
+        rootView.collectionView.registerCellClass(CurrencyCollectionViewCell.self)
         rootView.collectionView.registerClass(
             CurrencyHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        presenter.setup()
-    }
-
-    func makeDataSource() -> DataSource {
+    private func createDataSource() -> DataSource {
         let dataSource = DataSource(
             collectionView: rootView.collectionView,
-            cellProvider: { (collectionView, indexPath, model) ->
+            cellProvider: { collectionView, indexPath, model ->
                 UICollectionViewCell? in
-                let cell: CurrencyRow? = collectionView.dequeueReusableCell(for: indexPath)
+                let cell: CurrencyCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
                 cell?.render(model: model)
                 return cell
             }
         )
 
-        dataSource.supplementaryViewProvider = { (
-            collectionView: UICollectionView,
-            _: String,
-            indexPath: IndexPath
-        ) -> UICollectionReusableView? in
-        let header: CurrencyHeaderView? = collectionView.dequeueReusableSupplementaryView(
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            for: indexPath
-        )
-        let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
-        header?.render(title: section.title)
-        return header
+        dataSource.supplementaryViewProvider = { collectionView, _, indexPath in
+            let header: CurrencyHeaderView? = collectionView.dequeueReusableSupplementaryView(
+                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                for: indexPath
+            )
+            let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+            header?.render(title: section.title)
+            return header
         }
 
         return dataSource
     }
 }
 
+// MARK: - UICollectionViewDelegate
+
 extension CurrencyViewController: UICollectionViewDelegate {
     func collectionView(_: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let model = dataSource.itemIdentifier(for: indexPath) else {
             return
         }
+        presenter.didSelect(model: model)
     }
 }
 
+// MARK: - CurrencyViewProtocol
+
 extension CurrencyViewController: CurrencyViewProtocol {
     func currencyListDidLoad(_ sections: [CurrencyViewSectionModel]) {
-        var snapshot = NSDiffableDataSourceSnapshot<CurrencyViewSectionModel, CurrencyRow.Model>()
+        var snapshot = NSDiffableDataSourceSnapshot<CurrencyViewSectionModel, CurrencyCollectionViewCell.Model>()
         snapshot.appendSections(sections)
         sections.forEach { section in
             snapshot.appendItems(section.cells, toSection: section)
@@ -86,18 +93,12 @@ extension CurrencyViewController: CurrencyViewProtocol {
     }
 }
 
-struct CurrencyViewSectionModel: Hashable {
-    var title: String
-    var cells: [CurrencyRow.Model]
-}
+// MARK: - Localizable
 
-final class CurrencyHeaderView: UICollectionReusableView {
-    lazy var titleLabel: UILabel = .create {
-        $0.font = R.font.publicSansRegular(size: 13)
-        $0.textColor = R.color.colorWhite64()
-    }
-
-    func render(title: String) {
-        titleLabel.text = title
+extension CurrencyViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }

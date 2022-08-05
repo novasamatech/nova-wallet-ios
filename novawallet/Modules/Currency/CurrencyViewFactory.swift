@@ -1,9 +1,14 @@
 import Foundation
+import SoraKeystore
 
 struct CurrencyViewFactory {
     static func createView() -> CurrencyViewProtocol? {
         let interactor = CurrencyInteractor(
-            repository: CurrencyRepository(),
+            currencyRepository: CurrencyRepository.shared,
+            userCurrencyRepository: UserCurrencyRepository(
+                currencyRepository: CurrencyRepository.shared,
+                settingManager: SettingsManager.shared
+            ),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
         let wireframe = CurrencyWireframe()

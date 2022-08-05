@@ -4,15 +4,17 @@ protocol CurrencyViewProtocol: ControllerBackedProtocol {
 
 protocol CurrencyPresenterProtocol: AnyObject {
     func setup()
+    func didSelect(model: CurrencyViewSectionModel.CellModel)
 }
 
 protocol CurrencyInteractorInputProtocol: AnyObject {
-    func fetchCurrencies()
+    func setup()
+    func set(selectedCurrencyId: Int)
 }
 
 protocol CurrencyInteractorOutputProtocol: AnyObject {
     func didRecieve(currencies: [Currency])
-    func select(currencyId: Int)
+    func didRecieve(selectedCurrency: Currency)
 }
 
 protocol CurrencyWireframeProtocol: AnyObject {}

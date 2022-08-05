@@ -9,6 +9,6 @@ final class WatchOnlyPresetRepository: JsonFileRepository<[WatchOnlyWallet]> {}
 
 extension WatchOnlyPresetRepository: WatchOnlyPresetRepositoryProtocol {
     func fetchPresetsWrapper() -> CompoundOperationWrapper<[WatchOnlyWallet]> {
-        fetch(by: R.file.watchOnlyPresetJson(), defaultValue: [])
+        fetchOperationWrapper(by: R.file.watchOnlyPresetJson(), defaultValue: [])
     }
 }

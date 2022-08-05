@@ -1,9 +1,12 @@
 import Foundation
+import SoraFoundation
 
 final class CurrencyPresenter {
     weak var view: CurrencyViewProtocol?
     let wireframe: CurrencyWireframeProtocol
     let interactor: CurrencyInteractorInputProtocol
+    private var currentViewModel: [CurrencyViewSectionModel] = []
+    private var selectedCurrencyId: Int?
     private var currencies: [Currency] = []
 
     init(
@@ -14,64 +17,95 @@ final class CurrencyPresenter {
         self.wireframe = wireframe
     }
 
-    private static var mapper: ([Currency]) -> [CurrencyViewSectionModel] = { currencies in
-        // TODO: localize, reduce code
-        var cryptocurrenciesSection = CurrencyViewSectionModel(
-            title: "Cryptocurrencies",
-            cells: []
-        )
-        var popularFiatSection = CurrencyViewSectionModel(
-            title: "Popular fiat currencies",
-            cells: []
-        )
-        var fiatSection = CurrencyViewSectionModel(
-            title: "Fiat currencies",
-            cells: []
-        )
+    private static var mapper: ([Currency], Int?) -> [CurrencyViewSectionModel] = { currencies, selected in
+        var cryptocurrencyModels: [CurrencyViewSectionModel.CellModel] = []
+        var popularFiatModels: [CurrencyViewSectionModel.CellModel] = []
+        var fiatModels: [CurrencyViewSectionModel.CellModel] = []
+
         for currency in currencies {
-            let model = CurrencyRow.Model(
+            let model = CurrencyViewSectionModel.CellModel(
                 id: currency.id,
                 title: currency.code,
                 subtitle: currency.name,
                 symbol: currency.symbol ?? "",
-                isSelected: false
+                isSelected: currency.id == selected
             )
             switch currency.category {
             case .crypto:
-                cryptocurrenciesSection.cells.append(model)
+                cryptocurrencyModels.append(model)
             case .fiat:
-                currency.isPopular ? popularFiatSection.cells.append(model) :
-                    fiatSection.cells.append(model)
+                currency.isPopular ? popularFiatModels.append(model) :
+                    fiatModels.append(model)
             }
         }
 
         return [
-            cryptocurrenciesSection,
-            popularFiatSection,
-            fiatSection
-        ]
+            CurrencyViewSectionModel(
+                title: R.string.localizable.currencyCategoryCryptocurrencies(),
+                cells: cryptocurrencyModels
+            ),
+            CurrencyViewSectionModel(
+                title: R.string.localizable.currencyCategoryPopularFiat(),
+                cells: popularFiatModels
+            ),
+            CurrencyViewSectionModel(
+                title: R.string.localizable.currencyCategoryFiat(),
+                cells: fiatModels
+            )
+        ].filter { !$0.cells.isEmpty }
     }
 
-    private func updateView() {
+    private func updateView(currencies: [Currency]) {
         guard let view = view else {
             return
         }
-        view.currencyListDidLoad(Self.mapper(currencies))
+        currentViewModel = Self.mapper(currencies, selectedCurrencyId)
+        view.currencyListDidLoad(currentViewModel)
+    }
+
+    private func updateView(selectedCurrencyId: Int) {
+        self.selectedCurrencyId = selectedCurrencyId
+
+        guard let view = view else {
+            return
+        }
+        currentViewModel.updateCells {
+            $0.isSelected = selectedCurrencyId == $0.id
+        }
+
+        view.currencyListDidLoad(currentViewModel)
     }
 }
+
+// MARK: - CurrencyPresenterProtocol
 
 extension CurrencyPresenter: CurrencyPresenterProtocol {
     func setup() {
-        interactor.fetchCurrencies()
-        updateView()
+        interactor.setup()
+        updateView(currencies: [])
+    }
+
+    func didSelect(model: CurrencyViewSectionModel.CellModel) {
+        interactor.set(selectedCurrencyId: model.id)
     }
 }
 
+// MARK: - CurrencyInteractorOutputProtocol
+
 extension CurrencyPresenter: CurrencyInteractorOutputProtocol {
     func didRecieve(currencies: [Currency]) {
-        self.currencies = currencies
-        updateView()
+        updateView(currencies: currencies)
     }
 
-    func select(currencyId _: Int) {}
+    func didRecieve(selectedCurrency: Currency) {
+        updateView(selectedCurrencyId: selectedCurrency.id)
+    }
+}
+
+// MARK: - CurrencyInteractorOutputProtocol
+
+extension CurrencyPresenter: Localizable {
+    func applyLocalization() {
+        updateView(currencies: currencies)
+    }
 }
