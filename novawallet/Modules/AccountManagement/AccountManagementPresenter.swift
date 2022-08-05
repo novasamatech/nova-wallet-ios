@@ -225,6 +225,33 @@ final class AccountManagementPresenter {
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
+    private func displayParitySignerExistingAddressActions(
+        for chain: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        guard let view = view, let address = viewModel.address else {
+            return
+        }
+
+        var actions: [ChainAddressDetailsAction] = []
+
+        let copyAction = createCopyAction(for: address)
+        actions.append(copyAction)
+
+        let explorerActions = createExplorerActions(for: chain, address: address)
+
+        actions.append(contentsOf: explorerActions)
+
+        let model = ChainAddressDetailsModel(
+            address: address,
+            chainName: chain.name,
+            chainIcon: chain.icon,
+            actions: actions
+        )
+
+        wireframe.presentChainAddressDetails(from: view, model: model)
+    }
+
     // MARK: - Actions
 
     private func activateCopyAddress(_ address: String) {
@@ -243,6 +270,9 @@ final class AccountManagementPresenter {
             if let wallet = wallet {
                 wireframe.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chainModel)
             }
+        case .paritySigner:
+            // change account not supported for Parity Signer Wallets
+            break
         }
     }
 
@@ -400,6 +430,10 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
                 displayWatchOnlyNoAddressActions(for: chainModel)
             } else {
                 displayWatchOnlyExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+            }
+        case .paritySigner:
+            if chainViewModel.address != nil {
+                displayParitySignerExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
         }
     }

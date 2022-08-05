@@ -11,13 +11,9 @@ class UsernameSetupTests: XCTestCase {
         let view = MockUsernameSetupViewProtocol()
         let wireframe = MockUsernameSetupWireframeProtocol()
 
-        let interactor = UsernameSetupInteractor()
-
-        let presenter = UsernameSetupPresenter()
+        let presenter = UsernameSetupPresenter(wireframe: wireframe)
         presenter.view = view
         presenter.wireframe = wireframe
-        presenter.interactor = interactor
-        interactor.presenter = presenter
 
         let expectedName = "test name"
 

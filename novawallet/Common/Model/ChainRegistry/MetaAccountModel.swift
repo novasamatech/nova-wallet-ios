@@ -4,10 +4,11 @@ import RobinHood
 enum MetaAccountModelType: UInt8 {
     case secrets
     case watchOnly
+    case paritySigner
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets:
+        case .secrets, .paritySigner:
             return true
         case .watchOnly:
             return false

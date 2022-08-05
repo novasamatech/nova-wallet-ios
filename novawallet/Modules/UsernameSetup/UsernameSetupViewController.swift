@@ -8,10 +8,6 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
     let presenter: UsernameSetupPresenterProtocol
 
-    private var viewModel: InputViewModelProtocol?
-
-    var keyboardHandler: KeyboardHandler?
-
     // MARK: - Lifecycle
 
     init(
@@ -36,7 +32,6 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         configureActions()
-        configureTextField()
         setupLocalization()
 
         presenter.setup()
@@ -44,14 +39,14 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        rootView.nameField.textField.becomeFirstResponder()
+        rootView.walletNameInputView.textField.becomeFirstResponder()
     }
 
     // MARK: - Setup functions
 
     private func configureActions() {
-        rootView.nameField.addTarget(
-            self, action: #selector(textFieldDidChange(_:)),
+        rootView.walletNameInputView.addTarget(
+            self, action: #selector(textFieldDidChange),
             for: .editingChanged
         )
 
@@ -61,34 +56,22 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func configureTextField() {
-        rootView.nameField.textField.returnKeyType = .done
-        rootView.nameField.textField.textContentType = .nickname
-        rootView.nameField.textField.autocapitalizationType = .sentences
-        rootView.nameField.textField.autocorrectionType = .no
-        rootView.nameField.textField.spellCheckingType = .no
-
-        rootView.nameField.delegate = self
-    }
-
     private func updateActionButton() {
-        guard let viewModel = viewModel else {
-            return
+        if rootView.walletNameInputView.completed {
+            rootView.proceedButton.applyEnabledStyle()
+            rootView.proceedButton.isUserInteractionEnabled = true
+
+            rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+                .commonContinue(preferredLanguages: selectedLocale.rLanguages)
+        } else {
+            rootView.proceedButton.applyDisabledStyle()
+            rootView.proceedButton.isUserInteractionEnabled = false
+
+            rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+                .walletCreateButtonTitleDisabled_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
         }
 
-        let isEnabled = viewModel.inputHandler.completed
-        rootView.proceedButton.set(enabled: isEnabled)
-        _ = isEnabled ? setActionButtonEnabledTitle() : setActionButtonDisabledTitle()
-    }
-
-    private func setActionButtonEnabledTitle() {
-        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: selectedLocale.rLanguages)
-    }
-
-    private func setActionButtonDisabledTitle() {
-        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-            .walletCreateButtonTitleDisabled_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+        rootView.proceedButton.invalidateLayout()
     }
 
     private func setupLocalization() {
@@ -104,56 +87,34 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        rootView.nameField.title = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(
+        let walletNickname = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(
             preferredLanguages: languages
         )
 
-        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: languages)
-        rootView.proceedButton.invalidateLayout()
-    }
+        rootView.walletNameTitleLabel.text = walletNickname
 
-    // MARK: - Actions
+        let placeholder = NSAttributedString(
+            string: walletNickname,
+            attributes: [
+                .foregroundColor: R.color.colorWhite32()!,
+                .font: UIFont.regularSubheadline
+            ]
+        )
 
-    @objc private func textFieldDidChange(_ sender: UITextField) {
-        if viewModel?.inputHandler.value != sender.text {
-            sender.text = viewModel?.inputHandler.value
-        }
+        rootView.walletNameInputView.textField.attributedPlaceholder = placeholder
 
         updateActionButton()
     }
 
+    // MARK: - Actions
+
+    @objc private func textFieldDidChange() {
+        updateActionButton()
+    }
+
     @objc private func actionNext() {
-        rootView.nameField.resignFirstResponder()
+        rootView.walletNameInputView.textField.resignFirstResponder()
         presenter.proceed()
-    }
-}
-
-// MARK: - AnimatedTextFieldDelegate
-
-extension UserNameSetupViewController: AnimatedTextFieldDelegate {
-    func animatedTextField(
-        _ textField: AnimatedTextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        guard let viewModel = viewModel else {
-            return true
-        }
-
-        let shouldApply = viewModel.inputHandler.didReceiveReplacement(string, for: range)
-
-        if !shouldApply, textField.text != viewModel.inputHandler.value {
-            textField.text = viewModel.inputHandler.value
-        }
-
-        return shouldApply
-    }
-
-    func animatedTextFieldShouldReturn(_ textField: AnimatedTextField) -> Bool {
-        textField.resignFirstResponder()
-        presenter.proceed()
-        return false
     }
 }
 
@@ -161,7 +122,8 @@ extension UserNameSetupViewController: AnimatedTextFieldDelegate {
 
 extension UserNameSetupViewController: UsernameSetupViewProtocol {
     func setInput(viewModel: InputViewModelProtocol) {
-        self.viewModel = viewModel
+        rootView.walletNameInputView.bind(inputViewModel: viewModel)
+
         updateActionButton()
     }
 }

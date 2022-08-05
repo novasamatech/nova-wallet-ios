@@ -871,3 +871,6 @@
 "parity.signer.address.scan.error" = "Can't extract address from the QR code";
 "parity.signer.addresses.title" = "Here are your accounts";
 "parity.signer.addresses.subtitle" = "Following accounts have been successfully read from Parity Signer";
+"parity.signer.not.supported.chain" = "Not supported by Parity Signer";
+"parity.signer.details.hint" = "This wallet is paired with Parity Signer. Nova will help you to form any operations you want, and you will be requested to sign them using Parity Signer";
+"common.parity.signer" = "Parity Signer";

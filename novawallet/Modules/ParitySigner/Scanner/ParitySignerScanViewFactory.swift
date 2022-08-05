@@ -2,7 +2,19 @@ import Foundation
 import SoraFoundation
 
 struct ParitySignerScanViewFactory {
-    static func createView() -> QRScannerViewProtocol? {
+    static func createOnboardingView() -> QRScannerViewProtocol? {
+        createView(wireframe: ParitySignerScanWireframe())
+    }
+
+    static func createAddAccountView() -> QRScannerViewProtocol? {
+        createView(wireframe: AddAccount.ParitySignerScanWireframe())
+    }
+
+    static func createSwitchAccountView() -> QRScannerViewProtocol? {
+        createView(wireframe: SwitchAccount.ParitySignerScanWireframe())
+    }
+
+    private static func createView(wireframe: ParitySignerScanWireframeProtocol) -> QRScannerViewProtocol? {
         let processingQueue = QRCaptureService.processingQueue
         let qrService = QRCaptureService(delegate: nil, delegateQueue: processingQueue)
         let qrExtractor = QRExtractionService(processingQueue: processingQueue)
@@ -15,7 +27,7 @@ struct ParitySignerScanViewFactory {
 
         let presenter = ParitySignerScanPresenter(
             matcher: ParitySignerScanMatcher(),
-            scanWireframe: ParitySignerScanWireframe(),
+            scanWireframe: wireframe,
             baseWireframe: QRScannerWireframe(),
             qrScanService: qrService,
             qrExtractionService: qrExtractor,

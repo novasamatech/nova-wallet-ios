@@ -9,12 +9,6 @@ protocol UsernameSetupPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol UsernameSetupInteractorInputProtocol: AnyObject {
-    func setup()
-}
-
-protocol UsernameSetupInteractorOutputProtocol: AnyObject {}
-
 protocol UsernameSetupWireframeProtocol: AlertPresentable {
     func proceed(from view: UsernameSetupViewProtocol?, walletName: String)
 }

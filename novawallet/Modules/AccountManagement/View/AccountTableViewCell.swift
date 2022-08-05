@@ -24,10 +24,6 @@ final class AccountTableViewCell: UITableViewCell {
         selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
         self.selectedBackgroundView = selectedBackgroundView
 
-        infoButton.imageWithTitleView?.iconImage = R.image.iconMore()?.tinted(
-            with: R.color.colorWhite32()!
-        )
-
         iconView.fillColor = .clear
     }
 
@@ -70,6 +66,18 @@ final class AccountTableViewCell: UITableViewCell {
         } else {
             iconView.isHidden = true
             warningImageView.isHidden = false
+        }
+
+        if viewModel.hasAction {
+            selectionStyle = .default
+
+            infoButton.imageWithTitleView?.iconImage = R.image.iconMore()?.tinted(
+                with: R.color.colorWhite32()!
+            )
+        } else {
+            selectionStyle = .none
+
+            infoButton.imageWithTitleView?.iconImage = nil
         }
     }
 
