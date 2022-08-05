@@ -9,7 +9,7 @@
 import Foundation
 
 @propertyWrapper
-struct Atomic<Value> where Value: Initiable {
+struct Atomic<Value> {
     private let lock = NSLock()
     private var value: Value
 
