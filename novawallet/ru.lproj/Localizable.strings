@@ -871,3 +871,6 @@
 "parity.signer.address.scan.error" = "Не удается получить адрес из QR кода";
 "parity.signer.addresses.title" = "Ваши аккаунты";
 "parity.signer.addresses.subtitle" = "Следующие аккаунты были успешно получены от Parity Signer";
+"parity.signer.not.supported.chain" = "Не поддерживается через Parity Signer";
+"parity.signer.details.hint" = "Этот кошелек добавлен через Parity Signer. Nova поможет сформировать интересующие транзакции, а затем будет сформирован запрос на их подпись через Parity Signer";
+"common.parity.signer" = "Parity Signer";

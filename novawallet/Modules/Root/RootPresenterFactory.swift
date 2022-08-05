@@ -22,6 +22,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             settings: SelectedWalletSettings.shared,
             keystore: keychain,
             applicationConfig: ApplicationConfig.shared,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             eventCenter: EventCenter.shared,
             migrators: [dbMigrator],
             logger: Logger.shared

@@ -104,7 +104,7 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         )
 
         switch selectedAccountType {
-        case .secrets:
+        case .secrets, .paritySigner:
             receiveCommand = commandFactory.prepareReceiveCommand(for: assetId)
 
             buyCommand = actions.isEmpty ? nil :
