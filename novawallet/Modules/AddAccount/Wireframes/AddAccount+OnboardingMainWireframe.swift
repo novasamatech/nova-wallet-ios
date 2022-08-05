@@ -36,7 +36,7 @@ extension AddAccount {
         }
 
         func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?) {
-            guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createView() else {
+            guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createAddAccountView() else {
                 return
             }
 

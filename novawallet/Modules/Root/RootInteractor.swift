@@ -9,6 +9,7 @@ final class RootInteractor {
     let settings: SelectedWalletSettings
     let keystore: KeystoreProtocol
     let applicationConfig: ApplicationConfigProtocol
+    let chainRegistry: ChainRegistryProtocol
     let eventCenter: EventCenterProtocol
     let migrators: [Migrating]
     let logger: LoggerProtocol?
@@ -17,6 +18,7 @@ final class RootInteractor {
         settings: SelectedWalletSettings,
         keystore: KeystoreProtocol,
         applicationConfig: ApplicationConfigProtocol,
+        chainRegistry: ChainRegistryProtocol,
         eventCenter: EventCenterProtocol,
         migrators: [Migrating],
         logger: LoggerProtocol? = nil
@@ -24,6 +26,7 @@ final class RootInteractor {
         self.settings = settings
         self.keystore = keystore
         self.applicationConfig = applicationConfig
+        self.chainRegistry = chainRegistry
         self.eventCenter = eventCenter
         self.migrators = migrators
         self.logger = logger
@@ -87,7 +90,6 @@ extension RootInteractor: RootInteractorInputProtocol {
         setupURLHandlingService()
         runMigrators()
 
-        // TODO: Move to loading screen
         settings.setup(runningCompletionIn: .main) { result in
             switch result {
             case let .success(maybeMetaAccount):
@@ -100,5 +102,7 @@ extension RootInteractor: RootInteractorInputProtocol {
                 self.logger?.error("Selected account setup failed: \(error)")
             }
         }
+
+        chainRegistry.syncUp()
     }
 }
