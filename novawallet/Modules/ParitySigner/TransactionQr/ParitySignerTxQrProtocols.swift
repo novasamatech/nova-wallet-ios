@@ -1,4 +1,6 @@
-protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {}
+protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {
+    
+}
 
 protocol ParitySignerTxQrPresenterProtocol: AnyObject {
     func setup()
