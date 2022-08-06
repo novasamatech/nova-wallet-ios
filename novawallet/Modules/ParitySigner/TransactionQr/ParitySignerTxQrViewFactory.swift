@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct ParitySignerTxQrViewFactory {
     static func createView(with _: Data, completion _: ParitySignerSigningClosure) -> ParitySignerTxQrViewProtocol? {
@@ -7,7 +8,10 @@ struct ParitySignerTxQrViewFactory {
 
         let presenter = ParitySignerTxQrPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = ParitySignerTxQrViewController(presenter: presenter)
+        let view = ParitySignerTxQrViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

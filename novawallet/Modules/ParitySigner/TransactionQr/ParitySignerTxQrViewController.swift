@@ -6,11 +6,9 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
 
     let presenter: ParitySignerTxQrPresenterProtocol
 
-    init(presenter: ParitySignerTxQrPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: ParitySignerTxQrPresenterProtocol, localizationManager _: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-
-
     }
 
     @available(*, unavailable)
@@ -66,17 +64,11 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
         )
     }
 
-    @objc private func actionSelectAccount() {
+    @objc private func actionSelectAccount() {}
 
-    }
+    @objc private func actionSelectSecondaryAction() {}
 
-    @objc private func actionSelectSecondaryAction() {
-
-    }
-
-    @objc private func actionSelectMainAction() {
-
-    }
+    @objc private func actionSelectMainAction() {}
 }
 
 extension ParitySignerTxQrViewController: ParitySignerTxQrViewProtocol {}

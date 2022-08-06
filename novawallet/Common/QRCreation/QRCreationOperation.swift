@@ -44,8 +44,10 @@ final class QRCreationOperation: BaseOperation<UIImage> {
         let transformedImage: CIImage
 
         if qrImage.extent.size.width * qrImage.extent.height > 0.0 {
-            let transform = CGAffineTransform(scaleX: qrSize.width / qrImage.extent.width,
-                                              y: qrSize.height / qrImage.extent.height)
+            let transform = CGAffineTransform(
+                scaleX: qrSize.width / qrImage.extent.width,
+                y: qrSize.height / qrImage.extent.height
+            )
             transformedImage = qrImage.transformed(by: transform)
         } else {
             transformedImage = qrImage
@@ -60,7 +62,6 @@ final class QRCreationOperation: BaseOperation<UIImage> {
 
             return
         }
-
 
         if !isCancelled {
             result = .success(UIImage(cgImage: cgImage))
