@@ -10,9 +10,17 @@ import IrohaCrypto
  */
 final class ParitySignerSigningWrapper {
     let uiPresenter: TransactionSigningPresenting
+    let metaId: String
+    let chainId: ChainModel.Id
 
-    init(uiPresenter: TransactionSigningPresenting) {
+    init(
+        uiPresenter: TransactionSigningPresenting,
+        metaId: String,
+        chainId: ChainModel.Id
+    ) {
         self.uiPresenter = uiPresenter
+        self.metaId = metaId
+        self.chainId = chainId
     }
 }
 

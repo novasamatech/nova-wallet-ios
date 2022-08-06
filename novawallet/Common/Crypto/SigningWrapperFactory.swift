@@ -37,7 +37,11 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return ParitySignerSigningWrapper(uiPresenter: uiPresenter)
+            return ParitySignerSigningWrapper(
+                uiPresenter: uiPresenter,
+                metaId: metaId,
+                chainId: accountResponse.chainId
+            )
         }
     }
 
@@ -50,7 +54,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return ParitySignerSigningWrapper(uiPresenter: uiPresenter)
+            return NoSigningSupportWrapper()
         }
     }
 
@@ -61,7 +65,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return ParitySignerSigningWrapper(uiPresenter: uiPresenter)
+            return NoSigningSupportWrapper()
         }
     }
 }
