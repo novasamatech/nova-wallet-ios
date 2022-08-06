@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
-    struct Constants {
+    enum Constants {
         static let qrContentInsets: CGFloat = 10.0
         static let defaultQrSize: CGFloat = 280.0
     }
