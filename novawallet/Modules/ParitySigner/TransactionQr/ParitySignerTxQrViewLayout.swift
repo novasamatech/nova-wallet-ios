@@ -7,19 +7,7 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
         static let defaultQrSize: CGFloat = 280.0
     }
 
-    let accountDetailsView: DetailsTriangularedView = {
-        let detailsView = UIFactory().createDetailsView(with: .largeIconTitleSubtitle, filled: false)
-        detailsView.iconRadius = UIConstants.normalAddressIconSize.height / 2.0
-        detailsView.titleLabel.lineBreakMode = .byTruncatingTail
-        detailsView.titleLabel.font = .regularSubheadline
-        detailsView.titleLabel.textColor = R.color.colorWhite()
-        detailsView.actionImage = R.image.iconInfo()?.tinted(with: R.color.colorWhite48()!)
-        detailsView.highlightedFillColor = R.color.colorHighlightedAccent()!
-        detailsView.strokeColor = R.color.colorWhite32()!
-        detailsView.borderWidth = 1
-        detailsView.horizontalSpacing = 12.0
-        return detailsView
-    }()
+    let accountDetailsView = WalletAccountActionView.createInfoView()
 
     let titleLabel: UILabel = {
         let label = UILabel()
