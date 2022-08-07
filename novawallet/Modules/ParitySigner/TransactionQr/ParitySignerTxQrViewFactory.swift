@@ -3,9 +3,9 @@ import SoraFoundation
 
 struct ParitySignerTxQrViewFactory {
     static func createView(
-        with signingData: Data,
-        metaId: String,
-        chainId: ChainModel.Id,
+        with _: Data,
+        metaId _: String,
+        chainId _: ChainModel.Id,
         completion: @escaping TransactionSigningClosure
     ) -> ParitySignerTxQrViewProtocol? {
         let interactor = ParitySignerTxQrInteractor()
@@ -14,7 +14,9 @@ struct ParitySignerTxQrViewFactory {
         let presenter = ParitySignerTxQrPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            completion: completion
+            completion: completion,
+            logger: Logger.shared,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = ParitySignerTxQrViewController(

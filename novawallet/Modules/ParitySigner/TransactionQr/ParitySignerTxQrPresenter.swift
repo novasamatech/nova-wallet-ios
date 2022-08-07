@@ -54,9 +54,7 @@ final class ParitySignerTxQrPresenter {
         view?.didReceiveCode(viewModel: transactionCode.image)
     }
 
-    private func updateExpirationTimer() {
-
-    }
+    private func updateExpirationTimer() {}
 }
 
 extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
@@ -77,22 +75,18 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
         )
     }
 
-    func activateTroubleshouting() {
+    func activateTroubleshouting() {}
 
-    }
-
-    func proceed() {
-
-    }
+    func proceed() {}
 }
 
 extension ParitySignerTxQrPresenter: ParitySignerTxQrInteractorOutputProtocol {
     func didReceive(chainWallet: ChainWalletDisplayAddress) {
-        self.wallet = chainWallet
+        wallet = chainWallet
 
         provideWalletViewModel()
     }
-    
+
     func didReceive(transactionCode: TransactionDisplayCode) {
         self.transactionCode = transactionCode
 
@@ -107,8 +101,6 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrInteractorOutputProtocol {
 
 extension ParitySignerTxQrPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {
-
-        }
+        if let view = view, view.isSetup {}
     }
 }
