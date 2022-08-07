@@ -45,13 +45,15 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
     }
 
     var qrImageSize: CGFloat {
-        min(qrSize - 2 * Constants.qrContentInsets, 0.0)
+        max(qrSize - 2 * Constants.qrContentInsets, 0.0)
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = R.color.colorBlack()
+
+        setupLayout()
     }
 
     @available(*, unavailable)

@@ -6,9 +6,11 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
 
     let presenter: ParitySignerTxQrPresenterProtocol
 
-    init(presenter: ParitySignerTxQrPresenterProtocol, localizationManager _: LocalizationManagerProtocol) {
+    init(presenter: ParitySignerTxQrPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     private var accountDetailsViewModel: WalletAccountViewModel?
@@ -88,6 +90,28 @@ extension ParitySignerTxQrViewController: ParitySignerTxQrViewProtocol {
 
     func didReceiveCode(viewModel: UIImage) {
         rootView.qrView.imageView.image = viewModel
+    }
+
+    func didReceiveExpiration(viewModel: ExpirationTimeViewModel) {
+        switch viewModel {
+        case let .normal(time):
+            rootView.timerLabel.textColor = R.color.colorWhite()
+            rootView.timerLabel.text = R.string.localizable.commonTxQrNotExpiredTitle(
+                time,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case let .expiring(time):
+            rootView.timerLabel.textColor = R.color.colorRed()
+            rootView.timerLabel.text = R.string.localizable.commonTxQrNotExpiredTitle(
+                time,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        case .expired:
+            rootView.timerLabel.textColor = R.color.colorRed()
+            rootView.timerLabel.text = R.string.localizable.commonTxQrExpiredTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
     }
 }
 
