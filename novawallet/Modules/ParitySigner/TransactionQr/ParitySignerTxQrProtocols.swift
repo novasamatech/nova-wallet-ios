@@ -1,8 +1,10 @@
 import UIKit
+import SoraFoundation
 
 protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletAccountViewModel)
     func didReceiveCode(viewModel: UIImage)
+    func didReceiveExpiration(viewModel: ExpirationTimeViewModel)
 }
 
 protocol ParitySignerTxQrPresenterProtocol: AnyObject {
@@ -22,4 +24,7 @@ protocol ParitySignerTxQrInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {}
+protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable, WebPresentable {
+    func close(view: ParitySignerTxQrViewProtocol?)
+    func proceed(from view: ParitySignerTxQrViewProtocol?, timer: CountdownTimerProtocol)
+}

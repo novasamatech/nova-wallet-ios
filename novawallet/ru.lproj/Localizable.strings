@@ -879,3 +879,4 @@
 "common.qr.code.valid.format" = "QR код действителен %@";
 "common.qr.code.expired" = "QR код устарел";
 "parity.signer.tx.secondary.action" = "У меня ошибка в Parity Signer";
+"common.tx.qr.expired.message" = "В целях безопасности транзакция действительна только %@. Please generate new QR code and sign it with Parity Signer";

@@ -8,9 +8,12 @@ final class ParitySignerTxQrPresenter {
     let interactor: ParitySignerTxQrInteractorInputProtocol
     let logger: LoggerProtocol
     let completion: TransactionSigningClosure
+    let expirationViewModelFactory: ExpirationViewModelFactoryProtocol
+    let applicationConfig: ApplicationConfigProtocol
 
     private var transactionCode: TransactionDisplayCode?
     private var wallet: ChainWalletDisplayAddress?
+    private var timer: CountdownTimerProtocol?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
 
@@ -18,12 +21,16 @@ final class ParitySignerTxQrPresenter {
         interactor: ParitySignerTxQrInteractorInputProtocol,
         wireframe: ParitySignerTxQrWireframeProtocol,
         completion: @escaping TransactionSigningClosure,
+        expirationViewModelFactory: ExpirationViewModelFactoryProtocol,
+        applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.completion = completion
+        self.expirationViewModelFactory = expirationViewModelFactory
+        self.applicationConfig = applicationConfig
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -54,7 +61,74 @@ final class ParitySignerTxQrPresenter {
         view?.didReceiveCode(viewModel: transactionCode.image)
     }
 
-    private func updateExpirationTimer() {}
+    private func updateExpirationViewModel() {
+        guard let timer = timer else {
+            return
+        }
+
+        do {
+            let viewModel = try expirationViewModelFactory.createViewModel(from: timer.remainedInterval)
+            view?.didReceiveExpiration(viewModel: viewModel)
+        } catch {
+            handle(error: error)
+        }
+    }
+
+    private func applyNewExpirationInterval(after oldExpirationInterval: TimeInterval?) {
+        let optRemainedTimeInterval = timer?.remainedInterval
+
+        clearTimer()
+
+        guard let transactionCode = transactionCode else {
+            return
+        }
+
+        if
+            let remainedTimeInterval = optRemainedTimeInterval,
+            let oldExpirationInterval = oldExpirationInterval, oldExpirationInterval >= remainedTimeInterval {
+            let elapsedTime = oldExpirationInterval - remainedTimeInterval
+            let newTimerInterval = max(transactionCode.expirationTime - elapsedTime, 0.0)
+
+            setupTimer(for: newTimerInterval)
+        } else {
+            setupTimer(for: transactionCode.expirationTime)
+        }
+    }
+
+    private func clearTimer() {
+        timer?.stop()
+        timer = nil
+    }
+
+    private func setupTimer(for timeInterval: TimeInterval) {
+        timer = CountdownTimer()
+        timer?.delegate = self
+        timer?.start(with: timeInterval)
+    }
+
+    private func presentQrExpiredAlert() {
+        let expirationTimeInterval = transactionCode?.expirationTime.minutesFromSeconds
+
+        let title = R.string.localizable.commonTxQrExpiredTitle(preferredLanguages: selectedLocale.rLanguages)
+        let minutes = expirationTimeInterval.map { R.string.localizable.commonMinutesFormat(format: $0) } ?? ""
+        let message = R.string.localizable.commonTxQrExpiredMessage(minutes, preferredLanguages: selectedLocale.rLanguages)
+
+        let action = AlertPresentableAction(
+            title: R.string.localizable.commonOkBack(preferredLanguages: selectedLocale.rLanguages)
+        ) { [weak self] in
+            self?.completion(.failure(HardwareSigningError.signingCancelled))
+            self?.wireframe.close(view: self?.view)
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [action],
+            closeAction: nil
+        )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
+    }
 }
 
 extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
@@ -75,9 +149,25 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
         )
     }
 
-    func activateTroubleshouting() {}
+    func activateTroubleshouting() {
+        guard let view = view else {
+            return
+        }
 
-    func proceed() {}
+        wireframe.showWeb(
+            url: applicationConfig.paritySignerTroubleshoutingURL,
+            from: view,
+            style: .automatic
+        )
+    }
+
+    func proceed() {
+        guard let timer = timer else {
+            return
+        }
+
+        wireframe.proceed(from: view, timer: timer)
+    }
 }
 
 extension ParitySignerTxQrPresenter: ParitySignerTxQrInteractorOutputProtocol {
@@ -88,10 +178,11 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrInteractorOutputProtocol {
     }
 
     func didReceive(transactionCode: TransactionDisplayCode) {
+        let currentExpirationInterval = self.transactionCode?.expirationTime
         self.transactionCode = transactionCode
 
         provideCodeViewModel()
-        updateExpirationTimer()
+        applyNewExpirationInterval(after: currentExpirationInterval)
     }
 
     func didReceive(error: Error) {
@@ -99,8 +190,28 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrInteractorOutputProtocol {
     }
 }
 
+extension ParitySignerTxQrPresenter: CountdownTimerDelegate {
+    func didStart(with _: TimeInterval) {
+        updateExpirationViewModel()
+    }
+
+    func didCountdown(remainedInterval: TimeInterval) {
+        updateExpirationViewModel()
+
+        if remainedInterval == 0 {
+            presentQrExpiredAlert()
+        }
+    }
+
+    func didStop(with _: TimeInterval) {
+        updateExpirationViewModel()
+    }
+}
+
 extension ParitySignerTxQrPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {}
+        if let view = view, view.isSetup {
+            updateExpirationViewModel()
+        }
     }
 }
