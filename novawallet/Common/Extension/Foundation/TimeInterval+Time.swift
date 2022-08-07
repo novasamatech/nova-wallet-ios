@@ -2,6 +2,7 @@ import Foundation
 
 extension TimeInterval {
     static let secondsInHour: TimeInterval = 3600
+    static let secondsInMinute: TimeInterval = 60.0
     static let secondsInDay: TimeInterval = 24 * secondsInHour
 
     var milliseconds: Int {
@@ -13,6 +14,7 @@ extension TimeInterval {
     }
 
     var seconds: TimeInterval { self / 1000 }
+    var minutesFromSeconds: Int { Int(self / Self.secondsInMinute) }
     var daysFromSeconds: Int { Int(self / Self.secondsInDay) }
     var secondsFromDays: TimeInterval { self * Self.secondsInDay }
     var hoursFromSeconds: Int { Int(self / Self.secondsInHour) }

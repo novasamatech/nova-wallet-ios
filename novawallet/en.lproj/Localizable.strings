@@ -879,3 +879,6 @@
 "common.qr.code.valid.format" = "QR code is valid for %@";
 "common.qr.code.expired" = "QR code has expired";
 "parity.signer.tx.secondary.action" = "I have an error in Parity Signer";
+"common.tx.qr.not.expired.title" = "QR code is valid for %@";
+"common.tx.qr.expired.title" = "QR code has expired";
+"common.tx.qr.expired.message" = "For security reasons generated operations valid for only %@ mins. Please generate new QR code and sign it with Parity Signer";
