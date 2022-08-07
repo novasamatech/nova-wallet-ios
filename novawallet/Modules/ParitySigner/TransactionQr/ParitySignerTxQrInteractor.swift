@@ -5,7 +5,5 @@ final class ParitySignerTxQrInteractor {
 }
 
 extension ParitySignerTxQrInteractor: ParitySignerTxQrInteractorInputProtocol {
-    func setup(qrSize: CGSize) {
-        
-    }
+    func setup(qrSize _: CGSize) {}
 }

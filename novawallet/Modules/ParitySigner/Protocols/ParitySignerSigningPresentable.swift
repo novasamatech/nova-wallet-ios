@@ -9,7 +9,7 @@ protocol TransactionSigningPresenting: AnyObject {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        completion: TransactionSigningClosure
+        completion: @escaping TransactionSigningClosure
     )
 }
 
@@ -24,7 +24,7 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         for data: Data,
         metaId: String,
         chainId: ChainModel.Id,
-        completion: TransactionSigningClosure
+        completion: @escaping TransactionSigningClosure
     ) {
         let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
         let optionalController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
