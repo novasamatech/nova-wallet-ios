@@ -1,7 +1,11 @@
 import UIKit
 
 final class ParitySignerTxQrInteractor {
-    weak var presenter: ParitySignerTxQrInteractorOutputProtocol!
+    weak var presenter: ParitySignerTxQrInteractorOutputProtocol?
 }
 
-extension ParitySignerTxQrInteractor: ParitySignerTxQrInteractorInputProtocol {}
+extension ParitySignerTxQrInteractor: ParitySignerTxQrInteractorInputProtocol {
+    func setup(qrSize: CGSize) {
+        
+    }
+}

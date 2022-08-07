@@ -28,10 +28,14 @@ extension ParitySignerSigningWrapper: SigningWrapperProtocol {
     func sign(_ originalData: Data) throws -> IRSignatureProtocol {
         let semaphore = DispatchSemaphore(value: 0)
 
-        var signingResult: ParitySignerResult?
+        var signingResult: TransactionSigningResult?
 
         DispatchQueue.main.async {
-            self.uiPresenter.presentParitySignerFlow(for: originalData) { result in
+            self.uiPresenter.presentParitySignerFlow(
+                for: originalData,
+                metaId: self.metaId,
+                chainId: self.chainId
+            ) { result in
                 signingResult = result
 
                 semaphore.signal()

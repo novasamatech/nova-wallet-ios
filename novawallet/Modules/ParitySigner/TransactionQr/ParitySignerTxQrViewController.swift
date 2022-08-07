@@ -11,6 +11,8 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
         super.init(nibName: nil, bundle: nil)
     }
 
+    private var accountDetailsViewModel: WalletAccountViewModel?
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -26,7 +28,9 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
         setupHandlers()
         setupLocalization()
 
-        presenter.setup()
+        let qrSize = rootView.qrImageSize
+
+        presenter.setup(qrSize: CGSize(width: qrSize, height: qrSize))
     }
 
     private func setupHandlers() {
@@ -64,14 +68,28 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
         )
     }
 
-    @objc private func actionSelectAccount() {}
+    @objc private func actionSelectAccount() {
+        presenter.activateAddressDetails()
+    }
 
-    @objc private func actionSelectSecondaryAction() {}
+    @objc private func actionSelectSecondaryAction() {
+        presenter.activateTroubleshouting()
+    }
 
-    @objc private func actionSelectMainAction() {}
+    @objc private func actionSelectMainAction() {
+        presenter.proceed()
+    }
 }
 
-extension ParitySignerTxQrViewController: ParitySignerTxQrViewProtocol {}
+extension ParitySignerTxQrViewController: ParitySignerTxQrViewProtocol {
+    func didReceiveWallet(viewModel: WalletAccountViewModel) {
+        rootView.accountDetailsView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveCode(viewModel: UIImage) {
+        rootView.qrView.imageView.image = viewModel
+    }
+}
 
 extension ParitySignerTxQrViewController: Localizable {
     func applyLocalization() {

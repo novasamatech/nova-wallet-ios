@@ -1,11 +1,16 @@
 import Foundation
 import IrohaCrypto
 
-typealias ParitySignerResult = Result<IRSignatureProtocol, Error>
-typealias ParitySignerSigningClosure = (ParitySignerResult) -> Void
+typealias TransactionSigningResult = Result<IRSignatureProtocol, Error>
+typealias TransactionSigningClosure = (TransactionSigningResult) -> Void
 
 protocol TransactionSigningPresenting: AnyObject {
-    func presentParitySignerFlow(for data: Data, completion: ParitySignerSigningClosure)
+    func presentParitySignerFlow(
+        for data: Data,
+        metaId: String,
+        chainId: ChainModel.Id,
+        completion: TransactionSigningClosure
+    )
 }
 
 final class TransactionSigningPresenter: TransactionSigningPresenting {
@@ -15,7 +20,12 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
         self.view = view
     }
 
-    func presentParitySignerFlow(for data: Data, completion: ParitySignerSigningClosure) {
+    func presentParitySignerFlow(
+        for data: Data,
+        metaId: String,
+        chainId: ChainModel.Id,
+        completion: TransactionSigningClosure
+    ) {
         let defaultRootViewController = UIApplication.shared.delegate?.window??.rootViewController
         let optionalController = view ?? defaultRootViewController?.topModalViewController ?? defaultRootViewController
 
@@ -24,7 +34,12 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
             return
         }
 
-        guard let txQrView = ParitySignerTxQrViewFactory.createView(with: data, completion: completion) else {
+        guard let txQrView = ParitySignerTxQrViewFactory.createView(
+            with: data,
+            metaId: metaId,
+            chainId: chainId,
+            completion: completion
+        ) else {
             return
         }
 
