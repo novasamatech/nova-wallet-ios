@@ -1,11 +1,25 @@
-protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {}
+import UIKit
 
-protocol ParitySignerTxQrPresenterProtocol: AnyObject {
-    func setup()
+protocol ParitySignerTxQrViewProtocol: ControllerBackedProtocol {
+    func didReceiveWallet(viewModel: WalletAccountViewModel)
+    func didReceiveCode(viewModel: UIImage)
 }
 
-protocol ParitySignerTxQrInteractorInputProtocol: AnyObject {}
+protocol ParitySignerTxQrPresenterProtocol: AnyObject {
+    func setup(qrSize: CGSize)
+    func activateAddressDetails()
+    func activateTroubleshouting()
+    func proceed()
+}
 
-protocol ParitySignerTxQrInteractorOutputProtocol: AnyObject {}
+protocol ParitySignerTxQrInteractorInputProtocol: AnyObject {
+    func setup(qrSize: CGSize)
+}
 
-protocol ParitySignerTxQrWireframeProtocol: AnyObject {}
+protocol ParitySignerTxQrInteractorOutputProtocol: AnyObject {
+    func didReceive(chainWallet: ChainWalletDisplayAddress)
+    func didReceive(transactionCode: TransactionDisplayCode)
+    func didReceive(error: Error)
+}
+
+protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {}
