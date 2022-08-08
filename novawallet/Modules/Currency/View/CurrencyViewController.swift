@@ -54,7 +54,7 @@ final class CurrencyViewController: UIViewController, ViewHolder {
             cellProvider: { collectionView, indexPath, model ->
                 UICollectionViewCell? in
                 let cell: CurrencyCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
-                cell?.render(model: model)
+                cell?.bind(model: model)
                 return cell
             }
         )
@@ -65,7 +65,7 @@ final class CurrencyViewController: UIViewController, ViewHolder {
                 for: indexPath
             )
             let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
-            header?.render(title: section.title)
+            header?.bind(title: section.title)
             return header
         }
 

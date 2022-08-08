@@ -75,7 +75,7 @@ extension CurrencyCollectionViewCell {
         var isSelected: Bool
     }
 
-    func render(model: Model) {
+    func bind(model: Model) {
         symbolLabel.titleLabel.text = model.symbol
         titleLabel.text = model.title
         subtitleLabel.text = model.subtitle

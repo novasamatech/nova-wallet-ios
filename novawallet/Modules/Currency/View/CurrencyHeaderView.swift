@@ -27,7 +27,7 @@ final class CurrencyHeaderView: UICollectionReusableView {
         }
     }
 
-    func render(title: String) {
+    func bind(title: String) {
         titleLabel.text = title
     }
 }
