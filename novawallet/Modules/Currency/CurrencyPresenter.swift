@@ -65,6 +65,8 @@ final class CurrencyPresenter {
     }
 
     private func updateView(currencies: [Currency]) {
+        self.currencies = currencies
+
         guard let view = view else {
             return
         }
@@ -81,7 +83,7 @@ final class CurrencyPresenter {
         guard let view = view else {
             return
         }
-        currentViewModel.updateCells { [selectedCurrencyId] in
+        currentViewModel.updateCells {
             $0.isSelected = selectedCurrencyId == $0.id
         }
 

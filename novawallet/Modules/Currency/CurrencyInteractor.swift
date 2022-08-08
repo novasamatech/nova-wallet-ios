@@ -68,5 +68,6 @@ extension CurrencyInteractor: CurrencyInteractorInputProtocol {
 
     func set(selectedCurrency: Currency) {
         userCurrencyRepository.setSelectedCurrency(selectedCurrency)
+        presenter.didRecieve(selectedCurrency: selectedCurrency)
     }
 }
