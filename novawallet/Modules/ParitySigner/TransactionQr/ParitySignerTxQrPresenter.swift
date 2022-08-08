@@ -119,8 +119,8 @@ final class ParitySignerTxQrPresenter {
         let action = AlertPresentableAction(
             title: R.string.localizable.commonOkBack(preferredLanguages: selectedLocale.rLanguages)
         ) { [weak self] in
-            self?.completion(.failure(HardwareSigningError.signingCancelled))
             self?.wireframe.close(view: self?.view)
+            self?.completion(.failure(HardwareSigningError.signingCancelled))
         }
 
         let viewModel = AlertPresentableViewModel(
@@ -173,8 +173,9 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
     }
 
     func close() {
-        completion(.failure(HardwareSigningError.signingCancelled))
         wireframe.close(view: view)
+
+        completion(.failure(HardwareSigningError.signingCancelled))
     }
 }
 

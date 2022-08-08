@@ -1516,7 +1516,7 @@
 		84BC7043289EEF85008A9758 /* NoSigningSupportWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC7042289EEF85008A9758 /* NoSigningSupportWrapper.swift */; };
 		84BC7045289EFF44008A9758 /* TransactionDisplayCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC7044289EFF44008A9758 /* TransactionDisplayCode.swift */; };
 		84BC7047289EFFFA008A9758 /* ChainWalletDisplayAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC7046289EFFFA008A9758 /* ChainWalletDisplayAddress.swift */; };
-		84BC7049289F10AE008A9758 /* WalletAccountActionView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC7048289F10AE008A9758 /* WalletAccountActionView+Style.swift */; };
+		84BC7049289F10AE008A9758 /* WalletAccountInfoView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC7048289F10AE008A9758 /* WalletAccountInfoView+Style.swift */; };
 		84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC704A289F1338008A9758 /* ExpirationTimeViewModel.swift */; };
 		84BE207825E7D62100B4748C /* ActiveEraInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BE207725E7D62100B4748C /* ActiveEraInfo.swift */; };
 		84BE209E25E85CCA00B4748C /* ServiceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */; };
@@ -4005,7 +4005,7 @@
 		84BC7042289EEF85008A9758 /* NoSigningSupportWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningSupportWrapper.swift; sourceTree = "<group>"; };
 		84BC7044289EFF44008A9758 /* TransactionDisplayCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDisplayCode.swift; sourceTree = "<group>"; };
 		84BC7046289EFFFA008A9758 /* ChainWalletDisplayAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainWalletDisplayAddress.swift; sourceTree = "<group>"; };
-		84BC7048289F10AE008A9758 /* WalletAccountActionView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletAccountActionView+Style.swift"; sourceTree = "<group>"; };
+		84BC7048289F10AE008A9758 /* WalletAccountInfoView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletAccountInfoView+Style.swift"; sourceTree = "<group>"; };
 		84BC704A289F1338008A9758 /* ExpirationTimeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationTimeViewModel.swift; sourceTree = "<group>"; };
 		84BE207725E7D62100B4748C /* ActiveEraInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveEraInfo.swift; sourceTree = "<group>"; };
 		84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCoordinator.swift; sourceTree = "<group>"; };
@@ -9598,7 +9598,7 @@
 				84C5ADE7281428F1006D7388 /* WalletAccountInfoView.swift */,
 				84350ACD2845709D0031EF24 /* IdentityAccountView.swift */,
 				84350ACF2845724E0031EF24 /* IdentityAccountInfoView.swift */,
-				84BC7048289F10AE008A9758 /* WalletAccountActionView+Style.swift */,
+				84BC7048289F10AE008A9758 /* WalletAccountInfoView+Style.swift */,
 			);
 			path = WalletAccount;
 			sourceTree = "<group>";
@@ -13267,7 +13267,7 @@
 				848FFE6625E6742400652AA5 /* EraValidatorService.swift in Sources */,
 				8493D3E927059B6700157009 /* StakingServiceFactory.swift in Sources */,
 				84729758260AA519009B86D0 /* SelectValidatorsConfirmInteractorBase.swift in Sources */,
-				84BC7049289F10AE008A9758 /* WalletAccountActionView+Style.swift in Sources */,
+				84BC7049289F10AE008A9758 /* WalletAccountInfoView+Style.swift in Sources */,
 				846CD24D2656FEB800A2E4B6 /* StorageKeysQueryService.swift in Sources */,
 				846AF8402525B94D00868F37 /* WalletNetworkFacade+Protocol.swift in Sources */,
 				F40966FF26B29A58008CD244 /* FWBarChartView.swift in Sources */,

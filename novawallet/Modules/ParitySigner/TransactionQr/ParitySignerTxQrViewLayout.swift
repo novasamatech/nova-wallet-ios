@@ -18,7 +18,11 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
         return item
     }()
 
-    let accountDetailsView = WalletAccountActionView.createInfoView()
+    let accountDetailsView: WalletAccountInfoView = {
+        let view = WalletAccountInfoView()
+        view.applyOutlineStyle()
+        return view
+    }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
