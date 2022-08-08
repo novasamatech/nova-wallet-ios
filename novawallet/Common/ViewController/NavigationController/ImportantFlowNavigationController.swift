@@ -45,8 +45,8 @@ extension ImportantFlowNavigationController: UIAdaptivePresentationControllerDel
             title: R.string.localizable.commonCancelOperationAction(preferredLanguages: languages),
             style: .destructive
         ) { [weak self] in
-            self?.dismissalClosure?()
             self?.dismiss(animated: true, completion: nil)
+            self?.dismissalClosure?()
         }
 
         let viewModel = AlertPresentableViewModel(
