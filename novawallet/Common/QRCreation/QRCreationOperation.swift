@@ -13,7 +13,7 @@ final class QRCreationOperation: BaseOperation<UIImage> {
     let qrSize: CGSize
 
     init(payload: Data, qrSize: CGSize) {
-        self.payloadClosure = { payload }
+        payloadClosure = { payload }
         self.qrSize = qrSize
 
         super.init()

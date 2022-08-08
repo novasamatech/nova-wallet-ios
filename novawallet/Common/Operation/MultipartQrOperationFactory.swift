@@ -2,18 +2,16 @@ import Foundation
 import RobinHood
 
 protocol MultipartQrOperationFactoryProtocol {
-    func createFromPayloadClosure(_ payloadClosure: () throws -> Data) -> CompoundOperationWrapper<[Data]>
+    func createFromPayloadClosure(_ payloadClosure: @escaping () throws -> Data) -> CompoundOperationWrapper<[Data]>
 }
 
 /**
  *  Note: Current implementation adapts single frame to multipart format
  */
-final class MultipartQrOperationFactory {
-    static let multipartPrefix: Data = Data([0])
-}
+final class MultipartQrOperationFactory: MultipartQrOperationFactoryProtocol {
+    static let multipartPrefix = Data([0])
 
-extension MultipartQrOperationFactory: MultipartQrOperationFactoryProtocol {
-    func createFromPayloadClosure(_ payloadClosure: () throws -> Data) -> CompoundOperationWrapper<[Data]> {
+    func createFromPayloadClosure(_ payloadClosure: @escaping () throws -> Data) -> CompoundOperationWrapper<[Data]> {
         let operation = ClosureOperation<[Data]> {
             let payload = try payloadClosure()
 
