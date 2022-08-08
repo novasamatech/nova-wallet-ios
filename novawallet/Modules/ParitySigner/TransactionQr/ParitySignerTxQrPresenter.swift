@@ -35,6 +35,10 @@ final class ParitySignerTxQrPresenter {
         self.localizationManager = localizationManager
     }
 
+    deinit {
+        clearTimer()
+    }
+
     private func handle(error: Error) {
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         logger.error("Did receive error: \(error)")
@@ -96,6 +100,7 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func clearTimer() {
+        timer?.delegate = nil
         timer?.stop()
         timer = nil
     }
@@ -206,14 +211,14 @@ extension ParitySignerTxQrPresenter: CountdownTimerDelegate {
 
     func didCountdown(remainedInterval: TimeInterval) {
         updateExpirationViewModel()
-
-        if remainedInterval == 0 {
-            presentQrExpiredAlert()
-        }
     }
 
-    func didStop(with _: TimeInterval) {
+    func didStop(with remainedInterval: TimeInterval) {
         updateExpirationViewModel()
+
+        if remainedInterval == 0, transactionCode?.expirationTime != nil {
+            presentQrExpiredAlert()
+        }
     }
 }
 
