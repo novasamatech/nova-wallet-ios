@@ -11,7 +11,7 @@ final class QRDisplayView: UIView {
 
     let imageView = UIImageView()
 
-    var contentInsets: CGFloat = 10.0 {
+    var contentInsets: CGFloat = 8.0 {
         didSet {
             imageView.snp.updateConstraints { make in
                 make.edges.equalToSuperview().inset(contentInsets)
