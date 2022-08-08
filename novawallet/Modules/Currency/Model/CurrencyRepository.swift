@@ -16,7 +16,8 @@ protocol CurrencyRepositoryProtocol {
 final class CurrencyRepository: JsonFileRepository<[Currency]> {
     static let shared = CurrencyRepository()
 
-    private var currencies: [Currency] = []
+    @Atomic(defaultValue: [])
+    private var currencies: [Currency]
 }
 
 extension CurrencyRepository: CurrencyRepositoryProtocol {
@@ -24,20 +25,23 @@ extension CurrencyRepository: CurrencyRepositoryProtocol {
         guard currencies.isEmpty else {
             return CompoundOperationWrapper.createWithResult(currencies)
         }
-        let fetchOperation = fetchOperation(by: R.file.currenciesJson(), defaultValue: [])
+        let fetchCurrenciesOperation = fetchOperation(
+            by: R.file.currenciesJson(),
+            defaultValue: []
+        )
         let cacheOperation: BaseOperation<[Currency]> = ClosureOperation { [weak self] in
             guard let result = try?
-                fetchOperation.extractNoCancellableResultData() else {
+                fetchCurrenciesOperation.extractNoCancellableResultData() else {
                 return []
             }
             self?.currencies = result
             return result
         }
-        cacheOperation.addDependency(fetchOperation)
+        cacheOperation.addDependency(fetchCurrenciesOperation)
 
         return CompoundOperationWrapper(
             targetOperation: cacheOperation,
-            dependencies: [fetchOperation]
+            dependencies: [fetchCurrenciesOperation]
         )
     }
 }

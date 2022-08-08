@@ -17,7 +17,6 @@ protocol UserCurrencyRepositoryProtocol {
 final class UserCurrencyRepository: UserCurrencyRepositoryProtocol {
     private let currencyRepository: CurrencyRepositoryProtocol
     private let settingManager: SettingsManagerProtocol
-
     @Atomic(defaultValue: [])
     private(set) var currencies: [Currency]
 

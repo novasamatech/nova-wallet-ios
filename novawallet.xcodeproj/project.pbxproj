@@ -10026,9 +10026,9 @@
 			isa = PBXGroup;
 			children = (
 				8842105F289BBAE600306F2C /* CurrencyRepository.swift */,
-				88421063289BBD9100306F2C /* Currency.swift */,
 				8860F3E5289D5A6C00C0BF86 /* UserCurrencyRepository.swift */,
 				8860F3E7289D7CF400C0BF86 /* Atomic.swift */,
+				88421063289BBD9100306F2C /* Currency.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";

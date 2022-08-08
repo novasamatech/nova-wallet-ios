@@ -17,7 +17,10 @@ final class CurrencyPresenter {
         self.wireframe = wireframe
     }
 
-    private static var mapper: ([Currency], Int?) -> [CurrencyViewSectionModel] = { currencies, selected in
+    private func convertToViewModel(
+        currencies: [Currency],
+        selectedCurrency: Int?
+    ) -> [CurrencyViewSectionModel] {
         var cryptocurrencyModels: [CurrencyViewSectionModel.CellModel] = []
         var popularFiatModels: [CurrencyViewSectionModel.CellModel] = []
         var fiatModels: [CurrencyViewSectionModel.CellModel] = []
@@ -28,7 +31,7 @@ final class CurrencyPresenter {
                 title: currency.code,
                 subtitle: currency.name,
                 symbol: currency.symbol ?? "",
-                isSelected: currency.id == selected
+                isSelected: currency.id == selectedCurrency
             )
             switch currency.category {
             case .crypto:
@@ -59,7 +62,10 @@ final class CurrencyPresenter {
         guard let view = view else {
             return
         }
-        currentViewModel = Self.mapper(currencies, selectedCurrencyId)
+        currentViewModel = convertToViewModel(
+            currencies: currencies,
+            selectedCurrency: selectedCurrencyId
+        )
         view.currencyListDidLoad(currentViewModel)
     }
 

@@ -2,13 +2,15 @@ import SoraFoundation
 
 final class CurrencyViewController: UIViewController, ViewHolder {
     typealias RootViewType = CurrencyViewLayout
-    typealias DataSource = UICollectionViewDiffableDataSource<CurrencyViewSectionModel, CurrencyCollectionViewCell.Model>
+    typealias DataSource =
+        UICollectionViewDiffableDataSource<CurrencyViewSectionModel, CurrencyCollectionViewCell.Model>
 
     let presenter: CurrencyPresenterProtocol
     private lazy var dataSource = createDataSource()
 
     init(presenter: CurrencyPresenterProtocol) {
         self.presenter = presenter
+
         super.init(nibName: nil, bundle: nil)
     }
 
