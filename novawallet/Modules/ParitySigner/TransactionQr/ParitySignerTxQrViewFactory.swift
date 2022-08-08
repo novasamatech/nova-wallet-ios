@@ -49,6 +49,8 @@ struct ParitySignerTxQrViewFactory {
             chainId: chainId,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletRepository: walletRepository,
+            messageOperationFactory: ParitySignerMessageOperationFactory(),
+            multipartQrOperationFactory: MultipartQrOperationFactory(),
             mortalityPeriodMilliseconds: TimeInterval(MortalEraOperationFactory.mortalPeriod),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
