@@ -36,7 +36,7 @@ final class ParitySignerTxQrInteractor {
         self.operationQueue = operationQueue
     }
 
-    private func provideTransactionCode(for size: CGSize, account: ChainAccountResponse, expirationTime: TimeInterval) {
+    private func provideTransactionCode(for size: CGSize, account: ChainAccountResponse) {
         let messageWrapper = messageOperationFactory.createTransaction(
             for: signingData,
             accountId: account.accountId,
@@ -50,12 +50,22 @@ final class ParitySignerTxQrInteractor {
 
         qrPayloadWrapper.addDependency(wrapper: messageWrapper)
 
-        let operation = QRCreationOperation(payload: <#T##Data#>, qrSize: <#T##CGSize#>)
+        let qrCreationOperation = QRCreationOperation(qrSize: size) {
+            if let payload = try qrPayloadWrapper.targetOperation.extractNoCancellableResultData().first {
+                return payload
+            } else {
+                throw CommonError.dataCorruption
+            }
+        }
 
-        operation.completionBlock = { [weak self] in
+        qrCreationOperation.addDependency(qrPayloadWrapper.targetOperation)
+
+        let expirationTime = mortalityPeriodMilliseconds.seconds
+
+        qrCreationOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let qrCode = try operation.extractNoCancellableResultData()
+                    let qrCode = try qrCreationOperation.extractNoCancellableResultData()
                     let txCode = TransactionDisplayCode(image: qrCode, expirationTime: expirationTime)
                     self?.presenter?.didReceive(transactionCode: txCode)
                 } catch {
@@ -64,18 +74,20 @@ final class ParitySignerTxQrInteractor {
             }
         }
 
-        operationQueue.addOperation(operation)
+        let operations = messageWrapper.allOperations + qrPayloadWrapper.allOperations + [qrCreationOperation]
+
+        operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
-    private func subscribeChainsAndProvideDisplayWallet(for chainId: ChainModel.Id) {
+    private func subscribeChains(for chainId: ChainModel.Id, qrSize: CGSize) {
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             if let chain = changes.mergeToDict([String: ChainModel]())[chainId] {
-                self?.provideDisplayWallet(for: chain)
+                self?.provideDisplayWalletAndQr(for: chain, qrSize: qrSize)
             }
         }
     }
 
-    private func provideDisplayWallet(for chain: ChainModel) {
+    private func provideDisplayWalletAndQr(for chain: ChainModel, qrSize: CGSize) {
         let walletFetchOperation = walletRepository.fetchOperation(by: metaId, options: RepositoryFetchOptions())
 
         walletFetchOperation.completionBlock = { [weak self] in
@@ -84,12 +96,14 @@ final class ParitySignerTxQrInteractor {
                     let wallet = try walletFetchOperation.extractNoCancellableResultData()
 
                     guard
-                        let walletDisplayAddress = try wallet?.fetchMetaChainAccount(
+                        let accountResponse = wallet?.fetchMetaChainAccount(
                             for: chain.accountRequest()
-                        )?.toWalletDisplayAddress() else {
+                        ) else {
                         self?.presenter?.didReceive(error: ChainAccountFetchingError.accountNotExists)
                         return
                     }
+
+                    let walletDisplayAddress = try accountResponse.toWalletDisplayAddress()
 
                     let model = ChainWalletDisplayAddress(
                         chain: chain,
@@ -97,6 +111,8 @@ final class ParitySignerTxQrInteractor {
                     )
 
                     self?.presenter?.didReceive(chainWallet: model)
+
+                    self?.provideTransactionCode(for: qrSize, account: accountResponse.chainAccount)
                 } catch {
                     self?.presenter?.didReceive(error: error)
                 }
@@ -109,7 +125,6 @@ final class ParitySignerTxQrInteractor {
 
 extension ParitySignerTxQrInteractor: ParitySignerTxQrInteractorInputProtocol {
     func setup(qrSize: CGSize) {
-        provideTransactionCode(for: qrSize, expirationTime: mortalityPeriodMilliseconds.seconds)
-        subscribeChainsAndProvideDisplayWallet(for: chainId)
+        subscribeChains(for: chainId, qrSize: qrSize)
     }
 }
