@@ -1,7 +1,7 @@
 import UIKit
 import SoraFoundation
 
-final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
+final class ParitySignerTxQrViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = ParitySignerTxQrViewLayout
 
     let presenter: ParitySignerTxQrPresenterProtocol
@@ -27,12 +27,17 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupNavigationBar()
         setupHandlers()
         setupLocalization()
 
         let qrSize = rootView.qrImageSize
 
         presenter.setup(qrSize: CGSize(width: qrSize, height: qrSize))
+    }
+
+    private func setupNavigationBar() {
+        navigationItem.leftBarButtonItem = rootView.closeBarItem
     }
 
     private func setupHandlers() {
@@ -53,6 +58,9 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
             action: #selector(actionSelectMainAction),
             for: .touchUpInside
         )
+
+        rootView.closeBarItem.target = self
+        rootView.closeBarItem.action = #selector(actionClose)
     }
 
     private func setupLocalization() {
@@ -80,6 +88,10 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder {
 
     @objc private func actionSelectMainAction() {
         presenter.proceed()
+    }
+
+    @objc private func actionClose() {
+        presenter.close()
     }
 }
 

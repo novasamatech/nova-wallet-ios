@@ -12,6 +12,7 @@ protocol ParitySignerTxQrPresenterProtocol: AnyObject {
     func activateAddressDetails()
     func activateTroubleshouting()
     func proceed()
+    func close()
 }
 
 protocol ParitySignerTxQrInteractorInputProtocol: AnyObject {

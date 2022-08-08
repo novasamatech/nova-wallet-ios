@@ -4,11 +4,15 @@ import SoraFoundation
 class ImportantFlowNavigationController: FearlessNavigationController, ControllerBackedProtocol {
     let localizationManager: LocalizationManagerProtocol
 
+    let dismissalClosure: (() -> Void)?
+
     init(
         rootViewController: UIViewController,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        dismissalClosure: (() -> Void)?
     ) {
         self.localizationManager = localizationManager
+        self.dismissalClosure = dismissalClosure
 
         // from iOS 13 we can do init(rootController:) but due to iOS 12 bug need to stick to this approach
         super.init(nibName: nil, bundle: nil)
@@ -41,6 +45,7 @@ extension ImportantFlowNavigationController: UIAdaptivePresentationControllerDel
             title: R.string.localizable.commonCancelOperationAction(preferredLanguages: languages),
             style: .destructive
         ) { [weak self] in
+            self?.dismissalClosure?()
             self?.dismiss(animated: true, completion: nil)
         }
 
