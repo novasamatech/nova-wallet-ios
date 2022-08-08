@@ -67,7 +67,7 @@ final class ParitySignerTxQrViewController: UIViewController, ViewHolder, Import
         let languages = selectedLocale.rLanguages
 
         title = R.string.localizable.paritySignerTxTitle(preferredLanguages: languages)
-        rootView.titleLabel.text = R.string.localizable.paritySignerScanTitle(preferredLanguages: languages)
+        rootView.titleLabel.text = R.string.localizable.paritySignerTxScan(preferredLanguages: languages)
 
         rootView.helpButton.imageWithTitleView?.title = R.string.localizable.paritySignerTxSecondaryAction(
             preferredLanguages: languages
