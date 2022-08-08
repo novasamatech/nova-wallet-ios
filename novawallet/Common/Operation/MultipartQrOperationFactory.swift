@@ -18,8 +18,8 @@ final class MultipartQrOperationFactory: MultipartQrOperationFactoryProtocol {
             var frame: UInt16 = 1
             var index: UInt16 = 0
 
-            let frameBytes = Data(bytes: &frame, count: MemoryLayout<UInt16>.size)
-            let indexBytes = Data(bytes: &index, count: MemoryLayout<UInt16>.size)
+            let frameBytes = Data(bytes: &frame, count: MemoryLayout<UInt16>.size).reversed()
+            let indexBytes = Data(bytes: &index, count: MemoryLayout<UInt16>.size).reversed()
 
             let frameRepresentation = Self.multipartPrefix + frameBytes + indexBytes + payload
 

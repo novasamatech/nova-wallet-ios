@@ -209,7 +209,7 @@ extension ParitySignerTxQrPresenter: CountdownTimerDelegate {
         updateExpirationViewModel()
     }
 
-    func didCountdown(remainedInterval: TimeInterval) {
+    func didCountdown(remainedInterval _: TimeInterval) {
         updateExpirationViewModel()
     }
 
