@@ -111,7 +111,10 @@ final class ParitySignerTxQrPresenter {
 
         let title = R.string.localizable.commonTxQrExpiredTitle(preferredLanguages: selectedLocale.rLanguages)
         let minutes = expirationTimeInterval.map { R.string.localizable.commonMinutesFormat(format: $0) } ?? ""
-        let message = R.string.localizable.commonTxQrExpiredMessage(minutes, preferredLanguages: selectedLocale.rLanguages)
+        let message = R.string.localizable.commonTxQrExpiredMessage(
+            minutes,
+            preferredLanguages: selectedLocale.rLanguages
+        )
 
         let action = AlertPresentableAction(
             title: R.string.localizable.commonOkBack(preferredLanguages: selectedLocale.rLanguages)
@@ -167,6 +170,11 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
         }
 
         wireframe.proceed(from: view, timer: timer)
+    }
+
+    func close() {
+        completion(.failure(HardwareSigningError.signingCancelled))
+        wireframe.close(view: view)
     }
 }
 

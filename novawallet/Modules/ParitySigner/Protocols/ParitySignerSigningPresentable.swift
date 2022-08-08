@@ -43,7 +43,14 @@ final class TransactionSigningPresenter: TransactionSigningPresenting {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: txQrView.controller)
+        let barSettings = NavigationBarSettings.defaultSettings.bySettingCloseButton(false)
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(
+            from: txQrView.controller,
+            barSettings: barSettings
+        ) {
+            completion(.failure(HardwareSigningError.signingCancelled))
+        }
 
         controller.present(navigationController, animated: true)
     }

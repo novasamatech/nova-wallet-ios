@@ -7,6 +7,17 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
         static let defaultQrSize: CGFloat = 280.0
     }
 
+    let closeBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconClose(),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+
+        return item
+    }()
+
     let accountDetailsView = WalletAccountActionView.createInfoView()
 
     let titleLabel: UILabel = {
