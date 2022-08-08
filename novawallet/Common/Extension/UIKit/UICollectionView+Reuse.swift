@@ -5,10 +5,6 @@ extension UICollectionView {
         register(viewClass, forSupplementaryViewOfKind: kind, withReuseIdentifier: viewClass.reuseIdentifier)
     }
 
-    func register<TCell: UICollectionViewCell>(_: TCell.Type) {
-        register(TCell.self, forCellWithReuseIdentifier: TCell.reuseIdentifier)
-    }
-
     func registerCellClass(_ viewClass: UICollectionReusableView.Type) {
         register(viewClass, forCellWithReuseIdentifier: viewClass.reuseIdentifier)
     }

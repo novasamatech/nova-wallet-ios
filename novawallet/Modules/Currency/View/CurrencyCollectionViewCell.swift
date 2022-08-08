@@ -1,11 +1,3 @@
-//
-//  CurrencyCollectionViewCell.swift
-//  novawallet
-//
-//  Created by Holyberry on 04.08.2022.
-//  Copyright © 2022 Nova Foundation. All rights reserved.
-//
-
 import UIKit
 
 final class CurrencyCollectionViewCell: UICollectionViewCell {
@@ -18,13 +10,13 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
 
     private let titleLabel: UILabel = .create {
         $0.textColor = Colors.colorWhite100()
-        $0.font = Fonts.publicSansRegular(size: 15)
+        $0.font = .regularSubheadline
         $0.numberOfLines = 0
     }
 
     private let subtitleLabel: UILabel = .create {
         $0.textColor = Colors.colorWhite64()
-        $0.font = Fonts.publicSansRegular(size: 13)
+        $0.font = .regularFootnote
         $0.numberOfLines = 0
     }
 

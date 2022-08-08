@@ -6,7 +6,6 @@ final class CurrencyInteractor {
     private let currencyRepository: CurrencyRepositoryProtocol
     private let userCurrencyRepository: UserCurrencyRepositoryProtocol
     private let operationQueue: OperationQueue
-    private var currencies: [Currency] = []
 
     init(
         currencyRepository: CurrencyRepositoryProtocol,
@@ -23,11 +22,12 @@ final class CurrencyInteractor {
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard let currencies = try? wrapper.targetOperation.extractNoCancellableResultData() else {
-                    return
+                do {
+                    let currencies = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter.didRecieve(currencies: currencies)
+                } catch {
+                    self?.presenter.didRecieve(error: error)
                 }
-                self?.currencies = currencies
-                self?.presenter.didRecieve(currencies: currencies)
             }
         }
 
@@ -39,10 +39,13 @@ final class CurrencyInteractor {
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard let currency = try? wrapper.targetOperation.extractNoCancellableResultData() else {
-                    return
+                do {
+                    if let selectedCurrency = try wrapper.targetOperation.extractNoCancellableResultData() {
+                        self?.presenter.didRecieve(selectedCurrency: selectedCurrency)
+                    }
+                } catch {
+                    self?.presenter.didRecieve(error: error)
                 }
-                self?.presenter.didRecieve(selectedCurrency: currency)
             }
         }
 
@@ -63,14 +66,7 @@ extension CurrencyInteractor: CurrencyInteractorInputProtocol {
         )
     }
 
-    func set(selectedCurrencyId: Int) {
-        guard let selectedCurrency = currencies.first(where: { $0.id == selectedCurrencyId }) else {
-            return
-        }
-        let operation = userCurrencyRepository.setSelectedCurrency(selectedCurrency)
-        operation.completionBlock = { [weak self, selectedCurrency] in
-            self?.presenter?.didRecieve(selectedCurrency: selectedCurrency)
-        }
-        operationQueue.addOperation(operation)
+    func set(selectedCurrency: Currency) {
+        userCurrencyRepository.setSelectedCurrency(selectedCurrency)
     }
 }

@@ -1,18 +1,10 @@
-//
-//  CurrencyHeaderView.swift
-//  novawallet
-//
-//  Created by Holyberry on 05.08.2022.
-//  Copyright © 2022 Nova Foundation. All rights reserved.
-//
-
 import UIKit
 
 final class CurrencyHeaderView: UICollectionReusableView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite64()
-        label.font = R.font.publicSansRegular(size: 13)
+        label.font = .regularFootnote
         return label
     }()
 

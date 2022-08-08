@@ -1,11 +1,3 @@
-//
-//  CurrencyRepositoryProtocol.swift
-//  novawallet
-//
-//  Created by Holyberry on 04.08.2022.
-//  Copyright © 2022 Nova Foundation. All rights reserved.
-//
-
 import Foundation
 import RobinHood
 
@@ -30,12 +22,9 @@ extension CurrencyRepository: CurrencyRepositoryProtocol {
             defaultValue: []
         )
         let cacheOperation: BaseOperation<[Currency]> = ClosureOperation { [weak self] in
-            guard let result = try?
-                fetchCurrenciesOperation.extractNoCancellableResultData() else {
-                return []
-            }
-            self?.currencies = result
-            return result
+            let currencies = try fetchCurrenciesOperation.extractNoCancellableResultData()
+            self?.currencies = currencies
+            return currencies
         }
         cacheOperation.addDependency(fetchCurrenciesOperation)
 

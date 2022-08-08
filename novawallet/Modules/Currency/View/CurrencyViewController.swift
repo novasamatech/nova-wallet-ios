@@ -8,10 +8,13 @@ final class CurrencyViewController: UIViewController, ViewHolder {
     let presenter: CurrencyPresenterProtocol
     private lazy var dataSource = createDataSource()
 
-    init(presenter: CurrencyPresenterProtocol) {
+    init(
+        presenter: CurrencyPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
-
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)

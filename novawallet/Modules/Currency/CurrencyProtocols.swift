@@ -9,12 +9,13 @@ protocol CurrencyPresenterProtocol: AnyObject {
 
 protocol CurrencyInteractorInputProtocol: AnyObject {
     func setup()
-    func set(selectedCurrencyId: Int)
+    func set(selectedCurrency: Currency)
 }
 
 protocol CurrencyInteractorOutputProtocol: AnyObject {
     func didRecieve(currencies: [Currency])
     func didRecieve(selectedCurrency: Currency)
+    func didRecieve(error: Error)
 }
 
-protocol CurrencyWireframeProtocol: AnyObject {}
+protocol CurrencyWireframeProtocol: ErrorPresentable {}

@@ -3,18 +3,24 @@ import SoraFoundation
 
 final class CurrencyPresenter {
     weak var view: CurrencyViewProtocol?
-    let wireframe: CurrencyWireframeProtocol
-    let interactor: CurrencyInteractorInputProtocol
+    private let wireframe: CurrencyWireframeProtocol
+    private let interactor: CurrencyInteractorInputProtocol
+    private let logger: LoggerProtocol
+
     private var currentViewModel: [CurrencyViewSectionModel] = []
     private var selectedCurrencyId: Int?
     private var currencies: [Currency] = []
 
     init(
         interactor: CurrencyInteractorInputProtocol,
-        wireframe: CurrencyWireframeProtocol
+        wireframe: CurrencyWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.logger = logger
+        self.localizationManager = localizationManager
     }
 
     private func convertToViewModel(
@@ -91,7 +97,10 @@ extension CurrencyPresenter: CurrencyPresenterProtocol {
     }
 
     func didSelect(model: CurrencyViewSectionModel.CellModel) {
-        interactor.set(selectedCurrencyId: model.id)
+        guard let currency = currencies.first(where: { $0.id == model.id }) else {
+            return
+        }
+        interactor.set(selectedCurrency: currency)
     }
 }
 
@@ -104,6 +113,14 @@ extension CurrencyPresenter: CurrencyInteractorOutputProtocol {
 
     func didRecieve(selectedCurrency: Currency) {
         updateView(selectedCurrencyId: selectedCurrency.id)
+    }
+
+    func didRecieve(error: Error) {
+        let locale = localizationManager?.selectedLocale
+
+        if !wireframe.present(error: error, from: view, locale: locale) {
+            logger.error("Did receive error: \(error)")
+        }
     }
 }
 
