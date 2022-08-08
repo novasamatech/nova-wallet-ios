@@ -1387,6 +1387,8 @@
 		84A3B8A62836E08600DE2669 /* CollatorSelectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */; };
 		84A3B8A82836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A72836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift */; };
 		84A58FD428A05820003F6ABF /* HardwareSigningError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD328A05820003F6ABF /* HardwareSigningError.swift */; };
+		84A58FD728A10691003F6ABF /* ParitySignerMessageOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */; };
+		84A58FD928A10ABD003F6ABF /* MultipartQrOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */; };
 		84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */; };
 		84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */; };
 		84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */; };
@@ -3876,6 +3878,8 @@
 		84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorSelectionInfo.swift; sourceTree = "<group>"; };
 		84A3B8A72836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingCandidateMetadata.swift; sourceTree = "<group>"; };
 		84A58FD328A05820003F6ABF /* HardwareSigningError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareSigningError.swift; sourceTree = "<group>"; };
+		84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerMessageOperationFactory.swift; sourceTree = "<group>"; };
+		84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartQrOperationFactory.swift; sourceTree = "<group>"; };
 		84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallCodingPath.swift; sourceTree = "<group>"; };
 		84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeMetadata+Internal.swift"; sourceTree = "<group>"; };
 		84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmData.swift; sourceTree = "<group>"; };
@@ -6262,6 +6266,7 @@
 		84307C762897F05700CA3977 /* ParitySigner */ = {
 			isa = PBXGroup;
 			children = (
+				84A58FD528A10677003F6ABF /* Operation */,
 				8443CA48289D04C400FA4A95 /* Protocols */,
 				840B3D682899CD1600DA1DA9 /* Model */,
 				840B3D612899BBB900DA1DA9 /* Scanner */,
@@ -8060,6 +8065,7 @@
 				841E555A282E6B0900C8438F /* StorageDecodingOperation+Init.swift */,
 				848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */,
 				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
+				84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -8760,6 +8766,14 @@
 				84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */,
 			);
 			path = ParachainStaking;
+			sourceTree = "<group>";
+		};
+		84A58FD528A10677003F6ABF /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */,
+			);
+			path = Operation;
 			sourceTree = "<group>";
 		};
 		84A8FD8C265FDA42002ADB58 /* Model */ = {
@@ -12826,6 +12840,7 @@
 				8436B6D828480D2F00F24360 /* ModalPickerActionTableViewCell.swift in Sources */,
 				841AAC2926F6A59C00F0A25E /* MultiassetCryptoType.swift in Sources */,
 				F4DCAE4F2620819000CCA6BF /* PayoutRewardsService.swift in Sources */,
+				84A58FD728A10691003F6ABF /* ParitySignerMessageOperationFactory.swift in Sources */,
 				84800B042733024600E1E4DD /* RemoteChainNodeModel.swift in Sources */,
 				8463A70325E2FCD0003B8160 /* WeakWrapper.swift in Sources */,
 				8459A9CA2746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift in Sources */,
@@ -13131,6 +13146,7 @@
 				F4A12BF7260B61E900392C33 /* StakingManageOption.swift in Sources */,
 				843A2C7726A86FD000266F53 /* TitleStatusView.swift in Sources */,
 				8409C268252218FF0049B5C8 /* WalletFearlessDefinitionFactory.swift in Sources */,
+				84A58FD928A10ABD003F6ABF /* MultipartQrOperationFactory.swift in Sources */,
 				84E2589D2892B41500DC8A51 /* WalletSwitchViewModelFactory.swift in Sources */,
 				84AE7AA927D3700E00495267 /* StackTableCell.swift in Sources */,
 				84CFF1E526526FBC00DB7CF7 /* StakingBondMoreViewController.swift in Sources */,

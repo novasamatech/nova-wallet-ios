@@ -9,6 +9,8 @@ final class ParitySignerTxQrInteractor {
     let chainId: ChainModel.Id
     let chainRegistry: ChainRegistryProtocol
     let walletRepository: AnyDataProviderRepository<MetaAccountModel>
+    let messageOperationFactory: ParitySignerMessageOperationFactoryProtocol
+    let multipartQrOperationFactory: MultipartQrOperationFactoryProtocol
     let mortalityPeriodMilliseconds: TimeInterval
     let operationQueue: OperationQueue
 
@@ -18,6 +20,8 @@ final class ParitySignerTxQrInteractor {
         chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
+        messageOperationFactory: ParitySignerMessageOperationFactoryProtocol,
+        multipartQrOperationFactory: MultipartQrOperationFactoryProtocol,
         mortalityPeriodMilliseconds: TimeInterval,
         operationQueue: OperationQueue
     ) {
@@ -26,12 +30,27 @@ final class ParitySignerTxQrInteractor {
         self.chainId = chainId
         self.chainRegistry = chainRegistry
         self.walletRepository = walletRepository
+        self.messageOperationFactory = messageOperationFactory
+        self.multipartQrOperationFactory = multipartQrOperationFactory
         self.mortalityPeriodMilliseconds = mortalityPeriodMilliseconds
         self.operationQueue = operationQueue
     }
 
-    private func provideTransactionCode(for size: CGSize, expirationTime: TimeInterval) {
-        let operation = QRCreationOperation(payload: signingData, qrSize: size)
+    private func provideTransactionCode(for size: CGSize, account: ChainAccountResponse, expirationTime: TimeInterval) {
+        let messageWrapper = messageOperationFactory.createTransaction(
+            for: signingData,
+            accountId: account.accountId,
+            cryptoType: account.cryptoType,
+            genesisHash: chainId
+        )
+
+        let qrPayloadWrapper = multipartQrOperationFactory.createFromPayloadClosure {
+            try messageWrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        qrPayloadWrapper.addDependency(wrapper: messageWrapper)
+
+        let operation = QRCreationOperation(payload: <#T##Data#>, qrSize: <#T##CGSize#>)
 
         operation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
