@@ -1,19 +1,19 @@
 import Foundation
 
-protocol CurrencyDependent: AnyObject {
+protocol UserCurrencyDependent: AnyObject {
     var currencyManager: CurrencyManagerProtocol? { get set }
 
-    func applyCurrencyChanges()
+    func applyCurrency()
 }
 
-private enum CurrencyDependentConstants {
+private enum UserCurrencyDependentConstants {
     static var managerKey = "co.jp.novawallet.currencyDependent.manager"
 }
 
-extension CurrencyDependent {
+extension UserCurrencyDependent {
     var currencyManager: CurrencyManagerProtocol? {
         get {
-            objc_getAssociatedObject(self, &CurrencyDependentConstants.managerKey)
+            objc_getAssociatedObject(self, &UserCurrencyDependentConstants.managerKey)
                 as? CurrencyManagerProtocol
         }
 
@@ -27,17 +27,17 @@ extension CurrencyDependent {
             currentManager?.removeObserver(by: self)
 
             newValue?.addObserver(with: self) { [weak self] _, _ in
-                self?.applyCurrencyChanges()
+                self?.applyCurrency()
             }
 
             objc_setAssociatedObject(
                 self,
-                &CurrencyDependentConstants.managerKey,
+                &UserCurrencyDependentConstants.managerKey,
                 newValue,
                 .OBJC_ASSOCIATION_RETAIN
             )
 
-            applyCurrencyChanges()
+            applyCurrency()
         }
     }
 }

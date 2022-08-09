@@ -30,8 +30,8 @@ extension CurrencyInteractor: CurrencyInteractorInputProtocol {
     }
 }
 
-extension CurrencyInteractor: CurrencyDependent {
-    func applyCurrencyChanges() {
+extension CurrencyInteractor: UserCurrencyDependent {
+    func applyCurrency() {
         guard let currencyManager = currencyManager else {
             return
         }

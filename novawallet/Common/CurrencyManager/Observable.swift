@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol ObservableStateProtocol: AnyObject {
+public protocol ObservableProtocol: AnyObject {
     associatedtype State
     typealias StateChangeClosure = (State, State) -> Void
 
@@ -15,7 +15,7 @@ public protocol ObservableStateProtocol: AnyObject {
     func removeObserver(by owner: AnyObject)
 }
 
-public class Observable<TState>: ObservableStateProtocol where TState: Equatable {
+public class Observable<TState>: ObservableProtocol where TState: Equatable {
     public typealias State = TState
     public typealias VoidClosure = () -> Void
 
