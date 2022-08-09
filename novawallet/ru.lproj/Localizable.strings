@@ -857,3 +857,7 @@
 "common.address.scan.message" = "Отсканируйте QR с адресом";
 "common.watch.only" = "Watch-only";
 "common.invalid.address.format" = "%@ адрес имеет неверный формат";
+"currency.title" = "Валюта";
+"currency.category.fiat" = "Фиатные валюты";
+"currency.category.popularFiat" = "Популярные фиатные валюты";
+"currency.category.cryptocurrencies" = "Криптовалюты";

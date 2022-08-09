@@ -857,3 +857,7 @@
 "common.address.scan.message" = "Scan QR code with the address";
 "common.watch.only" = "Watch-only";
 "common.invalid.address.format" = "Invalid %@ address";
+"currency.title" = "Currency";
+"currency.category.fiat" = "Fiat currencies";
+"currency.category.popularFiat" = "Popular fiat currencies";
+"currency.category.cryptocurrencies" = "Cryptocurrencies";

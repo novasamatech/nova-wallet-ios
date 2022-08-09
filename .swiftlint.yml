@@ -4,3 +4,6 @@ excluded:
   - R.generated.swift
   - novawalletTests
   - novawalletIntegrationTests
+identifier_name:
+  excluded:
+    - id
