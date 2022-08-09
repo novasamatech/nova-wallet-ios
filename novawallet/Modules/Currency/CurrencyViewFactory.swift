@@ -4,8 +4,12 @@ import SoraFoundation
 
 struct CurrencyViewFactory {
     static func createView() -> CurrencyViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            assertionFailure("Failed to get currencyManager")
+            return nil
+        }
         let interactor = CurrencyInteractor(
-            currencyManager: CurrencyManager.shared!,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
         let wireframe = CurrencyWireframe()

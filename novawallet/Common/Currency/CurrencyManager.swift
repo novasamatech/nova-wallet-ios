@@ -17,8 +17,7 @@ protocol CurrencyManagerProtocol: AnyObject {
     func removeObserver(by owner: AnyObject)
 }
 
-final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol
-
+final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol {
     let availableCurrencies: [Currency]
     var selectedCurrency: Currency {
         get {
@@ -69,7 +68,7 @@ final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol
     }
 }
 
-//MARK: - Shared instance
+// MARK: - Shared instance
 
 extension CurrencyManager {
     static let shared = CurrencyManager()
@@ -83,7 +82,7 @@ extension CurrencyManager {
     }
 }
 
-//MARK: - Error
+// MARK: - Error
 
 enum CurrencyManagerError: Error {
     case unknownSelectedCurrency

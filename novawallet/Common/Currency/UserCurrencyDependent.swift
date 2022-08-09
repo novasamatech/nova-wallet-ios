@@ -7,7 +7,7 @@ protocol UserCurrencyDependent: AnyObject {
 }
 
 private enum UserCurrencyDependentConstants {
-    static var managerKey = "co.jp.novawallet.currencyDependent.manager"
+    static var managerKey = "co.jp.novawallet.userCurrencyDependentConstants.manager"
 }
 
 extension UserCurrencyDependent {
