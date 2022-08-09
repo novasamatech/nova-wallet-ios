@@ -18,6 +18,6 @@ protocol ParitySignerTxScanInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol ParitySignerTxScanWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol ParitySignerTxScanWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func complete(on view: ParitySignerTxScanViewProtocol?)
 }

@@ -880,4 +880,6 @@
 "common.qr.code.expired" = "QR code has expired";
 "parity.signer.tx.secondary.action" = "I have an error in Parity Signer";
 "common.tx.qr.expired.message" = "For security reasons generated operations valid for only %@ mins. Please generate new QR code and sign it with Parity Signer";
-"parity.signer.tx.scan.invalid" = "Invalid signature! Please, make sure QR code represents valid signature of the operation";
+"parity.signer.tx.scan.invalid.title" = "QR code is invalid";
+"parity.signer.tx.scan.invalid.message" = "Please make sure you are scanning QR code for currently signing operation";
+"common.try.again" = "Try again";

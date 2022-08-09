@@ -14,6 +14,7 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
     var scanWireframe: ParitySignerTxScanWireframeProtocol
 
     private var lastHandledCode: String?
+    private var mutex = NSLock()
 
     init(
         interactor: ParitySignerTxScanInteractorInputProtocol,
@@ -42,6 +43,26 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
         )
     }
 
+    private func getLastCode() -> String? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return lastHandledCode
+    }
+
+    private func setLastCode(_ newCode: String?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        lastHandledCode = newCode
+    }
+
     private func handle(error: Error) {
         _ = scanWireframe.present(error: error, from: view, locale: selectedLocale)
         logger?.error("Did receive error: \(error)")
@@ -68,11 +89,11 @@ final class ParitySignerTxScanPresenter: QRScannerPresenter {
     }
 
     override func handle(code: String) {
-        guard lastHandledCode != code else {
+        guard getLastCode() == nil else {
             return
         }
 
-        lastHandledCode = code
+        setLastCode(code)
 
         DispatchQueue.main.async { [weak self] in
             self?.interactor.process(scannedSignature: code)
@@ -88,8 +109,16 @@ extension ParitySignerTxScanPresenter: ParitySignerTxScanInteractorOutputProtoco
 
     func didReceiveError(_: Error) {
         let locale = localizationManager.selectedLocale
-        let message = R.string.localizable.paritySignerTxScanInvalid(preferredLanguages: locale.rLanguages)
-        view?.present(message: message, animated: true)
+
+        scanWireframe.presentTryAgainOperation(
+            on: view,
+            title: R.string.localizable.paritySignerTxScanInvalidTitle(preferredLanguages: locale.rLanguages),
+            message: R.string.localizable.paritySignerTxScanInvalidMessage(preferredLanguages: locale.rLanguages),
+            actionTitle: R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages),
+            locale: locale
+        ) { [weak self] in
+            self?.setLastCode(nil)
+        }
     }
 }
 
