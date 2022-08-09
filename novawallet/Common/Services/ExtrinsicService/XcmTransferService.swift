@@ -73,20 +73,24 @@ final class XcmTransferService {
 
         let accountId: AccountId
         let cryptoType: MultiassetCryptoType
+        let signaturePayloadFormat: ExtrinsicSignaturePayloadFormat
 
         if let chainAccount = chainAccount {
             accountId = chainAccount.accountId
             cryptoType = chainAccount.cryptoType
+            signaturePayloadFormat = chainAccount.type.signaturePayloadFormat
         } else {
             // account doesn't exists but we still might want to calculate fee
             accountId = AccountId.zeroAccountId(of: chain.accountIdSize)
             cryptoType = chain.isEthereumBased ? .ethereumEcdsa : .sr25519
+            signaturePayloadFormat = .regular
         }
 
         return ExtrinsicOperationFactory(
             accountId: accountId,
             chain: chain,
             cryptoType: cryptoType,
+            signaturePayloadFormat: signaturePayloadFormat,
             runtimeRegistry: runtimeProvider,
             customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection

@@ -195,9 +195,8 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
                     case let .success(maybeAccountResponse):
                         if let accountResponse = maybeAccountResponse {
                             self?.extrinsicService = self?.extrinsicServiceFactory.createService(
-                                accountId: accountResponse.chainAccount.accountId,
-                                chain: chain,
-                                cryptoType: accountResponse.chainAccount.cryptoType
+                                account: accountResponse.chainAccount,
+                                chain: chain
                             )
 
                             self?.estimateFee()

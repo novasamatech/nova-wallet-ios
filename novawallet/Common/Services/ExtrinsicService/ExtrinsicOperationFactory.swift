@@ -90,6 +90,7 @@ extension ExtrinsicOperationFactoryProtocol {
 final class ExtrinsicOperationFactory {
     let accountId: AccountId
     let cryptoType: MultiassetCryptoType
+    let signaturePayloadFormat: ExtrinsicSignaturePayloadFormat
     let chain: ChainModel
     let runtimeRegistry: RuntimeCodingServiceProtocol
     let customExtensions: [ExtrinsicExtension]
@@ -100,6 +101,7 @@ final class ExtrinsicOperationFactory {
         accountId: AccountId,
         chain: ChainModel,
         cryptoType: MultiassetCryptoType,
+        signaturePayloadFormat: ExtrinsicSignaturePayloadFormat,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         customExtensions: [ExtrinsicExtension],
         engine: JSONRPCEngine,
@@ -108,6 +110,7 @@ final class ExtrinsicOperationFactory {
         self.accountId = accountId
         self.chain = chain
         self.cryptoType = cryptoType
+        self.signaturePayloadFormat = signaturePayloadFormat
         self.runtimeRegistry = runtimeRegistry
         self.customExtensions = customExtensions
         self.engine = engine
@@ -157,6 +160,7 @@ final class ExtrinsicOperationFactory {
         let currentAccountId = accountId
         let currentChainFormat = chain.chainFormat
         let currentExtensions = customExtensions
+        let currentSignaturePayloadFormat = signaturePayloadFormat
         let optTip = chain.defaultTip
 
         let nonceOperation = createNonceOperation()
@@ -187,6 +191,7 @@ final class ExtrinsicOperationFactory {
                     transactionVersion: codingFactory.txVersion,
                     genesisHash: genesisHash
                 )
+                .with(signaturePayloadFormat: currentSignaturePayloadFormat)
                 .with(runtimeJsonContext: runtimeJsonContext)
                 .with(era: era, blockHash: eraBlockHash)
                 .with(nonce: nonce + UInt32(index))
