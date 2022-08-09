@@ -880,3 +880,4 @@
 "common.qr.code.expired" = "QR код устарел";
 "parity.signer.tx.secondary.action" = "У меня ошибка в Parity Signer";
 "common.tx.qr.expired.message" = "В целях безопасности транзакция действительна только %@. Please generate new QR code and sign it with Parity Signer";
+"parity.signer.tx.scan.invalid" = "Недействительная подпись! Пожалуйста, удостоверьтесь, что QR код представляет правильную подпись операции";

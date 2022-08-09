@@ -12,10 +12,17 @@ final class ParitySignerTxQrWireframe: ParitySignerTxQrWireframeProtocol {
         view?.controller.dismiss(animated: true)
     }
 
-    func proceed(from view: ParitySignerTxQrViewProtocol?, timer: CountdownTimerMediating) {
+    func proceed(
+        from view: ParitySignerTxQrViewProtocol?,
+        accountId: AccountId,
+        timer: CountdownTimerMediating,
+        completion: @escaping TransactionSigningClosure
+    ) {
         guard let scanView = ParitySignerTxScanViewFactory.createView(
             from: sharedSigningPayload,
-            expirationTimer: timer
+            accountId: accountId,
+            expirationTimer: timer,
+            completion: completion
         ) else {
             return
         }
