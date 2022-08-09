@@ -86,8 +86,7 @@ class BondMoreConfirmTests: XCTestCase {
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy(),
-            signingWraper: try DummySigner(cryptoType: accountResponse.cryptoType)
+            extrinsicService: ExtrinsicServiceStub.dummy()
         )
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(stashItem: stashItem)
@@ -101,6 +100,7 @@ class BondMoreConfirmTests: XCTestCase {
             chainAsset: chainAsset,
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: DummySigningWrapperFactory(),
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceSubscriptionFactory,

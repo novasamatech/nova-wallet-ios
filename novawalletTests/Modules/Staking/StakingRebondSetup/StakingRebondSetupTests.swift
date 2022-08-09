@@ -77,8 +77,7 @@ class StakingRebondSetupTests: XCTestCase {
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy(),
-            signingWraper: try DummySigner(cryptoType: selectedAccount.cryptoType)
+            extrinsicService: ExtrinsicServiceStub.dummy()
         )
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)

@@ -107,14 +107,11 @@ struct TransferConfirmOnChainViewFactory {
             logger: Logger.shared
         )
 
-        let extrinsicService = ExtrinsicService(
-            accountId: account.accountId,
-            chain: chain,
-            cryptoType: account.cryptoType,
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
-        )
+        ).createService(account: account, chain: chain)
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: accountMetaId,
