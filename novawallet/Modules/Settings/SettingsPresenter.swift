@@ -93,6 +93,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         switch row {
         case .wallets:
             wireframe.showAccountSelection(from: view)
+        case .currency:
+            wireframe.showCurrencies(from: view)
         case .language:
             wireframe.showLanguageSelection(from: view)
         case .changePin:
@@ -115,9 +117,6 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             show(url: config.termsURL)
         case .privacyPolicy:
             show(url: config.privacyPolicyURL)
-        case .currency:
-            break
-            // TODO: Add wireframe function
         }
     }
 

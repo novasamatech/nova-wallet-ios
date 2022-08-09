@@ -1,20 +1,47 @@
 [
-  {
-    "code": "BTC",
-    "name": "Bitcoin",
-    "symbol": "₿",
-    "category": "fiat",
-    "popular": true,
-    "id": 0,
-    "coingeckoId": "btc"
-  },
-  {
-    "code": "BTC",
-    "name": "Bitcoin",
-    "symbol": "₿",
-    "category": "fiat",
-    "popular": true,
-    "id": 1,
-    "coingeckoId": "btc"
-  }
+    {
+        "code": "USD",
+        "name": "United States Dollar",
+        "symbol": "$",
+        "category": "fiat",
+        "popular": true,
+        "id": 0,
+        "coingeckoId": "usd"
+    },
+    {
+        "code": "IDR",
+        "name": "Indonesian Rupiah",
+        "symbol": "Rp",
+        "category": "fiat",
+        "popular": true,
+        "id": 1,
+        "coingeckoId": "idr"
+    },
+    {
+        "code": "AED",
+        "name": "United Arab Emirates dirham",
+        "symbol": "AED",
+        "category": "fiat",
+        "popular": false,
+        "id": 2,
+        "coingeckoId": "idr"
+    },
+    {
+        "code": "DOT",
+        "name": "Polkadot",
+        "symbol": "DOT",
+        "category": "crypto",
+        "popular": true,
+        "id": 3,
+        "coingeckoId": "dot"
+    },
+    {
+        "code": "BTC",
+        "name": "Bitcoin",
+        "symbol": "₿",
+        "category": "crypto",
+        "popular": true,
+        "id": 4,
+        "coingeckoId": "btc"
+    }
 ]
