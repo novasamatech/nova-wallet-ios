@@ -49,7 +49,9 @@ final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol {
 
         availableCurrencies = currencies
         super.init(state: currency)
-        sideEffectOnChangeState = saveCurrencyInSettings
+        sideEffectOnChangeState = { [weak self] in
+            self?.saveCurrencyInSettings()
+        }
     }
 
     init(
@@ -64,7 +66,7 @@ final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol {
     }
 
     private func saveCurrencyInSettings() {
-        settingsManager.selectedCurrencyId = state.id
+        settingsManager.selectedCurrencyId = selectedCurrency.id
     }
 }
 

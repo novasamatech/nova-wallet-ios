@@ -65,11 +65,7 @@ public class Observable<TState>: ObservableProtocol where TState: Equatable {
 
         observers.forEach { wrapper in
             if wrapper.owner != nil {
-                if let queue = wrapper.queue {
-                    queue.async {
-                        wrapper.closure(oldState, newState)
-                    }
-                } else {
+                dispatchInQueueWhenPossible(wrapper.queue) {
                     wrapper.closure(oldState, newState)
                 }
             }
