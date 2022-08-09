@@ -118,9 +118,7 @@ extension CurrencyPresenter: CurrencyInteractorOutputProtocol {
     }
 
     func didReceive(error: Error) {
-        let locale = localizationManager?.selectedLocale
-
-        if !wireframe.present(error: error, from: view, locale: locale) {
+        if !wireframe.present(error: error, from: view, locale: selectedLocale) {
             logger.error("Did receive error: \(error)")
         }
     }
