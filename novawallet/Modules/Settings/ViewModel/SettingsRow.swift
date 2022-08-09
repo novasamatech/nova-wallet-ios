@@ -20,38 +20,33 @@ enum SettingsRow {
 extension SettingsRow {
     // swiftlint:disable:next cyclomatic_complexity
     func title(for locale: Locale) -> String {
-        titleLocalizationAction(locale.rLanguages)
-    }
-
-    var titleLocalizationAction: ([String]?) -> String {
-        let strings = R.string.localizable.self
         switch self {
         case .wallets:
-            return strings.profileWalletsTitle
+            return R.string.localizable.profileWalletsTitle(preferredLanguages: locale.rLanguages)
         case .currency:
-            return strings.profileCurrencyTitle
+            return R.string.localizable.profileCurrencyTitle(preferredLanguages: locale.rLanguages)
         case .language:
-            return strings.profileLanguageTitle
+            return R.string.localizable.profileLanguageTitle(preferredLanguages: locale.rLanguages)
         case .changePin:
-            return strings.profilePincodeChangeTitle
+            return R.string.localizable.profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
         case .telegram:
-            return strings.aboutTelegram
+            return R.string.localizable.aboutTelegram(preferredLanguages: locale.rLanguages)
         case .youtube:
-            return strings.settingsYoutube
+            return R.string.localizable.settingsYoutube(preferredLanguages: locale.rLanguages)
         case .twitter:
-            return strings.settingsTwitter
+            return R.string.localizable.settingsTwitter(preferredLanguages: locale.rLanguages)
         case .rateUs:
-            return strings.settingsRateUs
+            return R.string.localizable.settingsRateUs(preferredLanguages: locale.rLanguages)
         case .email:
-            return strings.settingsEmail
+            return R.string.localizable.settingsEmail(preferredLanguages: locale.rLanguages)
         case .website:
-            return strings.aboutWebsite
+            return R.string.localizable.aboutWebsite(preferredLanguages: locale.rLanguages)
         case .github:
-            return strings.aboutGithub
+            return R.string.localizable.aboutGithub(preferredLanguages: locale.rLanguages)
         case .terms:
-            return strings.aboutTerms
+            return R.string.localizable.aboutTerms(preferredLanguages: locale.rLanguages)
         case .privacyPolicy:
-            return strings.aboutPrivacy
+            return R.string.localizable.aboutPrivacy(preferredLanguages: locale.rLanguages)
         }
     }
 
