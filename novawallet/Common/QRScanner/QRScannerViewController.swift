@@ -3,7 +3,7 @@ import AVFoundation
 import SoraUI
 import SoraFoundation
 
-final class QRScannerViewController: UIViewController, ViewHolder {
+class QRScannerViewController: UIViewController, ViewHolder {
     typealias RootViewType = QRScannerViewLayout
 
     let localizedTitle: LocalizableResource<String>?
