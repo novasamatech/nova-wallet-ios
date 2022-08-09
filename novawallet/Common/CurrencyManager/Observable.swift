@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol StateObservableManagerProtocol: AnyObject {
+public protocol ObservableStateProtocol: AnyObject {
     associatedtype State
     typealias StateChangeClosure = (State, State) -> Void
 
@@ -15,7 +15,7 @@ public protocol StateObservableManagerProtocol: AnyObject {
     func removeObserver(by owner: AnyObject)
 }
 
-public class StateObservableManager<TState: Equatable>: StateObservableManagerProtocol {
+public class Observable<TState>: ObservableStateProtocol where TState: Equatable {
     public typealias State = TState
     public typealias VoidClosure = () -> Void
 
@@ -77,7 +77,7 @@ public class StateObservableManager<TState: Equatable>: StateObservableManagerPr
     }
 }
 
-extension StateObservableManager where TState: Equatable {
+extension Observable where TState: Equatable {
     func addObserver(
         with owner: AnyObject,
         closure: @escaping StateChangeClosure

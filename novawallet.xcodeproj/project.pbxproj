@@ -1896,7 +1896,7 @@
 		8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E7289D7CF400C0BF86 /* Atomic.swift */; };
 		886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62FA66143B25AA70B02CE461 /* ExportSeedViewFactory.swift */; };
 		88A0E0F328A23A8900A9C940 /* CurrencyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0E0F228A23A8900A9C940 /* CurrencyManager.swift */; };
-		88A0E0F528A26D0E00A9C940 /* StateObservableManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0E0F428A26D0E00A9C940 /* StateObservableManager.swift */; };
+		88A0E0F528A26D0E00A9C940 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0E0F428A26D0E00A9C940 /* Observable.swift */; };
 		88A0E0F728A26D9900A9C940 /* CurrencyDependent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0E0F628A26D9900A9C940 /* CurrencyDependent.swift */; };
 		88E1E896289C021F00C123A8 /* CurrencyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E1E895289C021F00C123A8 /* CurrencyCollectionViewCell.swift */; };
 		88E1E898289C024400C123A8 /* UIView+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E1E897289C024400C123A8 /* UIView+Create.swift */; };
@@ -4360,7 +4360,7 @@
 		8860F3E7289D7CF400C0BF86 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		889A825F58F5CB54118A9D35 /* SelectValidatorsStartWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartWireframe.swift; sourceTree = "<group>"; };
 		88A0E0F228A23A8900A9C940 /* CurrencyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyManager.swift; sourceTree = "<group>"; };
-		88A0E0F428A26D0E00A9C940 /* StateObservableManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateObservableManager.swift; sourceTree = "<group>"; };
+		88A0E0F428A26D0E00A9C940 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		88A0E0F628A26D9900A9C940 /* CurrencyDependent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyDependent.swift; sourceTree = "<group>"; };
 		88E1E895289C021F00C123A8 /* CurrencyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCollectionViewCell.swift; sourceTree = "<group>"; };
 		88E1E897289C024400C123A8 /* UIView+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Create.swift"; sourceTree = "<group>"; };
@@ -10044,7 +10044,7 @@
 			isa = PBXGroup;
 			children = (
 				88A0E0F228A23A8900A9C940 /* CurrencyManager.swift */,
-				88A0E0F428A26D0E00A9C940 /* StateObservableManager.swift */,
+				88A0E0F428A26D0E00A9C940 /* Observable.swift */,
 				88A0E0F628A26D9900A9C940 /* CurrencyDependent.swift */,
 			);
 			path = CurrencyManager;
@@ -13073,7 +13073,7 @@
 				84DB4E1E25E93B1700A6DF41 /* Identity.swift in Sources */,
 				F47F5A822626FDB9009BCFF4 /* StakingPayoutViewModel.swift in Sources */,
 				F400A7C2260CE1670061D576 /* StakingRewardStatus.swift in Sources */,
-				88A0E0F528A26D0E00A9C940 /* StateObservableManager.swift in Sources */,
+				88A0E0F528A26D0E00A9C940 /* Observable.swift in Sources */,
 				843F657126584D2C00829C14 /* JsonSingleProviderSource.swift in Sources */,
 				F41C728326428A9400E8BB41 /* ControllerAccountViewLayout.swift in Sources */,
 				84DA03D82759362100E8B326 /* ChainAccountViewModel.swift in Sources */,

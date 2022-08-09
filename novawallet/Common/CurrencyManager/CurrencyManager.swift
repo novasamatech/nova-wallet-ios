@@ -1,10 +1,6 @@
 import Foundation
 import SoraKeystore
 
-enum CurrencyManagerError: Error {
-    case notFoundCurrencies
-}
-
 protocol CurrencyManagerProtocol: AnyObject {
     var availableCurrencies: [Currency] { get }
     var selectedCurrency: Currency { get set }
@@ -21,11 +17,11 @@ protocol CurrencyManagerProtocol: AnyObject {
     func removeObserver(by owner: AnyObject)
 }
 
-final class CurrencyManager: StateObservableManager<Currency>, CurrencyManagerProtocol {
+final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol {
     let availableCurrencies: [Currency]
     var selectedCurrency: Currency {
         get {
-            return state
+            state
         }
         set {
             state = newValue
@@ -48,7 +44,7 @@ final class CurrencyManager: StateObservableManager<Currency>, CurrencyManagerPr
         let selectedCurrencyId = settingsManager.selectedCurrencyId
         let currency = currencies.first(where: { $0.id == selectedCurrencyId }) ?? currencies.min { $0.id < $1.id }
         guard let currency = currency else {
-            throw CurrencyManagerError.notFoundCurrencies
+            throw CurrencyManagerError.unknownSelectedCurrency
         }
 
         availableCurrencies = currencies
@@ -72,6 +68,8 @@ final class CurrencyManager: StateObservableManager<Currency>, CurrencyManagerPr
     }
 }
 
+//MARK: - Shared instance
+
 extension CurrencyManager {
     static let shared = CurrencyManager()
 
@@ -82,4 +80,10 @@ extension CurrencyManager {
             queue: OperationManagerFacade.sharedDefaultQueue
         )
     }
+}
+
+//MARK: - Error
+
+enum CurrencyManagerError: Error {
+    case unknownSelectedCurrency
 }
