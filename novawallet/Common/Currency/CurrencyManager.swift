@@ -17,7 +17,8 @@ protocol CurrencyManagerProtocol: AnyObject {
     func removeObserver(by owner: AnyObject)
 }
 
-final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol {
+final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol
+
     let availableCurrencies: [Currency]
     var selectedCurrency: Currency {
         get {
