@@ -118,6 +118,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
                 transactionVersion: extrinsic.transactionVersion,
                 genesisHash: extrinsic.genesisHash
             )
+            .with(signaturePayloadFormat: result.account.type.signaturePayloadFormat)
             .with(runtimeJsonContext: runtimeContext)
             .with(address: address)
             .with(nonce: UInt32(extrinsic.nonce))
