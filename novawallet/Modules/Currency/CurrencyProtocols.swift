@@ -13,9 +13,9 @@ protocol CurrencyInteractorInputProtocol: AnyObject {
 }
 
 protocol CurrencyInteractorOutputProtocol: AnyObject {
-    func didRecieve(currencies: [Currency])
-    func didRecieve(selectedCurrency: Currency)
-    func didRecieve(error: Error)
+    func didReceive(currencies: [Currency])
+    func didReceive(selectedCurrency: Currency)
+    func didReceive(error: Error)
 }
 
 protocol CurrencyWireframeProtocol: ErrorPresentable {}

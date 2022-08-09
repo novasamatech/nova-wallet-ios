@@ -109,15 +109,15 @@ extension CurrencyPresenter: CurrencyPresenterProtocol {
 // MARK: - CurrencyInteractorOutputProtocol
 
 extension CurrencyPresenter: CurrencyInteractorOutputProtocol {
-    func didRecieve(currencies: [Currency]) {
+    func didReceive(currencies: [Currency]) {
         updateView(currencies: currencies)
     }
 
-    func didRecieve(selectedCurrency: Currency) {
+    func didReceive(selectedCurrency: Currency) {
         updateView(selectedCurrencyId: selectedCurrency.id)
     }
 
-    func didRecieve(error: Error) {
+    func didReceive(error: Error) {
         let locale = localizationManager?.selectedLocale
 
         if !wireframe.present(error: error, from: view, locale: locale) {

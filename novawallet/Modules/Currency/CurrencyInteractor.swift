@@ -24,9 +24,9 @@ final class CurrencyInteractor {
             DispatchQueue.main.async {
                 do {
                     let currencies = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter.didRecieve(currencies: currencies)
+                    self?.presenter.didReceive(currencies: currencies)
                 } catch {
-                    self?.presenter.didRecieve(error: error)
+                    self?.presenter.didReceive(error: error)
                 }
             }
         }
@@ -41,10 +41,10 @@ final class CurrencyInteractor {
             DispatchQueue.main.async {
                 do {
                     if let selectedCurrency = try wrapper.targetOperation.extractNoCancellableResultData() {
-                        self?.presenter.didRecieve(selectedCurrency: selectedCurrency)
+                        self?.presenter.didReceive(selectedCurrency: selectedCurrency)
                     }
                 } catch {
-                    self?.presenter.didRecieve(error: error)
+                    self?.presenter.didReceive(error: error)
                 }
             }
         }
@@ -68,6 +68,6 @@ extension CurrencyInteractor: CurrencyInteractorInputProtocol {
 
     func set(selectedCurrency: Currency) {
         userCurrencyRepository.setSelectedCurrency(selectedCurrency)
-        presenter.didRecieve(selectedCurrency: selectedCurrency)
+        presenter.didReceive(selectedCurrency: selectedCurrency)
     }
 }
