@@ -38,4 +38,5 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)
     func showPincodeChange(from view: ControllerBackedProtocol?)
+    func showCurrencies(from view: ControllerBackedProtocol?)
 }
