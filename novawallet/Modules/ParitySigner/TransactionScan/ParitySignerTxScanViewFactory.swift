@@ -3,10 +3,13 @@ import SoraFoundation
 
 struct ParitySignerTxScanViewFactory {
     static func createView(
-        from _: Data,
-        expirationTimer: CountdownTimerMediating
+        from signingData: Data,
+        accountId: AccountId,
+        expirationTimer: CountdownTimerMediating,
+        completion: @escaping TransactionSigningClosure
     ) -> ParitySignerTxScanViewProtocol? {
-        let interactor = ParitySignerTxScanInteractor()
+        let interactor = ParitySignerTxScanInteractor(signingData: signingData, accountId: accountId)
+
         let wireframe = ParitySignerTxScanWireframe()
 
         let processingQueue = QRCaptureService.processingQueue
@@ -17,6 +20,7 @@ struct ParitySignerTxScanViewFactory {
             interactor: interactor,
             baseWireframe: QRScannerWireframe(),
             scanWireframe: wireframe,
+            completion: completion,
             timer: expirationTimer,
             expirationViewModelFactory: TxExpirationViewModelFactory(),
             qrScanService: qrService,
