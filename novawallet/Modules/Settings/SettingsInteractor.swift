@@ -57,6 +57,6 @@ extension SettingsInteractor: SelectedCurrencyDepending {
         guard let currencyManager = self.currencyManager else {
             return
         }
-        presenter?.didRecieve(currency: currencyManager.selectedCurrency.code)
+        presenter?.didReceive(currencyCode: currencyManager.selectedCurrency.code)
     }
 }

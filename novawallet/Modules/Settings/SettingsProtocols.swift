@@ -31,7 +31,7 @@ protocol SettingsInteractorInputProtocol: AnyObject {
 protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
-    func didRecieve(currency: String)
+    func didReceive(currencyCode: String)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,

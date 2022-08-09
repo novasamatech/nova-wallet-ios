@@ -146,8 +146,8 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         }
     }
 
-    func didRecieve(currency: String) {
-        self.currency = currency
+    func didReceive(currencyCode: String) {
+        currency = currencyCode
 
         if view?.isSetup == true {
             updateView()
