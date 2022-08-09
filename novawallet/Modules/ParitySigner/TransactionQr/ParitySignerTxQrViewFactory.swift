@@ -12,7 +12,7 @@ struct ParitySignerTxQrViewFactory {
             return nil
         }
 
-        let wireframe = ParitySignerTxQrWireframe()
+        let wireframe = ParitySignerTxQrWireframe(sharedSigningPayload: signingData)
 
         let presenter = ParitySignerTxQrPresenter(
             interactor: interactor,
