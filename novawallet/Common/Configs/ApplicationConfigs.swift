@@ -26,6 +26,7 @@ protocol ApplicationConfigProtocol {
     var learnPayoutURL: URL { get }
     var learnControllerAccountURL: URL { get }
     var learnRecommendedValidatorsURL: URL { get }
+    var paritySignerTroubleshoutingURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
 }
@@ -165,6 +166,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     var learnControllerAccountURL: URL {
         // swiftlint:disable:next line_length
         URL(string: "https://wiki.polkadot.network/docs/en/maintain-guides-how-to-nominate-polkadot#setting-up-stash-and-controller-keys")!
+    }
+
+    var paritySignerTroubleshoutingURL: URL {
+        URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Parity-Signer-troubleshooting")!
     }
 
     var learnRecommendedValidatorsURL: URL {
