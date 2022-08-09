@@ -44,7 +44,7 @@ final class CurrencyManager: Observable<Currency>, CurrencyManagerProtocol {
         let selectedCurrencyId = settingsManager.selectedCurrencyId
         let currency = currencies.first(where: { $0.id == selectedCurrencyId }) ?? currencies.min { $0.id < $1.id }
         guard let currency = currency else {
-            throw CurrencyManagerError.unknownSelectedCurrency
+            throw CurrencyManagerError.currencyListIsEmpty
         }
 
         availableCurrencies = currencies
@@ -85,5 +85,5 @@ extension CurrencyManager {
 // MARK: - Error
 
 enum CurrencyManagerError: Error {
-    case unknownSelectedCurrency
+    case currencyListIsEmpty
 }
