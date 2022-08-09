@@ -107,7 +107,7 @@ final class ParitySignerTxQrPresenter {
     private func presentQrExpiredAlert() {
         let expirationTimeInterval = transactionCode?.expirationTime.minutesFromSeconds
 
-        let title = R.string.localizable.commonTxQrExpiredTitle(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string.localizable.commonQrCodeExpired(preferredLanguages: selectedLocale.rLanguages)
         let minutes = expirationTimeInterval.map { R.string.localizable.commonMinutesFormat(format: $0) } ?? ""
         let message = R.string.localizable.commonTxQrExpiredMessage(
             minutes,
@@ -163,11 +163,13 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
     }
 
     func proceed() {
-        guard transactionCode != nil else {
+        guard
+            transactionCode != nil,
+            let accountId = try? wallet?.walletDisplayAddress.address.toAccountId() else {
             return
         }
 
-        wireframe.proceed(from: view, timer: timer)
+        wireframe.proceed(from: view, accountId: accountId, timer: timer, completion: completion)
     }
 
     func close() {
