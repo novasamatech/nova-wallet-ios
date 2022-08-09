@@ -1,0 +1,87 @@
+import Foundation
+
+public protocol StateObservableManagerProtocol: AnyObject {
+    associatedtype State
+    typealias StateChangeClosure = (State, State) -> Void
+
+    var state: State { get set }
+
+    func addObserver(
+        with owner: AnyObject,
+        queue: DispatchQueue?,
+        closure: @escaping StateChangeClosure
+    )
+
+    func removeObserver(by owner: AnyObject)
+}
+
+public class StateObservableManager<TState: Equatable>: StateObservableManagerProtocol {
+    public typealias State = TState
+    public typealias VoidClosure = () -> Void
+
+    public struct ObserverWrapper {
+        public weak var owner: AnyObject?
+        public let closure: (TState, TState) -> Void
+        public let queue: DispatchQueue?
+    }
+
+    public private(set) var observers: [ObserverWrapper] = []
+
+    public var state: TState {
+        didSet {
+            if oldValue != state {
+                sideEffectOnChangeState?()
+                notify(oldState: oldValue, newState: state)
+            }
+        }
+    }
+
+    public var sideEffectOnChangeState: VoidClosure?
+
+    public init(state: TState) {
+        self.state = state
+    }
+
+    public func addObserver(
+        with owner: AnyObject,
+        queue: DispatchQueue? = nil,
+        closure: @escaping (TState, TState) -> Void
+    ) {
+        observers.append(ObserverWrapper(
+            owner: owner,
+            closure: closure,
+            queue: queue
+        ))
+
+        observers = observers.filter { $0.owner !== nil }
+    }
+
+    public func removeObserver(by owner: AnyObject) {
+        observers = observers.filter { $0.owner !== owner && $0.owner !== nil }
+    }
+
+    private func notify(oldState: TState, newState: TState) {
+        observers = observers.filter { $0.owner !== nil }
+
+        observers.forEach { wrapper in
+            if wrapper.owner != nil {
+                if let queue = wrapper.queue {
+                    queue.async {
+                        wrapper.closure(oldState, newState)
+                    }
+                } else {
+                    wrapper.closure(oldState, newState)
+                }
+            }
+        }
+    }
+}
+
+extension StateObservableManager where TState: Equatable {
+    func addObserver(
+        with owner: AnyObject,
+        closure: @escaping StateChangeClosure
+    ) {
+        addObserver(with: owner, queue: nil, closure: closure)
+    }
+}
