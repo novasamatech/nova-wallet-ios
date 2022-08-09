@@ -27,5 +27,5 @@ protocol ParitySignerTxQrInteractorOutputProtocol: AnyObject {
 
 protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable, WebPresentable {
     func close(view: ParitySignerTxQrViewProtocol?)
-    func proceed(from view: ParitySignerTxQrViewProtocol?, timer: CountdownTimerProtocol)
+    func proceed(from view: ParitySignerTxQrViewProtocol?, timer: CountdownTimerMediating)
 }
