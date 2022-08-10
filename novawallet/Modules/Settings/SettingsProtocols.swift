@@ -19,6 +19,7 @@ protocol SettingsViewModelFactoryProtocol: AnyObject {
 
     func createSectionViewModels(
         language: Language?,
+        currency: String?,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])]
 }
@@ -30,6 +31,7 @@ protocol SettingsInteractorInputProtocol: AnyObject {
 protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
+    func didReceive(currencyCode: String)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
