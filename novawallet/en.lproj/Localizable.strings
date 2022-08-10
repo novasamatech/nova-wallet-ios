@@ -39,6 +39,7 @@
 "profile.title" = "Settings";
 "profile.about.title" = "About";
 "profile.language.title" = "Language";
+"profile.currency.title" = "Currency";
 "about.version" = "App version";
 "about.contact.us" = "Contact Us";
 "about.title" = "About";

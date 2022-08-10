@@ -12,7 +12,8 @@ struct SettingsViewFactory {
 
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared
+            eventCenter: EventCenter.shared,
+            currencyManager: CurrencyManager.shared
         )
 
         let wireframe = SettingsWireframe()

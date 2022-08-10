@@ -6,6 +6,7 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
 
     private let symbolLabel: BorderedLabelView = .create {
         $0.titleLabel.textAlignment = .center
+        $0.contentInsets = Constants.symbolContentInsets
     }
 
     private let titleLabel: UILabel = .create {
@@ -91,5 +92,6 @@ extension CurrencyCollectionViewCell {
         static let radioSelectorSize: CGFloat = 20
         static let itemsHorizontalOffset: CGFloat = 16
         static let contentVeritcalOffset: CGFloat = 9
+        static let symbolContentInsets = UIEdgeInsets.zero
     }
 }

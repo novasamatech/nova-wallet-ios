@@ -3,6 +3,7 @@ import UIKit.UIImage
 
 enum SettingsRow {
     case wallets
+    case currency
     case language
     case changePin
     case telegram
@@ -22,6 +23,8 @@ extension SettingsRow {
         switch self {
         case .wallets:
             return R.string.localizable.profileWalletsTitle(preferredLanguages: locale.rLanguages)
+        case .currency:
+            return R.string.localizable.profileCurrencyTitle(preferredLanguages: locale.rLanguages)
         case .language:
             return R.string.localizable.profileLanguageTitle(preferredLanguages: locale.rLanguages)
         case .changePin:
@@ -51,6 +54,8 @@ extension SettingsRow {
         switch self {
         case .wallets:
             return R.image.iconWallets()
+        case .currency:
+            return R.image.iconCurrency()
         case .language:
             return R.image.iconLanguage()
         case .changePin:
