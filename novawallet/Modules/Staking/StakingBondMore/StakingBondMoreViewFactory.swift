@@ -53,7 +53,8 @@ struct StakingBondMoreViewFactory {
         guard
             let chainAsset = state.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -79,7 +80,8 @@ struct StakingBondMoreViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
 
         return interactor

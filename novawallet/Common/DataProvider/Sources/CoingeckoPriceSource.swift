@@ -5,19 +5,19 @@ final class CoingeckoPriceSource: SingleValueProviderSourceProtocol {
     typealias Model = PriceData
 
     let priceId: AssetModel.PriceId?
+    let currencyId: String
 
-    @available(*, deprecated, message: "Use init(priceId:) instead")
-    init(assetId: WalletAssetId) {
-        priceId = assetId.coingeckoTokenId
-    }
-
-    init(priceId: AssetModel.PriceId) {
+    init(
+        priceId: AssetModel.PriceId,
+        currencyId: String
+    ) {
         self.priceId = priceId
+        self.currencyId = currencyId
     }
 
     func fetchOperation() -> CompoundOperationWrapper<PriceData?> {
         if let priceId = priceId {
-            let priceOperation = CoingeckoOperationFactory().fetchPriceOperation(for: [priceId])
+            let priceOperation = CoingeckoOperationFactory().fetchPriceOperation(for: [priceId], currency: currencyId)
 
             let targetOperation: BaseOperation<PriceData?> = ClosureOperation {
                 try priceOperation.extractNoCancellableResultData().first

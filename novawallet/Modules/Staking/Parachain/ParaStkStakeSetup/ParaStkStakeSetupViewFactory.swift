@@ -88,7 +88,8 @@ struct ParaStkStakeSetupViewFactory {
             let collatorService = state.collatorService,
             let rewardService = state.rewardCalculationService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -127,6 +128,7 @@ struct ParaStkStakeSetupViewFactory {
             runtimeProvider: runtimeProvider,
             repositoryFactory: repositoryFactory,
             identityOperationFactory: identityOperationFactory,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

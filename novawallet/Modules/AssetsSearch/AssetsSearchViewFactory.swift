@@ -6,11 +6,15 @@ struct AssetsSearchViewFactory {
         for initState: AssetListInitState,
         delegate: AssetsSearchDelegate
     ) -> AssetsSearchViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let interactor = AssetsSearchInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currenyManager: currencyManager,
             logger: Logger.shared
         )
 

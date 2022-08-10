@@ -9,6 +9,7 @@ struct ParaStkCollatorInfoViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared,
             let selectedAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
@@ -17,7 +18,8 @@ struct ParaStkCollatorInfoViewFactory {
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager
         )
 
         let wireframe = ParaStkCollatorInfoWireframe()

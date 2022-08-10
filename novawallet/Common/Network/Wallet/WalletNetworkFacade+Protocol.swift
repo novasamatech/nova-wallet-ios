@@ -13,10 +13,11 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
             return accountSettings.assets.first { $0.identifier == identifier }
         }
-
+        // TODO: Gulnaz
         let balanceOperation = fetchBalanceInfoForAsset(userAssets)
         let priceWrapper: CompoundOperationWrapper<[String: Price]> = fetchPriceOperation(
-            assets: userAssets
+            assets: userAssets,
+            currency: .usd
         )
 
         let currentPriceId = totalPriceId

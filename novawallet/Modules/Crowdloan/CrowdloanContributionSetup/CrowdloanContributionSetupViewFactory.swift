@@ -63,7 +63,8 @@ struct CrowdloanContributionSetupViewFactory {
         asset: AssetModel,
         state: CrowdloanSharedState
     ) -> CrowdloanContributionSetupInteractor? {
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -118,7 +119,8 @@ struct CrowdloanContributionSetupViewFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             jsonLocalSubscriptionFactory: jsonLocalSubscriptionFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

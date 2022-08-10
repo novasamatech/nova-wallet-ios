@@ -73,7 +73,8 @@ struct StakingRebondConfirmationViewFactory {
                 for: chainAsset.chain.accountRequest()
             ),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -99,7 +100,8 @@ struct StakingRebondConfirmationViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

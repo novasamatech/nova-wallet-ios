@@ -38,7 +38,8 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
         runtimeService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol
+        feeProxy: ExtrinsicFeeProxyProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -51,6 +52,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
         self.operationManager = operationManager
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
+        self.currencyManager = currencyManager
     }
 
     private func setupExtrinsicService(_ response: MetaChainAccountResponse) {
@@ -78,7 +80,7 @@ extension StakingRewardDestConfirmInteractor: StakingRewardDestConfirmInteractor
         }
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -199,5 +201,13 @@ extension StakingRewardDestConfirmInteractor: PriceLocalStorageSubscriber,
 extension StakingRewardDestConfirmInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter.didReceiveFee(result: result)
+    }
+}
+
+extension StakingRewardDestConfirmInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

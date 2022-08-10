@@ -23,6 +23,7 @@ final class AssetSelectionInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         assetFilter: @escaping AssetSelectionFilter,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedMetaAccount = selectedMetaAccount
@@ -31,6 +32,7 @@ final class AssetSelectionInteractor {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.assetFilter = assetFilter
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     private func fetchChainsAndSubscribeBalance() {
@@ -120,10 +122,10 @@ final class AssetSelectionInteractor {
             }
         }
 
-        setupPriceProvider(for: Set(availableTokenPrice.values))
+        setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 
-    private func setupPriceProvider(for priceIdSet: Set<AssetModel.PriceId>) {
+    private func setupPriceProvider(for priceIdSet: Set<AssetModel.PriceId>, currency: Currency) {
         priceSubscription = nil
 
         let priceIds = Array(priceIdSet).sorted()
@@ -132,7 +134,10 @@ final class AssetSelectionInteractor {
             return
         }
 
-        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(for: priceIds)
+        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(
+            for: priceIds,
+            currency: currency
+        )
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
             let finalValue = changes.reduceToLastChange()
@@ -268,5 +273,11 @@ extension AssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSub
         case let .failure(error):
             handleAccountBalanceError(error, accountId: accountId)
         }
+    }
+}
+
+extension AssetSelectionInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 }

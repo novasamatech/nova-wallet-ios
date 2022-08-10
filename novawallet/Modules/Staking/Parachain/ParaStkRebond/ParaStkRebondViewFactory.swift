@@ -66,7 +66,8 @@ struct ParaStkRebondViewFactory {
             let chainAsset = state.settings.value,
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -104,6 +105,7 @@ struct ParaStkRebondViewFactory {
             identityOperationFactory: identityOperationFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

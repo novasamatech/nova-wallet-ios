@@ -68,7 +68,8 @@ struct ParaStkUnstakeConfirmViewFactory {
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let blocktimeService = state.blockTimeService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -108,6 +109,7 @@ struct ParaStkUnstakeConfirmViewFactory {
             stakingDurationFactory: stakingDurationFactory,
             blocktimeEstimationService: blocktimeService,
             repositoryFactory: repositoryFactory,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

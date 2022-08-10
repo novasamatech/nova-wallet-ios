@@ -47,6 +47,7 @@ struct StakingUnbondSetupViewFactory {
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared,
             let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
                 for: chainAsset.chain
             ) else {
@@ -82,7 +83,8 @@ struct StakingUnbondSetupViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

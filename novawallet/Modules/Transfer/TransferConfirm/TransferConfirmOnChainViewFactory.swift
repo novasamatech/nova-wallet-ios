@@ -90,7 +90,8 @@ struct TransferConfirmOnChainViewFactory {
 
         guard
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -141,6 +142,7 @@ struct TransferConfirmOnChainViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

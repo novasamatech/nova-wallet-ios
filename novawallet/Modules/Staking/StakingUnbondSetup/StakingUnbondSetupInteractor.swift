@@ -39,7 +39,8 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -52,6 +53,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 
     func handleControllerMetaAccount(response: MetaChainAccountResponse) {
@@ -76,7 +78,7 @@ extension StakingUnbondSetupInteractor: StakingUnbondSetupInteractorInputProtoco
         }
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -216,5 +218,13 @@ extension StakingUnbondSetupInteractor: WalletLocalStorageSubscriber, WalletLoca
 extension StakingUnbondSetupInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter.didReceiveFee(result: result)
+    }
+}
+
+extension StakingUnbondSetupInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

@@ -37,6 +37,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         identityOperationFactory: IdentityOperationFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -51,6 +52,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -84,7 +86,7 @@ extension ParaStkRebondInteractor: ParaStkRebondInteractorInputProtocol {
         )
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceivePrice(nil)
         }
@@ -215,6 +217,14 @@ extension ParaStkRebondInteractor: ParastakingLocalStorageSubscriber, Parastakin
             presenter?.didReceiveScheduledRequests(scheduledRequests)
         case let .failure(error):
             presenter?.didReceiveError(error)
+        }
+    }
+}
+
+extension ParaStkRebondInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 }

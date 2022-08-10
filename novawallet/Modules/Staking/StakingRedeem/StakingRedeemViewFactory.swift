@@ -69,7 +69,8 @@ final class StakingRedeemViewFactory {
                 for: chainAsset.chain.accountRequest()
             ),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -103,7 +104,8 @@ final class StakingRedeemViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             slashesOperationFactory: SlashesOperationFactory(storageRequestFactory: storageRequestFactory),
             feeProxy: feeProxy,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

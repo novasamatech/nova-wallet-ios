@@ -101,6 +101,7 @@ extension StakingMainPresenterFactory {
             collatorsOperationFactory: collatorsOperationFactory,
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
+            currencyManager: CurrencyManager.shared!,
             operationQueue: operationQueue,
             logger: logger
         )

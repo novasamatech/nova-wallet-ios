@@ -55,7 +55,8 @@ struct ParaStkRedeemViewFactory {
             let chainAsset = state.settings.value,
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -82,7 +83,8 @@ struct ParaStkRedeemViewFactory {
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             signer: signer,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            currencyManager: currencyManager
         )
     }
 }

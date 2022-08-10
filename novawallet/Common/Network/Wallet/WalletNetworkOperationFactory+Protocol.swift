@@ -138,9 +138,9 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 result.append(priceId)
             }
         }
-
+        // TODO: Gulnaz
         if !priceIds.isEmpty {
-            priceOperation = CoingeckoPriceListSource(priceIds: priceIds).fetchOperation()
+            priceOperation = CoingeckoPriceListSource(priceIds: priceIds, currencyId: "usd").fetchOperation()
         } else {
             priceOperation = CompoundOperationWrapper.createWithResult(nil)
         }

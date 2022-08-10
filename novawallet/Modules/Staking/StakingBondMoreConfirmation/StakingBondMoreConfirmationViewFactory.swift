@@ -65,7 +65,8 @@ struct StakingBondMoreConfirmViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let accountResponse = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let accountResponse = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -97,7 +98,8 @@ struct StakingBondMoreConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            currencyManager: currencyManager
         )
     }
 }

@@ -141,6 +141,7 @@ final class SelectValidatorsConfirmViewFactory {
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress(),
+            let currencyManager = CurrencyManager.shared,
             let stakingDurationFactory = try? stakingState.createStakingDurationOperationFactory(
                 for: chainAsset.chain
             ) else {
@@ -172,7 +173,8 @@ final class SelectValidatorsConfirmViewFactory {
             durationOperationFactory: stakingDurationFactory,
             operationManager: operationManager,
             signer: signer,
-            nomination: nomination
+            nomination: nomination,
+            currencyManager: currencyManager
         )
     }
 
@@ -187,6 +189,7 @@ final class SelectValidatorsConfirmViewFactory {
 
         guard
             let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
@@ -224,7 +227,8 @@ final class SelectValidatorsConfirmViewFactory {
             operationManager: operationManager,
             signer: signer,
             accountRepositoryFactory: accountRepository,
-            nomination: nomination
+            nomination: nomination,
+            currencyManager: currencyManager
         )
     }
 }
