@@ -34,6 +34,6 @@ protocol StakingRedeemInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
-    StakingErrorPresentable, AddressOptionsPresentable, NoSigningPresentable {
+    StakingErrorPresentable, AddressOptionsPresentable, MessageSheetPresentable {
     func complete(from view: StakingRedeemViewProtocol?)
 }

@@ -883,3 +883,6 @@
 "parity.signer.tx.scan.invalid.title" = "QR code is invalid";
 "parity.signer.tx.scan.invalid.message" = "Please make sure you are scanning QR code for currently signing operation";
 "common.try.again" = "Try again";
+"common.signing.not.supported.title" = "Signing is not supported";
+"common.parity.signer.not.supported.message" = "Parity Signer does not support signing arbitrary messages — only transactions";
+"common.unsupported.qr.code" = "QR code has unsupported format";
