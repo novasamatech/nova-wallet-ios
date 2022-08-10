@@ -251,6 +251,8 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
             wireframe.presentDismissingNoSigningView(from: view)
         } else {
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+
+            logger?.error("Did receive error: \(error)")
         }
     }
 }

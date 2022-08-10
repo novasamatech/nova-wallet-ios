@@ -18,6 +18,14 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
         return item
     }()
 
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
+        return view
+    }()
+
     let accountDetailsView: WalletAccountInfoView = {
         let view = WalletAccountInfoView()
         view.applyOutlineStyle()
@@ -77,43 +85,61 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
     }
 
     private func setupLayout() {
+        let verticalScaling = isAdaptiveWidthDecreased ? designScaleRatio.height * 0.85 : 1.0
+        let topOffsetScaling = isAdaptiveWidthDecreased ? verticalScaling * 0.6 : 1.0
+
         addSubview(continueButton)
         continueButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-UIConstants.actionBottomInset)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-UIConstants.actionBottomInset * verticalScaling)
             make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(helpButton)
         helpButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset * verticalScaling)
             make.height.equalTo(UIConstants.actionHeight)
-            make.bottom.equalTo(continueButton.snp.top).offset(-16.0)
+            make.bottom.equalTo(continueButton.snp.top).offset(-16.0 * verticalScaling)
         }
 
-        addSubview(accountDetailsView)
+        var layoutMargins = containerView.stackView.layoutMargins
+        layoutMargins.top = 16.0 * topOffsetScaling
+        containerView.stackView.layoutMargins = layoutMargins
+
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(helpButton.snp.top).offset(-16.0 * verticalScaling)
+        }
+
+        containerView.stackView.addArrangedSubview(accountDetailsView)
         accountDetailsView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(16.0)
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(52.0)
         }
 
-        addSubview(qrView)
+        containerView.stackView.setCustomSpacing(52.0 * topOffsetScaling, after: accountDetailsView)
+
+        containerView.stackView.addArrangedSubview(titleLabel)
+
+        containerView.stackView.setCustomSpacing(35.0 * verticalScaling, after: titleLabel)
+
+        let qrContainerView = UIView()
+        qrContainerView.backgroundColor = .clear
+
+        containerView.stackView.addArrangedSubview(qrContainerView)
+        qrContainerView.snp.makeConstraints { make in
+            make.height.equalTo(qrSize)
+        }
+
+        qrContainerView.addSubview(qrView)
         qrView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.size.equalTo(qrSize)
         }
 
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(qrView.snp.top).offset(-35.0)
-        }
+        containerView.stackView.setCustomSpacing(24.0 * verticalScaling, after: qrContainerView)
 
-        addSubview(timerLabel)
-        timerLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(qrView.snp.bottom).offset(24.0)
-        }
+        containerView.stackView.addArrangedSubview(timerLabel)
     }
 }
