@@ -10,4 +10,13 @@ extension MetaAccountModelType {
             return .paritySigner
         }
     }
+
+    var supportsSigningRawBytes: Bool {
+        switch self {
+        case .secrets, .watchOnly:
+            return true
+        case .paritySigner:
+            return false
+        }
+    }
 }

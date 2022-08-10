@@ -15,6 +15,8 @@ struct ParitySignerScanViewFactory {
     }
 
     private static func createView(wireframe: ParitySignerScanWireframeProtocol) -> QRScannerViewProtocol? {
+        let interactor = ParitySignerScanInterator(chainRegistry: ChainRegistryFacade.sharedRegistry)
+
         let processingQueue = QRCaptureService.processingQueue
         let qrService = QRCaptureService(delegate: nil, delegateQueue: processingQueue)
         let qrExtractor = QRExtractionService(processingQueue: processingQueue)
@@ -27,6 +29,7 @@ struct ParitySignerScanViewFactory {
 
         let presenter = ParitySignerScanPresenter(
             matcher: ParitySignerScanMatcher(),
+            interactor: interactor,
             scanWireframe: wireframe,
             baseWireframe: QRScannerWireframe(),
             qrScanService: qrService,
@@ -51,6 +54,7 @@ struct ParitySignerScanViewFactory {
         )
 
         presenter.view = view
+        interactor.presenter = presenter
 
         return view
     }

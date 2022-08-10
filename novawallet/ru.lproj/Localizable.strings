@@ -883,3 +883,6 @@
 "parity.signer.tx.scan.invalid.title" = "Неверный QR код";
 "parity.signer.tx.scan.invalid.message" = "Пожалуйста, убедитесь, что вы сканируете QR код для правильно подписанной операции";
 "common.try.again" = "Попробовать снова";
+"common.signing.not.supported.title" = "Подпись не поддерживается";
+"common.parity.signer.not.supported.message" = "Parity Signer не поддерживает подпись произвольных сообщений — только транзакций";
+"common.unsupported.qr.code" = "Формат QR кода не поддерживается";

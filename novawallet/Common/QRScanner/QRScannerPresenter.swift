@@ -80,6 +80,13 @@ class QRScannerPresenter: QRScannerPresenterProtocol {
             let message = R.string.localizable.qrScanErrorCameraRestricted(preferredLanguages: locale.rLanguages)
             let title = R.string.localizable.qrScanErrorCameraTitle(preferredLanguages: locale.rLanguages)
             wireframe.askOpenApplicationSettings(with: message, title: title, from: view, locale: locale)
+        case .unsupportedFormat:
+            view.present(
+                message: R.string.localizable.commonUnsupportedQrCode(
+                    preferredLanguages: locale.rLanguages
+                ),
+                animated: true
+            )
         default:
             break
         }

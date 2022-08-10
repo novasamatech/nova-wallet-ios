@@ -19,6 +19,7 @@ extension AccountId {
 
 enum AccountAddressConversionError: Error {
     case invalidEthereumAddress
+    case invalidChainAddress
 }
 
 extension AccountAddress {

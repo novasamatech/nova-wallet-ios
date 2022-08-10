@@ -33,6 +33,6 @@ protocol StakingBondMoreConfirmationOutputProtocol: AnyObject {
 protocol StakingBondMoreConfirmationWireframeProtocol: AlertPresentable, ErrorPresentable,
     StakingErrorPresentable,
     AddressOptionsPresentable,
-    NoSigningPresentable {
+    MessageSheetPresentable {
     func complete(from view: StakingBondMoreConfirmationViewProtocol?)
 }

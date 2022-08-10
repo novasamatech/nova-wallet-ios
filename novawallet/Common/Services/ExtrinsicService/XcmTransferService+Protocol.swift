@@ -208,7 +208,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
 
             let optReserveWrapper: CompoundOperationWrapper<FeeWithWeight>?
 
-            if let reserveMessage = feeMessages.reserve {
+            if request.isNonReserveTransfer, let reserveMessage = feeMessages.reserve {
                 let wrapper = createReserveFeeWrapper(
                     for: reserveMessage,
                     request: request,
