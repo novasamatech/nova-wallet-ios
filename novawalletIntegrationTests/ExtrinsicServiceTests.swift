@@ -55,6 +55,7 @@ class ExtrinsicServiceTests: XCTestCase {
             accountId: selectedAccountId,
             chain: chain,
             cryptoType: .sr25519,
+            walletType: .secrets,
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
@@ -99,6 +100,7 @@ class ExtrinsicServiceTests: XCTestCase {
             accountId: selectedAccountId,
             chain: chain,
             cryptoType: .sr25519,
+            walletType: .secrets,
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager

@@ -12,6 +12,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let signingWrapperFactory: SigningWrapperFactoryProtocol
     let calculatorService: RewardCalculatorServiceProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let operationManager: OperationManagerProtocol
@@ -34,6 +35,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
         calculatorService: RewardCalculatorServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol,
@@ -46,6 +48,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.signingWrapperFactory = signingWrapperFactory
         self.calculatorService = calculatorService
         self.runtimeService = runtimeService
         self.operationManager = operationManager
@@ -57,14 +60,13 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
         let chain = chainAsset.chain
 
         extrinsicService = extrinsicServiceFactory.createService(
-            accountId: response.chainAccount.accountId,
-            chain: chain,
-            cryptoType: response.chainAccount.cryptoType
+            account: response.chainAccount,
+            chain: chain
         )
 
-        signingWrapper = extrinsicServiceFactory.createSigningWrapper(
-            metaId: response.metaId,
-            account: response.chainAccount
+        signingWrapper = signingWrapperFactory.createSigningWrapper(
+            for: response.metaId,
+            accountResponse: response.chainAccount
         )
     }
 }
