@@ -93,14 +93,11 @@ struct ParaStkStakeSetupViewFactory {
             return nil
         }
 
-        let extrinsicService = ExtrinsicService(
-            accountId: selectedAccount.chainAccount.accountId,
-            chain: chainAsset.chain,
-            cryptoType: selectedAccount.chainAccount.cryptoType,
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
-        )
+        ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
         let operationManager = OperationManagerFacade.sharedManager
 

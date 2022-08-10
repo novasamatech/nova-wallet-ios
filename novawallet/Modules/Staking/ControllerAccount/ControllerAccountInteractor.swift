@@ -227,9 +227,8 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
 
                         if let accountResponse = accountResponse, let account = maybeAccount {
                             self?.extrinsicService = self?.extrinsicServiceFactory.createService(
-                                accountId: accountResponse.chainAccount.accountId,
-                                chain: chain,
-                                cryptoType: accountResponse.chainAccount.cryptoType
+                                account: accountResponse.chainAccount,
+                                chain: chain
                             )
                             self?.estimateFee(for: account)
                         }
