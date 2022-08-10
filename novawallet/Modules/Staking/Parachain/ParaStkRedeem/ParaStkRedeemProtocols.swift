@@ -33,6 +33,6 @@ protocol ParaStkRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    NoSigningPresentable {
+    MessageSheetPresentable {
     func complete(on view: ParaStkRedeemViewProtocol?, locale: Locale)
 }
