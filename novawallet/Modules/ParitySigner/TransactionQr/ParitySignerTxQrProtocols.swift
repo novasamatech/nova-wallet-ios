@@ -25,7 +25,15 @@ protocol ParitySignerTxQrInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable, WebPresentable {
+protocol ParitySignerTxQrWireframeProtocol: AlertPresentable, ErrorPresentable,
+    AddressOptionsPresentable,
+    WebPresentable {
     func close(view: ParitySignerTxQrViewProtocol?)
-    func proceed(from view: ParitySignerTxQrViewProtocol?, timer: CountdownTimerProtocol)
+
+    func proceed(
+        from view: ParitySignerTxQrViewProtocol?,
+        accountId: AccountId,
+        timer: CountdownTimerMediating,
+        completion: @escaping TransactionSigningClosure
+    )
 }
