@@ -7,12 +7,17 @@ protocol AccountTableViewCellDelegate: AnyObject {
 }
 
 final class AccountTableViewCell: UITableViewCell {
+    private enum Constants {
+        static let actionButtonWidth: CGFloat = 40.0
+    }
+
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var detailsLabel: UILabel!
     @IBOutlet private var mainImageView: UIImageView!
     @IBOutlet private var warningImageView: UIImageView!
     @IBOutlet private var iconView: PolkadotIconView!
     @IBOutlet private var infoButton: RoundedButton!
+    @IBOutlet private var infoButtonWidth: NSLayoutConstraint!
 
     weak var delegate: AccountTableViewCellDelegate?
     private var viewModel: ChainAccountViewModelItem?
@@ -52,6 +57,12 @@ final class AccountTableViewCell: UITableViewCell {
         titleLabel.text = viewModel.name
         detailsLabel.text = viewModel.address ?? viewModel.warning ?? ""
 
+        if viewModel.address != nil {
+            detailsLabel.lineBreakMode = .byTruncatingMiddle
+        } else {
+            detailsLabel.lineBreakMode = .byTruncatingTail
+        }
+
         viewModel.chainIconViewModel?.loadImage(
             on: mainImageView,
             targetSize: CGSize(width: 32.0, height: 32.0),
@@ -74,11 +85,17 @@ final class AccountTableViewCell: UITableViewCell {
             infoButton.imageWithTitleView?.iconImage = R.image.iconMore()?.tinted(
                 with: R.color.colorWhite32()!
             )
+
+            infoButtonWidth.constant = Constants.actionButtonWidth
         } else {
             selectionStyle = .none
 
             infoButton.imageWithTitleView?.iconImage = nil
+
+            infoButtonWidth.constant = 0.0
         }
+
+        setNeedsLayout()
     }
 
     // MARK: - Actions
