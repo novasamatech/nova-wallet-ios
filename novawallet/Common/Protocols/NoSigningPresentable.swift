@@ -37,8 +37,8 @@ extension NoSigningPresentable {
 }
 
 enum NoSigningPresentableFactory {
-    static func createNoSigningView(with completion: @escaping () -> Void) -> NoSigningViewProtocol? {
-        guard let confirmationView = NoSigningViewFactory.createView(with: completion) else {
+    static func createNoSigningView(with completion: @escaping () -> Void) -> MessageSheetViewProtocol? {
+        guard let confirmationView = MessageSheetViewFactory.createNoSigningView(with: completion) else {
             return nil
         }
 
