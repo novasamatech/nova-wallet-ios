@@ -1,16 +1,21 @@
 import UIKit
 import SoraFoundation
 
-final class NoSigningViewController: UIViewController, ViewHolder {
-    typealias RootViewType = NoSigningViewLayout
+final class MessageSheetViewController: UIViewController, ViewHolder {
+    typealias RootViewType = MessageSheetViewLayout
 
-    let presenter: NoSigningPresenterProtocol
+    let presenter: MessageSheetPresenterProtocol
+    let viewModel: MessageSheetViewModel
 
-    init(presenter: NoSigningPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: MessageSheetPresenterProtocol,
+        viewModel: MessageSheetViewModel,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
-        super.init(nibName: nil, bundle: nil)
+        self.viewModel = viewModel
 
-        preferredContentSize = CGSize(width: 0.0, height: 300.0)
+        super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
     }
@@ -21,26 +26,31 @@ final class NoSigningViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = NoSigningViewLayout()
+        view = MessageSheetViewLayout()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupLocalization()
+        setupIcon()
         setupHandlers()
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.noKeyTitle(preferredLanguages: languages)
-        rootView.detailsLabel.text = R.string.localizable.noKeyMessage(preferredLanguages: languages)
+        rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
+        rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonOkBack(
             preferredLanguages: languages
         )
         rootView.actionButton.invalidateLayout()
+    }
+
+    private func setupIcon() {
+        rootView.iconView.image = viewModel.icon
     }
 
     private func setupHandlers() {
@@ -52,9 +62,9 @@ final class NoSigningViewController: UIViewController, ViewHolder {
     }
 }
 
-extension NoSigningViewController: NoSigningViewProtocol {}
+extension MessageSheetViewController: MessageSheetViewProtocol {}
 
-extension NoSigningViewController: Localizable {
+extension MessageSheetViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

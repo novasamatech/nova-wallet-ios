@@ -1,7 +1,7 @@
 import UIKit
 
-final class NoSigningViewLayout: UIView {
-    let iconView = UIImageView(image: R.image.imageNoKeys())
+final class MessageSheetViewLayout: UIView {
+    let iconView = UIImageView()
 
     let titleLabel: UILabel = {
         let label = UILabel()

@@ -2,6 +2,8 @@ import Foundation
 import SoraFoundation
 
 final class ParitySignerScanPresenter: QRScannerPresenter {
+    let interactor: ParitySignerScanInteractorInputProtocol
+
     let matcher: ParitySignerScanMatcherProtocol
     let qrExtractionError: LocalizableResource<String>
 
@@ -15,6 +17,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
     init(
         matcher: ParitySignerScanMatcherProtocol,
+        interactor: ParitySignerScanInteractorInputProtocol,
         scanWireframe: ParitySignerScanWireframeProtocol,
         baseWireframe: QRScannerWireframeProtocol,
         qrScanService: QRCaptureServiceProtocol,
@@ -24,6 +27,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         logger: LoggerProtocol? = nil
     ) {
         self.matcher = matcher
+        self.interactor = interactor
         self.scanWireframe = scanWireframe
         self.qrExtractionError = qrExtractionError
         self.localizationManager = localizationManager
@@ -71,7 +75,7 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
 
         if let addressScan = matcher.match(code: code) {
             DispatchQueue.main.async { [weak self] in
-                self?.scanWireframe.completeScan(on: self?.view, addressScan: addressScan)
+                self?.interactor.process(addressScan: addressScan)
             }
         } else {
             DispatchQueue.main.async { [weak self] in
@@ -84,5 +88,17 @@ final class ParitySignerScanPresenter: QRScannerPresenter {
         super.viewWillAppear()
 
         setLastCode(nil)
+    }
+}
+
+extension ParitySignerScanPresenter: ParitySignerScanInteractorOutputProtocol {
+    func didReceiveValidation(result: Result<ParitySignerAddressScan, Error>) {
+        switch result {
+        case let .success(addressScan):
+            scanWireframe.completeScan(on: view, addressScan: addressScan)
+        case .failure:
+            handleFailure()
+            setLastCode(nil)
+        }
     }
 }
