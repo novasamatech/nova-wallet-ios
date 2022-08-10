@@ -98,6 +98,7 @@ extension ParitySignerScanPresenter: ParitySignerScanInteractorOutputProtocol {
             scanWireframe.completeScan(on: view, addressScan: addressScan)
         case .failure:
             handleFailure()
+            setLastCode(nil)
         }
     }
 }

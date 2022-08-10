@@ -885,3 +885,4 @@
 "common.try.again" = "Попробовать снова";
 "common.signing.not.supported.title" = "Подпись не поддерживается";
 "common.parity.signer.not.supported.message" = "Parity Signer не поддерживает подпись произвольных сообщений — только транзакций";
+"common.unsupported.qr.code" = "Формат QR кода не поддерживается";
