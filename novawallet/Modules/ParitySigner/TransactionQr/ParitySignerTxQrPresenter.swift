@@ -13,7 +13,7 @@ final class ParitySignerTxQrPresenter {
 
     private var transactionCode: TransactionDisplayCode?
     private var wallet: ChainWalletDisplayAddress?
-    private var timer: CountdownTimerProtocol?
+    private var timer = CountdownTimerMediator()
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
 
@@ -33,10 +33,6 @@ final class ParitySignerTxQrPresenter {
         self.applicationConfig = applicationConfig
         self.logger = logger
         self.localizationManager = localizationManager
-    }
-
-    deinit {
-        clearTimer()
     }
 
     private func handle(error: Error) {
@@ -66,7 +62,7 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func updateExpirationViewModel() {
-        guard let timer = timer else {
+        guard transactionCode != nil else {
             return
         }
 
@@ -79,7 +75,7 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func applyNewExpirationInterval(after oldExpirationInterval: TimeInterval?) {
-        let optRemainedTimeInterval = timer?.remainedInterval
+        let remainedTimeInterval = timer.remainedInterval
 
         clearTimer()
 
@@ -88,7 +84,6 @@ final class ParitySignerTxQrPresenter {
         }
 
         if
-            let remainedTimeInterval = optRemainedTimeInterval,
             let oldExpirationInterval = oldExpirationInterval, oldExpirationInterval >= remainedTimeInterval {
             let elapsedTime = oldExpirationInterval - remainedTimeInterval
             let newTimerInterval = max(transactionCode.expirationTime - elapsedTime, 0.0)
@@ -100,21 +95,19 @@ final class ParitySignerTxQrPresenter {
     }
 
     private func clearTimer() {
-        timer?.delegate = nil
-        timer?.stop()
-        timer = nil
+        timer.removeObserver(self)
+        timer.stop()
     }
 
     private func setupTimer(for timeInterval: TimeInterval) {
-        timer = CountdownTimer()
-        timer?.delegate = self
-        timer?.start(with: timeInterval)
+        timer.addObserver(self)
+        timer.start(with: timeInterval)
     }
 
     private func presentQrExpiredAlert() {
         let expirationTimeInterval = transactionCode?.expirationTime.minutesFromSeconds
 
-        let title = R.string.localizable.commonTxQrExpiredTitle(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string.localizable.commonQrCodeExpired(preferredLanguages: selectedLocale.rLanguages)
         let minutes = expirationTimeInterval.map { R.string.localizable.commonMinutesFormat(format: $0) } ?? ""
         let message = R.string.localizable.commonTxQrExpiredMessage(
             minutes,
@@ -170,11 +163,13 @@ extension ParitySignerTxQrPresenter: ParitySignerTxQrPresenterProtocol {
     }
 
     func proceed() {
-        guard let timer = timer else {
+        guard
+            transactionCode != nil,
+            let accountId = try? wallet?.walletDisplayAddress.address.toAccountId() else {
             return
         }
 
-        wireframe.proceed(from: view, timer: timer)
+        wireframe.proceed(from: view, accountId: accountId, timer: timer, completion: completion)
     }
 
     func close() {

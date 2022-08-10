@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class QRScannerViewLayout: UIView {
+class QRScannerViewLayout: UIView {
     let qrFrameView: CameraFrameView = {
         let view = CameraFrameView()
         view.cornerRadius = 24.0
@@ -19,7 +19,7 @@ final class QRScannerViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .regularBody
+        label.font = .semiBoldBody
         label.textColor = R.color.colorWhite()
         label.numberOfLines = 2
         label.textAlignment = .center
@@ -59,7 +59,7 @@ final class QRScannerViewLayout: UIView {
         }
     }
 
-    private func setupLayout(with settings: QRScannerViewSettings) {
+    func setupLayout(with settings: QRScannerViewSettings) {
         addSubview(qrFrameView)
 
         qrFrameView.snp.makeConstraints { make in

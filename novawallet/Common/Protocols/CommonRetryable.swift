@@ -8,6 +8,15 @@ protocol CommonRetryable {
         locale: Locale?,
         retryAction: @escaping () -> Void
     )
+
+    func presentTryAgainOperation(
+        on view: ControllerBackedProtocol?,
+        title: String,
+        message: String,
+        actionTitle: String,
+        locale: Locale?,
+        retryAction: @escaping () -> Void
+    )
 }
 
 extension CommonRetryable where Self: AlertPresentable {
@@ -45,6 +54,29 @@ extension CommonRetryable where Self: AlertPresentable {
             message: message,
             actions: [retryViewModel],
             closeAction: R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages)
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentTryAgainOperation(
+        on view: ControllerBackedProtocol?,
+        title: String,
+        message: String,
+        actionTitle: String,
+        locale _: Locale?,
+        retryAction: @escaping () -> Void
+    ) {
+        let retryViewModel = AlertPresentableAction(
+            title: actionTitle,
+            handler: retryAction
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [retryViewModel],
+            closeAction: nil
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
