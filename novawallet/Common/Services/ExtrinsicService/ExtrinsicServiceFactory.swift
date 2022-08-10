@@ -4,52 +4,42 @@ import SubstrateSdk
 
 protocol ExtrinsicServiceFactoryProtocol {
     func createService(
-        accountId: AccountId,
-        chain: ChainModel,
-        cryptoType: MultiassetCryptoType
+        account: ChainAccountResponse,
+        chain: ChainModel
     ) -> ExtrinsicServiceProtocol
 
     func createOperationFactory(
-        accountId: AccountId,
-        chain: ChainModel,
-        cryptoType: MultiassetCryptoType
+        account: ChainAccountResponse,
+        chain: ChainModel
     ) -> ExtrinsicOperationFactoryProtocol
-
-    func createSigningWrapper(
-        metaId: String,
-        account: ChainAccountResponse
-    ) -> SigningWrapperProtocol
 }
 
 final class ExtrinsicServiceFactory {
     private let runtimeRegistry: RuntimeCodingServiceProtocol
     private let engine: JSONRPCEngine
     private let operationManager: OperationManagerProtocol
-    private let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol,
-        signingWrapperFactory: SigningWrapperFactoryProtocol
+        operationManager: OperationManagerProtocol
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
         self.operationManager = operationManager
-        self.signingWrapperFactory = signingWrapperFactory
     }
 }
 
 extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createService(
-        accountId: AccountId,
-        chain: ChainModel,
-        cryptoType: MultiassetCryptoType
+        account: ChainAccountResponse,
+        chain: ChainModel
     ) -> ExtrinsicServiceProtocol {
         ExtrinsicService(
-            accountId: accountId,
+            accountId: account.accountId,
             chain: chain,
-            cryptoType: cryptoType,
+            cryptoType: account.cryptoType,
+            walletType: account.type,
             runtimeRegistry: runtimeRegistry,
             engine: engine,
             operationManager: operationManager
@@ -57,24 +47,17 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     }
 
     func createOperationFactory(
-        accountId: AccountId,
-        chain: ChainModel,
-        cryptoType: MultiassetCryptoType
+        account: ChainAccountResponse,
+        chain: ChainModel
     ) -> ExtrinsicOperationFactoryProtocol {
         ExtrinsicOperationFactory(
-            accountId: accountId,
+            accountId: account.accountId,
             chain: chain,
-            cryptoType: cryptoType,
+            cryptoType: account.cryptoType,
+            signaturePayloadFormat: account.type.signaturePayloadFormat,
             runtimeRegistry: runtimeRegistry,
             customExtensions: DefaultExtrinsicExtension.extensions,
             engine: engine
         )
-    }
-
-    func createSigningWrapper(
-        metaId: String,
-        account: ChainAccountResponse
-    ) -> SigningWrapperProtocol {
-        signingWrapperFactory.createSigningWrapper(for: metaId, accountResponse: account)
     }
 }

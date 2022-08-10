@@ -15,6 +15,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let signingWrapperFactory: SigningWrapperFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let operationManager: OperationManagerProtocol
@@ -41,6 +42,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         operationManager: OperationManagerProtocol
@@ -52,6 +54,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.signingWrapperFactory = signingWrapperFactory
         self.stakingDurationOperationFactory = stakingDurationOperationFactory
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
@@ -62,14 +65,13 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         let chain = chainAsset.chain
 
         extrinsicService = extrinsicServiceFactory.createService(
-            accountId: response.chainAccount.accountId,
-            chain: chain,
-            cryptoType: response.chainAccount.cryptoType
+            account: response.chainAccount,
+            chain: chain
         )
 
-        signingWrapper = extrinsicServiceFactory.createSigningWrapper(
-            metaId: response.metaId,
-            account: response.chainAccount
+        signingWrapper = signingWrapperFactory.createSigningWrapper(
+            for: response.metaId,
+            accountResponse: response.chainAccount
         )
     }
 
