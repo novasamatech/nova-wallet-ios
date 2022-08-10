@@ -52,6 +52,12 @@ final class AccountTableViewCell: UITableViewCell {
         titleLabel.text = viewModel.name
         detailsLabel.text = viewModel.address ?? viewModel.warning ?? ""
 
+        if viewModel.address != nil {
+            detailsLabel.lineBreakMode = .byTruncatingMiddle
+        } else {
+            detailsLabel.lineBreakMode = .byTruncatingTail
+        }
+
         viewModel.chainIconViewModel?.loadImage(
             on: mainImageView,
             targetSize: CGSize(width: 32.0, height: 32.0),
