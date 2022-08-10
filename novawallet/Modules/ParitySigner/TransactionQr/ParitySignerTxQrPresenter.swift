@@ -211,7 +211,7 @@ extension ParitySignerTxQrPresenter: CountdownTimerDelegate {
     func didStop(with remainedInterval: TimeInterval) {
         updateExpirationViewModel()
 
-        if remainedInterval == 0, transactionCode?.expirationTime != nil {
+        if remainedInterval < TimeInterval.leastNonzeroMagnitude, transactionCode?.expirationTime != nil {
             presentQrExpiredAlert()
         }
     }
