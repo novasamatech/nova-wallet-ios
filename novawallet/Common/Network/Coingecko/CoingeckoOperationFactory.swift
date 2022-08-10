@@ -63,7 +63,7 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
                       let priceData = priceDataPairs.data[currency] else {
                     return PriceData(price: "0", usdDayChange: nil)
                 }
-    
+
                 return PriceData(
                     price: priceData.price.stringWithPointSeparator,
                     usdDayChange: priceData.dayChange
