@@ -140,7 +140,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         }
         // TODO: Gulnaz
         if !priceIds.isEmpty {
-            priceOperation = CoingeckoPriceListSource(priceIds: priceIds, currencyId: "usd").fetchOperation()
+            priceOperation = CoingeckoPriceListSource(priceIds: priceIds, currencyId: CurrencyManager.shared!.selectedCurrency.coingeckoId).fetchOperation()
         } else {
             priceOperation = CompoundOperationWrapper.createWithResult(nil)
         }

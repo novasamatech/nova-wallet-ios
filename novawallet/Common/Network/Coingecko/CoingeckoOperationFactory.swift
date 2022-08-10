@@ -59,13 +59,14 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
             )
 
             return tokenIds.map { assetId in
-                guard let priceData = priceData[assetId] else {
+                guard let priceDataPairs = priceData[assetId],
+                      let priceData = priceDataPairs.data[currency] else {
                     return PriceData(price: "0", usdDayChange: nil)
                 }
-
+    
                 return PriceData(
-                    price: priceData.usdPrice.stringWithPointSeparator,
-                    usdDayChange: priceData.usdDayChange
+                    price: priceData.price.stringWithPointSeparator,
+                    usdDayChange: priceData.dayChange
                 )
             }
         }

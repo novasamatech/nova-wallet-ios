@@ -17,7 +17,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         let balanceOperation = fetchBalanceInfoForAsset(userAssets)
         let priceWrapper: CompoundOperationWrapper<[String: Price]> = fetchPriceOperation(
             assets: userAssets,
-            currency: .usd
+            currency: CurrencyManager.shared!.selectedCurrency
         )
 
         let currentPriceId = totalPriceId

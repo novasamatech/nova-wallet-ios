@@ -27,6 +27,15 @@
         "coingeckoId": "aed"
     },
     {
+        "code": "RUB",
+        "name": "Russian rubles",
+        "symbol": "RUB",
+        "category": "fiat",
+        "popular": false,
+        "id": 5,
+        "coingeckoId": "rub"
+    },
+    {
         "code": "DOT",
         "name": "Polkadot",
         "symbol": "DOT",
