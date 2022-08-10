@@ -29,6 +29,6 @@ protocol ParaStkUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresenta
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
     FeeRetryable,
-    NoSigningPresentable {
+    MessageSheetPresentable {
     func complete(on view: ParaStkUnstakeConfirmViewProtocol?, locale: Locale)
 }

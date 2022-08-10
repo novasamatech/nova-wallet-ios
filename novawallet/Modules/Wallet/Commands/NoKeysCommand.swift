@@ -4,7 +4,7 @@ import SoraUI
 
 final class NoKeysCommand: WalletCommandProtocol {
     func execute() throws {
-        guard let confirmationView = NoSigningPresentableFactory.createNoSigningView(with: {}) else {
+        guard let confirmationView = MessageSheetPresentableFactory.createNoSigningView(with: {}) else {
             return
         }
 
