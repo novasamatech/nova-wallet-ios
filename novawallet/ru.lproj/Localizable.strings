@@ -867,7 +867,7 @@
 "welcome.parity.signer.step3" = "Parity Signer покажет QR код для сканирования";
 "welcome.parity.signer.step3.highlighted" = "QR код для сканирования";
 "common.scan.qr.code" = "Сканировать QR код";
-"parity.signer.scan.title" = "Поднесите QR код\nиз Parity Signer";
+"parity.signer.scan.title" = "Поднесите QR код из Parity Signer";
 "parity.signer.address.scan.error" = "Не удается получить адрес из QR кода";
 "parity.signer.addresses.title" = "Ваши аккаунты";
 "parity.signer.addresses.subtitle" = "Следующие аккаунты были успешно получены от Parity Signer";
@@ -880,3 +880,6 @@
 "common.qr.code.expired" = "QR код устарел";
 "parity.signer.tx.secondary.action" = "У меня ошибка в Parity Signer";
 "common.tx.qr.expired.message" = "В целях безопасности транзакция действительна только %@. Please generate new QR code and sign it with Parity Signer";
+"parity.signer.tx.scan.invalid.title" = "Неверный QR код";
+"parity.signer.tx.scan.invalid.message" = "Пожалуйста, убедитесь, что вы сканируете QR код для правильно подписанной операции";
+"common.try.again" = "Попробовать снова";

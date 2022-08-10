@@ -867,7 +867,7 @@
 "welcome.parity.signer.step3" = "Parity Signer will provide you QR code to scan";
 "welcome.parity.signer.step3.highlighted" = "QR code to scan";
 "common.scan.qr.code" = "Scan QR code";
-"parity.signer.scan.title" = "Scan the QR code\nfrom Parity Signer";
+"parity.signer.scan.title" = "Scan the QR code from Parity Signer";
 "parity.signer.address.scan.error" = "Can't extract address from the QR code";
 "parity.signer.addresses.title" = "Here are your accounts";
 "parity.signer.addresses.subtitle" = "Following accounts have been successfully read from Parity Signer";
@@ -879,6 +879,7 @@
 "common.qr.code.valid.format" = "QR code is valid for %@";
 "common.qr.code.expired" = "QR code has expired";
 "parity.signer.tx.secondary.action" = "I have an error in Parity Signer";
-"common.tx.qr.not.expired.title" = "QR code is valid for %@";
-"common.tx.qr.expired.title" = "QR code has expired";
 "common.tx.qr.expired.message" = "For security reasons generated operations valid for only %@ mins. Please generate new QR code and sign it with Parity Signer";
+"parity.signer.tx.scan.invalid.title" = "QR code is invalid";
+"parity.signer.tx.scan.invalid.message" = "Please make sure you are scanning QR code for currently signing operation";
+"common.try.again" = "Try again";
