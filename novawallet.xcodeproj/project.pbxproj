@@ -1889,6 +1889,7 @@
 		88421064289BBD9100306F2C /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88421063289BBD9100306F2C /* Currency.swift */; };
 		885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5CB64B91B35804B3671456 /* ControllerAccountPresenter.swift */; };
 		8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */; };
+		8857E02F28A4FA6000260BA2 /* Currency+usd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8857E02E28A4FA6000260BA2 /* Currency+usd.swift */; };
 		8860F3DE289D172700C0BF86 /* CurrencyHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3DD289D172700C0BF86 /* CurrencyHeaderView.swift */; };
 		8860F3E0289D241E00C0BF86 /* CurrencyViewSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3DF289D241E00C0BF86 /* CurrencyViewSectionModel.swift */; };
 		8860F3E2289D4FFD00C0BF86 /* SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */; };
@@ -4354,6 +4355,7 @@
 		88421061289BBD1800306F2C /* JsonFileRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonFileRepository.swift; sourceTree = "<group>"; };
 		88421063289BBD9100306F2C /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyManagerStub.swift; sourceTree = "<group>"; };
+		8857E02E28A4FA6000260BA2 /* Currency+usd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Currency+usd.swift"; sourceTree = "<group>"; };
 		8860F3DD289D172700C0BF86 /* CurrencyHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyHeaderView.swift; sourceTree = "<group>"; };
 		8860F3DF289D241E00C0BF86 /* CurrencyViewSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyViewSectionModel.swift; sourceTree = "<group>"; };
 		8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionProtocol.swift; sourceTree = "<group>"; };
@@ -10049,6 +10051,7 @@
 				88A0E0FC28A284C700A9C940 /* SelectedCurrencyDepending.swift */,
 				88A0E0FD28A284C700A9C940 /* CurrencyManager.swift */,
 				88A0E0FE28A284C700A9C940 /* Observable.swift */,
+				8857E02E28A4FA6000260BA2 /* Currency+usd.swift */,
 			);
 			path = Currency;
 			sourceTree = "<group>";
@@ -14138,6 +14141,7 @@
 				EBC1107125C55A65D4E21417 /* DAppAuthSettingsPresenter.swift in Sources */,
 				1633E4E12AF8B5C16F141944 /* DAppAuthSettingsInteractor.swift in Sources */,
 				48D5EFA462A597368024E9ED /* DAppAuthSettingsViewController.swift in Sources */,
+				8857E02F28A4FA6000260BA2 /* Currency+usd.swift in Sources */,
 				2B682D343F75EBEB8A1E65BD /* DAppAuthSettingsViewLayout.swift in Sources */,
 				148748ACAE23B7D15144015B /* DAppAuthSettingsViewFactory.swift in Sources */,
 				B1F86CA723BB4D69C5EF989D /* ParaStkStakeSetupProtocols.swift in Sources */,
