@@ -3,29 +3,36 @@ import CommonWallet
 
 struct CoingeckoPriceData: Decodable, Equatable {
     typealias Currency = String
-    let data: [Currency: CoingeckoSingleCurrencyPriceData]
+    let rates: [Currency: CoingeckoSingleCurrencyPriceData]
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let currencyProperties = try container.decode([String: Decimal?].self)
 
-        let currencies = currencyProperties.filter { $0.key.split(separator: "_").count == 1 }
-        var result: [Currency: CoingeckoSingleCurrencyPriceData] = [:]
+        let currencies = currencyProperties.filter { $0.key.split(separator: Constants.separator).count == 1 }
 
-        for currency in currencies {
+        rates = currencies.reduce(into: [Currency: CoingeckoSingleCurrencyPriceData]()) { result, currency in
             guard let price = currency.value else {
-                continue
+                return
             }
             result[currency.key] = CoingeckoSingleCurrencyPriceData(
                 price: price,
-                dayChange: currencyProperties["\(currency.key)_24h_change"] ?? nil
+                dayChange: currencyProperties[Constants.dayChangeKey(currency.key)] ?? nil
             )
         }
-        data = result
     }
 }
 
 struct CoingeckoSingleCurrencyPriceData: Equatable {
     let price: Decimal
     let dayChange: Decimal?
+}
+
+extension CoingeckoPriceData {
+    enum Constants {
+        static let separator = Character("_")
+        static let dayChangeKey: (String) -> String = {
+            [$0, "24h", "change"].joined(separator: String(Constants.separator))
+        }
+    }
 }
