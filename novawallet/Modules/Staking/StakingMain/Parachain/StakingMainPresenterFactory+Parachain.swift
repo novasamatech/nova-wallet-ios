@@ -7,12 +7,14 @@ extension StakingMainPresenterFactory {
     func createParachainPresenter(
         for stakingAssetSettings: StakingAssetSettings,
         view: StakingMainViewProtocol
-    ) -> StakingParachainPresenter {
+    ) -> StakingParachainPresenter? {
         let sharedState = createParachainSharedState(for: stakingAssetSettings)
 
         // MARK: - Interactor
 
-        let interactor = createParachainInteractor(state: sharedState)
+        guard let interactor = createParachainInteractor(state: sharedState) else {
+            return nil
+        }
 
         // MARK: - Router
 
@@ -37,7 +39,10 @@ extension StakingMainPresenterFactory {
         return presenter
     }
 
-    func createParachainInteractor(state: ParachainStakingSharedState) -> StakingParachainInteractor {
+    func createParachainInteractor(state: ParachainStakingSharedState) -> StakingParachainInteractor? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let storageFacade = SubstrateDataStorageFacade.shared
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -101,7 +106,7 @@ extension StakingMainPresenterFactory {
             collatorsOperationFactory: collatorsOperationFactory,
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
-            currencyManager: CurrencyManager.shared!,
+            currencyManager: currencyManager,
             operationQueue: operationQueue,
             logger: logger
         )
