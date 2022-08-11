@@ -6,6 +6,9 @@ import SubstrateSdk
 
 struct SettingsViewFactory {
     static func createView() -> SettingsViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let localizationManager = LocalizationManager.shared
 
         let profileViewModelFactory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator())
@@ -13,7 +16,7 @@ struct SettingsViewFactory {
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
-            currencyManager: CurrencyManager.shared
+            currencyManager: currencyManager
         )
 
         let wireframe = SettingsWireframe()

@@ -127,7 +127,8 @@ class StakingRedeemTests: XCTestCase {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             slashesOperationFactory: slashesOperationFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: CurrencyManagerStub()
         )
 
         let assetInfo = chainAsset.assetDisplayInfo

@@ -123,7 +123,8 @@ class StakingUnbondSetupTests: XCTestCase {
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: CurrencyManagerStub()
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)

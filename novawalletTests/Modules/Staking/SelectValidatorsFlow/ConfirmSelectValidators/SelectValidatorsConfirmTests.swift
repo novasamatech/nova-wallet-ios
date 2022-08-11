@@ -70,7 +70,8 @@ class SelectValidatorsConfirmTests: XCTestCase {
             durationOperationFactory: BabeStakingDurationFactory(),
             operationManager: OperationManager(),
             signer: signer,
-            nomination: initiatedBoding
+            nomination: initiatedBoding,
+            currencyManager: CurrencyManagerStub()
         )
 
         let presenter = SelectValidatorsConfirmPresenter(

@@ -129,7 +129,8 @@ class StakingUnbondConfirmTests: XCTestCase {
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: CurrencyManagerStub()
         )
 
         let assetInfo = chainAsset.assetDisplayInfo

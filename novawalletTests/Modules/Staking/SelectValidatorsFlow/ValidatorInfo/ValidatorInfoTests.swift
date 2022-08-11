@@ -29,7 +29,8 @@ class ValidatorInfoTests: XCTestCase {
         let interactor = AnyValidatorInfoInteractor(
             selectedAsset: chainAsset.asset,
             priceLocalSubscriptionFactory: priceProvider,
-            validatorInfo: validator
+            validatorInfo: validator,
+            currencyManager: CurrencyManagerStub()
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
@@ -91,7 +92,8 @@ class ValidatorInfoTests: XCTestCase {
             selectedAsset: chainAsset.asset,
             priceLocalSubscriptionFactory: priceProvider,
             validatorOperationFactory: validatorOperationFactory,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            currencyManager: CurrencyManagerStub()
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)

@@ -44,6 +44,7 @@ class AssetSelectionTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             assetFilter: { chainAsset in StakingType(rawType: chainAsset.asset.staking) != .unsupported },
+            currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue
         )
 

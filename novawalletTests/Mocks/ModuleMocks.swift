@@ -24625,16 +24625,16 @@ import UIKit.UIImage
     
     
     
-     func createSectionViewModels(language: Language?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])] {
+     func createSectionViewModels(language: Language?, currency: String?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])] {
         
-    return cuckoo_manager.call("createSectionViewModels(language: Language?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]",
-            parameters: (language, locale),
-            escapingParameters: (language, locale),
+    return cuckoo_manager.call("createSectionViewModels(language: Language?, currency: String?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]",
+            parameters: (language, currency, locale),
+            escapingParameters: (language, currency, locale),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createSectionViewModels(language: language, locale: locale))
+            defaultCall: __defaultImplStub!.createSectionViewModels(language: language, currency: currency, locale: locale))
         
     }
     
@@ -24652,9 +24652,9 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsViewModelFactoryProtocol.self, method: "createAccountViewModel(for: MetaAccountModel) -> SettingsAccountViewModel", parameterMatchers: matchers))
 	    }
 	    
-	    func createSectionViewModels<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(language: M1, locale: M2) -> Cuckoo.ProtocolStubFunction<(Language?, Locale), [(SettingsSection, [SettingsCellViewModel])]> where M1.OptionalMatchedType == Language, M2.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(Language?, Locale)>] = [wrap(matchable: language) { $0.0 }, wrap(matchable: locale) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsViewModelFactoryProtocol.self, method: "createSectionViewModels(language: Language?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]", parameterMatchers: matchers))
+	    func createSectionViewModels<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(language: M1, currency: M2, locale: M3) -> Cuckoo.ProtocolStubFunction<(Language?, String?, Locale), [(SettingsSection, [SettingsCellViewModel])]> where M1.OptionalMatchedType == Language, M2.OptionalMatchedType == String, M3.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(Language?, String?, Locale)>] = [wrap(matchable: language) { $0.0 }, wrap(matchable: currency) { $0.1 }, wrap(matchable: locale) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsViewModelFactoryProtocol.self, method: "createSectionViewModels(language: Language?, currency: String?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -24680,9 +24680,9 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
-	    func createSectionViewModels<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(language: M1, locale: M2) -> Cuckoo.__DoNotUse<(Language?, Locale), [(SettingsSection, [SettingsCellViewModel])]> where M1.OptionalMatchedType == Language, M2.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(Language?, Locale)>] = [wrap(matchable: language) { $0.0 }, wrap(matchable: locale) { $0.1 }]
-	        return cuckoo_manager.verify("createSectionViewModels(language: Language?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createSectionViewModels<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(language: M1, currency: M2, locale: M3) -> Cuckoo.__DoNotUse<(Language?, String?, Locale), [(SettingsSection, [SettingsCellViewModel])]> where M1.OptionalMatchedType == Language, M2.OptionalMatchedType == String, M3.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(Language?, String?, Locale)>] = [wrap(matchable: language) { $0.0 }, wrap(matchable: currency) { $0.1 }, wrap(matchable: locale) { $0.2 }]
+	        return cuckoo_manager.verify("createSectionViewModels(language: Language?, currency: String?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -24702,7 +24702,7 @@ import UIKit.UIImage
     
     
     
-     func createSectionViewModels(language: Language?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]  {
+     func createSectionViewModels(language: Language?, currency: String?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]  {
         return DefaultValueRegistry.defaultValue(for: ([(SettingsSection, [SettingsCellViewModel])]).self)
     }
     
@@ -24856,6 +24856,21 @@ import UIKit.UIImage
         
     }
     
+    
+    
+     func didReceive(currencyCode: String)  {
+        
+    return cuckoo_manager.call("didReceive(currencyCode: String)",
+            parameters: (currencyCode),
+            escapingParameters: (currencyCode),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(currencyCode: currencyCode))
+        
+    }
+    
 
 	 struct __StubbingProxy_SettingsInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -24873,6 +24888,11 @@ import UIKit.UIImage
 	    func didReceiveUserDataProvider<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
 	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceiveUserDataProvider(error: Error)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(currencyCode: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: currencyCode) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsInteractorOutputProtocol.self, method: "didReceive(currencyCode: String)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -24903,6 +24923,12 @@ import UIKit.UIImage
 	        return cuckoo_manager.verify("didReceiveUserDataProvider(error: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(currencyCode: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: currencyCode) { $0 }]
+	        return cuckoo_manager.verify("didReceive(currencyCode: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -24921,6 +24947,12 @@ import UIKit.UIImage
     
     
      func didReceiveUserDataProvider(error: Error)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(currencyCode: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -25013,6 +25045,21 @@ import UIKit.UIImage
     
     
     
+     func showCurrencies(from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("showCurrencies(from: ControllerBackedProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showCurrencies(from: view))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -25100,6 +25147,11 @@ import UIKit.UIImage
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showPincodeChange(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
+	    func showCurrencies<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "showCurrencies(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockSettingsWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -25161,6 +25213,12 @@ import UIKit.UIImage
 	    }
 	    
 	    @discardableResult
+	    func showCurrencies<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showCurrencies(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -25214,6 +25272,12 @@ import UIKit.UIImage
     
     
      func showPincodeChange(from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showCurrencies(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -1888,6 +1888,7 @@
 		88421062289BBD1900306F2C /* JsonFileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88421061289BBD1800306F2C /* JsonFileRepository.swift */; };
 		88421064289BBD9100306F2C /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88421063289BBD9100306F2C /* Currency.swift */; };
 		885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5CB64B91B35804B3671456 /* ControllerAccountPresenter.swift */; };
+		8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */; };
 		8860F3DE289D172700C0BF86 /* CurrencyHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3DD289D172700C0BF86 /* CurrencyHeaderView.swift */; };
 		8860F3E0289D241E00C0BF86 /* CurrencyViewSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3DF289D241E00C0BF86 /* CurrencyViewSectionModel.swift */; };
 		8860F3E2289D4FFD00C0BF86 /* SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */; };
@@ -4352,6 +4353,7 @@
 		8842105F289BBAE600306F2C /* CurrencyRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyRepository.swift; sourceTree = "<group>"; };
 		88421061289BBD1800306F2C /* JsonFileRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonFileRepository.swift; sourceTree = "<group>"; };
 		88421063289BBD9100306F2C /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyManagerStub.swift; sourceTree = "<group>"; };
 		8860F3DD289D172700C0BF86 /* CurrencyHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyHeaderView.swift; sourceTree = "<group>"; };
 		8860F3DF289D241E00C0BF86 /* CurrencyViewSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyViewSectionModel.swift; sourceTree = "<group>"; };
 		8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionProtocol.swift; sourceTree = "<group>"; };
@@ -6268,6 +6270,7 @@
 				84B66A1726FE05B00038B963 /* ChainRegistryStub.swift */,
 				843612CA279011B400DC739E /* SigningWrapperFactoryStub.swift */,
 				8476D39727F431D5004D9A7A /* MockApplicationService.swift */,
+				8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -14294,6 +14297,7 @@
 				AE2C1020267A67DD004AA8E9 /* CustomValidatorListTestDataGenerator.swift in Sources */,
 				84D9C41126CD361C004AB2AB /* SpecVersionSubscriptionTests.swift in Sources */,
 				84B66A1626FDF7D70038B963 /* JsonSubscriptionFactoryStub.swift in Sources */,
+				8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */,
 				8467FD3B24EAD236005D486C /* SigningWrapperTests.swift in Sources */,
 				84893BFC24D9B0F1008F6A3F /* PredicateTests.swift in Sources */,
 				844D229925EE5E8400C022F7 /* SingleValueProviderStub.swift in Sources */,

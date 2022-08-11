@@ -138,7 +138,8 @@ class StakingRewardDestConfirmTests: XCTestCase {
             runtimeService: chainRegistry.getRuntimeProvider(for: chain.chainId)!,
             operationManager: operationManager,
             accountRepositoryFactory: accountRepositoryFactory,
-            feeProxy: ExtrinsicFeeProxy()
+            feeProxy: ExtrinsicFeeProxy(),
+            currencyManager: CurrencyManagerStub()
         )
 
         let assetInfo = chainAsset.assetDisplayInfo

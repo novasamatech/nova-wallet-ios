@@ -113,6 +113,7 @@ class DAppOperationConfirmTests: XCTestCase {
             connection: connection,
             signingWrapperFactory: signingWrapperFactory,
             priceProviderFactory: priceProvider,
+            currencyManager: CurrencyManagerStub(),
             operationQueue: OperationQueue()
         )
 

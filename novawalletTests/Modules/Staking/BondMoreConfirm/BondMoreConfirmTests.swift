@@ -105,7 +105,8 @@ class BondMoreConfirmTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceSubscriptionFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: CurrencyManagerStub()
         )
 
         let assetInfo = chainAsset.assetDisplayInfo

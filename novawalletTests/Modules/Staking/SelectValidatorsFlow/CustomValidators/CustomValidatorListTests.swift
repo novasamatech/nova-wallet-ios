@@ -33,7 +33,8 @@ class CustomValidatorListTests: XCTestCase {
 
         let interactor = CustomValidatorListInteractor(
             selectedAsset: chainAsset.asset,
-            priceLocalSubscriptionFactory: priceProviderFactory
+            priceLocalSubscriptionFactory: priceProviderFactory,
+            currencyManager: CurrencyManagerStub()
         )
 
         let generator = CustomValidatorListTestDataGenerator.self
