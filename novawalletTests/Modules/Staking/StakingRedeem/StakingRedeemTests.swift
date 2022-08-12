@@ -111,7 +111,7 @@ class StakingRedeemTests: XCTestCase {
         )
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: nil)
+            priceData: PriceData(price: "0.1", dayChange: nil, currencyId: Currency.usd.id)
         )
 
         let slashesOperationFactory = SlashesOperationFactoryStub(slashingSpans: nil)
@@ -133,7 +133,8 @@ class StakingRedeemTests: XCTestCase {
 
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
         let confirmViewModelFactory = StakingRedeemViewModelFactory()
