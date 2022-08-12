@@ -1,5 +1,5 @@
 protocol PriceAssetInfoFactoryProtocol {
-    func createAssetBalanceDisplayInfo(from currencyId: Int) -> AssetBalanceDisplayInfo
+    func createAssetBalanceDisplayInfo(from currencyId: Int?) -> AssetBalanceDisplayInfo
 }
 
 final class PriceAssetInfoFactory: PriceAssetInfoFactoryProtocol {
@@ -9,9 +9,10 @@ final class PriceAssetInfoFactory: PriceAssetInfoFactoryProtocol {
         self.currencyManager = currencyManager
     }
 
-    func createAssetBalanceDisplayInfo(from currencyId: Int) -> AssetBalanceDisplayInfo {
-        guard let currency = currencyManager.availableCurrencies.first(where: { $0.id == currencyId }) else {
-            assertionFailure("Currency with id: \(currencyId) not found")
+    func createAssetBalanceDisplayInfo(from _: Int?) -> AssetBalanceDisplayInfo {
+        let mappedCurrencyId = currencyManager.selectedCurrency.id
+        guard let currency = currencyManager.availableCurrencies.first(where: { $0.id == mappedCurrencyId }) else {
+            assertionFailure("Currency with id: \(mappedCurrencyId) not found")
             return .usd()
         }
         return .from(currency: currency)

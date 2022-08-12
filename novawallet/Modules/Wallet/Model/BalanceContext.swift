@@ -14,7 +14,7 @@ struct BalanceContext {
     let frozen: Decimal
     let price: Decimal
     let priceChange: Decimal
-    let priceId: Int
+    let priceId: Int?
     let balanceLocks: BalanceLocks
 }
 
@@ -32,7 +32,7 @@ extension BalanceContext {
 
         price = Self.parseContext(key: BalanceContext.priceKey, context: context)
         priceChange = Self.parseContext(key: BalanceContext.priceChangeKey, context: context)
-        priceId = context[BalanceContext.priceIdKey].flatMap { Int($0) } ?? 0
+        priceId = context[BalanceContext.priceIdKey].flatMap { Int($0) }
 
         balanceLocks = Self.parseJSONContext(key: BalanceContext.balanceLocksKey, context: context)
     }
@@ -46,15 +46,20 @@ extension BalanceContext {
             return String(data: locksJSON, encoding: .utf8) ?? ""
         }()
 
-        return [
+        var dict = [
             BalanceContext.freeKey: free.stringWithPointSeparator,
             BalanceContext.reservedKey: reserved.stringWithPointSeparator,
             BalanceContext.frozen: frozen.stringWithPointSeparator,
             BalanceContext.priceKey: price.stringWithPointSeparator,
             BalanceContext.priceChangeKey: priceChange.stringWithPointSeparator,
-            BalanceContext.priceIdKey: String(priceId),
             BalanceContext.balanceLocksKey: locksStringRepresentation
         ]
+
+        if let priceId = priceId {
+            dict[BalanceContext.priceIdKey] = String(priceId)
+        }
+
+        return dict
     }
 
     private static func parseContext(key: String, context: [String: String]) -> Decimal {
@@ -136,7 +141,7 @@ extension BalanceContext {
         )
     }
 
-    func byChangingPrice(_ newPrice: Decimal, newPriceChange: Decimal, newPriceId: Int) -> BalanceContext {
+    func byChangingPrice(_ newPrice: Decimal, newPriceChange: Decimal, newPriceId: Int?) -> BalanceContext {
         BalanceContext(
             free: free,
             reserved: reserved,

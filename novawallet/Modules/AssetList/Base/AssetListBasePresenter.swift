@@ -62,7 +62,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         let priceData: PriceData?
 
         if let prices = maybePrices {
-            priceData = prices[chainAssetId] ?? .zero
+            priceData = prices[chainAssetId] ?? PriceData.zero()
         } else {
             priceData = nil
         }
