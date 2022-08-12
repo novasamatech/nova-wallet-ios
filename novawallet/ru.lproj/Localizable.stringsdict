@@ -82,5 +82,25 @@
         <string>%li эры</string>
       </dict>
     </dict>
+    <key>common.minutes.format</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>%li минута</string>
+        <key>few</key>
+        <string>%li минуты</string>
+        <key>many</key>
+        <string>%li минут</string>
+        <key>other</key>
+        <string>%li минута</string>
+      </dict>
+    </dict>
   </dict>
 </plist>

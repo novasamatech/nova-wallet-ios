@@ -20,6 +20,12 @@ final class WalletAccountInfoView: RowView<GenericTitleValueView<UIView, UIImage
         configureStyle()
     }
 
+    var actionIcon = R.image.iconActionIndicator() {
+        didSet {
+            rowContentView.valueView.image = actionIcon
+        }
+    }
+
     private func configureStyle() {
         roundedBackgroundView.applyFilledBackgroundStyle()
         roundedBackgroundView.fillColor = R.color.colorWhite8()!
@@ -52,7 +58,7 @@ final class WalletAccountInfoView: RowView<GenericTitleValueView<UIView, UIImage
 
         let knownAddressView = KnownAddressContentView()
         knownAddressView.isUserInteractionEnabled = false
-        knownAddressView.valueView.image = R.image.iconActionIndicator()
+        knownAddressView.valueView.image = actionIcon
 
         knownAddressView.titleView.walletLabel.setContentCompressionResistancePriority(
             .defaultLow,
@@ -86,7 +92,7 @@ final class WalletAccountInfoView: RowView<GenericTitleValueView<UIView, UIImage
 
         let unknownAddressView = UnknownAddressContentView()
         unknownAddressView.isUserInteractionEnabled = false
-        unknownAddressView.valueView.image = R.image.iconActionIndicator()
+        unknownAddressView.valueView.image = actionIcon
 
         unknownAddressView.titleView.addressLabel.setContentCompressionResistancePriority(
             .defaultLow,

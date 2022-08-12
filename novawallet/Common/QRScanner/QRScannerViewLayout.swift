@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class QRScannerViewLayout: UIView {
+class QRScannerViewLayout: UIView {
     let qrFrameView: CameraFrameView = {
         let view = CameraFrameView()
         view.cornerRadius = 24.0
@@ -19,7 +19,7 @@ final class QRScannerViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .regularBody
+        label.font = .semiBoldBody
         label.textColor = R.color.colorWhite()
         label.numberOfLines = 2
         label.textAlignment = .center
@@ -35,17 +35,15 @@ final class QRScannerViewLayout: UIView {
         return label
     }()
 
-    let actionButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        button.contentInsets = UIEdgeInsets(top: 0, left: 42, bottom: 0, right: 42)
-        return button
-    }()
+    var actionButton: TriangularedButton?
 
-    override init(frame: CGRect) {
+    init(settings: QRScannerViewSettings, frame: CGRect) {
         super.init(frame: frame)
 
-        setupLayout()
+        backgroundColor = R.color.colorBlack()
+
+        configure(with: settings)
+        setupLayout(with: settings)
     }
 
     @available(*, unavailable)
@@ -53,12 +51,25 @@ final class QRScannerViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    private func configure(with settigns: QRScannerViewSettings) {
+        if settigns.canUploadFromGallery {
+            actionButton = TriangularedButton()
+            actionButton?.applyDefaultStyle()
+            actionButton?.contentInsets = UIEdgeInsets(top: 0, left: 42, bottom: 0, right: 42)
+        }
+    }
+
+    func setupLayout(with settings: QRScannerViewSettings) {
         addSubview(qrFrameView)
 
         qrFrameView.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+
+            if settings.extendsUnderSafeArea {
+                make.top.equalToSuperview()
+            } else {
+                make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            }
         }
 
         qrFrameView.addSubview(qrFrameImageView)
@@ -75,17 +86,24 @@ final class QRScannerViewLayout: UIView {
             make.bottom.equalTo(qrFrameImageView.snp.top).offset(-24.0)
         }
 
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(UIConstants.actionHeight)
+        if let actionButton = actionButton {
+            addSubview(actionButton)
+            actionButton.snp.makeConstraints { make in
+                make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+                make.centerX.equalToSuperview()
+                make.height.equalTo(UIConstants.actionHeight)
+            }
         }
 
         addSubview(messageLabel)
         messageLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(actionButton.snp.top).offset(-24.0)
+
+            if let actionButton = actionButton {
+                make.bottom.equalTo(actionButton.snp.top).offset(-24.0)
+            } else {
+                make.bottom.equalTo(safeAreaLayoutGuide).offset(-24.0)
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ enum QRCaptureServiceError: Error {
     case deviceAccessDeniedPreviously
     case deviceAccessDeniedNow
     case deviceAccessRestricted
+    case unsupportedFormat
 }
 
 protocol QRCaptureServiceDelegate: AnyObject {
@@ -151,6 +152,7 @@ extension QRCaptureService: AVCaptureMetadataOutputObjectsDelegate {
         }
 
         guard let possibleCode = metadata.stringValue else {
+            notifyDelegate(with: QRCaptureServiceError.unsupportedFormat)
             return
         }
 

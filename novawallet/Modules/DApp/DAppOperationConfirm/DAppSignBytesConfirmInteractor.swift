@@ -88,6 +88,10 @@ extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputPro
         }
 
         do {
+            guard account.type.supportsSigningRawBytes else {
+                throw NoSigningSupportError.notSupported
+            }
+
             let signer = signingWrapperFactory.createSigningWrapper(
                 for: request.wallet.metaId,
                 accountResponse: account

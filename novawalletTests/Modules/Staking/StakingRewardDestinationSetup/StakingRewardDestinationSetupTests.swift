@@ -151,8 +151,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy(),
-            signingWraper: try DummySigner(cryptoType: MultiassetCryptoType.sr25519)
+            extrinsicService: ExtrinsicServiceStub.dummy()
         )
 
         let interactor = StakingRewardDestSetupInteractor(

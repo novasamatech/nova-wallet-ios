@@ -89,8 +89,7 @@ class StakingUnbondConfirmTests: XCTestCase {
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy(),
-            signingWraper: try DummySigner(cryptoType: selectedAccount.cryptoType)
+            extrinsicService: ExtrinsicServiceStub.dummy()
         )
 
         let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
@@ -127,6 +126,7 @@ class StakingUnbondConfirmTests: XCTestCase {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDurationOperationFactory: stakingDurationOperationFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: DummySigningWrapperFactory(),
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
             operationManager: operationManager
