@@ -48,9 +48,8 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         let chain = chainAsset.chain
 
         extrinisicService = extrinsicServiceFactory.createService(
-            accountId: response.chainAccount.accountId,
-            chain: chain,
-            cryptoType: response.chainAccount.cryptoType
+            account: response.chainAccount,
+            chain: chain
         )
 
         estimateFee()

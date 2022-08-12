@@ -84,6 +84,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             accountId: selectedAccount.accountId,
             chain: chain,
             cryptoType: selectedAccount.cryptoType,
+            signaturePayloadFormat: selectedAccount.type.signaturePayloadFormat,
             runtimeRegistry: runtimeService,
             customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection

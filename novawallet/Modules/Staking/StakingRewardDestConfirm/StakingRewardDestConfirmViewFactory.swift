@@ -70,8 +70,7 @@ struct StakingRewardDestConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager,
-            signingWrapperFactory: SigningWrapperFactory()
+            operationManager: operationManager
         )
 
         let storageFacade = UserDataStorageFacade.shared
@@ -84,6 +83,7 @@ struct StakingRewardDestConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: SigningWrapperFactory(),
             calculatorService: rewardCalculationService,
             runtimeService: runtimeService,
             operationManager: operationManager,

@@ -12,4 +12,6 @@ protocol QRScannerWireframeProtocol: ApplicationSettingsPresentable, ImageGaller
 protocol QRScannerPresenterProtocol: AnyObject {
     func setup()
     func uploadGallery()
+    func viewWillAppear()
+    func viewDidDisappear()
 }

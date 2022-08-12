@@ -123,8 +123,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
         )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
-            extrinsicService: ExtrinsicServiceStub.dummy(),
-            signingWraper: try DummySigner(cryptoType: MultiassetCryptoType.sr25519)
+            extrinsicService: ExtrinsicServiceStub.dummy()
         )
 
         let interactor = StakingRewardDestConfirmInteractor(
@@ -134,6 +133,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: DummySigningWrapperFactory(),
             calculatorService: calculatorService,
             runtimeService: chainRegistry.getRuntimeProvider(for: chain.chainId)!,
             operationManager: operationManager,

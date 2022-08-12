@@ -99,7 +99,7 @@ PODS:
   - SoraUI/Skrull (1.11.1)
   - Sourcery (1.4.1)
   - Starscream (4.0.5)
-  - SubstrateSdk (1.2.0):
+  - SubstrateSdk (1.3.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -137,7 +137,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.11.1`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.5`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.2.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.3.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
@@ -182,7 +182,7 @@ EXTERNAL SOURCES:
     :tag: 4.0.5
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.2.0
+    :tag: 1.3.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -201,7 +201,7 @@ CHECKOUT OPTIONS:
     :tag: 4.0.5
   SubstrateSdk:
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.2.0
+    :tag: 1.3.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -231,7 +231,7 @@ SPEC CHECKSUMS:
   SoraUI: e5ceb2cffe40145e589aa464e2e0a8d054011e0b
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 8cc648110705c09a15f0de84352c7f9595b7cb05
-  SubstrateSdk: 80def02673c07145109cdb4a5a724566ab12482c
+  SubstrateSdk: 46a442c9b42c8e22b144ad1cb24127415bfd6f68
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
@@ -240,6 +240,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 1c01ac8046cf87ecb2dfcca5889a41025c7b3897
+PODFILE CHECKSUM: c77a344ca52461c9928594f5bec896982db9f99d
 
 COCOAPODS: 1.11.3

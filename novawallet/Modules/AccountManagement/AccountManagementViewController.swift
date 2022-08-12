@@ -102,6 +102,14 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             )
             let icon = R.image.iconWatchOnly()
             rootView.headerView.bindHint(text: text, icon: icon)
+        case .paritySigner:
+            rootView.headerView.showsHintView = true
+
+            let text = R.string.localizable.paritySignerDetailsHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let icon = R.image.iconParitySigner()
+            rootView.headerView.bindHint(text: text, icon: icon)
         }
 
         rootView.updateHeaderLayout()

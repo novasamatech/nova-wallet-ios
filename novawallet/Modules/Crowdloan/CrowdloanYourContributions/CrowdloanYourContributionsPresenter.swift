@@ -124,7 +124,7 @@ final class CrowdloanYourContributionsPresenter {
             if remainedTime.daysFromSeconds > 0 {
                 return remainedTime.localizedDaysHours(for: selectedLocale)
             } else {
-                return try? timeFormatter.string(from: remainedTimeInterval)
+                return try? timeFormatter.string(from: remainedTime)
             }
         } ?? []
 

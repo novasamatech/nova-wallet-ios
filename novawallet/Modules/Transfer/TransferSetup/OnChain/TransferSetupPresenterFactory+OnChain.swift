@@ -95,14 +95,11 @@ extension TransferSetupPresenterFactory {
             logger: Logger.shared
         )
 
-        let extrinsicService = ExtrinsicService(
-            accountId: selectedAccount.accountId,
-            chain: chain,
-            cryptoType: selectedAccount.cryptoType,
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationManager: OperationManagerFacade.sharedManager
-        )
+        ).createService(account: selectedAccount, chain: chain)
 
         return OnChainTransferSetupInteractor(
             selectedAccount: selectedAccount,

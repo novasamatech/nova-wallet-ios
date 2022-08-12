@@ -74,14 +74,12 @@ struct MoonbeamTermsViewFactory {
             return nil
         }
 
-        let extrinsicService = ExtrinsicService(
-            accountId: accountResponse.accountId,
-            chain: chain,
-            cryptoType: accountResponse.cryptoType,
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
-        )
+        ).createService(account: accountResponse, chain: chain)
+
         let feeProxy = ExtrinsicFeeProxy()
 
         let priceLocalSubscriptionFactory = PriceProviderFactory(

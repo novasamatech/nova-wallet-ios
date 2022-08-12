@@ -81,8 +81,7 @@ struct StakingBondMoreConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager,
-            signingWrapperFactory: SigningWrapperFactory()
+            operationManager: OperationManagerFacade.sharedManager
         )
 
         let accountRepositoryFactory = AccountRepositoryFactory(
@@ -94,6 +93,7 @@ struct StakingBondMoreConfirmViewFactory {
             chainAsset: chainAsset,
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: SigningWrapperFactory(),
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

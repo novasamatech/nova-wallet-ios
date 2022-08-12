@@ -63,8 +63,7 @@ struct StakingBondMoreViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: operationManager,
-            signingWrapperFactory: SigningWrapperFactory()
+            operationManager: operationManager
         )
 
         let feeProxy = ExtrinsicFeeProxy()

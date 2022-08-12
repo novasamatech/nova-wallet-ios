@@ -3,11 +3,18 @@ import SoraFoundation
 
 class ImportantFlowViewFactory {
     static func createNavigation(
-        from rootViewController: UIViewController
+        from rootViewController: UIViewController,
+        barSettings: NavigationBarSettings = .defaultSettings,
+        dismissalClosure: (() -> Void)? = nil
     ) -> UINavigationController {
-        ImportantFlowNavigationController(
+        let navigationController = ImportantFlowNavigationController(
             rootViewController: rootViewController,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            dismissalClosure: dismissalClosure
         )
+
+        navigationController.barSettings = barSettings
+
+        return navigationController
     }
 }

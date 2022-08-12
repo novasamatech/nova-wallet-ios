@@ -86,6 +86,13 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
             controlBackgroundView.highlightedStrokeColor = R.color.colorWhite8()!
 
             typeImageView.image = R.image.iconWatchOnly()
+        case .paritySigner:
+            controlBackgroundView.fillColor = R.color.colorWhite16()!
+            controlBackgroundView.highlightedFillColor = R.color.colorWhite16()!
+            controlBackgroundView.strokeColor = R.color.colorWhite8()!
+            controlBackgroundView.highlightedStrokeColor = R.color.colorWhite8()!
+
+            typeImageView.image = R.image.iconParitySigner()
         }
     }
 

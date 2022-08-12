@@ -107,9 +107,12 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     func createBaseBuilderOperation(
-        for result: DAppOperationProcessedResult
+        for result: DAppOperationProcessedResult,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> BaseOperation<ExtrinsicBuilderProtocol> {
         ClosureOperation<ExtrinsicBuilderProtocol> {
+            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
+
             let extrinsic = result.extrinsic
 
             let address = MultiAddress.accoundId(result.account.accountId)
@@ -119,6 +122,8 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
                 transactionVersion: extrinsic.transactionVersion,
                 genesisHash: extrinsic.genesisHash
             )
+            .with(signaturePayloadFormat: result.account.type.signaturePayloadFormat)
+            .with(runtimeJsonContext: runtimeContext)
             .with(address: address)
             .with(nonce: UInt32(extrinsic.nonce))
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
@@ -140,7 +145,12 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     ) -> CompoundOperationWrapper<Data> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let builderOperation = createBaseBuilderOperation(for: result)
+        let builderOperation = createBaseBuilderOperation(
+            for: result,
+            codingFactoryOperation: codingFactoryOperation
+        )
+
+        builderOperation.addDependency(codingFactoryOperation)
 
         let payloadOperation = ClosureOperation<Data> {
             let builder = try builderOperation.extractNoCancellableResultData()
@@ -170,7 +180,12 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     ) -> CompoundOperationWrapper<Data> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let builderOperation = createBaseBuilderOperation(for: result)
+        let builderOperation = createBaseBuilderOperation(
+            for: result,
+            codingFactoryOperation: codingFactoryOperation
+        )
+
+        builderOperation.addDependency(codingFactoryOperation)
 
         let signatureOperation = ClosureOperation<Data> {
             let builder = try builderOperation.extractNoCancellableResultData()

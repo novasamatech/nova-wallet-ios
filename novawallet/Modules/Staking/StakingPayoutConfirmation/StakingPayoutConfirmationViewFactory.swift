@@ -78,22 +78,20 @@ final class StakingPayoutConfirmationViewFactory {
             return nil
         }
 
-        let extrinsicService = ExtrinsicService(
-            accountId: selectedAccount.chainAccount.accountId,
-            chain: chainAsset.chain,
-            cryptoType: selectedAccount.chainAccount.cryptoType,
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
         )
 
-        let extrinsicOperationFactory = ExtrinsicOperationFactory(
-            accountId: selectedAccount.chainAccount.accountId,
-            chain: chainAsset.chain,
-            cryptoType: selectedAccount.chainAccount.cryptoType,
-            runtimeRegistry: runtimeService,
-            customExtensions: DefaultExtrinsicExtension.extensions,
-            engine: connection
+        let extrinsicService = extrinsicServiceFactory.createService(
+            account: selectedAccount.chainAccount,
+            chain: chainAsset.chain
+        )
+
+        let extrinsicOperationFactory = extrinsicServiceFactory.createOperationFactory(
+            account: selectedAccount.chainAccount,
+            chain: chainAsset.chain
         )
 
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(

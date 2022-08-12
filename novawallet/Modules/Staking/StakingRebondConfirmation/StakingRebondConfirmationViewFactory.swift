@@ -83,8 +83,7 @@ struct StakingRebondConfirmationViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: operationManager,
-            signingWrapperFactory: SigningWrapperFactory()
+            operationManager: operationManager
         )
 
         let feeProxy = ExtrinsicFeeProxy()
@@ -96,6 +95,7 @@ struct StakingRebondConfirmationViewFactory {
             chainAsset: chainAsset,
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: SigningWrapperFactory(),
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

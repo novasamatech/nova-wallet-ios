@@ -5,7 +5,7 @@ import SoraUI
 final class UsernameSetupViewLayout: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .h2Title
+        label.font = .boldTitle2
         label.textColor = R.color.colorWhite()
         label.numberOfLines = 0
         return label
@@ -13,44 +13,28 @@ final class UsernameSetupViewLayout: UIView {
 
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorTransparentText()
         label.numberOfLines = 0
         return label
     }()
 
     let captionLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.font = .caption1
+        label.textColor = R.color.colorWhite48()
         label.numberOfLines = 0
         return label
     }()
 
-    let containerView: TriangularedView = {
-        let view = TriangularedView()
-        view.sideLength = 10.0
-        view.fillColor = .clear
-        view.highlightedFillColor = .clear
-        view.strokeColor = R.color.colorGray()!
-        view.highlightedStrokeColor = R.color.colorGray()!
-        view.strokeWidth = 1.0
-        return view
+    let walletNameTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorTransparentText()
+        return label
     }()
 
-    let nameField: AnimatedTextField = {
-        let textField = AnimatedTextField()
-        textField.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 6.0, right: 16.0)
-        textField.titleFont = .p2Paragraph
-        textField.placeholderFont = .p1Paragraph
-        textField.textFont = .p1Paragraph
-        textField.titleColor = R.color.colorLightGray()!
-        textField.placeholderColor = R.color.colorLightGray()!
-        textField.textColor = R.color.colorWhite()
-        textField.cursorColor = R.color.colorWhite()!
-        textField.textField.enablesReturnKeyAutomatically = true
-        return textField
-    }()
+    let walletNameInputView = TextInputView()
 
     let proceedButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -74,31 +58,31 @@ final class UsernameSetupViewLayout: UIView {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(safeAreaLayoutGuide).inset(UIConstants.verticalTitleInset)
+            make.top.equalTo(safeAreaLayoutGuide).inset(16.0)
         }
 
         addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
         }
 
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
+        addSubview(walletNameTitleLabel)
+        walletNameTitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(16.0)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
-            make.height.equalTo(UIConstants.triangularedViewHeight)
         }
 
-        containerView.addSubview(nameField)
-        nameField.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        addSubview(walletNameInputView)
+        walletNameInputView.snp.makeConstraints { make in
+            make.top.equalTo(walletNameTitleLabel.snp.bottom).offset(8.0)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
         addSubview(captionLabel)
         captionLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(nameField.snp.bottom).offset(12.0)
+            make.top.equalTo(walletNameInputView.snp.bottom).offset(12.0)
         }
 
         addSubview(proceedButton)

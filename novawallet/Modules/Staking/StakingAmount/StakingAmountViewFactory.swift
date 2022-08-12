@@ -88,14 +88,11 @@ final class StakingAmountViewFactory {
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
 
-        let extrinsicService = ExtrinsicService(
-            accountId: selectedAccount.accountId,
-            chain: chainAsset.chain,
-            cryptoType: selectedAccount.cryptoType,
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
-        )
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
 
         let interactor = StakingAmountInteractor(
             selectedAccount: selectedAccount,
