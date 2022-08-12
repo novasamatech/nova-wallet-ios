@@ -96,13 +96,14 @@ class AssetListAssetViewModelFactory {
         locale: Locale
     ) -> LoadableViewModelState<AssetPriceViewModel> {
         if
-            let priceString = assetAccountInfo.priceData?.price,
-            let price = Decimal(string: priceString) {
+            let priceData = assetAccountInfo.priceData,
+            let price = Decimal(string: priceData.price) {
             let priceChangeValue = (assetAccountInfo.priceData?.dayChange ?? 0.0) / 100.0
             let priceChangeString = percentFormatter.value(for: locale)
                 .stringFromDecimal(priceChangeValue) ?? ""
-            let balanceViewModelFactory = balanceViewModelFactory(assetAccountInfo: assetAccountInfo)
-            let priceString = balanceViewModelFactory.amountFromValue(price).value(for: locale)
+            let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
+            let priceFormatter = assetFormatterFactory.createTokenFormatter(for: priceAssetInfo).value(for: locale)
+            let priceString = priceFormatter.stringFromDecimal(price) ?? ""
 
             let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
                 ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
