@@ -296,11 +296,12 @@ extension StakingRelaychainInteractor: AccountLocalSubscriptionHandler, AccountL
 
 extension StakingRelaychainInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if
-            presenter != nil,
-            let chainAsset = stakingSettings.value,
-            let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        guard presenter != nil,
+              let chainAsset = stakingSettings.value
+              let priceId = chainAsset.asset.priceId else {
+            return
         }
+        
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

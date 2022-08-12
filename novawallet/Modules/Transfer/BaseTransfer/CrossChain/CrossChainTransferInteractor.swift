@@ -637,8 +637,7 @@ extension CrossChainTransferInteractor: SelectedCurrencyDepending {
         guard presenter != nil else {
             return
         }
-
+        
         setupUtilityAssetPriceProviderIfNeeded()
-        setupSendingAssetPriceProviderIfNeeded()
     }
 }

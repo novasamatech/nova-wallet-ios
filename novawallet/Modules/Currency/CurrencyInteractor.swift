@@ -32,9 +32,9 @@ extension CurrencyInteractor: CurrencyInteractorInputProtocol {
 
 extension CurrencyInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard let currencyManager = currencyManager else {
+        guard let presenter = presenter else {
             return
         }
-        presenter?.didReceive(selectedCurrency: currencyManager.selectedCurrency)
+        presenter.didReceive(selectedCurrency: selectedCurrency)
     }
 }

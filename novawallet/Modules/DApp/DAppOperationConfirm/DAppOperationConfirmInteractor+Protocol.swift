@@ -166,9 +166,11 @@ extension DAppOperationConfirmInteractor: PriceLocalStorageSubscriber, PriceLoca
 
 extension DAppOperationConfirmInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard presenter != nil, let priceId = chain.utilityAssets().first?.priceId else {
+        guard presenter != nil,
+              let priceId = chain.utilityAssets().first?.priceId else {
             return
         }
+        
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

@@ -38,8 +38,11 @@ extension StakingRewardDetailsInteractor: PriceLocalStorageSubscriber, PriceLoca
 
 extension StakingRewardDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if presenter != nil, let priceId = asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
         }
+        
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

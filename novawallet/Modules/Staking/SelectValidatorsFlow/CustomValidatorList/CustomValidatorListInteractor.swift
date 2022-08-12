@@ -38,8 +38,11 @@ extension CustomValidatorListInteractor: PriceLocalStorageSubscriber, PriceLocal
 
 extension CustomValidatorListInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if presenter != nil, let priceId = selectedAsset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
         }
+        
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

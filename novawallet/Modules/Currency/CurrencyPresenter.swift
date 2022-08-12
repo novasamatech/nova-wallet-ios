@@ -103,6 +103,7 @@ extension CurrencyPresenter: CurrencyPresenterProtocol {
             return
         }
         interactor.set(selectedCurrency: currency)
+        wireframe.complete(view: view)
     }
 }
 

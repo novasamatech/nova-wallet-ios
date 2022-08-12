@@ -54,9 +54,11 @@ extension SettingsInteractor: EventVisitorProtocol {
 
 extension SettingsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard let currencyManager = self.currencyManager else {
+        guard let presenter = presenter,
+              let currencyManager = self.currencyManager else {
             return
         }
-        presenter?.didReceive(currencyCode: currencyManager.selectedCurrency.code)
+        
+        presenter.didReceive(currencyCode: currencyManager.selectedCurrency.code)
     }
 }
