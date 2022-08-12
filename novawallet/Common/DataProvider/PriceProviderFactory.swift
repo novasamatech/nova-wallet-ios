@@ -63,7 +63,8 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
     func getPriceListProvider(for priceIds: [AssetModel.PriceId], currency: Currency) -> AnySingleValueProvider<[PriceData]> {
         clearIfNeeded()
 
-        let fullKey = priceIds.joined()
+        let coingeckoId = currency.coingeckoId
+        let fullKey = priceIds.joined() + "\(coingeckoId)"
         let cacheKey = fullKey.data(using: .utf8)?.sha256().toHex() ?? fullKey
 
         if let provider = providers[cacheKey]?.target as? SingleValueProvider<[PriceData]> {
@@ -75,7 +76,7 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
 
         let source = CoingeckoPriceListSource(priceIds: priceIds, currencyId: currency.coingeckoId)
 
-        let databaseIdentifier = "coingecko_price_list_identifier"
+        let databaseIdentifier = "coingecko_price_list_\(coingeckoId)_identifier"
 
         let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]
         let provider = SingleValueProvider(
