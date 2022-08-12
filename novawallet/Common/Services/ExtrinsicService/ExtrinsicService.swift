@@ -70,6 +70,7 @@ final class ExtrinsicService {
         accountId: AccountId,
         chain: ChainModel,
         cryptoType: MultiassetCryptoType,
+        walletType: MetaAccountModelType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
         operationManager: OperationManagerProtocol
@@ -78,6 +79,7 @@ final class ExtrinsicService {
             accountId: accountId,
             chain: chain,
             cryptoType: cryptoType,
+            signaturePayloadFormat: walletType.signaturePayloadFormat,
             runtimeRegistry: runtimeRegistry,
             customExtensions: DefaultExtrinsicExtension.extensions,
             engine: engine

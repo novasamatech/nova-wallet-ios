@@ -1,6 +1,5 @@
 import Foundation
 
-// @available(iOS, obsoleted: 10, message: "Network selection functionality does not longer exist")
 extension SwitchAccount {
     final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMainWireframeProtocol {
         func showSignup(from view: OnboardingMainViewProtocol?) {
@@ -34,6 +33,17 @@ extension SwitchAccount {
             }
 
             view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
+        }
+
+        func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?) {
+            guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createSwitchAccountView() else {
+                return
+            }
+
+            view?.controller.navigationController?.pushViewController(
+                paritySignerWelcomeView.controller,
+                animated: true
+            )
         }
 
         private func presentAccountRestore(

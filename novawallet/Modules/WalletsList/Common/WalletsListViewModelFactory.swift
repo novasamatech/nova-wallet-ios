@@ -178,6 +178,18 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
 
         if
             let watchOnlySection = createSection(
+                type: .paritySigner,
+                wallets: wallets,
+                chains: chains,
+                balances: balances,
+                prices: prices,
+                locale: locale
+            ) {
+            sections.append(watchOnlySection)
+        }
+
+        if
+            let watchOnlySection = createSection(
                 type: .watchOnly,
                 wallets: wallets,
                 chains: chains,

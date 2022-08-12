@@ -13,7 +13,7 @@ protocol NavigationControlling: AnyObject {
 }
 
 class FearlessNavigationController: UINavigationController, UINavigationControllerDelegate {
-    var barSettings: NavigationBarSettings = .defaultSettings {
+    public var barSettings: NavigationBarSettings = .defaultSettings {
         didSet {
             applyBarStyle()
         }

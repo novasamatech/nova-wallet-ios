@@ -32,7 +32,7 @@ protocol ControllerAccountConfirmationWireframeProtocol: AddressOptionsPresentab
     ErrorPresentable,
     AlertPresentable,
     StakingErrorPresentable,
-    NoSigningPresentable {
+    MessageSheetPresentable {
     func complete(from view: ControllerAccountConfirmationViewProtocol?)
     func close(view: ControllerBackedProtocol?)
 }
