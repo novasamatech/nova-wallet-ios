@@ -48,17 +48,19 @@ final class CurrencyPresenter {
             }
         }
 
+        let languages = selectedLocale.rLanguages
+
         return [
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryCryptocurrencies(),
+                title: R.string.localizable.currencyCategoryCryptocurrencies(preferredLanguages: languages),
                 cells: cryptocurrencyModels
             ),
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryPopularFiat(),
+                title: R.string.localizable.currencyCategoryPopularFiat(preferredLanguages: languages),
                 cells: popularFiatModels
             ),
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryFiat(),
+                title: R.string.localizable.currencyCategoryFiat(preferredLanguages: languages),
                 cells: fiatModels
             )
         ].filter { !$0.cells.isEmpty }
