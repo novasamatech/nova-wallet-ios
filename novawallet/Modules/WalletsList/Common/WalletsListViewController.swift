@@ -79,6 +79,16 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
 
             view.bind(title: title, icon: icon)
             return view
+        case .paritySigner:
+            let view: RoundedIconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
+            view.contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 8.0, right: 16.0)
+            let icon = R.image.iconParitySignerHeader()
+            let title = R.string.localizable.commonParitySigner(
+                preferredLanguages: selectedLocale.rLanguages
+            ).uppercased()
+
+            view.bind(title: title, icon: icon)
+            return view
         }
     }
 
@@ -94,7 +104,7 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
         switch section.type {
         case .secrets:
             return 0.0
-        case .watchOnly:
+        case .watchOnly, .paritySigner:
             return 46.0
         }
     }

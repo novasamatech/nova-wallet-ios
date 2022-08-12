@@ -17,7 +17,13 @@ protocol SigningWrapperFactoryProtocol {
 final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     let keystore: KeystoreProtocol
 
-    init(keystore: KeystoreProtocol = Keychain()) {
+    let uiPresenter: TransactionSigningPresenting
+
+    init(
+        uiPresenter: TransactionSigningPresenting = TransactionSigningPresenter(),
+        keystore: KeystoreProtocol = Keychain()
+    ) {
+        self.uiPresenter = uiPresenter
         self.keystore = keystore
     }
 
@@ -30,6 +36,12 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return SigningWrapper(keystore: keystore, metaId: metaId, accountResponse: accountResponse)
         case .watchOnly:
             return NoKeysSigningWrapper()
+        case .paritySigner:
+            return ParitySignerSigningWrapper(
+                uiPresenter: uiPresenter,
+                metaId: metaId,
+                chainId: accountResponse.chainId
+            )
         }
     }
 
@@ -41,6 +53,8 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return SigningWrapper(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
         case .watchOnly:
             return NoKeysSigningWrapper()
+        case .paritySigner:
+            return NoSigningSupportWrapper()
         }
     }
 
@@ -50,6 +64,8 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return EthereumSigner(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
         case .watchOnly:
             return NoKeysSigningWrapper()
+        case .paritySigner:
+            return NoSigningSupportWrapper()
         }
     }
 }

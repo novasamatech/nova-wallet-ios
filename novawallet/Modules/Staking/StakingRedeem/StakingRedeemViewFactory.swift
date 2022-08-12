@@ -78,8 +78,7 @@ final class StakingRedeemViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: operationManager,
-            signingWrapperFactory: SigningWrapperFactory()
+            operationManager: operationManager
         )
 
         let feeProxy = ExtrinsicFeeProxy()
@@ -98,6 +97,7 @@ final class StakingRedeemViewFactory {
             chainRegistry: chainRegistry,
             accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: SigningWrapperFactory(),
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

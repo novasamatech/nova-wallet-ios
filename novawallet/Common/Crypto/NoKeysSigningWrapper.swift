@@ -22,4 +22,15 @@ extension Error {
             return true
         }
     }
+
+    var isNotSupportedByParitySigner: Bool {
+        guard let notSupportedError = self as? NoSigningSupportError else {
+            return false
+        }
+
+        switch notSupportedError {
+        case .notSupported:
+            return true
+        }
+    }
 }

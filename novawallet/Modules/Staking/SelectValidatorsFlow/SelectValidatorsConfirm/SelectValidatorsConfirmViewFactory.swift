@@ -147,14 +147,11 @@ final class SelectValidatorsConfirmViewFactory {
             return nil
         }
 
-        let extrinsicService = ExtrinsicService(
-            accountId: selectedMetaAccount.chainAccount.accountId,
-            chain: chainAsset.chain,
-            cryptoType: selectedMetaAccount.chainAccount.cryptoType,
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
-        )
+        ).createService(account: selectedMetaAccount.chainAccount, chain: chainAsset.chain)
 
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
             for: selectedMetaAccount.metaId,
@@ -197,14 +194,11 @@ final class SelectValidatorsConfirmViewFactory {
 
         let extrinsicSender = nomination.bonding.controllerAccount
 
-        let extrinsicService = ExtrinsicService(
-            accountId: extrinsicSender.chainAccount.accountId,
-            chain: chainAsset.chain,
-            cryptoType: extrinsicSender.chainAccount.cryptoType,
+        let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
-        )
+        ).createService(account: extrinsicSender.chainAccount, chain: chainAsset.chain)
 
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
             for: extrinsicSender.metaId,
