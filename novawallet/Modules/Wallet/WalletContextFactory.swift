@@ -148,6 +148,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         WalletCommonConfigurator(
             chainAccount: chainAccountResponse,
             localizationManager: localizationManager,
+            currencyManager: currencyManager,
             assets: [walletAsset]
         ).configure(builder: builder)
 
@@ -160,17 +161,17 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             accountType: chainAccountResponse.type,
             chainAsset: chainAsset,
             purchaseProvider: purchaseProvider,
-            priceAsset: priceAsset,
+            priceAssetFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
             localizationManager: localizationManager
         )
 
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
 
-        let amountFormatterFactory = AmountFormatterFactory()
+        let balanceFormatterFactory = AssetBalanceFormatterFactory()
 
         TransactionHistoryConfigurator(
             chainAsset: chainAsset,
-            amountFormatterFactory: amountFormatterFactory,
+            balanceFormatterFactory: balanceFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
 

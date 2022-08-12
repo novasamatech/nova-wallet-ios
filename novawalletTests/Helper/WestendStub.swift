@@ -9,7 +9,7 @@ struct WestendStub {
     static let address: String = "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq"
 
     static let price: PriceData = {
-        PriceData(price: "0.3", usdDayChange: 0.1)
+        PriceData(price: "0.3", dayChange: 0.1, currencyId: Currency.usd.id)
     }()
 
     static let totalReward: TotalRewardItem = {

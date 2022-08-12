@@ -278,6 +278,10 @@ extension AssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSub
 
 extension AssetSelectionInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
         setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 }

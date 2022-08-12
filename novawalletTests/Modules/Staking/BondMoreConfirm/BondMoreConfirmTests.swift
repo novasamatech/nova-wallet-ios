@@ -93,7 +93,7 @@ class BondMoreConfirmTests: XCTestCase {
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(stashItem: stashItem)
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+12))
         let priceSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.01", usdDayChange: nil)
+            priceData: PriceData(price: "0.01", dayChange: nil, currencyId: Currency.usd.id)
         )
 
         let interactor = StakingBondMoreConfirmationInteractor(
@@ -110,7 +110,10 @@ class BondMoreConfirmTests: XCTestCase {
         )
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let confirmViewModelFactory = StakingBondMoreConfirmViewModelFactory()
 

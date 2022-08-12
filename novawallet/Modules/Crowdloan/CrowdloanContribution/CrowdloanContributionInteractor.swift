@@ -225,9 +225,10 @@ extension CrowdloanContributionInteractor: ExtrinsicFeeProxyDelegate {
 
 extension CrowdloanContributionInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard let priceId = asset.priceId else {
+        guard presenter != nil, let priceId = asset.priceId else {
             return
         }
+
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

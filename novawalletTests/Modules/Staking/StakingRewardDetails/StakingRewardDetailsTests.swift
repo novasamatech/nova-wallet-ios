@@ -21,7 +21,7 @@ class StakingRewardDetailsTests: XCTestCase {
         let wireframe = MockStakingRewardDetailsWireframeProtocol()
 
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
         )
 
         let interactor = StakingRewardDetailsInteractor(
@@ -57,7 +57,11 @@ class StakingRewardDetailsTests: XCTestCase {
         )
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
+        
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
             chainFormat: chain.chainFormat

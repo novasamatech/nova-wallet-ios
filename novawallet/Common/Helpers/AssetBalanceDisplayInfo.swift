@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import CommonWallet
 
 struct AssetBalanceDisplayInfo {
     let displayPrecision: UInt16
@@ -30,6 +31,17 @@ extension AssetBalanceDisplayInfo {
             symbolValueSeparator: " ",
             symbolPosition: .suffix,
             icon: URL(string: info.icon)
+        )
+    }
+
+    static func fromWallet(asset: WalletAsset) -> AssetBalanceDisplayInfo {
+        AssetBalanceDisplayInfo(
+            displayPrecision: 5,
+            assetPrecision: asset.precision,
+            symbol: asset.symbol,
+            symbolValueSeparator: " ",
+            symbolPosition: .suffix,
+            icon: nil
         )
     }
 
