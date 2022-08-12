@@ -281,7 +281,7 @@ extension AssetSelectionInteractor: SelectedCurrencyDepending {
         guard presenter != nil else {
             return
         }
-        
+
         setupPriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 }

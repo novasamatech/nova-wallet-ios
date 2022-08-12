@@ -58,7 +58,7 @@ extension SettingsInteractor: SelectedCurrencyDepending {
               let currencyManager = self.currencyManager else {
             return
         }
-        
+
         presenter.didReceive(currencyCode: currencyManager.selectedCurrency.code)
     }
 }

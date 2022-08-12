@@ -70,7 +70,10 @@ class AssetListAssetViewModelFactory {
                 LoadableViewModelState.cached(value: balanceAmountString)
 
             if let priceData = assetAccountInfo.priceData {
-                let balanceValue = balanceViewModelFactory.priceFromAmount(decimalBalance, priceData: priceData).value(for: locale)
+                let balanceValue = balanceViewModelFactory.priceFromAmount(
+                    decimalBalance,
+                    priceData: priceData
+                ).value(for: locale)
                 return (balanceState, .loaded(value: balanceValue))
             } else {
                 return (balanceState, .loading)

@@ -225,7 +225,7 @@ extension MoonbeamTermsInteractor: SelectedCurrencyDepending {
               let priceId = asset.priceId else {
             return
         }
-        
+
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

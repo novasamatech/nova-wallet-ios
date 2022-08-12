@@ -159,10 +159,10 @@ extension WalletsListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscr
 
 extension WalletsListInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard presenter != nil else {
+        guard basePresenter != nil else {
             return
         }
-        
+
         updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 }

@@ -498,7 +498,7 @@ extension OnChainTransferInteractor: SelectedCurrencyDepending {
         guard presenter != nil else {
             return
         }
-        
+
         setupSendingAssetPriceProviderIfNeeded()
         setupUtilityAssetPriceProviderIfNeeded()
     }

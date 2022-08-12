@@ -213,7 +213,7 @@ extension StakingRebondConfirmationInteractor: SelectedCurrencyDepending {
               let priceId = chainAsset.asset.priceId else {
             return
         }
-        
+
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

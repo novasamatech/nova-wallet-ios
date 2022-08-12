@@ -273,7 +273,7 @@ extension NftListInteractor: SelectedCurrencyDepending {
         guard presenter != nil else {
             return
         }
-        
+
         updatePriceProviders()
     }
 }

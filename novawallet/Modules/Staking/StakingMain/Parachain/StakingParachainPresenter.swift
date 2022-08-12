@@ -175,8 +175,7 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
             let identities = delegator.delegations?.identitiesDict()
 
             let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(
-                chainAsset: chainAsset,
-                priceAssetInfoFactory: priceAssetInfoFactory
+                chainAsset: chainAsset
             )
 
             let viewModels = accountDetailsViewModelFactory.createUnstakingViewModels(

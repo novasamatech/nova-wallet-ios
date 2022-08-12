@@ -170,7 +170,7 @@ extension DAppOperationConfirmInteractor: SelectedCurrencyDepending {
               let priceId = chain.utilityAssets().first?.priceId else {
             return
         }
-        
+
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

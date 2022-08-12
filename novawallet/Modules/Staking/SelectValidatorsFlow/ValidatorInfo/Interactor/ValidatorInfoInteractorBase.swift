@@ -40,10 +40,10 @@ extension ValidatorInfoInteractorBase: PriceLocalStorageSubscriber, PriceLocalSu
 extension ValidatorInfoInteractorBase: SelectedCurrencyDepending {
     func applyCurrency() {
         guard presenter != nil,
-              let priceId = chainAsset.asset.priceId else {
+              let priceId = selectedAsset.priceId else {
             return
         }
-        
+
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

@@ -56,7 +56,6 @@
     {
         "code": "AED",
         "name": "United Arab Emirates dirham",
-        "symbol": "AED",
         "category": "fiat",
         "popular": true,
         "id": 6,
@@ -65,7 +64,6 @@
     {
         "code": "IDR",
         "name": "Indonesian Rupiah",
-        "symbol": "Rp",
         "category": "fiat",
         "popular": true,
         "id": 7,
@@ -101,7 +99,6 @@
     {
         "code": "BDT",
         "name": "Bangladeshi Taka",
-        "symbol": "Tk",
         "category": "fiat",
         "popular": false,
         "id": 11,
@@ -110,7 +107,6 @@
     {
         "code": "BHD",
         "name": "Bahraini Dinar",
-        "symbol": "BD",
         "category": "fiat",
         "popular": false,
         "id": 12,
@@ -146,7 +142,6 @@
     {
         "code": "CHF",
         "name": "Swiss Franc",
-        "symbol": "Fr",
         "category": "fiat",
         "popular": false,
         "id": 16,
@@ -173,7 +168,6 @@
     {
         "code": "DKK",
         "name": "Danish Krone",
-        "symbol": "Kr",
         "category": "fiat",
         "popular": false,
         "id": 19,
@@ -200,7 +194,6 @@
     {
         "code": "HUF",
         "name": "Hungarian Forint",
-        "symbol": "Ft",
         "category": "fiat",
         "popular": false,
         "id": 22,
@@ -227,7 +220,6 @@
     {
         "code": "KDW",
         "name": "Kuwaiti Dinar",
-        "symbol": "KD",
         "category": "fiat",
         "popular": false,
         "id": 25,
@@ -236,7 +228,6 @@
     {
         "code": "LKR",
         "name": "Sri Lankan Rupee",
-        "symbol": "Rs",
         "category": "fiat",
         "popular": false,
         "id": 26,
@@ -245,7 +236,6 @@
     {
         "code": "MMK",
         "name": "Myanmar Kyat",
-        "symbol": "K",
         "category": "fiat",
         "popular": false,
         "id": 27,
@@ -263,7 +253,6 @@
     {
         "code": "MYR",
         "name": "Malaysian Ringgit",
-        "symbol": "RM",
         "category": "fiat",
         "popular": false,
         "id": 29,
@@ -281,7 +270,6 @@
     {
         "code": "NOK",
         "name": "Norwegian Krone",
-        "symbol": "kr",
         "category": "fiat",
         "popular": false,
         "id": 31,
@@ -308,7 +296,6 @@
     {
         "code": "PKR",
         "name": "Pakistani Rupee",
-        "symbol": "Rs",
         "category": "fiat",
         "popular": false,
         "id": 34,
@@ -326,7 +313,6 @@
     {
         "code": "SAR",
         "name": "Saudi Riyal",
-        "symbol": "SR",
         "category": "fiat",
         "popular": false,
         "id": 36,
@@ -335,7 +321,6 @@
     {
         "code": "SEK",
         "name": "Swedish Krona",
-        "symbol": "kr",
         "category": "fiat",
         "popular": false,
         "id": 37,
@@ -380,7 +365,6 @@
     {
         "code": "VEF",
         "name": "Venezuelan bolívar",
-        "symbol": "Bs",
         "category": "fiat",
         "popular": false,
         "id": 42,
@@ -398,7 +382,6 @@
     {
         "code": "ZAR",
         "name": "South African rand",
-        "symbol": "R",
         "category": "fiat",
         "popular": false,
         "id": 44,
@@ -407,7 +390,6 @@
     {
         "code": "XDR",
         "name": "IMF Special Drawing Rights",
-        "symbol": "SDR",
         "category": "fiat",
         "popular": false,
         "id": 45,
@@ -416,7 +398,6 @@
     {
         "code": "DOT",
         "name": "Polkadot",
-        "symbol": "DOT",
         "category": "crypto",
         "popular": true,
         "id": 46,

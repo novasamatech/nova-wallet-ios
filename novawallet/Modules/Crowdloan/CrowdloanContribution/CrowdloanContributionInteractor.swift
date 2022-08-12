@@ -228,7 +228,7 @@ extension CrowdloanContributionInteractor: SelectedCurrencyDepending {
         guard presenter != nil, let priceId = asset.priceId else {
             return
         }
-        
+
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }
