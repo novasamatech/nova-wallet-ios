@@ -3,8 +3,14 @@ import CommonWallet
 import IrohaCrypto
 
 final class WalletSingleProviderIdFactory: SingleProviderIdentifierFactoryProtocol {
+    let currencyId: Int
+
+    init(currencyId: Int) {
+        self.currencyId = currencyId
+    }
+
     func balanceIdentifierForAccountId(_ accountId: String) -> String {
-        "wallet.cache.\(accountId).balance"
+        "wallet.cache.\(accountId).\(currencyId).balance"
     }
 
     func historyIdentifierForAccountId(_ accountId: String, assets _: [String]) -> String {
@@ -20,7 +26,7 @@ final class WalletSingleProviderIdFactory: SingleProviderIdentifierFactoryProtoc
         assetId: String,
         optionId _: String
     ) -> String {
-        "wallet.cache.\(accountId).\(assetId).withdraw.metadata"
+        "wallet.cache.\(accountId).\(assetId).\(currencyId).withdraw.metadata"
     }
 
     func transferMetadataIdentifierForAccountId(
@@ -28,6 +34,6 @@ final class WalletSingleProviderIdFactory: SingleProviderIdentifierFactoryProtoc
         assetId: String,
         receiverId _: String
     ) -> String {
-        "wallet.cache.\(accountId).\(assetId).transfer.metadata"
+        "wallet.cache.\(accountId).\(assetId).\(currencyId).transfer.metadata"
     }
 }

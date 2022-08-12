@@ -148,6 +148,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         WalletCommonConfigurator(
             chainAccount: chainAccountResponse,
             localizationManager: localizationManager,
+            currencyManager: currencyManager,
             assets: [walletAsset]
         ).configure(builder: builder)
 
