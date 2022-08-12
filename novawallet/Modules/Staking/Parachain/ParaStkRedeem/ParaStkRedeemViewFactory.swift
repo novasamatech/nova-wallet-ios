@@ -40,7 +40,6 @@ struct ParaStkRedeemViewFactory {
             dataValidatingFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
-            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 

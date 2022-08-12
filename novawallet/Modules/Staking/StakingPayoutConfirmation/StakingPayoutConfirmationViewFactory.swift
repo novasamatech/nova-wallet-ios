@@ -38,7 +38,6 @@ final class StakingPayoutConfirmationViewFactory {
             dataValidatingFactory: dataValidationFactory,
             assetInfo: assetInfo,
             chain: chainAsset.chain,
-            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 

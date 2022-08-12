@@ -29,7 +29,6 @@ struct StakingUnbondSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 

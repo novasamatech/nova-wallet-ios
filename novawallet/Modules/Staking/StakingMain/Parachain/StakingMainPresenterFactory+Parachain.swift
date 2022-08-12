@@ -12,7 +12,8 @@ extension StakingMainPresenterFactory {
 
         // MARK: - Interactor
 
-        guard let interactor = createParachainInteractor(state: sharedState) else {
+        guard let interactor = createParachainInteractor(state: sharedState),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -23,7 +24,8 @@ extension StakingMainPresenterFactory {
         // MARK: - Presenter
 
         let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory()
-        let stateViewModelFactory = ParaStkStateViewModelFactory()
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let stateViewModelFactory = ParaStkStateViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let presenter = StakingParachainPresenter(
             interactor: interactor,

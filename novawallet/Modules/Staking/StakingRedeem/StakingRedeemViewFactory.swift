@@ -60,7 +60,6 @@ final class StakingRedeemViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
             chain: chainAsset.chain,
-            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
     }

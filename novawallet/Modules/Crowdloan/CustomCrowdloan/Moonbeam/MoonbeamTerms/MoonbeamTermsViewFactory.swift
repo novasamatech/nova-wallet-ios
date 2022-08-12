@@ -40,7 +40,6 @@ struct MoonbeamTermsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             dataValidatingFactory: dataValidatingFactory,
-            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 

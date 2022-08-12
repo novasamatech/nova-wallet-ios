@@ -49,7 +49,6 @@ struct ParaStkUnstakeConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             hintViewModelFactory: ParaStkHintsViewModelFactory(),
             localizationManager: localizationManager,
-            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 
