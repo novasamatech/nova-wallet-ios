@@ -151,7 +151,7 @@ extension CrowdloanYourContributionsInteractor: PriceLocalStorageSubscriber, Pri
 
 extension CrowdloanYourContributionsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if let priceId = chain.utilityAsset()?.priceId {
+        if presenter != nil, let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }

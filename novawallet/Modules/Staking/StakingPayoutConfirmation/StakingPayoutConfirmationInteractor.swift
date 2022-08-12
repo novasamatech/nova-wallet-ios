@@ -303,7 +303,7 @@ extension StakingPayoutConfirmationInteractor: PriceLocalStorageSubscriber, Pric
 
 extension StakingPayoutConfirmationInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if let priceId = chainAsset.asset.priceId {
+        if presenter != nil, let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }

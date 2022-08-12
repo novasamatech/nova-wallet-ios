@@ -495,6 +495,10 @@ extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
 
 extension OnChainTransferInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
         setupSendingAssetPriceProviderIfNeeded()
         setupUtilityAssetPriceProviderIfNeeded()
     }

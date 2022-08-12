@@ -39,7 +39,7 @@ extension ValidatorInfoInteractorBase: PriceLocalStorageSubscriber, PriceLocalSu
 
 extension ValidatorInfoInteractorBase: SelectedCurrencyDepending {
     func applyCurrency() {
-        if let priceId = selectedAsset.priceId {
+        if presenter != nil, let priceId = selectedAsset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }

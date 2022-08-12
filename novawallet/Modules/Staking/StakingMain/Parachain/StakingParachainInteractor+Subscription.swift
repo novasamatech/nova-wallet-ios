@@ -273,7 +273,7 @@ extension StakingParachainInteractor: GeneralLocalStorageSubscriber, GeneralLoca
 
 extension StakingParachainInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if let priceId = selectedChainAsset?.asset.priceId {
+        if presenter != nil, let priceId = selectedChainAsset?.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }

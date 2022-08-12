@@ -148,7 +148,7 @@ extension StakingRewardPayoutsInteractor: PriceLocalStorageSubscriber, PriceLoca
 
 extension StakingRewardPayoutsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if let priceId = chainAsset.asset.priceId {
+        if presenter != nil, let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
