@@ -56,7 +56,8 @@ struct MoonbeamTermsViewFactory {
         asset: AssetModel,
         moonbeamService: MoonbeamBonusServiceProtocol
     ) -> MoonbeamTermsInteractor? {
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -107,6 +108,7 @@ struct MoonbeamTermsViewFactory {
             operationManager: operationManager,
             signingWrapper: signingWrapper,
             chainConnection: connection,
+            currencyManager: currencyManager,
             logger: Logger.shared
         )
     }

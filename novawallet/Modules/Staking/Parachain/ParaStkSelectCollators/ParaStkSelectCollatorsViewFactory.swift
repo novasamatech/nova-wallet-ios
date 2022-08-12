@@ -49,7 +49,8 @@ struct ParaStkSelectCollatorsViewFactory {
         guard
             let chainAsset = state.settings.value,
             let collatorService = state.collatorService,
-            let rewardEngineService = state.rewardCalculationService else {
+            let rewardEngineService = state.rewardCalculationService,
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -86,6 +87,7 @@ struct ParaStkSelectCollatorsViewFactory {
             runtimeProvider: runtimeProvider,
             collatorOperationFactory: collatorOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

@@ -53,7 +53,8 @@ struct ControllerAccountConfirmationViewFactory {
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let chainAsset = state.settings.value,
-            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -100,7 +101,8 @@ struct ControllerAccountConfirmationViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapper: signingWrapper,
             storageRequestFactory: storageRequestFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
 
         return interactor

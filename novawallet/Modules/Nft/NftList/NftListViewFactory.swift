@@ -45,7 +45,8 @@ struct NftListViewFactory {
     }
 
     private static func createInteractor() -> NftListInteractor? {
-        guard let wallet = SelectedWalletSettings.shared.value else {
+        guard let wallet = SelectedWalletSettings.shared.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -53,7 +54,8 @@ struct NftListViewFactory {
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared
+            nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
+            currencyManager: currencyManager
         )
     }
 }

@@ -140,7 +140,7 @@ extension StakingRewardDestSetupInteractor: StakingRewardDestSetupInteractorInpu
         }
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceivePriceData(result: .success(nil))
         }
@@ -330,5 +330,15 @@ extension StakingRewardDestSetupInteractor: PriceLocalStorageSubscriber, PriceLo
 extension StakingRewardDestSetupInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter?.didReceiveFee(result: result)
+    }
+}
+
+extension StakingRewardDestSetupInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

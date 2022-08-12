@@ -15,7 +15,7 @@ final class SettingsInteractor {
     init(
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
-        currencyManager: CurrencyManager?
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter

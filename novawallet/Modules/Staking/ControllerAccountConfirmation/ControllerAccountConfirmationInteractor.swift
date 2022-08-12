@@ -42,7 +42,8 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.controllerAccountItem = controllerAccountItem
@@ -58,6 +59,7 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
         self.signingWrapper = signingWrapper
         self.storageRequestFactory = storageRequestFactory
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 
     private func createLedgerFetchOperation(_ accountId: AccountId) -> CompoundOperationWrapper<StakingLedger?> {
@@ -93,7 +95,7 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
         }
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -235,5 +237,13 @@ extension ControllerAccountConfirmationInteractor: WalletLocalStorageSubscriber,
 extension ControllerAccountConfirmationInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter.didReceiveFee(result: result)
+    }
+}
+
+extension ControllerAccountConfirmationInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

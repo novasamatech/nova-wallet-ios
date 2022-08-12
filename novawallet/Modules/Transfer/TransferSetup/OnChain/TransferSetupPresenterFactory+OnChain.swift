@@ -77,7 +77,8 @@ extension TransferSetupPresenterFactory {
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -114,6 +115,7 @@ extension TransferSetupPresenterFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

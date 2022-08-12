@@ -37,7 +37,8 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -48,6 +49,7 @@ final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, Accoun
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.feeProxy = feeProxy
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 
     private func handleControllerMetaAccount(response: MetaChainAccountResponse) {
@@ -75,7 +77,7 @@ extension StakingRebondConfirmationInteractor: StakingRebondConfirmationInteract
         }
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -202,5 +204,13 @@ extension StakingRebondConfirmationInteractor: PriceLocalStorageSubscriber, Pric
 extension StakingRebondConfirmationInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter.didReceiveFee(result: result)
+    }
+}
+
+extension StakingRebondConfirmationInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

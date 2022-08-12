@@ -42,7 +42,8 @@ final class SettingsTests: XCTestCase {
         let eventCenter = MockEventCenterProtocol()
         let interactor = SettingsInteractor(
             selectedWalletSettings: walletSettings,
-            eventCenter: eventCenter
+            eventCenter: eventCenter,
+            currencyManager: CurrencyManagerStub()
         )
 
         let viewModelFactory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator())

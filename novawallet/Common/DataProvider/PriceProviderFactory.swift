@@ -2,8 +2,14 @@ import Foundation
 import RobinHood
 
 protocol PriceProviderFactoryProtocol {
-    func getPriceProvider(for priceId: AssetModel.PriceId) -> AnySingleValueProvider<PriceData>
-    func getPriceListProvider(for priceIds: [AssetModel.PriceId]) -> AnySingleValueProvider<[PriceData]>
+    func getPriceProvider(
+        for priceId: AssetModel.PriceId,
+        currency: Currency
+    ) -> AnySingleValueProvider<PriceData>
+    func getPriceListProvider(
+        for priceIds: [AssetModel.PriceId],
+        currency: Currency
+    ) -> AnySingleValueProvider<[PriceData]>
 }
 
 class PriceProviderFactory {
@@ -21,16 +27,16 @@ class PriceProviderFactory {
         providers = providers.filter { $0.value.target != nil }
     }
 
-    static func localIdentifier(for priceId: AssetModel.PriceId) -> String {
-        "coingecko_price_\(priceId)"
+    static func localIdentifier(for priceId: AssetModel.PriceId, currencyId: String) -> String {
+        "coingecko_price_\(priceId)_\(currencyId)"
     }
 }
 
 extension PriceProviderFactory: PriceProviderFactoryProtocol {
-    func getPriceProvider(for priceId: AssetModel.PriceId) -> AnySingleValueProvider<PriceData> {
+    func getPriceProvider(for priceId: AssetModel.PriceId, currency: Currency) -> AnySingleValueProvider<PriceData> {
         clearIfNeeded()
 
-        let identifier = Self.localIdentifier(for: priceId)
+        let identifier = Self.localIdentifier(for: priceId, currencyId: currency.coingeckoId)
 
         if let provider = providers[identifier]?.target as? SingleValueProvider<PriceData> {
             return AnySingleValueProvider(provider)
@@ -39,7 +45,7 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             storageFacade.createRepository()
 
-        let source = CoingeckoPriceSource(priceId: priceId)
+        let source = CoingeckoPriceSource(priceId: priceId, currencyId: currency.coingeckoId)
 
         let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]
         let provider = SingleValueProvider(
@@ -54,10 +60,11 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         return AnySingleValueProvider(provider)
     }
 
-    func getPriceListProvider(for priceIds: [AssetModel.PriceId]) -> AnySingleValueProvider<[PriceData]> {
+    func getPriceListProvider(for priceIds: [AssetModel.PriceId], currency: Currency) -> AnySingleValueProvider<[PriceData]> {
         clearIfNeeded()
 
-        let fullKey = priceIds.joined()
+        let coingeckoId = currency.coingeckoId
+        let fullKey = priceIds.joined() + "\(coingeckoId)"
         let cacheKey = fullKey.data(using: .utf8)?.sha256().toHex() ?? fullKey
 
         if let provider = providers[cacheKey]?.target as? SingleValueProvider<[PriceData]> {
@@ -67,9 +74,9 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             storageFacade.createRepository()
 
-        let source = CoingeckoPriceListSource(priceIds: priceIds)
+        let source = CoingeckoPriceListSource(priceIds: priceIds, currencyId: currency.coingeckoId)
 
-        let databaseIdentifier = "coingecko_price_list_identifier"
+        let databaseIdentifier = "coingecko_price_list_\(coingeckoId)_identifier"
 
         let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]
         let provider = SingleValueProvider(

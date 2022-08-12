@@ -42,6 +42,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         runtimeProvider: RuntimeCodingServiceProtocol,
         stakingDurationFactory: ParaStkDurationOperationFactoryProtocol,
         blockEstimationService: BlockTimeEstimationServiceProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -58,6 +59,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         self.operationQueue = operationQueue
         self.stakingDurationFactory = stakingDurationFactory
         self.blockEstimationService = blockEstimationService
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -74,7 +76,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
 
     private func subscribePriceIfNeeded() {
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceivePrice(nil)
         }
@@ -314,5 +316,13 @@ extension ParaStkStakeConfirmInteractor: ParastakingLocalStorageSubscriber, Para
 extension ParaStkStakeConfirmInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter?.didReceiveFee(result)
+    }
+}
+
+extension ParaStkStakeConfirmInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

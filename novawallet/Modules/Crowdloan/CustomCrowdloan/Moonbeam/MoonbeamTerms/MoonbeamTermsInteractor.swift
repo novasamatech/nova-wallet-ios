@@ -40,6 +40,7 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
         operationManager: OperationManagerProtocol,
         signingWrapper: SigningWrapperProtocol,
         chainConnection: ChainConnection,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.accountId = accountId
@@ -57,11 +58,12 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
         self.signingWrapper = signingWrapper
         self.chainConnection = chainConnection
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     private func subscribeToPrice() {
         if let priceId = asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -214,5 +216,13 @@ extension MoonbeamTermsInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         chainId _: ChainModel.Id
     ) {
         presenter.didReceiveAccountInfo(result: result)
+    }
+}
+
+extension MoonbeamTermsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

@@ -121,7 +121,8 @@ class StakingRebondConfirmationTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: CurrencyManagerStub()
         )
 
         let assetInfo = chainAsset.assetDisplayInfo

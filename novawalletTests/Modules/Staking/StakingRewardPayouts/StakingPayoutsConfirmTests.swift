@@ -74,7 +74,8 @@ class StakingPayoutsConfirmTests: XCTestCase {
             signer: signer,
             accountRepositoryFactory: accountRepositoryFactory,
             operationManager: OperationManager(),
-            payouts: [PayoutInfo(era: 1000, validator: validatorAccountId, reward: 1, identity: nil)]
+            payouts: [PayoutInfo(era: 1000, validator: validatorAccountId, reward: 1, identity: nil)],
+            currencyManager: CurrencyManagerStub()
         )
 
         presenter.view = view

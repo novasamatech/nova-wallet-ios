@@ -11,13 +11,18 @@ final class YourValidatorInfoInteractor: ValidatorInfoInteractorBase {
         selectedAsset: AssetModel,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         validatorOperationFactory: ValidatorOperationFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.accountAddress = accountAddress
         self.validatorOperationFactory = validatorOperationFactory
         self.operationManager = operationManager
 
-        super.init(selectedAsset: selectedAsset, priceLocalSubscriptionFactory: priceLocalSubscriptionFactory)
+        super.init(
+            selectedAsset: selectedAsset,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager
+        )
     }
 
     private func fetchValidatorInfo() {

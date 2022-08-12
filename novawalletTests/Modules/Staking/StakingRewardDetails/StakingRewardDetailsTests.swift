@@ -26,7 +26,8 @@ class StakingRewardDetailsTests: XCTestCase {
 
         let interactor = StakingRewardDetailsInteractor(
             asset: chainAsset.asset,
-            priceLocalSubscriptionFactory: priceProviderFactory
+            priceLocalSubscriptionFactory: priceProviderFactory,
+            currencyManager: CurrencyManagerStub()
         )
 
         let payoutInfo = PayoutInfo(

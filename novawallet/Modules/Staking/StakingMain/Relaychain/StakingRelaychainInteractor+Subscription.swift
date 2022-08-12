@@ -63,7 +63,7 @@ extension StakingRelaychainInteractor {
             return
         }
 
-        priceProvider = subscribeToPrice(for: priceId)
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
     func performAccountInfoSubscription() {
@@ -290,6 +290,15 @@ extension StakingRelaychainInteractor: AccountLocalSubscriptionHandler, AccountL
             presenter?.didReceiveAccount(account, for: accountId)
         case .failure:
             presenter?.didReceiveAccount(nil, for: accountId)
+        }
+    }
+}
+
+extension StakingRelaychainInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let chainAsset = stakingSettings.value,
+           let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 }

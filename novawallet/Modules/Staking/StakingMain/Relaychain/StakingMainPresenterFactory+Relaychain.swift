@@ -9,12 +9,14 @@ extension StakingMainPresenterFactory {
         for stakingAssetSettings: StakingAssetSettings,
         view: StakingMainViewProtocol,
         consensus: ConsensusType
-    ) -> StakingRelaychainPresenter {
+    ) -> StakingRelaychainPresenter? {
         let sharedState = createRelaychainSharedState(for: stakingAssetSettings, consensus: consensus)
 
         // MARK: - Interactor
 
-        let interactor = createRelaychainInteractor(state: sharedState)
+        guard let interactor = createRelaychainInteractor(state: sharedState) else {
+            return nil
+        }
 
         // MARK: - Router
 
@@ -62,7 +64,10 @@ extension StakingMainPresenterFactory {
 
     func createRelaychainInteractor(
         state: StakingSharedState
-    ) -> StakingRelaychainInteractor {
+    ) -> StakingRelaychainInteractor? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
 
@@ -126,6 +131,7 @@ extension StakingMainPresenterFactory {
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
             applicationHandler: ApplicationHandler(),
+            currencyManager: currencyManager,
             logger: logger
         )
     }

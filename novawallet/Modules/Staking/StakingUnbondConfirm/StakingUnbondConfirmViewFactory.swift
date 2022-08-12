@@ -62,7 +62,8 @@ struct StakingUnbondConfirmViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -100,7 +101,8 @@ struct StakingUnbondConfirmViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

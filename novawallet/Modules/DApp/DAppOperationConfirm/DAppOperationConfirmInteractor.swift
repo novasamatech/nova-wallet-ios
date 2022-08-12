@@ -27,6 +27,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         connection: ChainConnection,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.request = request
@@ -36,6 +37,9 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         self.signingWrapperFactory = signingWrapperFactory
         priceLocalSubscriptionFactory = priceProviderFactory
         self.operationQueue = operationQueue
+        super.init()
+
+        self.currencyManager = currencyManager
     }
 
     func processRequestAndContinueSetup(_ request: DAppOperationRequest, chain: ChainModel) {

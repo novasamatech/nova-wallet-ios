@@ -96,7 +96,8 @@ final class StakingRewardPayoutsViewFactory {
         for payoutService: PayoutRewardsServiceProtocol,
         state: StakingSharedState
     ) -> StakingRewardPayoutsViewProtocol? {
-        guard let chainAsset = state.settings.value else {
+        guard let chainAsset = state.settings.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -138,7 +139,8 @@ final class StakingRewardPayoutsViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             payoutService: payoutService,
             eraCountdownOperationFactory: eraCountdownOperationFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
 
         let wireframe = StakingRewardPayoutsWireframe(state: state)

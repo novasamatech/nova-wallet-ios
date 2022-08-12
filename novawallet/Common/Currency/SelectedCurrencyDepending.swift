@@ -41,3 +41,13 @@ extension SelectedCurrencyDepending {
         }
     }
 }
+
+extension SelectedCurrencyDepending {
+    var selectedCurrency: Currency {
+        guard let selectedCurrency = currencyManager?.selectedCurrency else {
+            assertionFailure("Currency manager must be created")
+            return .usd
+        }
+        return selectedCurrency
+    }
+}

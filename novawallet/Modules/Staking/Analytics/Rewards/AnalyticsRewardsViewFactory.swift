@@ -48,6 +48,7 @@ struct AnalyticsRewardsViewFactory {
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
             let selectedAddress = metaAccount.fetch(
                 for: chainAsset.chain.accountRequest()
             )?.toAddress() else {
@@ -59,7 +60,8 @@ struct AnalyticsRewardsViewFactory {
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            currencyManager: currencyManager
         )
 
         return interactor

@@ -29,7 +29,8 @@ final class ParaStkRedeemInteractor {
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         signer: SigningWrapperProtocol,
-        stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+        stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
@@ -39,6 +40,7 @@ final class ParaStkRedeemInteractor {
         self.feeProxy = feeProxy
         self.signer = signer
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -62,7 +64,7 @@ extension ParaStkRedeemInteractor: ParaStkRedeemInteractorInputProtocol {
         )
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceivePrice(nil)
         }
@@ -208,6 +210,14 @@ extension ParaStkRedeemInteractor: ParastakingLocalStorageSubscriber, Parastakin
             presenter?.didReceiveRoundInfo(roundInfo)
         case let .failure(error):
             presenter?.didReceiveError(error)
+        }
+    }
+}
+
+extension ParaStkRedeemInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 }

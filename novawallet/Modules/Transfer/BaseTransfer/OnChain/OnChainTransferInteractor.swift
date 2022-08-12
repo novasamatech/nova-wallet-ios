@@ -58,6 +58,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
@@ -71,6 +72,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -178,7 +180,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
                 waitsInProgressSyncOnAdd: false
             )
 
-            sendingAssetPriceProvider = subscribeToPrice(for: priceId, options: options)
+            sendingAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
         } else {
             presenter?.didReceiveSendingAssetPrice(nil)
         }
@@ -195,7 +197,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
                 waitsInProgressSyncOnAdd: false
             )
 
-            utilityAssetPriceProvider = subscribeToPrice(for: priceId, options: options)
+            utilityAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
         } else {
             presenter?.didReceiveUtilityAssetPrice(nil)
         }
@@ -488,5 +490,12 @@ extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
         case let .failure(error):
             presenter?.didReceiveFee(result: .failure(error))
         }
+    }
+}
+
+extension OnChainTransferInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        setupSendingAssetPriceProviderIfNeeded()
+        setupUtilityAssetPriceProviderIfNeeded()
     }
 }

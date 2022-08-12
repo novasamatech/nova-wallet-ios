@@ -107,7 +107,8 @@ struct AcalaContributionSetupViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -149,7 +150,8 @@ struct AcalaContributionSetupViewFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             jsonLocalSubscriptionFactory: jsonLocalSubscriptionFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

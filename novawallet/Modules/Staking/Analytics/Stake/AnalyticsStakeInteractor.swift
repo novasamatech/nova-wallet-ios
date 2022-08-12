@@ -18,13 +18,15 @@ final class AnalyticsStakeInteractor {
         chainAsset: ChainAsset,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccountAddress = selectedAccountAddress
         self.chainAsset = chainAsset
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 }
 
@@ -43,7 +45,7 @@ extension AnalyticsStakeInteractor: PriceLocalStorageSubscriber, PriceLocalSubsc
 extension AnalyticsStakeInteractor: AnalyticsStakeInteractorInputProtocol {
     func setup() {
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -67,5 +69,13 @@ extension AnalyticsStakeInteractor: AnalyticsStakeInteractorInputProtocol {
             }
         }
         operationManager.enqueue(operations: fetchOperation.allOperations, in: .transient)
+    }
+}
+
+extension AnalyticsStakeInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

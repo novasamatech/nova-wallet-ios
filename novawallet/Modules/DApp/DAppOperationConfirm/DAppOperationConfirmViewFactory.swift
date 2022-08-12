@@ -67,7 +67,8 @@ struct DAppOperationConfirmViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -78,6 +79,7 @@ struct DAppOperationConfirmViewFactory {
             connection: connection,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
             priceProviderFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
