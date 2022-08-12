@@ -31,11 +31,11 @@ struct ParaStkUnstakeViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let assetFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
         let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory,
+            formatter: assetFormatter,
             chainFormat: chainAsset.chain.chainFormat,
-            assetPrecision: assetDisplayInfo.assetPrecision,
-            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            assetPrecision: assetDisplayInfo.assetPrecision
         )
 
         let localizationManager = LocalizationManager.shared

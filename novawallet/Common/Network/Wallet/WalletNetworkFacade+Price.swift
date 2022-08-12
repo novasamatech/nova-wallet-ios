@@ -44,7 +44,8 @@ extension WalletNetworkFacade {
 
                 let price = Price(
                     lastValue: Decimal(string: priceData.price) ?? 0.0,
-                    change: (priceData.dayChange ?? 0.0) / 100.0
+                    change: (priceData.dayChange ?? 0.0) / 100.0,
+                    currencyId: priceData.currencyId
                 )
 
                 result[asset.identifier] = price

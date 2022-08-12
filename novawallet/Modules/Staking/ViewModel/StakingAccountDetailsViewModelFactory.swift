@@ -21,34 +21,26 @@ protocol ParaStkAccountDetailsViewModelFactoryProtocol {
 }
 
 final class ParaStkAccountDetailsViewModelFactory {
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let formatter: LocalizableResource<TokenFormatter>
     let chainFormat: ChainFormat
     let assetPrecision: Int16
-    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
 
     init(
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        formatter: LocalizableResource<TokenFormatter>,
         chainFormat: ChainFormat,
-        assetPrecision: Int16,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+        assetPrecision: Int16
     ) {
-        self.balanceViewModelFactory = balanceViewModelFactory
+        self.formatter = formatter
         self.chainFormat = chainFormat
         self.assetPrecision = assetPrecision
-        self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
     init(
-        chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+        chainAsset: ChainAsset
     ) {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        self.priceAssetInfoFactory = priceAssetInfoFactory
-        balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        )
+        formatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
         chainFormat = chainAsset.chain.chainFormat
         assetPrecision = assetDisplayInfo.assetPrecision
     }
@@ -75,7 +67,7 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
                 precision: assetPrecision
             ) ?? 0
 
-            let stakedAmount = balanceViewModelFactory.amountFromValue(stakedDecimal).value(for: locale)
+            let stakedAmount = formatter.value(for: locale).stringFromDecimal(stakedDecimal) ?? ""
 
             details = TitleWithSubtitleViewModel(title: detailsName, subtitle: stakedAmount)
         } else {
@@ -102,7 +94,15 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
             }
 
             let amountDecimal = Decimal.fromSubstrateAmount(bond.amount, precision: assetPrecision) ?? 0
-            let localizedAmountString = balanceViewModelFactory.amountFromValue(amountDecimal)
+
+            let localizedAmountString = LocalizableResource<String> { [weak self] locale in
+                if let formatter = self?.formatter {
+                    return formatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
+                } else {
+                    return ""
+                }
+            }
+
             let selectable = !disabled.contains(bond.owner)
 
             return LocalizableResource { locale in
@@ -142,7 +142,13 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
                 precision: assetPrecision
             ) ?? 0
 
-            let localizedAmountString = balanceViewModelFactory.amountFromValue(amountDecimal)
+            let localizedAmountString = LocalizableResource<String> { [weak self] locale in
+                if let formatter = self?.formatter {
+                    return formatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
+                } else {
+                    return ""
+                }
+            }
 
             return LocalizableResource { locale in
                 let detailsTitle = R.string.localizable.commonUnstakingPrefix(preferredLanguages: locale.rLanguages)

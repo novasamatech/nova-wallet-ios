@@ -20,10 +20,6 @@ struct ParaStkStakeSetupViewFactory {
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        )
 
         let dataValidationFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
@@ -31,14 +27,21 @@ struct ParaStkStakeSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let assetFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
+
         let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory,
+            formatter: assetFormatter,
             chainFormat: chainAsset.chain.chainFormat,
-            assetPrecision: assetDisplayInfo.assetPrecision,
-            priceAssetInfoFactory: priceAssetInfoFactory
+            assetPrecision: assetDisplayInfo.assetPrecision
         )
 
         let localizationManager = LocalizationManager.shared
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
         let presenter = ParaStkStakeSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,

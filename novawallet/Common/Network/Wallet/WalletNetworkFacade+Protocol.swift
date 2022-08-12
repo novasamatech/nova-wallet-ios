@@ -35,7 +35,11 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
                     let contextWithPrice: BalanceContext = {
                         guard let price = prices[balanceData.identifier] else { return context }
-                        return context.byChangingPrice(price.lastValue, newPriceChange: price.change)
+                        return context.byChangingPrice(
+                            price.lastValue,
+                            newPriceChange: price.change,
+                            newPriceId: price.currencyId
+                        )
                     }()
 
                     return BalanceData(
