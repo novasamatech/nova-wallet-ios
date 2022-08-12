@@ -12,7 +12,7 @@ final class AssetDetailsConfigurator {
         accountType: MetaAccountModelType,
         chainAsset: ChainAsset,
         purchaseProvider: PurchaseProviderProtocol,
-        priceAsset: WalletAsset,
+        priceDisplayInfo: Asset,
         localizationManager: LocalizationManagerProtocol
     ) {
         let amountFormatterFactory = AmountFormatterFactory()

@@ -6,6 +6,7 @@ struct BalanceContext {
     static let frozen = "account.balance.frozen.key"
     static let priceKey = "account.balance.price.key"
     static let priceChangeKey = "account.balance.price.change.key"
+    static let priceIdKey = "account.balance.price.id.key"
     static let balanceLocksKey = "account.balance.locks.key"
 
     let free: Decimal
@@ -13,6 +14,7 @@ struct BalanceContext {
     let frozen: Decimal
     let price: Decimal
     let priceChange: Decimal
+    let priceId: String
     let balanceLocks: BalanceLocks
 }
 
@@ -30,6 +32,7 @@ extension BalanceContext {
 
         price = Self.parseContext(key: BalanceContext.priceKey, context: context)
         priceChange = Self.parseContext(key: BalanceContext.priceChangeKey, context: context)
+        priceId = context[BalanceContext.priceIdKey] ?? ""
 
         balanceLocks = Self.parseJSONContext(key: BalanceContext.balanceLocksKey, context: context)
     }
@@ -49,6 +52,7 @@ extension BalanceContext {
             BalanceContext.frozen: frozen.stringWithPointSeparator,
             BalanceContext.priceKey: price.stringWithPointSeparator,
             BalanceContext.priceChangeKey: priceChange.stringWithPointSeparator,
+            BalanceContext.priceIdKey: priceId,
             BalanceContext.balanceLocksKey: locksStringRepresentation
         ]
     }
@@ -94,6 +98,7 @@ extension BalanceContext {
             frozen: max(miscFrozen, feeFrozen),
             price: price,
             priceChange: priceChange,
+            priceId: priceId,
             balanceLocks: balanceLocks
         )
     }
@@ -112,6 +117,7 @@ extension BalanceContext {
             frozen: frozen,
             price: price,
             priceChange: priceChange,
+            priceId: priceId,
             balanceLocks: balanceLocks
         )
     }
@@ -125,17 +131,19 @@ extension BalanceContext {
             frozen: frozen,
             price: price,
             priceChange: priceChange,
+            priceId: priceId,
             balanceLocks: updatedLocks
         )
     }
 
-    func byChangingPrice(_ newPrice: Decimal, newPriceChange: Decimal) -> BalanceContext {
+    func byChangingPrice(_ newPrice: Decimal, newPriceChange: Decimal, newPriceId: String) -> BalanceContext {
         BalanceContext(
             free: free,
             reserved: reserved,
             frozen: frozen,
             price: newPrice,
             priceChange: newPriceChange,
+            priceId: newPriceId,
             balanceLocks: balanceLocks
         )
     }
