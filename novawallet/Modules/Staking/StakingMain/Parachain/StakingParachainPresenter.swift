@@ -10,12 +10,14 @@ final class StakingParachainPresenter {
     let stateMachine: ParaStkStateMachineProtocol
     let networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol
     let stateViewModelFactory: ParaStkStateViewModelFactoryProtocol
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         interactor: StakingParachainInteractorInputProtocol,
         wireframe: StakingParachainWireframeProtocol,
         networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol,
         stateViewModelFactory: ParaStkStateViewModelFactoryProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -23,6 +25,7 @@ final class StakingParachainPresenter {
         self.networkInfoViewModelFactory = networkInfoViewModelFactory
         self.stateViewModelFactory = stateViewModelFactory
         self.logger = logger
+        self.priceAssetInfoFactory = priceAssetInfoFactory
 
         let stateMachine = ParachainStaking.StateMachine()
         self.stateMachine = stateMachine
@@ -171,7 +174,10 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         if delegationRequests.count > 1 {
             let identities = delegator.delegations?.identitiesDict()
 
-            let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(chainAsset: chainAsset)
+            let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(
+                chainAsset: chainAsset,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
 
             let viewModels = accountDetailsViewModelFactory.createUnstakingViewModels(
                 from: delegationRequests,

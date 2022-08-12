@@ -20,11 +20,12 @@ struct AssetsSearchViewFactory {
 
         let wireframe = AssetsSearchWireframe()
 
-        let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListAssetViewModelFactory(
-            priceFormatter: priceFormatter,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: NumberFormatter.signedPercent.localizableResource()
+            percentFormatter: NumberFormatter.signedPercent.localizableResource(),
+            currencyManager: currencyManager
         )
 
         let presenter = AssetsSearchPresenter(

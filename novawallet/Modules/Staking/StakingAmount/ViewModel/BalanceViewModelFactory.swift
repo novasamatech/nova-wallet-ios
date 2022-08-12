@@ -60,12 +60,12 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
     }
 
     func priceFromAmount(_ amount: Decimal, priceData: PriceData) -> LocalizableResource<String> {
-        guard let rate = Decimal(string: priceData.price) else {
+        guard let rate = Decimal(string: priceData.price),
+              let localizableFormatter = priceFormatter(for: priceData) else {
             return LocalizableResource { _ in "" }
         }
 
         let targetAmount = rate * amount
-        let localizableFormatter = priceFormatter(for: priceData)
 
         return LocalizableResource { locale in
             let formatter = localizableFormatter.value(for: locale)
@@ -73,10 +73,9 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         }
     }
 
-    private func priceFormatter(for priceData: PriceData?) -> LocalizableResource<TokenFormatter> {
+    private func priceFormatter(for priceData: PriceData?) -> LocalizableResource<TokenFormatter>? {
         guard let priceData = priceData else {
-            assertionFailure("Price data is nil")
-            return formatterFactory.createTokenFormatter(for: .usd())
+            return nil
         }
 
         let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
@@ -110,8 +109,8 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
 
             let targetAmount = rate * amount
 
-            let priceFormatter = localizablePriceFormatter.value(for: locale)
-            let priceString = priceFormatter.stringFromDecimal(targetAmount) ?? ""
+            let priceFormatter = localizablePriceFormatter?.value(for: locale)
+            let priceString = priceFormatter?.stringFromDecimal(targetAmount) ?? ""
 
             return BalanceViewModel(amount: amountString, price: priceString)
         }
@@ -135,8 +134,8 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
 
             let targetAmount = rate * amount
 
-            let priceFormatter = localizablePriceFormatter.value(for: locale)
-            let priceString = priceFormatter.stringFromDecimal(targetAmount) ?? ""
+            let priceFormatter = localizablePriceFormatter?.value(for: locale)
+            let priceString = priceFormatter?.stringFromDecimal(targetAmount) ?? ""
 
             return BalanceViewModel(amount: amountString, price: priceString)
         }
@@ -162,8 +161,8 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
 
             let targetAmount = rate * amount
 
-            let priceFormatter = localizablePriceFormatter.value(for: locale)
-            let priceString = priceFormatter.stringFromDecimal(targetAmount) ?? ""
+            let priceFormatter = localizablePriceFormatter?.value(for: locale)
+            let priceString = priceFormatter?.stringFromDecimal(targetAmount) ?? ""
 
             return BalanceViewModel(amount: amountString, price: priceString)
         }
@@ -207,8 +206,8 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
             if let priceData = priceData, let rate = Decimal(string: priceData.price) {
                 let targetAmount = rate * amount
 
-                let priceFormatter = localizablePriceFormatter.value(for: locale)
-                priceString = priceFormatter.stringFromDecimal(targetAmount)
+                let priceFormatter = localizablePriceFormatter?.value(for: locale)
+                priceString = priceFormatter?.stringFromDecimal(targetAmount)
             } else {
                 priceString = nil
             }
