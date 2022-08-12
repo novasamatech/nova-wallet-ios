@@ -25,7 +25,11 @@ struct AnalyticsStakeViewFactory {
         let wireframe = AnalyticsStakeWireframe(state: state)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
         let viewModelFactory = AnalyticsStakeViewModelFactory(
             assetInfo: assetInfo,
             balanceViewModelFactory: balanceViewModelFactory,

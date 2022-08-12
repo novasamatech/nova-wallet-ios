@@ -25,7 +25,7 @@ extension WalletNetworkFacade {
 
         let priceOperation = coingeckoOperationFactory.fetchPriceOperation(
             for: allPriceIds,
-            currency: currency.coingeckoId
+            currency: currency
         )
 
         let mappingOperation: BaseOperation<[String: Price]> = ClosureOperation {
@@ -44,7 +44,7 @@ extension WalletNetworkFacade {
 
                 let price = Price(
                     lastValue: Decimal(string: priceData.price) ?? 0.0,
-                    change: (priceData.usdDayChange ?? 0.0) / 100.0
+                    change: (priceData.dayChange ?? 0.0) / 100.0
                 )
 
                 result[asset.identifier] = price

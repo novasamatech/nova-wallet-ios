@@ -91,7 +91,8 @@ extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
                 balance: balance?.transferable,
                 fee: fee,
                 asset: assetInfo,
-                locale: selectedLocale
+                locale: selectedLocale,
+                priceAssetInfoFactory: priceAssetInfoFactory
             ),
             dataValidatingFactory.canUnstake(
                 amount: inputAmount,

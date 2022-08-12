@@ -7,7 +7,8 @@ struct AnalyticsRewardDetailsViewFactory {
         for state: StakingSharedState,
         rewardModel: AnalyticsRewardDetailsModel
     ) -> AnalyticsRewardDetailsViewProtocol? {
-        guard let chainAsset = state.settings.value else {
+        guard let chainAsset = state.settings.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -15,8 +16,11 @@ struct AnalyticsRewardDetailsViewFactory {
         let wireframe = AnalyticsRewardDetailsWireframe()
 
         let assetInfo = chainAsset.assetDisplayInfo
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let viewModelFactory = AnalyticsRewardDetailsViewModelFactory(

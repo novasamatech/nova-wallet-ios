@@ -11,6 +11,7 @@ struct ParaStkStakeSetupViewFactory {
     ) -> ParaStkStakeSetupViewProtocol? {
         guard
             let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(from: state) else {
             return nil
         }
@@ -18,17 +19,23 @@ struct ParaStkStakeSetupViewFactory {
         let wireframe = ParaStkStakeSetupWireframe(state: state)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidationFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
-            assetDisplayInfo: assetDisplayInfo
+            assetDisplayInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
             chainFormat: chainAsset.chain.chainFormat,
-            assetPrecision: assetDisplayInfo.assetPrecision
+            assetPrecision: assetDisplayInfo.assetPrecision,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let localizationManager = LocalizationManager.shared

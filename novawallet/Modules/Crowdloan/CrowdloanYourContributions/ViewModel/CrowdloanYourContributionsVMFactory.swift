@@ -6,11 +6,18 @@ import BigInt
 final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFactoryProtocol {
     let chainDateCalculator: ChainDateCalculatorProtocol
     let calendar: Calendar
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+
     private lazy var iconGenerator = PolkadotIconGenerator()
 
-    init(chainDateCalculator: ChainDateCalculatorProtocol, calendar: Calendar) {
+    init(
+        chainDateCalculator: ChainDateCalculatorProtocol,
+        calendar: Calendar,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    ) {
         self.chainDateCalculator = chainDateCalculator
         self.calendar = calendar
+        self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
     func createReturnInIntervals(
@@ -178,7 +185,10 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
     ) -> BalanceViewModelProtocol {
         let decimalAmount = Decimal.fromSubstrateAmount(contributed, precision: chainAsset.asset.assetPrecision) ?? 0
 
-        return BalanceViewModelFactory(targetAssetInfo: chainAsset.asset).balanceFromPrice(
+        return BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.asset,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        ).balanceFromPrice(
             decimalAmount,
             priceData: price
         ).value(for: locale)

@@ -88,7 +88,7 @@ class AssetListAssetViewModelFactory {
         if
             let priceString = assetAccountInfo.priceData?.price,
             let price = Decimal(string: priceString) {
-            let priceChangeValue = (assetAccountInfo.priceData?.usdDayChange ?? 0.0) / 100.0
+            let priceChangeValue = (assetAccountInfo.priceData?.dayChange ?? 0.0) / 100.0
             let priceChangeString = percentFormatter.value(for: locale)
                 .stringFromDecimal(priceChangeValue) ?? ""
             let priceString = priceFormatter.value(for: locale)

@@ -8,6 +8,7 @@ struct ParaStkRedeemViewFactory {
             let chainAsset = state.settings.value,
             let interactor = createInteractor(from: state),
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared,
             let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(
                 for: chainAsset.chain.accountRequest()
             ) else {
@@ -19,11 +20,16 @@ struct ParaStkRedeemViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidationFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
-            assetDisplayInfo: assetDisplayInfo
+            assetDisplayInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let presenter = ParaStkRedeemPresenter(
@@ -34,6 +40,7 @@ struct ParaStkRedeemViewFactory {
             dataValidatingFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 

@@ -8,15 +8,20 @@ struct YourValidatorListViewFactory {
     static func createView(for state: StakingSharedState) -> YourValidatorListViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state) else {
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = YourValidatorListWireframe(state: state)
 
         let chainInfo = chainAsset.chainAssetInfo
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainInfo.asset)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainInfo.asset,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let viewModelFactory = YourValidatorListViewModelFactory(
             balanceViewModeFactory: balanceViewModelFactory

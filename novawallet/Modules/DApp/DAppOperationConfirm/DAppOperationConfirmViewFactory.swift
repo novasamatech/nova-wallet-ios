@@ -30,13 +30,18 @@ struct DAppOperationConfirmViewFactory {
             )
         }
 
-        guard let interactor = maybeInteractor, let assetInfo = maybeAssetInfo else {
+        guard let interactor = maybeInteractor,
+              let assetInfo = maybeAssetInfo,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = DAppOperationConfirmWireframe()
-
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let presenter = DAppOperationConfirmPresenter(
             interactor: interactor,

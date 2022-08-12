@@ -45,7 +45,7 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             storageFacade.createRepository()
 
-        let source = CoingeckoPriceSource(priceId: priceId, currencyId: currency.coingeckoId)
+        let source = CoingeckoPriceSource(priceId: priceId, currency: currency)
 
         let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]
         let provider = SingleValueProvider(
@@ -74,7 +74,7 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             storageFacade.createRepository()
 
-        let source = CoingeckoPriceListSource(priceIds: priceIds, currencyId: currency.coingeckoId)
+        let source = CoingeckoPriceListSource(priceIds: priceIds, currency: currency)
 
         let databaseIdentifier = "coingecko_price_list_\(coingeckoId)_identifier"
 

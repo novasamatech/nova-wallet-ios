@@ -9,7 +9,8 @@ extension TransferSetupPresenterFactory {
     ) -> TransferSetupChildPresenterProtocol? {
         guard
             let selectedAccountAddress = wallet.fetch(for: chainAsset.chain.accountRequest())?.toAddress(),
-            let interactor = createInteractor(for: chainAsset) else {
+            let interactor = createInteractor(for: chainAsset),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -20,7 +21,11 @@ extension TransferSetupPresenterFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
-        let sendingBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let sendingBalanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
@@ -28,7 +33,10 @@ extension TransferSetupPresenterFactory {
             let utilityAsset = chainAsset.chain.utilityAssets().first,
             utilityAsset.assetId != chainAsset.asset.assetId {
             let utilityAssetInfo = utilityAsset.displayInfo(with: chainAsset.chain.icon)
-            utilityBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: utilityAssetInfo)
+            utilityBalanceViewModelFactory = BalanceViewModelFactory(
+                targetAssetInfo: utilityAssetInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
         } else {
             utilityBalanceViewModelFactory = nil
         }
@@ -36,7 +44,8 @@ extension TransferSetupPresenterFactory {
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo
+            utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let phishingRepository = SubstrateRepositoryFactory().createPhishingRepository()

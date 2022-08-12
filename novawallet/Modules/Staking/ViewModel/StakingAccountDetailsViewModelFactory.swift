@@ -24,23 +24,31 @@ final class ParaStkAccountDetailsViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let chainFormat: ChainFormat
     let assetPrecision: Int16
-
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         chainFormat: ChainFormat,
-        assetPrecision: Int16
+        assetPrecision: Int16,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainFormat = chainFormat
         self.assetPrecision = assetPrecision
+        self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
-    init(chainAsset: ChainAsset) {
+    init(
+        chainAsset: ChainAsset,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    ) {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-
-        balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        self.priceAssetInfoFactory = priceAssetInfoFactory
+        balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
         chainFormat = chainAsset.chain.chainFormat
         assetPrecision = assetDisplayInfo.assetPrecision
     }

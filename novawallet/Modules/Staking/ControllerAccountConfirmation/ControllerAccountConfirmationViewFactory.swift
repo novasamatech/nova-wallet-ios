@@ -11,6 +11,7 @@ struct ControllerAccountConfirmationViewFactory {
     ) -> ControllerAccountConfirmationViewProtocol? {
         guard
             let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
                 controllerAccountItem: controllerAccountItem.chainAccount
@@ -21,7 +22,11 @@ struct ControllerAccountConfirmationViewFactory {
         let wireframe = ControllerAccountConfirmationWireframe()
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
         let presenter = ControllerAccountConfirmationPresenter(

@@ -7,15 +7,19 @@ struct StakingUnbondSetupViewFactory {
     static func createView(for state: StakingSharedState) -> StakingUnbondSetupViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state) else {
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = StakingUnbondSetupWireframe(state: state)
 
         let assetInfo = chainAsset.assetDisplayInfo
-
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -25,6 +29,7 @@ struct StakingUnbondSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 

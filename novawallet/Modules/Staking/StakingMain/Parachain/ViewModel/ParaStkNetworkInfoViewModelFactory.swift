@@ -7,7 +7,8 @@ protocol ParaStkNetworkInfoViewModelFactoryProtocol {
         from model: ParachainStaking.NetworkInfo,
         duration: ParachainStakingDuration?,
         chainAsset: ChainAsset,
-        price: PriceData?
+        price: PriceData?,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> LocalizableResource<NetworkStakingInfoViewModel>
 }
 
@@ -92,11 +93,13 @@ extension ParachainStaking {
             from model: ParachainStaking.NetworkInfo,
             duration: ParachainStakingDuration?,
             chainAsset: ChainAsset,
-            price: PriceData?
+            price: PriceData?,
+            priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
         ) -> LocalizableResource<NetworkStakingInfoViewModel> {
             let assetDisplayInfo = chainAsset.assetDisplayInfo
             let balanceViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: assetDisplayInfo
+                targetAssetInfo: assetDisplayInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
             )
 
             let localizedTotalStake = createTotalStakeViewModel(

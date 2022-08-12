@@ -8,7 +8,8 @@ final class StakingRedeemViewFactory {
     static func createView(for state: StakingSharedState) -> StakingRedeemViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state) else {
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -20,7 +21,8 @@ final class StakingRedeemViewFactory {
             from: interactor,
             wireframe: wireframe,
             dataValidatingFactory: dataValidatingFactory,
-            chainAsset: chainAsset
+            chainAsset: chainAsset,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
         let view = StakingRedeemViewController(
@@ -39,10 +41,14 @@ final class StakingRedeemViewFactory {
         from interactor: StakingRedeemInteractorInputProtocol,
         wireframe: StakingRedeemWireframeProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> StakingRedeemPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let confirmationViewModelFactory = StakingRedeemViewModelFactory()
 
@@ -54,6 +60,7 @@ final class StakingRedeemViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
             chain: chainAsset.chain,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
     }

@@ -145,7 +145,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         if chainAsset.asset.priceId != nil {
             let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
-            let priceData = sendingAssetPrice ?? PriceData(price: "0", usdDayChange: nil)
+            let priceData = sendingAssetPrice ?? .zero
 
             let price = sendingBalanceViewModelFactory.priceFromAmount(
                 inputAmount,

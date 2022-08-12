@@ -32,6 +32,17 @@ extension AssetBalanceDisplayInfo {
             icon: URL(string: info.icon)
         )
     }
+
+    static func from(currency: Currency) -> AssetBalanceDisplayInfo {
+        AssetBalanceDisplayInfo(
+            displayPrecision: 2,
+            assetPrecision: 2,
+            symbol: currency.symbol ?? currency.code,
+            symbolValueSeparator: "",
+            symbolPosition: .prefix,
+            icon: nil
+        )
+    }
 }
 
 extension AssetModel {

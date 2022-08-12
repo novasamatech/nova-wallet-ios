@@ -9,7 +9,14 @@ final class ValidatorInfoViewFactory {
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel
     ) -> ValidatorInfoViewProtocol? {
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory

@@ -9,7 +9,8 @@ struct StakingRebondConfirmationViewFactory {
         -> StakingRebondConfirmationViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state) else {
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -22,7 +23,8 @@ struct StakingRebondConfirmationViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             dataValidatingFactory: dataValidatingFactory,
-            chainAsset: chainAsset
+            chainAsset: chainAsset,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
         let view = StakingRebondConfirmationViewController(
@@ -42,10 +44,14 @@ struct StakingRebondConfirmationViewFactory {
         interactor: StakingRebondConfirmationInteractorInputProtocol,
         wireframe: StakingRebondConfirmationWireframeProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> StakingRebondConfirmationPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let confirmationViewModelFactory = StakingRebondConfirmationViewModelFactory()
 

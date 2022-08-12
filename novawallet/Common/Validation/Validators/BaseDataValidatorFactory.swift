@@ -150,7 +150,8 @@ extension BaseDataValidatingFactoryProtocol {
         balance: BigUInt?,
         fee: BigUInt?,
         asset: AssetBalanceDisplayInfo,
-        locale: Locale
+        locale: Locale,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> DataValidating {
         let precision = asset.assetPrecision
         let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }

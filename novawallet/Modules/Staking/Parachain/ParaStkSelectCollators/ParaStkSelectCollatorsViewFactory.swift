@@ -10,14 +10,17 @@ struct ParaStkSelectCollatorsViewFactory {
     ) -> ParaStkSelectCollatorsViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
-            let chainAsset = state.settings.value else {
+            let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = ParaStkSelectCollatorsWireframe(sharedState: state)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let localizationManager = LocalizationManager.shared

@@ -10,7 +10,8 @@ struct StakingRewardDestConfirmViewFactory {
     ) -> StakingRewardDestConfirmViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state) else {
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -19,7 +20,12 @@ struct StakingRewardDestConfirmViewFactory {
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let presenter = StakingRewardDestConfirmPresenter(
             interactor: interactor,
