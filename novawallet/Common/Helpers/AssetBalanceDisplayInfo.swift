@@ -50,7 +50,7 @@ extension AssetBalanceDisplayInfo {
             displayPrecision: 2,
             assetPrecision: 2,
             symbol: currency.symbol ?? currency.code,
-            symbolValueSeparator: "",
+            symbolValueSeparator: currency.symbol != nil ? "" : " ",
             symbolPosition: .prefix,
             icon: nil
         )

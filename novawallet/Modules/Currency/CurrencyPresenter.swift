@@ -36,7 +36,7 @@ final class CurrencyPresenter {
                 id: currency.id,
                 title: currency.code,
                 subtitle: currency.name,
-                symbol: currency.symbol ?? "",
+                symbol: currency.symbol ?? currency.code,
                 isSelected: currency.id == selectedCurrency
             )
             switch currency.category {
