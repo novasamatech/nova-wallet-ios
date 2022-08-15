@@ -13,15 +13,19 @@ final class WalletManageViewFactory {
     }
 
     private static func createView(for wireframe: WalletManageWireframeProtocol) -> WalletManageViewProtocol? {
-        guard let interactor = createInteractor() else {
+        guard let interactor = createInteractor(),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let localizationManager = LocalizationManager.shared
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
-        let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
-
-        let viewModelFactory = WalletsListViewModelFactory(priceFormatter: priceFormatter)
+        let viewModelFactory = WalletsListViewModelFactory(
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            currencyManager: currencyManager
+        )
         let presenter = WalletManagePresenter(
             interactor: interactor,
             wireframe: wireframe,
