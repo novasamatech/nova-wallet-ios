@@ -114,6 +114,7 @@ class StakingRebondSetupTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             feeProxy: ExtrinsicFeeProxy(),
+            currencyManager: CurrencyManagerStub(),
             operationManager: operationManager
         )
 
