@@ -15,6 +15,7 @@ final class SelectValidatorsConfirmViewFactory {
             let metaAccount = SelectedWalletSettings.shared.value,
             let chainAsset = stakingState.settings.value,
             let metaAccountResponse = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared,
             let interactor = createInitiatedBondingInteractor(
                 state,
                 selectedMetaAccount: metaAccountResponse,
@@ -34,7 +35,8 @@ final class SelectValidatorsConfirmViewFactory {
             for: interactor,
             wireframe: wireframe,
             stakingState: stakingState,
-            title: title
+            title: title,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
     }
 
@@ -61,11 +63,12 @@ final class SelectValidatorsConfirmViewFactory {
     ) -> SelectValidatorsConfirmViewProtocol? {
         let keystore = Keychain()
 
-        guard let interactor = createChangeTargetsInteractor(
-            state,
-            state: stakingState,
-            keystore: keystore
-        ) else {
+        guard let currencyManager = CurrencyManager.shared,
+              let interactor = createChangeTargetsInteractor(
+                  state,
+                  state: stakingState,
+                  keystore: keystore
+              ) else {
             return nil
         }
 
@@ -77,7 +80,8 @@ final class SelectValidatorsConfirmViewFactory {
             for: interactor,
             wireframe: wireframe,
             stakingState: stakingState,
-            title: title
+            title: title,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
     }
 
@@ -85,7 +89,8 @@ final class SelectValidatorsConfirmViewFactory {
         for interactor: SelectValidatorsConfirmInteractorBase,
         wireframe: SelectValidatorsConfirmWireframeProtocol,
         stakingState: StakingSharedState,
-        title: LocalizableResource<String>
+        title: LocalizableResource<String>,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> SelectValidatorsConfirmViewProtocol? {
         guard let chainAsset = stakingState.settings.value else {
             return nil
@@ -94,7 +99,10 @@ final class SelectValidatorsConfirmViewFactory {
         let confirmViewModelFactory = SelectValidatorsConfirmViewModelFactory()
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(
             presentable: wireframe,
@@ -141,6 +149,7 @@ final class SelectValidatorsConfirmViewFactory {
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress(),
+            let currencyManager = CurrencyManager.shared,
             let stakingDurationFactory = try? stakingState.createStakingDurationOperationFactory(
                 for: chainAsset.chain
             ) else {
@@ -169,7 +178,8 @@ final class SelectValidatorsConfirmViewFactory {
             durationOperationFactory: stakingDurationFactory,
             operationManager: operationManager,
             signer: signer,
-            nomination: nomination
+            nomination: nomination,
+            currencyManager: currencyManager
         )
     }
 
@@ -184,6 +194,7 @@ final class SelectValidatorsConfirmViewFactory {
 
         guard
             let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
@@ -218,7 +229,8 @@ final class SelectValidatorsConfirmViewFactory {
             operationManager: operationManager,
             signer: signer,
             accountRepositoryFactory: accountRepository,
-            nomination: nomination
+            nomination: nomination,
+            currencyManager: currencyManager
         )
     }
 }

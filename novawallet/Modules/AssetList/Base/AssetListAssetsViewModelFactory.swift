@@ -27,20 +27,23 @@ protocol AssetListAssetViewModelFactoryProtocol {
 }
 
 class AssetListAssetViewModelFactory {
-    let priceFormatter: LocalizableResource<TokenFormatter>
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    let currencyManager: CurrencyManagerProtocol
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: LocalizableResource<NumberFormatter>
 
     private(set) lazy var cssColorFactory = CSSGradientFactory()
 
     init(
-        priceFormatter: LocalizableResource<TokenFormatter>,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
-        percentFormatter: LocalizableResource<NumberFormatter>
+        percentFormatter: LocalizableResource<NumberFormatter>,
+        currencyManager: CurrencyManagerProtocol
     ) {
-        self.priceFormatter = priceFormatter
+        self.priceAssetInfoFactory = priceAssetInfoFactory
         self.assetFormatterFactory = assetFormatterFactory
         self.percentFormatter = percentFormatter
+        self.currencyManager = currencyManager
     }
 
     func createBalanceState(
@@ -50,6 +53,7 @@ class AssetListAssetViewModelFactory {
     ) -> (LoadableViewModelState<String>, LoadableViewModelState<String>) {
         if let balance = assetAccountInfo.balance {
             let assetInfo = assetAccountInfo.assetInfo
+            let balanceViewModelFactory = balanceViewModelFactory(assetAccountInfo: assetAccountInfo)
 
             let decimalBalance = Decimal.fromSubstrateAmount(
                 balance,
@@ -65,12 +69,11 @@ class AssetListAssetViewModelFactory {
             let balanceState = connected ? LoadableViewModelState.loaded(value: balanceAmountString) :
                 LoadableViewModelState.cached(value: balanceAmountString)
 
-            if
-                let priceData = assetAccountInfo.priceData,
-                let decimalPrice = Decimal(string: priceData.price) {
-                let balanceValue = priceFormatter.value(for: locale).stringFromDecimal(
-                    decimalBalance * decimalPrice
-                ) ?? ""
+            if let priceData = assetAccountInfo.priceData {
+                let balanceValue = balanceViewModelFactory.priceFromAmount(
+                    decimalBalance,
+                    priceData: priceData
+                ).value(for: locale)
                 return (balanceState, .loaded(value: balanceValue))
             } else {
                 return (balanceState, .loading)
@@ -81,18 +84,26 @@ class AssetListAssetViewModelFactory {
         }
     }
 
+    func balanceViewModelFactory(assetAccountInfo: AssetListAssetAccountInfo) -> BalanceViewModelFactoryProtocol {
+        BalanceViewModelFactory(
+            targetAssetInfo: assetAccountInfo.assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+    }
+
     func createPriceState(
         assetAccountInfo: AssetListAssetAccountInfo,
         locale: Locale
     ) -> LoadableViewModelState<AssetPriceViewModel> {
         if
-            let priceString = assetAccountInfo.priceData?.price,
-            let price = Decimal(string: priceString) {
-            let priceChangeValue = (assetAccountInfo.priceData?.usdDayChange ?? 0.0) / 100.0
+            let priceData = assetAccountInfo.priceData,
+            let price = Decimal(string: priceData.price) {
+            let priceChangeValue = (assetAccountInfo.priceData?.dayChange ?? 0.0) / 100.0
             let priceChangeString = percentFormatter.value(for: locale)
                 .stringFromDecimal(priceChangeValue) ?? ""
-            let priceString = priceFormatter.value(for: locale)
-                .stringFromDecimal(price) ?? ""
+            let priceAssetInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceData.currencyId)
+            let priceFormatter = assetFormatterFactory.createTokenFormatter(for: priceAssetInfo).value(for: locale)
+            let priceString = priceFormatter.stringFromDecimal(price) ?? ""
 
             let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
                 ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
@@ -124,7 +135,11 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let iconViewModel = RemoteImageViewModel(url: chain.icon)
 
-        let priceString = priceFormatter.value(for: locale).stringFromDecimal(value) ?? ""
+        let priceString = formatPrice(
+            amount: value,
+            priceData: assets.first?.priceData,
+            locale: locale
+        )
 
         return AssetListGroupViewModel(
             networkName: networkName,
@@ -132,6 +147,13 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
             icon: iconViewModel,
             assets: assetViewModels
         )
+    }
+
+    func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
+        let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
+        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 
     func createAssetViewModel(

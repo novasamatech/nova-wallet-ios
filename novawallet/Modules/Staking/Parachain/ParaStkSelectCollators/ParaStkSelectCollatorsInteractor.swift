@@ -24,6 +24,7 @@ final class ParaStkSelectCollatorsInteractor {
         runtimeProvider: RuntimeProviderProtocol,
         collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -34,6 +35,7 @@ final class ParaStkSelectCollatorsInteractor {
         self.collatorOperationFactory = collatorOperationFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     private func provideElectedCollatorsInfo() {
@@ -65,7 +67,7 @@ extension ParaStkSelectCollatorsInteractor: ParaStkSelectCollatorsInteractorInpu
         provideElectedCollatorsInfo()
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 
@@ -80,5 +82,16 @@ extension ParaStkSelectCollatorsInteractor: PriceLocalStorageSubscriber, PriceLo
         priceId _: AssetModel.PriceId
     ) {
         presenter?.didReceivePrice(result: result)
+    }
+}
+
+extension ParaStkSelectCollatorsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

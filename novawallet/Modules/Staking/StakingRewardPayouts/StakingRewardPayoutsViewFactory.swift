@@ -96,7 +96,8 @@ final class StakingRewardPayoutsViewFactory {
         for payoutService: PayoutRewardsServiceProtocol,
         state: StakingSharedState
     ) -> StakingRewardPayoutsViewProtocol? {
-        guard let chainAsset = state.settings.value else {
+        guard let chainAsset = state.settings.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -115,7 +116,11 @@ final class StakingRewardPayoutsViewFactory {
         }
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let timeleftViewModelFactory = PayoutTimeViewModelFactory(timeFormatter: TotalTimeFormatter())
         let payoutsViewModelFactory = StakingPayoutViewModelFactory(
@@ -138,7 +143,8 @@ final class StakingRewardPayoutsViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             payoutService: payoutService,
             eraCountdownOperationFactory: eraCountdownOperationFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
 
         let wireframe = StakingRewardPayoutsWireframe(state: state)

@@ -24,7 +24,8 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         runtimeService: RuntimeProviderProtocol,
         crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol,
         crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.chain = chain
         self.selectedMetaAccount = selectedMetaAccount
@@ -33,6 +34,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
         self.crowdloanOffchainProviderFactory = crowdloanOffchainProviderFactory
         self.crowdloanLocalSubscriptionFactory = crowdloanLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.currencyManager = currencyManager
     }
 
     private func subscribeBlockNumber() {
@@ -52,7 +54,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
 
     private func subscribePrice() {
         if let priceId = chain.utilityAsset()?.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePrice(nil)
         }
@@ -143,6 +145,14 @@ extension CrowdloanYourContributionsInteractor: PriceLocalStorageSubscriber, Pri
             presenter.didReceivePrice(priceData)
         case let .failure(error):
             presenter.didReceiveError(error)
+        }
+    }
+}
+
+extension CrowdloanYourContributionsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if presenter != nil, let priceId = chain.utilityAsset()?.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 }

@@ -12,13 +12,21 @@ protocol StakingMainViewModelFactoryProtocol {
 final class StakingMainViewModelFactory: StakingMainViewModelFactoryProtocol {
     private var chainAsset: ChainAsset?
     private var balanceViewModelFactory: BalanceViewModelFactoryProtocol?
+    private let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+
+    init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
+        self.priceAssetInfoFactory = priceAssetInfoFactory
+    }
 
     private func getBalanceViewModelFactory(for chainAsset: ChainAsset) -> BalanceViewModelFactoryProtocol {
         if let factory = balanceViewModelFactory, self.chainAsset == chainAsset {
             return factory
         }
 
-        let factory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let factory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         self.chainAsset = chainAsset
         balanceViewModelFactory = factory

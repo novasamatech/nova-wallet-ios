@@ -13,6 +13,7 @@ struct CrowdloanContributionConfirmViewFactory {
         guard
             let chain = state.settings.value,
             let asset = chain.utilityAssets().first,
+            let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: paraId,
                 chain: chain,
@@ -26,7 +27,11 @@ struct CrowdloanContributionConfirmViewFactory {
         let wireframe = CrowdloanContributionConfirmWireframe()
 
         let assetInfo = asset.displayInfo(with: chain.icon)
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let localizationManager = LocalizationManager.shared
 
@@ -73,7 +78,8 @@ struct CrowdloanContributionConfirmViewFactory {
         bonusService: CrowdloanBonusServiceProtocol?,
         state: CrowdloanSharedState
     ) -> CrowdloanContributionConfirmInteractor? {
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -119,7 +125,8 @@ struct CrowdloanContributionConfirmViewFactory {
             jsonLocalSubscriptionFactory: JsonDataProviderFactory.shared,
             signingWrapper: signingWrapper,
             bonusService: bonusService,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

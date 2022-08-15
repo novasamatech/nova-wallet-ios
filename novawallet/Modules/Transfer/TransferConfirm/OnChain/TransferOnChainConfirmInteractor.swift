@@ -25,6 +25,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.signingWrapper = signingWrapper
@@ -42,6 +43,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             substrateStorageFacade: substrateStorageFacade,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

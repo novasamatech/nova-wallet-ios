@@ -8,6 +8,9 @@ struct AssetSelectionViewFactory {
         selectedChainAssetId: ChainAssetId?,
         assetFilter: @escaping AssetSelectionFilter
     ) -> AssetSelectionViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let repository = ChainRepositoryFactory().createRepository(
             for: nil,
             sortDescriptors: [NSSortDescriptor.chainsByAddressPrefix]
@@ -19,6 +22,7 @@ struct AssetSelectionViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             assetFilter: assetFilter,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

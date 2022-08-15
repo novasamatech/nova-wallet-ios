@@ -265,7 +265,11 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
                 waitsInProgressSyncOnAdd: false
             )
 
-            sendingAssetPriceProvider = subscribeToPrice(for: priceId, options: options)
+            sendingAssetPriceProvider = subscribeToPrice(
+                for: priceId,
+                currency: selectedCurrency,
+                options: options
+            )
         } else {
             presenter?.didReceiveSendingAssetPrice(nil)
         }
@@ -282,7 +286,11 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
                 waitsInProgressSyncOnAdd: false
             )
 
-            utilityAssetPriceProvider = subscribeToPrice(for: priceId, options: options)
+            utilityAssetPriceProvider = subscribeToPrice(
+                for: priceId,
+                currency: selectedCurrency,
+                options: options
+            )
         } else {
             presenter?.didReceiveUtilityAssetPrice(nil)
         }
@@ -621,5 +629,15 @@ extension CrossChainTransferInteractor: XcmExtrinsicFeeProxyDelegate {
 
     func didReceiveCrossChainFee(result: XcmTrasferFeeResult, for _: ExtrinsicFeeId) {
         presenter?.didReceiveCrossChainFee(result: result)
+    }
+}
+
+extension CrossChainTransferInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
+        setupUtilityAssetPriceProviderIfNeeded()
     }
 }

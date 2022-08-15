@@ -10,17 +10,19 @@ final class CustomValidatorListInteractor {
 
     init(
         selectedAsset: AssetModel,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.selectedAsset = selectedAsset
+        self.currencyManager = currencyManager
     }
 }
 
 extension CustomValidatorListInteractor: CustomValidatorListInteractorInputProtocol {
     func setup() {
         if let priceId = selectedAsset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -31,5 +33,16 @@ extension CustomValidatorListInteractor: PriceLocalStorageSubscriber, PriceLocal
     AnyProviderAutoCleaning {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         presenter.didReceivePriceData(result: result)
+    }
+}
+
+extension CustomValidatorListInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = selectedAsset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

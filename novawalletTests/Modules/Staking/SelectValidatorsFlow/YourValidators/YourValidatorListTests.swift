@@ -118,7 +118,10 @@ class YourValidatorListTests: XCTestCase {
 
         let chainInfo = chainAsset.chainAssetInfo
 
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainInfo.asset)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainInfo.asset,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let viewModelFactory = YourValidatorListViewModelFactory(
             balanceViewModeFactory: balanceViewModelFactory

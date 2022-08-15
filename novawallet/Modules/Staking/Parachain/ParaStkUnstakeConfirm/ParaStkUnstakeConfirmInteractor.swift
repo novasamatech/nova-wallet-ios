@@ -24,6 +24,7 @@ final class ParaStkUnstakeConfirmInteractor: ParaStkBaseUnstakeInteractor {
         stakingDurationFactory: ParaStkDurationOperationFactoryProtocol,
         blocktimeEstimationService: BlockTimeEstimationServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.signer = signer
@@ -41,6 +42,7 @@ final class ParaStkUnstakeConfirmInteractor: ParaStkBaseUnstakeInteractor {
             stakingDurationFactory: stakingDurationFactory,
             blocktimeEstimationService: blocktimeEstimationService,
             repositoryFactory: repositoryFactory,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

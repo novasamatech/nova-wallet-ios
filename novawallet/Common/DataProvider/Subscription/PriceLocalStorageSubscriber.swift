@@ -8,27 +8,35 @@ protocol PriceLocalStorageSubscriber where Self: AnyObject {
 
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
+        currency: Currency,
         options: DataProviderObserverOptions
     ) -> AnySingleValueProvider<PriceData>?
 }
 
 extension PriceLocalStorageSubscriber {
-    func subscribeToPrice(for priceId: AssetModel.PriceId) -> AnySingleValueProvider<PriceData>? {
+    func subscribeToPrice(
+        for priceId: AssetModel.PriceId,
+        currency: Currency
+    ) -> AnySingleValueProvider<PriceData>? {
         let options = DataProviderObserverOptions(
             alwaysNotifyOnRefresh: false,
             waitsInProgressSyncOnAdd: false
         )
 
-        return subscribeToPrice(for: priceId, options: options)
+        return subscribeToPrice(for: priceId, currency: currency, options: options)
     }
 }
 
 extension PriceLocalStorageSubscriber {
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
+        currency: Currency,
         options: DataProviderObserverOptions
     ) -> AnySingleValueProvider<PriceData>? {
-        let priceProvider = priceLocalSubscriptionFactory.getPriceProvider(for: priceId)
+        let priceProvider = priceLocalSubscriptionFactory.getPriceProvider(
+            for: priceId,
+            currency: currency
+        )
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
             let finalValue = changes.reduceToLastChange()

@@ -33,7 +33,8 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
-        signer: SigningWrapperProtocol
+        signer: SigningWrapperProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.balanceAccountAddress = balanceAccountAddress
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
@@ -45,13 +46,14 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         self.operationManager = operationManager
         self.signer = signer
         self.chainAsset = chainAsset
+        self.currencyManager = currencyManager
     }
 
     // MARK: - SelectValidatorsConfirmInteractorInputProtocol
 
     func setup() {
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePrice(result: .success(nil))
         }
@@ -103,5 +105,16 @@ extension SelectValidatorsConfirmInteractorBase: WalletLocalStorageSubscriber, W
 extension SelectValidatorsConfirmInteractorBase: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         presenter.didReceivePrice(result: result)
+    }
+}
+
+extension SelectValidatorsConfirmInteractorBase: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }
