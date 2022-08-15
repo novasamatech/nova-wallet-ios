@@ -634,6 +634,10 @@ extension CrossChainTransferInteractor: XcmExtrinsicFeeProxyDelegate {
 
 extension CrossChainTransferInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
         setupUtilityAssetPriceProviderIfNeeded()
     }
 }

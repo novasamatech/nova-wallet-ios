@@ -189,7 +189,8 @@ extension ParaStkBaseUnstakeInteractor: ParastakingLocalStorageSubscriber, Paras
 
 extension ParaStkBaseUnstakeInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard let priceId = chainAsset.asset.priceId else {
+        guard basePresenter != nil,
+              let priceId = chainAsset.asset.priceId else {
             return
         }
 

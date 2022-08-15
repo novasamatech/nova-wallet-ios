@@ -8,7 +8,8 @@ struct StakingUnbondConfirmViewFactory {
         from amount: Decimal,
         state: StakingSharedState
     ) -> StakingUnbondConfirmViewProtocol? {
-        guard let interactor = createInteractor(state: state) else {
+        guard let interactor = createInteractor(state: state),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -18,7 +19,8 @@ struct StakingUnbondConfirmViewFactory {
             from: interactor,
             wireframe: wireframe,
             amount: amount,
-            chainAsset: state.settings.value
+            chainAsset: state.settings.value,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
         let view = StakingUnbondConfirmViewController(
@@ -36,10 +38,14 @@ struct StakingUnbondConfirmViewFactory {
         from interactor: StakingUnbondConfirmInteractorInputProtocol,
         wireframe: StakingUnbondConfirmWireframeProtocol,
         amount: Decimal,
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> StakingUnbondConfirmPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let confirmationViewModelFactory = StakingUnbondConfirmViewModelFactory()
 

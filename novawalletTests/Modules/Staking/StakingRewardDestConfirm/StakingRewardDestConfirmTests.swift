@@ -119,7 +119,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+14))
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
         )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
@@ -143,7 +143,10 @@ class StakingRewardDestConfirmTests: XCTestCase {
         )
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let newPayoutItem = newPayout?.fetchMetaChainAccount(for: chain.accountRequest())
         let rewardDestination = newPayoutItem.map { RewardDestination.payout(account: $0) } ?? .restake

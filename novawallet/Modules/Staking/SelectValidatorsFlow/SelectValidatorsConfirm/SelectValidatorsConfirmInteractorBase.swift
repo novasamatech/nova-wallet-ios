@@ -110,7 +110,8 @@ extension SelectValidatorsConfirmInteractorBase: PriceLocalStorageSubscriber, Pr
 
 extension SelectValidatorsConfirmInteractorBase: SelectedCurrencyDepending {
     func applyCurrency() {
-        guard let priceId = chainAsset.asset.priceId else {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
             return
         }
 

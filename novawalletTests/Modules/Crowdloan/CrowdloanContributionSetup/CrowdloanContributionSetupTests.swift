@@ -156,7 +156,10 @@ class CrowdloanContributionSetupTests: XCTestCase {
         }
 
         let assetInfo = asset.displayInfo(with: chain.icon)
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let crowdloanViewModelFactory = CrowdloanContributionViewModelFactory(
             assetInfo: assetInfo,
@@ -213,7 +216,7 @@ class CrowdloanContributionSetupTests: XCTestCase {
         )
 
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "100", usdDayChange: 0.01)
+            priceData: PriceData(price: "100", dayChange: 0.01, currencyId: Currency.usd.id)
         )
 
         let jsonProviderFactory = JsonDataProviderFactoryStub(

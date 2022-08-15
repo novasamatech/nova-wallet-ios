@@ -12,6 +12,7 @@ struct AcalaContributionSetupViewFactory {
             let asset = chain.utilityAssets().first,
             let selectedAccount = SelectedWalletSettings.shared.value,
             let accountResponse = selectedAccount.fetch(for: chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared,
             let selectedAddress = try? accountResponse.accountId.toAddress(
                 using: chain.chainFormat
             ),
@@ -55,7 +56,11 @@ struct AcalaContributionSetupViewFactory {
         let wireframe = AcalaContributionSetupWireframe(state: state, acalaService: acalaService)
 
         let assetInfo = asset.displayInfo(with: chain.icon)
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let localizationManager = LocalizationManager.shared
 

@@ -102,7 +102,7 @@ class StakingRebondSetupTests: XCTestCase {
         )
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: nil)
+            priceData: PriceData(price: "0.1", dayChange: nil, currencyId: Currency.usd.id)
         )
 
         let interactor = StakingRebondSetupInteractor(
@@ -118,7 +118,10 @@ class StakingRebondSetupTests: XCTestCase {
         )
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 

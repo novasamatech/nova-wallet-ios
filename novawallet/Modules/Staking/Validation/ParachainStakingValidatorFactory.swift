@@ -8,21 +8,24 @@ extension ParachainStaking {
 
         var basePresentable: BaseErrorPresentable { presentable }
         let assetDisplayInfo: AssetBalanceDisplayInfo
-
+        let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
         let presentable: ParachainStakingErrorPresentable
 
         private lazy var balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetDisplayInfo
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         private lazy var quantityFormatter = NumberFormatter.quantity.localizableResource()
 
         init(
             presentable: ParachainStakingErrorPresentable,
-            assetDisplayInfo: AssetBalanceDisplayInfo
+            assetDisplayInfo: AssetBalanceDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
         ) {
             self.presentable = presentable
             self.assetDisplayInfo = assetDisplayInfo
+            self.priceAssetInfoFactory = priceAssetInfoFactory
         }
     }
 }

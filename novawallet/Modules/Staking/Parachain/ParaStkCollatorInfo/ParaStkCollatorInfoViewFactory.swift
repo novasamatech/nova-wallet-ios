@@ -25,10 +25,14 @@ struct ParaStkCollatorInfoViewFactory {
         let wireframe = ParaStkCollatorInfoWireframe()
 
         let localizationManager = LocalizationManager.shared
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let viewModelFactory = ParaStkCollatorInfoViewModelFactory(
-            balanceViewModelFactory: BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo),
+            balanceViewModelFactory: BalanceViewModelFactory(
+                targetAssetInfo: assetDisplayInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            ),
             precision: assetDisplayInfo.assetPrecision,
             chainFormat: chainAsset.chain.chainFormat
         )

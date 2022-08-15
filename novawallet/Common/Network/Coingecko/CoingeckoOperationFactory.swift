@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 
 protocol CoingeckoOperationFactoryProtocol {
-    func fetchPriceOperation(for tokenIds: [String], currency: String) -> BaseOperation<[PriceData]>
+    func fetchPriceOperation(for tokenIds: [String], currency: Currency) -> BaseOperation<[PriceData]>
 }
 
 final class CoingeckoOperationFactory {
@@ -30,11 +30,11 @@ final class CoingeckoOperationFactory {
 }
 
 extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
-    func fetchPriceOperation(for tokenIds: [String], currency: String) -> BaseOperation<[PriceData]> {
+    func fetchPriceOperation(for tokenIds: [String], currency: Currency) -> BaseOperation<[PriceData]> {
         guard let url = buildURLForAssets(
             tokenIds,
             method: CoingeckoAPI.price,
-            currencies: [currency]
+            currencies: [currency.coingeckoId]
         ) else {
             return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
         }
@@ -60,13 +60,14 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
 
             return tokenIds.map { assetId in
                 guard let assetPriceData = priceData[assetId],
-                      let priceData = assetPriceData.rates[currency] else {
-                    return PriceData(price: "0", usdDayChange: nil)
+                      let priceData = assetPriceData.rates[currency.coingeckoId] else {
+                    return PriceData.zero(for: currency.id)
                 }
 
                 return PriceData(
                     price: priceData.price.stringWithPointSeparator,
-                    usdDayChange: priceData.dayChange
+                    dayChange: priceData.dayChange,
+                    currencyId: currency.id
                 )
             }
         }

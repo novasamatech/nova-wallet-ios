@@ -270,6 +270,10 @@ extension NftListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHand
 
 extension NftListInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
         updatePriceProviders()
     }
 }

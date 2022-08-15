@@ -18,4 +18,6 @@ protocol CurrencyInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol CurrencyWireframeProtocol: ErrorPresentable, AlertPresentable {}
+protocol CurrencyWireframeProtocol: ErrorPresentable, AlertPresentable {
+    func complete(view: CurrencyViewProtocol?)
+}

@@ -27,13 +27,14 @@ struct AssetListViewFactory {
             operationQueue: OperationManagerFacade.fileDownloadQueue
         )
 
-        let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListViewModelFactory(
-            priceFormatter: priceFormatter,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource(),
-            nftDownloadService: nftDownloadService
+            nftDownloadService: nftDownloadService,
+            currencyManager: currencyManager
         )
         let localizationManager = LocalizationManager.shared
 

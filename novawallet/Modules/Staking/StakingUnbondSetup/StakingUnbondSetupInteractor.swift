@@ -222,8 +222,11 @@ extension StakingUnbondSetupInteractor: ExtrinsicFeeProxyDelegate {
 
 extension StakingUnbondSetupInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
         }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

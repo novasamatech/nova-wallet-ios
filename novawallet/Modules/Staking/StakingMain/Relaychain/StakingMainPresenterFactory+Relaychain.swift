@@ -14,13 +14,15 @@ extension StakingMainPresenterFactory {
 
         // MARK: - Interactor
 
-        guard let interactor = createRelaychainInteractor(state: sharedState) else {
+        guard let interactor = createRelaychainInteractor(state: sharedState),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         // MARK: - Router
 
         let wireframe = StakingRelaychainWireframe(state: sharedState)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         // MARK: - Presenter
 
@@ -38,9 +40,10 @@ extension StakingMainPresenterFactory {
 
         let stateViewModelFactory = StakingStateViewModelFactory(
             analyticsRewardsViewModelFactoryBuilder: analyticsVMFactoryBuilder,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: logger
         )
-        let networkInfoViewModelFactory = NetworkInfoViewModelFactory()
+        let networkInfoViewModelFactory = NetworkInfoViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 

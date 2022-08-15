@@ -24,7 +24,9 @@ class ValidatorInfoTests: XCTestCase {
         let view = MockValidatorInfoViewProtocol()
         let wireframe = MockValidatorInfoWireframeProtocol()
 
-        let priceProvider = PriceProviderFactoryStub(priceData: PriceData(price: "0.1", usdDayChange: 0.1))
+        let priceProvider = PriceProviderFactoryStub(
+            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+        )
 
         let interactor = AnyValidatorInfoInteractor(
             selectedAsset: chainAsset.asset,
@@ -33,7 +35,10 @@ class ValidatorInfoTests: XCTestCase {
             currencyManager: CurrencyManagerStub()
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory
@@ -85,7 +90,9 @@ class ValidatorInfoTests: XCTestCase {
             electedValidatorList: WestendStub.allValidators
         )
 
-        let priceProvider = PriceProviderFactoryStub(priceData: PriceData(price: "0.1", usdDayChange: 0.1))
+        let priceProvider = PriceProviderFactoryStub(
+            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+        )
 
         let interactor = YourValidatorInfoInteractor(
             accountAddress: validator.address,
@@ -96,7 +103,10 @@ class ValidatorInfoTests: XCTestCase {
             currencyManager: CurrencyManagerStub()
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory

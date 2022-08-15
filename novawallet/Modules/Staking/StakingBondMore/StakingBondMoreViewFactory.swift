@@ -9,6 +9,7 @@ struct StakingBondMoreViewFactory {
         guard
             let wallet = SelectedWalletSettings.shared.value,
             let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
             let selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
@@ -20,7 +21,11 @@ struct StakingBondMoreViewFactory {
         let wireframe = StakingBondMoreWireframe(state: state)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
         let presenter = StakingBondMorePresenter(

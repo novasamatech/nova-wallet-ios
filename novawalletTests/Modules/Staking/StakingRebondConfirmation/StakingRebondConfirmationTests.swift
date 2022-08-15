@@ -108,7 +108,7 @@ class StakingRebondConfirmationTests: XCTestCase {
         )
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: nil)
+            priceData: PriceData(price: "0.1", dayChange: nil, currencyId: Currency.usd.id)
         )
 
         let interactor = StakingRebondConfirmationInteractor(
@@ -127,7 +127,8 @@ class StakingRebondConfirmationTests: XCTestCase {
 
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetInfo
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
         let confirmViewModelFactory = StakingRebondConfirmationViewModelFactory()

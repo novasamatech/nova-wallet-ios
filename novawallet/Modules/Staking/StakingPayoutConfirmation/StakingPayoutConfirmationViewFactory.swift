@@ -9,14 +9,19 @@ final class StakingPayoutConfirmationViewFactory {
         for state: StakingSharedState,
         payouts: [PayoutInfo]
     ) -> StakingPayoutConfirmationViewProtocol? {
-        guard let chainAsset = state.settings.value else {
+        guard let chainAsset = state.settings.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let keystore = Keychain()
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let payoutConfirmViewModelFactory = StakingPayoutConfirmViewModelFactory()
 

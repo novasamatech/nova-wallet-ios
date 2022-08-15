@@ -36,7 +36,7 @@ final class CurrencyPresenter {
                 id: currency.id,
                 title: currency.code,
                 subtitle: currency.name,
-                symbol: currency.symbol ?? "",
+                symbol: currency.symbol ?? currency.code,
                 isSelected: currency.id == selectedCurrency
             )
             switch currency.category {
@@ -48,17 +48,19 @@ final class CurrencyPresenter {
             }
         }
 
+        let languages = selectedLocale.rLanguages
+
         return [
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryCryptocurrencies(),
+                title: R.string.localizable.currencyCategoryCryptocurrencies(preferredLanguages: languages),
                 cells: cryptocurrencyModels
             ),
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryPopularFiat(),
+                title: R.string.localizable.currencyCategoryPopularFiat(preferredLanguages: languages),
                 cells: popularFiatModels
             ),
             CurrencyViewSectionModel(
-                title: R.string.localizable.currencyCategoryFiat(),
+                title: R.string.localizable.currencyCategoryFiat(preferredLanguages: languages),
                 cells: fiatModels
             )
         ].filter { !$0.cells.isEmpty }
@@ -103,6 +105,7 @@ extension CurrencyPresenter: CurrencyPresenterProtocol {
             return
         }
         interactor.set(selectedCurrency: currency)
+        wireframe.complete(view: view)
     }
 }
 

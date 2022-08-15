@@ -3,7 +3,8 @@ import SoraFoundation
 
 struct NftListViewFactory {
     static func createView() -> NftListViewProtocol? {
-        guard let interactor = createInteractor() else {
+        guard let interactor = createInteractor(),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -17,10 +18,12 @@ struct NftListViewFactory {
         )
 
         let quantityFormatter = NumberFormatter.quantity.localizableResource()
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let viewModelFactory = NftListViewModelFactory(
             nftDownloadService: nftDownloadService,
-            quantityFormatter: quantityFormatter
+            quantityFormatter: quantityFormatter,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let localizationManager = LocalizationManager.shared

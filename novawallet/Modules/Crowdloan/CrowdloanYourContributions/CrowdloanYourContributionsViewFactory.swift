@@ -46,10 +46,11 @@ enum CrowdloanYourContributionsViewFactory {
         )
 
         let wireframe = CrowdloanYourContributionsWireframe()
-
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = CrowdloanYourContributionsVMFactory(
             chainDateCalculator: ChainDateCalculator(),
-            calendar: Calendar.current
+            calendar: Calendar.current,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let presenter = CrowdloanYourContributionsPresenter(
