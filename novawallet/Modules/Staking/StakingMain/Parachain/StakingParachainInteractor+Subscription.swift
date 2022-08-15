@@ -69,7 +69,7 @@ extension StakingParachainInteractor {
             return
         }
 
-        priceProvider = subscribeToPrice(for: priceId)
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
     func performAssetBalanceSubscription() {
@@ -268,5 +268,16 @@ extension StakingParachainInteractor: GeneralLocalStorageSubscriber, GeneralLoca
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
+    }
+}
+
+extension StakingParachainInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = selectedChainAsset?.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

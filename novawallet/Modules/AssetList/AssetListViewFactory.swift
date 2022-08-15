@@ -4,6 +4,9 @@ import SoraKeystore
 
 struct AssetListViewFactory {
     static func createView() -> AssetListViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let interactor = AssetListInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
@@ -11,7 +14,8 @@ struct AssetListViewFactory {
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,
-            settingsManager: SettingsManager.shared
+            settingsManager: SettingsManager.shared,
+            currencyManager: currencyManager
         )
 
         let wireframe = AssetListWireframe(walletUpdater: WalletDetailsUpdater.shared)
@@ -23,13 +27,14 @@ struct AssetListViewFactory {
             operationQueue: OperationManagerFacade.fileDownloadQueue
         )
 
-        let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = AssetListViewModelFactory(
-            priceFormatter: priceFormatter,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource(),
-            nftDownloadService: nftDownloadService
+            nftDownloadService: nftDownloadService,
+            currencyManager: currencyManager
         )
         let localizationManager = LocalizationManager.shared
 

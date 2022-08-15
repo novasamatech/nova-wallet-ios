@@ -66,10 +66,10 @@ extension BaseDataValidatingFactoryProtocol {
                 return
             }
 
-            let viewModelFactory = BalanceViewModelFactory(targetAssetInfo: asset)
+            let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: asset)
 
-            let balanceString = viewModelFactory.amountFromValue(balance ?? 0).value(for: locale)
-            let feeString = viewModelFactory.amountFromValue(fee ?? 0).value(for: locale)
+            let balanceString = tokenFormatter.value(for: locale).stringFromDecimal(balance ?? 0) ?? ""
+            let feeString = tokenFormatter.value(for: locale).stringFromDecimal(fee ?? 0) ?? ""
 
             self?.basePresentable.presentFeeTooHigh(from: view, balance: balanceString, fee: feeString, locale: locale)
 

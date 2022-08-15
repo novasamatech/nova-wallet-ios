@@ -193,7 +193,7 @@ final class ParaStkStakeSetupPresenter {
 
         let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
             rewardAmount,
-            priceData: price ?? PriceData.zero
+            priceData: price ?? PriceData.zero()
         ).value(for: selectedLocale)
 
         let aprString = aprFormatter.value(for: selectedLocale).stringFromDecimal(amountReturn)

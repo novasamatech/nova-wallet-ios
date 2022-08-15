@@ -17,7 +17,8 @@ enum CrowdloanYourContributionsViewFactory {
     ) -> CrowdloanYourContributionsViewProtocol? {
         guard
             let chain = sharedState.settings.value,
-            let selectedMetaAccount = SelectedWalletSettings.shared.value
+            let selectedMetaAccount = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared
         else { return nil }
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -40,14 +41,16 @@ enum CrowdloanYourContributionsViewFactory {
             runtimeService: runtimeService,
             crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionFactory,
             crowdloanOffchainProviderFactory: sharedState.crowdloanOffchainProviderFactory,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager
         )
 
         let wireframe = CrowdloanYourContributionsWireframe()
-
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let viewModelFactory = CrowdloanYourContributionsVMFactory(
             chainDateCalculator: ChainDateCalculator(),
-            calendar: Calendar.current
+            calendar: Calendar.current,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let presenter = CrowdloanYourContributionsPresenter(

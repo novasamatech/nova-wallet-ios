@@ -9,16 +9,20 @@ extension StakingMainPresenterFactory {
         for stakingAssetSettings: StakingAssetSettings,
         view: StakingMainViewProtocol,
         consensus: ConsensusType
-    ) -> StakingRelaychainPresenter {
+    ) -> StakingRelaychainPresenter? {
         let sharedState = createRelaychainSharedState(for: stakingAssetSettings, consensus: consensus)
 
         // MARK: - Interactor
 
-        let interactor = createRelaychainInteractor(state: sharedState)
+        guard let interactor = createRelaychainInteractor(state: sharedState),
+              let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
 
         // MARK: - Router
 
         let wireframe = StakingRelaychainWireframe(state: sharedState)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         // MARK: - Presenter
 
@@ -36,9 +40,10 @@ extension StakingMainPresenterFactory {
 
         let stateViewModelFactory = StakingStateViewModelFactory(
             analyticsRewardsViewModelFactoryBuilder: analyticsVMFactoryBuilder,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: logger
         )
-        let networkInfoViewModelFactory = NetworkInfoViewModelFactory()
+        let networkInfoViewModelFactory = NetworkInfoViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -62,7 +67,10 @@ extension StakingMainPresenterFactory {
 
     func createRelaychainInteractor(
         state: StakingSharedState
-    ) -> StakingRelaychainInteractor {
+    ) -> StakingRelaychainInteractor? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
 
@@ -126,6 +134,7 @@ extension StakingMainPresenterFactory {
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
             applicationHandler: ApplicationHandler(),
+            currencyManager: currencyManager,
             logger: logger
         )
     }

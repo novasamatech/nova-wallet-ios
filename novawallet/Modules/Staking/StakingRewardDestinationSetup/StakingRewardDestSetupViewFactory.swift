@@ -6,7 +6,8 @@ struct StakingRewardDestSetupViewFactory {
     static func createView(for state: StakingSharedState) -> StakingRewardDestSetupViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state) else {
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -15,7 +16,12 @@ struct StakingRewardDestSetupViewFactory {
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let rewardDestinationViewModelFactory = RewardDestinationViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory

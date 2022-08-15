@@ -15,6 +15,7 @@ final class StakingBondMoreInteractor: AccountFetching {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let operationManager: OperationManagerProtocol
+    let currencyManager: CurrencyManagerProtocol
 
     private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -32,7 +33,8 @@ final class StakingBondMoreInteractor: AccountFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManager
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -43,6 +45,7 @@ final class StakingBondMoreInteractor: AccountFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.feeProxy = feeProxy
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 
     func handleStashMetaAccount(response: MetaChainAccountResponse) {
@@ -64,7 +67,7 @@ extension StakingBondMoreInteractor: StakingBondMoreInteractorInputProtocol {
         }
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -154,5 +157,16 @@ extension StakingBondMoreInteractor: WalletLocalStorageSubscriber, WalletLocalSu
 extension StakingBondMoreInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter.didReceiveFee(result: result)
+    }
+}
+
+extension StakingBondMoreInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

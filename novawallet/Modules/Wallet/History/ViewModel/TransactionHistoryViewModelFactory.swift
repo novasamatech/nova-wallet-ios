@@ -10,7 +10,7 @@ enum TransactionHistoryViewModelFactoryError: Error {
 
 final class TransactionHistoryViewModelFactory {
     let chainAsset: ChainAsset
-    let amountFormatterFactory: NumberFormatterFactoryProtocol
+    let balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let assets: [WalletAsset]
 
@@ -20,12 +20,12 @@ final class TransactionHistoryViewModelFactory {
 
     init(
         chainAsset: ChainAsset,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
+        balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
         assets: [WalletAsset]
     ) {
         self.chainAsset = chainAsset
-        self.amountFormatterFactory = amountFormatterFactory
+        self.balanceFormatterFactory = balanceFormatterFactory
         self.dateFormatter = dateFormatter
         self.assets = assets
     }
@@ -40,7 +40,8 @@ final class TransactionHistoryViewModelFactory {
             throw TransactionHistoryViewModelFactoryError.missingAsset
         }
 
-        let amount = amountFormatterFactory.createTokenFormatter(for: asset)
+        let assetDisplayInfo = AssetBalanceDisplayInfo.fromWallet(asset: asset)
+        let amount = balanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
             .value(for: locale)
             .stringFromDecimal(data.amount.decimalValue)
             ?? ""
@@ -82,7 +83,8 @@ final class TransactionHistoryViewModelFactory {
             throw TransactionHistoryViewModelFactoryError.missingAsset
         }
 
-        let amount = amountFormatterFactory.createTokenFormatter(for: asset)
+        let assetDisplayInfo = AssetBalanceDisplayInfo.fromWallet(asset: asset)
+        let amount = balanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
             .value(for: locale)
             .stringFromDecimal(data.amount.decimalValue)
             ?? ""
@@ -127,7 +129,8 @@ final class TransactionHistoryViewModelFactory {
             throw TransactionHistoryViewModelFactoryError.missingAsset
         }
 
-        let amount = amountFormatterFactory.createTokenFormatter(for: asset)
+        let assetDisplayInfo = AssetBalanceDisplayInfo.fromWallet(asset: asset)
+        let amount = balanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
             .value(for: locale)
             .stringFromDecimal(data.amount.decimalValue)
             ?? ""

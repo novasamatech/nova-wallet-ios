@@ -9,6 +9,9 @@ struct OperationDetailsViewFactory {
         chainAsset: ChainAsset,
         commandFactory: WalletCommandFactoryProtocol?
     ) -> OperationDetailsViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let storageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let walletRepository = accountRepositoryFactory.createMetaAccountRepository(
@@ -34,9 +37,11 @@ struct OperationDetailsViewFactory {
         wireframe.commandFactory = commandFactory
 
         let localizationManager = LocalizationManager.shared
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let feeViewModelFactory: BalanceViewModelFactoryProtocol?
@@ -45,7 +50,8 @@ struct OperationDetailsViewFactory {
             let utilityAsset = chainAsset.chain.utilityAssets().first,
             utilityAsset.assetId != chainAsset.asset.assetId {
             feeViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAsset.displayInfo(with: chainAsset.chain.icon)
+                targetAssetInfo: utilityAsset.displayInfo(with: chainAsset.chain.icon),
+                priceAssetInfoFactory: priceAssetInfoFactory
             )
         } else {
             feeViewModelFactory = nil

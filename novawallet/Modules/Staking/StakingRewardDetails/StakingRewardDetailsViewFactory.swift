@@ -8,12 +8,17 @@ final class StakingRewardDetailsViewFactory {
         for state: StakingSharedState,
         input: StakingRewardDetailsInput
     ) -> StakingRewardDetailsViewProtocol? {
-        guard let chainAsset = state.settings.value else {
+        guard let chainAsset = state.settings.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
@@ -41,7 +46,8 @@ final class StakingRewardDetailsViewFactory {
 
         let interactor = StakingRewardDetailsInteractor(
             asset: chainAsset.asset,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager
         )
 
         let wireframe = StakingRewardDetailsWireframe(state: state)

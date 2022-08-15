@@ -10,14 +10,17 @@ struct ParaStkSelectCollatorsViewFactory {
     ) -> ParaStkSelectCollatorsViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
-            let chainAsset = state.settings.value else {
+            let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = ParaStkSelectCollatorsWireframe(sharedState: state)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let localizationManager = LocalizationManager.shared
@@ -49,7 +52,8 @@ struct ParaStkSelectCollatorsViewFactory {
         guard
             let chainAsset = state.settings.value,
             let collatorService = state.collatorService,
-            let rewardEngineService = state.rewardCalculationService else {
+            let rewardEngineService = state.rewardCalculationService,
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -86,6 +90,7 @@ struct ParaStkSelectCollatorsViewFactory {
             runtimeProvider: runtimeProvider,
             collatorOperationFactory: collatorOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }
