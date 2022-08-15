@@ -88,7 +88,8 @@ extension TransferSetupPresenterFactory {
         destinationChainAsset: ChainAsset,
         xcmTransfers: XcmTransfers
     ) -> CrossChainTransferSetupInteractor? {
-        guard let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()) else {
+        guard let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -131,6 +132,7 @@ extension TransferSetupPresenterFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

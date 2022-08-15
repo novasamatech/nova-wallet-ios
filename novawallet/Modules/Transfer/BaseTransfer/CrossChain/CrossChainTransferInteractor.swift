@@ -75,6 +75,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
@@ -90,6 +91,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     deinit {
