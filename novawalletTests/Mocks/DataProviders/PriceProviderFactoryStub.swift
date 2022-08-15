@@ -8,12 +8,12 @@ final class PriceProviderFactoryStub: PriceProviderFactoryProtocol {
         self.priceData = priceData
     }
 
-    func getPriceProvider(for priceId: AssetModel.PriceId) -> AnySingleValueProvider<PriceData> {
+    func getPriceProvider(for priceId: AssetModel.PriceId, currency: Currency) -> AnySingleValueProvider<PriceData> {
         let provider = SingleValueProviderStub(item: priceData)
         return AnySingleValueProvider(provider)
     }
 
-    func getPriceListProvider(for priceIds: [AssetModel.PriceId]) -> AnySingleValueProvider<[PriceData]> {
+    func getPriceListProvider(for priceIds: [AssetModel.PriceId], currency: Currency) -> AnySingleValueProvider<[PriceData]> {
         let priceList = priceData.map { [$0] } ?? []
         let provider = SingleValueProviderStub(item: priceList)
         return AnySingleValueProvider(provider)

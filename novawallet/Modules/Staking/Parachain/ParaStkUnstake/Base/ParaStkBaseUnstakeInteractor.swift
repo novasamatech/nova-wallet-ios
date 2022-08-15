@@ -38,6 +38,7 @@ class ParaStkBaseUnstakeInteractor {
         stakingDurationFactory: ParaStkDurationOperationFactoryProtocol,
         blocktimeEstimationService: BlockTimeEstimationServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -53,6 +54,7 @@ class ParaStkBaseUnstakeInteractor {
         self.runtimeProvider = runtimeProvider
         self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     private func subscribeAssetBalanceAndPrice() {
@@ -63,7 +65,7 @@ class ParaStkBaseUnstakeInteractor {
         )
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 
@@ -182,5 +184,16 @@ extension ParaStkBaseUnstakeInteractor: ParastakingLocalStorageSubscriber, Paras
         case let .failure(error):
             basePresenter?.didReceiveError(error)
         }
+    }
+}
+
+extension ParaStkBaseUnstakeInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard basePresenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

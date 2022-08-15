@@ -21,19 +21,23 @@ class CustomValidatorListTests: XCTestCase {
 
         let chainAsset = ChainAsset(chain: selectedChain, asset: selectedChain.assets.first!)
 
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let viewModelFactory = CustomValidatorListViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory
         )
 
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
         )
 
         let interactor = CustomValidatorListInteractor(
             selectedAsset: chainAsset.asset,
-            priceLocalSubscriptionFactory: priceProviderFactory
+            priceLocalSubscriptionFactory: priceProviderFactory,
+            currencyManager: CurrencyManagerStub()
         )
 
         let generator = CustomValidatorListTestDataGenerator.self

@@ -36,7 +36,10 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let wireframe = MockSelectValidatorsConfirmWireframeProtocol()
 
         let confirmViewModelFactory = SelectValidatorsConfirmViewModelFactory()
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(
             presentable: wireframe,
@@ -56,7 +59,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub()
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+14))
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
         )
 
         let interactor = InitiatedBondingConfirmInteractor(
@@ -70,7 +73,8 @@ class SelectValidatorsConfirmTests: XCTestCase {
             durationOperationFactory: BabeStakingDurationFactory(),
             operationManager: OperationManager(),
             signer: signer,
-            nomination: initiatedBoding
+            nomination: initiatedBoding,
+            currencyManager: CurrencyManagerStub()
         )
 
         let presenter = SelectValidatorsConfirmPresenter(

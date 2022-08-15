@@ -9,13 +9,16 @@ protocol NftListViewModelFactoryProtocol {
 final class NftListViewModelFactory {
     let nftDownloadService: NftFileDownloadServiceProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     init(
         nftDownloadService: NftFileDownloadServiceProtocol,
-        quantityFormatter: LocalizableResource<NumberFormatter>
+        quantityFormatter: LocalizableResource<NumberFormatter>,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.nftDownloadService = nftDownloadService
         self.quantityFormatter = quantityFormatter
+        self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
     private var balanceViewModelFactories: [ChainAssetId: BalanceViewModelFactory] = [:]
@@ -28,7 +31,10 @@ final class NftListViewModelFactory {
         }
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let viewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let viewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
         balanceViewModelFactories[chainAssetId] = viewModelFactory
 
         return viewModelFactory

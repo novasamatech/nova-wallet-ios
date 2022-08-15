@@ -68,6 +68,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         eventCenter: EventCenterProtocol,
         operationManager: OperationManagerProtocol,
         applicationHandler: ApplicationHandlerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -83,6 +84,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         self.operationManager = operationManager
         self.applicationHandler = applicationHandler
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     deinit {

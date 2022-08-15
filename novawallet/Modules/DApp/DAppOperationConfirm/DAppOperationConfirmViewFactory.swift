@@ -30,13 +30,18 @@ struct DAppOperationConfirmViewFactory {
             )
         }
 
-        guard let interactor = maybeInteractor, let assetInfo = maybeAssetInfo else {
+        guard let interactor = maybeInteractor,
+              let assetInfo = maybeAssetInfo,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = DAppOperationConfirmWireframe()
-
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let presenter = DAppOperationConfirmPresenter(
             interactor: interactor,
@@ -67,7 +72,8 @@ struct DAppOperationConfirmViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -78,6 +84,7 @@ struct DAppOperationConfirmViewFactory {
             connection: connection,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
             priceProviderFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

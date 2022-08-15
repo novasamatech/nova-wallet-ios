@@ -46,7 +46,8 @@ class OperationDetailsTests: XCTestCase {
         )
 
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
         let viewModelFactory = OperationDetailsViewModelFactory(

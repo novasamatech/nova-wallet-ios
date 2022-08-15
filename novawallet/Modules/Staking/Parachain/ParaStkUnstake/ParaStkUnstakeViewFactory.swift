@@ -11,22 +11,29 @@ struct ParaStkUnstakeViewFactory {
     ) -> ParaStkUnstakeViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(from: state) else {
+            let interactor = createInteractor(from: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = ParaStkUnstakeWireframe(state: state)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidationFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
-            assetDisplayInfo: assetDisplayInfo
+            assetDisplayInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let assetFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: assetDisplayInfo)
         let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory,
+            formatter: assetFormatter,
             chainFormat: chainAsset.chain.chainFormat,
             assetPrecision: assetDisplayInfo.assetPrecision
         )
@@ -71,7 +78,8 @@ struct ParaStkUnstakeViewFactory {
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let blocktimeService = state.blockTimeService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -108,6 +116,7 @@ struct ParaStkUnstakeViewFactory {
             stakingDurationFactory: stakingDurationFactory,
             blocktimeEstimationService: blocktimeService,
             repositoryFactory: repositoryFactory,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

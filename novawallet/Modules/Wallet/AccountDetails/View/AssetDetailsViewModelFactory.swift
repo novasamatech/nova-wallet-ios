@@ -3,12 +3,12 @@ import CommonWallet
 import SoraFoundation
 
 final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
-    let amountFormatterFactory: NumberFormatterFactoryProtocol
-    let priceAsset: WalletAsset
+    let balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let priceInfoFactory: PriceAssetInfoFactoryProtocol
 
-    init(amountFormatterFactory: NumberFormatterFactoryProtocol, priceAsset: WalletAsset) {
-        self.amountFormatterFactory = amountFormatterFactory
-        self.priceAsset = priceAsset
+    init(balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol, priceInfoFactory: PriceAssetInfoFactoryProtocol) {
+        self.balanceFormatterFactory = balanceFormatterFactory
+        self.priceInfoFactory = priceInfoFactory
     }
 
     private func createFormattedAmount(from decimalValue: Decimal, with amountFormatter: TokenFormatter) -> String {
@@ -37,13 +37,16 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> WalletViewModelProtocol? {
-        let loclaizableAmountFormatter = amountFormatterFactory.createTokenFormatter(for: asset)
-        let localizablePriceFormatter = amountFormatterFactory.createTokenFormatter(for: priceAsset)
+        let assetInfo = AssetBalanceDisplayInfo.fromWallet(asset: asset)
+        let loclaizableAmountFormatter = balanceFormatterFactory.createTokenFormatter(for: assetInfo)
+
+        let balanceContext = BalanceContext(context: balance.context ?? [:])
+
+        let priceInfo = priceInfoFactory.createAssetBalanceDisplayInfo(from: balanceContext.priceId)
+        let localizablePriceFormatter = balanceFormatterFactory.createTokenFormatter(for: priceInfo)
 
         let amountFormatter = loclaizableAmountFormatter.value(for: locale)
         let priceFormatter = localizablePriceFormatter.value(for: locale)
-
-        let balanceContext = BalanceContext(context: balance.context ?? [:])
 
         let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
 

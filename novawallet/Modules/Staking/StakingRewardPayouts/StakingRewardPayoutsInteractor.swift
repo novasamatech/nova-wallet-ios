@@ -32,6 +32,7 @@ final class StakingRewardPayoutsInteractor {
         payoutService: PayoutRewardsServiceProtocol,
         eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.chainAsset = chainAsset
@@ -42,6 +43,7 @@ final class StakingRewardPayoutsInteractor {
         self.eraCountdownOperationFactory = eraCountdownOperationFactory
         self.operationManager = operationManager
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     private func fetchEraCompletionTime() {
@@ -77,7 +79,7 @@ final class StakingRewardPayoutsInteractor {
 extension StakingRewardPayoutsInteractor: StakingRewardPayoutsInteractorInputProtocol {
     func setup() {
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceive(priceResult: .success(nil))
         }
@@ -141,5 +143,16 @@ extension StakingRewardPayoutsInteractor: PriceLocalStorageSubscriber, PriceLoca
         case let .failure(error):
             presenter.didReceive(priceResult: .failure(error))
         }
+    }
+}
+
+extension StakingRewardPayoutsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

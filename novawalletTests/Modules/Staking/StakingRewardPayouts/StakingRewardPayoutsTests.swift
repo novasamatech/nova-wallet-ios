@@ -31,7 +31,8 @@ class StakingRewardPayoutsTests: XCTestCase {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             payoutService: payoutServiceThatReturnsError,
             eraCountdownOperationFactory: eraCountdownOperationFactory,
-            operationManager: OperationManager()
+            operationManager: OperationManager(),
+            currencyManager: CurrencyManagerStub()
         )
 
         let view = MockStakingRewardPayoutsViewProtocol()

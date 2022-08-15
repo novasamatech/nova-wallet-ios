@@ -10,16 +10,21 @@ enum CustomValidatorListViewFactory {
         validatorsSelectionParams: ValidatorsSelectionParams,
         wireframe: CustomValidatorListWireframeProtocol
     ) -> CustomValidatorListViewProtocol? {
-        guard let chainAsset = stakingState.settings.value else {
+        guard let chainAsset = stakingState.settings.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let interactor = CustomValidatorListInteractor(
             selectedAsset: chainAsset.asset,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager
         )
-
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let viewModelFactory = CustomValidatorListViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory

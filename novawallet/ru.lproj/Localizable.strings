@@ -39,6 +39,7 @@
 "profile.title" = "Настройки";
 "profile.about.title" = "О приложении";
 "profile.language.title" = "Язык";
+"profile.currency.title" = "Валюта";
 "about.version" = "Версия";
 "about.contact.us" = "Свяжитесь с нами";
 "about.title" = "О приложении";
@@ -856,6 +857,10 @@
 "common.address.scan.message" = "Отсканируйте QR с адресом";
 "common.watch.only" = "Watch-only";
 "common.invalid.address.format" = "%@ адрес имеет неверный формат";
+"currency.title" = "Валюта";
+"currency.category.fiat" = "Фиатные валюты";
+"currency.category.popularFiat" = "Популярные фиатные валюты";
+"currency.category.cryptocurrencies" = "Криптовалюты";
 "common.signing.not.supported.title" = "Подписание не поддерживается";
 "common.parity.signer.not.supported.message" = "Parity Signer не поддерживает подписание произвольных сообщений — только транзакции";
 "parity.signer.tx.scan.invalid.title" = "QR-код недействителен";

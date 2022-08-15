@@ -4,10 +4,15 @@ final class AnyValidatorInfoInteractor: ValidatorInfoInteractorBase {
     init(
         selectedAsset: AssetModel,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        validatorInfo: ValidatorInfoProtocol
+        validatorInfo: ValidatorInfoProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.validatorInfo = validatorInfo
-        super.init(selectedAsset: selectedAsset, priceLocalSubscriptionFactory: priceLocalSubscriptionFactory)
+        super.init(
+            selectedAsset: selectedAsset,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager
+        )
     }
 
     override func setup() {

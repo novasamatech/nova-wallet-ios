@@ -26,19 +26,21 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
     let nftDownloadService: NftFileDownloadServiceProtocol
 
     init(
-        priceFormatter: LocalizableResource<TokenFormatter>,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
         quantityFormatter: LocalizableResource<NumberFormatter>,
-        nftDownloadService: NftFileDownloadServiceProtocol
+        nftDownloadService: NftFileDownloadServiceProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.quantityFormatter = quantityFormatter
         self.nftDownloadService = nftDownloadService
 
         super.init(
-            priceFormatter: priceFormatter,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             assetFormatterFactory: assetFormatterFactory,
-            percentFormatter: percentFormatter
+            percentFormatter: percentFormatter,
+            currencyManager: currencyManager
         )
     }
 
@@ -56,7 +58,7 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
             return result + balance * price
         }
 
-        return priceFormatter.value(for: locale).stringFromDecimal(totalPrice) ?? ""
+        return formatPrice(amount: totalPrice, priceData: prices.first?.price, locale: locale)
     }
 
     private func createTotalPrice(
