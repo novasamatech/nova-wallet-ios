@@ -1964,6 +1964,11 @@
 		8582395FEF296771447439FF /* AssetsSearchWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6746DDB8F277A968E6B25332 /* AssetsSearchWireframe.swift */; };
 		85A093F6055DDD2E2E9253F2 /* ControllerAccountProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F829E7F8B39EE7D977001510 /* ControllerAccountProtocols.swift */; };
 		86EB789787B731691B36C827 /* OnChainTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A2F7E5E278FDCC89FE097 /* OnChainTransferSetupPresenter.swift */; };
+		87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5DCA28ABF42D342BBDF9A /* ParitySignerTxQrViewLayout.swift */; };
+		8836AF4428AA293500A94EDD /* CurrencyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8836AF4328AA293500A94EDD /* CurrencyManagerTests.swift */; };
+		8836AF4828AA49AB00A94EDD /* Currency+btc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8836AF4728AA49AB00A94EDD /* Currency+btc.swift */; };
+		8836AF4A28AA4B9300A94EDD /* CurrencyRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8836AF4928AA4B9300A94EDD /* CurrencyRepositoryTests.swift */; };
+		8836AF4D28AA515900A94EDD /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 8836AF4B28AA4E4800A94EDD /* currencies.json */; };
 		8842104C289BBA6400306F2C /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 8842104B289BBA6400306F2C /* currencies.json */; };
 		88421055289BBA8D00306F2C /* CurrencyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */; };
 		88421056289BBA8D00306F2C /* CurrencyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8842104F289BBA8D00306F2C /* CurrencyPresenter.swift */; };
@@ -1975,7 +1980,6 @@
 		88421060289BBAE600306F2C /* CurrencyRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8842105F289BBAE600306F2C /* CurrencyRepository.swift */; };
 		88421062289BBD1900306F2C /* JsonFileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88421061289BBD1800306F2C /* JsonFileRepository.swift */; };
 		88421064289BBD9100306F2C /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88421063289BBD9100306F2C /* Currency.swift */; };
-		87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5DCA28ABF42D342BBDF9A /* ParitySignerTxQrViewLayout.swift */; };
 		885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5CB64B91B35804B3671456 /* ControllerAccountPresenter.swift */; };
 		8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */; };
 		8857E02F28A4FA6000260BA2 /* Currency+usd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8857E02E28A4FA6000260BA2 /* Currency+usd.swift */; };
@@ -1984,7 +1988,6 @@
 		8860F3E0289D241E00C0BF86 /* CurrencyViewSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3DF289D241E00C0BF86 /* CurrencyViewSectionModel.swift */; };
 		8860F3E2289D4FFD00C0BF86 /* SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */; };
 		8860F3E4289D50BA00C0BF86 /* Array+SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */; };
-		8860F3E6289D5A6C00C0BF86 /* UserCurrencyRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E5289D5A6C00C0BF86 /* UserCurrencyRepository.swift */; };
 		8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E7289D7CF400C0BF86 /* Atomic.swift */; };
 		886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62FA66143B25AA70B02CE461 /* ExportSeedViewFactory.swift */; };
 		88A0E0FF28A284C700A9C940 /* SelectedCurrencyDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0E0FC28A284C700A9C940 /* SelectedCurrencyDepending.swift */; };
@@ -4497,6 +4500,10 @@
 		86F9063B2DF46E7B65B5248E /* Pods_novawalletAll_novawalletIntegrationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawalletIntegrationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87CD8C618D61C78EA8C58532 /* ParitySignerTxScanViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanViewLayout.swift; sourceTree = "<group>"; };
 		8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewFactory.swift; sourceTree = "<group>"; };
+		8836AF4328AA293500A94EDD /* CurrencyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyManagerTests.swift; sourceTree = "<group>"; };
+		8836AF4728AA49AB00A94EDD /* Currency+btc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Currency+btc.swift"; sourceTree = "<group>"; };
+		8836AF4928AA4B9300A94EDD /* CurrencyRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyRepositoryTests.swift; sourceTree = "<group>"; };
+		8836AF4B28AA4E4800A94EDD /* currencies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = currencies.json; sourceTree = "<group>"; };
 		8842104B289BBA6400306F2C /* currencies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = currencies.json; sourceTree = "<group>"; };
 		8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyViewLayout.swift; sourceTree = "<group>"; };
 		8842104F289BBA8D00306F2C /* CurrencyPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyPresenter.swift; sourceTree = "<group>"; };
@@ -4515,7 +4522,6 @@
 		8860F3DF289D241E00C0BF86 /* CurrencyViewSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyViewSectionModel.swift; sourceTree = "<group>"; };
 		8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionProtocol.swift; sourceTree = "<group>"; };
 		8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SectionProtocol.swift"; sourceTree = "<group>"; };
-		8860F3E5289D5A6C00C0BF86 /* UserCurrencyRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCurrencyRepository.swift; sourceTree = "<group>"; };
 		8860F3E7289D7CF400C0BF86 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		889A825F58F5CB54118A9D35 /* SelectValidatorsStartWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartWireframe.swift; sourceTree = "<group>"; };
 		88A0E0FC28A284C700A9C940 /* SelectedCurrencyDepending.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedCurrencyDepending.swift; sourceTree = "<group>"; };
@@ -4523,7 +4529,6 @@
 		88A0E0FE28A284C700A9C940 /* Observable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		88E1E895289C021F00C123A8 /* CurrencyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCollectionViewCell.swift; sourceTree = "<group>"; };
 		88E1E897289C024400C123A8 /* UIView+Create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Create.swift"; sourceTree = "<group>"; };
-		890203CBFFCBF517C0BAA396 /* YourValidatorListTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = YourValidatorListTests.swift; sourceTree = "<group>"; };
 		899686C7351A2600FFA08371 /* TransferConfirmOnChainViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransferConfirmOnChainViewFactory.swift; sourceTree = "<group>"; };
 		89CFED2E01AB638656E251AF /* NftListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListProtocols.swift; sourceTree = "<group>"; };
 		8ADA5C374888879D27DBAA29 /* Pods-novawalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.release.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -6244,6 +6249,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				8836AF4228AA290300A94EDD /* Currency */,
 				8489EDD8264DE40800FF997E /* Migration */,
 				848DB99C26063BA90055DDE7 /* DataProvider */,
 				84452F8725D5E6CC00F47EC5 /* Services */,
@@ -10556,6 +10562,7 @@
 		84FACB2B25F562CB00F32ED4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8836AF4B28AA4E4800A94EDD /* currencies.json */,
 				84F438B125DA548700AEDA56 /* runtimeTestMetadata */,
 				84FACB2C25F562CB00F32ED4 /* westend-metadata */,
 				848DB992260638440055DDE7 /* rewardResponse.json */,
@@ -10652,10 +10659,19 @@
 			path = ParaStkUnstakeConfirm;
 			sourceTree = "<group>";
 		};
+		8836AF4228AA290300A94EDD /* Currency */ = {
+			isa = PBXGroup;
+			children = (
+				8836AF4728AA49AB00A94EDD /* Currency+btc.swift */,
+				8836AF4328AA293500A94EDD /* CurrencyManagerTests.swift */,
+				8836AF4928AA4B9300A94EDD /* CurrencyRepositoryTests.swift */,
+			);
+			path = Currency;
+			sourceTree = "<group>";
+		};
 		8842104D289BBA8D00306F2C /* Currency */ = {
 			isa = PBXGroup;
 			children = (
-				8842105C289BBAC100306F2C /* Model */,
 				88E1E894289C020D00C123A8 /* View */,
 				8842104F289BBA8D00306F2C /* CurrencyPresenter.swift */,
 				88421050289BBA8D00306F2C /* CurrencyProtocols.swift */,
@@ -10666,20 +10682,12 @@
 			path = Currency;
 			sourceTree = "<group>";
 		};
-		8842105C289BBAC100306F2C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				8842105F289BBAE600306F2C /* CurrencyRepository.swift */,
-				8860F3E5289D5A6C00C0BF86 /* UserCurrencyRepository.swift */,
-				8860F3E7289D7CF400C0BF86 /* Atomic.swift */,
-				88421063289BBD9100306F2C /* Currency.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		88A0E0FB28A284C700A9C940 /* Currency */ = {
 			isa = PBXGroup;
 			children = (
+				8842105F289BBAE600306F2C /* CurrencyRepository.swift */,
+				8860F3E7289D7CF400C0BF86 /* Atomic.swift */,
+				88421063289BBD9100306F2C /* Currency.swift */,
 				88A0E0FC28A284C700A9C940 /* SelectedCurrencyDepending.swift */,
 				88A0E0FD28A284C700A9C940 /* CurrencyManager.swift */,
 				88A0E0FE28A284C700A9C940 /* Observable.swift */,
@@ -12251,6 +12259,7 @@
 				848DB993260638440055DDE7 /* rewardResponse.json in Resources */,
 				8467FD0624E5E0A5005D486C /* invalidKeystore.json in Resources */,
 				84F438B225DA548700AEDA56 /* runtimeTestMetadata in Resources */,
+				8836AF4D28AA515900A94EDD /* currencies.json in Resources */,
 				8467FD3F24EAD66F005D486C /* validEcdsaKeystore.json in Resources */,
 				8467FD0A24E5E258005D486C /* validSrKeystore.json in Resources */,
 				8467FD3E24EAD66F005D486C /* validEd25519Keystore.json in Resources */,
@@ -12389,7 +12398,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#! /bin/sh\n# Define output file. Change \"$PROJECT_DIR/${PROJECT_NAME}Tests\" to your test's root source folder, if it's not the default name.\nOUTPUT_FILE=\"${PROJECT_NAME}Tests/Mocks/CommonMocks.swift\"\necho \"Generated Mocks File = $OUTPUT_FILE\"\n\n# Define input directory. Change \"${PROJECT_DIR}/${PROJECT_NAME}\" to your project's root source folder, if it's not the default name.\nINPUT_DIR=\"${PROJECT_NAME}\"\necho \"Mocks Input Directory = $INPUT_DIR\"\n\n# Generate mock files, include as many input files as you'd like to create mocks for.\n\"Pods/Cuckoo/run\" generate --no-header --testable \"${PROJECT_NAME},SoraKeystore\" \\\n--exclude \"\" \\\n--output \"${OUTPUT_FILE}\" \\\n\"$INPUT_DIR/Common/Helpers/Scheduler.swift\" \\\n\"$INPUT_DIR/Common/LocalAuthentication/BiometryAuth.swift\" \\\n\"$INPUT_DIR/Common/EventCenter/EventProtocols.swift\" \\\n\"$INPUT_DIR/Common/Network/Misc/SubstrateOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Helpers/AccountRepositoryFactory.swift\" \\\n\"$INPUT_DIR/../Pods/SoraKeystore/SoraKeystore/Classes/Keychain/KeystoreProtocols.swift\"  \\\n\"$INPUT_DIR/../Pods/SubstrateSdk/SubstrateSdk/Classes/Network/JSONRPCEngine.swift\" \\\n\"$INPUT_DIR/Common/Operation/EraCountdownOperationFactory/EraCountdownOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Network/JSONRPC/ConnectionAutobalancing.swift\" \\\n\"$INPUT_DIR/Common/Network/JSONRPC/ConnectionStateReporting.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/ConnectionPool/ConnectionFactory.swift\" \\\n\"$INPUT_DIR/Common/Network/Misc/DataOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeFilesOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeProviderPool.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeProviderFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeCodingService.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeSyncService.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/CommonTypesSyncService.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeProvider.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/ConnectionPool/ConnectionPool.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/SpecVersionSubscriptionFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/SpecVersionSubscription.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/ChainRegistry.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/CrowdloanRemoteSubscriptionService.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/WalletRemoteSubscriptionService.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/StakingRemoteSubscriptionService.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/StakingAccountUpdatingService.swift\" \\\n\"$INPUT_DIR/Modules/Staking/Services/StakingServiceFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ApplicationService.swift\" \\\n";
+			shellScript = "#! /bin/sh\n# Define output file. Change \"$PROJECT_DIR/${PROJECT_NAME}Tests\" to your test's root source folder, if it's not the default name.\nOUTPUT_FILE=\"${PROJECT_NAME}Tests/Mocks/CommonMocks.swift\"\necho \"Generated Mocks File = $OUTPUT_FILE\"\n\n# Define input directory. Change \"${PROJECT_DIR}/${PROJECT_NAME}\" to your project's root source folder, if it's not the default name.\nINPUT_DIR=\"${PROJECT_NAME}\"\necho \"Mocks Input Directory = $INPUT_DIR\"\n\n# Generate mock files, include as many input files as you'd like to create mocks for.\n\"Pods/Cuckoo/run\" generate --no-header --testable \"${PROJECT_NAME},SoraKeystore\" \\\n--exclude \"\" \\\n--output \"${OUTPUT_FILE}\" \\\n\"$INPUT_DIR/Common/Helpers/Scheduler.swift\" \\\n\"$INPUT_DIR/Common/LocalAuthentication/BiometryAuth.swift\" \\\n\"$INPUT_DIR/Common/EventCenter/EventProtocols.swift\" \\\n\"$INPUT_DIR/Common/Network/Misc/SubstrateOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Helpers/AccountRepositoryFactory.swift\" \\\n\"$INPUT_DIR/../Pods/SoraKeystore/SoraKeystore/Classes/Keychain/KeystoreProtocols.swift\"  \\\n\"$INPUT_DIR/../Pods/SubstrateSdk/SubstrateSdk/Classes/Network/JSONRPCEngine.swift\" \\\n\"$INPUT_DIR/Common/Operation/EraCountdownOperationFactory/EraCountdownOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Network/JSONRPC/ConnectionAutobalancing.swift\" \\\n\"$INPUT_DIR/Common/Network/JSONRPC/ConnectionStateReporting.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/ConnectionPool/ConnectionFactory.swift\" \\\n\"$INPUT_DIR/Common/Network/Misc/DataOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeFilesOperationFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeProviderPool.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeProviderFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeCodingService.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeSyncService.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/CommonTypesSyncService.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/RuntimeProviderPool/RuntimeProvider.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/ConnectionPool/ConnectionPool.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/SpecVersionSubscriptionFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/SpecVersionSubscription.swift\" \\\n\"$INPUT_DIR/Common/Services/ChainRegistry/ChainRegistry.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/CrowdloanRemoteSubscriptionService.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/WalletRemoteSubscriptionService.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/StakingRemoteSubscriptionService.swift\" \\\n\"$INPUT_DIR/Common/Services/RemoteSubscription/StakingAccountUpdatingService.swift\" \\\n\"$INPUT_DIR/Modules/Staking/Services/StakingServiceFactory.swift\" \\\n\"$INPUT_DIR/Common/Services/ApplicationService.swift\" \\\n\"$INPUT_DIR/Common/Currency/CurrencyRepository.swift\" \\\n";
 		};
 		849013CD24A92260008F705E /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -13529,7 +13538,6 @@
 				8499FEE227C0AF4700712589 /* ChainModel+Nft.swift in Sources */,
 				8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */,
 				843612C1278FE62900DC739E /* DAppOperationConfirmInteractorError.swift in Sources */,
-				8860F3E6289D5A6C00C0BF86 /* UserCurrencyRepository.swift in Sources */,
 				F40966C326B297D6008CD244 /* AnalyticsContainerViewLayout.swift in Sources */,
 				84E1CD02260DCC62001E81B5 /* SwitchAccount+OnboardingMainWireframe.swift in Sources */,
 				AEC167062667671B0058F572 /* RecommendedValidatorListViewModelFactory.swift in Sources */,
@@ -14814,6 +14822,7 @@
 				84B7C735289BFA79001A3566 /* StakingRedeemTests.swift in Sources */,
 				84B7C714289BFA79001A3566 /* AccountCreateTests.swift in Sources */,
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
+				8836AF4828AA49AB00A94EDD /* Currency+btc.swift in Sources */,
 				842D1E8E24D2091A00C30A7A /* CommonMocks.swift in Sources */,
 				8467FD0824E5E0BD005D486C /* KeystoreDefinition+Test.swift in Sources */,
 				84452F5D25D5CB3B00F47EC5 /* FileManagerTests.swift in Sources */,
@@ -14894,6 +14903,7 @@
 				84F13F0E26F1D9B1006725FF /* CrowdloadSettingsTests.swift in Sources */,
 				845C7F06263C45EC0024E797 /* AnyProviderAutoCleaner.swift in Sources */,
 				84B7C734289BFA79001A3566 /* StakingRewardDetailsTests.swift in Sources */,
+				8836AF4428AA293500A94EDD /* CurrencyManagerTests.swift in Sources */,
 				84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */,
 				84B7C736289BFA79001A3566 /* StakingDurationOperationFactoryTests.swift in Sources */,
 				848DB998260639C70055DDE7 /* TotalRewardMock.swift in Sources */,
@@ -14919,6 +14929,7 @@
 				84B7C718289BFA79001A3566 /* DAppOperationConfirmTests.swift in Sources */,
 				844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */,
 				84F4A910255001D2000CF0A3 /* KeystoreExportWrapperTests.swift in Sources */,
+				8836AF4A28AA4B9300A94EDD /* CurrencyRepositoryTests.swift in Sources */,
 				846CA778270911920011124C /* StakingLocalSubscriptionFactoryStub.swift in Sources */,
 				AE805FCA26B42AE200007CE9 /* ValidatorOperationFactoryStub.swift in Sources */,
 				84B7C73E289BFA79001A3566 /* StakingRebondConfirmationTests.swift in Sources */,
