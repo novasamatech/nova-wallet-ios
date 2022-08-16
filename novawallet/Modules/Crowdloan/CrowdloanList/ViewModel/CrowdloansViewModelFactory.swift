@@ -326,17 +326,10 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
 
         let imageViewModel = RemoteImageViewModel(url: asset.icon ?? chain.icon)
 
-        let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
-            displayInfo.symbol,
-            preferredLanguages: locale.rLanguages
-        )
-
         return CrowdloansChainViewModel(
             networkName: chain.name,
             balance: amount,
-            imageViewModel: imageViewModel,
-            title: R.string.localizable.crowdloanAboutCrowdloans(preferredLanguages: locale.rLanguages),
-            description: description
+            imageViewModel: imageViewModel
         )
     }
 
@@ -380,11 +373,26 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             preferredLanguages: locale.rLanguages
         )
 
-        let sections: [CrowdloansSection] =
-            (allContributionsCount > 0 ?
-                [.yourContributions(contributionsTitle, allContributionsCount)]
-                : [])
-            + crowdloansSections
+        let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
+            chainAsset.asset.symbol,
+            preferredLanguages: locale.rLanguages
+        )
+        // TODO:
+        let aboutViewModel = AboutCrowdloansViewModel(
+            title: R.string.localizable.crowdloanAboutCrowdloans(preferredLanguages: locale.rLanguages),
+            subtitle: description
+        )
+        let contributionsViewModel = YourContributionsViewModel(
+            title: contributionsTitle,
+            count: "\(allContributionsCount)",
+            amount: "108 DOT",
+            amountDetails: "$5,000"
+        )
+
+        let contributionSection: CrowdloansSection = allContributionsCount > 0 ?
+            .yourContributions(contributionsViewModel) :
+            .about(aboutViewModel)
+        let sections = [contributionSection] + crowdloansSections
 
         return CrowdloansViewModel(
             sections: sections
