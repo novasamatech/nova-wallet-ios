@@ -22,12 +22,20 @@ protocol WalletsListViewModelFactoryProtocol {
 }
 
 final class WalletsListViewModelFactory {
-    let priceFormatter: LocalizableResource<TokenFormatter>
+    let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    let currencyManager: CurrencyManagerProtocol
 
     private lazy var iconGenerator = NovaIconGenerator()
 
-    init(priceFormatter: LocalizableResource<TokenFormatter>) {
-        self.priceFormatter = priceFormatter
+    init(
+        assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
+    ) {
+        self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
+        self.priceAssetInfoFactory = priceAssetInfoFactory
+        self.currencyManager = currencyManager
     }
 
     func calculateValue(
@@ -141,7 +149,12 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             prices: prices
         )
 
-        let totalValue = priceFormatter.value(for: locale).stringFromDecimal(totalValueDecimal)
+        let price = prices.first(where: { $0.value.currencyId != nil })?.value
+        let totalValue = formatPrice(
+            amount: totalValueDecimal,
+            priceData: price,
+            locale: locale
+        )
 
         let optIcon = try? iconGenerator.generateFromAccountId(wallet.info.substrateAccountId)
         let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
@@ -201,5 +214,12 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
 
         return sections
+    }
+
+    func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
+        let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
+        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+        let priceFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 }
