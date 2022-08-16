@@ -40,10 +40,12 @@ extension LedgerTransport: LedgerTransportProtocol {
 
             let remainingPacketSize = mtu >= chunk.count ? mtu - chunk.count : 0
 
-            let packetBytes = remainingBytes.prefix(remainingPacketSize)
-            chunk.append(contentsOf: packetBytes)
+            if remainingPacketSize > 0 {
+                let packetBytes = remainingBytes.prefix(remainingPacketSize)
+                chunk.append(contentsOf: packetBytes)
 
-            remainingBytes = remainingBytes.dropFirst(packetBytes.count)
+                remainingBytes = remainingBytes.dropFirst(packetBytes.count)
+            }
 
             chunks.append(chunk)
         }
