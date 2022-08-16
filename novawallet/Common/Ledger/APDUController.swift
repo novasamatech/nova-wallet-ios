@@ -9,7 +9,6 @@
 import Foundation
 
 /// Application Protocol Data Unit
-/// https://blog.ledger.com/btchip-doc/bitcoin-technical.html#_lifecycle_management_apdus
 /// https://gist.github.com/Wollac/49f0c4e318e42f463b8306298dfb4f4a
 class APDUController {
     static private let tagID: UInt8 = 0x05
@@ -32,7 +31,7 @@ class APDUController {
     static func parseAPDU(message: Data) -> Data? {
         guard message.count > 6, Int8(message[0]) == tagID else { return nil }
         guard message[1] == 0 && message[2] == 0 else { return nil }
-        guard let dataLength = (try? UInt16(message[3]) << 8 | UInt16(message[4])) else { return nil }
+        let dataLength = UInt16(message[3]) << 8 | UInt16(message[4])
         let data = [UInt8](message[5..<message.count])
         guard data.count == dataLength else { return nil }
         return Data(data)
