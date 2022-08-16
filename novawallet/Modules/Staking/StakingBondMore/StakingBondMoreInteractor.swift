@@ -15,7 +15,6 @@ final class StakingBondMoreInteractor: AccountFetching {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let operationManager: OperationManagerProtocol
-    let currencyManager: CurrencyManagerProtocol
 
     private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
     private var priceProvider: AnySingleValueProvider<PriceData>?

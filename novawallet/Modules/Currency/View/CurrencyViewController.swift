@@ -30,12 +30,8 @@ final class CurrencyViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupCollectionView()
-        setupLocalization()
+        applyLocalization()
         presenter.setup()
-    }
-
-    private func setupLocalization() {
-        title = R.string.localizable.currencyTitle()
     }
 
     private func setupCollectionView() {
@@ -103,7 +99,8 @@ extension CurrencyViewController: CurrencyViewProtocol {
 extension CurrencyViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            setupLocalization()
+            let languages = localizationManager?.preferredLocalizations
+            title = R.string.localizable.currencyTitle(preferredLanguages: languages)
         }
     }
 }
