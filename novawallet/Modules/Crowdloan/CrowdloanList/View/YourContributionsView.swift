@@ -10,6 +10,7 @@ final class YourContributionsView: UIView {
 
     let counterLabel: BorderedLabelView = .create {
         $0.titleLabel.textAlignment = .center
+        $0.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
     }
 
     let amountLabel: UILabel = .create {
@@ -69,25 +70,25 @@ final class YourContributionsView: UIView {
     }
 
     private func setupLayout() {
-        let titleStackView = UIStackView(arrangedSubviews: [titleLabel, counterLabel])
-        titleStackView.spacing = 8
-        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
-        titleLabel.setContentHuggingPriority(.required, for: .vertical)
-        titleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        counterLabel.setContentHuggingPriority(.required, for: .horizontal)
-        counterLabel.setContentHuggingPriority(.required, for: .vertical)
-        counterLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        counterLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-
+        let titleView = UIView()
+        titleView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints {
+            $0.top.bottom.leading.equalToSuperview()
+        }
+        titleView.addSubview(counterLabel)
+        counterLabel.snp.makeConstraints {
+            $0.leading.equalTo(titleLabel.snp.trailing).offset(8)
+            $0.top.trailing.bottom.equalToSuperview()
+        }
         let contentStackView = UIStackView(arrangedSubviews: [
-            titleStackView,
+            titleView,
             amountLabel,
             amountDetailsLabel
         ])
         contentStackView.spacing = 4
         contentStackView.axis = .vertical
-        contentStackView.distribution = .equalCentering
+        contentStackView.distribution = .fillProportionally
+        contentStackView.alignment = .center
 
         addSubview(contentStackView)
         contentStackView.snp.makeConstraints {
@@ -97,7 +98,7 @@ final class YourContributionsView: UIView {
         addSubview(navigationImageView)
         navigationImageView.snp.makeConstraints {
             $0.leading.greaterThanOrEqualTo(contentStackView.snp.trailing).inset(4)
-            $0.centerY.equalTo(titleStackView.snp.centerY)
+            $0.centerY.equalTo(titleView.snp.centerY)
             $0.trailing.equalToSuperview().inset(16)
             $0.width.equalTo(24)
             $0.height.equalTo(24)
