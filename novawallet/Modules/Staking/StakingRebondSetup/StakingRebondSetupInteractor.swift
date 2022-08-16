@@ -31,6 +31,7 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
@@ -42,6 +43,7 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.feeProxy = feeProxy
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 
     private func handleControllerMetaAccount(response: MetaChainAccountResponse) {

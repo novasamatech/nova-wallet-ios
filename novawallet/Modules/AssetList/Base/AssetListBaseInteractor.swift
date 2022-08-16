@@ -24,7 +24,7 @@ class AssetListBaseInteractor {
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        currenyManager: CurrencyManagerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -32,7 +32,7 @@ class AssetListBaseInteractor {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
-        currencyManager = currenyManager
+        self.currencyManager = currencyManager
     }
 
     func clearAccountSubscriptions() {

@@ -42,7 +42,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            currenyManager: currencyManager,
+            currencyManager: currencyManager,
             logger: logger
         )
     }

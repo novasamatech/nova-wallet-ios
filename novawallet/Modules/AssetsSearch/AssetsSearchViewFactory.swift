@@ -14,7 +14,7 @@ struct AssetsSearchViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            currenyManager: currencyManager,
+            currencyManager: currencyManager,
             logger: Logger.shared
         )
 
