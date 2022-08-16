@@ -6,7 +6,7 @@ protocol LedgerTransportProtocol {
 }
 
 final class LedgerTransport {
-    private struct Constants {
+    private enum Constants {
         static let dataTagId = UInt8(0x05)
     }
 
@@ -53,7 +53,7 @@ extension LedgerTransport: LedgerTransportProtocol {
         return chunks
     }
 
-    func receive(partialResponseData: Data, for identifier: String) throws -> Data? {
+    func receive(partialResponseData _: Data, for _: String) throws -> Data? {
         nil
     }
 }

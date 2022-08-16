@@ -10,7 +10,7 @@ protocol LedgerApplicationProtocol {
 }
 
 class LedgerApplication {
-    private struct Constants {
+    private enum Constants {
         static let publicKeyLength = 32
         static let responseCodeLength = 2
     }
@@ -41,7 +41,7 @@ class LedgerApplication {
 
         connectionManager.send(message: command, deviceId: deviceId) { result in
             switch result {
-            case .success(let data):
+            case let .success(data):
                 let responseCodeData: Data = data.suffix(Constants.responseCodeLength)
                 guard responseCodeData.count == Constants.responseCodeLength else {
                     completion(.failure(LedgerError.unexpectedData("No response code")))
@@ -92,9 +92,10 @@ class LedgerApplication {
 
         var command = Data()
         var pathsData = Data()
-        paths.forEach({ element in
-                        let array = withUnsafeBytes(of: element.bigEndian, Array.init)
-                        array.forEach { x in pathsData.append(x) } })
+        paths.forEach { element in
+            let array = withUnsafeBytes(of: element.bigEndian, Array.init)
+            array.forEach { x in pathsData.append(x) }
+        }
 
         command.append(cla)
         command.append(Instruction.getAddress.rawValue)
@@ -111,12 +112,12 @@ class LedgerApplication {
         components.forEach { component in
             var number = UInt32(0)
             var numberText = component
-            if component.count > 1 && component.hasSuffix("\'") {
-                number = 0x80000000
+            if component.count > 1, component.hasSuffix("\'") {
+                number = 0x8000_0000
                 numberText = String(component.dropLast(1))
             }
 
-            if let index =  UInt32(numberText) {
+            if let index = UInt32(numberText) {
                 number = number + index
                 result.append(number)
             }

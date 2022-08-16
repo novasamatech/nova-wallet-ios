@@ -20,9 +20,9 @@ final class BluetoothLedgerDevice: LedgerDeviceProtocol {
         peripheral.identifier
     }
 
-    var readCharacteristic: CBCharacteristic? = nil
-    var writeCharacteristic: CBCharacteristic? = nil
-    var notifyCharacteristic: CBCharacteristic? = nil
+    var readCharacteristic: CBCharacteristic?
+    var writeCharacteristic: CBCharacteristic?
+    var notifyCharacteristic: CBCharacteristic?
 
     var writeCommand: WriteCommand?
     var responseCompletion: ResponseCompletion?

@@ -27,8 +27,8 @@ final class LedgerConnectionManager: NSObject {
     private var devices: [BluetoothLedgerDevice] = []
 
     private var supportedDevices: [SupportedBluetoothDevice] = [SupportedBluetoothDevice.ledgerNanoX]
-    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.compactMap { $0.uuid } }
-    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.compactMap { $0.notifyUuid } }
+    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.compactMap(\.uuid) }
+    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.compactMap(\.notifyUuid) }
 
     weak var delegate: LedgerConnectionManagerDelegate?
 
@@ -110,19 +110,21 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
         }
     }
 
-    func centralManager(_ central: CBCentralManager,
-                        didDiscover peripheral: CBPeripheral,
-                        advertisementData: [String : Any],
-                        rssi RSSI: NSNumber) {
+    func centralManager(
+        _: CBCentralManager,
+        didDiscover peripheral: CBPeripheral,
+        advertisementData _: [String: Any],
+        rssi _: NSNumber
+    ) {
         didDiscoverDevice(peripheral)
     }
 
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.delegate = self
         peripheral.discoverServices(supportedDeviceUUIDs)
     }
 
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         guard let device = bluetoothDevice(id: peripheral.identifier) else { return }
 
         device.responseCompletion?(.failure(LedgerConnectionError.deviceDisconnected))
@@ -211,7 +213,7 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
                 logger.error("Can't parse response for \(characteristic): \(String(describing: characteristic.value?.toHex()))")
                 responseCompletion(.failure(LedgerConnectionError.badResponse))
             }
-            
+
             device.responseCompletion = nil
         }
     }
