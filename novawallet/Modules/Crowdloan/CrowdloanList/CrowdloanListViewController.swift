@@ -174,7 +174,7 @@ extension CrowdloanListViewController: UITableViewDataSource {
                 return cell
             case let .yourContributions(model):
                 let cell = tableView.dequeueReusableCellWithType(YourContributionsTableViewCell.self)!
-                cell.view.bind(model: .cached(value: model))
+                cell.view.bind(model: model)
                 return cell
             case let .about(model):
                 let cell = tableView.dequeueReusableCellWithType(AboutCrowdloansTableViewCell.self)!

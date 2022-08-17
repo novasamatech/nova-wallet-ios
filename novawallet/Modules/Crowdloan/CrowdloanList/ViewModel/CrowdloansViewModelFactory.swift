@@ -378,11 +378,11 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             preferredLanguages: locale.rLanguages
         )
         // TODO:
-        let aboutViewModel = AboutCrowdloansViewModel(
+        let aboutViewModel = AboutCrowdloansView.Model(
             title: R.string.localizable.crowdloanAboutCrowdloans(preferredLanguages: locale.rLanguages),
             subtitle: description
         )
-        let contributionsViewModel = YourContributionsViewModel(
+        let contributionsViewModel = YourContributionsView.Model(
             title: contributionsTitle,
             count: "\(allContributionsCount)",
             amount: "108 DOT",

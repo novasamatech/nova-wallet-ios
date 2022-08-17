@@ -8619,11 +8619,11 @@
 			children = (
 				F4F69E272731B0B200214542 /* CrowdloanTableHeaderView.swift */,
 				849842EB26587B20006BBB9F /* YourCrowdloansTableViewCell.swift */,
-				88D997AD28AB86FD006135A5 /* YourContributionsView.swift */,
 				84BB3CF7267D276D00676FFE /* CrowdloanTableViewCell.swift */,
 				8498430226592D29006BBB9F /* CrowdloanStatusSectionView.swift */,
 				88D997AF28ABC8C0006135A5 /* BlurredTableViewCell.swift */,
 				88D997B128ABC90E006135A5 /* AboutCrowdloansView.swift */,
+				88D997AD28AB86FD006135A5 /* YourContributionsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";

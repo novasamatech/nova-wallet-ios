@@ -35,5 +35,5 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
     }
 }
 
-final class YourContributionsTableViewCell: BlurredTableViewCell<YourContributionsView> {}
-final class AboutCrowdloansTableViewCell: BlurredTableViewCell<AboutCrowdloansView> {}
+typealias YourContributionsTableViewCell = BlurredTableViewCell<YourContributionsView>
+typealias AboutCrowdloansTableViewCell = BlurredTableViewCell<AboutCrowdloansView>
