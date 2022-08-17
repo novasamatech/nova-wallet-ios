@@ -27,8 +27,8 @@ final class LedgerConnectionManager: NSObject {
     private var devices: [BluetoothLedgerDevice] = []
 
     private var supportedDevices: [SupportedBluetoothDevice] = [SupportedBluetoothDevice.ledgerNanoX]
-    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.compactMap(\.uuid) }
-    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.compactMap(\.notifyUuid) }
+    private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.map(\.uuid) }
+    private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.map(\.notifyUuid) }
 
     weak var delegate: LedgerConnectionManagerDelegate?
 
@@ -46,7 +46,12 @@ final class LedgerConnectionManager: NSObject {
         devices.first { $0.identifier == id }
     }
 
-    func didDiscoverDevice(_ peripheral: CBPeripheral) {
+    private func completeRequest(with result: Result<Data, Error>, device: BluetoothLedgerDevice) {
+        device.responseCompletion?(result)
+        device.responseCompletion = nil
+    }
+
+    private func didDiscoverDevice(_ peripheral: CBPeripheral) {
         if bluetoothDevice(id: peripheral.identifier) == nil {
             let device = BluetoothLedgerDevice(peripheral: peripheral)
             devices.append(device)
@@ -86,10 +91,11 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
 
         centralManager.connect(device.peripheral, options: nil)
         device.writeCommand = { [weak device] in
-            if let characteristic = device?.writeCharacteristic {
-                device?.responseCompletion = completion
-                let data = APDUController.prepareAPDU(message: message)
-                device?.peripheral.writeValue(data, for: characteristic, type: .withResponse)
+            if let currentDevice = device, let characteristic = currentDevice.writeCharacteristic {
+                currentDevice.responseCompletion = completion
+                let chunks = currentDevice.transport.prepareRequest(from: message)
+
+                chunks.forEach { currentDevice.peripheral.writeValue($0, for: characteristic, type: .withResponse) }
             }
         }
     }
@@ -145,7 +151,9 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        logger.debug("\(peripheral) did discover characteristics for \(service) with error: \(String(describing: error))")
+        logger.debug(
+            "\(peripheral) did discover characteristics for \(service) with error: \(String(describing: error))"
+        )
 
         guard let device = bluetoothDevice(id: peripheral.identifier) else {
             logger.warning("Characteristic discovered for missing device")
@@ -183,7 +191,11 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
         logger.debug("\(peripheral) did write value for \(characteristic) with error: \(String(describing: error))")
     }
 
-    func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didUpdateNotificationStateFor characteristic: CBCharacteristic,
+        error: Error?
+    ) {
         logger.debug("\(peripheral) did update state for \(characteristic) with error: \(String(describing: error))")
 
         if let error = error {
@@ -200,21 +212,27 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
         }
 
         if supportedDeviceNotifyUuids.contains(characteristic.uuid) {
-            guard let responseCompletion = device.responseCompletion else { return }
-
             if let error = error {
                 logger.error("Failed to update value for \(characteristic): \(error)")
-                responseCompletion(.failure(error))
+                device.responseCompletion?(.failure(error))
             }
 
-            if let message = characteristic.value, let data = APDUController.parseAPDU(message: message) {
-                responseCompletion(.success(data))
+            if let message = characteristic.value {
+                do {
+                    if let response = try device.transport.receive(partialResponseData: message) {
+                        completeRequest(with: .success(response), device: device)
+                    }
+                } catch {
+                    device.transport.reset()
+                    completeRequest(with: .failure(error), device: device)
+                }
             } else {
-                logger.error("Can't parse response for \(characteristic): \(String(describing: characteristic.value?.toHex()))")
-                responseCompletion(.failure(LedgerConnectionError.badResponse))
-            }
+                logger.error(
+                    "Can't parse response for \(characteristic): \(String(describing: characteristic.value?.toHex()))"
+                )
 
-            device.responseCompletion = nil
+                completeRequest(with: .failure(LedgerConnectionError.badResponse), device: device)
+            }
         }
     }
 }

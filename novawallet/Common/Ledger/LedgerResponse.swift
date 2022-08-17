@@ -27,12 +27,4 @@ enum LedgerResponse: UInt16 {
     init(responseCode: UInt16) {
         self = .init(rawValue: responseCode) ?? .unknown
     }
-
-    init(data: Data) {
-        if data.count == 2 {
-            self = .init(responseCode: UInt16(data[0]) * 256 + UInt16(data[1]))
-        } else {
-            self = .unknown
-        }
-    }
 }

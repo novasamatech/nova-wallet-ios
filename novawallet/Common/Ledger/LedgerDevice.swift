@@ -27,6 +27,8 @@ final class BluetoothLedgerDevice: LedgerDeviceProtocol {
     var writeCommand: WriteCommand?
     var responseCompletion: ResponseCompletion?
 
+    let transport = LedgerTransport()
+
     init(peripheral: CBPeripheral) {
         self.peripheral = peripheral
     }

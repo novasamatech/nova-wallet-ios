@@ -48,7 +48,7 @@ class LedgerApplication {
                     return
                 }
 
-                let response = LedgerResponse(data: responseCodeData)
+                let response = LedgerResponse(responseCode: UInt16.fromBigEndian(data: responseCodeData))
 
                 guard response == .noError else {
                     completion(.failure(LedgerError.response(code: response)))
@@ -92,10 +92,7 @@ class LedgerApplication {
 
         var command = Data()
         var pathsData = Data()
-        paths.forEach { element in
-            let array = withUnsafeBytes(of: element.bigEndian, Array.init)
-            array.forEach { x in pathsData.append(x) }
-        }
+        paths.forEach { pathsData.append(contentsOf: $0.bigEndianBytes) }
 
         command.append(cla)
         command.append(Instruction.getAddress.rawValue)
@@ -118,7 +115,7 @@ class LedgerApplication {
             }
 
             if let index = UInt32(numberText) {
-                number = number + index
+                number += index
                 result.append(number)
             }
         }
