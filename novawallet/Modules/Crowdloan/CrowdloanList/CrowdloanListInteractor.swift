@@ -15,6 +15,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     let operationManager: OperationManagerProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let logger: LoggerProtocol?
+    var priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
     private var blockNumberSubscriptionId: UUID?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
@@ -26,6 +27,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var leaseInfoParams: [LeaseParam]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
+    private var priceProvider: AnySingleValueProvider<PriceData>?
 
     deinit {
         if let subscriptionId = blockNumberSubscriptionId, let chain = crowdloanState.settings.value {
@@ -44,6 +46,8 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
         operationManager: OperationManagerProtocol,
         applicationHandler: ApplicationHandlerProtocol,
+        currencyManager: CurrencyManagerProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.selectedMetaAccount = selectedMetaAccount
@@ -55,7 +59,9 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.operationManager = operationManager
         self.applicationHandler = applicationHandler
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     private func clearOnchainContributionRequest(_ shouldCancel: Bool) {
@@ -290,6 +296,18 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             self?.presenter.didReceiveLeasingOffset(result: result)
         }
     }
+
+    private func subscribePrice() {
+        guard let chain = crowdloanState.settings.value else {
+            return
+        }
+
+        if let priceId = chain.utilityAsset()?.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        } else {
+            presenter.didReceivePriceData(result: .success(nil))
+        }
+    }
 }
 
 extension CrowdloanListInteractor {
@@ -299,7 +317,7 @@ extension CrowdloanListInteractor {
 
         subscribeToAccountInfo(for: accountId, chain: chain)
         subscribeToExternalContributions(for: accountId, chain: chain)
-
+        subscribePrice()
         provideCrowdloans(for: chain)
 
         subscribeToDisplayInfo(for: chain)
@@ -427,5 +445,19 @@ extension CrowdloanListInteractor {
         }
 
         operationManager.enqueue(operations: crowdloanWrapper.allOperations, in: .transient)
+    }
+}
+
+extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+        presenter.didReceivePriceData(result: result)
+    }
+}
+
+extension CrowdloanListInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        if presenter != nil, let priceId = crowdloanState.settings.value.utilityAsset()?.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
     }
 }

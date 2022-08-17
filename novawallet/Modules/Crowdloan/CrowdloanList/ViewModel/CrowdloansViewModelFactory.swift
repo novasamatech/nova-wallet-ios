@@ -17,6 +17,8 @@ protocol CrowdloansViewModelFactoryProtocol {
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
         externalContributionsCount: Int,
+        amount: Decimal?,
+        priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel
 }
@@ -39,6 +41,7 @@ final class CrowdloansViewModelFactory {
     }
 
     let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let priceFormatter: PriceFormatterProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
     private lazy var percentFormatter = NumberFormatter.percent
@@ -47,9 +50,11 @@ final class CrowdloansViewModelFactory {
     }()
 
     init(
-        amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
+        amountFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        priceFormatter: PriceFormatterProtocol
     ) {
         self.amountFormatterFactory = amountFormatterFactory
+        self.priceFormatter = priceFormatter
     }
 
     private func createCommonContent(
@@ -338,6 +343,8 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
         externalContributionsCount: Int,
+        amount: Decimal?,
+        priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel {
         let timeFormatter = TotalTimeFormatter()
@@ -369,33 +376,58 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             .compactMap { hasContribution(in: $0, viewInfo: viewInfo) }
             .filter { $0 }
         let allContributionsCount = contributions.count + externalContributionsCount
-        let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
-            preferredLanguages: locale.rLanguages
-        )
 
+        guard let amount = amount else {
+            return .init(sections: crowdloansSections)
+        }
+
+        let contributionSection = amount > 0 ? createYourContributionsSection(
+            chainAsset: chainAsset,
+            contributions: allContributionsCount,
+            amount: amount,
+            priceData: priceData,
+            locale: locale
+        ) : createAboutSection(chainAsset: chainAsset, locale: locale)
+
+        return .init(sections: [contributionSection] + crowdloansSections)
+    }
+
+    private func createAboutSection(chainAsset: ChainAssetDisplayInfo, locale: Locale) -> CrowdloansSection {
         let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
             chainAsset.asset.symbol,
             preferredLanguages: locale.rLanguages
         )
-        // TODO:
-        let aboutViewModel = AboutCrowdloansView.Model(
+
+        let model = AboutCrowdloansView.Model(
             title: R.string.localizable.crowdloanAboutCrowdloans(preferredLanguages: locale.rLanguages),
             subtitle: description
         )
-        let contributionsViewModel = YourContributionsView.Model(
+        return .about(model)
+    }
+
+    private func createYourContributionsSection(
+        chainAsset: ChainAssetDisplayInfo,
+        contributions: Int,
+        amount: Decimal,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> CrowdloansSection {
+        let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
+            preferredLanguages: locale.rLanguages
+        )
+        let balance = priceFormatter.balanceFromPrice(
+            targetAssetInfo: chainAsset.asset,
+            amount: amount,
+            priceData: priceData,
+            locale: locale
+        )
+
+        let model = YourContributionsView.Model(
             title: contributionsTitle,
-            count: "\(allContributionsCount)",
-            amount: "108 DOT",
-            amountDetails: "$5,000"
+            count: "\(contributions)",
+            amount: balance.amount,
+            amountDetails: balance.price ?? ""
         )
-
-        let contributionSection: CrowdloansSection = allContributionsCount > 0 ?
-            .yourContributions(contributionsViewModel) :
-            .about(aboutViewModel)
-        let sections = [contributionSection] + crowdloansSections
-
-        return CrowdloansViewModel(
-            sections: sections
-        )
+        return .yourContributions(model)
     }
 }
