@@ -8,7 +8,9 @@ extension UInt16 {
     }
 
     static func fromBigEndian(data: Data) -> UInt16 {
-        UInt16(bigEndian: data.withUnsafeBytes { $0.load(as: UInt16.self) })
+        let bytes = [UInt8](data)
+
+        return (UInt16(bytes[0]) << 8) | UInt16(bytes[1])
     }
 }
 
@@ -20,18 +22,8 @@ extension UInt32 {
     }
 
     static func fromBigEndian(data: Data) -> UInt32 {
-        UInt32(bigEndian: data.withUnsafeBytes { $0.load(as: UInt32.self) })
-    }
-}
+        let bytes = [UInt8](data)
 
-extension UInt64 {
-    var bigEndianBytes: [UInt8] {
-        var value = bigEndian
-
-        return withUnsafeBytes(of: &value, Array.init)
-    }
-
-    static func fromBigEndian(data: Data) -> UInt64 {
-        UInt64(bigEndian: data.withUnsafeBytes { $0.load(as: UInt64.self) })
+        return (UInt32(bytes[0]) << 24) | (UInt32(bytes[1]) << 16) | (UInt32(bytes[2]) << 8) | UInt32(bytes[3])
     }
 }
