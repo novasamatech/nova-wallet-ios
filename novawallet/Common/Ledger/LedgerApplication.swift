@@ -83,7 +83,9 @@ final class LedgerApplication {
         }
     }
 
-    private func createAccountResponseOperation(dependingOn sendOperation: LedgerSendOperation) -> BaseOperation<LedgerAccount> {
+    private func createAccountResponseOperation(
+        dependingOn sendOperation: LedgerSendOperation
+    ) -> BaseOperation<LedgerAccount> {
         ClosureOperation {
             let data = try sendOperation.extractNoCancellableResultData()
 
