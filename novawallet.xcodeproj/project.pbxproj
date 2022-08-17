@@ -1709,6 +1709,10 @@
 		84D97ECF2521CA2F00F07405 /* WalletBaseTokenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D97ECE2521CA2F00F07405 /* WalletBaseTokenView.swift */; };
 		84D97ED12521CA5200F07405 /* WalletTokenView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84D97ED02521CA5200F07405 /* WalletTokenView.xib */; };
 		84D9C41126CD361C004AB2AB /* SpecVersionSubscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C41026CD361C004AB2AB /* SpecVersionSubscriptionTests.swift */; };
+		84D9C8EB28AD903E007FB23B /* LedgerSendOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8EA28AD903E007FB23B /* LedgerSendOperation.swift */; };
+		84D9C8EF28AD97E7007FB23B /* SupportedLedgerApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8EE28AD97E7007FB23B /* SupportedLedgerApps.swift */; };
+		84D9C8F128AD9913007FB23B /* BIP32PathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8F028AD9913007FB23B /* BIP32PathBuilder.swift */; };
+		84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */; };
 		84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D02758AA6800E8B326 /* BaseAccountImportWireframe.swift */; };
 		84DA03D427592FAA00E8B326 /* ChainAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D327592FAA00E8B326 /* ChainAccountView.swift */; };
 		84DA03D62759341200E8B326 /* ChainAccountControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DA03D52759341200E8B326 /* ChainAccountControl.swift */; };
@@ -4247,6 +4251,10 @@
 		84D97ECE2521CA2F00F07405 /* WalletBaseTokenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletBaseTokenView.swift; sourceTree = "<group>"; };
 		84D97ED02521CA5200F07405 /* WalletTokenView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletTokenView.xib; sourceTree = "<group>"; };
 		84D9C41026CD361C004AB2AB /* SpecVersionSubscriptionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecVersionSubscriptionTests.swift; sourceTree = "<group>"; };
+		84D9C8EA28AD903E007FB23B /* LedgerSendOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSendOperation.swift; sourceTree = "<group>"; };
+		84D9C8EE28AD97E7007FB23B /* SupportedLedgerApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedLedgerApps.swift; sourceTree = "<group>"; };
+		84D9C8F028AD9913007FB23B /* BIP32PathBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP32PathBuilder.swift; sourceTree = "<group>"; };
+		84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Chunk.swift"; sourceTree = "<group>"; };
 		84DA03D02758AA6800E8B326 /* BaseAccountImportWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAccountImportWireframe.swift; sourceTree = "<group>"; };
 		84DA03D327592FAA00E8B326 /* ChainAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountView.swift; sourceTree = "<group>"; };
 		84DA03D52759341200E8B326 /* ChainAccountControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountControl.swift; sourceTree = "<group>"; };
@@ -6756,6 +6764,9 @@
 				84EFB78828AB7654003B8396 /* LedgerError.swift */,
 				84EFB78E28AB897D003B8396 /* LedgerResponse.swift */,
 				844DAADC28ABC5E2008E11DA /* LedgerDevice.swift */,
+				84D9C8EA28AD903E007FB23B /* LedgerSendOperation.swift */,
+				84D9C8EE28AD97E7007FB23B /* SupportedLedgerApps.swift */,
+				84D9C8F028AD9913007FB23B /* BIP32PathBuilder.swift */,
 			);
 			path = Ledger;
 			sourceTree = "<group>";
@@ -8148,6 +8159,7 @@
 				840DC83D288085AE0039A054 /* ChainModel+Comparator.swift */,
 				840DC83F288090030039A054 /* Bool+Int.swift */,
 				844DAAE028AD106B008E11DA /* UInt+Serialization.swift */,
+				84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -12784,6 +12796,7 @@
 				841E6AF625EC12100007DDFE /* PreparedNomination.swift in Sources */,
 				848C3D0926248A3B005481C3 /* TransferCall.swift in Sources */,
 				843CE3A327D1FB8A00436F4E /* NftDetailsPriceView.swift in Sources */,
+				84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */,
 				8456C08227CF9DC9001282DE /* RemoteNftModel.swift in Sources */,
 				8401AEC42642A71D000B03E3 /* StakingRebondConfirmationWireframe.swift in Sources */,
 				F4F3C3CB265BB12200C58400 /* CustomValidatorListViewModelFactory.swift in Sources */,
@@ -13155,6 +13168,7 @@
 				84BEE0F02562897100D05EB3 /* AccountImportJsonFactory.swift in Sources */,
 				841E5545282D793900C8438F /* ParachainStakingSharedState.swift in Sources */,
 				849014DF24AA8F60008F705E /* MainTabBarViewController.swift in Sources */,
+				84D9C8F128AD9913007FB23B /* BIP32PathBuilder.swift in Sources */,
 				843E9B2F27C8B17F009C143A /* FileDownloadOperation.swift in Sources */,
 				8490152124ABC721008F705E /* WalletStaticImageViewModel.swift in Sources */,
 				F408E9BE26B80FD30043CFE0 /* AnalyticsSectionHeader.swift in Sources */,
@@ -14419,6 +14433,7 @@
 				846F758727B5550700536547 /* EthereumRpcRequest.swift in Sources */,
 				278F5341DC043EBED7C0733D /* CrowdloanListViewFactory.swift in Sources */,
 				7CBE9FFAF8394786CA131D4D /* CustomValidatorListProtocols.swift in Sources */,
+				84D9C8EF28AD97E7007FB23B /* SupportedLedgerApps.swift in Sources */,
 				8482F62A280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift in Sources */,
 				840DC8422880AF440039A054 /* AssetSelectionViewController.swift in Sources */,
 				B51AD1836313CE26F369ED3F /* CustomValidatorListWireframe.swift in Sources */,
@@ -14556,6 +14571,7 @@
 				EC328560F66AA0F5CFB3FE58 /* AdvancedWalletPresenter.swift in Sources */,
 				671C5788468FE8445A46C09F /* AdvancedWalletViewController.swift in Sources */,
 				88421058289BBA8D00306F2C /* CurrencyViewController.swift in Sources */,
+				84D9C8EB28AD903E007FB23B /* LedgerSendOperation.swift in Sources */,
 				6DEA5344FAD4C6A6E7CA989C /* AdvancedWalletViewLayout.swift in Sources */,
 				43DB2CC9864CC7F5904A2DBC /* AdvancedWalletViewFactory.swift in Sources */,
 				848DAEFB28227D4A00D56F55 /* ParachainStakingLocalSubscriptionFactory.swift in Sources */,

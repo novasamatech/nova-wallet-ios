@@ -1,18 +1,30 @@
 import Foundation
+import RobinHood
 
 protocol LedgerApplicationProtocol {
-    func getAccount(
+    func getAccountWrapper(
         for deviceId: UUID,
-        cla: UInt8,
-        path: String,
-        completion: @escaping (Result<LedgerAccount, Error>) -> Void
-    )
+        chainId: ChainModel.Id,
+        index: UInt32
+    ) -> CompoundOperationWrapper<LedgerAccount>
+
+    func getSignWrapper(
+        for payload: Data,
+        deviceId: UUID,
+        chainId: ChainModel.Id,
+        accountIndex: UInt32
+    ) -> CompoundOperationWrapper<Data>
 }
 
-class LedgerApplication {
+enum LedgerApplicationError: Error {
+    case unsupportedApp(chainId: ChainModel.Id)
+}
+
+final class LedgerApplication {
     private enum Constants {
         static let publicKeyLength = 32
         static let responseCodeLength = 2
+        static let chunkSize = 250
     }
 
     enum Instruction: UInt8 {
@@ -25,101 +37,161 @@ class LedgerApplication {
         case sr25519 = 0x01
     }
 
-    let connectionManager: LedgerConnectionManagerProtocol
+    enum PayloadType: UInt8 {
+        case initialize
+        case add
+        case last
 
-    init(connectionManager: LedgerConnectionManagerProtocol) {
-        self.connectionManager = connectionManager
-    }
-
-    func getAccount(
-        for deviceId: UUID,
-        cla: UInt8,
-        path: String,
-        completion: @escaping (Result<LedgerAccount, Error>) -> Void
-    ) {
-        let command = getAddressCommand(cla: cla, path: path)
-
-        connectionManager.send(message: command, deviceId: deviceId) { result in
-            switch result {
-            case let .success(data):
-                let responseCodeData: Data = data.suffix(Constants.responseCodeLength)
-                guard responseCodeData.count == Constants.responseCodeLength else {
-                    completion(.failure(LedgerError.unexpectedData("No response code")))
-                    return
-                }
-
-                let response = LedgerResponse(responseCode: UInt16.fromBigEndian(data: responseCodeData))
-
-                guard response == .noError else {
-                    completion(.failure(LedgerError.response(code: response)))
-                    return
-                }
-
-                let dataWithoutResponseCode = data.dropLast(Constants.responseCodeLength)
-
-                let publicKey: Data = dataWithoutResponseCode.prefix(Constants.publicKeyLength)
-                guard publicKey.count == Constants.publicKeyLength else {
-                    completion(.failure(LedgerError.unexpectedData("No public key")))
-                    return
-                }
-
-                let accountAddressData = dataWithoutResponseCode.dropFirst(Constants.publicKeyLength)
-
-                guard
-                    let accountAddress = AccountAddress(data: accountAddressData, encoding: .ascii),
-                    (try? accountAddress.toAccountId()) != nil else {
-                    completion(.failure(LedgerError.unexpectedData("Invalid account address")))
-                    return
-                }
-
-                let account = LedgerAccount(address: accountAddress, publicKey: publicKey)
-
-                completion(.success(account))
-
-            case let .failure(error):
-                completion(.failure(error))
+        init(chunkIndex: Int, totalChunks: Int) {
+            if chunkIndex == 0 {
+                self = .initialize
+            } else if chunkIndex < totalChunks - 1 {
+                self = .add
+            } else {
+                self = .last
             }
         }
     }
 
-    private func getAddressCommand(
-        cla: UInt8,
-        path: String,
+    let connectionManager: LedgerConnectionManagerProtocol
+    let supportedApps: [SupportedLedgerApp]
+
+    init(connectionManager: LedgerConnectionManagerProtocol, supportedApps: [SupportedLedgerApp]) {
+        self.connectionManager = connectionManager
+        self.supportedApps = supportedApps
+    }
+
+    private func createAccountMessageOperation(
+        for application: SupportedLedgerApp,
+        index: UInt32,
         displayVerificationDialog: Bool = false,
         cryptoScheme: CryptoScheme = .ed25519
-    ) -> Data {
-        let paths = splitPath(path: path)
+    ) -> BaseOperation<Data> {
+        ClosureOperation {
+            let path = LedgerPathBuilder()
+                .appendingStandardJunctions(coin: application.coin, accountIndex: index)
+                .build()
 
-        var command = Data()
-        var pathsData = Data()
-        paths.forEach { pathsData.append(contentsOf: $0.bigEndianBytes) }
+            var message = Data()
+            message.append(application.cla)
+            message.append(Instruction.getAddress.rawValue)
+            message.append(UInt8(displayVerificationDialog ? 0x01 : 0x00))
+            message.append(cryptoScheme.rawValue)
+            message.append(contentsOf: path)
 
-        command.append(cla)
-        command.append(Instruction.getAddress.rawValue)
-        command.append(UInt8(displayVerificationDialog ? 0x01 : 0x00))
-        command.append(cryptoScheme.rawValue)
-        command.append(pathsData)
-
-        return command
+            return message
+        }
     }
 
-    private func splitPath(path: String) -> [UInt32] {
-        var result: [UInt32] = []
-        let components = path.components(separatedBy: "/")
-        components.forEach { component in
-            var number = UInt32(0)
-            var numberText = component
-            if component.count > 1, component.hasSuffix("\'") {
-                number = 0x8000_0000
-                numberText = String(component.dropLast(1))
+    private func createAccountResponseOperation(dependingOn sendOperation: LedgerSendOperation) -> BaseOperation<LedgerAccount> {
+        ClosureOperation {
+            let data = try sendOperation.extractNoCancellableResultData()
+
+            let responseCodeData: Data = data.suffix(Constants.responseCodeLength)
+            guard responseCodeData.count == Constants.responseCodeLength else {
+                throw LedgerError.unexpectedData("No response code")
             }
 
-            if let index = UInt32(numberText) {
-                number += index
-                result.append(number)
+            let response = LedgerResponse(responseCode: UInt16.fromBigEndian(data: responseCodeData))
+
+            guard response == .noError else {
+                throw LedgerError.response(code: response)
+            }
+
+            let dataWithoutResponseCode = data.dropLast(Constants.responseCodeLength)
+
+            let publicKey: Data = dataWithoutResponseCode.prefix(Constants.publicKeyLength)
+            guard publicKey.count == Constants.publicKeyLength else {
+                throw LedgerError.unexpectedData("No public key")
+            }
+
+            let accountAddressData = dataWithoutResponseCode.dropFirst(Constants.publicKeyLength)
+
+            guard
+                let accountAddress = AccountAddress(data: accountAddressData, encoding: .ascii),
+                (try? accountAddress.toAccountId()) != nil else {
+                throw LedgerError.unexpectedData("Invalid account address")
+            }
+
+            return LedgerAccount(address: accountAddress, publicKey: publicKey)
+        }
+    }
+}
+
+extension LedgerApplication: LedgerApplicationProtocol {
+    /// https://github.com/Zondax/ledger-substrate-js/blob/main/src/substrate_app.ts#L143
+    func getAccountWrapper(
+        for deviceId: UUID,
+        chainId: ChainModel.Id,
+        index: UInt32
+    ) -> CompoundOperationWrapper<LedgerAccount> {
+        guard let application = supportedApps.first(where: { $0.chainId == chainId }) else {
+            return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
+        }
+
+        let messageOperation = createAccountMessageOperation(for: application, index: index)
+
+        let sendOperation = LedgerSendOperation(connection: connectionManager, deviceId: deviceId)
+        sendOperation.configurationBlock = {
+            do {
+                sendOperation.message = try messageOperation.extractNoCancellableResultData()
+            } catch {
+                sendOperation.result = .failure(error)
             }
         }
 
-        return result
+        sendOperation.addDependency(messageOperation)
+
+        let responseOperation = createAccountResponseOperation(dependingOn: sendOperation)
+
+        responseOperation.addDependency(sendOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: responseOperation,
+            dependencies: [messageOperation, sendOperation]
+        )
+    }
+
+    /// https://github.com/Zondax/ledger-substrate-js/blob/main/src/substrate_app.ts#L203
+    func getSignWrapper(
+        for payload: Data,
+        deviceId: UUID,
+        chainId: ChainModel.Id,
+        accountIndex: UInt32
+    ) -> CompoundOperationWrapper<Data> {
+        guard let application = supportedApps.first(where: { $0.chainId == chainId }) else {
+            return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
+        }
+
+        let path = LedgerPathBuilder()
+            .appendingStandardJunctions(coin: application.coin, accountIndex: accountIndex)
+            .build()
+
+        let chunks: [Data] = [path] + payload.chunked(by: Constants.chunkSize)
+
+        let operations: [LedgerSendOperation] = chunks.enumerated().map { indexedChunk in
+            let type = PayloadType(chunkIndex: indexedChunk.offset, totalChunks: chunks.count)
+
+            var message = Data()
+            message.append(application.cla)
+            message.append(Instruction.sign.rawValue)
+            message.append(type.rawValue)
+            message.append(CryptoScheme.ed25519.rawValue)
+            message.append(indexedChunk.element)
+
+            return LedgerSendOperation(connection: connectionManager, deviceId: deviceId, message: message)
+        }
+
+        for index in 0 ..< (operations.count - 1) {
+            operations[index + 1].addDependency(operations[index])
+        }
+
+        guard let targetOperation = operations.last else {
+            return CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+        }
+
+        let dependencies = operations.dropLast()
+
+        return CompoundOperationWrapper(targetOperation: targetOperation, dependencies: Array(dependencies))
     }
 }

@@ -9,26 +9,41 @@ enum LedgerConnectionError: Error {
     case badResponse
 }
 
+typealias LedgerResponseClosure = (Result<Data, Error>) -> Void
+
 protocol LedgerConnectionManagerProtocol: AnyObject {
     func start()
     func stop()
-    func send(message: Data, deviceId: UUID, completion: @escaping (Result<Data, Error>) -> Void)
+    func send(message: Data, deviceId: UUID, completion: LedgerResponseClosure?) throws
+}
+
+extension LedgerConnectionManagerProtocol {
+    func send(message: Data, deviceId: UUID) throws {
+        try send(message: message, deviceId: deviceId, completion: nil)
+    }
 }
 
 protocol LedgerConnectionManagerDelegate: AnyObject {
     func ledgerConnection(manager: LedgerConnectionManagerProtocol, didFailToConnect error: Error)
-    func ledgerConnection(manager: LedgerConnectionManagerProtocol, didDiscover deviceId: UUID)
-    func ledgerConnection(manager: LedgerConnectionManagerProtocol, didDisconnect deviceId: UUID, error: Error?)
+    func ledgerConnection(manager: LedgerConnectionManagerProtocol, didDiscover device: LedgerDeviceProtocol)
+    func ledgerConnection(
+        manager: LedgerConnectionManagerProtocol,
+        didDisconnect device: LedgerDeviceProtocol,
+        error: Error?
+    )
 }
 
 final class LedgerConnectionManager: NSObject {
     private var centralManager: CBCentralManager?
 
-    private var devices: [BluetoothLedgerDevice] = []
+    @Atomic(defaultValue: [])
+    private var devices: [BluetoothLedgerDevice]
 
     private var supportedDevices: [SupportedBluetoothDevice] = [SupportedBluetoothDevice.ledgerNanoX]
     private var supportedDeviceUUIDs: [CBUUID] { supportedDevices.map(\.uuid) }
     private var supportedDeviceNotifyUuids: [CBUUID] { supportedDevices.map(\.notifyUuid) }
+
+    private let delegateQueue = DispatchQueue(label: "com.nova.wallet.ledger.connection." + UUID().uuidString)
 
     weak var delegate: LedgerConnectionManagerDelegate?
 
@@ -55,7 +70,7 @@ final class LedgerConnectionManager: NSObject {
         if bluetoothDevice(id: peripheral.identifier) == nil {
             let device = BluetoothLedgerDevice(peripheral: peripheral)
             devices.append(device)
-            delegate?.ledgerConnection(manager: self, didDiscover: device.identifier)
+            delegate?.ledgerConnection(manager: self, didDiscover: device)
         }
     }
 }
@@ -69,7 +84,7 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
         devices = []
         centralManager = CBCentralManager(
             delegate: self,
-            queue: DispatchQueue.main,
+            queue: delegateQueue,
             options: [
                 CBCentralManagerScanOptionAllowDuplicatesKey: false,
                 CBCentralManagerOptionShowPowerAlertKey: true
@@ -83,10 +98,9 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
         centralManager = nil
     }
 
-    func send(message: Data, deviceId: UUID, completion: @escaping (Result<Data, Error>) -> Void) {
+    func send(message: Data, deviceId: UUID, completion: LedgerResponseClosure?) throws {
         guard let centralManager = centralManager, let device = bluetoothDevice(id: deviceId) else {
-            completion(.failure(LedgerConnectionError.deviceNotFound))
-            return
+            throw LedgerConnectionError.deviceNotFound
         }
 
         centralManager.connect(device.peripheral, options: nil)
@@ -95,7 +109,9 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
                 currentDevice.responseCompletion = completion
                 let chunks = currentDevice.transport.prepareRequest(from: message)
 
-                chunks.forEach { currentDevice.peripheral.writeValue($0, for: characteristic, type: .withResponse) }
+                let type: CBCharacteristicWriteType = completion != nil ? .withResponse : .withoutResponse
+
+                chunks.forEach { currentDevice.peripheral.writeValue($0, for: characteristic, type: type) }
             }
         }
     }
@@ -103,6 +119,8 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
 
 extension LedgerConnectionManager: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        logger.debug("Did receive state: \(central.state)")
+
         switch central.state {
         case .poweredOn:
             centralManager?.retrieveConnectedPeripherals(withServices: supportedDeviceUUIDs).forEach { peripheral in
@@ -122,10 +140,14 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
         advertisementData _: [String: Any],
         rssi _: NSNumber
     ) {
+        logger.debug("Did discover device: \(peripheral)")
+
         didDiscoverDevice(peripheral)
     }
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        logger.debug("Did connect to device: \(peripheral)")
+
         peripheral.delegate = self
         peripheral.discoverServices(supportedDeviceUUIDs)
     }
@@ -137,7 +159,7 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
 
         removeDevices(peripheral: peripheral)
 
-        delegate?.ledgerConnection(manager: self, didDisconnect: device.identifier, error: error)
+        delegate?.ledgerConnection(manager: self, didDisconnect: device, error: error)
     }
 }
 
