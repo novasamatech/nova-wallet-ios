@@ -23,4 +23,3 @@ final class CrowdloansCalculator: CrowdloansCalculatorProtocol {
         return Decimal.fromSubstrateAmount(total, precision: Int16(precision))
     }
 }
-

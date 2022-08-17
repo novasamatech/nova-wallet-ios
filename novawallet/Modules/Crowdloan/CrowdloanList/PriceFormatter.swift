@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 protocol PriceFormatterProtocol {
     func balanceFromPrice(
@@ -60,4 +61,3 @@ final class PriceFormatter: PriceFormatterProtocol {
         return BalanceViewModel(amount: amountString, price: priceString)
     }
 }
-
