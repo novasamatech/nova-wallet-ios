@@ -305,7 +305,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         if let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: .success(nil))
+            presenter.didReceivePriceData(result: nil)
         }
     }
 }

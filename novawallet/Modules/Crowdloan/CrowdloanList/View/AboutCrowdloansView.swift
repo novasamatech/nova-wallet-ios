@@ -9,8 +9,15 @@ final class AboutCrowdloansView: UIView {
     let descriptionLabel: UILabel = .create {
         $0.font = .p2Paragraph
         $0.textColor = R.color.colorTransparentText()
+        $0.lineBreakMode = .byWordWrapping
         $0.numberOfLines = 0
     }
+
+    lazy var descriptionAttributes: [NSAttributedString.Key: Any] = {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = Constants.descriptionLineHeightMultiple
+        return [.paragraphStyle: paragraphStyle]
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,7 +55,10 @@ extension AboutCrowdloansView {
 
     func bind(model: Model) {
         aboutLabel.text = model.title
-        descriptionLabel.text = model.subtitle
+        descriptionLabel.attributedText = .init(
+            string: model.subtitle,
+            attributes: descriptionAttributes
+        )
     }
 }
 
@@ -58,5 +68,6 @@ extension AboutCrowdloansView {
     private enum Constants {
         static let contentInsets: CGFloat = 16
         static let titleDescriptionSpace: CGFloat = 12
+        static let descriptionLineHeightMultiple: CGFloat = 1.18
     }
 }

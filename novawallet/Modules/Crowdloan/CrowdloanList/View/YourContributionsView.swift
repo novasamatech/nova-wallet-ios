@@ -3,19 +3,21 @@ import SoraUI
 
 final class YourContributionsView: UIView {
     let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorTransparentText()
-        $0.font = .regularSubheadline
+        $0.textColor = R.color.colorWhite64()
+        $0.font = .p1Paragraph
         $0.numberOfLines = 1
     }
 
     let counterLabel: BorderedLabelView = .create {
         $0.titleLabel.textAlignment = .center
+        $0.titleLabel.textColor = R.color.colorWhite80()
+        $0.titleLabel.font = .semiBoldFootnote
         $0.contentInsets = Constants.counterLabelContentInsets
     }
 
     let amountLabel: UILabel = .create {
         $0.textColor = R.color.colorWhite()
-        $0.font = .boldLargeTitle
+        $0.font = .boldTitle1
         $0.textAlignment = .center
     }
 
@@ -66,8 +68,10 @@ final class YourContributionsView: UIView {
         addSubview(contentStackView)
         contentStackView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.bottom.equalToSuperview().inset(Constants.topBottomInsets)
+            $0.top.equalToSuperview().inset(Constants.topInset)
+            $0.bottom.equalToSuperview().inset(Constants.bottomInset)
         }
+
         addSubview(navigationImageView)
         navigationImageView.snp.makeConstraints {
             $0.leading.greaterThanOrEqualTo(contentStackView.snp.trailing)
@@ -105,7 +109,8 @@ extension YourContributionsView {
         static let counterLabelContentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
         static let counterTitleSpace: CGFloat = 8
         static let verticalSpace: CGFloat = 4
-        static let topBottomInsets: CGFloat = 20
+        static let topInset: CGFloat = 21
+        static let bottomInset: CGFloat = 20
         static let navigationImageViewSize = CGSize(width: 24, height: 24)
         static let navigationImageViewRightOffset: CGFloat = 16
     }

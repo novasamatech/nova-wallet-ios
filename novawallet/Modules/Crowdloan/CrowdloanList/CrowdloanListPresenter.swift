@@ -382,7 +382,7 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
         updateWalletSwitchView()
     }
 
-    func didReceivePriceData(result: Result<PriceData?, Error>) {
+    func didReceivePriceData(result: Result<PriceData?, Error>?) {
         priceDataResult = result
         updateListView()
     }
