@@ -2,3 +2,4 @@
 "NSFaceIDUsageDescription" = "Face ID используется для авторизации в приложении";
 "NSPhotoLibraryUsageDescription" = "Загрузить изображения из библиотеки";
 "NSPhotoLibraryAddUsageDescription" = "Вы можете сохранить запрос на перевод в виде QR кода";
+"NSBluetoothAlwaysUsageDescription" = "Bluetooth будет использоваться для взаимодействия с устройвом Ledger Nano X";

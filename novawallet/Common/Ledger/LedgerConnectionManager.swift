@@ -12,6 +12,8 @@ enum LedgerConnectionError: Error {
 typealias LedgerResponseClosure = (Result<Data, Error>) -> Void
 
 protocol LedgerConnectionManagerProtocol: AnyObject {
+    var delegate: LedgerConnectionManagerDelegate? { get set }
+
     func start()
     func stop()
     func send(message: Data, deviceId: UUID, completion: LedgerResponseClosure?) throws

@@ -46,8 +46,15 @@ extension AddAccount {
             )
         }
 
-        func showLedgerWalletCreation(from _: OnboardingMainViewProtocol?) {
-            // TODO: Add navigation
+        func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?) {
+            guard let ledgerDiscoverView = LedgerDiscoverViewFactory.createView() else {
+                return
+            }
+
+            view?.controller.navigationController?.pushViewController(
+                ledgerDiscoverView.controller,
+                animated: true
+            )
         }
 
         private func presentAccountRestore(
