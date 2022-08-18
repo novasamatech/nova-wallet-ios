@@ -91,7 +91,8 @@ struct TransferConfirmCrossChainViewFactory {
     ) -> TransferCrossChainConfirmInteractor? {
         guard
             let wallet = SelectedWalletSettings.shared.value,
-            let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()) else {
+            let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -152,6 +153,7 @@ struct TransferConfirmCrossChainViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

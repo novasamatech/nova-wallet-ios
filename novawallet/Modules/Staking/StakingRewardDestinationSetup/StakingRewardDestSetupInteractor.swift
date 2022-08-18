@@ -41,7 +41,8 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
         runtimeService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol
+        feeProxy: ExtrinsicFeeProxyProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -54,6 +55,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
         self.operationManager = operationManager
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
+        self.currencyManager = currencyManager
     }
 
     private func setupExtrinsicServiceIfNeeded(response: MetaChainAccountResponse) {
