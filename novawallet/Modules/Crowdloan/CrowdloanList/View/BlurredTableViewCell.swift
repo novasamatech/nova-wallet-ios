@@ -2,6 +2,7 @@ import UIKit
 
 class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UIView {
     let view: TContentView = .init()
+    let backgroundBlurView = TriangularedBlurView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -21,19 +22,27 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
     }
 
     private func setupLayout() {
-        let textBlur = TriangularedBlurView()
-        contentView.addSubview(textBlur)
-        textBlur.snp.makeConstraints { make in
+        contentView.addSubview(backgroundBlurView)
+        backgroundBlurView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(16)
         }
 
-        textBlur.addSubview(view)
+        backgroundBlurView.addSubview(view)
         view.snp.makeConstraints { make in
             make.leading.top.trailing.bottom.equalToSuperview()
         }
     }
 }
 
-typealias YourContributionsTableViewCell = BlurredTableViewCell<YourContributionsView>
+final class YourContributionsTableViewCell: BlurredTableViewCell<YourContributionsView> {
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+
+        backgroundBlurView.overlayView.fillColor = highlighted ?
+            R.color.colorAccentSelected()!
+            : .clear
+    }
+}
+
 typealias AboutCrowdloansTableViewCell = BlurredTableViewCell<AboutCrowdloansView>

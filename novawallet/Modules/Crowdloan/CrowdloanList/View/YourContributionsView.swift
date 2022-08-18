@@ -88,7 +88,7 @@ final class YourContributionsView: UIView {
 extension YourContributionsView {
     struct Model {
         let title: String
-        let count: String
+        let count: String?
         let amount: String
         let amountDetails: String
     }
