@@ -891,3 +891,5 @@
 "common.scan.qr.code" = "Сканировать QR код";
 "parity.signer.address.scan.error" = "Не удается получить адрес из QR-кода";
 "common.unsupported.qr.code" = "Формат QR кода не поддерживается";
+"common.ledger.nano.x" = "Ledger Nano X";
+"hardware.wallet.options.title" = "Выберите аппаратный кошелёк";

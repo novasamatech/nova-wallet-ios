@@ -35,7 +35,7 @@ extension SwitchAccount {
             view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
         }
 
-        func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?) {
+        func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?) {
             guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createSwitchAccountView() else {
                 return
             }
@@ -44,6 +44,10 @@ extension SwitchAccount {
                 paritySignerWelcomeView.controller,
                 animated: true
             )
+        }
+
+        func showLedgerWalletCreation(from _: OnboardingMainViewProtocol?) {
+            // TODO: Add navigation
         }
 
         private func presentAccountRestore(

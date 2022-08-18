@@ -891,3 +891,5 @@
 "common.scan.qr.code" = "Scan QR code";
 "parity.signer.address.scan.error" = "Can't extract address from the QR code";
 "common.unsupported.qr.code" = "QR code has unsupported format";
+"common.ledger.nano.x" = "Ledger Nano X";
+"hardware.wallet.options.title" = "Selected hardware wallet";

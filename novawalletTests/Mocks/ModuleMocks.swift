@@ -21691,7 +21691,7 @@ import Foundation
     
     
     
-     func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?)  {
+     func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?)  {
         
     return cuckoo_manager.call("showHardwareWalletCreate(from: OnboardingMainViewProtocol?)",
             parameters: (view),
@@ -21700,7 +21700,7 @@ import Foundation
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showHardwareWalletCreate(from: view))
+            defaultCall: __defaultImplStub!.showParitySignerWalletCreation(from: view))
         
     }
     
@@ -21897,7 +21897,7 @@ import Foundation
     
     
     
-     func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?)   {
+     func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
