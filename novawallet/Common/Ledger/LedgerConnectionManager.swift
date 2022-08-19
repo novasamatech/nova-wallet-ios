@@ -155,6 +155,8 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
     }
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        logger.debug("Device disconnected: \(peripheral)")
+
         guard let device = bluetoothDevice(id: peripheral.identifier) else { return }
 
         device.responseCompletion?(.failure(LedgerConnectionError.deviceDisconnected))
