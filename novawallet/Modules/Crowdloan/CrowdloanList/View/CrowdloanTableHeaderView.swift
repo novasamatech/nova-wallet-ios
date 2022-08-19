@@ -15,21 +15,6 @@ final class CrowdloanTableHeaderView: UIView {
         return view
     }()
 
-    let aboutLabel: UILabel = {
-        let label = UILabel()
-        label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()!
-        return label
-    }()
-
-    let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorTransparentText()
-        label.numberOfLines = 0
-        return label
-    }()
-
     private var viewModel: CrowdloansChainViewModel?
 
     override init(frame: CGRect) {
@@ -59,9 +44,6 @@ final class CrowdloanTableHeaderView: UIView {
             targetSize: CGSize(width: iconSize, height: iconSize),
             animated: true
         )
-
-        aboutLabel.text = viewModel.title
-        descriptionLabel.text = viewModel.description
     }
 
     private func setupLayout() {
@@ -84,31 +66,13 @@ final class CrowdloanTableHeaderView: UIView {
         chainBlur.snp.makeConstraints { make in
             make.top.equalTo(walletSwitch.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(8)
         }
 
         chainBlur.addSubview(chainSelectionView)
         chainSelectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.height.equalTo(52.0)
-        }
-
-        let textBlur = TriangularedBlurView()
-        addSubview(textBlur)
-        textBlur.snp.makeConstraints { make in
-            make.top.equalTo(chainBlur.snp.bottom).offset(8)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview()
-        }
-
-        textBlur.addSubview(aboutLabel)
-        aboutLabel.snp.makeConstraints { make in
-            make.leading.top.trailing.equalToSuperview().inset(16.0)
-        }
-
-        textBlur.addSubview(descriptionLabel)
-        descriptionLabel.snp.makeConstraints { make in
-            make.leading.bottom.trailing.equalToSuperview().inset(16.0)
-            make.top.equalTo(aboutLabel.snp.bottom).offset(12.0)
         }
     }
 }

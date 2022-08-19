@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import CommonWallet
 
-struct AssetBalanceDisplayInfo {
+struct AssetBalanceDisplayInfo: Hashable {
     let displayPrecision: UInt16
     let assetPrecision: Int16
     let symbol: String
