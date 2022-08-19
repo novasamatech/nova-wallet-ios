@@ -8,7 +8,7 @@ extension Data {
 
         while offset < totalSize {
             let chunkSize = Swift.min(size, totalSize - offset)
-            let chunk = subdata(in: offset..<(offset + chunkSize))
+            let chunk = subdata(in: offset ..< (offset + chunkSize))
             chunks.append(chunk)
 
             offset += chunkSize

@@ -22,7 +22,7 @@ extension UInt32 {
     }
 
     init(bigEndianData: Data) {
-        let bytes = [UInt8](data)
+        let bytes = [UInt8](bigEndianData)
 
         self = (UInt32(bytes[0]) << 24) | (UInt32(bytes[1]) << 16) | (UInt32(bytes[2]) << 8) | UInt32(bytes[3])
     }

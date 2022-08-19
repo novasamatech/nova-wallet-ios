@@ -73,7 +73,7 @@ extension LedgerTransport: LedgerTransportProtocol {
             if remainingPacketSize > 0 {
                 let remainedMessageSize = totalLength - offest
                 let packetSize = min(remainingPacketSize, remainedMessageSize)
-                let packetBytes = message.subdata(in: offest..<(offest + packetSize))
+                let packetBytes = message.subdata(in: offest ..< (offest + packetSize))
                 chunk.append(contentsOf: packetBytes)
 
                 offest += packetSize
@@ -100,7 +100,7 @@ extension LedgerTransport: LedgerTransportProtocol {
 
         remainedData = remainedData.dropFirst()
 
-        let packetIndex = UInt16.fromBigEndian(data: remainedData.prefix(Constants.packetIndexLength))
+        let packetIndex = UInt16(bigEndianData: remainedData.prefix(Constants.packetIndexLength))
 
         remainedData = remainedData.dropFirst(Constants.packetIndexLength)
 
@@ -113,7 +113,7 @@ extension LedgerTransport: LedgerTransportProtocol {
                 throw LedgerTransportError.noMessageSizeFound
             }
 
-            let totalLength = UInt16.fromBigEndian(data: remainedData.prefix(Constants.messageSizeLength))
+            let totalLength = UInt16(bigEndianData: remainedData.prefix(Constants.messageSizeLength))
             remainedData = remainedData.dropFirst(Constants.messageSizeLength)
 
             partialResponse = Response(partialData: remainedData, totalLength: totalLength)
