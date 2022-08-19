@@ -77,6 +77,7 @@ final class LedgerApplication {
             message.append(Instruction.getAddress.rawValue)
             message.append(UInt8(displayVerificationDialog ? 0x01 : 0x00))
             message.append(cryptoScheme.rawValue)
+            message.append(UInt8(path.count))
             message.append(contentsOf: path)
 
             return message

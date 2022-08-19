@@ -893,3 +893,5 @@
 "common.unsupported.qr.code" = "QR code has unsupported format";
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Selected hardware wallet";
+"ledger.discover.title" = "Looking for Ledger device";
+"ledger.discover.details" = "Please, enable Bluetooth in your phone settings.\nUnlock your Ledger device.";

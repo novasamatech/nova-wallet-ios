@@ -893,3 +893,5 @@
 "common.unsupported.qr.code" = "Формат QR кода не поддерживается";
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Выберите аппаратный кошелёк";
+"ledger.discover.title" = "Поиск устройства Ledger";
+"ledger.discover.details" = "Пожалуйста, включите Bluetooth в настройках телефона.\nРазблокируйте устройство Ledger.";

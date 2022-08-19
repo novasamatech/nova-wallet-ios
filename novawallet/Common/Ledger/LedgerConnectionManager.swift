@@ -121,7 +121,7 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
 
 extension LedgerConnectionManager: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        logger.debug("Did receive state: \(central.state)")
+        logger.debug("Did receive state: \(central.state.rawValue)")
 
         switch central.state {
         case .poweredOn:

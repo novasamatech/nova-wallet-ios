@@ -7,6 +7,12 @@ extension UInt16 {
         return withUnsafeBytes(of: &value, Array.init)
     }
 
+    var littleEndianBytes: [UInt8] {
+        var value = littleEndian
+
+        return withUnsafeBytes(of: &value, Array.init)
+    }
+
     static func fromBigEndian(data: Data) -> UInt16 {
         let bytes = [UInt8](data)
 
@@ -17,6 +23,12 @@ extension UInt16 {
 extension UInt32 {
     var bigEndianBytes: [UInt8] {
         var value = bigEndian
+
+        return withUnsafeBytes(of: &value, Array.init)
+    }
+
+    var littleEndianBytes: [UInt8] {
+        var value = littleEndian
 
         return withUnsafeBytes(of: &value, Array.init)
     }
