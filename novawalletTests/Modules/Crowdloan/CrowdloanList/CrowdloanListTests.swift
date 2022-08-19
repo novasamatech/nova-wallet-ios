@@ -144,8 +144,8 @@ class CrowdloanListTests: XCTestCase {
 
         let yourContributionsCount: Int = {
             let yourContribution = actualViewModel!.sections[0]
-            if case let .yourContributions(_, count) = yourContribution {
-                return count
+            if case let .yourContributions(model) = yourContribution {
+                return Int(model.count)!
             } else {
                 return 0
             }
@@ -204,15 +204,18 @@ class CrowdloanListTests: XCTestCase {
 
         let wireframe = MockCrowdloanListWireframeProtocol()
 
+        let currencyManager = CurrencyManagerStub()
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory:  PriceAssetInfoFactory(currencyManager: currencyManager))
         let viewModelFactory = CrowdloansViewModelFactory(
-            amountFormatterFactory: AssetBalanceFormatterFactory()
-        )
+            amountFormatterFactory: AssetBalanceFormatterFactory(),
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade)
 
         let presenter = CrowdloanListPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            crowdloansCalculator: CrowdloansCalculator()
         )
 
         presenter.view = view
@@ -270,6 +273,10 @@ class CrowdloanListTests: XCTestCase {
             crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory
         )
         
+        let priceProviderFactory = PriceProviderFactoryStub(
+            priceData: PriceData(price: "100", dayChange: 0.01, currencyId: Currency.usd.id)
+        )
+        
         return CrowdloanListInteractor(
             selectedMetaAccount: selectedAccount,
             crowdloanState: crowdloanState,
@@ -279,7 +286,9 @@ class CrowdloanListTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionService,
             jsonDataProviderFactory: jsonProviderFactory,
             operationManager: OperationManagerFacade.sharedManager,
-            applicationHandler: ApplicationHandler()
+            applicationHandler: ApplicationHandler(),
+            currencyManager: CurrencyManagerStub(),
+            priceLocalSubscriptionFactory: priceProviderFactory
         )
     }
 }
