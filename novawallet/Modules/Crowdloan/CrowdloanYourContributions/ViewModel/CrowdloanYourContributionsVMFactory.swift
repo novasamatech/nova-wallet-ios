@@ -130,7 +130,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         chainAsset: ChainAssetDisplayInfo,
         price: PriceData?,
         locale: Locale
-    ) -> TimeableCrowdloanContributionViewModel? {
+    ) -> LimitedCrowdloanContributionViewModel? {
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
         let displayInfo = input.displayInfo?[model.paraId]
 
@@ -162,7 +162,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         chainAsset: ChainAssetDisplayInfo,
         price: PriceData?,
         locale: Locale
-    ) -> TimeableCrowdloanContributionViewModel? {
+    ) -> LimitedCrowdloanContributionViewModel? {
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
         let contributedInParaId = externalContribution.paraId
         let displayInfo = input.displayInfo?[contributedInParaId]
@@ -235,7 +235,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 }
 
 extension CrowdloanYourContributionsVMFactory {
-    struct TimeableCrowdloanContributionViewModel {
+    struct LimitedCrowdloanContributionViewModel {
         let viewModel: CrowdloanContributionViewModel
         let lastPeriod: UInt32
     }

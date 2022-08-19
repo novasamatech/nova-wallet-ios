@@ -140,17 +140,4 @@ extension CrowdloanYourContributionsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
-
-    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch viewModel?.sections[section] {
-        case .total, .contributions:
-            return 16
-        default:
-            return 0
-        }
-    }
-
-    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
-        UIView()
-    }
 }

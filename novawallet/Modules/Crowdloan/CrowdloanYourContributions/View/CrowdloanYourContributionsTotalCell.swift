@@ -5,5 +5,6 @@ final class CrowdloanYourContributionsTotalCell: BlurredTableViewCell<YourContri
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         view.apply(style: .readonly)
+        contentInsets = .init(top: 16, left: 16, bottom: 16, right: 16)
     }
 }
