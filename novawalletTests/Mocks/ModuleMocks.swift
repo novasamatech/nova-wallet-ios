@@ -12779,9 +12779,9 @@ import SoraFoundation
     
     
     
-     func didReceivePriceData(result: Result<PriceData?, Error>)  {
+     func didReceivePriceData(result: Result<PriceData?, Error>?)  {
         
-    return cuckoo_manager.call("didReceivePriceData(result: Result<PriceData?, Error>)",
+    return cuckoo_manager.call("didReceivePriceData(result: Result<PriceData?, Error>?)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -12861,9 +12861,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceive(wallet: MetaAccountModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceivePriceData<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<PriceData?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>)", parameterMatchers: matchers))
+	    func didReceivePriceData<M1: Cuckoo.OptionalMatchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>?)> where M1.OptionalMatchedType == Result<PriceData?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<PriceData?, Error>?)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceivePriceData(result: Result<PriceData?, Error>?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -12955,9 +12955,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceivePriceData<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<PriceData?, Error>), Void> where M1.MatchedType == Result<PriceData?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<PriceData?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceivePriceData(result: Result<PriceData?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceivePriceData<M1: Cuckoo.OptionalMatchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<PriceData?, Error>?), Void> where M1.OptionalMatchedType == Result<PriceData?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<PriceData?, Error>?)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceivePriceData(result: Result<PriceData?, Error>?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -13043,7 +13043,7 @@ import SoraFoundation
     
     
     
-     func didReceivePriceData(result: Result<PriceData?, Error>)   {
+     func didReceivePriceData(result: Result<PriceData?, Error>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

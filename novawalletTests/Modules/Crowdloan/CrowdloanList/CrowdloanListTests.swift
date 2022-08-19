@@ -205,12 +205,10 @@ class CrowdloanListTests: XCTestCase {
         let wireframe = MockCrowdloanListWireframeProtocol()
 
         let currencyManager = CurrencyManagerStub()
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory:  PriceAssetInfoFactory(currencyManager: currencyManager))
         let viewModelFactory = CrowdloansViewModelFactory(
             amountFormatterFactory: AssetBalanceFormatterFactory(),
-            priceFormatter: PriceFormatter(currencyManager: currencyManager,
-                                           priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
-                                           assetFormatterFactory: AssetBalanceFormatterFactory())
-        )
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade)
 
         let presenter = CrowdloanListPresenter(
             interactor: interactor,

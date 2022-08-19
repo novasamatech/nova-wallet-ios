@@ -41,7 +41,7 @@ final class CrowdloansViewModelFactory {
     }
 
     let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
-    let priceFormatter: PriceFormatterProtocol
+    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
     private lazy var percentFormatter = NumberFormatter.percent
@@ -51,10 +51,10 @@ final class CrowdloansViewModelFactory {
 
     init(
         amountFormatterFactory: AssetBalanceFormatterFactoryProtocol,
-        priceFormatter: PriceFormatterProtocol
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     ) {
         self.amountFormatterFactory = amountFormatterFactory
-        self.priceFormatter = priceFormatter
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 
     private func createCommonContent(
@@ -415,12 +415,11 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
             preferredLanguages: locale.rLanguages
         )
-        let balance = priceFormatter.balanceFromPrice(
+        let balance = balanceViewModelFactoryFacade.balanceFromPrice(
             targetAssetInfo: chainAsset.asset,
             amount: amount,
-            priceData: priceData,
-            locale: locale
-        )
+            priceData: priceData
+        ).value(for: locale)
 
         let model = YourContributionsView.Model(
             title: contributionsTitle,

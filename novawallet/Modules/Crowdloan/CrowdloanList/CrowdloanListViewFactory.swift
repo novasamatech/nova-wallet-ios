@@ -18,10 +18,8 @@ struct CrowdloanListViewFactory {
 
         let viewModelFactory = CrowdloansViewModelFactory(
             amountFormatterFactory: AssetBalanceFormatterFactory(),
-            priceFormatter: PriceFormatter(
-                currencyManager: currencyManager,
-                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
-                assetFormatterFactory: AssetBalanceFormatterFactory()
+            balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
+                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
             )
         )
 
