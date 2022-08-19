@@ -1621,6 +1621,7 @@
 		84CA68E126BEAC7C003B9453 /* SpecVersionSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA68E026BEAC7C003B9453 /* SpecVersionSubscriptionFactory.swift */; };
 		84CB2250270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CB224F270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift */; };
 		84CC128627B8336900C8E6AB /* AsyncClosureOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC128527B8336900C8E6AB /* AsyncClosureOperation.swift */; };
+		84CC726228AF8C7A003429E7 /* LedgerApplicationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC726128AF8C7A003429E7 /* LedgerApplicationRequest.swift */; };
 		84CC986B287D7BAA0085431C /* RMRKV2Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC986A287D7BAA0085431C /* RMRKV2Collection.swift */; };
 		84CCBFBC2509709500180F4F /* UIBarButtonItem+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CCBFBB2509709500180F4F /* UIBarButtonItem+Style.swift */; };
 		84CD82AE263C1452001A6F01 /* SubstrateProviderSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CD82AD263C1452001A6F01 /* SubstrateProviderSubscriber.swift */; };
@@ -4175,6 +4176,7 @@
 		84CA68E026BEAC7C003B9453 /* SpecVersionSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecVersionSubscriptionFactory.swift; sourceTree = "<group>"; };
 		84CB224F270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		84CC128527B8336900C8E6AB /* AsyncClosureOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncClosureOperation.swift; sourceTree = "<group>"; };
+		84CC726128AF8C7A003429E7 /* LedgerApplicationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerApplicationRequest.swift; sourceTree = "<group>"; };
 		84CC986A287D7BAA0085431C /* RMRKV2Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV2Collection.swift; sourceTree = "<group>"; };
 		84CCBFBB2509709500180F4F /* UIBarButtonItem+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Style.swift"; sourceTree = "<group>"; };
 		84CD82AD263C1452001A6F01 /* SubstrateProviderSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateProviderSubscriber.swift; sourceTree = "<group>"; };
@@ -6790,6 +6792,7 @@
 				84D9C8EA28AD903E007FB23B /* LedgerSendOperation.swift */,
 				84D9C8EE28AD97E7007FB23B /* SupportedLedgerApps.swift */,
 				84D9C8F028AD9913007FB23B /* BIP32PathBuilder.swift */,
+				84CC726128AF8C7A003429E7 /* LedgerApplicationRequest.swift */,
 			);
 			path = Ledger;
 			sourceTree = "<group>";
@@ -13497,6 +13500,7 @@
 				F402BC83273ACDC30075F803 /* AstarBonusService.swift in Sources */,
 				84205897260C795B007D26C6 /* NominatorState+Status.swift in Sources */,
 				AE8B883226733BAD00AB0AA9 /* CustomValidatorListHeaderView.swift in Sources */,
+				84CC726228AF8C7A003429E7 /* LedgerApplicationRequest.swift in Sources */,
 				849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */,
 				84CFF1E426526FBC00DB7CF7 /* StakingBondMorePresenter.swift in Sources */,
 				842D1E7924D063FD00C30A7A /* TriangularedView.swift in Sources */,

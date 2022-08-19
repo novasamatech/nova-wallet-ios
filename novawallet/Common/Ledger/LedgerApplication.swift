@@ -22,8 +22,6 @@ enum LedgerApplicationError: Error {
 
 final class LedgerApplication {
     private enum Constants {
-        static let publicKeyLength = 32
-        static let responseCodeLength = 2
         static let chunkSize = 250
     }
 
@@ -72,13 +70,13 @@ final class LedgerApplication {
                 .appendingStandardJunctions(coin: application.coin, accountIndex: index)
                 .build()
 
-            var message = Data()
-            message.append(application.cla)
-            message.append(Instruction.getAddress.rawValue)
-            message.append(UInt8(displayVerificationDialog ? 0x01 : 0x00))
-            message.append(cryptoScheme.rawValue)
-            message.append(UInt8(path.count))
-            message.append(contentsOf: path)
+            let message = LedgerApplicationRequest(
+                cla: application.cla,
+                instruction: Instruction.getAddress.rawValue,
+                param1: UInt8(displayVerificationDialog ? 0x01 : 0x00),
+                param2: cryptoScheme.rawValue,
+                payload: path
+            ).toBytes()
 
             return message
         }
@@ -90,33 +88,7 @@ final class LedgerApplication {
         ClosureOperation {
             let data = try sendOperation.extractNoCancellableResultData()
 
-            let responseCodeData: Data = data.suffix(Constants.responseCodeLength)
-            guard responseCodeData.count == Constants.responseCodeLength else {
-                throw LedgerError.unexpectedData("No response code")
-            }
-
-            let response = LedgerResponse(responseCode: UInt16(bigEndianData: responseCodeData))
-
-            guard response == .noError else {
-                throw LedgerError.response(code: response)
-            }
-
-            let dataWithoutResponseCode = data.dropLast(Constants.responseCodeLength)
-
-            let publicKey: Data = dataWithoutResponseCode.prefix(Constants.publicKeyLength)
-            guard publicKey.count == Constants.publicKeyLength else {
-                throw LedgerError.unexpectedData("No public key")
-            }
-
-            let accountAddressData = dataWithoutResponseCode.dropFirst(Constants.publicKeyLength)
-
-            guard
-                let accountAddress = AccountAddress(data: accountAddressData, encoding: .ascii),
-                (try? accountAddress.toAccountId()) != nil else {
-                throw LedgerError.unexpectedData("Invalid account address")
-            }
-
-            return LedgerAccount(address: accountAddress, publicKey: publicKey)
+            return try LedgerResponse<LedgerAccount>(ledgerData: data).value
         }
     }
 }
@@ -172,39 +144,36 @@ extension LedgerApplication: LedgerApplicationProtocol {
 
         let chunks: [Data] = [path] + payload.chunked(by: Constants.chunkSize)
 
-        let operations: [LedgerSendOperation] = chunks.enumerated().map { indexedChunk in
+        let requestOperations: [LedgerSendOperation] = chunks.enumerated().map { indexedChunk in
             let type = PayloadType(chunkIndex: indexedChunk.offset, totalChunks: chunks.count)
 
-            var message = Data()
-            message.append(application.cla)
-            message.append(Instruction.sign.rawValue)
-            message.append(type.rawValue)
-            message.append(CryptoScheme.ed25519.rawValue)
-
-            if !indexedChunk.element.isEmpty {
-                if indexedChunk.element.count < 256 {
-                    message.append(UInt8(indexedChunk.element.count))
-                } else {
-                    message.append(0)
-                    message.append(contentsOf: UInt16(indexedChunk.element.count).bigEndianBytes)
-                }
-
-                message.append(indexedChunk.element)
-            }
+            let message = LedgerApplicationRequest(
+                cla: application.cla,
+                instruction: Instruction.sign.rawValue,
+                param1: type.rawValue,
+                param2: CryptoScheme.ed25519.rawValue,
+                payload: indexedChunk.element
+            ).toBytes()
 
             return LedgerSendOperation(connection: connectionManager, deviceId: deviceId, message: message)
         }
 
-        for index in 0 ..< (operations.count - 1) {
-            operations[index + 1].addDependency(operations[index])
+        for index in 0 ..< (requestOperations.count - 1) {
+            requestOperations[index + 1].addDependency(requestOperations[index])
         }
 
-        guard let targetOperation = operations.last else {
+        guard let targetOperation = requestOperations.last else {
             return CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
         }
 
-        let dependencies = operations.dropLast()
+        let responseOperation = ClosureOperation<LedgerSignature> {
+            let data = try targetOperation.extractNoCancellableResultData()
 
-        return CompoundOperationWrapper(targetOperation: targetOperation, dependencies: Array(dependencies))
+            return try LedgerResponse<LedgerSignature>(ledgerData: data).value
+        }
+
+        responseOperation.addDependency(targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: responseOperation, dependencies: requestOperations)
     }
 }
