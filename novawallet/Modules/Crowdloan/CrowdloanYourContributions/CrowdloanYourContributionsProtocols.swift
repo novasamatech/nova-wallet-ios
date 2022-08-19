@@ -1,7 +1,8 @@
 import SoraFoundation
+import Foundation
 
 protocol CrowdloanYourContributionsViewProtocol: ControllerBackedProtocol {
-    func reload(contributions: [CrowdloanContributionViewModel])
+    func reload(model: CrowdloanYourContributionsViewModel)
     func reload(returnInIntervals: [String?])
 }
 
@@ -13,6 +14,7 @@ protocol CrowdloanYourContributionsVMFactoryProtocol: AnyObject {
     func createViewModel(
         input: CrowdloanYourContributionsViewInput,
         externalContributions: [ExternalContribution]?,
+        amount: Decimal,
         price: PriceData?,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel

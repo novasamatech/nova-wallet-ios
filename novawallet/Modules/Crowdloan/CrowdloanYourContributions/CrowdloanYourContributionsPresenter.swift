@@ -9,6 +9,7 @@ final class CrowdloanYourContributionsPresenter {
     let viewModelFactory: CrowdloanYourContributionsVMFactoryProtocol
     let timeFormatter: TimeFormatterProtocol
     let logger: LoggerProtocol?
+    let crowdloansCalculator: CrowdloansCalculatorProtocol
 
     private var returnInIntervals: [TimeInterval]?
     private var maxReturnInInterval: TimeInterval?
@@ -49,6 +50,7 @@ final class CrowdloanYourContributionsPresenter {
         wireframe: CrowdloanYourContributionsWireframeProtocol,
         timeFormatter: TimeFormatterProtocol,
         localizationManager: LocalizationManagerProtocol,
+        crowdloansCalculator: CrowdloansCalculatorProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.input = input
@@ -57,18 +59,25 @@ final class CrowdloanYourContributionsPresenter {
         self.wireframe = wireframe
         self.timeFormatter = timeFormatter
         self.logger = logger
+        self.crowdloansCalculator = crowdloansCalculator
         self.localizationManager = localizationManager
     }
 
     private func updateCrowdloans() {
+        let amount = crowdloansCalculator.calculateTotal(
+            precision: input.chainAsset.asset.assetPrecision,
+            contributions: input.contributions,
+            externalContributions: externalContributions
+        )
         let viewModel = viewModelFactory.createViewModel(
             input: input,
             externalContributions: externalContributions,
+            amount: amount ?? 0,
             price: price,
             locale: selectedLocale
         )
 
-        view?.reload(contributions: viewModel.contributions)
+        view?.reload(model: viewModel)
     }
 
     private func updateReturnInTimeIntervals() {

@@ -36,6 +36,12 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
 }
 
 final class YourContributionsTableViewCell: BlurredTableViewCell<YourContributionsView> {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        view.apply(style: .navigation)
+    }
+
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 

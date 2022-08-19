@@ -348,6 +348,7 @@
 "tabbar.crowdloan.title" = "Crowdloans";
 "crowdloan.list.section.format" = "Select parachains to contribute your %@. You will receive rewards if the parachain acquires a slot by the end of the auction.";
 "crowdloan.you.contributions.title" = "Your contributions";
+"crowdloan.you.contributions.total" = "Total";
 "crowdloan.about.crowdloans" = "About crowdloans";
 "crowdloan.progress.format" = "Raised: %@ of %@";
 "crowdloan.empty.message" = "Information about crowdloans\n will appear here";

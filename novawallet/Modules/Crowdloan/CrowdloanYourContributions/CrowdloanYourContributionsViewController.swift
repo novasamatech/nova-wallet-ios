@@ -6,7 +6,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 
     let presenter: CrowdloanYourContributionsPresenterProtocol
 
-    private var contributions: [CrowdloanContributionViewModel]?
+    private var viewModel: CrowdloanYourContributionsViewModel?
     private var returnInTimeIntervals: [String?]?
 
     init(
@@ -38,6 +38,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
     private func setupTable() {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
+        rootView.tableView.registerClassForCell(CrowdloanYourContributionsTotalCell.self)
         rootView.tableView.registerClassForCell(CrowdloanYourContributionsCell.self)
     }
 
@@ -64,8 +65,8 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 }
 
 extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsViewProtocol {
-    func reload(contributions: [CrowdloanContributionViewModel]) {
-        self.contributions = contributions
+    func reload(model: CrowdloanYourContributionsViewModel) {
+        viewModel = model
         rootView.tableView.reloadData()
     }
 
@@ -94,24 +95,54 @@ extension CrowdloanYourContributionsViewController: Localizable {
 }
 
 extension CrowdloanYourContributionsViewController: UITableViewDataSource {
-    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        contributions?.count ?? 0
+    func numberOfSections(in _: UITableView) -> Int {
+        viewModel?.sections.count ?? 0
+    }
+
+    func tableView(_: UITableView, numberOfRowsInSection: Int) -> Int {
+        switch viewModel?.sections[numberOfRowsInSection] {
+        case .total:
+            return 1
+        case let .contributions(contributions):
+            return contributions.count
+        default:
+            return 0
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let contributions = contributions else { return UITableViewCell() }
-        let contribution = contributions[indexPath.row]
-        let cell = tableView.dequeueReusableCellWithType(CrowdloanYourContributionsCell.self)!
-        cell.bind(contributionViewModel: contribution)
-
-        bindReturnInInterval(to: cell, at: indexPath)
-
-        return cell
+        switch viewModel?.sections[indexPath.section] {
+        case let .total(model):
+            let cell: CrowdloanYourContributionsTotalCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.view.bind(model: model)
+            return cell
+        case let .contributions(contributions):
+            let contribution = contributions[indexPath.row]
+            let cell = tableView.dequeueReusableCellWithType(CrowdloanYourContributionsCell.self)!
+            cell.bind(contributionViewModel: contribution)
+            bindReturnInInterval(to: cell, at: indexPath)
+            return cell
+        default:
+            return UITableViewCell()
+        }
     }
 }
 
 extension CrowdloanYourContributionsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch viewModel?.sections[section] {
+        case .total, .contributions:
+            return 16
+        default:
+            return 0
+        }
+    }
+
+    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        UIView()
     }
 }

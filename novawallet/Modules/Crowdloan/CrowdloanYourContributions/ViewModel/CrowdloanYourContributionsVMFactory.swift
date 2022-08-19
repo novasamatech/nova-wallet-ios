@@ -6,18 +6,18 @@ import BigInt
 final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFactoryProtocol {
     let chainDateCalculator: ChainDateCalculatorProtocol
     let calendar: Calendar
-    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
         chainDateCalculator: ChainDateCalculatorProtocol,
         calendar: Calendar,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     ) {
         self.chainDateCalculator = chainDateCalculator
         self.calendar = calendar
-        self.priceAssetInfoFactory = priceAssetInfoFactory
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 
     func createReturnInIntervals(
@@ -59,6 +59,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
     func createViewModel(
         input: CrowdloanYourContributionsViewInput,
         externalContributions: [ExternalContribution]?,
+        amount: Decimal,
         price: PriceData?,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel {
@@ -82,7 +83,42 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
             )
         }
 
-        return CrowdloanYourContributionsViewModel(contributions: contributions + externalContributions)
+        let total = createTotalSection(
+            chainAsset: input.chainAsset,
+            amount: amount,
+            priceData: price,
+            locale: locale
+        )
+
+        let sections: [CrowdloanYourContributionsSection] = [
+            .total(total),
+            .contributions(contributions + externalContributions)
+        ]
+        return CrowdloanYourContributionsViewModel(sections: sections)
+    }
+
+    private func createTotalSection(
+        chainAsset: ChainAssetDisplayInfo,
+        amount: Decimal,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> YourContributionsView.Model {
+        let title = R.string.localizable.crowdloanYouContributionsTotal(
+            preferredLanguages: locale.rLanguages
+        )
+        let balance = balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: chainAsset.asset,
+            amount: amount,
+            priceData: priceData
+        ).value(for: locale)
+
+        let model = YourContributionsView.Model(
+            title: title,
+            count: nil,
+            amount: balance.amount,
+            amountDetails: balance.price ?? ""
+        )
+        return model
     }
 
     private func crowdloanCotribution(
@@ -185,11 +221,9 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
     ) -> BalanceViewModelProtocol {
         let decimalAmount = Decimal.fromSubstrateAmount(contributed, precision: chainAsset.asset.assetPrecision) ?? 0
 
-        return BalanceViewModelFactory(
+        return balanceViewModelFactoryFacade.balanceFromPrice(
             targetAssetInfo: chainAsset.asset,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        ).balanceFromPrice(
-            decimalAmount,
+            amount: decimalAmount,
             priceData: price
         ).value(for: locale)
     }
