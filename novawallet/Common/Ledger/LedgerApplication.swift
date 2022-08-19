@@ -180,7 +180,17 @@ extension LedgerApplication: LedgerApplicationProtocol {
             message.append(Instruction.sign.rawValue)
             message.append(type.rawValue)
             message.append(CryptoScheme.ed25519.rawValue)
-            message.append(indexedChunk.element)
+
+            if !indexedChunk.element.isEmpty {
+                if indexedChunk.element.count < 256 {
+                    message.append(UInt8(indexedChunk.element.count))
+                } else {
+                    message.append(0)
+                    message.append(contentsOf: UInt16(indexedChunk.element.count).bigEndianBytes)
+                }
+
+                message.append(indexedChunk.element)
+            }
 
             return LedgerSendOperation(connection: connectionManager, deviceId: deviceId, message: message)
         }
