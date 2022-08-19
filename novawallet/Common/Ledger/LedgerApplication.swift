@@ -95,7 +95,7 @@ final class LedgerApplication {
                 throw LedgerError.unexpectedData("No response code")
             }
 
-            let response = LedgerResponse(responseCode: UInt16.fromBigEndian(data: responseCodeData))
+            let response = LedgerResponse(responseCode: UInt16(bigEndianData: responseCodeData))
 
             guard response == .noError else {
                 throw LedgerError.response(code: response)
