@@ -7,7 +7,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
     let presenter: CrowdloanYourContributionsPresenterProtocol
 
     private var viewModel: CrowdloanYourContributionsViewModel?
-    private var returnInTimeIntervals: [String?]?
+    private var returnInTimeIntervals: [FormattedReturnInIntervalsViewModel?]?
 
     init(
         presenter: CrowdloanYourContributionsPresenterProtocol,
@@ -42,18 +42,18 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
         rootView.tableView.registerClassForCell(CrowdloanYourContributionsCell.self)
     }
 
-    private func bindReturnInInterval(to cell: CrowdloanYourContributionsCell, at indexPath: IndexPath) {
+    private func bindReturnInInterval(to cell: CrowdloanYourContributionsCell) {
         guard
             let returnInTimeIntervals = returnInTimeIntervals,
-            indexPath.row < returnInTimeIntervals.count else {
+            let cellModel = cell.model else {
             return
         }
 
         let subtitle: String
 
-        if let returnIn = returnInTimeIntervals[indexPath.row] {
+        if let returnIn = returnInTimeIntervals.first(where: { $0?.index == cellModel.index }) {
             subtitle = R.string.localizable.crowdloanReturnsInFormat(
-                returnIn,
+                returnIn?.interval ?? "",
                 preferredLanguages: selectedLocale.rLanguages
             )
         } else {
@@ -72,17 +72,15 @@ extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsVi
         rootView.tableView.reloadData()
     }
 
-    func reload(returnInIntervals: [String?]) {
+    func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel?]) {
         returnInTimeIntervals = returnInIntervals
 
         rootView.tableView.visibleCells.forEach { cell in
-            guard
-                let indexPath = rootView.tableView.indexPath(for: cell),
-                let contributionCell = cell as? CrowdloanYourContributionsCell else {
+            guard let contributionCell = cell as? CrowdloanYourContributionsCell else {
                 return
             }
 
-            bindReturnInInterval(to: contributionCell, at: indexPath)
+            bindReturnInInterval(to: contributionCell)
         }
     }
 }
@@ -126,7 +124,7 @@ extension CrowdloanYourContributionsViewController: UITableViewDataSource {
             let contribution = contributions[indexPath.row]
             let cell: CrowdloanYourContributionsCell = tableView.dequeueReusableCell(for: indexPath)
             cell.bind(contributionViewModel: contribution)
-            bindReturnInInterval(to: cell, at: indexPath)
+            bindReturnInInterval(to: cell)
             return cell
         default:
             return UITableViewCell()

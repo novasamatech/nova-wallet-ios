@@ -3,7 +3,7 @@ import Foundation
 
 protocol CrowdloanYourContributionsViewProtocol: ControllerBackedProtocol {
     func reload(model: CrowdloanYourContributionsViewModel)
-    func reload(returnInIntervals: [String?])
+    func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel?])
 }
 
 protocol CrowdloanYourContributionsPresenterProtocol: AnyObject {
@@ -23,7 +23,7 @@ protocol CrowdloanYourContributionsVMFactoryProtocol: AnyObject {
         input: CrowdloanYourContributionsViewInput,
         externalContributions: [ExternalContribution]?,
         metadata: CrowdloanMetadata
-    ) -> [TimeInterval]
+    ) -> [ReturnInIntervalsViewModel]
 }
 
 protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {
