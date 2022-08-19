@@ -145,7 +145,7 @@ class CrowdloanListTests: XCTestCase {
         let yourContributionsCount: Int = {
             let yourContribution = actualViewModel!.sections[0]
             if case let .yourContributions(model) = yourContribution {
-                return Int(model.count)!
+                return Int(model.count!)!
             } else {
                 return 0
             }
