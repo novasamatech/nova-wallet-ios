@@ -38,6 +38,7 @@ protocol CrowdloanListInteractorOutputProtocol: AnyObject {
     func didReceiveSelectedChain(result: Result<ChainModel, Error>)
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
     func didReceive(wallet: MetaAccountModel)
+    func didReceivePriceData(result: Result<PriceData?, Error>?)
 }
 
 protocol CrowdloanListWireframeProtocol: AnyObject, WalletSwitchPresentable {

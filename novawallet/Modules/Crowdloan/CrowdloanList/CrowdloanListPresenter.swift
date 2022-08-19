@@ -18,24 +18,28 @@ final class CrowdloanListPresenter {
     private var blockDurationResult: Result<BlockTime, Error>?
     private var leasingPeriodResult: Result<LeasingPeriod, Error>?
     private var leasingOffsetResult: Result<LeasingOffset, Error>?
+    private var priceDataResult: Result<PriceData?, Error>?
     private var contributionsResult: Result<CrowdloanContributionDict, Error>?
     private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
     private var wallet: MetaAccountModel?
 
     private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
+    private let crowdloansCalculator: CrowdloansCalculatorProtocol
 
     init(
         interactor: CrowdloanListInteractorInputProtocol,
         wireframe: CrowdloanListWireframeProtocol,
         viewModelFactory: CrowdloansViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
+        crowdloansCalculator: CrowdloansCalculatorProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.logger = logger
+        self.crowdloansCalculator = crowdloansCalculator
         self.localizationManager = localizationManager
     }
 
@@ -161,6 +165,7 @@ final class CrowdloanListPresenter {
 
         do {
             let crowdloans = try crowdloansResult.get()
+            let priceData = try? priceDataResult?.get() ?? nil
 
             guard !crowdloans.isEmpty else {
                 view?.didReceive(listState: .empty)
@@ -171,11 +176,24 @@ final class CrowdloanListPresenter {
             let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
             let externalContributionsCount = externalContributions?.count ?? 0
 
+            let amount: Decimal?
+            if let contributionsResult = try contributionsResult?.get() {
+                amount = crowdloansCalculator.calculateTotal(
+                    chain: chain,
+                    contributions: contributionsResult,
+                    externalContributions: externalContributions ?? []
+                )
+            } else {
+                amount = nil
+            }
+
             let viewModel = viewModelFactory.createViewModel(
                 from: crowdloans,
                 viewInfo: viewInfo,
                 chainAsset: chainAsset,
                 externalContributionsCount: externalContributionsCount,
+                amount: amount,
+                priceData: priceData,
                 locale: selectedLocale
             )
 
@@ -362,6 +380,11 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
         self.wallet = wallet
 
         updateWalletSwitchView()
+    }
+
+    func didReceivePriceData(result: Result<PriceData?, Error>?) {
+        priceDataResult = result
+        updateListView()
     }
 }
 

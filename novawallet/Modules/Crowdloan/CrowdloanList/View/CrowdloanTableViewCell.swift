@@ -68,8 +68,9 @@ final class CrowdloanTableViewCell: UITableViewCell {
 
     let navigationImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconSmallArrow()
+        imageView.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .center
+        imageView.tintColor = R.color.colorWhite48()
         return imageView
     }()
 

@@ -7,7 +7,8 @@ import RobinHood
 
 struct CrowdloanListViewFactory {
     static func createView(with sharedState: CrowdloanSharedState) -> CrowdloanListViewProtocol? {
-        guard let interactor = createInteractor(from: sharedState) else {
+        guard let interactor = createInteractor(from: sharedState),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -16,7 +17,10 @@ struct CrowdloanListViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let viewModelFactory = CrowdloansViewModelFactory(
-            amountFormatterFactory: AssetBalanceFormatterFactory()
+            amountFormatterFactory: AssetBalanceFormatterFactory(),
+            balanceViewModelFactoryFacade: BalanceViewModelFactoryFacade(
+                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            )
         )
 
         let presenter = CrowdloanListPresenter(
@@ -24,6 +28,7 @@ struct CrowdloanListViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
+            crowdloansCalculator: CrowdloansCalculator(),
             logger: Logger.shared
         )
 
@@ -41,6 +46,10 @@ struct CrowdloanListViewFactory {
     private static func createInteractor(
         from state: CrowdloanSharedState
     ) -> CrowdloanListInteractor? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
         let selectedMetaAccount: MetaAccountModel = SelectedWalletSettings.shared.value
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
@@ -76,6 +85,8 @@ struct CrowdloanListViewFactory {
             jsonDataProviderFactory: JsonDataProviderFactory.shared,
             operationManager: operationManager,
             applicationHandler: ApplicationHandler(),
+            currencyManager: currencyManager,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             logger: logger
         )
     }
