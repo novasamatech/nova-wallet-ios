@@ -52,10 +52,11 @@ extension LedgerTransport: LedgerTransportProtocol {
     }
 
     func prepareRequest(from message: Data) -> [Data] {
-        var remainingBytes = message
+        let totalLength = message.count
+        var offest: Int = 0
         var chunks: [Data] = []
 
-        while !remainingBytes.isEmpty {
+        while offest < totalLength {
             var chunk = Data()
             chunk.append(Constants.dataTagId)
 
@@ -64,16 +65,18 @@ extension LedgerTransport: LedgerTransportProtocol {
             let isFirst = chunks.isEmpty
 
             if isFirst {
-                chunk.append(contentsOf: UInt16(message.count).bigEndianBytes)
+                chunk.append(contentsOf: UInt16(totalLength).bigEndianBytes)
             }
 
             let remainingPacketSize = mtu >= chunk.count ? mtu - chunk.count : 0
 
             if remainingPacketSize > 0 {
-                let packetBytes = remainingBytes.prefix(remainingPacketSize)
+                let remainedMessageSize = totalLength - offest
+                let packetSize = min(remainingPacketSize, remainedMessageSize)
+                let packetBytes = message.subdata(in: offest..<(offest + packetSize))
                 chunk.append(contentsOf: packetBytes)
 
-                remainingBytes = remainingBytes.dropFirst(packetBytes.count)
+                offest += packetSize
             }
 
             chunks.append(chunk)
