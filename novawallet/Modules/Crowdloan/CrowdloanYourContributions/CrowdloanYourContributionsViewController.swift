@@ -64,6 +64,8 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
     }
 }
 
+// MARK: - CrowdloanYourContributionsViewProtocol
+
 extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsViewProtocol {
     func reload(model: CrowdloanYourContributionsViewModel) {
         viewModel = model
@@ -85,6 +87,8 @@ extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsVi
     }
 }
 
+// MARK: - Localizable
+
 extension CrowdloanYourContributionsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
@@ -93,6 +97,8 @@ extension CrowdloanYourContributionsViewController: Localizable {
         }
     }
 }
+
+// MARK: - UITableViewDataSource
 
 extension CrowdloanYourContributionsViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
@@ -118,7 +124,7 @@ extension CrowdloanYourContributionsViewController: UITableViewDataSource {
             return cell
         case let .contributions(contributions):
             let contribution = contributions[indexPath.row]
-            let cell = tableView.dequeueReusableCellWithType(CrowdloanYourContributionsCell.self)!
+            let cell: CrowdloanYourContributionsCell = tableView.dequeueReusableCell(for: indexPath)
             cell.bind(contributionViewModel: contribution)
             bindReturnInInterval(to: cell, at: indexPath)
             return cell
@@ -127,6 +133,8 @@ extension CrowdloanYourContributionsViewController: UITableViewDataSource {
         }
     }
 }
+
+// MARK: - UITableViewDelegate
 
 extension CrowdloanYourContributionsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
