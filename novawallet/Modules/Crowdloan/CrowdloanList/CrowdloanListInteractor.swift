@@ -456,7 +456,9 @@ extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscr
 
 extension CrowdloanListInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if presenter != nil, let priceId = crowdloanState.settings.value.utilityAsset()?.priceId {
+        if presenter != nil,
+           let chain = crowdloanState.settings.value,
+           let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
