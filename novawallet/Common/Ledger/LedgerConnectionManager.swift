@@ -1,12 +1,17 @@
 import Foundation
 import CoreBluetooth
 
-enum LedgerConnectionError: Error {
+enum LedgerDiscoveryError: Error {
+    case unknown
     case unauthorized
-    case connection
+    case unsupported
+    case unavailable
+}
+
+enum LedgerConnectionError: Error {
     case deviceNotFound
     case deviceDisconnected
-    case badResponse
+    case deviceNoResponse
 }
 
 typealias LedgerResponseClosure = (Result<Data, Error>) -> Void
@@ -26,13 +31,8 @@ extension LedgerConnectionManagerProtocol {
 }
 
 protocol LedgerConnectionManagerDelegate: AnyObject {
-    func ledgerConnection(manager: LedgerConnectionManagerProtocol, didFailToConnect error: Error)
+    func ledgerConnection(manager: LedgerConnectionManagerProtocol, didReceive error: LedgerDiscoveryError)
     func ledgerConnection(manager: LedgerConnectionManagerProtocol, didDiscover device: LedgerDeviceProtocol)
-    func ledgerConnection(
-        manager: LedgerConnectionManagerProtocol,
-        didDisconnect device: LedgerDeviceProtocol,
-        error: Error?
-    )
 }
 
 final class LedgerConnectionManager: NSObject {
@@ -66,6 +66,7 @@ final class LedgerConnectionManager: NSObject {
     private func completeRequest(with result: Result<Data, Error>, device: BluetoothLedgerDevice) {
         device.responseCompletion?(result)
         device.responseCompletion = nil
+        device.transport.reset()
     }
 
     private func didDiscoverDevice(_ peripheral: CBPeripheral) {
@@ -130,9 +131,13 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
             }
             centralManager?.scanForPeripherals(withServices: supportedDeviceUUIDs)
         case .unauthorized:
-            delegate?.ledgerConnection(manager: self, didFailToConnect: LedgerConnectionError.unauthorized)
+            delegate?.ledgerConnection(manager: self, didReceive: LedgerDiscoveryError.unauthorized)
+        case .poweredOff:
+            delegate?.ledgerConnection(manager: self, didReceive: LedgerDiscoveryError.unavailable)
+        case .unsupported:
+            delegate?.ledgerConnection(manager: self, didReceive: LedgerDiscoveryError.unsupported)
         default:
-            delegate?.ledgerConnection(manager: self, didFailToConnect: LedgerConnectionError.connection)
+            delegate?.ledgerConnection(manager: self, didReceive: LedgerDiscoveryError.unknown)
         }
     }
 
@@ -154,16 +159,20 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
         peripheral.discoverServices(supportedDeviceUUIDs)
     }
 
-    func centralManager(_: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error _: Error?) {
         logger.debug("Device disconnected: \(peripheral)")
 
         guard let device = bluetoothDevice(id: peripheral.identifier) else { return }
 
-        device.responseCompletion?(.failure(LedgerConnectionError.deviceDisconnected))
+        completeRequest(with: .failure(LedgerConnectionError.deviceDisconnected), device: device)
+    }
 
-        removeDevices(peripheral: peripheral)
+    func centralManager(_: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        logger.debug("Did fail to connect \(peripheral): \(String(describing: error))")
 
-        delegate?.ledgerConnection(manager: self, didDisconnect: device, error: error)
+        guard let device = bluetoothDevice(id: peripheral.identifier) else { return }
+
+        completeRequest(with: .failure(LedgerConnectionError.deviceDisconnected), device: device)
     }
 }
 
@@ -257,7 +266,7 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
                     "Can't parse response for \(characteristic): \(String(describing: characteristic.value?.toHex()))"
                 )
 
-                completeRequest(with: .failure(LedgerConnectionError.badResponse), device: device)
+                completeRequest(with: .failure(LedgerConnectionError.deviceNoResponse), device: device)
             }
         }
     }

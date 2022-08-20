@@ -893,5 +893,9 @@
 "common.unsupported.qr.code" = "QR code has unsupported format";
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Selected hardware wallet";
-"ledger.discover.title" = "Looking for Ledger device";
+"ledger.discover.title" = "Select your Ledger device";
 "ledger.discover.details" = "Please, enable Bluetooth in your phone settings.\nUnlock your Ledger device.";
+"common.bluetooth.unsupported.message" = "Unfortunatelly, Bluetooth is not supported by your device.";
+"common.bluetooth.unauthorized.message" = "Please, enable access to Bluetooth in the Settings.";
+"common.bluetooth.unauthorized.title" = "Bluetooth Unauthorized";
+"common.bluetooth.unknown.message" = "Please, make sure Bluetooth is enabled in the Settings.";

@@ -27,6 +27,8 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
 
         setupLocalization()
 
+        updateActivityIndicator()
+
         presenter.setup()
     }
 
@@ -37,8 +39,20 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
         rootView.headerView.valueBottom.text = R.string.localizable.ledgerDiscoverDetails(preferredLanguages: languages)
     }
 
+    private func updateActivityIndicator() {
+        let shouldAnimate = rootView.cells.isEmpty
+
+        if shouldAnimate {
+            rootView.activityIndicator.startAnimating()
+        } else {
+            rootView.activityIndicator.stopAnimating()
+        }
+    }
+
     @objc private func actionTap(_ sender: UIControl) {
-        guard let index = rootView.deviceTableView.stackView.arrangedSubviews.firstIndex(of: sender) else {
+        guard
+            let cell = sender as? LoadableStackActionCell<UILabel>,
+            let index = rootView.cells.firstIndex(of: cell) else {
             return
         }
 
@@ -47,17 +61,23 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
 }
 
 extension LedgerDiscoverViewController: LedgerDiscoverViewProtocol {
+    func didStartLoading(at index: Int) {
+        rootView.cells[index].startLoading()
+    }
+
+    func didStopLoading(at index: Int) {
+        rootView.cells[index].stopLoading()
+    }
+
     func didReceive(devices: [String]) {
-        rootView.deviceTableView.clear()
+        rootView.clearCells()
 
         for device in devices {
-            let cell = StackActionCell()
-            rootView.deviceTableView.addArrangedSubview(cell)
-
-            cell.bind(title: device, icon: nil, details: nil)
-
+            let cell = rootView.addCell(for: device)
             cell.addTarget(self, action: #selector(actionTap(_:)), for: .touchUpInside)
         }
+
+        updateActivityIndicator()
     }
 }
 

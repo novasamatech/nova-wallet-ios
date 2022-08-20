@@ -1263,6 +1263,8 @@
 		8490152B24ABD0A2008F705E /* WalletCommonConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490152A24ABD0A2008F705E /* WalletCommonConfigurator.swift */; };
 		8490152E24ABD0F5008F705E /* Logger+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490152D24ABD0F5008F705E /* Logger+Wallet.swift */; };
 		8490386B262E22DC0016D541 /* NominatorPayoutInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490386A262E22DC0016D541 /* NominatorPayoutInfoFactory.swift */; };
+		84906FEA28AFCC3F0049B57D /* LoadableStackCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FE928AFCC3F0049B57D /* LoadableStackCellView.swift */; };
+		84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */; };
 		849244922514EDE800477C1B /* SelectableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849244912514EDE800477C1B /* SelectableViewModel.swift */; };
 		84939B1826E1690D000111DA /* TreasuryDepositEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84939B1726E1690D000111DA /* TreasuryDepositEvent.swift */; };
 		8493D0DF26FE7D7400A28008 /* ChainRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8493D0DE26FE7D7400A28008 /* ChainRepositoryFactory.swift */; };
@@ -3817,6 +3819,8 @@
 		8490152A24ABD0A2008F705E /* WalletCommonConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCommonConfigurator.swift; sourceTree = "<group>"; };
 		8490152D24ABD0F5008F705E /* Logger+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+Wallet.swift"; sourceTree = "<group>"; };
 		8490386A262E22DC0016D541 /* NominatorPayoutInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominatorPayoutInfoFactory.swift; sourceTree = "<group>"; };
+		84906FE928AFCC3F0049B57D /* LoadableStackCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableStackCellView.swift; sourceTree = "<group>"; };
+		84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableStackActionCell.swift; sourceTree = "<group>"; };
 		849244912514EDE800477C1B /* SelectableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableViewModel.swift; sourceTree = "<group>"; };
 		84939B1726E1690D000111DA /* TreasuryDepositEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryDepositEvent.swift; sourceTree = "<group>"; };
 		8493D0DE26FE7D7400A28008 /* ChainRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRepositoryFactory.swift; sourceTree = "<group>"; };
@@ -8369,6 +8373,8 @@
 				847449502891F3B00042FD80 /* WalletSwitchControl.swift */,
 				8475B47A289870A4009B90BC /* ProcessStepView.swift */,
 				84282287289AC80600163031 /* MultiValueView+Factory.swift */,
+				84906FE928AFCC3F0049B57D /* LoadableStackCellView.swift */,
+				84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -12773,6 +12779,7 @@
 				847F2D4627A9DB8E00AFD476 /* MultigradientView.swift in Sources */,
 				842876A524AE049B00D91AD8 /* SelectableTitleListViewModel.swift in Sources */,
 				847C96302553426D002D288F /* ExportGenericViewModel.swift in Sources */,
+				84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */,
 				AEF73FB525DBA24300407D41 /* PhishingCheckExecutor.swift in Sources */,
 				AEE5FB1826457AC1002B8FDC /* StakingRewardDestSetupViewController.swift in Sources */,
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
@@ -14318,6 +14325,7 @@
 				B02EAF42C91E069FE6872EE0 /* SelectValidatorsConfirmWireframe.swift in Sources */,
 				AEA0C8B4267BA40C00F9666F /* SelectedValidatorListViewModelFactory.swift in Sources */,
 				6ECD0116CD39D8F55D246864 /* SelectValidatorsConfirmPresenter.swift in Sources */,
+				84906FEA28AFCC3F0049B57D /* LoadableStackCellView.swift in Sources */,
 				84C3420728314D9600156569 /* ParaStkScheduledRequestsQueryFactory.swift in Sources */,
 				CC545DF80038901FA06FDD58 /* SelectValidatorsConfirmViewController.swift in Sources */,
 				1F88F3DBFA0BD6D0FDF558F3 /* SelectValidatorsConfirmViewFactory.swift in Sources */,

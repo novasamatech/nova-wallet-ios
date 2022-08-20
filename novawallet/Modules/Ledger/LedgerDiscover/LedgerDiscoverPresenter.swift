@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class LedgerDiscoverPresenter {
     weak var view: LedgerDiscoverViewProtocol?
@@ -7,17 +8,72 @@ final class LedgerDiscoverPresenter {
 
     private var devices: [LedgerDeviceProtocol] = []
 
+    private var isConnecting: Bool = false
+
+    let localizationManager: LocalizationManagerProtocol
+
     init(
         interactor: LedgerDiscoverInteractorInputProtocol,
-        wireframe: LedgerDiscoverWireframeProtocol
+        wireframe: LedgerDiscoverWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.localizationManager = localizationManager
     }
 
     private func updateView() {
         let names = devices.map(\.name)
         view?.didReceive(devices: names)
+    }
+
+    private func stopConnecting(to deviceId: UUID) {
+        guard isConnecting else {
+            return
+        }
+
+        isConnecting = false
+
+        guard let deviceIndex = devices.firstIndex(where: { $0.identifier == deviceId }) else {
+            return
+        }
+
+        view?.didStopLoading(at: deviceIndex)
+    }
+
+    private func handleAppConnection(error: Error) {
+
+    }
+
+    private func handleSetup(error: LedgerDiscoveryError) {
+        let locale = localizationManager.selectedLocale
+
+        switch error {
+        case .unauthorized:
+            wireframe.askOpenApplicationSettings(
+                with: R.string.localizable.commonBluetoothUnauthorizedMessage(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.commonBluetoothUnauthorizedTitle(preferredLanguages: locale.rLanguages),
+                from: view,
+                locale: locale
+            )
+        case .unsupported:
+            wireframe.present(
+                message: R.string.localizable.commonBluetoothUnsupportedMessage(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages),
+                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+                from: view
+            )
+        case .unknown:
+            wireframe.present(
+                message: R.string.localizable.commonBluetoothUnknownMessage(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale.rLanguages),
+                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
+                from: view
+            )
+        case .unavailable:
+            // we rely on the native alert to navigate to Bluetooth settings
+            break
+        }
     }
 }
 
@@ -27,6 +83,14 @@ extension LedgerDiscoverPresenter: LedgerDiscoverPresenterProtocol {
     }
 
     func selectDevice(at index: Int) {
+        guard !isConnecting else {
+            return
+        }
+
+        isConnecting = true
+
+        view?.didStartLoading(at: index)
+
         interactor.connect(to: devices[index].identifier)
     }
 }
@@ -39,5 +103,20 @@ extension LedgerDiscoverPresenter: LedgerDiscoverInteractorOutputProtocol {
 
         devices.append(device)
         updateView()
+    }
+
+    func didReceiveConnection(result: Result<Void, Error>, for deviceId: UUID) {
+        stopConnecting(to: deviceId)
+
+        switch result {
+        case .success:
+            wireframe.showAccountSelection(from: view, for: deviceId)
+        case let .failure(error):
+            handleAppConnection(error: error)
+        }
+    }
+
+    func didReceiveSetup(error: LedgerDiscoveryError) {
+        handleSetup(error: error)
     }
 }

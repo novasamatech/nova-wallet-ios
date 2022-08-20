@@ -40,12 +40,16 @@ extension LedgerDiscoverInteractor: LedgerDiscoverInteractorInputProtocol {
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
-            do {
-                let ledgerAccount = try wrapper.targetOperation.extractNoCancellableResultData()
+            DispatchQueue.main.async {
+                do {
+                    _ = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                self?.logger.info("Did receive address: \(ledgerAccount.address)")
-            } catch {
-                self?.logger.error("Did receive error: \(error)")
+                    self?.presenter?.didReceiveConnection(result: .success(()), for: deviceId)
+                } catch {
+                    self?.logger.error("Did receive error: \(error)")
+
+                    self?.presenter?.didReceiveConnection(result: .failure(error), for: deviceId)
+                }
             }
         }
 
@@ -54,17 +58,15 @@ extension LedgerDiscoverInteractor: LedgerDiscoverInteractorInputProtocol {
 }
 
 extension LedgerDiscoverInteractor: LedgerConnectionManagerDelegate {
-    func ledgerConnection(manager _: LedgerConnectionManagerProtocol, didFailToConnect _: Error) {}
-
     func ledgerConnection(manager _: LedgerConnectionManagerProtocol, didDiscover device: LedgerDeviceProtocol) {
         DispatchQueue.main.async { [weak self] in
             self?.presenter?.didDiscover(device: device)
         }
     }
 
-    func ledgerConnection(
-        manager _: LedgerConnectionManagerProtocol,
-        didDisconnect _: LedgerDeviceProtocol,
-        error _: Error?
-    ) {}
+    func ledgerConnection(manager: LedgerConnectionManagerProtocol, didReceive error: LedgerDiscoveryError) {
+        DispatchQueue.main.async { [weak self] in
+            self?.presenter?.didReceiveSetup(error: error)
+        }
+    }
 }

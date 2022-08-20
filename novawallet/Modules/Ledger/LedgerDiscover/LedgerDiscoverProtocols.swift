@@ -2,6 +2,8 @@ import Foundation
 
 protocol LedgerDiscoverViewProtocol: ControllerBackedProtocol {
     func didReceive(devices: [String])
+    func didStartLoading(at index: Int)
+    func didStopLoading(at index: Int)
 }
 
 protocol LedgerDiscoverPresenterProtocol: AnyObject {
@@ -16,6 +18,10 @@ protocol LedgerDiscoverInteractorInputProtocol: AnyObject {
 
 protocol LedgerDiscoverInteractorOutputProtocol: AnyObject {
     func didDiscover(device: LedgerDeviceProtocol)
+    func didReceiveConnection(result: Result<Void, Error>, for deviceId: UUID)
+    func didReceiveSetup(error: LedgerDiscoveryError)
 }
 
-protocol LedgerDiscoverWireframeProtocol: AnyObject {}
+protocol LedgerDiscoverWireframeProtocol: AlertPresentable, ErrorPresentable, ApplicationSettingsPresentable {
+    func showAccountSelection(from view: LedgerDiscoverViewProtocol?, for deviceId: UUID)
+}
