@@ -899,3 +899,8 @@
 "common.bluetooth.unauthorized.message" = "Пожалуйста, разрешите приложению использовать Bluetooth в Настройках.";
 "common.bluetooth.unauthorized.title" = "Разрешите использовать Bluetooth";
 "common.bluetooth.unknown.message" = "Пожалуйста, удостоверьтесь, что Bluetooth включен в Настройках.";
+"ledger.app.not.open.title" = "%@ приложение не запущено";
+"ledger.app.not.open.message" = "Пожалуйтса, откройте %@ приложение чтобы продолжить";
+"ledger.operation.title" = "Ledger операция";
+"ledger.operation.message.cancelled" = "Операция была отменена на устройстве";
+"ledger.operation.message.error" = "Операция завершилась ошибкой на устройстве. Пожалуйста, попробуйте позже.";

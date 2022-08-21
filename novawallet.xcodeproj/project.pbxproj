@@ -1265,6 +1265,7 @@
 		8490386B262E22DC0016D541 /* NominatorPayoutInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490386A262E22DC0016D541 /* NominatorPayoutInfoFactory.swift */; };
 		84906FEA28AFCC3F0049B57D /* LoadableStackCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FE928AFCC3F0049B57D /* LoadableStackCellView.swift */; };
 		84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */; };
+		84906FEF28B2C7090049B57D /* LedgerErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FEE28B2C7090049B57D /* LedgerErrorPresentable.swift */; };
 		849244922514EDE800477C1B /* SelectableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849244912514EDE800477C1B /* SelectableViewModel.swift */; };
 		84939B1826E1690D000111DA /* TreasuryDepositEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84939B1726E1690D000111DA /* TreasuryDepositEvent.swift */; };
 		8493D0DF26FE7D7400A28008 /* ChainRepositoryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8493D0DE26FE7D7400A28008 /* ChainRepositoryFactory.swift */; };
@@ -3821,6 +3822,7 @@
 		8490386A262E22DC0016D541 /* NominatorPayoutInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominatorPayoutInfoFactory.swift; sourceTree = "<group>"; };
 		84906FE928AFCC3F0049B57D /* LoadableStackCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableStackCellView.swift; sourceTree = "<group>"; };
 		84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableStackActionCell.swift; sourceTree = "<group>"; };
+		84906FEE28B2C7090049B57D /* LedgerErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerErrorPresentable.swift; sourceTree = "<group>"; };
 		849244912514EDE800477C1B /* SelectableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableViewModel.swift; sourceTree = "<group>"; };
 		84939B1726E1690D000111DA /* TreasuryDepositEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryDepositEvent.swift; sourceTree = "<group>"; };
 		8493D0DE26FE7D7400A28008 /* ChainRepositoryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRepositoryFactory.swift; sourceTree = "<group>"; };
@@ -7722,6 +7724,7 @@
 		848FD1A628AE314F00CCD9E2 /* Ledger */ = {
 			isa = PBXGroup;
 			children = (
+				84906FED28B2C6EC0049B57D /* Protocols */,
 				A95AB62112CBD476058A81F1 /* LedgerDiscover */,
 			);
 			path = Ledger;
@@ -8540,6 +8543,14 @@
 				8434C9E92540AE51009E4191 /* ExtrinsicEraTests.swift */,
 			);
 			path = Scale;
+			sourceTree = "<group>";
+		};
+		84906FED28B2C6EC0049B57D /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				84906FEE28B2C7090049B57D /* LedgerErrorPresentable.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		849244902514EDD900477C1B /* ViewModel */ = {
@@ -14034,6 +14045,7 @@
 				846A68292746234100D1A47A /* ChainConnection.swift in Sources */,
 				846F758327B54D7A00536547 /* EthereumOperationFactor+Protocol.swift in Sources */,
 				8487584127F0842D00495306 /* AddressQRMatcher.swift in Sources */,
+				84906FEF28B2C7090049B57D /* LedgerErrorPresentable.swift in Sources */,
 				84ADF6F3288DE99C00C25B40 /* NoKeysSigningWrapper.swift in Sources */,
 				AE398398272B62C100BC8A85 /* ChainAccountListSectionView.swift in Sources */,
 				84DED3EF26661CC600A153BB /* CrowdloanFlow.swift in Sources */,

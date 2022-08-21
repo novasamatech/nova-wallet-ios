@@ -12,6 +12,9 @@ final class LedgerDiscoverPresenter {
 
     let localizationManager: LocalizationManagerProtocol
 
+    // TODO: Provide user selected network
+    let networkName: String = "Polkadot"
+
     init(
         interactor: LedgerDiscoverInteractorInputProtocol,
         wireframe: LedgerDiscoverWireframeProtocol,
@@ -41,8 +44,27 @@ final class LedgerDiscoverPresenter {
         view?.didStopLoading(at: deviceIndex)
     }
 
-    private func handleAppConnection(error: Error) {
+    private func handleAppConnection(error: Error, deviceId: UUID) {
+        guard let view = view else {
+            return
+        }
 
+        if let ledgerError = error as? LedgerError {
+            wireframe.presentLedgerError(
+                on: view,
+                error: ledgerError,
+                networkName: networkName,
+                locale: localizationManager.selectedLocale
+            ) { [weak self] in
+                guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
+                    return
+                }
+
+                self?.selectDevice(at: deviceIndex)
+            }
+        } else {
+            _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
+        }
     }
 
     private func handleSetup(error: LedgerDiscoveryError) {
@@ -79,6 +101,8 @@ final class LedgerDiscoverPresenter {
 
 extension LedgerDiscoverPresenter: LedgerDiscoverPresenterProtocol {
     func setup() {
+        view?.didReceive(networkName: networkName)
+
         interactor.setup()
     }
 
@@ -112,7 +136,7 @@ extension LedgerDiscoverPresenter: LedgerDiscoverInteractorOutputProtocol {
         case .success:
             wireframe.showAccountSelection(from: view, for: deviceId)
         case let .failure(error):
-            handleAppConnection(error: error)
+            handleAppConnection(error: error, deviceId: deviceId)
         }
     }
 

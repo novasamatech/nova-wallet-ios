@@ -6,6 +6,8 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
 
     let presenter: LedgerDiscoverPresenterProtocol
 
+    private var networkName: String?
+
     init(presenter: LedgerDiscoverPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -36,7 +38,17 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
         let languages = selectedLocale.rLanguages
 
         rootView.headerView.valueTop.text = R.string.localizable.ledgerDiscoverTitle(preferredLanguages: languages)
-        rootView.headerView.valueBottom.text = R.string.localizable.ledgerDiscoverDetails(preferredLanguages: languages)
+
+        updateSubtitleLocalization()
+    }
+
+    private func updateSubtitleLocalization() {
+        if let networkName = networkName {
+            rootView.headerView.valueBottom.text = R.string.localizable.ledgerDiscoverDetails(
+                networkName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
     }
 
     private func updateActivityIndicator() {
@@ -61,6 +73,12 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
 }
 
 extension LedgerDiscoverViewController: LedgerDiscoverViewProtocol {
+    func didReceive(networkName: String) {
+        self.networkName = networkName
+
+        updateSubtitleLocalization()
+    }
+
     func didStartLoading(at index: Int) {
         rootView.cells[index].startLoading()
     }

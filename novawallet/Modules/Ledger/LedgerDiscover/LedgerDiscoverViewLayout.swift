@@ -3,13 +3,13 @@ import UIKit
 final class LedgerDiscoverViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 12.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 0.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
     }()
 
-    let headerView = MultiValueView.createTableHeaderView()
+    let headerView = MultiValueView.createTableHeaderView(with: .zero)
 
     let activityIndicator: UIActivityIndicatorView = .create { view in
         view.style = .medium

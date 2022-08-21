@@ -19,7 +19,11 @@ struct LedgerDiscoverViewFactory {
 
         let wireframe = LedgerDiscoverWireframe()
 
-        let presenter = LedgerDiscoverPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = LedgerDiscoverPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = LedgerDiscoverViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
 

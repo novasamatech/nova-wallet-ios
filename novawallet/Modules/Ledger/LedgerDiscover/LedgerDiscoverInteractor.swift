@@ -64,7 +64,7 @@ extension LedgerDiscoverInteractor: LedgerConnectionManagerDelegate {
         }
     }
 
-    func ledgerConnection(manager: LedgerConnectionManagerProtocol, didReceive error: LedgerDiscoveryError) {
+    func ledgerConnection(manager _: LedgerConnectionManagerProtocol, didReceive error: LedgerDiscoveryError) {
         DispatchQueue.main.async { [weak self] in
             self?.presenter?.didReceiveSetup(error: error)
         }

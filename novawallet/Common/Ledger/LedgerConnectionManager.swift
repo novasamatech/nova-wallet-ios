@@ -8,12 +8,6 @@ enum LedgerDiscoveryError: Error {
     case unavailable
 }
 
-enum LedgerConnectionError: Error {
-    case deviceNotFound
-    case deviceDisconnected
-    case deviceNoResponse
-}
-
 typealias LedgerResponseClosure = (Result<Data, Error>) -> Void
 
 protocol LedgerConnectionManagerProtocol: AnyObject {
@@ -103,7 +97,7 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
 
     func send(message: Data, deviceId: UUID, completion: LedgerResponseClosure?) throws {
         guard let centralManager = centralManager, let device = bluetoothDevice(id: deviceId) else {
-            throw LedgerConnectionError.deviceNotFound
+            throw LedgerError.deviceNotFound
         }
 
         centralManager.connect(device.peripheral, options: nil)
@@ -164,7 +158,7 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
 
         guard let device = bluetoothDevice(id: peripheral.identifier) else { return }
 
-        completeRequest(with: .failure(LedgerConnectionError.deviceDisconnected), device: device)
+        completeRequest(with: .failure(LedgerError.deviceDisconnected), device: device)
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -172,7 +166,7 @@ extension LedgerConnectionManager: CBCentralManagerDelegate {
 
         guard let device = bluetoothDevice(id: peripheral.identifier) else { return }
 
-        completeRequest(with: .failure(LedgerConnectionError.deviceDisconnected), device: device)
+        completeRequest(with: .failure(LedgerError.deviceDisconnected), device: device)
     }
 }
 
@@ -249,7 +243,6 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
         if supportedDeviceNotifyUuids.contains(characteristic.uuid) {
             if let error = error {
                 logger.error("Failed to update value for \(characteristic): \(error)")
-                device.responseCompletion?(.failure(error))
             }
 
             if let message = characteristic.value {
@@ -259,14 +252,19 @@ extension LedgerConnectionManager: CBPeripheralDelegate {
                     }
                 } catch {
                     device.transport.reset()
-                    completeRequest(with: .failure(error), device: device)
+                    completeRequest(with: .failure(LedgerError.internalTransport(error: error)), device: device)
                 }
             } else {
                 logger.error(
                     "Can't parse response for \(characteristic): \(String(describing: characteristic.value?.toHex()))"
                 )
 
-                completeRequest(with: .failure(LedgerConnectionError.deviceNoResponse), device: device)
+                if let error = error {
+                    completeRequest(with: .failure(LedgerError.internalTransport(error: error)), device: device)
+                } else {
+                    let error = LedgerError.unexpectedData("Unexpected empty response from device")
+                    completeRequest(with: .failure(error), device: device)
+                }
             }
         }
     }
