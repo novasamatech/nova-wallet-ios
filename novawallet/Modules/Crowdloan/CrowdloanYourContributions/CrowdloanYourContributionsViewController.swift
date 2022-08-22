@@ -51,9 +51,10 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 
         let subtitle: String
 
-        if let returnIn = returnInTimeIntervals.first(where: { $0.index == cellModel.index }) {
+        if let returnIn = returnInTimeIntervals.first(where: { $0.index == cellModel.index }),
+           let interval = returnIn.interval {
             subtitle = R.string.localizable.crowdloanReturnsInFormat(
-                returnIn.interval ?? "",
+                interval,
                 preferredLanguages: selectedLocale.rLanguages
             )
         } else {
