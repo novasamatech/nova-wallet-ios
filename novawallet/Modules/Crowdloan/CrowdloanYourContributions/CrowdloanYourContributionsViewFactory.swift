@@ -47,10 +47,11 @@ enum CrowdloanYourContributionsViewFactory {
 
         let wireframe = CrowdloanYourContributionsWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactoryFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
         let viewModelFactory = CrowdloanYourContributionsVMFactory(
             chainDateCalculator: ChainDateCalculator(),
             calendar: Calendar.current,
-            priceAssetInfoFactory: priceAssetInfoFactory
+            balanceViewModelFactoryFacade: balanceViewModelFactoryFacade
         )
 
         let presenter = CrowdloanYourContributionsPresenter(
@@ -60,6 +61,7 @@ enum CrowdloanYourContributionsViewFactory {
             wireframe: wireframe,
             timeFormatter: TotalTimeFormatter(),
             localizationManager: LocalizationManager.shared,
+            crowdloansCalculator: CrowdloansCalculator(),
             logger: Logger.shared
         )
 

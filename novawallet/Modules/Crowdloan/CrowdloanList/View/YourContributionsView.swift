@@ -45,16 +45,14 @@ final class YourContributionsView: UIView {
     }
 
     private func setupLayout() {
-        let titleView = UIView()
-        titleView.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints {
-            $0.top.bottom.leading.equalToSuperview()
-        }
-        titleView.addSubview(counterLabel)
-        counterLabel.snp.makeConstraints {
-            $0.leading.equalTo(titleLabel.snp.trailing).offset(Constants.counterTitleSpace)
-            $0.top.trailing.bottom.equalToSuperview()
-        }
+        let titleView = UIStackView(arrangedSubviews: [
+            titleLabel,
+            counterLabel
+        ])
+        titleView.spacing = Constants.counterTitleSpace
+        titleView.setContentHuggingPriority(.required, for: .horizontal)
+        titleView.setContentCompressionResistancePriority(.required, for: .horizontal)
+
         let contentStackView = UIStackView(arrangedSubviews: [
             titleView,
             amountLabel,
@@ -88,7 +86,7 @@ final class YourContributionsView: UIView {
 extension YourContributionsView {
     struct Model {
         let title: String
-        let count: String
+        let count: String?
         let amount: String
         let amountDetails: String
     }
@@ -96,8 +94,27 @@ extension YourContributionsView {
     func bind(model: Model) {
         titleLabel.text = model.title
         counterLabel.titleLabel.text = model.count
+        counterLabel.isHidden = model.count == nil
         amountLabel.text = model.amount
         amountDetailsLabel.text = model.amountDetails
+    }
+}
+
+// MARK: - Style
+
+extension YourContributionsView {
+    enum Style {
+        case navigation
+        case readonly
+    }
+
+    func apply(style: Style) {
+        switch style {
+        case .navigation:
+            navigationImageView.isHidden = false
+        case .readonly:
+            navigationImageView.isHidden = true
+        }
     }
 }
 
