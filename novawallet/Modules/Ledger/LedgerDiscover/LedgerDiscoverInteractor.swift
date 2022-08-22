@@ -33,6 +33,7 @@ extension LedgerDiscoverInteractor: LedgerDiscoverInteractorInputProtocol {
     }
 
     func connect(to deviceId: UUID) {
+        // TODO: Provide chainId based on user selected network
         let wrapper = ledgerApplication.getAccountWrapper(
             for: deviceId,
             chainId: KnowChainId.polkadot,
