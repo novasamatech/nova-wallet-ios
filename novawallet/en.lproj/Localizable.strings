@@ -39,7 +39,6 @@
 "profile.title" = "Settings";
 "profile.about.title" = "About";
 "profile.language.title" = "Language";
-"profile.currency.title" = "Currency";
 "about.version" = "App version";
 "about.contact.us" = "Contact Us";
 "about.title" = "About";
@@ -348,6 +347,7 @@
 "tabbar.crowdloan.title" = "Crowdloans";
 "crowdloan.list.section.format" = "Select parachains to contribute your %@. You will receive rewards if the parachain acquires a slot by the end of the auction.";
 "crowdloan.you.contributions.title" = "Your contributions";
+"crowdloan.you.contributions.total" = "Total";
 "crowdloan.about.crowdloans" = "About crowdloans";
 "crowdloan.progress.format" = "Raised: %@ of %@";
 "crowdloan.empty.message" = "Information about crowdloans\n will appear here";
@@ -857,10 +857,6 @@
 "common.address.scan.message" = "Scan QR code with the address";
 "common.watch.only" = "Watch-only";
 "common.invalid.address.format" = "Invalid %@ address";
-"currency.title" = "Currency";
-"currency.category.fiat" = "Fiat currencies";
-"currency.category.popularFiat" = "Popular fiat currencies";
-"currency.category.cryptocurrencies" = "Cryptocurrencies";
 "common.signing.not.supported.title" = "Signing is not supported";
 "common.parity.signer.not.supported.message" = "Parity Signer does not support signing arbitrary messages — only transactions";
 "parity.signer.tx.scan.invalid.title" = "QR code is invalid";
@@ -891,6 +887,11 @@
 "common.scan.qr.code" = "Scan QR code";
 "parity.signer.address.scan.error" = "Can't extract address from the QR code";
 "common.unsupported.qr.code" = "QR code has unsupported format";
+"currency.title" = "Currency";
+"currency.category.fiat" = "Fiat currencies";
+"currency.category.popularFiat" = "Popular fiat currencies";
+"currency.category.cryptocurrencies" = "Cryptocurrencies";
+"profile.currency.title" = "Currency";
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Selected hardware wallet";
 "ledger.discover.title" = "Select your Ledger device";

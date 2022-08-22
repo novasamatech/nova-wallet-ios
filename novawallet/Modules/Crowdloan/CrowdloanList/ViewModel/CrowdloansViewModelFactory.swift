@@ -17,6 +17,8 @@ protocol CrowdloansViewModelFactoryProtocol {
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
         externalContributionsCount: Int,
+        amount: Decimal?,
+        priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel
 }
@@ -39,6 +41,7 @@ final class CrowdloansViewModelFactory {
     }
 
     let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
     private lazy var percentFormatter = NumberFormatter.percent
@@ -47,9 +50,11 @@ final class CrowdloansViewModelFactory {
     }()
 
     init(
-        amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
+        amountFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
     ) {
         self.amountFormatterFactory = amountFormatterFactory
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 
     private func createCommonContent(
@@ -326,17 +331,10 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
 
         let imageViewModel = RemoteImageViewModel(url: asset.icon ?? chain.icon)
 
-        let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
-            displayInfo.symbol,
-            preferredLanguages: locale.rLanguages
-        )
-
         return CrowdloansChainViewModel(
             networkName: chain.name,
             balance: amount,
-            imageViewModel: imageViewModel,
-            title: R.string.localizable.crowdloanAboutCrowdloans(preferredLanguages: locale.rLanguages),
-            description: description
+            imageViewModel: imageViewModel
         )
     }
 
@@ -345,6 +343,8 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
         externalContributionsCount: Int,
+        amount: Decimal?,
+        priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel {
         let timeFormatter = TotalTimeFormatter()
@@ -376,18 +376,57 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             .compactMap { hasContribution(in: $0, viewInfo: viewInfo) }
             .filter { $0 }
         let allContributionsCount = contributions.count + externalContributionsCount
-        let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
+
+        guard let amount = amount else {
+            return .init(sections: crowdloansSections)
+        }
+
+        let contributionSection = amount > 0 ? createYourContributionsSection(
+            chainAsset: chainAsset,
+            contributions: allContributionsCount,
+            amount: amount,
+            priceData: priceData,
+            locale: locale
+        ) : createAboutSection(chainAsset: chainAsset, locale: locale)
+
+        return .init(sections: [contributionSection] + crowdloansSections)
+    }
+
+    private func createAboutSection(chainAsset: ChainAssetDisplayInfo, locale: Locale) -> CrowdloansSection {
+        let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
+            chainAsset.asset.symbol,
             preferredLanguages: locale.rLanguages
         )
 
-        let sections: [CrowdloansSection] =
-            (allContributionsCount > 0 ?
-                [.yourContributions(contributionsTitle, allContributionsCount)]
-                : [])
-            + crowdloansSections
-
-        return CrowdloansViewModel(
-            sections: sections
+        let model = AboutCrowdloansView.Model(
+            title: R.string.localizable.crowdloanAboutCrowdloans(preferredLanguages: locale.rLanguages),
+            subtitle: description
         )
+        return .about(model)
+    }
+
+    private func createYourContributionsSection(
+        chainAsset: ChainAssetDisplayInfo,
+        contributions: Int,
+        amount: Decimal,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> CrowdloansSection {
+        let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
+            preferredLanguages: locale.rLanguages
+        )
+        let balance = balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: chainAsset.asset,
+            amount: amount,
+            priceData: priceData
+        ).value(for: locale)
+
+        let model = YourContributionsView.Model(
+            title: contributionsTitle,
+            count: "\(contributions)",
+            amount: balance.amount,
+            amountDetails: balance.price ?? ""
+        )
+        return .yourContributions(model)
     }
 }
