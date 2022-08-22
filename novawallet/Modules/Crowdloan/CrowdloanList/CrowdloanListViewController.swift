@@ -73,7 +73,8 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
     }
 
     func configure() {
-        rootView.tableView.registerClassForCell(YourCrowdloansTableViewCell.self)
+        rootView.tableView.registerClassForCell(YourContributionsTableViewCell.self)
+        rootView.tableView.registerClassForCell(AboutCrowdloansTableViewCell.self)
         rootView.tableView.registerClassForCell(CrowdloanTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
         rootView.tableView.dataSource = self
@@ -149,12 +150,12 @@ extension CrowdloanListViewController: UITableViewDataSource {
         case let .loaded(viewModel):
             let sectionModel = viewModel.sections[section]
             switch sectionModel {
-            case .yourContributions:
-                return 1
             case let .active(_, cellViewModels):
                 return cellViewModels.count
             case let .completed(_, cellViewModels):
                 return cellViewModels.count
+            case .yourContributions, .about:
+                return 1
             }
         case .loading, .empty, .error:
             return 0
@@ -166,14 +167,18 @@ extension CrowdloanListViewController: UITableViewDataSource {
         case let .loaded(viewModel):
             let sectionModel = viewModel.sections[indexPath.section]
             switch sectionModel {
-            case let .yourContributions(title, contrubutionsCount):
-                let cell = tableView.dequeueReusableCellWithType(YourCrowdloansTableViewCell.self)!
-                cell.bind(title: title, count: contrubutionsCount)
-                return cell
             case let .active(_, cellViewModels), let .completed(_, cellViewModels):
                 let cell = tableView.dequeueReusableCellWithType(CrowdloanTableViewCell.self)!
                 let cellViewModel = cellViewModels[indexPath.row]
                 cell.bind(viewModel: cellViewModel)
+                return cell
+            case let .yourContributions(model):
+                let cell = tableView.dequeueReusableCellWithType(YourContributionsTableViewCell.self)!
+                cell.view.bind(model: model)
+                return cell
+            case let .about(model):
+                let cell = tableView.dequeueReusableCellWithType(AboutCrowdloansTableViewCell.self)!
+                cell.view.bind(model: model)
                 return cell
             }
         case .loading, .empty, .error:
