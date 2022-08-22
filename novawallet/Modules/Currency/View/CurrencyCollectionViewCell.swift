@@ -6,7 +6,14 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
 
     private let symbolLabel: BorderedLabelView = .create {
         $0.titleLabel.textAlignment = .center
-        $0.contentInsets = Constants.symbolContentInsets
+        $0.titleLabel.font = .systemFont(ofSize: 13)
+        $0.titleLabel.textColor = Colors.colorWhite64()
+        $0.contentInsets = Constants.Symbol.contentInsets
+        $0.backgroundView.cornerRadius = Constants.Symbol.cornerRadius
+        $0.backgroundView.strokeWidth = Constants.Symbol.borderWidth
+        $0.backgroundView.strokeColor = Colors.colorWhite16()!
+        $0.backgroundView.fillColor = Colors.colorWhite8()!
+        $0.backgroundView.highlightedFillColor = Colors.colorWhite8()!
     }
 
     private let titleLabel: UILabel = .create {
@@ -33,6 +40,8 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
         let textStackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         textStackView.axis = .vertical
         textStackView.alignment = .leading
+        titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        titleLabel.setContentHuggingPriority(.required, for: .vertical)
 
         contentView.addSubview(symbolLabel)
         contentView.addSubview(textStackView)
@@ -41,8 +50,8 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
         symbolLabel.snp.makeConstraints {
             $0.leading.equalToSuperview()
             $0.centerY.equalToSuperview()
-            $0.width.equalTo(Constants.symbolLabelSize.width)
-            $0.height.equalTo(Constants.symbolLabelSize.height)
+            $0.width.equalTo(Constants.Symbol.labelSize.width)
+            $0.height.equalTo(Constants.Symbol.labelSize.height)
         }
 
         textStackView.snp.makeConstraints {
@@ -88,10 +97,14 @@ extension CurrencyCollectionViewCell {
 
 extension CurrencyCollectionViewCell {
     private enum Constants {
-        static let symbolLabelSize = CGSize(width: 40, height: 28)
         static let radioSelectorSize: CGFloat = 20
         static let itemsHorizontalOffset: CGFloat = 16
         static let contentVeritcalOffset: CGFloat = 9
-        static let symbolContentInsets = UIEdgeInsets.zero
+        enum Symbol {
+            static let contentInsets = UIEdgeInsets(top: 5, left: 0, bottom: 7, right: 0)
+            static let cornerRadius: CGFloat = 8
+            static let borderWidth: CGFloat = 0.5
+            static let labelSize = CGSize(width: 40, height: 28)
+        }
     }
 }
