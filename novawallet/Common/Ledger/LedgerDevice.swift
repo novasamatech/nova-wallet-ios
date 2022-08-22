@@ -8,7 +8,6 @@ protocol LedgerDeviceProtocol {
 
 final class BluetoothLedgerDevice: LedgerDeviceProtocol {
     typealias WriteCommand = () -> Void
-    typealias ResponseCompletion = (Result<Data, Error>) -> Void
 
     let peripheral: CBPeripheral
 
@@ -25,7 +24,7 @@ final class BluetoothLedgerDevice: LedgerDeviceProtocol {
     var notifyCharacteristic: CBCharacteristic?
 
     var writeCommand: WriteCommand?
-    var responseCompletion: ResponseCompletion?
+    var responseCompletion: LedgerResponseClosure?
 
     let transport = LedgerTransport()
 
