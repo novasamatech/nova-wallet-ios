@@ -70,7 +70,7 @@ final class CrowdloanYourContributionsTests: XCTestCase {
         wait(for: [reloadModelExpectation, returnInIntervalsExpectation], timeout: 10)
         
         XCTAssertNotNil(viewModel)
-        print(viewModel!.sections.count)
+        
         let contributions = CrowdloanYourContributionsSection.contributions.get(viewModel!.sections[1])
         XCTAssertEqual(contributions?.count, 2)
         XCTAssertEqual(returnInIntervals.compactMap { $0.interval }.count, 2)
