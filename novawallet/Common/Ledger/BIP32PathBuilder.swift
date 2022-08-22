@@ -18,7 +18,7 @@ final class LedgerPathBuilder {
             numericJunction = value
         }
 
-        pathData.append(contentsOf: numericJunction.bigEndianBytes)
+        pathData.append(contentsOf: numericJunction.littleEndianBytes)
 
         return self
     }
