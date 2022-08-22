@@ -7,7 +7,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
     let presenter: CrowdloanYourContributionsPresenterProtocol
 
     private var viewModel: CrowdloanYourContributionsViewModel?
-    private var returnInTimeIntervals: [FormattedReturnInIntervalsViewModel?]?
+    private var returnInTimeIntervals: [FormattedReturnInIntervalsViewModel]?
 
     init(
         presenter: CrowdloanYourContributionsPresenterProtocol,
@@ -51,9 +51,9 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 
         let subtitle: String
 
-        if let returnIn = returnInTimeIntervals.first(where: { $0?.index == cellModel.index }) {
+        if let returnIn = returnInTimeIntervals.first(where: { $0.index == cellModel.index }) {
             subtitle = R.string.localizable.crowdloanReturnsInFormat(
-                returnIn?.interval ?? "",
+                returnIn.interval ?? "",
                 preferredLanguages: selectedLocale.rLanguages
             )
         } else {
@@ -72,7 +72,7 @@ extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsVi
         rootView.tableView.reloadData()
     }
 
-    func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel?]) {
+    func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel]) {
         returnInTimeIntervals = returnInIntervals
 
         rootView.tableView.visibleCells.forEach { cell in

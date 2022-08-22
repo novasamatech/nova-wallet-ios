@@ -3,7 +3,7 @@ import Foundation
 
 protocol CrowdloanYourContributionsViewProtocol: ControllerBackedProtocol {
     func reload(model: CrowdloanYourContributionsViewModel)
-    func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel?])
+    func reload(returnInIntervals: [FormattedReturnInIntervalsViewModel])
 }
 
 protocol CrowdloanYourContributionsPresenterProtocol: AnyObject {
