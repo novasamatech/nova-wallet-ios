@@ -4,6 +4,12 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
     let view: TContentView = .init()
     let backgroundBlurView = TriangularedBlurView()
 
+    var contentInsets: UIEdgeInsets = .init(top: 0, left: 16, bottom: 0, right: 16) {
+        didSet {
+            updateLayout()
+        }
+    }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -23,19 +29,30 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
 
     private func setupLayout() {
         contentView.addSubview(backgroundBlurView)
-        backgroundBlurView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
+        backgroundBlurView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(contentInsets)
         }
 
         backgroundBlurView.addSubview(view)
-        view.snp.makeConstraints { make in
-            make.leading.top.trailing.bottom.equalToSuperview()
+        view.snp.makeConstraints {
+            $0.leading.top.trailing.bottom.equalToSuperview()
+        }
+    }
+
+    private func updateLayout() {
+        backgroundBlurView.snp.updateConstraints {
+            $0.edges.equalToSuperview().inset(contentInsets)
         }
     }
 }
 
 final class YourContributionsTableViewCell: BlurredTableViewCell<YourContributionsView> {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        view.apply(style: .navigation)
+    }
+
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 

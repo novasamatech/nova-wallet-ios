@@ -2,7 +2,7 @@ import Foundation
 
 protocol CrowdloansCalculatorProtocol {
     func calculateTotal(
-        chain: ChainModel,
+        precision: Int16?,
         contributions: CrowdloanContributionDict,
         externalContributions: [ExternalContribution]?
     ) -> Decimal?
@@ -10,11 +10,11 @@ protocol CrowdloansCalculatorProtocol {
 
 final class CrowdloansCalculator: CrowdloansCalculatorProtocol {
     func calculateTotal(
-        chain: ChainModel,
+        precision: Int16?,
         contributions: CrowdloanContributionDict,
         externalContributions: [ExternalContribution]?
     ) -> Decimal? {
-        guard let precision = chain.utilityAsset()?.precision else {
+        guard let precision = precision else {
             return nil
         }
 
@@ -22,6 +22,6 @@ final class CrowdloansCalculator: CrowdloansCalculatorProtocol {
         let externalContributionsBalance = externalContributions?.reduce(0) { $0 + $1.amount } ?? 0
         let total = balance + externalContributionsBalance
 
-        return Decimal.fromSubstrateAmount(total, precision: Int16(precision))
+        return Decimal.fromSubstrateAmount(total, precision: precision)
     }
 }

@@ -179,7 +179,7 @@ final class CrowdloanListPresenter {
             let amount: Decimal?
             if let contributionsResult = try contributionsResult?.get() {
                 amount = crowdloansCalculator.calculateTotal(
-                    chain: chain,
+                    precision: chain.utilityAsset().map { Int16($0.precision) },
                     contributions: contributionsResult,
                     externalContributions: externalContributions ?? []
                 )
