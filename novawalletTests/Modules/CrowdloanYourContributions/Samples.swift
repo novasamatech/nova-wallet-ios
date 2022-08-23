@@ -4,7 +4,7 @@ import BigInt
 @testable import novawallet
 
 extension Crowdloan {
-    static let currentBlockNumber: BlockNumber = 1337
+    static let currentBlockNumber: BlockNumber = 403200 * 101
  
     static let ended = Crowdloan(
         paraId: 2001,
@@ -13,11 +13,11 @@ extension Crowdloan {
             verifier: nil,
             deposit: 100,
             raised: 1000,
-            end: currentBlockNumber,
+            end: 100,
             cap: 1000,
             lastContribution: .never,
-            firstPeriod: 100,
-            lastPeriod: 101,
+            firstPeriod: 0,
+            lastPeriod: 1,
             trieIndex: nil,
             fundIndex: StringScaleMapper(value: 2)
         )
