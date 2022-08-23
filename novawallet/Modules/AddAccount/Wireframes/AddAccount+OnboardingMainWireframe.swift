@@ -47,12 +47,12 @@ extension AddAccount {
         }
 
         func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?) {
-            guard let ledgerDiscoverView = LedgerDiscoverViewFactory.createView() else {
+            guard let ledgerNetworkSelection = LedgerNetworkSelectionViewFactory.createView() else {
                 return
             }
 
             view?.controller.navigationController?.pushViewController(
-                ledgerDiscoverView.controller,
+                ledgerNetworkSelection.controller,
                 animated: true
             )
         }
