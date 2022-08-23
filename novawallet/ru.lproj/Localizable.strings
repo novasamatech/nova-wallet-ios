@@ -905,3 +905,6 @@
 "ledger.operation.title" = "Ledger операция";
 "ledger.operation.message.cancelled" = "Операция была отменена на устройстве";
 "ledger.operation.message.error" = "Операция завершилась ошибкой на устройстве. Пожалуйста, попробуйте позже.";
+"ledger.accounts.title" = "Добавьте аккаунты в Ваш кошелёк";
+"ledger.accounts.subtitle" = "Убедитесь, что приложение сети установлено на вашем Ledger устройстве через приложение Ledger Live. Откройте приложение сети на вашем Ledger устройстве.";
+"ledger.accounts.button.add" = "Добавьте аккаунт";
