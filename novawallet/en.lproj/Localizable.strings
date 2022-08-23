@@ -895,7 +895,7 @@
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Selected hardware wallet";
 "ledger.discover.title" = "Select your Ledger device";
-"ledger.discover.details" = "Please enable Bluetooth in your phone settings. Open the %@ app on your Ledger device ";
+"ledger.discover.details" = "Please enable Bluetooth in your phone settings. Open the %@ app on your Ledger device.";
 "common.bluetooth.unsupported.message" = "Unfortunatelly, Bluetooth is not supported by your device.";
 "common.bluetooth.unauthorized.message" = "Please, enable access to Bluetooth in the Settings.";
 "common.bluetooth.unauthorized.title" = "Bluetooth Unauthorized";

@@ -3,17 +3,20 @@ import UIKit
 final class LedgerDiscoverInteractor {
     weak var presenter: LedgerDiscoverInteractorOutputProtocol?
 
+    let chain: ChainModel
     let ledgerConnection: LedgerConnectionManagerProtocol
     let ledgerApplication: LedgerApplicationProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
+        chain: ChainModel,
         ledgerApplication: LedgerApplicationProtocol,
         ledgerConnection: LedgerConnectionManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.chain = chain
         self.ledgerApplication = ledgerApplication
         self.ledgerConnection = ledgerConnection
         self.operationQueue = operationQueue
@@ -33,10 +36,9 @@ extension LedgerDiscoverInteractor: LedgerDiscoverInteractorInputProtocol {
     }
 
     func connect(to deviceId: UUID) {
-        // TODO: Provide chainId based on user selected network
         let wrapper = ledgerApplication.getAccountWrapper(
             for: deviceId,
-            chainId: KnowChainId.polkadot,
+            chainId: chain.chainId,
             index: 0
         )
 
