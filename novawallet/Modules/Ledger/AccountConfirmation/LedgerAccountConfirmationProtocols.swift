@@ -2,6 +2,7 @@ import Foundation
 
 protocol LedgerAccountConfirmationViewProtocol: ControllerBackedProtocol {
     func didAddAccount(viewModel: LedgerAccountViewModel)
+    func didReceive(networkViewModel: NetworkViewModel)
     func didStartLoading()
     func didStopLoading()
 }

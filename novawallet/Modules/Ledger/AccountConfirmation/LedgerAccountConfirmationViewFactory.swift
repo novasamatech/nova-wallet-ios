@@ -34,7 +34,10 @@ struct LedgerAccountConfirmationViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = LedgerAccountConfirmationViewController(presenter: presenter)
+        let view = LedgerAccountConfirmationViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
