@@ -1,9 +1,11 @@
 import Foundation
+import SoraFoundation
 
 final class LedgerNetworkSelectionPresenter {
     weak var view: LedgerNetworkSelectionViewProtocol?
     let wireframe: LedgerNetworkSelectionWireframeProtocol
     let interactor: LedgerNetworkSelectionInteractorInputProtocol
+    let localizationManager: LocalizationManagerProtocol
 
     private var chainAccounts: [LedgerChainAccount] = []
 
@@ -11,15 +13,19 @@ final class LedgerNetworkSelectionPresenter {
 
     init(
         interactor: LedgerNetworkSelectionInteractorInputProtocol,
-        wireframe: LedgerNetworkSelectionWireframeProtocol
+        wireframe: LedgerNetworkSelectionWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.localizationManager = localizationManager
     }
 
     private func updateView() {
         let viewModels: [ChainAccountAddViewModel] = chainAccounts.map { chainAccount in
-            let displayAddressViewModel = chainAccount.address.map { displayAddressViewModelFactory.createViewModel(from: $0) }
+            let displayAddressViewModel = chainAccount.address.map { address in
+                displayAddressViewModelFactory.createViewModel(from: address)
+            }
 
             let chainAccountViewModel = ChainAccountViewModel(
                 networkName: chainAccount.chain.name,
@@ -44,6 +50,19 @@ extension LedgerNetworkSelectionPresenter: LedgerNetworkSelectionPresenterProtoc
 
         guard !chainAccount.exists else {
             return
+        }
+    }
+
+    func cancel() {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentCancelOperation(
+            from: view,
+            locale: localizationManager.selectedLocale
+        ) { [weak self, weak view] in
+            self?.wireframe.close(view: view)
         }
     }
 }

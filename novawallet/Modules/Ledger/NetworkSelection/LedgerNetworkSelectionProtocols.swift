@@ -5,6 +5,7 @@ protocol LedgerNetworkSelectionViewProtocol: ControllerBackedProtocol {
 protocol LedgerNetworkSelectionPresenterProtocol: AnyObject {
     func setup()
     func selectChainAccount(at index: Int)
+    func cancel()
 }
 
 protocol LedgerNetworkSelectionInteractorInputProtocol: AnyObject {
@@ -15,6 +16,7 @@ protocol LedgerNetworkSelectionInteractorOutputProtocol: AnyObject {
     func didReceive(chainAccounts: [LedgerChainAccount])
 }
 
-protocol LedgerNetworkSelectionWireframeProtocol: AnyObject {
+protocol LedgerNetworkSelectionWireframeProtocol: AlertPresentable, CancelOperationPresentable {
     func showLedgerDiscovery(from view: LedgerNetworkSelectionViewProtocol?, chain: ChainModel)
+    func close(view: LedgerNetworkSelectionViewProtocol?)
 }
