@@ -28,7 +28,9 @@ final class LedgerAccountConfirmationInteractor {
     }
 
     private func verify(responseAddress: AccountAddress, expectedAddress: AccountAddress, index: UInt32) {
-        if responseAddress == expectedAddress, let accountId = try? responseAddress.toAccountId(using: chain.chainFormat) {
+        if
+            responseAddress == expectedAddress,
+            let accountId = try? responseAddress.toAccountId(using: chain.chainFormat) {
             let chainAccount = LedgerChainAccount(chain: chain, accountId: accountId)
             accountsStore.add(chainAccount: chainAccount)
 

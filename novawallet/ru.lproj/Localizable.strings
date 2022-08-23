@@ -908,3 +908,5 @@
 "ledger.accounts.title" = "Добавьте аккаунты в Ваш кошелёк";
 "ledger.accounts.subtitle" = "Убедитесь, что приложение сети установлено на вашем Ledger устройстве через приложение Ledger Live. Откройте приложение сети на вашем Ledger устройстве.";
 "ledger.accounts.button.add" = "Добавьте аккаунт";
+"ledger.account.confirm.title" = "Выберите аккаунты для добавления в кошелёк";
+"common.load.more.accounts" = "Загрузить больше аккаунтов";
