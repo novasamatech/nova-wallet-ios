@@ -13,6 +13,7 @@ final class LedgerAccountConfirmationPresenter {
     private var accounts: [LedgerAccountAmount] = []
 
     private lazy var iconGenerator = PolkadotIconGenerator()
+    private lazy var networkViewModelFactory = NetworkViewModelFactory()
 
     init(
         interactor: LedgerAccountConfirmationInteractorInputProtocol,
@@ -61,6 +62,11 @@ final class LedgerAccountConfirmationPresenter {
         view?.didAddAccount(viewModel: viewModel)
     }
 
+    private func provideNetworkViewModel() {
+        let networkViewModel = networkViewModelFactory.createViewModel(from: chain)
+        view?.didReceive(networkViewModel: networkViewModel)
+    }
+
     private func handle(error: Error, retryClosure: @escaping () -> Void) {
         guard let view = view else {
             return
@@ -82,6 +88,7 @@ final class LedgerAccountConfirmationPresenter {
 
 extension LedgerAccountConfirmationPresenter: LedgerAccountConfirmationPresenterProtocol {
     func setup() {
+        provideNetworkViewModel()
         performLoadNext()
     }
 
