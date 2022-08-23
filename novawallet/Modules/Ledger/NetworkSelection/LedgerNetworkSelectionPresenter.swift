@@ -51,6 +51,8 @@ extension LedgerNetworkSelectionPresenter: LedgerNetworkSelectionPresenterProtoc
         guard !chainAccount.exists else {
             return
         }
+
+        wireframe.showLedgerDiscovery(from: view, chain: chainAccount.chain)
     }
 
     func cancel() {
