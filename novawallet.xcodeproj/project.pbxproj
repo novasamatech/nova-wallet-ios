@@ -954,6 +954,7 @@
 		846B749528B422C800C39B93 /* ChainAccountAddViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846B749428B422C800C39B93 /* ChainAccountAddViewModel.swift */; };
 		846B749828B4BA0500C39B93 /* LedgerAccountsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846B749728B4BA0500C39B93 /* LedgerAccountsStore.swift */; };
 		846B749A28B4BA1700C39B93 /* LedgerChainAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846B749928B4BA1700C39B93 /* LedgerChainAccount.swift */; };
+		846B749C28B4D3B400C39B93 /* CancelOperationPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846B749B28B4D3B400C39B93 /* CancelOperationPresentable.swift */; };
 		846C372E26B199D10098F303 /* BabeStakingDurationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846C372D26B199D10098F303 /* BabeStakingDurationFactory.swift */; };
 		846CA7722707A3060011124C /* SingleToMultiasset.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 846CA7712707A3060011124C /* SingleToMultiasset.xcmappingmodel */; };
 		846CA778270911920011124C /* StakingLocalSubscriptionFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CA777270911920011124C /* StakingLocalSubscriptionFactoryStub.swift */; };
@@ -3525,6 +3526,7 @@
 		846B749428B422C800C39B93 /* ChainAccountAddViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountAddViewModel.swift; sourceTree = "<group>"; };
 		846B749728B4BA0500C39B93 /* LedgerAccountsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAccountsStore.swift; sourceTree = "<group>"; };
 		846B749928B4BA1700C39B93 /* LedgerChainAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerChainAccount.swift; sourceTree = "<group>"; };
+		846B749B28B4D3B400C39B93 /* CancelOperationPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelOperationPresentable.swift; sourceTree = "<group>"; };
 		846C372D26B199D10098F303 /* BabeStakingDurationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabeStakingDurationFactory.swift; sourceTree = "<group>"; };
 		846CA7712707A3060011124C /* SingleToMultiasset.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = SingleToMultiasset.xcmappingmodel; sourceTree = "<group>"; };
 		846CA777270911920011124C /* StakingLocalSubscriptionFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingLocalSubscriptionFactoryStub.swift; sourceTree = "<group>"; };
@@ -8141,6 +8143,7 @@
 				840DFF5428942CA9001B11EA /* ChainAddressDetailsPresentable.swift */,
 				840DFF56289482F5001B11EA /* ActionsManagePresentable.swift */,
 				84282289289B1E5C00163031 /* TableHeaderLayoutUpdatable.swift */,
+				846B749B28B4D3B400C39B93 /* CancelOperationPresentable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -12909,6 +12912,7 @@
 				84DED4032666537600A153BB /* CrowdloanBonusService.swift in Sources */,
 				844EFB5A265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift in Sources */,
 				AE8B8837267351E300AB0AA9 /* CustomValidatorListComposer.swift in Sources */,
+				846B749C28B4D3B400C39B93 /* CancelOperationPresentable.swift in Sources */,
 				846E5018277AD3D50049B659 /* DAppList.swift in Sources */,
 				845E49832636C87B002F8C22 /* ActionManageViewModel.swift in Sources */,
 				8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */,

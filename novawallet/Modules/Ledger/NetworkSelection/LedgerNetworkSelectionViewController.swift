@@ -28,6 +28,7 @@ final class LedgerNetworkSelectionViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupTableView()
+        setupNavigationItem()
         setupLocalization()
         updateActionButton()
 
@@ -38,7 +39,9 @@ final class LedgerNetworkSelectionViewController: UIViewController, ViewHolder {
         let languages = selectedLocale.rLanguages
 
         rootView.headerView.valueTop.text = R.string.localizable.ledgerAccountsTitle(preferredLanguages: languages)
-        rootView.headerView.valueBottom.text = R.string.localizable.ledgerAccountsSubtitle(preferredLanguages: languages)
+        rootView.headerView.valueBottom.text = R.string.localizable.ledgerAccountsSubtitle(
+            preferredLanguages: languages
+        )
 
         updateActionButton()
     }
@@ -70,6 +73,17 @@ final class LedgerNetworkSelectionViewController: UIViewController, ViewHolder {
         }
 
         rootView.actionButton.invalidateLayout()
+    }
+
+    private func setupNavigationItem() {
+        navigationItem.leftBarButtonItem = rootView.backButton
+
+        rootView.backButton.target = self
+        rootView.backButton.action = #selector(actionCancel)
+    }
+
+    @objc private func actionCancel() {
+        presenter.cancel()
     }
 }
 

@@ -19,7 +19,11 @@ struct LedgerNetworkSelectionViewFactory {
         let interactor = LedgerNetworkSelectionInteractor(accountsStore: ledgerAccountsStore)
         let wireframe = LedgerNetworkSelectionWireframe(accountsStore: ledgerAccountsStore)
 
-        let presenter = LedgerNetworkSelectionPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = LedgerNetworkSelectionPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = LedgerNetworkSelectionViewController(
             presenter: presenter,
