@@ -7,7 +7,16 @@ final class LedgerNetworkSelectionWireframe: LedgerNetworkSelectionWireframeProt
         self.accountsStore = accountsStore
     }
 
-    func showLedgerDiscovery(from _: LedgerNetworkSelectionViewProtocol?, chain _: ChainModel) {}
+    func showLedgerDiscovery(from view: LedgerNetworkSelectionViewProtocol?, chain: ChainModel) {
+        guard let ledgerDiscovery = LedgerDiscoverViewFactory.createView(
+            chain: chain,
+            accountsStore: accountsStore
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(ledgerDiscovery.controller, animated: true)
+    }
 
     func close(view: LedgerNetworkSelectionViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)

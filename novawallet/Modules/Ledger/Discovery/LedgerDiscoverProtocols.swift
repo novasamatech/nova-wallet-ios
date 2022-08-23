@@ -25,5 +25,5 @@ protocol LedgerDiscoverInteractorOutputProtocol: AnyObject {
 
 protocol LedgerDiscoverWireframeProtocol: AlertPresentable, ErrorPresentable, ApplicationSettingsPresentable,
     CommonRetryable, LedgerErrorPresentable {
-    func showAccountSelection(from view: LedgerDiscoverViewProtocol?, for deviceId: UUID)
+    func showAccountSelection(from view: LedgerDiscoverViewProtocol?, chain: ChainModel, deviceId: UUID)
 }

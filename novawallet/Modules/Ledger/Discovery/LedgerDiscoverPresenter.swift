@@ -5,6 +5,7 @@ final class LedgerDiscoverPresenter {
     weak var view: LedgerDiscoverViewProtocol?
     let wireframe: LedgerDiscoverWireframeProtocol
     let interactor: LedgerDiscoverInteractorInputProtocol
+    let chain: ChainModel
 
     private var devices: [LedgerDeviceProtocol] = []
 
@@ -12,14 +13,13 @@ final class LedgerDiscoverPresenter {
 
     let localizationManager: LocalizationManagerProtocol
 
-    // TODO: Provide user selected network
-    let networkName: String = "Polkadot"
-
     init(
+        chain: ChainModel,
         interactor: LedgerDiscoverInteractorInputProtocol,
         wireframe: LedgerDiscoverWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
+        self.chain = chain
         self.interactor = interactor
         self.wireframe = wireframe
         self.localizationManager = localizationManager
@@ -53,7 +53,7 @@ final class LedgerDiscoverPresenter {
             wireframe.presentLedgerError(
                 on: view,
                 error: ledgerError,
-                networkName: networkName,
+                networkName: chain.name,
                 locale: localizationManager.selectedLocale
             ) { [weak self] in
                 guard let deviceIndex = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
@@ -101,7 +101,7 @@ final class LedgerDiscoverPresenter {
 
 extension LedgerDiscoverPresenter: LedgerDiscoverPresenterProtocol {
     func setup() {
-        view?.didReceive(networkName: networkName)
+        view?.didReceive(networkName: chain.name)
 
         interactor.setup()
     }
@@ -134,7 +134,7 @@ extension LedgerDiscoverPresenter: LedgerDiscoverInteractorOutputProtocol {
 
         switch result {
         case .success:
-            wireframe.showAccountSelection(from: view, for: deviceId)
+            wireframe.showAccountSelection(from: view, chain: chain, deviceId: deviceId)
         case let .failure(error):
             handleAppConnection(error: error, deviceId: deviceId)
         }
