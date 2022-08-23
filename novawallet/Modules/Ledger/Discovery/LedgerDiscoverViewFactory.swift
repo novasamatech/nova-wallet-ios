@@ -18,7 +18,7 @@ struct LedgerDiscoverViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = LedgerDiscoverWireframe(accountsStore: accountsStore)
+        let wireframe = LedgerDiscoverWireframe(accountsStore: accountsStore, application: ledgerApplication)
 
         let presenter = LedgerDiscoverPresenter(
             chain: chain,
