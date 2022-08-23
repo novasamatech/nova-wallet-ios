@@ -8,4 +8,8 @@ final class LedgerNetworkSelectionWireframe: LedgerNetworkSelectionWireframeProt
     }
 
     func showLedgerDiscovery(from _: LedgerNetworkSelectionViewProtocol?, chain _: ChainModel) {}
+
+    func close(view: LedgerNetworkSelectionViewProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
+    }
 }

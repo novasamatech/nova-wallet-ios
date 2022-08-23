@@ -8,6 +8,17 @@ final class LedgerNetworkSelectionViewLayout: UIView, TableHeaderLayoutUpdatable
         return button
     }()
 
+    let backButton: UIBarButtonItem = {
+        let barItem = UIBarButtonItem(
+            image: R.image.iconBack(),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+
+        return barItem
+    }()
+
     let tableView: UITableView = {
         let view = UITableView()
         view.backgroundColor = .clear
