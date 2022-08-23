@@ -3,7 +3,7 @@ import UIKit
 class ChainAccountTableViewCell: UITableViewCell {
     let chainAccountView = ChainAccountView()
 
-    var contentInsets = UIEdgeInsets(top: 10.0, left: 16.0, bottom: 10.0, right: 16.0) {
+    var contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 9.0, right: 16.0) {
         didSet {
             applyConstraints()
         }
