@@ -87,4 +87,8 @@ final class LedgerAccountsStore: Observable<[LedgerChainAccount]> {
             fetchWallet(by: walletId)
         }
     }
+
+    func add(chainAccount: LedgerChainAccount) {
+        state.append(chainAccount)
+    }
 }

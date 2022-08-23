@@ -5,7 +5,8 @@ protocol LedgerApplicationProtocol {
     func getAccountWrapper(
         for deviceId: UUID,
         chainId: ChainModel.Id,
-        index: UInt32
+        index: UInt32,
+        displayVerificationDialog: Bool
     ) -> CompoundOperationWrapper<LedgerAccount>
 
     func getSignWrapper(
@@ -14,6 +15,16 @@ protocol LedgerApplicationProtocol {
         chainId: ChainModel.Id,
         accountIndex: UInt32
     ) -> CompoundOperationWrapper<Data>
+}
+
+extension LedgerApplicationProtocol {
+    func getAccountWrapper(
+        for deviceId: UUID,
+        chainId: ChainModel.Id,
+        index: UInt32
+    ) -> CompoundOperationWrapper<LedgerAccount> {
+        getAccountWrapper(for: deviceId, chainId: chainId, index: index, displayVerificationDialog: false)
+    }
 }
 
 enum LedgerApplicationError: Error {
@@ -98,13 +109,18 @@ extension LedgerApplication: LedgerApplicationProtocol {
     func getAccountWrapper(
         for deviceId: UUID,
         chainId: ChainModel.Id,
-        index: UInt32
+        index: UInt32,
+        displayVerificationDialog: Bool
     ) -> CompoundOperationWrapper<LedgerAccount> {
         guard let application = supportedApps.first(where: { $0.chainId == chainId }) else {
             return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
         }
 
-        let messageOperation = createAccountMessageOperation(for: application, index: index)
+        let messageOperation = createAccountMessageOperation(
+            for: application,
+            index: index,
+            displayVerificationDialog: displayVerificationDialog
+        )
 
         let sendOperation = LedgerSendOperation(connection: connectionManager, deviceId: deviceId)
         sendOperation.configurationBlock = {
