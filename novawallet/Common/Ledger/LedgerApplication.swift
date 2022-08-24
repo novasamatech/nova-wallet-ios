@@ -32,6 +32,8 @@ enum LedgerApplicationError: Error {
 }
 
 final class LedgerApplication {
+    static let defaultCryptoScheme: CryptoScheme = .ed25519
+
     private enum Constants {
         static let chunkSize = 250
     }
@@ -74,7 +76,7 @@ final class LedgerApplication {
         for application: SupportedLedgerApp,
         index: UInt32,
         displayVerificationDialog: Bool = false,
-        cryptoScheme: CryptoScheme = .ed25519
+        cryptoScheme: CryptoScheme = LedgerApplication.defaultCryptoScheme
     ) -> BaseOperation<Data> {
         ClosureOperation {
             let path = LedgerPathBuilder()
