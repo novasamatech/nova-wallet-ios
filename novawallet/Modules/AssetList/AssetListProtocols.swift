@@ -25,7 +25,7 @@ protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol 
 }
 
 protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtocol {
-    func didReceive(genericAccountId: AccountId, walletType: MetaAccountModelType, name: String)
+    func didReceive(walletIdenticon: Data?, walletType: MetaAccountModelType, name: String)
     func didReceiveNft(changes: [DataProviderChange<NftModel>])
     func didReceiveNft(error: Error)
     func didResetNftProvider()
