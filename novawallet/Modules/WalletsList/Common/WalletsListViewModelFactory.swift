@@ -73,13 +73,17 @@ final class WalletsListViewModelFactory {
     ) -> Decimal {
         let chainAccountIds = wallet.info.chainAccounts.map(\.chainId)
 
-        var totalValue: Decimal = calculateValue(
-            chains: chains,
-            balances: balances[wallet.info.substrateAccountId] ?? [:],
-            prices: prices,
-            includingChainIds: Set(),
-            excludingChainIds: Set(chainAccountIds)
-        )
+        var totalValue: Decimal = 0.0
+
+        if let substrateAccountId = wallet.info.substrateAccountId {
+            totalValue += calculateValue(
+                chains: chains,
+                balances: balances[substrateAccountId] ?? [:],
+                prices: prices,
+                includingChainIds: Set(),
+                excludingChainIds: Set(chainAccountIds)
+            )
+        }
 
         if let ethereumAddress = wallet.info.ethereumAddress {
             totalValue += calculateValue(
@@ -156,7 +160,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             locale: locale
         )
 
-        let optIcon = try? iconGenerator.generateFromAccountId(wallet.info.substrateAccountId)
+        let optIcon = wallet.info.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
         let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
 
         return WalletsListViewModel(
