@@ -741,6 +741,7 @@
 		84452F9D25D6768000F47EC5 /* RuntimeMetadataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F9C25D6768000F47EC5 /* RuntimeMetadataItem.swift */; };
 		84452FA525D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */; };
 		8445CC2728366578003B26CD /* ParaStkCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8445CC2628366578003B26CD /* ParaStkCalls.swift */; };
+		84466B3328B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */; };
 		84468A072866530100BCBE00 /* AssetStorageInfoOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */; };
 		84468A09286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */; };
 		84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */; };
@@ -3333,6 +3334,8 @@
 		84452F9C25D6768000F47EC5 /* RuntimeMetadataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataItem.swift; sourceTree = "<group>"; };
 		84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRuntimeMetadataItem+CoreDataCodable.swift"; sourceTree = "<group>"; };
 		8445CC2628366578003B26CD /* ParaStkCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkCalls.swift; sourceTree = "<group>"; };
+		84466B3128B652BA00FA1E0D /* MultiassetUserDataModel6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel6.xcdatamodel; sourceTree = "<group>"; };
+		84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Identicon.swift"; sourceTree = "<group>"; };
 		84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStorageInfoOperationFactory.swift; sourceTree = "<group>"; };
 		84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupInteractor.swift; sourceTree = "<group>"; };
 		84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupPresenter.swift; sourceTree = "<group>"; };
@@ -8340,6 +8343,7 @@
 				84FF26852849530E003EC78D /* AccountId+Dummy.swift */,
 				848F8B1C2863616E00204BC4 /* ChainsStore.swift */,
 				849FA21528A26CB500F83EAA /* CountdownTimerMediator.swift */,
+				84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -13035,6 +13039,7 @@
 				84364D5E252FD09100281F9A /* AssetDetailsViewModel.swift in Sources */,
 				84AE7AAB27D373A200495267 /* StackInfoTableCell.swift in Sources */,
 				845BB8C925E45D1500E5FCDC /* BondCall.swift in Sources */,
+				84466B3328B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift in Sources */,
 				F40966B926B297D6008CD244 /* AnalyticsRewardsViewModel.swift in Sources */,
 				AE2C84DA25EF98A900986716 /* ValidatorInfoPresenter.swift in Sources */,
 				84B018AE26E03FB500C75E28 /* NominatorStateView.swift in Sources */,
@@ -16003,6 +16008,7 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				84466B3128B652BA00FA1E0D /* MultiassetUserDataModel6.xcdatamodel */,
 				8450805128868B6E00FB3CB6 /* MultiassetUserDataModel5.xcdatamodel */,
 				84E5CD532809315300A98DC4 /* MultiassetUserDataModel4.xcdatamodel */,
 				84D17ED42805307000F7BAFF /* MultiassetUserDataModel3.xcdatamodel */,
@@ -16010,7 +16016,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 8450805128868B6E00FB3CB6 /* MultiassetUserDataModel5.xcdatamodel */;
+			currentVersion = 84466B3128B652BA00FA1E0D /* MultiassetUserDataModel6.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

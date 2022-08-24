@@ -9,8 +9,8 @@ final class WalletAccountViewModelFactory {
         let addressIcon = try addressIconGenerator.generateFromAccountId(account.chainAccount.accountId)
         let addressIconViewModel = DrawableIconViewModel(icon: addressIcon)
 
-        let walletIcon = try walletIconGenerator.generateFromAccountId(account.substrateAccountId)
-        let walletIconViewModel = DrawableIconViewModel(icon: walletIcon)
+        let walletIcon = account.walletIdenticonData.flatMap { try? walletIconGenerator.generateFromAccountId($0) }
+        let walletIconViewModel = walletIcon.map { DrawableIconViewModel(icon: $0) }
         let address = account.chainAccount.toAddress() ?? ""
 
         return WalletAccountViewModel(
@@ -51,8 +51,8 @@ final class WalletAccountViewModelFactory {
     }
 
     func createDisplayViewModel(from response: MetaChainAccountResponse) throws -> DisplayWalletViewModel {
-        let walletIcon = try walletIconGenerator.generateFromAccountId(response.substrateAccountId)
-        let iconViewModel = DrawableIconViewModel(icon: walletIcon)
+        let walletIcon = response.walletIdenticonData.flatMap { try? walletIconGenerator.generateFromAccountId($0) }
+        let iconViewModel = walletIcon.map { DrawableIconViewModel(icon: $0) }
 
         return DisplayWalletViewModel(name: response.chainAccount.name, imageViewModel: iconViewModel)
     }
