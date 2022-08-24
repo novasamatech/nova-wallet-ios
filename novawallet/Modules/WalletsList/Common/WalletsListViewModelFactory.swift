@@ -194,7 +194,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         }
 
         if
-            let watchOnlySection = createSection(
+            let paritySignerSection = createSection(
                 type: .paritySigner,
                 wallets: wallets,
                 chains: chains,
@@ -202,7 +202,19 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 prices: prices,
                 locale: locale
             ) {
-            sections.append(watchOnlySection)
+            sections.append(paritySignerSection)
+        }
+
+        if
+            let ledgerSection = createSection(
+                type: .ledger,
+                wallets: wallets,
+                chains: chains,
+                balances: balances,
+                prices: prices,
+                locale: locale
+            ) {
+            sections.append(ledgerSection)
         }
 
         if
