@@ -31,10 +31,7 @@ class ChainAccountTableViewCell: UITableViewCell {
 
     private func applyConstraints() {
         chainAccountView.snp.remakeConstraints { make in
-            make.top.equalToSuperview().inset(contentInsets.top)
-            make.bottom.equalToSuperview().inset(contentInsets.bottom)
-            make.leading.equalToSuperview().inset(contentInsets.left)
-            make.trailing.equalToSuperview().inset(contentInsets.right)
+            make.edges.equalToSuperview().inset(contentInsets)
         }
     }
 }
