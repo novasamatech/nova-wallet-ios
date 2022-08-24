@@ -915,3 +915,4 @@
 "ledger.device.busy.message" = "Please, complete or cancel current operation on Ledger device";
 "ledger.address.verify.title" = "Verify address";
 "ledger.address.verify.message" = "Press both buttons on your %@ to verify address";
+"ledger.address.verify.confirmation" = "Verify\naddress";
