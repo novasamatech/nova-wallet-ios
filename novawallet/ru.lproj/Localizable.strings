@@ -895,7 +895,7 @@
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Выберите аппаратный кошелёк";
 "ledger.discover.title" = "Выберите устройство Ledger";
-"ledger.discover.details" = "Пожалуйста, включите Bluetooth в настройках телефона.\nРазблокируйте устройство Ledger.";
+"ledger.discover.details" = "Пожалуйста, включите Bluetooth в настройках телефона. Откройте %@ приложение на Ledger устройстве.";
 "common.bluetooth.unsupported.message" = "К сожалению, Bluetooth не поддерживается вашим телефоном.";
 "common.bluetooth.unauthorized.message" = "Пожалуйста, разрешите приложению использовать Bluetooth в Настройках.";
 "common.bluetooth.unauthorized.title" = "Разрешите использовать Bluetooth";
@@ -905,3 +905,6 @@
 "ledger.operation.title" = "Ledger операция";
 "ledger.operation.message.cancelled" = "Операция была отменена на устройстве";
 "ledger.operation.message.error" = "Операция завершилась ошибкой на устройстве. Пожалуйста, попробуйте позже.";
+"ledger.accounts.title" = "Добавьте аккаунты в Ваш кошелёк";
+"ledger.accounts.subtitle" = "Убедитесь, что приложение сети установлено на вашем Ledger устройстве через приложение Ledger Live. Откройте приложение сети на вашем Ledger устройстве.";
+"ledger.accounts.button.add" = "Добавьте аккаунт";
