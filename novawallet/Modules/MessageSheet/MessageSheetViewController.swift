@@ -1,15 +1,16 @@
 import UIKit
 import SoraFoundation
 
-final class MessageSheetViewController: UIViewController, ViewHolder {
-    typealias RootViewType = MessageSheetViewLayout
+final class MessageSheetViewController<I: UIView & MessageSheetGraphicsProtocol, T>: UIViewController, ViewHolder
+    where I.GraphicsViewModel == T {
+    typealias RootViewType = MessageSheetViewLayout<I>
 
     let presenter: MessageSheetPresenterProtocol
-    let viewModel: MessageSheetViewModel
+    let viewModel: MessageSheetViewModel<T>
 
     init(
         presenter: MessageSheetPresenterProtocol,
-        viewModel: MessageSheetViewModel,
+        viewModel: MessageSheetViewModel<T>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -26,14 +27,14 @@ final class MessageSheetViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = MessageSheetViewLayout()
+        view = MessageSheetViewLayout<I>()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupLocalization()
-        setupIcon()
+        setupGraphics()
         setupHandlers()
     }
 
@@ -43,18 +44,21 @@ final class MessageSheetViewController: UIViewController, ViewHolder {
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
         rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonOkBack(
+        rootView.actionButton?.imageWithTitleView?.title = R.string.localizable.commonOkBack(
             preferredLanguages: languages
         )
-        rootView.actionButton.invalidateLayout()
+        rootView.actionButton?.invalidateLayout()
     }
 
-    private func setupIcon() {
-        rootView.iconView.image = viewModel.icon
+    private func setupGraphics() {
+        rootView.graphicsView.bind(messageSheetGraphics: viewModel.graphics)
     }
 
     private func setupHandlers() {
-        rootView.actionButton.addTarget(self, action: #selector(actionGoBack), for: .touchUpInside)
+        if viewModel.hasAction {
+            rootView.setupActionButton()
+            rootView.actionButton?.addTarget(self, action: #selector(actionGoBack), for: .touchUpInside)
+        }
     }
 
     @objc private func actionGoBack() {
