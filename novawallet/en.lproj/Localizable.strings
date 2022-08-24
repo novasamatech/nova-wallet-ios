@@ -911,3 +911,5 @@
 "ledger.accounts.button.add" = "Add at least one account";
 "ledger.account.confirm.title" = "Select an account to pair in Nova Wallet";
 "common.load.more.accounts" = "Load more accounts";
+"ledger.device.busy.title" = "Ledger busy";
+"ledger.device.busy.message" = "Please, complete or cancel current operation on Ledger device";

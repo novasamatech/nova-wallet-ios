@@ -1,4 +1,6 @@
 import UIKit
+import SubstrateSdk
+import RobinHood
 
 enum LedgerAccountConfirmationInteractorError: Error {
     case accountVerificationFailed
@@ -11,6 +13,9 @@ final class LedgerAccountConfirmationInteractor {
     let deviceId: UUID
     let application: LedgerApplication
     let accountsStore: LedgerAccountsStore
+    let requestFactory: StorageRequestFactoryProtocol
+    let connection: JSONRPCEngine
+    let runtimeService: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
 
     init(
@@ -18,12 +23,18 @@ final class LedgerAccountConfirmationInteractor {
         deviceId: UUID,
         application: LedgerApplication,
         accountsStore: LedgerAccountsStore,
+        requestFactory: StorageRequestFactoryProtocol,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
         self.application = application
         self.deviceId = deviceId
         self.operationQueue = operationQueue
+        self.requestFactory = requestFactory
+        self.connection = connection
+        self.runtimeService = runtimeService
         self.accountsStore = accountsStore
     }
 
@@ -46,13 +57,42 @@ final class LedgerAccountConfirmationInteractor {
 
 extension LedgerAccountConfirmationInteractor: LedgerAccountConfirmationInteractorInputProtocol {
     func fetchAccount(for index: UInt32) {
-        let wrapper = application.getAccountWrapper(for: deviceId, chainId: chain.chainId, index: index)
+        let ledgerWrapper = application.getAccountWrapper(for: deviceId, chainId: chain.chainId, index: index)
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let keyParams: () throws -> [Data] = {
+            let account = try ledgerWrapper.targetOperation.extractNoCancellableResultData()
+            let accountId = try account.address.toAccountId()
+            return [accountId]
+        }
+
+        let balanceWrapper: CompoundOperationWrapper<[StorageResponse<AccountInfo>]> = requestFactory.queryItems(
+            engine: connection,
+            keyParams: keyParams,
+            factory: {
+                try codingFactoryOperation.extractNoCancellableResultData()
+            },
+            storagePath: .account
+        )
+
+        balanceWrapper.addDependency(wrapper: ledgerWrapper)
+        balanceWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mappingOperation = ClosureOperation<LedgerAccountAmount> {
+            let ledgerResponse = try ledgerWrapper.targetOperation.extractNoCancellableResultData()
+            let balanceResponse = try balanceWrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+            return LedgerAccountAmount(address: ledgerResponse.address, amount: balanceResponse?.data.total)
+        }
+
+        mappingOperation.addDependency(balanceWrapper.targetOperation)
+        mappingOperation.addDependency(ledgerWrapper.targetOperation)
+
+        mappingOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let response = try wrapper.targetOperation.extractNoCancellableResultData()
-                    let account = LedgerAccountAmount(address: response.address, amount: nil)
+                    let account = try mappingOperation.extractNoCancellableResultData()
 
                     self?.presenter?.didReceiveAccount(result: .success(account), at: index)
                 } catch {
@@ -61,7 +101,9 @@ extension LedgerAccountConfirmationInteractor: LedgerAccountConfirmationInteract
             }
         }
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        let operations = ledgerWrapper.allOperations + [codingFactoryOperation] + balanceWrapper.allOperations + [mappingOperation]
+
+        operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
     func confirm(address: AccountAddress, at index: UInt32) {
