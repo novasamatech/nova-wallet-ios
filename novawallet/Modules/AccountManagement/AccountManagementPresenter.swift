@@ -270,8 +270,8 @@ final class AccountManagementPresenter {
             if let wallet = wallet {
                 wireframe.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chainModel)
             }
-        case .paritySigner:
-            // change account not supported for Parity Signer Wallets
+        case .paritySigner, .ledger:
+            // change account not supported for Parity Signer and Ledger Wallets
             break
         }
     }
@@ -435,6 +435,9 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             if chainViewModel.address != nil {
                 displayParitySignerExistingAddressActions(for: chainModel, viewModel: chainViewModel)
             }
+        case .ledger:
+            // TODO: Add support to Ledger
+            break
         }
     }
 

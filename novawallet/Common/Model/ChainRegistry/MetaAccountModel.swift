@@ -5,10 +5,11 @@ enum MetaAccountModelType: UInt8 {
     case secrets
     case watchOnly
     case paritySigner
+    case ledger
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner:
+        case .secrets, .paritySigner, .ledger:
             return true
         case .watchOnly:
             return false
