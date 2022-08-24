@@ -86,9 +86,13 @@ struct MessageSheetViewFactory {
             R.string.localizable.ledgerAddressVerifyMessage(deviceName, preferredLanguages: locale.rLanguages)
         }
 
+        let hint = LocalizableResource { locale in
+            R.string.localizable.ledgerAddressVerifyConfirmation(preferredLanguages: locale.rLanguages)
+        }
+
         let graphicsViewModel = MessageSheetLedgerViewModel(
             backgroundImage: R.image.graphicsLedgerVerify()!,
-            text: title,
+            text: hint,
             icon: R.image.iconEye14()!,
             infoRenderSize: CGSize(width: 100.0, height: 72.0)
         )
@@ -106,7 +110,7 @@ struct MessageSheetViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        view.controller.preferredContentSize = CGSize(width: 0.0, height: 365.0)
+        view.controller.preferredContentSize = CGSize(width: 0.0, height: 320.0)
 
         presenter.view = view
 
