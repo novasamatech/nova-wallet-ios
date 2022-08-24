@@ -630,6 +630,8 @@
 		84355CE928B5132B004E5C5E /* LedgerAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84355CE828B5132B004E5C5E /* LedgerAccountViewModel.swift */; };
 		84355CEC28B5611F004E5C5E /* LedgerAccountStackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84355CEB28B5611F004E5C5E /* LedgerAccountStackCell.swift */; };
 		84355CEE28B614A7004E5C5E /* MessageSheetImageGraphicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84355CED28B614A7004E5C5E /* MessageSheetImageGraphicsView.swift */; };
+		84355CF228B61794004E5C5E /* MessageSheetLedgerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84355CF128B61794004E5C5E /* MessageSheetLedgerView.swift */; };
+		84355CF428B617D3004E5C5E /* MessageSheetLedgerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84355CF328B617D3004E5C5E /* MessageSheetLedgerViewModel.swift */; };
 		843612BB278FD6E000DC739E /* DAppSigningType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612BA278FD6E000DC739E /* DAppSigningType.swift */; };
 		843612BD278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612BC278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift */; };
 		843612BF278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612BE278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift */; };
@@ -3209,6 +3211,8 @@
 		84355CE828B5132B004E5C5E /* LedgerAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAccountViewModel.swift; sourceTree = "<group>"; };
 		84355CEB28B5611F004E5C5E /* LedgerAccountStackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAccountStackCell.swift; sourceTree = "<group>"; };
 		84355CED28B614A7004E5C5E /* MessageSheetImageGraphicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetImageGraphicsView.swift; sourceTree = "<group>"; };
+		84355CF128B61794004E5C5E /* MessageSheetLedgerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetLedgerView.swift; sourceTree = "<group>"; };
+		84355CF328B617D3004E5C5E /* MessageSheetLedgerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetLedgerViewModel.swift; sourceTree = "<group>"; };
 		843612BA278FD6E000DC739E /* DAppSigningType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSigningType.swift; sourceTree = "<group>"; };
 		843612BC278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppOperationConfirmInteractor+Protocol.swift"; sourceTree = "<group>"; };
 		843612BE278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppOperationConfirmInteractor+Proccessing.swift"; sourceTree = "<group>"; };
@@ -6553,6 +6557,15 @@
 				84355CEB28B5611F004E5C5E /* LedgerAccountStackCell.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		84355CF028B6177F004E5C5E /* Ledger */ = {
+			isa = PBXGroup;
+			children = (
+				84355CF128B61794004E5C5E /* MessageSheetLedgerView.swift */,
+				84355CF328B617D3004E5C5E /* MessageSheetLedgerViewModel.swift */,
+			);
+			path = Ledger;
 			sourceTree = "<group>";
 		};
 		84364D53252FAD5C00281F9A /* AccountDetails */ = {
@@ -10990,6 +11003,7 @@
 		95ED25232B568F2C7DA953CC /* MessageSheet */ = {
 			isa = PBXGroup;
 			children = (
+				84355CF028B6177F004E5C5E /* Ledger */,
 				0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */,
 				14383723F0B56C91A0B3016E /* MessageSheetWireframe.swift */,
 				6C3AD523C06AD4FD58B7B3CC /* MessageSheetPresenter.swift */,
@@ -13708,6 +13722,7 @@
 				84786DA825F9F58E0089DFF7 /* EraValidatorService+Fetch.swift in Sources */,
 				84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */,
 				84754CA22513DB8800854599 /* EmptyAccountIcon.swift in Sources */,
+				84355CF228B61794004E5C5E /* MessageSheetLedgerView.swift in Sources */,
 				AEA0C8C6268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift in Sources */,
 				84CE69922565244700559427 /* WalletAccountOpenCommand.swift in Sources */,
 				84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */,
@@ -14484,6 +14499,7 @@
 				841E5567282EAC1000C8438F /* ParachainStakingInitState.swift in Sources */,
 				F20C8D17ABF18B7104E14394 /* StakingAmountInteractor.swift in Sources */,
 				EF02C9661F03C8EF58182997 /* StakingAmountViewController.swift in Sources */,
+				84355CF428B617D3004E5C5E /* MessageSheetLedgerViewModel.swift in Sources */,
 				D8581E5440A19D977E17BFDE /* StakingAmountViewFactory.swift in Sources */,
 				F40966C626B297D6008CD244 /* AnalyticsRewardsInteractor.swift in Sources */,
 				3250F2C0E12ED42A355853BE /* SelectValidatorsStartProtocols.swift in Sources */,

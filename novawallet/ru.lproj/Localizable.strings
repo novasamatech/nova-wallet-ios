@@ -910,3 +910,5 @@
 "ledger.accounts.button.add" = "Добавьте аккаунт";
 "ledger.account.confirm.title" = "Выберите аккаунты для добавления в кошелёк";
 "common.load.more.accounts" = "Загрузить больше аккаунтов";
+"ledger.address.verify.title" = "Подтвердите адрес";
+"ledger.address.verify.message" = "Нажмите обе кнопки на Вашем %@ для подтверждения адреса";
