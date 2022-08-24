@@ -8,6 +8,7 @@ final class LedgerAccountConfirmationPresenter {
     let interactor: LedgerAccountConfirmationInteractorInputProtocol
     let tokenFormatter: LocalizableResource<TokenFormatter>
     let chain: ChainModel
+    let deviceName: String
     let localizationManager: LocalizationManagerProtocol
 
     private var accounts: [LedgerAccountAmount] = []
@@ -19,12 +20,14 @@ final class LedgerAccountConfirmationPresenter {
         interactor: LedgerAccountConfirmationInteractorInputProtocol,
         wireframe: LedgerAccountConfirmationWireframeProtocol,
         chain: ChainModel,
+        deviceName: String,
         tokenFormatter: LocalizableResource<TokenFormatter>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
+        self.deviceName = deviceName
         self.tokenFormatter = tokenFormatter
         self.localizationManager = localizationManager
     }
@@ -96,6 +99,8 @@ extension LedgerAccountConfirmationPresenter: LedgerAccountConfirmationPresenter
         let account = accounts[index]
 
         interactor.confirm(address: account.address, at: UInt32(index))
+
+        wireframe.showAddressVerification(on: view, deviceName: deviceName)
     }
 
     func loadNext() {
@@ -121,6 +126,8 @@ extension LedgerAccountConfirmationPresenter: LedgerAccountConfirmationInteracto
     }
 
     func didReceiveConfirmation(result: Result<AccountId, Error>, at index: UInt32) {
+        wireframe.closeAddressVerification(on: view)
+
         switch result {
         case .success:
             wireframe.complete(on: view)

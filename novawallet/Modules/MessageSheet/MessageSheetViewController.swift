@@ -34,12 +34,13 @@ final class MessageSheetViewController<I: UIView & MessageSheetGraphicsProtocol,
         super.viewDidLoad()
 
         setupLocalization()
-        setupGraphics()
         setupHandlers()
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
+
+        rootView.graphicsView.bind(messageSheetGraphics: viewModel.graphics, locale: selectedLocale)
 
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
         rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
@@ -47,11 +48,8 @@ final class MessageSheetViewController<I: UIView & MessageSheetGraphicsProtocol,
         rootView.actionButton?.imageWithTitleView?.title = R.string.localizable.commonOkBack(
             preferredLanguages: languages
         )
-        rootView.actionButton?.invalidateLayout()
-    }
 
-    private func setupGraphics() {
-        rootView.graphicsView.bind(messageSheetGraphics: viewModel.graphics)
+        rootView.actionButton?.invalidateLayout()
     }
 
     private func setupHandlers() {

@@ -25,5 +25,7 @@ protocol LedgerAccountConfirmationInteractorOutputProtocol: AnyObject {
 
 protocol LedgerAccountConfirmationWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, LedgerErrorPresentable {
+    func showAddressVerification(on view: LedgerAccountConfirmationViewProtocol?, deviceName: String)
+    func closeAddressVerification(on view: LedgerAccountConfirmationViewProtocol?)
     func complete(on view: LedgerAccountConfirmationViewProtocol?)
 }

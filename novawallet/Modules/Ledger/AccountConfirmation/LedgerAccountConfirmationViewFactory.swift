@@ -6,7 +6,7 @@ import RobinHood
 struct LedgerAccountConfirmationViewFactory {
     static func createView(
         chain: ChainModel,
-        deviceId: UUID,
+        device: LedgerDeviceProtocol,
         application: LedgerApplication,
         accountsStore: LedgerAccountsStore
     ) -> LedgerAccountConfirmationViewProtocol? {
@@ -29,7 +29,7 @@ struct LedgerAccountConfirmationViewFactory {
 
         let interactor = LedgerAccountConfirmationInteractor(
             chain: chain,
-            deviceId: deviceId,
+            deviceId: device.identifier,
             application: application,
             accountsStore: accountsStore,
             requestFactory: requestFactory,
@@ -48,6 +48,7 @@ struct LedgerAccountConfirmationViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
+            deviceName: device.name,
             tokenFormatter: tokenFormatter,
             localizationManager: LocalizationManager.shared
         )

@@ -9,10 +9,10 @@ final class LedgerDiscoverWireframe: LedgerDiscoverWireframeProtocol {
         self.application = application
     }
 
-    func showAccountSelection(from view: LedgerDiscoverViewProtocol?, chain: ChainModel, deviceId: UUID) {
+    func showAccountSelection(from view: LedgerDiscoverViewProtocol?, chain: ChainModel, device: LedgerDeviceProtocol) {
         guard let confirmView = LedgerAccountConfirmationViewFactory.createView(
             chain: chain,
-            deviceId: deviceId,
+            device: device,
             application: application,
             accountsStore: accountsStore
         ) else {

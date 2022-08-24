@@ -134,7 +134,11 @@ extension LedgerDiscoverPresenter: LedgerDiscoverInteractorOutputProtocol {
 
         switch result {
         case .success:
-            wireframe.showAccountSelection(from: view, chain: chain, deviceId: deviceId)
+            guard let device = devices.first(where: { $0.identifier == deviceId }) else {
+                return
+            }
+
+            wireframe.showAccountSelection(from: view, chain: chain, device: device)
         case let .failure(error):
             handleAppConnection(error: error, deviceId: deviceId)
         }
