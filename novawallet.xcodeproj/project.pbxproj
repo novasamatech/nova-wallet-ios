@@ -5670,7 +5670,7 @@
 			path = AccountCreate;
 			sourceTree = "<group>";
 		};
-		4DD52EEDA62725DF7A2FE059 /* WalletConfirm */ = {
+		4DD52EEDA62725DF7A2FE059 /* WalletConfirmation */ = {
 			isa = PBXGroup;
 			children = (
 				A73D7BA4201018DF9163536D /* LedgerWalletConfirmProtocols.swift */,
@@ -5679,7 +5679,7 @@
 				96340EDDE0EAA7F9B6D33E96 /* LedgerWalletConfirmInteractor.swift */,
 				1D42F468C639CA69621F0C03 /* LedgerWalletConfirmViewFactory.swift */,
 			);
-			path = WalletConfirm;
+			path = WalletConfirmation;
 			sourceTree = "<group>";
 		};
 		4E765C43A5296629DDD375B2 /* CustomValidatorList */ = {
@@ -7881,7 +7881,7 @@
 				84906FED28B2C6EC0049B57D /* Protocols */,
 				A95AB62112CBD476058A81F1 /* Discovery */,
 				E2185B0E6FF1CE03B8403EB9 /* NetworkSelection */,
-				4DD52EEDA62725DF7A2FE059 /* WalletConfirm */,
+				4DD52EEDA62725DF7A2FE059 /* WalletConfirmation */,
 				A98051E06AE43C02585D467F /* AccountConfirmation */,
 			);
 			path = Ledger;
