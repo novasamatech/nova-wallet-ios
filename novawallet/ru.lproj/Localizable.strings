@@ -908,3 +908,8 @@
 "ledger.accounts.title" = "Добавьте аккаунты в Ваш кошелёк";
 "ledger.accounts.subtitle" = "Убедитесь, что приложение сети установлено на вашем Ledger устройстве через приложение Ledger Live. Откройте приложение сети на вашем Ledger устройстве.";
 "ledger.accounts.button.add" = "Добавьте аккаунт";
+"ledger.account.confirm.title" = "Выберите аккаунты для добавления в кошелёк";
+"common.load.more.accounts" = "Загрузить больше аккаунтов";
+"ledger.address.verify.title" = "Подтвердите адрес";
+"ledger.address.verify.message" = "Нажмите обе кнопки на Вашем %@ для подтверждения адреса";
+"ledger.address.verify.confirmation" = "Проверьте\nадрес";

@@ -87,4 +87,12 @@ final class LedgerAccountsStore: Observable<[LedgerChainAccount]> {
             fetchWallet(by: walletId)
         }
     }
+
+    func add(chainAccount: LedgerChainAccount) {
+        if let replacingIndex = state.firstIndex(where: { $0.chain.chainId == chainAccount.chain.chainId }) {
+            state[replacingIndex] = chainAccount
+        } else {
+            state.append(chainAccount)
+        }
+    }
 }
