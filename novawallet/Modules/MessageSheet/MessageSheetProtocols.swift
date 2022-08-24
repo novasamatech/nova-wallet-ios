@@ -1,9 +1,11 @@
+import Foundation
+
 protocol MessageSheetViewProtocol: ControllerBackedProtocol {}
 
 protocol MessageSheetGraphicsProtocol {
     associatedtype GraphicsViewModel
 
-    func bind(messageSheetGraphics: GraphicsViewModel?)
+    func bind(messageSheetGraphics: GraphicsViewModel?, locale: Locale)
 }
 
 protocol MessageSheetPresenterProtocol: AnyObject {
