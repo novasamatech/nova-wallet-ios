@@ -105,6 +105,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
         childPresenter?.setup()
         interactor.setup()
+        interactor.destinationChainDidChanged(destinationChainAsset?.chain ?? originChainAsset.chain)
     }
 
     func updateRecepient(partialAddress: String) {
