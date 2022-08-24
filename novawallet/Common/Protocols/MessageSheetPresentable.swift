@@ -3,7 +3,10 @@ import SoraUI
 
 protocol MessageSheetPresentable {
     func presentNoSigningView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void)
-    func presentParitySignerNotSupportedView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void)
+    func presentParitySignerNotSupportedView(
+        from presentationView: ControllerBackedProtocol,
+        completion: @escaping () -> Void
+    )
 }
 
 extension MessageSheetPresentable {
@@ -57,8 +60,13 @@ extension MessageSheetPresentable {
         }
     }
 
-    func presentParitySignerNotSupportedView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void) {
-        guard let confirmationView = MessageSheetPresentableFactory.createParitySignerNotSupportedView(with: completion) else {
+    func presentParitySignerNotSupportedView(
+        from presentationView: ControllerBackedProtocol,
+        completion: @escaping () -> Void
+    ) {
+        guard let confirmationView = MessageSheetPresentableFactory.createParitySignerNotSupportedView(
+            with: completion
+        ) else {
             return
         }
 

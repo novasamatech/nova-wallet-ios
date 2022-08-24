@@ -1,7 +1,7 @@
 import UIKit
 
-final class MessageSheetViewLayout: UIView {
-    let iconView = UIImageView()
+final class MessageSheetViewLayout<I: UIView & MessageSheetGraphicsProtocol>: UIView {
+    let graphicsView = I()
 
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -20,11 +20,7 @@ final class MessageSheetViewLayout: UIView {
         return label
     }()
 
-    let actionButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        return button
-    }()
+    private(set) var actionButton: TriangularedButton?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,9 +35,23 @@ final class MessageSheetViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func setupActionButton() {
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-16.0)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        actionButton = button
+    }
+
     private func setupLayout() {
-        addSubview(iconView)
-        iconView.snp.makeConstraints { make in
+        addSubview(graphicsView)
+        graphicsView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalToSuperview().inset(16.0)
         }
@@ -49,20 +59,13 @@ final class MessageSheetViewLayout: UIView {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
-            make.top.equalTo(iconView.snp.bottom).offset(24.0)
+            make.top.equalTo(graphicsView.snp.bottom).offset(24.0)
         }
 
         addSubview(detailsLabel)
         detailsLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
             make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
-        }
-
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16.0)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-16.0)
-            make.height.equalTo(UIConstants.actionHeight)
         }
     }
 }
