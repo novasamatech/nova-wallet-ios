@@ -1,12 +1,20 @@
 import Foundation
 
 struct LedgerChainAccount: Equatable {
-    let chain: ChainModel
-    let accountId: AccountId?
+    struct Info: Equatable {
+        let accountId: AccountId
+        let publicKey: Data
+        let cryptoType: MultiassetCryptoType
+    }
 
-    var exists: Bool { accountId != nil }
+    let chain: ChainModel
+    let info: Info?
+
+    var accountId: AccountId? { info?.accountId }
 
     var address: AccountAddress? {
-        try? accountId?.toAddress(using: chain.chainFormat)
+        try? info?.accountId.toAddress(using: chain.chainFormat)
     }
+
+    var exists: Bool { info != nil }
 }
