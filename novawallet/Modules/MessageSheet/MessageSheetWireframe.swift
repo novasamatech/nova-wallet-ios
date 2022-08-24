@@ -1,9 +1,9 @@
 import Foundation
 
 final class MessageSheetWireframe: MessageSheetWireframeProtocol {
-    let completionCallback: () -> Void
+    let completionCallback: MessageSheetCallback?
 
-    init(completionCallback: @escaping () -> Void) {
+    init(completionCallback: MessageSheetCallback?) {
         self.completionCallback = completionCallback
     }
 

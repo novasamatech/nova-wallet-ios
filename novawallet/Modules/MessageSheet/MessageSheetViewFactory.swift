@@ -1,8 +1,11 @@
 import Foundation
 import SoraFoundation
+import UIKit
 
 struct MessageSheetViewFactory {
-    static func createNoSigningView(with completionCallback: @escaping () -> Void) -> MessageSheetViewProtocol? {
+    static func createNoSigningView(
+        with completionCallback: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe(completionCallback: completionCallback)
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
@@ -15,13 +18,14 @@ struct MessageSheetViewFactory {
             R.string.localizable.noKeyMessage(preferredLanguages: locale.rLanguages)
         }
 
-        let viewModel = MessageSheetViewModel(
+        let viewModel = MessageSheetViewModel<UIImage>(
             title: title,
             message: message,
-            icon: R.image.imageNoKeys()
+            graphics: R.image.imageNoKeys(),
+            hasAction: true
         )
 
-        let view = MessageSheetViewController(
+        let view = MessageSheetViewController<MessageSheetImageView, UIImage>(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
@@ -35,7 +39,7 @@ struct MessageSheetViewFactory {
     }
 
     static func createParitySignerNotSupportedView(
-        with completionCallback: @escaping () -> Void
+        with completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe(completionCallback: completionCallback)
 
@@ -49,13 +53,14 @@ struct MessageSheetViewFactory {
             R.string.localizable.commonParitySignerNotSupportedMessage(preferredLanguages: locale.rLanguages)
         }
 
-        let viewModel = MessageSheetViewModel(
+        let viewModel = MessageSheetViewModel<UIImage>(
             title: title,
             message: message,
-            icon: R.image.iconParitySignerInSheet()
+            graphics: R.image.iconParitySignerInSheet(),
+            hasAction: true
         )
 
-        let view = MessageSheetViewController(
+        let view = MessageSheetViewController<MessageSheetImageView, UIImage>(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
