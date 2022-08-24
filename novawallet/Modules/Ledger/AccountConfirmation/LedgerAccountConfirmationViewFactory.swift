@@ -1,5 +1,7 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
+import RobinHood
 
 struct LedgerAccountConfirmationViewFactory {
     static func createView(
@@ -12,11 +14,27 @@ struct LedgerAccountConfirmationViewFactory {
             return nil
         }
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue)
+        )
+
         let interactor = LedgerAccountConfirmationInteractor(
             chain: chain,
             deviceId: deviceId,
             application: application,
             accountsStore: accountsStore,
+            requestFactory: requestFactory,
+            connection: connection,
+            runtimeService: runtimeService,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

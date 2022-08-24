@@ -75,6 +75,15 @@ extension LedgerErrorPresentable where Self: AlertPresentable & CommonRetryable 
                 locale: locale,
                 retryAction: retryClosure
             )
+        case .deviceBusy:
+            presentRequestStatus(
+                on: view,
+                title: R.string.localizable.ledgerDeviceBusyTitle(preferredLanguages: locale.rLanguages),
+                message: R.string.localizable.ledgerDeviceBusyMessage(preferredLanguages: locale.rLanguages),
+                cancelAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
+                locale: locale,
+                retryAction: retryClosure
+            )
         case .transactionRejected:
             present(
                 message: R.string.localizable.ledgerOperationMessageCancelled(preferredLanguages: locale.rLanguages),
