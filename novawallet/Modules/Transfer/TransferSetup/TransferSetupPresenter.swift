@@ -19,6 +19,7 @@ final class TransferSetupPresenter {
     private(set) var destinationChainAsset: ChainAsset?
     private(set) var availableDestinations: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
+    private var metaChainAccountResponses: [PossibleMetaAccountChainResponse] = []
 
     init(
         interactor: TransferSetupInteractorIntputProtocol,
@@ -155,12 +156,14 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             context: selectionState
         )
     }
-    
+
     func didTapOnYourWallets() {
-        let chain = destinationChainAsset ?? originChainAsset
-        wireframe.showYourWallets(from: view,
-                                  chain: chain,
-                                  address: childPresenter?.inputState.recepient)
+        wireframe.showYourWallets(
+            from: view,
+            accounts: metaChainAccountResponses,
+            address: childPresenter?.inputState.recepient,
+            delegate: self
+        )
     }
 }
 
@@ -189,6 +192,11 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
         _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
     }
+
+    func didReceive(metaChainAccountResponses: [PossibleMetaAccountChainResponse]) {
+        self.metaChainAccountResponses = metaChainAccountResponses
+        view?.changeYourWalletsViewState(isHidden: metaChainAccountResponses.isEmpty)
+    }
 }
 
 extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
@@ -210,10 +218,12 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         provideChainsViewModel()
 
-        if destinationChainAsset != nil {
+        if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
+            interactor.destinationChainDidChanged(destinationChainAsset.chain)
         } else {
             setupOnChainChildPresenter()
+            interactor.destinationChainDidChanged(originChainAsset.chain)
         }
     }
 

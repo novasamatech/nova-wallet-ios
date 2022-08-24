@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import CommonWallet
+import RobinHood
 
 struct TransferSetupViewFactory {
     static func createView(
@@ -79,7 +80,9 @@ struct TransferSetupViewFactory {
         return TransferSetupInteractor(
             originChainAssetId: chainAsset.chainAssetId,
             xcmTransfersSyncService: syncService,
-            chainsStore: chainsStore
+            chainsStore: chainsStore,
+            accountRepositoryFactory: AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared),
+            operationManager: OperationManager()
         )
     }
 }

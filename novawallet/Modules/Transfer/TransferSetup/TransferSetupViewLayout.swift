@@ -25,7 +25,9 @@ final class TransferSetupViewLayout: UIView {
         return label
     }()
 
-    let yourWalletsView = YourWalletsControlView()
+    let yourWalletsView: YourWalletsControlView = .create {
+        $0.isHidden = true
+    }
 
     let recepientInputView: AccountInputView = {
         let view = AccountInputView()

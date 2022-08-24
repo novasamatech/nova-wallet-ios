@@ -38,13 +38,21 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
     func hideRecepientScan(from view: TransferSetupViewProtocol?) {
         view?.controller.dismiss(animated: true)
     }
-    
-    func showYourWallets(from view: TransferSetupViewProtocol?, chain: ChainAsset, address: AccountAddress?) {
-        guard let viewController = YourWalletsViewFactory.createView(chain: chain,
-                                                                     address: address) else {
+
+    func showYourWallets(
+        from view: TransferSetupViewProtocol?,
+        accounts: [PossibleMetaAccountChainResponse],
+        address: AccountAddress?,
+        delegate: YourWalletsDelegate
+    ) {
+        guard let viewController = YourWalletsViewFactory.createView(
+            metaAccounts: accounts,
+            address: address,
+            delegate: delegate
+        ) else {
             return
         }
 
-        view?.controller.present(viewController, animated: true, completion: nil)
+        view?.controller.present(viewController.controller, animated: true, completion: nil)
     }
 }

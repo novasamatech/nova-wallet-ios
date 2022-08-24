@@ -15,4 +15,3 @@ public final class FlexibleSpaceView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-

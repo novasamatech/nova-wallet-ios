@@ -19,6 +19,7 @@ protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
     func didCompleteDestinationSelection()
     func didSwitchCrossChain()
     func didSwitchOnChain()
+    func changeYourWalletsViewState(isHidden: Bool)
 }
 
 protocol TransferSetupCommonPresenterProtocol: AnyObject {
@@ -44,11 +45,13 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
     func setup()
+    func destinationChainDidChanged(_ chain: ChainModel)
 }
 
 protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceive(error: Error)
+    func didReceive(metaChainAccountResponses: [PossibleMetaAccountChainResponse])
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
@@ -62,9 +65,11 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate)
 
     func hideRecepientScan(from view: TransferSetupViewProtocol?)
-    
-    func showYourWallets(from view: TransferSetupViewProtocol?,
-                         chain: ChainAsset,
-                         address: AccountAddress?,
-                         delegate: YourWalletsDelegate)
+
+    func showYourWallets(
+        from view: TransferSetupViewProtocol?,
+        accounts: [PossibleMetaAccountChainResponse],
+        address: AccountAddress?,
+        delegate: YourWalletsDelegate
+    )
 }
