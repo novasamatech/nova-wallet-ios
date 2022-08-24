@@ -39,6 +39,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func changeDestinationChain()
     func scanRecepientCode()
     func applyMyselfRecepient()
+    func didTapOnYourWallets()
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
@@ -61,4 +62,9 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate)
 
     func hideRecepientScan(from view: TransferSetupViewProtocol?)
+    
+    func showYourWallets(from view: TransferSetupViewProtocol?,
+                         chain: ChainAsset,
+                         address: AccountAddress?,
+                         delegate: YourWalletsDelegate)
 }

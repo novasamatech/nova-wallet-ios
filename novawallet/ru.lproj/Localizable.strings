@@ -159,6 +159,7 @@
 "wallet.balance.available" = "Доступно";
 "wallet.transfer.total.title" = "Всего";
 "wallet.search.contacts" = "Контакты";
+"wallet.transfer.your.wallets" = "Ваши кошельки";
 "common.retry" = "Повторить";
 "wallet.balance.frozen" = "Заморожено";
 "transaction.status.completed" = "Успешно";

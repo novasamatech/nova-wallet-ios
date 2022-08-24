@@ -25,6 +25,8 @@ final class TransferSetupViewLayout: UIView {
         return label
     }()
 
+    let yourWalletsView = YourWalletsControlView()
+
     let recepientInputView: AccountInputView = {
         let view = AccountInputView()
         return view
@@ -97,8 +99,13 @@ final class TransferSetupViewLayout: UIView {
 
         containerView.stackView.setCustomSpacing(16.0, after: networkContainerView)
 
-        containerView.stackView.addArrangedSubview(recepientTitleLabel)
-        containerView.stackView.setCustomSpacing(8.0, after: recepientTitleLabel)
+        let titleStackView = UIStackView(arrangedSubviews: [
+            recepientTitleLabel,
+            FlexibleSpaceView(),
+            yourWalletsView
+        ])
+        containerView.stackView.addArrangedSubview(titleStackView)
+        containerView.stackView.setCustomSpacing(8.0, after: titleStackView)
         containerView.stackView.addArrangedSubview(recepientInputView)
         containerView.stackView.setCustomSpacing(8.0, after: recepientInputView)
 

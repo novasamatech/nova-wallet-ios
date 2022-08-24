@@ -155,6 +155,13 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             context: selectionState
         )
     }
+    
+    func didTapOnYourWallets() {
+        let chain = destinationChainAsset ?? originChainAsset
+        wireframe.showYourWallets(from: view,
+                                  chain: chain,
+                                  address: childPresenter?.inputState.recepient)
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
@@ -218,6 +225,16 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 extension TransferSetupPresenter: AddressScanDelegate {
     func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
         wireframe.hideRecepientScan(from: view)
+
+        childPresenter?.changeRecepient(address: address)
+    }
+}
+
+extension TransferSetupPresenter: YourWalletsDelegate {
+    func selectWallet(address: AccountAddress?) {
+        guard let address = address else {
+            return
+        }
 
         childPresenter?.changeRecepient(address: address)
     }

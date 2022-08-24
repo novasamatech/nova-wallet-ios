@@ -75,6 +75,11 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             action: #selector(actionRecepientScan),
             for: .touchUpInside
         )
+        
+        rootView.yourWalletsView.actionControl.addTarget(
+            self,
+            action: #selector(actionYourWallets),
+            for: .touchUpInside)
     }
 
     private func setupLocalization() {
@@ -100,6 +105,13 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         setupAmountInputAccessoryView(for: selectedLocale)
 
         updateActionButtonState()
+        
+        rootView.yourWalletsView.bind(model: .init(
+            name: R.string.localizable.walletTransferYourWallets(
+                preferredLanguages: selectedLocale.rLanguages
+            ),
+            image: R.image.iconUsers()
+        ))
     }
 
     private func setupCrossChainLocalization() {
@@ -175,6 +187,10 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
     @objc func actionSendMyself() {
         presenter.applyMyselfRecepient()
+    }
+    
+    @objc func actionYourWallets() {
+        presenter.didTapOnYourWallets()
     }
 }
 
