@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct LedgerDiscoverViewFactory {
-    static func createView(chain: ChainModel, accountsStore: LedgerAccountsStore) -> LedgerDiscoverViewProtocol? {
+    static func createView(chain: ChainModel, accountsStore: LedgerAccountsStore) -> ControllerBackedProtocol? {
         let ledgerConnection = LedgerConnectionManager(logger: Logger.shared)
 
         let ledgerApplication = LedgerApplication(
@@ -27,10 +27,13 @@ struct LedgerDiscoverViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = LedgerDiscoverViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        let view = LedgerPerformOperationViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
-        interactor.presenter = presenter
+        interactor.basePresenter = presenter
 
         return view
     }

@@ -4,9 +4,9 @@ import SubstrateSdk
 extension MetaAccountModelType {
     var signaturePayloadFormat: ExtrinsicSignaturePayloadFormat {
         switch self {
-        case .secrets, .watchOnly:
+        case .secrets, .watchOnly, .ledger:
             return .regular
-        case .paritySigner, .ledger:
+        case .paritySigner:
             return .paritySigner
         }
     }
