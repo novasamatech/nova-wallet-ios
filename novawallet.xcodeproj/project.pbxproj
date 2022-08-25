@@ -743,6 +743,7 @@
 		8445CC2728366578003B26CD /* ParaStkCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8445CC2628366578003B26CD /* ParaStkCalls.swift */; };
 		84466B3328B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */; };
 		84466B3528B6731B00FA1E0D /* LedgerSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84466B3428B6731B00FA1E0D /* LedgerSigningWrapper.swift */; };
+		84466B3728B7588F00FA1E0D /* LedgerWalletFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84466B3628B7588F00FA1E0D /* LedgerWalletFactory.swift */; };
 		84468A072866530100BCBE00 /* AssetStorageInfoOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */; };
 		84468A09286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */; };
 		84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */; };
@@ -3338,6 +3339,7 @@
 		84466B3128B652BA00FA1E0D /* MultiassetUserDataModel6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel6.xcdatamodel; sourceTree = "<group>"; };
 		84466B3228B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MetaAccountModel+Identicon.swift"; sourceTree = "<group>"; };
 		84466B3428B6731B00FA1E0D /* LedgerSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerSigningWrapper.swift; sourceTree = "<group>"; };
+		84466B3628B7588F00FA1E0D /* LedgerWalletFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerWalletFactory.swift; sourceTree = "<group>"; };
 		84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStorageInfoOperationFactory.swift; sourceTree = "<group>"; };
 		84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupInteractor.swift; sourceTree = "<group>"; };
 		84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupPresenter.swift; sourceTree = "<group>"; };
@@ -7508,6 +7510,7 @@
 			children = (
 				846B749728B4BA0500C39B93 /* LedgerAccountsStore.swift */,
 				846B749928B4BA1700C39B93 /* LedgerChainAccount.swift */,
+				84466B3628B7588F00FA1E0D /* LedgerWalletFactory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -13198,6 +13201,7 @@
 				840DFDD8277061ED00B62981 /* DAppOperationConfirmModel.swift in Sources */,
 				84CC128627B8336900C8E6AB /* AsyncClosureOperation.swift in Sources */,
 				84F4393A25DAC48D00AEDA56 /* JSONRPCAliases.swift in Sources */,
+				84466B3728B7588F00FA1E0D /* LedgerWalletFactory.swift in Sources */,
 				84C5ADD928127F4D006D7388 /* WalletAccountSelectionView.swift in Sources */,
 				843910D6253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift in Sources */,
 				849842E626587573006BBB9F /* MultilineTableViewCell.swift in Sources */,
