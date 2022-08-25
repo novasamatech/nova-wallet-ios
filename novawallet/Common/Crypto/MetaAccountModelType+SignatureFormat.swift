@@ -6,14 +6,14 @@ extension MetaAccountModelType {
         switch self {
         case .secrets, .watchOnly:
             return .regular
-        case .paritySigner:
+        case .paritySigner, .ledger:
             return .paritySigner
         }
     }
 
     var supportsSigningRawBytes: Bool {
         switch self {
-        case .secrets, .watchOnly:
+        case .secrets, .watchOnly, .ledger:
             return true
         case .paritySigner:
             return false

@@ -55,7 +55,7 @@ final class CrowdloanListPresenter {
         }
 
         let viewModel = walletSwitchViewModelFactory.createViewModel(
-            from: wallet.substrateAccountId,
+            from: wallet.walletIdenticonData(),
             walletType: wallet.type
         )
 

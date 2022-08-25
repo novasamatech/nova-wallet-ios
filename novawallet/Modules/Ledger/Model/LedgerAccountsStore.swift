@@ -69,11 +69,17 @@ final class LedgerAccountsStore: Observable<[LedgerChainAccount]> {
         }
 
         let chainAccounts: [LedgerChainAccount] = supportedChains.map { chain in
-            if let wallet = wallet, let accountId = wallet.fetchChainAccountId(for: chain.accountRequest()) {
-                return LedgerChainAccount(chain: chain, accountId: accountId)
+            if let wallet = wallet, let response = wallet.fetch(for: chain.accountRequest()) {
+                let info = LedgerChainAccount.Info(
+                    accountId: response.accountId,
+                    publicKey: response.publicKey,
+                    cryptoType: response.cryptoType
+                )
+
+                return LedgerChainAccount(chain: chain, info: info)
             } else {
-                let accountId = currentChainAccounts[chain.chainId]?.accountId
-                return LedgerChainAccount(chain: chain, accountId: accountId)
+                let info = currentChainAccounts[chain.chainId]?.info
+                return LedgerChainAccount(chain: chain, info: info)
             }
         }
 

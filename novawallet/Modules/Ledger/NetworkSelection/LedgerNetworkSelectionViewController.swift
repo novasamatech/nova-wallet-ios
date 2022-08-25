@@ -28,7 +28,7 @@ final class LedgerNetworkSelectionViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupTableView()
-        setupNavigationItem()
+        setupHandlers()
         setupLocalization()
         updateActionButton()
 
@@ -75,15 +75,21 @@ final class LedgerNetworkSelectionViewController: UIViewController, ViewHolder {
         rootView.actionButton.invalidateLayout()
     }
 
-    private func setupNavigationItem() {
+    private func setupHandlers() {
         navigationItem.leftBarButtonItem = rootView.backButton
 
         rootView.backButton.target = self
         rootView.backButton.action = #selector(actionCancel)
+
+        rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
     }
 
     @objc private func actionCancel() {
         presenter.cancel()
+    }
+
+    @objc private func actionProceed() {
+        presenter.proceed()
     }
 }
 

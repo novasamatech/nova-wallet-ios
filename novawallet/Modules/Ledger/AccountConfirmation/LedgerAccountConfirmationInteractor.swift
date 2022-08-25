@@ -38,11 +38,17 @@ final class LedgerAccountConfirmationInteractor {
         self.accountsStore = accountsStore
     }
 
-    private func verify(responseAddress: AccountAddress, expectedAddress: AccountAddress, index: UInt32) {
+    private func verify(response: LedgerAccount, expectedAddress: AccountAddress, index: UInt32) {
         if
-            responseAddress == expectedAddress,
-            let accountId = try? responseAddress.toAccountId(using: chain.chainFormat) {
-            let chainAccount = LedgerChainAccount(chain: chain, accountId: accountId)
+            response.address == expectedAddress,
+            let accountId = try? response.address.toAccountId(using: chain.chainFormat) {
+            let info = LedgerChainAccount.Info(
+                accountId: accountId,
+                publicKey: response.publicKey,
+                cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType
+            )
+
+            let chainAccount = LedgerChainAccount(chain: chain, info: info)
             accountsStore.add(chainAccount: chainAccount)
 
             presenter?.didReceiveConfirmation(result: .success(accountId), at: index)
@@ -101,7 +107,8 @@ extension LedgerAccountConfirmationInteractor: LedgerAccountConfirmationInteract
             }
         }
 
-        let operations = ledgerWrapper.allOperations + [codingFactoryOperation] + balanceWrapper.allOperations + [mappingOperation]
+        let operations = ledgerWrapper.allOperations + [codingFactoryOperation] + balanceWrapper.allOperations
+            + [mappingOperation]
 
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }
@@ -119,7 +126,7 @@ extension LedgerAccountConfirmationInteractor: LedgerAccountConfirmationInteract
                 do {
                     let response = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                    self?.verify(responseAddress: response.address, expectedAddress: address, index: index)
+                    self?.verify(response: response, expectedAddress: address, index: index)
                 } catch {
                     self?.presenter?.didReceiveConfirmation(result: .failure(error), at: index)
                 }
