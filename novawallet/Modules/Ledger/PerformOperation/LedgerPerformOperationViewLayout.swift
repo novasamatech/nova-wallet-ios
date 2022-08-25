@@ -1,6 +1,6 @@
 import UIKit
 
-final class LedgerDiscoverViewLayout: UIView {
+final class LedgerPerformOperationViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 0.0, right: 16.0)

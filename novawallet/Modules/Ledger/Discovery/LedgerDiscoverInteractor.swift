@@ -1,10 +1,17 @@
-import UIKit
+import Foundation
 
-final class LedgerDiscoverInteractor {
-    weak var presenter: LedgerDiscoverInteractorOutputProtocol?
+final class LedgerDiscoverInteractor: LedgerPerformOperationInteractor {
+    var presenter: LedgerDiscoverInteractorOutputProtocol? {
+        get {
+            basePresenter as? LedgerDiscoverInteractorOutputProtocol
+        }
+
+        set {
+            basePresenter = newValue
+        }
+    }
 
     let chain: ChainModel
-    let ledgerConnection: LedgerConnectionManagerProtocol
     let ledgerApplication: LedgerApplicationProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -18,24 +25,13 @@ final class LedgerDiscoverInteractor {
     ) {
         self.chain = chain
         self.ledgerApplication = ledgerApplication
-        self.ledgerConnection = ledgerConnection
         self.operationQueue = operationQueue
         self.logger = logger
+
+        super.init(ledgerConnection: ledgerConnection)
     }
 
-    deinit {
-        ledgerConnection.delegate = nil
-        ledgerConnection.stop()
-    }
-}
-
-extension LedgerDiscoverInteractor: LedgerDiscoverInteractorInputProtocol {
-    func setup() {
-        ledgerConnection.delegate = self
-        ledgerConnection.start()
-    }
-
-    func connect(to deviceId: UUID) {
+    override func performOperation(using deviceId: UUID) {
         let wrapper = ledgerApplication.getAccountWrapper(
             for: deviceId,
             chainId: chain.chainId,
@@ -57,19 +53,5 @@ extension LedgerDiscoverInteractor: LedgerDiscoverInteractorInputProtocol {
         }
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-    }
-}
-
-extension LedgerDiscoverInteractor: LedgerConnectionManagerDelegate {
-    func ledgerConnection(manager _: LedgerConnectionManagerProtocol, didDiscover device: LedgerDeviceProtocol) {
-        DispatchQueue.main.async { [weak self] in
-            self?.presenter?.didDiscover(device: device)
-        }
-    }
-
-    func ledgerConnection(manager _: LedgerConnectionManagerProtocol, didReceive error: LedgerDiscoveryError) {
-        DispatchQueue.main.async { [weak self] in
-            self?.presenter?.didReceiveSetup(error: error)
-        }
     }
 }
