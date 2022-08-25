@@ -72,4 +72,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
         address: AccountAddress?,
         delegate: YourWalletsDelegate
     )
+
+    func hideYourWallets(from view: TransferSetupViewProtocol?)
 }

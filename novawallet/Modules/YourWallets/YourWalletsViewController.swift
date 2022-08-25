@@ -1,13 +1,23 @@
 import UIKit
+import SoraFoundation
 
-final class YourWalletsViewController: UIViewController {
+final class YourWalletsCollectionViewCell: UICollectionViewCell {}
+
+final class YourWalletsViewController: UIViewController, ViewHolder {
     typealias RootViewType = YourWalletsViewLayout
+    typealias DataSource =
+        UICollectionViewDiffableDataSource<YourWalletsViewSectionModel, YourWalletsViewModelCell>
 
     let presenter: YourWalletsPresenterProtocol
+    private lazy var dataSource = createDataSource()
 
-    init(presenter: YourWalletsPresenterProtocol) {
+    init(
+        presenter: YourWalletsPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -22,76 +32,81 @@ final class YourWalletsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupCollectionView()
+        applyLocalization()
         presenter.setup()
+    }
+
+    private func setupCollectionView() {
+        rootView.collectionView.dataSource = dataSource
+        rootView.collectionView.delegate = self
+        rootView.collectionView.registerCellClass(YourWalletsCollectionViewCell.self)
+        rootView.collectionView.registerClass(
+            RoundedIconTitleCollectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
+        )
+    }
+
+    private func createDataSource() -> DataSource {
+        let dataSource = DataSource(
+            collectionView: rootView.collectionView,
+            cellProvider: { collectionView, indexPath, _ ->
+                UICollectionViewCell? in
+                let cell: YourWalletsCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
+                // cell?.bind(model: model)
+                return cell
+            }
+        )
+
+        dataSource.supplementaryViewProvider = { [weak self] collectionView, _, indexPath in
+            guard let headerModel = self?
+                .dataSource
+                .snapshot()
+                .sectionIdentifiers[indexPath.section]
+                .header else {
+                return nil
+            }
+
+            let header: RoundedIconTitleCollectionHeaderView? = collectionView.dequeueReusableSupplementaryView(
+                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                for: indexPath
+            )
+
+            header?.bind(title: headerModel.title, icon: headerModel.icon)
+            return header
+        }
+
+        return dataSource
     }
 }
 
 extension YourWalletsViewController: YourWalletsViewProtocol {
-    func update(viewModel _: [YourWalletsViewModel]) {}
+    func update(viewModel: [YourWalletsViewSectionModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<YourWalletsViewSectionModel, YourWalletsViewModelCell>()
+        snapshot.appendSections(viewModel)
+        viewModel.forEach { section in
+            snapshot.appendItems(section.cells, toSection: section)
+        }
+
+        dataSource.apply(snapshot)
+    }
 }
 
-// TODO: Remove
-final class TestYourWalletsViewController: UITableViewController {
-    let presenter: YourWalletsPresenterProtocol
-    private var viewModel: [YourWalletsViewModel] = []
-
-    init(presenter: YourWalletsPresenterProtocol) {
-        self.presenter = presenter
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        presenter.setup()
-    }
-
-    override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        viewModel.count
-    }
-
-    override func tableView(_: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
-
-        let cellModel = viewModel[indexPath.row]
-        switch cellModel {
-        case let .common(model, _):
-            cell.textLabel?.text = model.name
-            cell.detailTextLabel?.text = model.address
-            model.imageViewModel?.loadImage(
-                on: cell.imageView!,
-                targetSize: .init(width: 32, height: 32),
-                animated: true
-            )
-        case let .notFound(model):
-            cell.textLabel?.text = model.name
-            cell.detailTextLabel?.text = "Account not found"
-            model.imageViewModel?.loadImage(
-                on: cell.imageView!,
-                targetSize: .init(width: 32, height: 32),
-                animated: true
-            )
-        }
-        return cell
-    }
-
-    override func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        guard case let .common(cellModel, _) = viewModel[indexPath.row] else {
+extension YourWalletsViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        guard let item = dataSource.itemIdentifier(for: indexPath) else {
             return
         }
-        presenter.didSelect(viewModel: cellModel)
+        guard case let .common(model) = item else {
+            return
+        }
+        presenter.didSelect(viewModel: model)
     }
 }
 
-extension TestYourWalletsViewController: YourWalletsViewProtocol {
-    func update(viewModel: [YourWalletsViewModel]) {
-        self.viewModel = viewModel
-        tableView.reloadData()
+extension YourWalletsViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {}
     }
 }

@@ -242,10 +242,8 @@ extension TransferSetupPresenter: AddressScanDelegate {
 }
 
 extension TransferSetupPresenter: YourWalletsDelegate {
-    func selectWallet(address: AccountAddress?) {
-        guard let address = address else {
-            return
-        }
+    func selectWallet(address: AccountAddress) {
+        wireframe.hideYourWallets(from: view)
 
         childPresenter?.changeRecepient(address: address)
     }

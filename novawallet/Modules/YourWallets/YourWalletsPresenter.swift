@@ -3,64 +3,92 @@ import SubstrateSdk
 
 final class YourWalletsPresenter {
     weak var view: YourWalletsViewProtocol?
-    let wireframe: YourWalletsWireframeProtocol
-    let interactor: YourWalletsInteractorInputProtocol
     weak var delegate: YourWalletsDelegate?
+
+    let wireframe: YourWalletsWireframeProtocol
     let metaAccounts: [PossibleMetaAccountChainResponse]
-    private lazy var walletIconGenerator = NovaIconGenerator()
+    let iconGenerator: IconGenerating
+    private(set) var selectedAddress: AccountAddress?
 
     init(
-        interactor: YourWalletsInteractorInputProtocol,
         wireframe: YourWalletsWireframeProtocol,
+        iconGenerator: IconGenerating,
         metaAccounts: [PossibleMetaAccountChainResponse],
+        selectedAddress: AccountAddress?,
         delegate: YourWalletsDelegate
     ) {
-        self.interactor = interactor
         self.wireframe = wireframe
+        self.iconGenerator = iconGenerator
         self.metaAccounts = metaAccounts
+        self.selectedAddress = selectedAddress
         self.delegate = delegate
     }
 
-    private func updateView() throws {
-        let viewModel: [YourWalletsViewModel] =
-            try metaAccounts.map {
-                if let displayAddress = try $0.chainAccountResponse?.toWalletDisplayAddress() {
-                    return .common(
-                        .init(
-                            address: displayAddress.address,
-                            name: displayAddress.walletName,
-                            imageViewModel: try? icon(from: displayAddress.walletIconData)
-                        ),
-                        isSelected: false
-                    )
-                } else {
-                    return .notFound(.init(
-                        address: "",
-                        name: $0.metaAccount.name,
-                        imageViewModel: try? icon(from: $0.metaAccount.substrateAccountId)
-                    ))
-                }
+    private func updateView() {
+        var createdSections: [MetaAccountModelType: Int] = [:]
+        var sections: [YourWalletsViewSectionModel] = []
+
+        for metaAccount in metaAccounts {
+            if let existsSectionIndex = createdSections[metaAccount.metaAccount.type] {
+                sections[existsSectionIndex].cells.append(cell(response: metaAccount))
+            } else {
+                sections.append(.init(
+                    header: header(response: metaAccount),
+                    cells: .init()
+                ))
+                createdSections[metaAccount.metaAccount.type] = createdSections.count
             }
-        view?.update(viewModel: viewModel)
+        }
+
+        view?.update(viewModel: sections)
     }
 
-    private func icon(from imageData: Data?) throws -> DrawableIconViewModel? {
-        try imageData.map { data in
-            let icon = try walletIconGenerator.generateFromAccountId(data)
-            return DrawableIconViewModel(icon: icon)
+    private func header(response: PossibleMetaAccountChainResponse) -> YourWalletsViewSectionModel.HeaderModel? {
+        switch response.metaAccount.type {
+        case .watchOnly, .secrets:
+            return nil
+        case .paritySigner:
+            return .init(
+                title: "Parity Signer",
+                icon: R.image.iconParitySigner()
+            )
         }
+    }
+
+    private func cell(response: PossibleMetaAccountChainResponse) -> YourWalletsViewModelCell {
+        let name = response.metaAccount.name
+        let imageViewModel = icon(from: response.metaAccount.substrateAccountId)
+
+        guard let displayAddress = try? response.chainAccountResponse?.chainAccount.toDisplayAddress() else {
+            return .notFound(.init(name: name, imageViewModel: imageViewModel))
+        }
+
+        return .common(.init(
+            displayAddress: displayAddress,
+            imageViewModel: imageViewModel,
+            isSelected: selectedAddress == displayAddress.address
+        ))
+    }
+
+    private func icon(from imageData: Data?) -> DrawableIconViewModel? {
+        guard let data = imageData else {
+            return nil
+        }
+        guard let icon = try? iconGenerator.generateFromAccountId(data) else {
+            return nil
+        }
+
+        return DrawableIconViewModel(icon: icon)
     }
 }
 
 extension YourWalletsPresenter: YourWalletsPresenterProtocol {
     func setup() {
-        try? updateView()
+        updateView()
     }
 
-    func didSelect(viewModel: DisplayAddressViewModel) {
-        delegate?.selectWallet(address: viewModel.address)
-        view?.controller.dismiss(animated: true)
+    func didSelect(viewModel: YourWalletsViewModelCell.CommonModel) {
+        selectedAddress = viewModel.displayAddress.address
+        delegate?.selectWallet(address: viewModel.displayAddress.address)
     }
 }
-
-extension YourWalletsPresenter: YourWalletsInteractorOutputProtocol {}

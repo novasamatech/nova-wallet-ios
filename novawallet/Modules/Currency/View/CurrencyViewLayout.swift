@@ -32,34 +32,14 @@ final class CurrencyViewLayout: UIView {
     }()
 
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .fractionalHeight(1)
-        )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(Constants.estimatedRowHeight)
-        )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(Constants.estimatedHeaderHeight)
-        )
-        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .topLeading
-        )
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = Constants.sectionContentInsets
-        section.interGroupSpacing = Constants.interGroupSpacing
-        section.boundarySupplementaryItems = [sectionHeader]
-
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        return layout
+        .createWholeWidthRowCompositionalLayout(settings:
+            .init(
+                estimatedRowHeight: Constants.estimatedRowHeight,
+                estimatedHeaderHeight: Constants.estimatedHeaderHeight,
+                sectionContentInsets: Constants.sectionContentInsets,
+                sectionInterGroupSpacing: Constants.interGroupSpacing,
+                headerPinToVisibleBounds: false
+            ))
     }
 }
 
@@ -79,8 +59,50 @@ extension CurrencyViewLayout {
         static let collectionViewContentInset = UIEdgeInsets(
             top: 8,
             left: 0,
-            bottom: 16.0,
+            bottom: 16,
             right: 0
         )
+    }
+}
+
+extension UICollectionViewCompositionalLayout {
+    struct Settings {
+        let estimatedRowHeight: CGFloat
+        let estimatedHeaderHeight: CGFloat
+        let sectionContentInsets: NSDirectionalEdgeInsets
+        let sectionInterGroupSpacing: CGFloat
+        let headerPinToVisibleBounds: Bool
+    }
+
+    static func createWholeWidthRowCompositionalLayout(settings: Settings) -> UICollectionViewCompositionalLayout {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .fractionalHeight(1)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(settings.estimatedRowHeight)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(settings.estimatedHeaderHeight)
+        )
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .topLeading
+        )
+        sectionHeader.pinToVisibleBounds = settings.headerPinToVisibleBounds
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = settings.sectionContentInsets
+        section.interGroupSpacing = settings.sectionInterGroupSpacing
+        section.boundarySupplementaryItems = [sectionHeader]
+
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
     }
 }

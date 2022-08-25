@@ -1,25 +1,28 @@
 import Foundation
+import SubstrateSdk
+import SoraFoundation
 
 struct YourWalletsViewFactory {
     static func createView(
         metaAccounts: [PossibleMetaAccountChainResponse],
-        address _: AccountAddress?,
+        address: AccountAddress?,
         delegate: YourWalletsDelegate
     ) -> YourWalletsViewProtocol? {
-        let interactor = YourWalletsInteractor()
         let wireframe = YourWalletsWireframe()
 
         let presenter = YourWalletsPresenter(
-            interactor: interactor,
             wireframe: wireframe,
+            iconGenerator: NovaIconGenerator(),
             metaAccounts: metaAccounts,
+            selectedAddress: address,
             delegate: delegate
         )
 
-        let view = TestYourWalletsViewController(presenter: presenter)
-
+        let view = YourWalletsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }
