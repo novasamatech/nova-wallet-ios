@@ -915,3 +915,14 @@
 "ledger.address.verify.confirmation" = "Проверьте\nадрес";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Этот кошелёк добавлен из Ledger устройства. Nova Wallet поможет создать любую операцию, и вам будет необходимо подписать ее с помощью Ledger устройства";
+"ledger.instructions.title" = "Подключите Ledger Nano X";
+"ledger.instructions.link" = "Инструкция по подключению Ledger";
+"ledger.instructions.step1" = "Удостоверьтесь, что приложение Сети установлено на Ваше устройство Ledger, используя приложение Ledger Live";
+"ledger.instructions.step1.highlighted" = "приложение Сети установлено";
+"ledger.instructions.step2" = "Откройте приложение Сети на Вашем Ledger устройстве";
+"ledger.instructions.step2.highlighted" = "Откройте приложение Сети";
+"ledger.instructions.step3" = "Разрешите Nova Wallet доступ к Bluetooth";
+"ledger.instructions.step3.highlighted" = "доступ к Bluetooth";
+"ledger.instructions.step4" = "Выберите аккаунт для добавления в кошелёк";
+"ledger.instructions.step4.highlighted" = "Выберите аккаунт";
+"welcome.hardware.wallet.subtitle.v3_7" = "Использовать Parity Signer и Ledger";

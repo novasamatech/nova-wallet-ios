@@ -29,7 +29,7 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
     let integrationImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = R.image.imageNovaParitySigner()
+        imageView.image = R.image.imageNovaLedger()
         return imageView
     }()
 
@@ -47,13 +47,13 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
 
     let step3: ProcessStepView = {
         let view = ProcessStepView()
-        view.stepNumberView.titleLabel.text = "1"
+        view.stepNumberView.titleLabel.text = "3"
         return view
     }()
 
     let step4: ProcessStepView = {
         let view = ProcessStepView()
-        view.stepNumberView.titleLabel.text = "2"
+        view.stepNumberView.titleLabel.text = "4"
         return view
     }()
 

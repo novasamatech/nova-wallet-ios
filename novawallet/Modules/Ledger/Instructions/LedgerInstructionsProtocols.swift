@@ -5,4 +5,6 @@ protocol LedgerInstructionsPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol LedgerInstructionsWireframeProtocol: AnyObject {}
+protocol LedgerInstructionsWireframeProtocol: WebPresentable {
+    func showNetworkSelection(from view: LedgerInstructionsViewProtocol?)
+}
