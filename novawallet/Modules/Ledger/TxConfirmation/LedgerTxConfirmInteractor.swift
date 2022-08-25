@@ -99,7 +99,9 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
     ) -> BaseOperation<IRSignatureProtocol> {
         ClosureOperation {
             let chainAccount = try chainAccountOperation.extractNoCancellableResultData()
-            let rawSignature = try signatureFetchOperation.extractNoCancellableResultData()
+
+            // drop signature type
+            let rawSignature = try signatureFetchOperation.extractNoCancellableResultData().dropFirst()
 
             let originalData: Data
 
