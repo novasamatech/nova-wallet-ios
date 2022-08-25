@@ -24,7 +24,7 @@ final class LedgerSigningWrapper {
     }
 }
 
-extension LedgerSigningWrapper {
+extension LedgerSigningWrapper: SigningWrapperProtocol {
     func sign(_ originalData: Data) throws -> IRSignatureProtocol {
         let semaphore = DispatchSemaphore(value: 0)
 

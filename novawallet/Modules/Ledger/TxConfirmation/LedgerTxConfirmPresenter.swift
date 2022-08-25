@@ -28,14 +28,14 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
 }
 
 extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
-    func didReceiveSigning(result: Result<IRSignatureProtocol, Error>, for _: UUID) {
+    func didReceiveSigning(result: Result<IRSignatureProtocol, Error>, for deviceId: UUID) {
         wireframe?.complete(on: view)
 
         switch result {
         case let .success(signature):
             completion(.success(signature))
         case let .failure(error):
-            completion(.failure(error))
+            handleAppConnection(error: error, deviceId: deviceId)
         }
     }
 }
