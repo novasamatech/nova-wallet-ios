@@ -914,4 +914,4 @@
 "ledger.address.verify.message" = "Нажмите обе кнопки на Вашем %@ для подтверждения адреса";
 "ledger.address.verify.confirmation" = "Проверьте\nадрес";
 "common.ledger" = "Ledger";
-"ledger.details.hint" = "Этот кошелёк добавлен из Ledger устройства. Nova Wallet создать любую операцию, и вам будет необходимо подписать ее с помощью Ledger устройства";
+"ledger.details.hint" = "Этот кошелёк добавлен из Ledger устройства. Nova Wallet поможет создать любую операцию, и вам будет необходимо подписать ее с помощью Ledger устройства";
