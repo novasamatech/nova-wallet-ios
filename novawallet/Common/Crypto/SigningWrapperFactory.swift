@@ -43,7 +43,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 chainId: accountResponse.chainId
             )
         case .ledger:
-            return ParitySignerSigningWrapper(
+            return LedgerSigningWrapper(
                 uiPresenter: uiPresenter,
                 metaId: metaId,
                 chainId: accountResponse.chainId
