@@ -3,7 +3,7 @@ import BigInt
 
 struct DAppOperationConfirmModel {
     let accountName: String
-    let walletAccountId: AccountId
+    let walletIdenticon: Data?
     let chainAccountId: AccountId
     let chainAddress: AccountAddress
     let networkName: String

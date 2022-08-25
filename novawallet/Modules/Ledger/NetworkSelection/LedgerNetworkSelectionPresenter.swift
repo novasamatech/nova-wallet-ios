@@ -67,6 +67,10 @@ extension LedgerNetworkSelectionPresenter: LedgerNetworkSelectionPresenterProtoc
             self?.wireframe.close(view: view)
         }
     }
+
+    func proceed() {
+        wireframe.showWalletCreate(from: view)
+    }
 }
 
 extension LedgerNetworkSelectionPresenter: LedgerNetworkSelectionInteractorOutputProtocol {

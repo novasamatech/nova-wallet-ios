@@ -42,7 +42,7 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
-            walletAccountId: request.wallet.substrateAccountId,
+            walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: accountResponse.accountId,
             chainAddress: chainAddress,
             networkName: chain.name,

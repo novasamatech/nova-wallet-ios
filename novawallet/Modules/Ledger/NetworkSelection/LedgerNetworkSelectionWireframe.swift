@@ -21,4 +21,12 @@ final class LedgerNetworkSelectionWireframe: LedgerNetworkSelectionWireframeProt
     func close(view: LedgerNetworkSelectionViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }
+
+    func showWalletCreate(from view: LedgerNetworkSelectionViewProtocol?) {
+        guard let walletCreateView = LedgerWalletConfirmViewFactory.createView(with: accountsStore) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(walletCreateView.controller, animated: true)
+    }
 }

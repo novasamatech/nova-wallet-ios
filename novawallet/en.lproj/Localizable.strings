@@ -916,3 +916,5 @@
 "ledger.address.verify.title" = "Verify address";
 "ledger.address.verify.message" = "Press both buttons on your %@ to verify address";
 "ledger.address.verify.confirmation" = "Verify\naddress";
+"common.ledger" = "Ledger";
+"ledger.details.hint" = "This wallet is paired with Ledger. Nova will help you to form any operations you want, and you will be requested to sign them using Ledger";
