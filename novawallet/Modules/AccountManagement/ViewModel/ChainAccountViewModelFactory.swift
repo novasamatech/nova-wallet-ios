@@ -89,7 +89,7 @@ final class ChainAccountViewModelFactory {
             let hasAction: Bool
 
             switch wallet.type {
-            case .secrets, .watchOnly:
+            case .secrets, .watchOnly, .ledger:
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             case .paritySigner:

@@ -480,7 +480,7 @@ extension StakingMainViewController: StakingMainViewProtocol {
         assetIconViewModel = viewModel.assetIcon
         balanceViewModel = viewModel.balanceViewModel
 
-        let icon = try? iconGenerator?.generateFromAccountId(viewModel.accountId)
+        let icon = viewModel.walletIdenticon.flatMap { try? iconGenerator?.generateFromAccountId($0) }
         let walletSwitchViewModel = WalletSwitchViewModel(
             type: viewModel.walletType,
             iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }

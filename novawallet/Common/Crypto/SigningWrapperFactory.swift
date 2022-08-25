@@ -42,6 +42,12 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 metaId: metaId,
                 chainId: accountResponse.chainId
             )
+        case .ledger:
+            return ParitySignerSigningWrapper(
+                uiPresenter: uiPresenter,
+                metaId: metaId,
+                chainId: accountResponse.chainId
+            )
         }
     }
 
@@ -53,7 +59,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return SigningWrapper(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
         case .watchOnly:
             return NoKeysSigningWrapper()
-        case .paritySigner:
+        case .paritySigner, .ledger:
             return NoSigningSupportWrapper()
         }
     }
@@ -64,7 +70,7 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
             return EthereumSigner(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
         case .watchOnly:
             return NoKeysSigningWrapper()
-        case .paritySigner:
+        case .paritySigner, .ledger:
             return NoSigningSupportWrapper()
         }
     }
