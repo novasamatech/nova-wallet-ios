@@ -1,6 +1,8 @@
 import Foundation
 import RobinHood
 
+typealias DerivationPathClosure = () throws -> Data
+
 protocol LedgerApplicationProtocol {
     func getAccountWrapper(
         for deviceId: UUID,
@@ -13,7 +15,7 @@ protocol LedgerApplicationProtocol {
         for payload: Data,
         deviceId: UUID,
         chainId: ChainModel.Id,
-        derivationPath: Data
+        derivationPathClosure: @escaping DerivationPathClosure
     ) -> CompoundOperationWrapper<Data>
 }
 
@@ -153,26 +155,41 @@ extension LedgerApplication: LedgerApplicationProtocol {
         for payload: Data,
         deviceId: UUID,
         chainId: ChainModel.Id,
-        derivationPath: Data
+        derivationPathClosure: @escaping DerivationPathClosure
     ) -> CompoundOperationWrapper<Data> {
         guard let application = supportedApps.first(where: { $0.chainId == chainId }) else {
             return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
         }
 
-        let chunks: [Data] = [derivationPath] + payload.chunked(by: Constants.chunkSize)
+        let payloadChunkClosures: [DerivationPathClosure] = payload.chunked(by: Constants.chunkSize).map { chunk in
+            { chunk }
+        }
+
+        let chunks = [derivationPathClosure] + payloadChunkClosures
 
         let requestOperations: [LedgerSendOperation] = chunks.enumerated().map { indexedChunk in
             let type = PayloadType(chunkIndex: indexedChunk.offset, totalChunks: chunks.count)
 
-            let message = LedgerApplicationRequest(
-                cla: application.cla,
-                instruction: Instruction.sign.rawValue,
-                param1: type.rawValue,
-                param2: CryptoScheme.ed25519.rawValue,
-                payload: indexedChunk.element
-            ).toBytes()
+            let operation = LedgerSendOperation(connection: connectionManager, deviceId: deviceId)
+            operation.configurationBlock = {
+                do {
+                    let chunk = try indexedChunk.element()
 
-            return LedgerSendOperation(connection: connectionManager, deviceId: deviceId, message: message)
+                    let message = LedgerApplicationRequest(
+                        cla: application.cla,
+                        instruction: Instruction.sign.rawValue,
+                        param1: type.rawValue,
+                        param2: LedgerApplication.defaultCryptoScheme.rawValue,
+                        payload: chunk
+                    ).toBytes()
+
+                    operation.message = message
+                } catch {
+                    operation.result = .failure(error)
+                }
+            }
+
+            return operation
         }
 
         for index in 0 ..< (requestOperations.count - 1) {

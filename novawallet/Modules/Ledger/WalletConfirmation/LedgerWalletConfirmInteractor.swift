@@ -38,20 +38,11 @@ final class LedgerWalletConfirmInteractor {
 
             return ClosureOperation {
                 try walletResult.derivationPaths.forEach { accountAndPath in
-                    let keystoreTag: String = {
-                        if accountAndPath.chainAccount.isEthereumBased {
-                            return KeystoreTagV2.ethereumDerivationTagForMetaId(
-                                walletResult.wallet.metaId,
-                                accountId: accountAndPath.chainAccount.accountId
-                            )
-                        } else {
-                            return KeystoreTagV2.substrateDerivationTagForMetaId(
-                                walletResult.wallet.metaId,
-                                accountId: accountAndPath.chainAccount.accountId
-                            )
-                        }
-
-                    }()
+                    let keystoreTag: String = KeystoreTagV2.derivationTagForMetaId(
+                        walletResult.wallet.metaId,
+                        accountId: accountAndPath.chainAccount.accountId,
+                        isEthereumBased: accountAndPath.chainAccount.isEthereumBased
+                    )
 
                     try keystore.saveKey(accountAndPath.path, with: keystoreTag)
                 }

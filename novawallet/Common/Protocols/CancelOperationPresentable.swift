@@ -17,7 +17,7 @@ extension CancelOperationPresentable where Self: AlertPresentable {
         let action = AlertPresentableAction(
             title: R.string.localizable.commonCancelOperationAction(preferredLanguages: locale.rLanguages),
             style: .destructive
-        ) { [weak view] in
+        ) {
             destructiveClosure()
         }
 
