@@ -23,3 +23,8 @@ struct LedgerAccount: LedgerDecodable {
         address = accountAddress
     }
 }
+
+struct LedgerAccountResponse {
+    let account: LedgerAccount
+    let derivationPath: Data
+}

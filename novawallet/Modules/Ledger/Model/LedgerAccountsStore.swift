@@ -13,6 +13,9 @@ final class LedgerAccountsStore: Observable<[LedgerChainAccount]> {
     private var wallet: MetaAccountModel?
     private var walletProvider: StreamableProvider<ManagedMetaAccountModel>?
 
+    // stores derivation paths for new accounts
+    private var derivationPaths: [AccountId: Data] = [:]
+
     init(
         chainRegistry: ChainRegistryProtocol,
         supportedApps: [SupportedLedgerApp],
@@ -94,11 +97,19 @@ final class LedgerAccountsStore: Observable<[LedgerChainAccount]> {
         }
     }
 
-    func add(chainAccount: LedgerChainAccount) {
+    func add(chain: ChainModel, info: LedgerChainAccount.Info, derivationPath: Data) {
+        derivationPaths[info.accountId] = derivationPath
+
+        let chainAccount = LedgerChainAccount(chain: chain, info: info)
+
         if let replacingIndex = state.firstIndex(where: { $0.chain.chainId == chainAccount.chain.chainId }) {
             state[replacingIndex] = chainAccount
         } else {
             state.append(chainAccount)
         }
+    }
+
+    func derivationPath(for accountId: AccountId) -> Data? {
+        derivationPaths[accountId]
     }
 }
