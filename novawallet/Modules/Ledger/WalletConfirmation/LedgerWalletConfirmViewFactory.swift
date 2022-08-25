@@ -1,12 +1,15 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct LedgerWalletConfirmViewFactory {
     static func createView(with accountsStore: LedgerAccountsStore) -> ControllerBackedProtocol? {
         let interactor = LedgerWalletConfirmInteractor(
             accountsStore: accountsStore,
             settings: SelectedWalletSettings.shared,
+            walletFactory: LedgerWalletFactory(),
             eventCenter: EventCenter.shared,
+            keystore: Keychain(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

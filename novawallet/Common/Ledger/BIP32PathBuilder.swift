@@ -26,9 +26,9 @@ final class LedgerPathBuilder {
     func appendingStandardJunctions(coin: UInt32, accountIndex: UInt32) -> LedgerPathBuilder {
         appending(junction: .hardened(value: 44))
             .appending(junction: .hardened(value: coin))
-            .appending(junction: .hardened(value: 0))
-            .appending(junction: .hardened(value: 0))
             .appending(junction: .hardened(value: accountIndex))
+            .appending(junction: .hardened(value: 0))
+            .appending(junction: .hardened(value: 0))
     }
 
     func build() -> Data {
