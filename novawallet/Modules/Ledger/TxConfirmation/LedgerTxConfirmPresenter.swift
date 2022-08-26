@@ -48,9 +48,19 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
             switch code {
             case .transactionRejected:
                 wireframe?.closeTransactionStatus(on: view)
+            case .instructionNotSupported:
+                wireframe?.transitToTransactionNotSupported(on: view) { [weak self] in
+                    self?.performCancellation()
+                }
             default:
                 wireframe?.closeTransactionStatus(on: view)
                 super.handleAppConnection(error: error, deviceId: deviceId)
+            }
+        } else if
+            let signatureError = error as? LedgerTxConfirmInteractorError,
+            signatureError == .invalidSignature {
+            wireframe?.transitToInvalidSignature(on: view) { [weak self] in
+                self?.performCancellation()
             }
         } else {
             wireframe?.closeTransactionStatus(on: view)

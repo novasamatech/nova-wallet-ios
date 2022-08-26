@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class MessageSheetViewController<
     I: UIView & MessageSheetGraphicsProtocol,
@@ -9,6 +10,8 @@ final class MessageSheetViewController<
 
     let presenter: MessageSheetPresenterProtocol
     let viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>
+
+    var allowsSwipeDown: Bool = true
 
     init(
         presenter: MessageSheetPresenterProtocol,
@@ -35,8 +38,8 @@ final class MessageSheetViewController<
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupLocalization()
         setupHandlers()
+        setupLocalization()
     }
 
     private func setupLocalization() {
@@ -68,6 +71,12 @@ final class MessageSheetViewController<
 }
 
 extension MessageSheetViewController: MessageSheetViewProtocol {}
+
+extension MessageSheetViewController: ModalPresenterDelegate {
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool {
+        allowsSwipeDown
+    }
+}
 
 extension MessageSheetViewController: Localizable {
     func applyLocalization() {

@@ -99,12 +99,30 @@ enum LedgerBottomSheetViewFactory {
         return view
     }
 
-    static func createTransactionExpiredView(
-        for expirationTimeInterval: TimeInterval,
+    static func createLedgerWarningView(
+        for title: LocalizableResource<String>,
+        message: LocalizableResource<String>,
         completionClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let image = R.image.imageLedgerWarning()
 
+        let view = MessageSheetViewFactory.createNoContentView(
+            title: title,
+            message: message,
+            image: image,
+            allowsSwipeDown: false,
+            completionCallback: completionClosure
+        )
+
+        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 380.0)
+
+        return view
+    }
+
+    static func createTransactionExpiredView(
+        for expirationTimeInterval: TimeInterval,
+        completionClosure: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.commonTransactionExpired(preferredLanguages: locale.rLanguages)
         }
@@ -121,11 +139,56 @@ enum LedgerBottomSheetViewFactory {
             )
         }
 
-        return MessageSheetViewFactory.createNoContentView(
-            title: title,
-            message: message,
-            image: image,
-            completionCallback: completionClosure
-        )
+        return createLedgerWarningView(for: title, message: message, completionClosure: completionClosure)
+    }
+
+    static func createTransactionNotSupportedView(
+        completionClosure: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.ledgerTransactionNotSupportedTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource<String> { locale in
+            R.string.localizable.ledgerTransactionNotSupportedMessage(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        return createLedgerWarningView(for: title, message: message, completionClosure: completionClosure)
+    }
+
+    static func createSignatureInvalidView(
+        completionClosure: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.commonSignatureInvalid(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource<String> { locale in
+            R.string.localizable.ledgerTransactionSignatureInvalid(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        return createLedgerWarningView(for: title, message: message, completionClosure: completionClosure)
+    }
+
+    static func createMetadataOutdatedView(
+        chainName: String,
+        completionClosure: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.commonOutdatedMetadata(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource<String> { locale in
+            R.string.localizable.ledgerTransactionUpdateMetadata(
+                chainName,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        return createLedgerWarningView(for: title, message: message, completionClosure: completionClosure)
     }
 }

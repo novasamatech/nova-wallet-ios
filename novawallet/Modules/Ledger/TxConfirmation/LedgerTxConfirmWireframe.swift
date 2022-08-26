@@ -62,6 +62,47 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         replaceTransactionStatus(with: transactionExpiredView, on: view)
     }
 
+    func transitToTransactionNotSupported(
+        on view: ControllerBackedProtocol?,
+        completion: @escaping MessageSheetCallback
+    ) {
+        guard let notSupportedView = LedgerBottomSheetViewFactory.createTransactionNotSupportedView(
+            completionClosure: completion
+        ) else {
+            return
+        }
+
+        replaceTransactionStatus(with: notSupportedView, on: view)
+    }
+
+    func transitToMetadataOutdated(
+        on view: ControllerBackedProtocol?,
+        chainName: String,
+        completion: @escaping MessageSheetCallback
+    ) {
+        guard let outdateMetadataView = LedgerBottomSheetViewFactory.createMetadataOutdatedView(
+            chainName: chainName,
+            completionClosure: completion
+        ) else {
+            return
+        }
+
+        replaceTransactionStatus(with: outdateMetadataView, on: view)
+    }
+
+    func transitToInvalidSignature(
+        on view: ControllerBackedProtocol?,
+        completion: @escaping MessageSheetCallback
+    ) {
+        guard let invalidSignatureView = LedgerBottomSheetViewFactory.createSignatureInvalidView(
+            completionClosure: completion
+        ) else {
+            return
+        }
+
+        replaceTransactionStatus(with: invalidSignatureView, on: view)
+    }
+
     func closeTransactionStatus(on view: ControllerBackedProtocol?) {
         if transactionStatusView != nil {
             transactionStatusView = nil

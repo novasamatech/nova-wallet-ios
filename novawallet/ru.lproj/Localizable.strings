@@ -931,3 +931,7 @@
 "ledger.review.transaction.confirmation" = "Просмотрите\nтранзакцию";
 "common.transaction.expired" = "Срок действия транзакции истек";
 "ledger.transaction.expired.details" = "В целях безопасности сгенерированные операции действительны только в течение %@. Пожалуйста, попробуйте еще раз и подпишите транзакцию с помощью Ledger";
+"common.signature.invalid" = "Неверная подпись";
+"ledger.transaction.signature.invalid" = "Пожалуйста, удостоверьтесь, что Вы выбрали верное устройство Ledger";
+"common.outdated.metadata" = "Метаданные устарели";
+"ledger.transaction.update.metadata" = "Пожалуйста, обновите %@ приложение, используя Ledger Live";
