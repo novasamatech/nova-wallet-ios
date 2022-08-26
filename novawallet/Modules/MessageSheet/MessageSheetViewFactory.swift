@@ -79,6 +79,7 @@ struct MessageSheetViewFactory {
         title: LocalizableResource<String>,
         message: LocalizableResource<String>,
         image: UIImage?,
+        allowsSwipeDown: Bool,
         completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe(completionCallback: completionCallback)
@@ -100,6 +101,7 @@ struct MessageSheetViewFactory {
         )
 
         view.controller.preferredContentSize = CGSize(width: 0.0, height: 300.0)
+        view.allowsSwipeDown = allowsSwipeDown
 
         presenter.view = view
 
