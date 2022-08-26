@@ -2,9 +2,11 @@ import Foundation
 
 final class LedgerNetworkSelectionWireframe: LedgerNetworkSelectionWireframeProtocol {
     let accountsStore: LedgerAccountsStore
+    let flow: WalletCreationFlow
 
-    init(accountsStore: LedgerAccountsStore) {
+    init(accountsStore: LedgerAccountsStore, flow: WalletCreationFlow) {
         self.accountsStore = accountsStore
+        self.flow = flow
     }
 
     func showLedgerDiscovery(from view: LedgerNetworkSelectionViewProtocol?, chain: ChainModel) {
@@ -23,7 +25,10 @@ final class LedgerNetworkSelectionWireframe: LedgerNetworkSelectionWireframeProt
     }
 
     func showWalletCreate(from view: LedgerNetworkSelectionViewProtocol?) {
-        guard let walletCreateView = LedgerWalletConfirmViewFactory.createView(with: accountsStore) else {
+        guard let walletCreateView = LedgerWalletConfirmViewFactory.createView(
+            with: accountsStore,
+            flow: flow
+        ) else {
             return
         }
 

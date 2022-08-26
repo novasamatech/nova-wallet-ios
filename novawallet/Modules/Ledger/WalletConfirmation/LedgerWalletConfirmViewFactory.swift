@@ -3,7 +3,10 @@ import SoraFoundation
 import SoraKeystore
 
 struct LedgerWalletConfirmViewFactory {
-    static func createView(with accountsStore: LedgerAccountsStore) -> ControllerBackedProtocol? {
+    static func createView(
+        with accountsStore: LedgerAccountsStore,
+        flow: WalletCreationFlow
+    ) -> ControllerBackedProtocol? {
         let interactor = LedgerWalletConfirmInteractor(
             accountsStore: accountsStore,
             settings: SelectedWalletSettings.shared,
@@ -13,7 +16,7 @@ struct LedgerWalletConfirmViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
-        let wireframe = LedgerWalletConfirmWireframe()
+        let wireframe = LedgerWalletConfirmWireframe(flow: flow)
 
         let presenter = LedgerWalletConfirmPresenter(
             interactor: interactor,
