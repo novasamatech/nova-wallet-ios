@@ -1,14 +1,13 @@
 import Foundation
 
-final class LedgerWalletConfirmWireframe: LedgerWalletConfirmWireframeProtocol {
-    func complete(on view: ControllerBackedProtocol?) {
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
+final class LedgerWalletConfirmWireframe: LedgerWalletConfirmWireframeProtocol, WalletCreationFlowCompleting {
+    let flow: WalletCreationFlow
 
-        MainTransitionHelper.transitToMainTabBarController(
-            closing: navigationController,
-            animated: true
-        )
+    init(flow: WalletCreationFlow) {
+        self.flow = flow
+    }
+
+    func complete(on view: ControllerBackedProtocol?) {
+        completeWalletCreation(on: view, flow: flow)
     }
 }
