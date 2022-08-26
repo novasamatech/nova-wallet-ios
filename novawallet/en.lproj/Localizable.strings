@@ -918,3 +918,14 @@
 "ledger.address.verify.confirmation" = "Verify\naddress";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "This wallet is paired with Ledger. Nova will help you to form any operations you want, and you will be requested to sign them using Ledger";
+"ledger.instructions.title" = "Connect Ledger Nano X";
+"ledger.instructions.link" = "Ledger’s official Bluetooth Connection Guide";
+"ledger.instructions.step1" = "Make sure Network app is installed to your Ledger device using Ledger Live app";
+"ledger.instructions.step1.highlighted" = "Network app is installed";
+"ledger.instructions.step2" = "Open the network app on your Ledger device";
+"ledger.instructions.step2.highlighted" = "Open the network app";
+"ledger.instructions.step3" = "Allow Nova Wallet to access Bluetooth";
+"ledger.instructions.step3.highlighted" = "access Bluetooth";
+"ledger.instructions.step4" = "Select account to add to wallet";
+"ledger.instructions.step4.highlighted" = "Select account";
+"welcome.hardware.wallet.subtitle.v3_7" = "Use Parity Signer and Ledger";
