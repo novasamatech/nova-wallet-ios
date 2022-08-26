@@ -57,7 +57,14 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
         )
     }
 
-    func showLedgerWalletCreation(from _: OnboardingMainViewProtocol?) {
-        // TODO: Add navigation
+    func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?) {
+        guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .onboarding) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            ledgerInstructions.controller,
+            animated: true
+        )
     }
 }
