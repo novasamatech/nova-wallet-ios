@@ -1,19 +1,21 @@
 import Foundation
 import RobinHood
 
+typealias DerivationPathClosure = () throws -> Data
+
 protocol LedgerApplicationProtocol {
     func getAccountWrapper(
         for deviceId: UUID,
         chainId: ChainModel.Id,
         index: UInt32,
         displayVerificationDialog: Bool
-    ) -> CompoundOperationWrapper<LedgerAccount>
+    ) -> CompoundOperationWrapper<LedgerAccountResponse>
 
     func getSignWrapper(
         for payload: Data,
         deviceId: UUID,
         chainId: ChainModel.Id,
-        accountIndex: UInt32
+        derivationPathClosure: @escaping DerivationPathClosure
     ) -> CompoundOperationWrapper<Data>
 }
 
@@ -22,7 +24,7 @@ extension LedgerApplicationProtocol {
         for deviceId: UUID,
         chainId: ChainModel.Id,
         index: UInt32
-    ) -> CompoundOperationWrapper<LedgerAccount> {
+    ) -> CompoundOperationWrapper<LedgerAccountResponse> {
         getAccountWrapper(for: deviceId, chainId: chainId, index: index, displayVerificationDialog: false)
     }
 }
@@ -74,15 +76,11 @@ final class LedgerApplication {
 
     private func createAccountMessageOperation(
         for application: SupportedLedgerApp,
-        index: UInt32,
+        path: Data,
         displayVerificationDialog: Bool = false,
         cryptoScheme: CryptoScheme = LedgerApplication.defaultCryptoScheme
     ) -> BaseOperation<Data> {
         ClosureOperation {
-            let path = LedgerPathBuilder()
-                .appendingStandardJunctions(coin: application.coin, accountIndex: index)
-                .build()
-
             let message = LedgerApplicationRequest(
                 cla: application.cla,
                 instruction: Instruction.getAddress.rawValue,
@@ -96,12 +94,15 @@ final class LedgerApplication {
     }
 
     private func createAccountResponseOperation(
-        dependingOn sendOperation: LedgerSendOperation
-    ) -> BaseOperation<LedgerAccount> {
+        dependingOn sendOperation: LedgerSendOperation,
+        path: Data
+    ) -> BaseOperation<LedgerAccountResponse> {
         ClosureOperation {
             let data = try sendOperation.extractNoCancellableResultData()
 
-            return try LedgerResponse<LedgerAccount>(ledgerData: data).value
+            let account = try LedgerResponse<LedgerAccount>(ledgerData: data).value
+
+            return LedgerAccountResponse(account: account, derivationPath: path)
         }
     }
 }
@@ -113,14 +114,18 @@ extension LedgerApplication: LedgerApplicationProtocol {
         chainId: ChainModel.Id,
         index: UInt32,
         displayVerificationDialog: Bool
-    ) -> CompoundOperationWrapper<LedgerAccount> {
+    ) -> CompoundOperationWrapper<LedgerAccountResponse> {
         guard let application = supportedApps.first(where: { $0.chainId == chainId }) else {
             return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
         }
 
+        let path = LedgerPathBuilder()
+            .appendingStandardJunctions(coin: application.coin, accountIndex: index)
+            .build()
+
         let messageOperation = createAccountMessageOperation(
             for: application,
-            index: index,
+            path: path,
             displayVerificationDialog: displayVerificationDialog
         )
 
@@ -135,7 +140,7 @@ extension LedgerApplication: LedgerApplicationProtocol {
 
         sendOperation.addDependency(messageOperation)
 
-        let responseOperation = createAccountResponseOperation(dependingOn: sendOperation)
+        let responseOperation = createAccountResponseOperation(dependingOn: sendOperation, path: path)
 
         responseOperation.addDependency(sendOperation)
 
@@ -150,30 +155,41 @@ extension LedgerApplication: LedgerApplicationProtocol {
         for payload: Data,
         deviceId: UUID,
         chainId: ChainModel.Id,
-        accountIndex: UInt32
+        derivationPathClosure: @escaping DerivationPathClosure
     ) -> CompoundOperationWrapper<Data> {
         guard let application = supportedApps.first(where: { $0.chainId == chainId }) else {
             return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
         }
 
-        let path = LedgerPathBuilder()
-            .appendingStandardJunctions(coin: application.coin, accountIndex: accountIndex)
-            .build()
+        let payloadChunkClosures: [DerivationPathClosure] = payload.chunked(by: Constants.chunkSize).map { chunk in
+            { chunk }
+        }
 
-        let chunks: [Data] = [path] + payload.chunked(by: Constants.chunkSize)
+        let chunks = [derivationPathClosure] + payloadChunkClosures
 
         let requestOperations: [LedgerSendOperation] = chunks.enumerated().map { indexedChunk in
             let type = PayloadType(chunkIndex: indexedChunk.offset, totalChunks: chunks.count)
 
-            let message = LedgerApplicationRequest(
-                cla: application.cla,
-                instruction: Instruction.sign.rawValue,
-                param1: type.rawValue,
-                param2: CryptoScheme.ed25519.rawValue,
-                payload: indexedChunk.element
-            ).toBytes()
+            let operation = LedgerSendOperation(connection: connectionManager, deviceId: deviceId)
+            operation.configurationBlock = {
+                do {
+                    let chunk = try indexedChunk.element()
 
-            return LedgerSendOperation(connection: connectionManager, deviceId: deviceId, message: message)
+                    let message = LedgerApplicationRequest(
+                        cla: application.cla,
+                        instruction: Instruction.sign.rawValue,
+                        param1: type.rawValue,
+                        param2: LedgerApplication.defaultCryptoScheme.rawValue,
+                        payload: chunk
+                    ).toBytes()
+
+                    operation.message = message
+                } catch {
+                    operation.result = .failure(error)
+                }
+            }
+
+            return operation
         }
 
         for index in 0 ..< (requestOperations.count - 1) {
