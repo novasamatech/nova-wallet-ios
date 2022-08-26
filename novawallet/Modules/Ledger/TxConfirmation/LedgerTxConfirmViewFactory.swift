@@ -43,7 +43,7 @@ struct LedgerTxConfirmViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = LedgerPerformOperationViewController(
+        let view = LedgerTxConfirmViewController(
             presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
