@@ -27,6 +27,7 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
     let signatureVerifier: SignatureVerificationWrapperProtocol
     let keystore: KeystoreProtocol
     let operationQueue: OperationQueue
+    let mortalityPeriodMilliseconds: TimeInterval
 
     init(
         signingData: Data,
@@ -37,7 +38,8 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
         signatureVerifier: SignatureVerificationWrapperProtocol,
         keystore: KeystoreProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        mortalityPeriodMilliseconds: TimeInterval
     ) {
         self.signingData = signingData
         self.metaId = metaId
@@ -47,8 +49,15 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         self.signatureVerifier = signatureVerifier
         self.keystore = keystore
         self.operationQueue = operationQueue
+        self.mortalityPeriodMilliseconds = mortalityPeriodMilliseconds
 
         super.init(ledgerConnection: ledgerConnection)
+    }
+
+    private func provideExpirationTimeInterval() {
+        let expirationTime = mortalityPeriodMilliseconds.seconds
+
+        presenter?.didReceiveTransactionExpiration(timeInterval: expirationTime)
     }
 
     private func createChainAccountWrapper(
@@ -124,6 +133,14 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
 
             return signature
         }
+    }
+
+    // MARK: Overriden
+
+    override func setup() {
+        super.setup()
+
+        provideExpirationTimeInterval()
     }
 
     override func performOperation(using deviceId: UUID) {

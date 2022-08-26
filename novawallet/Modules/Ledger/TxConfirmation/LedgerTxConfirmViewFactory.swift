@@ -28,7 +28,8 @@ struct LedgerTxConfirmViewFactory {
             walletRepository: walletRepository,
             signatureVerifier: SignatureVerificationWrapper(),
             keystore: Keychain(),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            mortalityPeriodMilliseconds: TimeInterval(MortalEraOperationFactory.mortalPeriod)
         )
 
         let wireframe = LedgerTxConfirmWireframe()

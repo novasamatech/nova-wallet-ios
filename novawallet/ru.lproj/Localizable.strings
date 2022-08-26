@@ -926,3 +926,8 @@
 "ledger.instructions.step4" = "Выберите аккаунт для добавления в кошелёк";
 "ledger.instructions.step4.highlighted" = "Выберите аккаунт";
 "welcome.hardware.wallet.subtitle.v3_7" = "Использовать Parity Signer и Ledger";
+"common.sign.transaction" = "Подтвердите транзакцию";
+"ledger.sign.transaction.details" = "Нажмите обе кнопки на Вашем %@ для подтверждения транзакции";
+"ledger.review.transaction.confirmation" = "Просмотрите\nтранзакцию";
+"common.transaction.expired" = "Срок действия транзакции истек";
+"ledger.transaction.expired.details" = "В целях безопасности сгенерированные операции действительны только в течение %@. Пожалуйста, попробуйте еще раз и подпишите транзакцию с помощью Ledger";
