@@ -968,6 +968,10 @@
 		846A835428B8A36D00D92892 /* WalletCreationFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A835328B8A36D00D92892 /* WalletCreationFlow.swift */; };
 		846A835628B8A5C700D92892 /* WalletCreationFlowCompleting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A835528B8A5C700D92892 /* WalletCreationFlowCompleting.swift */; };
 		846A835828B8BC7B00D92892 /* LedgerTxConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A835728B8BC7B00D92892 /* LedgerTxConfirmViewController.swift */; };
+		846A835A28B8C5EC00D92892 /* TransactionExpiredPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A835928B8C5EC00D92892 /* TransactionExpiredPresentable.swift */; };
+		846A835D28B8D09600D92892 /* LedgerBottomSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A835C28B8D09600D92892 /* LedgerBottomSheetViewFactory.swift */; };
+		846A835F28B8D94300D92892 /* MessageSheetNoContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A835E28B8D94300D92892 /* MessageSheetNoContentView.swift */; };
+		846A836128B8DB7700D92892 /* MessageSheetTimerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A836028B8DB7700D92892 /* MessageSheetTimerLabel.swift */; };
 		846AC7EF2638D9200075F7DA /* YourValidatorTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AC7EE2638D9200075F7DA /* YourValidatorTableCell.swift */; };
 		846AF83E2525B85100868F37 /* WalletNetworkFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AF83D2525B85100868F37 /* WalletNetworkFacade.swift */; };
 		846AF8402525B94D00868F37 /* WalletNetworkFacade+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846AF83F2525B94D00868F37 /* WalletNetworkFacade+Protocol.swift */; };
@@ -3583,6 +3587,10 @@
 		846A835328B8A36D00D92892 /* WalletCreationFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCreationFlow.swift; sourceTree = "<group>"; };
 		846A835528B8A5C700D92892 /* WalletCreationFlowCompleting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCreationFlowCompleting.swift; sourceTree = "<group>"; };
 		846A835728B8BC7B00D92892 /* LedgerTxConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerTxConfirmViewController.swift; sourceTree = "<group>"; };
+		846A835928B8C5EC00D92892 /* TransactionExpiredPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionExpiredPresentable.swift; sourceTree = "<group>"; };
+		846A835C28B8D09600D92892 /* LedgerBottomSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerBottomSheetViewFactory.swift; sourceTree = "<group>"; };
+		846A835E28B8D94300D92892 /* MessageSheetNoContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetNoContentView.swift; sourceTree = "<group>"; };
+		846A836028B8DB7700D92892 /* MessageSheetTimerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetTimerLabel.swift; sourceTree = "<group>"; };
 		846AC7EE2638D9200075F7DA /* YourValidatorTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorTableCell.swift; sourceTree = "<group>"; };
 		846AF83D2525B85100868F37 /* WalletNetworkFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNetworkFacade.swift; sourceTree = "<group>"; };
 		846AF83F2525B94D00868F37 /* WalletNetworkFacade+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletNetworkFacade+Protocol.swift"; sourceTree = "<group>"; };
@@ -6642,15 +6650,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		84355CF028B6177F004E5C5E /* Ledger */ = {
-			isa = PBXGroup;
-			children = (
-				84355CF128B61794004E5C5E /* MessageSheetLedgerView.swift */,
-				84355CF328B617D3004E5C5E /* MessageSheetLedgerViewModel.swift */,
-			);
-			path = Ledger;
-			sourceTree = "<group>";
-		};
 		84364D53252FAD5C00281F9A /* AccountDetails */ = {
 			isa = PBXGroup;
 			children = (
@@ -7523,6 +7522,17 @@
 			path = Crowdloan;
 			sourceTree = "<group>";
 		};
+		846A835B28B8D08000D92892 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				846A835C28B8D09600D92892 /* LedgerBottomSheetViewFactory.swift */,
+				84355CF128B61794004E5C5E /* MessageSheetLedgerView.swift */,
+				84355CF328B617D3004E5C5E /* MessageSheetLedgerViewModel.swift */,
+				846A836028B8DB7700D92892 /* MessageSheetTimerLabel.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		846B49A92769EEC80066B875 /* DApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -7938,6 +7948,7 @@
 		848FD1A628AE314F00CCD9E2 /* Ledger */ = {
 			isa = PBXGroup;
 			children = (
+				846A835B28B8D08000D92892 /* View */,
 				84466B3828B7652800FA1E0D /* PerformOperation */,
 				846B749628B4B9DD00C39B93 /* Model */,
 				84906FED28B2C6EC0049B57D /* Protocols */,
@@ -8300,6 +8311,7 @@
 				846B749B28B4D3B400C39B93 /* CancelOperationPresentable.swift */,
 				8443CA49289D04E900FA4A95 /* TransactionSigningPresenting.swift */,
 				846A835528B8A5C700D92892 /* WalletCreationFlowCompleting.swift */,
+				846A835928B8C5EC00D92892 /* TransactionExpiredPresentable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -11104,7 +11116,6 @@
 		95ED25232B568F2C7DA953CC /* MessageSheet */ = {
 			isa = PBXGroup;
 			children = (
-				84355CF028B6177F004E5C5E /* Ledger */,
 				0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */,
 				14383723F0B56C91A0B3016E /* MessageSheetWireframe.swift */,
 				6C3AD523C06AD4FD58B7B3CC /* MessageSheetPresenter.swift */,
@@ -11113,6 +11124,7 @@
 				57535268534B154B42ED51CE /* MessageSheetViewFactory.swift */,
 				844B6EC628A3B05300A8BE83 /* MessageSheetViewModel.swift */,
 				84355CED28B614A7004E5C5E /* MessageSheetImageGraphicsView.swift */,
+				846A835E28B8D94300D92892 /* MessageSheetNoContentView.swift */,
 			);
 			path = MessageSheet;
 			sourceTree = "<group>";
@@ -13840,6 +13852,7 @@
 				84EE2FA52891205500A98816 /* WalletManageViewController.swift in Sources */,
 				84786DA825F9F58E0089DFF7 /* EraValidatorService+Fetch.swift in Sources */,
 				84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */,
+				846A835F28B8D94300D92892 /* MessageSheetNoContentView.swift in Sources */,
 				84754CA22513DB8800854599 /* EmptyAccountIcon.swift in Sources */,
 				84355CF228B61794004E5C5E /* MessageSheetLedgerView.swift in Sources */,
 				AEA0C8C6268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift in Sources */,
@@ -13999,6 +14012,7 @@
 				84EBC54324F656D100459D15 /* SortDescriptor+Storage.swift in Sources */,
 				845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */,
 				84CD82B3263C30BC001A6F01 /* SubstrateProviderSubscriptionHandler.swift in Sources */,
+				846A835A28B8C5EC00D92892 /* TransactionExpiredPresentable.swift in Sources */,
 				842EBB352890A79500B952D8 /* WalletSelectionViewFactory.swift in Sources */,
 				84DB4E1E25E93B1700A6DF41 /* Identity.swift in Sources */,
 				F47F5A822626FDB9009BCFF4 /* StakingPayoutViewModel.swift in Sources */,
@@ -14985,6 +14999,7 @@
 				84350AD02845724E0031EF24 /* IdentityAccountInfoView.swift in Sources */,
 				E325FBFE10A037E58525DA66 /* DAppSearchViewFactory.swift in Sources */,
 				65C06FCE82EEC0B476DB1CEF /* DAppBrowserProtocols.swift in Sources */,
+				846A836128B8DB7700D92892 /* MessageSheetTimerLabel.swift in Sources */,
 				40087CC8E6A91976807F7D44 /* DAppBrowserWireframe.swift in Sources */,
 				37E229641DCDF64AC5AF1DCD /* DAppBrowserPresenter.swift in Sources */,
 				91530F7301CA39654E008580 /* DAppBrowserInteractor.swift in Sources */,
@@ -15195,6 +15210,7 @@
 				6BBD025775841F8B055CA367 /* AssetsSearchViewFactory.swift in Sources */,
 				5188FF070CD05F92C93A5055 /* CreateWatchOnlyProtocols.swift in Sources */,
 				97BF7157FE13F723BF4D5713 /* CreateWatchOnlyWireframe.swift in Sources */,
+				846A835D28B8D09600D92892 /* LedgerBottomSheetViewFactory.swift in Sources */,
 				60FFEE5B386E82D70333BE80 /* CreateWatchOnlyPresenter.swift in Sources */,
 				454D41CC5C7CC2FDAB778026 /* CreateWatchOnlyInteractor.swift in Sources */,
 				576010F6494B3E2A6CA0B444 /* CreateWatchOnlyViewController.swift in Sources */,

@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-class LedgerPerformOperationPresenter {
+class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     weak var view: LedgerPerformOperationViewProtocol?
     let baseWireframe: LedgerPerformOperationWireframeProtocol
     let interactor: LedgerPerformOperationInputProtocol
@@ -9,7 +9,7 @@ class LedgerPerformOperationPresenter {
 
     private(set) var devices: [LedgerDeviceProtocol] = []
 
-    private var isConnecting: Bool = false
+    private(set) var isConnecting: Bool = false
 
     let localizationManager: LocalizationManagerProtocol
 
@@ -97,9 +97,9 @@ class LedgerPerformOperationPresenter {
             break
         }
     }
-}
 
-extension LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
+    // MARK: Protocol
+
     func setup() {
         view?.didReceive(networkName: chainName)
 

@@ -929,3 +929,9 @@
 "ledger.instructions.step4" = "Select account to add to wallet";
 "ledger.instructions.step4.highlighted" = "Select account";
 "welcome.hardware.wallet.subtitle.v3_7" = "Use Parity Signer and Ledger";
+"common.sign.transaction" = "Sign transaction";
+"ledger.sign.transaction.details" = "Press both buttons on your %@ to sign the transaction";
+"ledger.review.transaction.confirmation" = "Review\ntransaction";
+"common.transaction.expired" = "Transaction has expired";
+"ledger.transaction.expired.details" = "For security reasons generated operations valid for only %@. Please try again and sign it with Ledger";
+"common.transaction.valid.format" = "Transaction is valid for %@";
