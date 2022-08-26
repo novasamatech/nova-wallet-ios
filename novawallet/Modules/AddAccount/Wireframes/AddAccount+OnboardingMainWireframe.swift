@@ -47,7 +47,7 @@ extension AddAccount {
         }
 
         func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?) {
-            guard let ledgerInstructions = LedgerInstructionsViewFactory.createView() else {
+            guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .addWallet) else {
                 return
             }
 
