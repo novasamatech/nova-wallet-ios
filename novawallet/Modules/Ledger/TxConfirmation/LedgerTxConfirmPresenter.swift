@@ -27,6 +27,14 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
     }
 }
 
+extension LedgerTxConfirmPresenter: LedgerTxConfirmPresenterProtocol {
+    func cancel() {
+        wireframe?.complete(on: view)
+
+        completion(.failure(HardwareSigningError.signingCancelled))
+    }
+}
+
 extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
     func didReceiveSigning(result: Result<IRSignatureProtocol, Error>, for deviceId: UUID) {
         wireframe?.complete(on: view)
