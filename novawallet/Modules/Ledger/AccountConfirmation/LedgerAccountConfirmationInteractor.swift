@@ -38,18 +38,19 @@ final class LedgerAccountConfirmationInteractor {
         self.accountsStore = accountsStore
     }
 
-    private func verify(response: LedgerAccount, expectedAddress: AccountAddress, index: UInt32) {
+    private func verify(response: LedgerAccountResponse, expectedAddress: AccountAddress, index: UInt32) {
+        let responseAccount = response.account
+
         if
-            response.address == expectedAddress,
-            let accountId = try? response.address.toAccountId(using: chain.chainFormat) {
+            responseAccount.address == expectedAddress,
+            let accountId = try? responseAccount.address.toAccountId(using: chain.chainFormat) {
             let info = LedgerChainAccount.Info(
                 accountId: accountId,
-                publicKey: response.publicKey,
+                publicKey: responseAccount.publicKey,
                 cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType
             )
 
-            let chainAccount = LedgerChainAccount(chain: chain, info: info)
-            accountsStore.add(chainAccount: chainAccount)
+            accountsStore.add(chain: chain, info: info, derivationPath: response.derivationPath)
 
             presenter?.didReceiveConfirmation(result: .success(accountId), at: index)
         } else {
@@ -68,7 +69,7 @@ extension LedgerAccountConfirmationInteractor: LedgerAccountConfirmationInteract
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let keyParams: () throws -> [Data] = {
-            let account = try ledgerWrapper.targetOperation.extractNoCancellableResultData()
+            let account = try ledgerWrapper.targetOperation.extractNoCancellableResultData().account
             let accountId = try account.address.toAccountId()
             return [accountId]
         }
@@ -89,7 +90,7 @@ extension LedgerAccountConfirmationInteractor: LedgerAccountConfirmationInteract
             let ledgerResponse = try ledgerWrapper.targetOperation.extractNoCancellableResultData()
             let balanceResponse = try balanceWrapper.targetOperation.extractNoCancellableResultData().first?.value
 
-            return LedgerAccountAmount(address: ledgerResponse.address, amount: balanceResponse?.data.total)
+            return LedgerAccountAmount(address: ledgerResponse.account.address, amount: balanceResponse?.data.total)
         }
 
         mappingOperation.addDependency(balanceWrapper.targetOperation)

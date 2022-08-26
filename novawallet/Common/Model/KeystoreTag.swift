@@ -47,6 +47,14 @@ enum KeystoreTagV2: String, CaseIterable {
         createTagForMetaId(metaId, accountId: accountId, suffix: "-ethereumDeriv")
     }
 
+    static func derivationTagForMetaId(_ metaId: String, accountId: AccountId, isEthereumBased: Bool) -> String {
+        if isEthereumBased {
+            return ethereumDerivationTagForMetaId(metaId, accountId: accountId)
+        } else {
+            return substrateDerivationTagForMetaId(metaId, accountId: accountId)
+        }
+    }
+
     static func substrateSeedTagForMetaId(
         _ metaId: String,
         accountId: AccountId? = nil

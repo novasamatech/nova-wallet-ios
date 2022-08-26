@@ -27,6 +27,7 @@ protocol ApplicationConfigProtocol {
     var learnControllerAccountURL: URL { get }
     var learnRecommendedValidatorsURL: URL { get }
     var paritySignerTroubleshoutingURL: URL { get }
+    var ledgerGuideURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
 }
@@ -170,6 +171,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var paritySignerTroubleshoutingURL: URL {
         URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Parity-Signer-troubleshooting")!
+    }
+
+    var ledgerGuideURL: URL {
+        URL(string: "https://support.ledger.com/hc/en-us/articles/360019138694-Set-up-Bluetooth-connection")!
     }
 
     var learnRecommendedValidatorsURL: URL {
