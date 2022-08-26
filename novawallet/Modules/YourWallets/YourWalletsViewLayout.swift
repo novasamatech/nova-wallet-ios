@@ -2,15 +2,30 @@ import UIKit
 
 final class YourWalletsViewLayout: UIView {
     lazy var collectionView: UICollectionView = {
-        let view = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+        let view = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.contentInset = Constants.collectionViewContentInset
+        view.bounces = false
         return view
+    }()
+
+    private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
+        .init { sectionIndex, _ -> NSCollectionLayoutSection? in
+            switch sectionIndex {
+            case 0:
+                return Self.createCompositionalLayout(showHeader: false)
+            default:
+                return Self.createCompositionalLayout(showHeader: true)
+            }
+        }
     }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        backgroundColor = R.color.color0x1D1D20()
+        setupLayout()
     }
 
     @available(*, unavailable)
@@ -19,8 +34,6 @@ final class YourWalletsViewLayout: UIView {
     }
 
     private func setupLayout() {
-        backgroundColor = R.color.colorBlack()
-
         addSubview(collectionView)
         collectionView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top)
@@ -28,14 +41,14 @@ final class YourWalletsViewLayout: UIView {
         }
     }
 
-    private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
-        .createWholeWidthRowCompositionalLayout(settings:
+    private static func createCompositionalLayout(showHeader: Bool) -> NSCollectionLayoutSection {
+        .createSectionLayoutWithFullWidthRow(settings:
             .init(
                 estimatedRowHeight: Constants.estimatedRowHeight,
                 estimatedHeaderHeight: Constants.estimatedHeaderHeight,
                 sectionContentInsets: Constants.sectionContentInsets,
                 sectionInterGroupSpacing: Constants.interGroupSpacing,
-                headerPinToVisibleBounds: true
+                header: showHeader ? .init(pinToVisibleBounds: true) : nil
             ))
     }
 }

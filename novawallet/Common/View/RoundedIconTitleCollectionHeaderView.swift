@@ -33,13 +33,25 @@ final class RoundedIconTitleCollectionHeaderView: UICollectionReusableView {
         }
     }
 
+    override var intrinsicContentSize: CGSize {
+        .init(width: UIView.noIntrinsicMetric, height: 22)
+    }
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func bind(title: String, icon: UIImage?) {
-        view.bind(title: title, icon: icon)
-    }
 }
 
+// MARK: - Model
+
+extension RoundedIconTitleCollectionHeaderView {
+    struct Model {
+        let title: String
+        let icon: UIImage?
+    }
+
+    func bind(viewModel: Model) {
+        view.bind(title: viewModel.title, icon: viewModel.icon)
+    }
+}

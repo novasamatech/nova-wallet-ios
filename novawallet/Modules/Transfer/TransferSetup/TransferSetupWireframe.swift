@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraUI
 
 final class TransferSetupWireframe: TransferSetupWireframeProtocol {
     func showDestinationChainSelection(
@@ -53,7 +54,7 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
             return
         }
 
-        view?.controller.present(viewController.controller, animated: true, completion: nil)
+        view?.controller.present(viewController.controller, animated: true)
     }
 
     func hideYourWallets(from view: TransferSetupViewProtocol?) {

@@ -65,7 +65,7 @@ final class RoundedIconTitleView: UIView {
             make.trailing.equalToSuperview().inset(8.0)
         }
     }
-    
+
     func bind(title: String, icon: UIImage?) {
         titleView.detailsLabel.text = title
         titleView.imageView.image = icon

@@ -8,19 +8,17 @@ struct YourWalletsViewFactory {
         address: AccountAddress?,
         delegate: YourWalletsDelegate
     ) -> YourWalletsViewProtocol? {
-        let wireframe = YourWalletsWireframe()
-
         let presenter = YourWalletsPresenter(
-            wireframe: wireframe,
-            iconGenerator: NovaIconGenerator(),
+            localizationManager: LocalizationManager.shared,
+            accountIconGenerator: NovaIconGenerator(),
+            chainIconGenerator: PolkadotIconGenerator(),
             metaAccounts: metaAccounts,
             selectedAddress: address,
             delegate: delegate
         )
 
         let view = YourWalletsViewController(
-            presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            presenter: presenter
         )
         presenter.view = view
 

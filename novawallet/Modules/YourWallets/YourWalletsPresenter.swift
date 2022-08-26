@@ -1,55 +1,70 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 final class YourWalletsPresenter {
     weak var view: YourWalletsViewProtocol?
     weak var delegate: YourWalletsDelegate?
 
-    let wireframe: YourWalletsWireframeProtocol
     let metaAccounts: [PossibleMetaAccountChainResponse]
-    let iconGenerator: IconGenerating
+    let accountIconGenerator: IconGenerating
+    let chainIconGenerator: IconGenerating
     private(set) var selectedAddress: AccountAddress?
+    private(set) var sections: [YourWalletsViewSectionModel] = []
 
     init(
-        wireframe: YourWalletsWireframeProtocol,
-        iconGenerator: IconGenerating,
+        localizationManager: LocalizationManagerProtocol,
+        accountIconGenerator: IconGenerating,
+        chainIconGenerator: IconGenerating,
         metaAccounts: [PossibleMetaAccountChainResponse],
         selectedAddress: AccountAddress?,
         delegate: YourWalletsDelegate
     ) {
-        self.wireframe = wireframe
-        self.iconGenerator = iconGenerator
+        self.accountIconGenerator = accountIconGenerator
         self.metaAccounts = metaAccounts
         self.selectedAddress = selectedAddress
+        self.chainIconGenerator = chainIconGenerator
         self.delegate = delegate
+        self.localizationManager = localizationManager
     }
 
     private func updateView() {
         var createdSections: [MetaAccountModelType: Int] = [:]
-        var sections: [YourWalletsViewSectionModel] = []
-
+        
         for metaAccount in metaAccounts {
             if let existsSectionIndex = createdSections[metaAccount.metaAccount.type] {
                 sections[existsSectionIndex].cells.append(cell(response: metaAccount))
             } else {
                 sections.append(.init(
                     header: header(response: metaAccount),
-                    cells: .init()
+                    cells: [cell(response: metaAccount)]
                 ))
                 createdSections[metaAccount.metaAccount.type] = createdSections.count
             }
         }
-
+        
         view?.update(viewModel: sections)
     }
 
+    private func updateSelectedCell() {
+        sections.updateCells { cell in
+            guard case var .common(model) = cell else {
+                return
+            }
+            model.isSelected = selectedAddress == model.displayAddress.address
+            cell = .common(model)
+        }
+
+        view?.update(viewModel: sections)
+    }
+  
     private func header(response: PossibleMetaAccountChainResponse) -> YourWalletsViewSectionModel.HeaderModel? {
         switch response.metaAccount.type {
         case .watchOnly, .secrets:
             return nil
         case .paritySigner:
             return .init(
-                title: "Parity Signer",
+                title: R.string.localizable.commonParitySigner(preferredLanguages: locale.rLanguages),
                 icon: R.image.iconParitySigner()
             )
         }
@@ -57,30 +72,43 @@ final class YourWalletsPresenter {
 
     private func cell(response: PossibleMetaAccountChainResponse) -> YourWalletsViewModelCell {
         let name = response.metaAccount.name
-        let imageViewModel = icon(from: response.metaAccount.substrateAccountId)
+        let imageViewModel = icon(
+            generator: accountIconGenerator,
+            from: response.metaAccount.substrateAccountId
+        )
 
-        guard let displayAddress = try? response.chainAccountResponse?.chainAccount.toDisplayAddress() else {
-            return .notFound(.init(name: name, imageViewModel: imageViewModel))
+        guard let chainAccountResponse = response.chainAccountResponse,
+              let displayAddress = try? chainAccountResponse.chainAccount.toDisplayAddress() else {
+            return .notFound(.init(
+                name: name,
+                warning: R.string.localizable.accountNotFoundCaption(
+                    preferredLanguages: selectedLocale.rLanguages),
+                imageViewModel: imageViewModel
+            ))
         }
-
+        let chainAccountIcon = icon(
+            generator: chainIconGenerator,
+            from: chainAccountResponse.chainAccount.accountId
+        )
         return .common(.init(
             displayAddress: displayAddress,
             imageViewModel: imageViewModel,
+            chainIcon: chainAccountIcon,
             isSelected: selectedAddress == displayAddress.address
         ))
     }
 
-    private func icon(from imageData: Data?) -> DrawableIconViewModel? {
-        guard let data = imageData else {
-            return nil
-        }
-        guard let icon = try? iconGenerator.generateFromAccountId(data) else {
+    private func icon(generator: IconGenerating, from imageData: Data?) -> DrawableIconViewModel? {
+        guard let data = imageData,
+              let icon = try? generator.generateFromAccountId(data) else {
             return nil
         }
 
         return DrawableIconViewModel(icon: icon)
     }
 }
+
+// MARK: - YourWalletsPresenterProtocol
 
 extension YourWalletsPresenter: YourWalletsPresenterProtocol {
     func setup() {
@@ -89,6 +117,20 @@ extension YourWalletsPresenter: YourWalletsPresenterProtocol {
 
     func didSelect(viewModel: YourWalletsViewModelCell.CommonModel) {
         selectedAddress = viewModel.displayAddress.address
-        delegate?.selectWallet(address: viewModel.displayAddress.address)
+        updateSelectedCell()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.delegate?.selectWallet(address: viewModel.displayAddress.address)
+        }
+    }
+}
+
+// MARK: - Localizable
+
+extension YourWalletsPresenter: Localizable {
+    func applyLocalization() {
+        guard let view = view, view.isSetup else {
+            return
+        }
+        updateView()
     }
 }

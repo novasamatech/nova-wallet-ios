@@ -1,7 +1,7 @@
 import UIKit
 import SoraFoundation
-
-final class YourWalletsCollectionViewCell: UICollectionViewCell {}
+import SoraUI
+import SubstrateSdk
 
 final class YourWalletsViewController: UIViewController, ViewHolder {
     typealias RootViewType = YourWalletsViewLayout
@@ -11,13 +11,9 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     let presenter: YourWalletsPresenterProtocol
     private lazy var dataSource = createDataSource()
 
-    init(
-        presenter: YourWalletsPresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
-    ) {
+    init(presenter: YourWalletsPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
-        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -33,14 +29,13 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupCollectionView()
-        applyLocalization()
         presenter.setup()
     }
 
     private func setupCollectionView() {
         rootView.collectionView.dataSource = dataSource
         rootView.collectionView.delegate = self
-        rootView.collectionView.registerCellClass(YourWalletsCollectionViewCell.self)
+        rootView.collectionView.registerCellClass(SelectableIconSubtitleCollectionViewCell.self)
         rootView.collectionView.registerClass(
             RoundedIconTitleCollectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -50,10 +45,15 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     private func createDataSource() -> DataSource {
         let dataSource = DataSource(
             collectionView: rootView.collectionView,
-            cellProvider: { collectionView, indexPath, _ ->
+            cellProvider: { collectionView, indexPath, model ->
                 UICollectionViewCell? in
-                let cell: YourWalletsCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
-                // cell?.bind(model: model)
+                let cell: SelectableIconSubtitleCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
+                switch model {
+                case let .notFound(notFoundModel):
+                    cell?.bind(model: Self.mapNotFoundModel(notFoundModel))
+                case let .common(commonModel):
+                    cell?.bind(model: Self.mapCommonModel(commonModel))
+                }
                 return cell
             }
         )
@@ -71,14 +71,43 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                 for: indexPath
             )
-
-            header?.bind(title: headerModel.title, icon: headerModel.icon)
+            header?.bind(viewModel: .init(title: headerModel.title, icon: headerModel.icon))
             return header
         }
 
         return dataSource
     }
+
+    private static func mapNotFoundModel(_ model: YourWalletsViewModelCell.NotFoundModel) ->
+        SelectableIconSubtitleCollectionViewCell.Model {
+        .init(
+            iconSubtitle: .init(
+                icon: model.imageViewModel,
+                title: model.name ?? "",
+                subtitle: model.warning,
+                subtitleIcon: DrawableIconViewModel(icon: R.image.iconWarning()!),
+                lineBreakMode: NSLineBreakMode.byTruncatingTail
+            ),
+            isSelected: nil
+        )
+    }
+
+    private static func mapCommonModel(_ model: YourWalletsViewModelCell.CommonModel) ->
+        SelectableIconSubtitleCollectionViewCell.Model {
+        .init(
+            iconSubtitle: .init(
+                icon: model.imageViewModel,
+                title: model.displayAddress.username,
+                subtitle: model.displayAddress.address,
+                subtitleIcon: model.chainIcon,
+                lineBreakMode: NSLineBreakMode.byTruncatingMiddle
+            ),
+            isSelected: model.isSelected
+        )
+    }
 }
+
+// MARK: - YourWalletsViewProtocol
 
 extension YourWalletsViewController: YourWalletsViewProtocol {
     func update(viewModel: [YourWalletsViewSectionModel]) {
@@ -92,21 +121,16 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
     }
 }
 
+// MARK: - UICollectionViewDelegate
+
 extension YourWalletsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        guard let item = dataSource.itemIdentifier(for: indexPath) else {
+        guard let item = dataSource.itemIdentifier(for: indexPath),
+              case let .common(model) = item else {
             return
         }
-        guard case let .common(model) = item else {
-            return
-        }
-        presenter.didSelect(viewModel: model)
-    }
-}
 
-extension YourWalletsViewController: Localizable {
-    func applyLocalization() {
-        if isViewLoaded {}
+        presenter.didSelect(viewModel: model)
     }
 }
