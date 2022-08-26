@@ -1,14 +1,14 @@
 import UIKit
 import SoraFoundation
 
-final class LedgerDiscoverViewController: UIViewController, ViewHolder {
-    typealias RootViewType = LedgerDiscoverViewLayout
+final class LedgerPerformOperationViewController: UIViewController, ViewHolder {
+    typealias RootViewType = LedgerPerformOperationViewLayout
 
-    let presenter: LedgerDiscoverPresenterProtocol
+    let presenter: LedgerPerformOperationPresenterProtocol
 
     private var networkName: String?
 
-    init(presenter: LedgerDiscoverPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: LedgerPerformOperationPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
@@ -21,7 +21,7 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = LedgerDiscoverViewLayout()
+        view = LedgerPerformOperationViewLayout()
     }
 
     override func viewDidLoad() {
@@ -72,7 +72,7 @@ final class LedgerDiscoverViewController: UIViewController, ViewHolder {
     }
 }
 
-extension LedgerDiscoverViewController: LedgerDiscoverViewProtocol {
+extension LedgerPerformOperationViewController: LedgerPerformOperationViewProtocol {
     func didReceive(networkName: String) {
         self.networkName = networkName
 
@@ -99,7 +99,7 @@ extension LedgerDiscoverViewController: LedgerDiscoverViewProtocol {
     }
 }
 
-extension LedgerDiscoverViewController: Localizable {
+extension LedgerPerformOperationViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

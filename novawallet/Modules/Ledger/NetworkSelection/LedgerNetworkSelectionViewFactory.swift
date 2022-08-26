@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct LedgerNetworkSelectionViewFactory {
-    static func createView() -> LedgerNetworkSelectionViewProtocol? {
+    static func createView(for flow: WalletCreationFlow) -> LedgerNetworkSelectionViewProtocol? {
         let walletRepository = AccountRepositoryFactory(
             storageFacade: UserDataStorageFacade.shared
         ).createMetaAccountRepository(for: nil, sortDescriptors: [])
@@ -17,7 +17,10 @@ struct LedgerNetworkSelectionViewFactory {
         )
 
         let interactor = LedgerNetworkSelectionInteractor(accountsStore: ledgerAccountsStore)
-        let wireframe = LedgerNetworkSelectionWireframe(accountsStore: ledgerAccountsStore)
+        let wireframe = LedgerNetworkSelectionWireframe(
+            accountsStore: ledgerAccountsStore,
+            flow: flow
+        )
 
         let presenter = LedgerNetworkSelectionPresenter(
             interactor: interactor,
