@@ -941,3 +941,4 @@
 "ledger.transaction.signature.invalid" = "Please, make sure you have selected the right Ledger device for currently signing operation";
 "common.outdated.metadata" = "Metadata is outdated";
 "ledger.transaction.update.metadata" = "Please, update Kusama app using Ledger Live app";
+"common.invalid.data" = "Invalid data";

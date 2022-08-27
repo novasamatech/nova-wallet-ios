@@ -161,9 +161,9 @@ extension LedgerApplication: LedgerApplicationProtocol {
             return CompoundOperationWrapper.createWithError(LedgerApplicationError.unsupportedApp(chainId: chainId))
         }
 
-        let payloadChunkClosures: [DerivationPathClosure] = payload.chunked(by: Constants.chunkSize).map { chunk in
-            { chunk }
-        }
+        let payloadChunkClosures: [DerivationPathClosure] = payload.chunked(
+            by: Constants.chunkSize
+        ).map { chunk in { chunk } }
 
         let chunks = [derivationPathClosure] + payloadChunkClosures
 

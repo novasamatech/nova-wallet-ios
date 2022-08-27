@@ -193,3 +193,9 @@ final class LedgerTxConfirmInteractor: LedgerPerformOperationInteractor {
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 }
+
+extension LedgerTxConfirmInteractor: LedgerTxConfirmInteractorInputProtocol {
+    func cancelTransactionRequest(for deviceId: UUID) {
+        ledgerConnection.cancelRequest(for: deviceId)
+    }
+}

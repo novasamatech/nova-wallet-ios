@@ -905,11 +905,14 @@
 "ledger.operation.title" = "Ledger операция";
 "ledger.operation.message.cancelled" = "Операция была отменена на устройстве";
 "ledger.operation.message.error" = "Операция завершилась ошибкой на устройстве. Пожалуйста, попробуйте позже.";
+"ledger.operation.device.not.connected" = "Подключите Ledger и попробуйте снова";
 "ledger.accounts.title" = "Добавьте аккаунты в Ваш кошелёк";
 "ledger.accounts.subtitle" = "Убедитесь, что приложение сети установлено на вашем Ledger устройстве через приложение Ledger Live. Откройте приложение сети на вашем Ledger устройстве.";
 "ledger.accounts.button.add" = "Добавьте аккаунт";
 "ledger.account.confirm.title" = "Выберите аккаунты для добавления в кошелёк";
 "common.load.more.accounts" = "Загрузить больше аккаунтов";
+"ledger.device.busy.title" = "Ledger занят";
+"ledger.device.busy.message" = "Пожалуйста, завершите или отмените текущую операцию на Ledger";
 "ledger.address.verify.title" = "Подтвердите адрес";
 "ledger.address.verify.message" = "Нажмите обе кнопки на Вашем %@ для подтверждения адреса";
 "ledger.address.verify.confirmation" = "Проверьте\nадрес";
@@ -931,7 +934,11 @@
 "ledger.review.transaction.confirmation" = "Просмотрите\nтранзакцию";
 "common.transaction.expired" = "Срок действия транзакции истек";
 "ledger.transaction.expired.details" = "В целях безопасности сгенерированные операции действительны только в течение %@. Пожалуйста, попробуйте еще раз и подпишите транзакцию с помощью Ledger";
+"common.transaction.valid.format" = "Транзакция валидна %@";
+"ledger.transaction.not.supported.title" = "Транзакция не поддерживается";
+"ledger.transaction.not.supported.message" = "Ledger не поддерживает подпись данной транзакции";
 "common.signature.invalid" = "Неверная подпись";
 "ledger.transaction.signature.invalid" = "Пожалуйста, удостоверьтесь, что Вы выбрали верное устройство Ledger";
 "common.outdated.metadata" = "Метаданные устарели";
 "ledger.transaction.update.metadata" = "Пожалуйста, обновите %@ приложение, используя Ledger Live";
+"common.invalid.data" = "Неверные данные";

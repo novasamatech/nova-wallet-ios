@@ -11,6 +11,10 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         baseWireframe as? LedgerTxConfirmWireframeProtocol
     }
 
+    var interactor: LedgerTxConfirmInteractorInputProtocol? {
+        baseInteractor as? LedgerTxConfirmInteractorInputProtocol
+    }
+
     private var timer = CountdownTimerMediator()
 
     var isExpired: Bool {
@@ -20,7 +24,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
 
     init(
         chainName: String,
-        interactor: LedgerPerformOperationInputProtocol,
+        interactor: LedgerTxConfirmInteractorInputProtocol,
         wireframe: LedgerTxConfirmWireframeProtocol,
         completion: @escaping TransactionSigningClosure,
         localizationManager: LocalizationManagerProtocol
@@ -29,7 +33,7 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
 
         super.init(
             chainName: chainName,
-            interactor: interactor,
+            baseInteractor: interactor,
             baseWireframe: wireframe,
             localizationManager: localizationManager
         )
@@ -43,14 +47,38 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         completion(.failure(HardwareSigningError.signingCancelled))
     }
 
+    private func handleInvalidData(reason: LedgerInvaliDataPolkadotReason) {
+        switch reason {
+        case let .unknown(reason):
+            wireframe?.transitToInvalidData(on: view, reason: reason) { [weak self] in
+                self?.performCancellation()
+            }
+        case .unsupportedOperation:
+            wireframe?.transitToTransactionNotSupported(on: view) { [weak self] in
+                self?.performCancellation()
+            }
+        case .outdatedMetadata:
+            wireframe?.transitToMetadataOutdated(on: view, chainName: chainName) { [weak self] in
+                self?.performCancellation()
+            }
+        }
+    }
+
     override func handleAppConnection(error: Error, deviceId: UUID) {
-        if let ledgerError = error as? LedgerError, case let .response(code) = ledgerError {
-            switch code {
+        if let ledgerError = error as? LedgerError, case let .response(ledgerResponseError) = ledgerError {
+            switch ledgerResponseError.code {
             case .transactionRejected:
                 wireframe?.closeTransactionStatus(on: view)
             case .instructionNotSupported:
                 wireframe?.transitToTransactionNotSupported(on: view) { [weak self] in
                     self?.performCancellation()
+                }
+            case .invalidData:
+                if let reason = ledgerResponseError.reason() {
+                    handleInvalidData(reason: LedgerInvaliDataPolkadotReason(rawReason: reason))
+                } else {
+                    wireframe?.closeTransactionStatus(on: view)
+                    super.handleAppConnection(error: error, deviceId: deviceId)
                 }
             default:
                 wireframe?.closeTransactionStatus(on: view)
@@ -73,8 +101,11 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
     override func selectDevice(at index: Int) {
         super.selectDevice(at: index)
 
-        if isConnecting {
-            wireframe?.transitToTransactionReview(on: view, timer: timer, deviceName: devices[index].name)
+        if let device = connectingDevice {
+            wireframe?.transitToTransactionReview(on: view, timer: timer, deviceName: device.name) { [weak self] in
+                self?.stopConnecting()
+                self?.interactor?.cancelTransactionRequest(for: device.identifier)
+            }
         }
     }
 }
@@ -115,7 +146,7 @@ extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
             wireframe?.complete(on: view)
             completion(.success(signature))
         case let .failure(error):
-            stopConnecting(to: deviceId)
+            stopConnecting()
 
             handleAppConnection(error: error, deviceId: deviceId)
         }
