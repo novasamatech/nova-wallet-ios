@@ -53,7 +53,8 @@ enum LedgerBottomSheetViewFactory {
 
     static func createReviewLedgerTransactionView(
         for timerMediator: CountdownTimerMediator,
-        deviceName: String
+        deviceName: String,
+        cancelClosure: @escaping () -> Void
     ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe(completionCallback: nil)
 
@@ -91,6 +92,9 @@ enum LedgerBottomSheetViewFactory {
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
         )
+
+        view.allowsSwipeDown = true
+        view.closeOnSwipeDownClosure = cancelClosure
 
         view.controller.preferredContentSize = CGSize(width: 0.0, height: 360.0)
 

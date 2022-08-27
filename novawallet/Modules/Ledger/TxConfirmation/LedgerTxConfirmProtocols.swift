@@ -1,7 +1,12 @@
 import IrohaCrypto
+import Foundation
 
 protocol LedgerTxConfirmPresenterProtocol: LedgerPerformOperationPresenterProtocol {
     func cancel()
+}
+
+protocol LedgerTxConfirmInteractorInputProtocol: LedgerPerformOperationInputProtocol {
+    func cancelTransactionRequest(for deviceId: UUID)
 }
 
 protocol LedgerTxConfirmInteractorOutputProtocol: LedgerPerformOperationOutputProtocol {
@@ -15,7 +20,8 @@ protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtoc
     func transitToTransactionReview(
         on view: ControllerBackedProtocol?,
         timer: CountdownTimerMediator,
-        deviceName: String
+        deviceName: String,
+        cancelClosure: @escaping () -> Void
     )
 
     func transitToTransactionExpired(
@@ -37,6 +43,12 @@ protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtoc
 
     func transitToInvalidSignature(
         on view: ControllerBackedProtocol?,
+        completion: @escaping MessageSheetCallback
+    )
+
+    func transitToInvalidData(
+        on view: ControllerBackedProtocol?,
+        reason: String,
         completion: @escaping MessageSheetCallback
     )
 

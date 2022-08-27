@@ -35,7 +35,6 @@ enum LedgerResponseCode: UInt16 {
 }
 
 struct LedgerResponse<T: LedgerDecodable>: LedgerDecodable {
-    let code: LedgerResponseCode
     let value: T
 
     init(ledgerData: Data) throws {
@@ -45,10 +44,11 @@ struct LedgerResponse<T: LedgerDecodable>: LedgerDecodable {
             throw LedgerError.unexpectedData("No response code")
         }
 
-        code = LedgerResponseCode(responseCode: UInt16(bigEndianData: ledgerData.suffix(responseCodeSize)))
+        let code = LedgerResponseCode(responseCode: UInt16(bigEndianData: ledgerData.suffix(responseCodeSize)))
 
         guard code == .noError else {
-            throw LedgerError.response(code: code)
+            let error = LedgerResponseError(code: code, reasonData: ledgerData.dropLast(responseCodeSize))
+            throw LedgerError.response(error: error)
         }
 
         let valueData = ledgerData.prefix(ledgerData.count - responseCodeSize)

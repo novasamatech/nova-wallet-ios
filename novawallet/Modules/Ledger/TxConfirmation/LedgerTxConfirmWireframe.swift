@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import SoraFoundation
 
 final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     weak var transactionStatusView: ControllerBackedProtocol?
@@ -33,12 +34,14 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
     func transitToTransactionReview(
         on view: ControllerBackedProtocol?,
         timer: CountdownTimerMediator,
-        deviceName: String
+        deviceName: String,
+        cancelClosure: @escaping () -> Void
     ) {
         guard
             let transactionSignView = LedgerBottomSheetViewFactory.createReviewLedgerTransactionView(
                 for: timer,
-                deviceName: deviceName
+                deviceName: deviceName,
+                cancelClosure: cancelClosure
             ) else {
             return
         }
@@ -101,6 +104,28 @@ final class LedgerTxConfirmWireframe: LedgerTxConfirmWireframeProtocol {
         }
 
         replaceTransactionStatus(with: invalidSignatureView, on: view)
+    }
+
+    func transitToInvalidData(
+        on view: ControllerBackedProtocol?,
+        reason: String,
+        completion: @escaping MessageSheetCallback
+    ) {
+        let title = LocalizableResource { locale in
+            R.string.localizable.commonInvalidData(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { _ in reason }
+
+        guard let warningView = LedgerBottomSheetViewFactory.createLedgerWarningView(
+            for: title,
+            message: message,
+            completionClosure: completion
+        ) else {
+            return
+        }
+
+        replaceTransactionStatus(with: warningView, on: view)
     }
 
     func closeTransactionStatus(on view: ControllerBackedProtocol?) {

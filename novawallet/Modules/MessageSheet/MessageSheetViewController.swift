@@ -12,6 +12,7 @@ final class MessageSheetViewController<
     let viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>
 
     var allowsSwipeDown: Bool = true
+    var closeOnSwipeDownClosure: (() -> Void)?
 
     init(
         presenter: MessageSheetPresenterProtocol,
@@ -75,6 +76,10 @@ extension MessageSheetViewController: MessageSheetViewProtocol {}
 extension MessageSheetViewController: ModalPresenterDelegate {
     func presenterShouldHide(_: ModalPresenterProtocol) -> Bool {
         allowsSwipeDown
+    }
+
+    func presenterDidHide(_: ModalPresenterProtocol) {
+        closeOnSwipeDownClosure?()
     }
 }
 
