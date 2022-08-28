@@ -118,7 +118,7 @@ enum LedgerBottomSheetViewFactory {
             completionCallback: completionClosure
         )
 
-        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 380.0)
+        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 400.0)
 
         return view
     }
