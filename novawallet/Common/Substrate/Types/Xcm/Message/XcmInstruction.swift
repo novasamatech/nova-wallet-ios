@@ -17,7 +17,7 @@ extension Xcm {
         let assets: MultiassetFilter
         @StringCodable var maxAssets: UInt32
         let dest: Multilocation
-        let xcm: Xcm.Message
+        let xcm: [Xcm.Instruction]
     }
 
     enum Instruction: Encodable {
