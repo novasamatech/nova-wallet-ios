@@ -78,7 +78,7 @@ extension YourWalletsViewLayout {
         )
         static let interGroupSpacing: CGFloat = 0
         static let collectionViewContentInset = UIEdgeInsets(
-            top: 8,
+            top: 0,
             left: 0,
             bottom: 16,
             right: 0
@@ -86,7 +86,7 @@ extension YourWalletsViewLayout {
         static let headerContentInsets = UIEdgeInsets(
             top: 12,
             left: 0,
-            bottom: 0,
+            bottom: 12,
             right: 0
         )
     }
