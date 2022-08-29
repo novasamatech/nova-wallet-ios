@@ -358,7 +358,7 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
                     assets: .wild(.all),
                     maxAssets: 1,
                     dest: destination,
-                    xcm: .V2([])
+                    xcm: []
                 )
 
                 return .depositReserveAsset(value)
