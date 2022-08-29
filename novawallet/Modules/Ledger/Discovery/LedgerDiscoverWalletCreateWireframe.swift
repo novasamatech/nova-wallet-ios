@@ -10,7 +10,7 @@ final class LedgerDiscoverWalletCreateWireframe: LedgerDiscoverWireframeProtocol
     }
 
     func showAccountSelection(from view: ControllerBackedProtocol?, chain: ChainModel, device: LedgerDeviceProtocol) {
-        guard let confirmView = LedgerAccountConfirmationViewFactory.createView(
+        guard let confirmView = LedgerAccountConfirmationViewFactory.createNewWalletView(
             chain: chain,
             device: device,
             application: application,
@@ -33,6 +33,15 @@ final class LedgerDiscoverAccountAddWireframe: LedgerDiscoverWireframeProtocol {
     }
 
     func showAccountSelection(from view: ControllerBackedProtocol?, chain: ChainModel, device: LedgerDeviceProtocol) {
-        
+        guard let confirmView = LedgerAccountConfirmationViewFactory.createAddAccountView(
+            wallet: wallet,
+            chain: chain,
+            device: device,
+            application: application
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(confirmView.controller, animated: true)
     }
 }
