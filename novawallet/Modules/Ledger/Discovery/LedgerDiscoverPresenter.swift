@@ -18,7 +18,7 @@ final class LedgerDiscoverPresenter: LedgerPerformOperationPresenter {
 
         super.init(
             chainName: chain.name,
-            interactor: interactor,
+            baseInteractor: interactor,
             baseWireframe: wireframe,
             localizationManager: localizationManager
         )
@@ -27,7 +27,7 @@ final class LedgerDiscoverPresenter: LedgerPerformOperationPresenter {
 
 extension LedgerDiscoverPresenter: LedgerDiscoverInteractorOutputProtocol {
     func didReceiveConnection(result: Result<Void, Error>, for deviceId: UUID) {
-        stopConnecting(to: deviceId)
+        stopConnecting()
 
         switch result {
         case .success:

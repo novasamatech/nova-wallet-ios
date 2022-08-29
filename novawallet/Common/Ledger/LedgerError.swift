@@ -3,7 +3,16 @@ import Foundation
 enum LedgerError: Error {
     case deviceNotFound
     case deviceDisconnected
-    case response(code: LedgerResponseCode)
+    case response(error: LedgerResponseError)
     case unexpectedData(_ details: String)
     case internalTransport(error: Error)
+}
+
+struct LedgerResponseError {
+    let code: LedgerResponseCode
+    let reasonData: Data
+
+    func reason() -> String? {
+        String(data: reasonData, encoding: .utf8)
+    }
 }

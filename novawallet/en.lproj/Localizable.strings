@@ -929,3 +929,16 @@
 "ledger.instructions.step4" = "Select account to add to wallet";
 "ledger.instructions.step4.highlighted" = "Select account";
 "welcome.hardware.wallet.subtitle.v3_7" = "Use Parity Signer and Ledger";
+"common.sign.transaction" = "Sign transaction";
+"ledger.sign.transaction.details" = "Press both buttons on your %@ to sign the transaction";
+"ledger.review.transaction.confirmation" = "Review\ntransaction";
+"common.transaction.expired" = "Transaction has expired";
+"ledger.transaction.expired.details" = "For security reasons generated operations valid for only %@. Please try again and sign it with Ledger";
+"common.transaction.valid.format" = "Transaction is valid for %@";
+"ledger.transaction.not.supported.title" = "Transaction is not supported";
+"ledger.transaction.not.supported.message" = "Ledger does not support signing this transaction";
+"common.signature.invalid" = "Signature is invalid";
+"ledger.transaction.signature.invalid" = "Please, make sure you have selected the right Ledger device for currently signing operation";
+"common.outdated.metadata" = "Metadata is outdated";
+"ledger.transaction.update.metadata" = "Please, update Kusama app using Ledger Live app";
+"common.invalid.data" = "Invalid data";
