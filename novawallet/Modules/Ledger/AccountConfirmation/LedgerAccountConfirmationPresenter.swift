@@ -100,7 +100,7 @@ extension LedgerAccountConfirmationPresenter: LedgerAccountConfirmationPresenter
 
         interactor.confirm(address: account.address, at: UInt32(index))
 
-        wireframe.showAddressVerification(on: view, deviceName: deviceName)
+        wireframe.showAddressVerification(on: view, deviceName: deviceName, address: account.address)
     }
 
     func loadNext() {

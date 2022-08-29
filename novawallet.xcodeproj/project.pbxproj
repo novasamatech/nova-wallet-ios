@@ -1186,6 +1186,7 @@
 		848B59BE28BCB4C80009543C /* LedgerAddAccountConfirmationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848B59BD28BCB4C80009543C /* LedgerAddAccountConfirmationWireframe.swift */; };
 		848B59C028BCB8530009543C /* LedgerBaseAccountConfirmationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848B59BF28BCB8530009543C /* LedgerBaseAccountConfirmationInteractor.swift */; };
 		848B59C228BCC1E60009543C /* LedgerAddAccountConfirmationInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848B59C128BCC1E60009543C /* LedgerAddAccountConfirmationInteractor.swift */; };
+		848B59C428BCD1BD0009543C /* MessageSheetContentLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848B59C328BCD1BD0009543C /* MessageSheetContentLabel.swift */; };
 		848C3D0926248A3B005481C3 /* TransferCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848C3D0826248A3B005481C3 /* TransferCall.swift */; };
 		848CCB442832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB432832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift */; };
 		848CCB462832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB452832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift */; };
@@ -3811,6 +3812,7 @@
 		848B59BD28BCB4C80009543C /* LedgerAddAccountConfirmationWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAddAccountConfirmationWireframe.swift; sourceTree = "<group>"; };
 		848B59BF28BCB8530009543C /* LedgerBaseAccountConfirmationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerBaseAccountConfirmationInteractor.swift; sourceTree = "<group>"; };
 		848B59C128BCC1E60009543C /* LedgerAddAccountConfirmationInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerAddAccountConfirmationInteractor.swift; sourceTree = "<group>"; };
+		848B59C328BCD1BD0009543C /* MessageSheetContentLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetContentLabel.swift; sourceTree = "<group>"; };
 		848C3D0826248A3B005481C3 /* TransferCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferCall.swift; sourceTree = "<group>"; };
 		848CCB432832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralStorageSubscriptionFactory.swift; sourceTree = "<group>"; };
 		848CCB452832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralLocalStorageSubscriber.swift; sourceTree = "<group>"; };
@@ -7543,6 +7545,7 @@
 				84355CF128B61794004E5C5E /* MessageSheetLedgerView.swift */,
 				84355CF328B617D3004E5C5E /* MessageSheetLedgerViewModel.swift */,
 				846A836028B8DB7700D92892 /* MessageSheetTimerLabel.swift */,
+				848B59C328BCD1BD0009543C /* MessageSheetContentLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -13181,6 +13184,7 @@
 				84466B3328B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift in Sources */,
 				F40966B926B297D6008CD244 /* AnalyticsRewardsViewModel.swift in Sources */,
 				AE2C84DA25EF98A900986716 /* ValidatorInfoPresenter.swift in Sources */,
+				848B59C428BCD1BD0009543C /* MessageSheetContentLabel.swift in Sources */,
 				84B018AE26E03FB500C75E28 /* NominatorStateView.swift in Sources */,
 				845BB8D625E461FC00E5FCDC /* RewardDestination.swift in Sources */,
 				849E07F6284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift in Sources */,
