@@ -51,6 +51,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     var selectedIndex: Int = 0
     var selectedSection: Int = 0
     var sectionHeaderHeight: CGFloat = 26.0
+    var isScrollEnabled: Bool = false
 
     var hasCloseItem: Bool = false
     var allowsSelection: Bool = true
@@ -105,6 +106,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
 
         tableView.allowsSelection = allowsSelection
         tableView.separatorStyle = separatorStyle
+        tableView.isScrollEnabled = isScrollEnabled
 
         if let separatorColor = separatorColor {
             tableView.separatorColor = separatorColor
@@ -284,6 +286,13 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     @objc private func handleClose() {
         presenter?.hide(view: self, animated: true)
     }
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        guard isScrollEnabled else {
+            return
+        }
+        scrollView.bounces = scrollView.contentOffset.y > UIConstants.bouncesOffset
+    }
 }
 
 extension ModalPickerViewController: Localizable {
@@ -299,5 +308,16 @@ extension ModalPickerViewController: Localizable {
 extension ModalPickerViewController: ModalPresenterDelegate {
     func presenterDidHide(_: ModalPresenterProtocol) {
         delegate?.modalPickerDidCancel(context: context)
+    }
+}
+
+extension ModalPickerViewController: ModalSheetPresenterDelegate {
+    func presenterCanDrag(_: ModalPresenterProtocol) -> Bool {
+        if isScrollEnabled {
+            let offset = tableView.contentOffset.y + tableView.contentInset.top
+            return offset == 0
+        }
+
+        return true
     }
 }
