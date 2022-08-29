@@ -2,8 +2,16 @@ import Foundation
 import SoraUI
 
 class LedgerBaseAccountConfirmationWireframe {
-    func showAddressVerification(on view: LedgerAccountConfirmationViewProtocol?, deviceName: String) {
-        guard let confirmationView = LedgerBottomSheetViewFactory.createVerifyLedgerView(for: deviceName) else {
+    func showAddressVerification(
+        on view: LedgerAccountConfirmationViewProtocol?,
+        deviceName: String,
+        address: AccountAddress
+    ) {
+        guard
+            let confirmationView = LedgerBottomSheetViewFactory.createVerifyLedgerView(
+                for: deviceName,
+                address: address
+            ) else {
             return
         }
 
