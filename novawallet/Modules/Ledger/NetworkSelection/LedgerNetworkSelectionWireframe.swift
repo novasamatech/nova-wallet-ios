@@ -10,7 +10,7 @@ final class LedgerNetworkSelectionWireframe: LedgerNetworkSelectionWireframeProt
     }
 
     func showLedgerDiscovery(from view: LedgerNetworkSelectionViewProtocol?, chain: ChainModel) {
-        guard let ledgerDiscovery = LedgerDiscoverViewFactory.createView(
+        guard let ledgerDiscovery = LedgerDiscoverViewFactory.createNewPairingView(
             chain: chain,
             accountsStore: accountsStore
         ) else {
