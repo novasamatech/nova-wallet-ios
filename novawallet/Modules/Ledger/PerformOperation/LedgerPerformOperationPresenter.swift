@@ -1,26 +1,26 @@
 import Foundation
 import SoraFoundation
 
-class LedgerPerformOperationPresenter {
+class LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
     weak var view: LedgerPerformOperationViewProtocol?
     let baseWireframe: LedgerPerformOperationWireframeProtocol
-    let interactor: LedgerPerformOperationInputProtocol
+    let baseInteractor: LedgerPerformOperationInputProtocol
     let chainName: String
 
     private(set) var devices: [LedgerDeviceProtocol] = []
 
-    private var isConnecting: Bool = false
+    private(set) var connectingDevice: LedgerDeviceProtocol?
 
     let localizationManager: LocalizationManagerProtocol
 
     init(
         chainName: String,
-        interactor: LedgerPerformOperationInputProtocol,
+        baseInteractor: LedgerPerformOperationInputProtocol,
         baseWireframe: LedgerPerformOperationWireframeProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.chainName = chainName
-        self.interactor = interactor
+        self.baseInteractor = baseInteractor
         self.baseWireframe = baseWireframe
         self.localizationManager = localizationManager
     }
@@ -30,14 +30,11 @@ class LedgerPerformOperationPresenter {
         view?.didReceive(devices: names)
     }
 
-    func stopConnecting(to deviceId: UUID) {
-        guard isConnecting else {
-            return
-        }
+    func stopConnecting() {
+        let identifier = connectingDevice?.identifier
+        connectingDevice = nil
 
-        isConnecting = false
-
-        guard let deviceIndex = devices.firstIndex(where: { $0.identifier == deviceId }) else {
+        guard let deviceIndex = devices.firstIndex(where: { $0.identifier == identifier }) else {
             return
         }
 
@@ -97,25 +94,26 @@ class LedgerPerformOperationPresenter {
             break
         }
     }
-}
 
-extension LedgerPerformOperationPresenter: LedgerPerformOperationPresenterProtocol {
+    // MARK: Protocol
+
     func setup() {
         view?.didReceive(networkName: chainName)
 
-        interactor.setup()
+        baseInteractor.setup()
     }
 
     func selectDevice(at index: Int) {
-        guard !isConnecting else {
+        guard connectingDevice == nil else {
             return
         }
 
-        isConnecting = true
+        let device = devices[index]
+        connectingDevice = device
 
         view?.didStartLoading(at: index)
 
-        interactor.performOperation(using: devices[index].identifier)
+        baseInteractor.performOperation(using: device.identifier)
     }
 }
 

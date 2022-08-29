@@ -28,10 +28,10 @@ extension LedgerErrorPresentable where Self: AlertPresentable & CommonRetryable 
                 locale: locale,
                 retryAction: retryClosure
             )
-        case let .response(code):
+        case let .response(ledgerResponseError):
             presentLedger(
                 on: view,
-                response: code,
+                response: ledgerResponseError.code,
                 networkName: networkName,
                 locale: locale,
                 retryClosure: retryClosure

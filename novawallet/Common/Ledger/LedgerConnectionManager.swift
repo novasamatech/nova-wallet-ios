@@ -16,6 +16,7 @@ protocol LedgerConnectionManagerProtocol: AnyObject {
     func start()
     func stop()
     func send(message: Data, deviceId: UUID, completion: LedgerResponseClosure?) throws
+    func cancelRequest(for deviceId: UUID)
 }
 
 extension LedgerConnectionManagerProtocol {
@@ -110,6 +111,18 @@ extension LedgerConnectionManager: LedgerConnectionManagerProtocol {
 
                 chunks.forEach { currentDevice.peripheral.writeValue($0, for: characteristic, type: type) }
             }
+        }
+    }
+
+    func cancelRequest(for deviceId: UUID) {
+        guard let centralManager = centralManager, let device = bluetoothDevice(id: deviceId) else {
+            return
+        }
+
+        delegateQueue.async {
+            device.responseCompletion = nil
+
+            centralManager.cancelPeripheralConnection(device.peripheral)
         }
     }
 }
