@@ -173,7 +173,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
                 )
             ]
         case .ledger:
-            let allChainAccounts = customSecretAccountList + sharedSecretAccountList
+            let allChainAccounts = sharedSecretAccountList + customSecretAccountList
 
             let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)
 
