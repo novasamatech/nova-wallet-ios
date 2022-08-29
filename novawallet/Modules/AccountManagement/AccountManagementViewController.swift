@@ -193,8 +193,11 @@ extension AccountManagementViewController: UITableViewDataSource {
 
 extension AccountManagementViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let title = presenter.titleForSection(section)?.value(for: selectedLocale) else {
+            return nil
+        }
+
         let headerView: ChainAccountListSectionView = tableView.dequeueReusableHeaderFooterView()
-        let title = presenter.titleForSection(section).value(for: selectedLocale)
         headerView.bind(description: title.uppercased())
 
         return headerView

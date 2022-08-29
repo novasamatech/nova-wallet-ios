@@ -67,14 +67,14 @@ final class AccountManagementPresenter {
         view?.set(nameViewModel: nameViewModel)
     }
 
-    // MARK: - Bottom sheet display for watch only type
+    // MARK: Common bottom sheet
 
-    private func displayWatchOnlyNoAddressActions(for chain: ChainModel) {
+    private func displayAddAddress(for chain: ChainModel, walletType: MetaAccountModelType) {
         guard let view = view else {
             return
         }
 
-        let addAction = createAccountAddAction(for: chain, walletType: .watchOnly)
+        let addAction = createAccountAddAction(for: chain, walletType: walletType)
 
         let actions: [ChainAddressDetailsAction] = [addAction]
 
@@ -86,6 +86,12 @@ final class AccountManagementPresenter {
         )
 
         wireframe.presentChainAddressDetails(from: view, model: model)
+    }
+
+    // MARK: - Bottom sheet display for watch only type
+
+    private func displayWatchOnlyNoAddressActions(for chain: ChainModel) {
+        displayAddAddress(for: chain, walletType: .watchOnly)
     }
 
     private func displayWatchOnlyExistingAddressActions(
@@ -225,7 +231,7 @@ final class AccountManagementPresenter {
         wireframe.presentChainAddressDetails(from: view, model: model)
     }
 
-    private func displayParitySignerExistingAddressActions(
+    private func displayExistingHardwareAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
@@ -367,6 +373,27 @@ final class AccountManagementPresenter {
         for chain: ChainModel,
         walletType: MetaAccountModelType
     ) -> ChainAddressDetailsAction {
+        let handlingClosure: () -> Void
+
+        switch walletType {
+        case .secrets, .watchOnly, .paritySigner:
+            handlingClosure = { [weak self] in
+                self?.activateChangeAccount(for: chain, walletType: walletType)
+            }
+        case .ledger:
+            handlingClosure = { [weak self] in
+                guard let wallet = self?.wallet else {
+                    return
+                }
+
+                self?.wireframe.showAddLedgerAccount(
+                    from: self?.view,
+                    wallet: wallet,
+                    chain: chain
+                )
+            }
+        }
+
         let addAccountTitle = LocalizableResource { locale in
             R.string.localizable.accountsAddAccount(preferredLanguages: locale.rLanguages)
         }
@@ -374,10 +401,9 @@ final class AccountManagementPresenter {
         return ChainAddressDetailsAction(
             title: addAccountTitle,
             icon: R.image.iconActionChange(),
-            indicator: .navigation
-        ) { [weak self] in
-            self?.activateChangeAccount(for: chain, walletType: walletType)
-        }
+            indicator: .navigation,
+            onSelection: handlingClosure
+        )
     }
 }
 
@@ -402,7 +428,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         return viewModels[indexPath.row]
     }
 
-    func titleForSection(_ section: Int) -> LocalizableResource<String> {
+    func titleForSection(_ section: Int) -> LocalizableResource<String>? {
         viewModel[section].section.title
     }
 
@@ -433,11 +459,14 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             }
         case .paritySigner:
             if chainViewModel.address != nil {
-                displayParitySignerExistingAddressActions(for: chainModel, viewModel: chainViewModel)
+                displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
             }
         case .ledger:
-            // TODO: Add support to Ledger
-            break
+            if chainViewModel.address != nil {
+                displayExistingHardwareAddressActions(for: chainModel, viewModel: chainViewModel)
+            } else {
+                displayAddAddress(for: chainModel, walletType: .ledger)
+            }
         }
     }
 
