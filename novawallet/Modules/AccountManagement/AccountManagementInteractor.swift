@@ -14,6 +14,7 @@ final class AccountManagementInteractor {
     let settings: SelectedWalletSettings
     let operationManager: OperationManagerProtocol
     let eventCenter: EventCenterProtocol
+    let chainsFilter: AccountManagementFilterProtocol
     let keystore: KeystoreProtocol
 
     private lazy var saveScheduler = Scheduler(with: self, callbackQueue: .main)
@@ -28,6 +29,7 @@ final class AccountManagementInteractor {
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         keystore: KeystoreProtocol,
+        chainsFilter: AccountManagementFilterProtocol,
         saveInterval: TimeInterval = 2.0
     ) {
         self.walletRepository = walletRepository
@@ -36,45 +38,61 @@ final class AccountManagementInteractor {
         self.settings = settings
         self.eventCenter = eventCenter
         self.keystore = keystore
+        self.chainsFilter = chainsFilter
         self.saveInterval = saveInterval
     }
 
     // MARK: - Fetching functions
 
-    private func fetchChains() {
+    private func filterChainsAndNotify(for chains: [ChainModel], wallet: MetaAccountModel) {
+        let filteredChains = chains.filter { chainsFilter.checkWallet(wallet: wallet, supports: $0) }
+
+        let chainsById: [ChainModel.Id: ChainModel] = filteredChains.reduce(into: [:]) { result, chain in
+            result[chain.chainId] = chain
+        }
+
+        presenter?.didReceiveChains(.success(chainsById))
+    }
+
+    private func fetchChains(for wallet: MetaAccountModel) {
         let operation = chainRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        operation.completionBlock = {
+        operation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
                     let chains = try operation.extractNoCancellableResultData()
 
-                    let chainsById: [ChainModel.Id: ChainModel] = chains.reduce(into: [:]) { result, chain in
-                        result[chain.chainId] = chain
-                    }
-
-                    self.presenter?.didReceiveChains(.success(chainsById))
+                    self?.filterChainsAndNotify(for: chains, wallet: wallet)
                 } catch {
-                    self.presenter?.didReceiveChains(.failure(error))
+                    self?.presenter?.didReceiveChains(.failure(error))
                 }
             }
         }
+
         operationManager.enqueue(operations: [operation], in: .transient)
     }
 
-    private func fetchWallet(with walletId: String) {
+    private func fetchWalletAndChains(with walletId: String) {
         let operation = walletRepository.fetchOperation(
             by: walletId,
             options: RepositoryFetchOptions()
         )
 
-        operation.completionBlock = {
+        operation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let wallet = try operation.extractNoCancellableResultData()?.info
-                    self.presenter?.didReceiveWallet(.success(wallet))
+                    let optWallet = try operation.extractNoCancellableResultData()?.info
+
+                    if let wallet = optWallet {
+                        self?.fetchChains(for: wallet)
+                    } else {
+                        self?.presenter?.didReceiveChains(.success([:]))
+                    }
+
+                    self?.presenter?.didReceiveWallet(.success(optWallet))
                 } catch {
-                    self.presenter?.didReceiveWallet(.failure(error))
+                    self?.presenter?.didReceiveWallet(.failure(error))
+                    self?.presenter?.didReceiveChains(.failure(error))
                 }
             }
         }
@@ -163,8 +181,7 @@ final class AccountManagementInteractor {
 
 extension AccountManagementInteractor: AccountManagementInteractorInputProtocol {
     func setup(walletId: String) {
-        fetchWallet(with: walletId)
-        fetchChains()
+        fetchWalletAndChains(with: walletId)
     }
 
     func save(name: String, walletId: String) {
