@@ -6,7 +6,7 @@ final class YourWalletsPresenter {
     weak var view: YourWalletsViewProtocol?
     weak var delegate: YourWalletsDelegate?
 
-    let metaAccounts: [PossibleMetaAccountChainResponse]
+    let metaAccounts: [MetaAccountChainResponse]
     let accountIconGenerator: IconGenerating
     let chainIconGenerator: IconGenerating
     private(set) var selectedAddress: AccountAddress?
@@ -16,7 +16,7 @@ final class YourWalletsPresenter {
         localizationManager: LocalizationManagerProtocol,
         accountIconGenerator: IconGenerating,
         chainIconGenerator: IconGenerating,
-        metaAccounts: [PossibleMetaAccountChainResponse],
+        metaAccounts: [MetaAccountChainResponse],
         selectedAddress: AccountAddress?,
         delegate: YourWalletsDelegate
     ) {
@@ -30,7 +30,7 @@ final class YourWalletsPresenter {
 
     private func updateView() {
         var createdSections: [MetaAccountModelType: Int] = [:]
-        
+
         for metaAccount in metaAccounts {
             if let existsSectionIndex = createdSections[metaAccount.metaAccount.type] {
                 sections[existsSectionIndex].cells.append(cell(response: metaAccount))
@@ -42,8 +42,10 @@ final class YourWalletsPresenter {
                 createdSections[metaAccount.metaAccount.type] = createdSections.count
             }
         }
-        
+
+        let title = R.string.localizable.yourwalletsTitle(preferredLanguages: selectedLocale.rLanguages)
         view?.update(viewModel: sections)
+        view?.update(header: title)
     }
 
     private func updateSelectedCell() {
@@ -57,35 +59,31 @@ final class YourWalletsPresenter {
 
         view?.update(viewModel: sections)
     }
-  
-    private func header(response: PossibleMetaAccountChainResponse) -> YourWalletsViewSectionModel.HeaderModel? {
+
+    private func header(response: MetaAccountChainResponse) -> YourWalletsViewSectionModel.HeaderViewModel? {
         switch response.metaAccount.type {
         case .watchOnly, .secrets:
             return nil
         case .paritySigner:
             return .init(
-                title: R.string.localizable.commonParitySigner(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.commonParitySigner(preferredLanguages: selectedLocale.rLanguages),
                 icon: R.image.iconParitySigner()
             )
         }
     }
 
-    private func cell(response: PossibleMetaAccountChainResponse) -> YourWalletsViewModelCell {
+    private func cell(response: MetaAccountChainResponse) -> YourWalletsCellViewModel {
         let name = response.metaAccount.name
         let imageViewModel = icon(
             generator: accountIconGenerator,
             from: response.metaAccount.substrateAccountId
         )
-
         guard let chainAccountResponse = response.chainAccountResponse,
               let displayAddress = try? chainAccountResponse.chainAccount.toDisplayAddress() else {
-            return .notFound(.init(
-                name: name,
-                warning: R.string.localizable.accountNotFoundCaption(
-                    preferredLanguages: selectedLocale.rLanguages),
-                imageViewModel: imageViewModel
-            ))
+            let message = R.string.localizable.accountNotFoundCaption(preferredLanguages: selectedLocale.rLanguages)
+            return .warning(.init(accountName: name, warning: message, imageViewModel: imageViewModel))
         }
+        
         let chainAccountIcon = icon(
             generator: chainIconGenerator,
             from: chainAccountResponse.chainAccount.accountId
@@ -115,7 +113,7 @@ extension YourWalletsPresenter: YourWalletsPresenterProtocol {
         updateView()
     }
 
-    func didSelect(viewModel: YourWalletsViewModelCell.CommonModel) {
+    func didSelect(viewModel: YourWalletsCellViewModel.CommonModel) {
         selectedAddress = viewModel.displayAddress.address
         updateSelectedCell()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

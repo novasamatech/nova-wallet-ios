@@ -4,7 +4,7 @@ import SoraFoundation
 
 struct YourWalletsViewFactory {
     static func createView(
-        metaAccounts: [PossibleMetaAccountChainResponse],
+        metaAccounts: [MetaAccountChainResponse],
         address: AccountAddress?,
         delegate: YourWalletsDelegate
     ) -> YourWalletsViewProtocol? {

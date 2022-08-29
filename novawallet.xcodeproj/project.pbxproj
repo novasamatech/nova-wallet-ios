@@ -1998,6 +1998,7 @@
 		8860F3E4289D50BA00C0BF86 /* Array+SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */; };
 		8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E7289D7CF400C0BF86 /* Atomic.swift */; };
 		886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62FA66143B25AA70B02CE461 /* ExportSeedViewFactory.swift */; };
+		887AFC8728BC95F0002A0422 /* MetaAccountChainResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */; };
 		8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */; };
 		8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */; };
 		8887814028B7AAB700E7290F /* RoundedIconTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */; };
@@ -4556,6 +4557,7 @@
 		8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionProtocol.swift; sourceTree = "<group>"; };
 		8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SectionProtocol.swift"; sourceTree = "<group>"; };
 		8860F3E7289D7CF400C0BF86 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountChainResponse.swift; sourceTree = "<group>"; };
 		8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleSpaceView.swift; sourceTree = "<group>"; };
 		8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleCollectionHeaderView.swift; sourceTree = "<group>"; };
 		8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleView.swift; sourceTree = "<group>"; };
@@ -7951,6 +7953,7 @@
 				8448F7A32882E21E0080CEA9 /* SearchMatch.swift */,
 				84BC7044289EFF44008A9758 /* TransactionDisplayCode.swift */,
 				84BC7046289EFFFA008A9758 /* ChainWalletDisplayAddress.swift */,
+				887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -14915,6 +14918,7 @@
 				821518375113295E41E0481C /* ParitySignerTxQrViewFactory.swift in Sources */,
 				641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */,
 				1EE4FBB79EE6015D7D3EBDC1 /* ParitySignerTxScanWireframe.swift in Sources */,
+				887AFC8728BC95F0002A0422 /* MetaAccountChainResponse.swift in Sources */,
 				042799797DF7E6FD02D1D1E6 /* ParitySignerTxScanPresenter.swift in Sources */,
 				7580D432F22904C8F71441FE /* ParitySignerTxScanInteractor.swift in Sources */,
 				83DCE6BEEAD957D9C7588DB5 /* ParitySignerTxScanViewController.swift in Sources */,

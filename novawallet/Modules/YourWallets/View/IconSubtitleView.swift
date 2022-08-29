@@ -41,7 +41,7 @@ final class IconSubtitleView: UIView {
             subtitleImageView,
             subtitleLabel
         ])
-        subtitleView.spacing = 4
+        subtitleView.spacing = Constants.horizontalSubtileViewSpace
         subtitleImageView.setContentCompressionResistancePriority(.required, for: .vertical)
         subtitleImageView.setContentCompressionResistancePriority(.required, for: .horizontal)
 
@@ -52,7 +52,7 @@ final class IconSubtitleView: UIView {
         titleLabel.setContentHuggingPriority(.required, for: .vertical)
 
         let contentView = UIStackView(arrangedSubviews: [imageView, textStackView])
-        contentView.spacing = 12
+        contentView.spacing = Constants.horizontalSpace
         addSubview(contentView)
 
         contentView.snp.makeConstraints {
@@ -60,10 +60,10 @@ final class IconSubtitleView: UIView {
         }
 
         subtitleImageView.snp.makeConstraints {
-            $0.width.height.equalTo(18)
+            $0.width.equalTo(Constants.subtitleImageViewSize)
+            $0.height.equalTo(Constants.subtitleImageViewSize)
         }
     }
-    
 }
 
 // MARK: - Model
@@ -98,12 +98,22 @@ extension IconSubtitleView {
             subtitleImageView.bind(icon: $0.icon)
         }
     }
-    
+
     func clear() {
         model?.icon?.cancel(on: imageView)
         imageView.image = nil
         titleLabel.text = nil
         subtitleLabel.text = nil
         model = nil
+    }
+}
+
+//MARK: - Constants
+
+extension IconSubtitleView {
+    enum Constants {
+        static let subtitleImageViewSize = CGSize(width: 18, height: 18)
+        static let horizontalSpace: CGFloat = 12
+        static let horizontalSubtileViewSpace: CGFloat = 4
     }
 }

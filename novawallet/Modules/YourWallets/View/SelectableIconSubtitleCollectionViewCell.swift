@@ -17,11 +17,10 @@ final class SelectableIconSubtitleCollectionViewCell: UICollectionViewCell {
     private func setupLayout() {
         contentView.addSubview(view)
         view.snp.makeConstraints {
-            $0.top.bottom.equalToSuperview().inset(9)
-            $0.leading.trailing.equalToSuperview()
+            $0.edges.equalToSuperview().inset(Constants.contentInsets)
         }
     }
-    
+
     override func prepareForReuse() {
         view.clear()
     }
@@ -34,5 +33,13 @@ extension SelectableIconSubtitleCollectionViewCell {
 
     func bind(model: Model) {
         view.bind(model: model)
+    }
+}
+
+//MARK: - Constants
+
+extension SelectableIconSubtitleCollectionViewCell {
+    enum Constants {
+        static let contentInsets = UIEdgeInsets(top: 9, left: 0, bottom: 9, right: 0)
     }
 }

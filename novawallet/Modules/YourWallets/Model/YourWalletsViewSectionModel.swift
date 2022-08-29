@@ -1,19 +1,21 @@
-struct YourWalletsViewSectionModel: SectionProtocol, Hashable {
-    let header: HeaderModel?
-    var cells: [YourWalletsViewModelCell]
+import UIKit
 
-    struct HeaderModel: Hashable {
+struct YourWalletsViewSectionModel: SectionProtocol, Hashable {
+    let header: HeaderViewModel?
+    var cells: [YourWalletsCellViewModel]
+
+    struct HeaderViewModel: Hashable {
         let title: String
         let icon: UIImage?
     }
 }
 
-enum YourWalletsViewModelCell: Hashable {
+enum YourWalletsCellViewModel: Hashable {
     case common(CommonModel)
-    case notFound(NotFoundModel)
-    
-    struct NotFoundModel {
-        let name: String?
+    case warning(WarningModel)
+
+    struct WarningModel {
+        let accountName: String?
         let warning: String
         let imageViewModel: DrawableIconViewModel?
     }
@@ -28,29 +30,33 @@ enum YourWalletsViewModelCell: Hashable {
 
 // MARK: - Hashable
 
-extension YourWalletsViewModelCell.NotFoundModel: Hashable {
+extension YourWalletsCellViewModel.WarningModel: Hashable {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(name ?? "")
+        hasher.combine(accountName ?? "")
         hasher.combine(warning)
     }
 
-    static func == (lhs: YourWalletsViewModelCell.NotFoundModel,
-                    rhs: YourWalletsViewModelCell.NotFoundModel) -> Bool {
-        rhs.name == lhs.name && rhs.warning == lhs.warning
+    static func == (
+        lhs: YourWalletsCellViewModel.WarningModel,
+        rhs: YourWalletsCellViewModel.WarningModel
+    ) -> Bool {
+        rhs.accountName == lhs.accountName && rhs.warning == lhs.warning
     }
 }
 
-extension YourWalletsViewModelCell.CommonModel: Hashable {
+extension YourWalletsCellViewModel.CommonModel: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(displayAddress.address)
         hasher.combine(displayAddress.username)
         hasher.combine(isSelected)
     }
-    
-    static func == (lhs: YourWalletsViewModelCell.CommonModel,
-                    rhs: YourWalletsViewModelCell.CommonModel) -> Bool {
+
+    static func == (
+        lhs: YourWalletsCellViewModel.CommonModel,
+        rhs: YourWalletsCellViewModel.CommonModel
+    ) -> Bool {
         lhs.displayAddress.address == rhs.displayAddress.address &&
-        lhs.displayAddress.username == rhs.displayAddress.username &&
-        lhs.isSelected == rhs.isSelected
+            lhs.displayAddress.username == rhs.displayAddress.username &&
+            lhs.isSelected == rhs.isSelected
     }
 }

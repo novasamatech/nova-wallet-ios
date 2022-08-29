@@ -51,7 +51,7 @@ protocol TransferSetupInteractorIntputProtocol: AnyObject {
 protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceive(error: Error)
-    func didReceive(metaChainAccountResponses: [PossibleMetaAccountChainResponse])
+    func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
@@ -68,7 +68,7 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
 
     func showYourWallets(
         from view: TransferSetupViewProtocol?,
-        accounts: [PossibleMetaAccountChainResponse],
+        accounts: [MetaAccountChainResponse],
         address: AccountAddress?,
         delegate: YourWalletsDelegate
     )

@@ -24,10 +24,11 @@ final class SelectableIconSubtitleView: UIView {
         }
 
         radioSelectorView.snp.makeConstraints {
-            $0.leading.equalTo(iconSubtitleView.snp.trailing).offset(25)
+            $0.leading.equalTo(iconSubtitleView.snp.trailing).offset(Constants.horizontalSpace)
             $0.centerY.equalToSuperview()
             $0.trailing.equalToSuperview()
-            $0.width.height.equalTo(20)
+            $0.width.equalTo(Constants.radioButtonSize.width)
+            $0.height.equalTo(Constants.radioButtonSize.height)
         }
     }
 }
@@ -50,8 +51,17 @@ extension SelectableIconSubtitleView {
         radioSelectorView.isHidden = false
         radioSelectorView.selected = isSelected
     }
-    
+
     func clear() {
         iconSubtitleView.clear()
+    }
+}
+
+// MARK: - Constants
+
+extension SelectableIconSubtitleView {
+    enum Constants {
+        static let horizontalSpace: CGFloat = 25
+        static let radioButtonSize = CGSize(width: 20, height: 20)
     }
 }

@@ -108,7 +108,7 @@ extension AccountFetching {
         operationManager: OperationManagerProtocol,
         closure: @escaping (Result<[MetaChainAccountResponse], Error>) -> Void
     ) {
-        fetchAllPossibleMetaAccountChainResponse(
+        fetchAllMetaAccountChainResponses(
             for: accountRequest,
             repository: repository,
             operationManager: operationManager
@@ -178,20 +178,20 @@ extension AccountFetching {
         return wrapper
     }
 
-    func fetchAllPossibleMetaAccountChainResponse(
+    func fetchAllMetaAccountChainResponses(
         for accountRequest: ChainAccountRequest,
         repository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
-        closure: @escaping (Result<[PossibleMetaAccountChainResponse], Error>) -> Void
+        closure: @escaping (Result<[MetaAccountChainResponse], Error>) -> Void
     ) {
         let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        let mapOperation = ClosureOperation<[PossibleMetaAccountChainResponse]> {
-            let metAccounts = try fetchOperation.extractNoCancellableResultData()
+        let mapOperation = ClosureOperation<[MetaAccountChainResponse]> {
+            let metaAccounts = try fetchOperation.extractNoCancellableResultData()
 
-            let responses: [PossibleMetaAccountChainResponse] = metAccounts.compactMap { metaAccount in
+            let responses: [MetaAccountChainResponse] = metaAccounts.map { metaAccount in
                 let metaAccountResponse = metaAccount.fetchMetaChainAccount(for: accountRequest)
-                return PossibleMetaAccountChainResponse(
+                return MetaAccountChainResponse(
                     metaAccount: metaAccount,
                     chainAccountResponse: metaAccountResponse
                 )
@@ -214,9 +214,4 @@ extension AccountFetching {
 
         operationManager.enqueue(operations: [fetchOperation, mapOperation], in: .transient)
     }
-}
-
-struct PossibleMetaAccountChainResponse {
-    let metaAccount: MetaAccountModel
-    let chainAccountResponse: MetaChainAccountResponse?
 }

@@ -6,7 +6,7 @@ import SubstrateSdk
 final class YourWalletsViewController: UIViewController, ViewHolder {
     typealias RootViewType = YourWalletsViewLayout
     typealias DataSource =
-        UICollectionViewDiffableDataSource<YourWalletsViewSectionModel, YourWalletsViewModelCell>
+        UICollectionViewDiffableDataSource<YourWalletsViewSectionModel, YourWalletsCellViewModel>
 
     let presenter: YourWalletsPresenterProtocol
     private lazy var dataSource = createDataSource()
@@ -49,8 +49,8 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
                 UICollectionViewCell? in
                 let cell: SelectableIconSubtitleCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
                 switch model {
-                case let .notFound(notFoundModel):
-                    cell?.bind(model: Self.mapNotFoundModel(notFoundModel))
+                case let .warning(warning):
+                    cell?.bind(model: Self.mapWarningModel(warning))
                 case let .common(commonModel):
                     cell?.bind(model: Self.mapCommonModel(commonModel))
                 }
@@ -78,21 +78,21 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
         return dataSource
     }
 
-    private static func mapNotFoundModel(_ model: YourWalletsViewModelCell.NotFoundModel) ->
-        SelectableIconSubtitleCollectionViewCell.Model {
+    private static func mapWarningModel(_ model: YourWalletsCellViewModel.WarningModel) ->
+    SelectableIconSubtitleCollectionViewCell.Model {
         .init(
             iconSubtitle: .init(
                 icon: model.imageViewModel,
-                title: model.name ?? "",
+                title: model.accountName ?? "",
                 subtitle: model.warning,
                 subtitleIcon: DrawableIconViewModel(icon: R.image.iconWarning()!),
-                lineBreakMode: NSLineBreakMode.byTruncatingTail
+                lineBreakMode: .byTruncatingTail
             ),
             isSelected: nil
         )
     }
 
-    private static func mapCommonModel(_ model: YourWalletsViewModelCell.CommonModel) ->
+    private static func mapCommonModel(_ model: YourWalletsCellViewModel.CommonModel) ->
         SelectableIconSubtitleCollectionViewCell.Model {
         .init(
             iconSubtitle: .init(
@@ -100,7 +100,7 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
                 title: model.displayAddress.username,
                 subtitle: model.displayAddress.address,
                 subtitleIcon: model.chainIcon,
-                lineBreakMode: NSLineBreakMode.byTruncatingMiddle
+                lineBreakMode: .byTruncatingMiddle
             ),
             isSelected: model.isSelected
         )
@@ -111,13 +111,17 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
 
 extension YourWalletsViewController: YourWalletsViewProtocol {
     func update(viewModel: [YourWalletsViewSectionModel]) {
-        var snapshot = NSDiffableDataSourceSnapshot<YourWalletsViewSectionModel, YourWalletsViewModelCell>()
+        var snapshot = NSDiffableDataSourceSnapshot<YourWalletsViewSectionModel, YourWalletsCellViewModel>()
         snapshot.appendSections(viewModel)
         viewModel.forEach { section in
             snapshot.appendItems(section.cells, toSection: section)
         }
 
         dataSource.apply(snapshot)
+    }
+    
+    func update(header: String) {
+        rootView.header.bind(title: header, icon: nil)
     }
 }
 
@@ -127,10 +131,10 @@ extension YourWalletsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         guard let item = dataSource.itemIdentifier(for: indexPath),
-              case let .common(model) = item else {
+              case let .common(viewModel) = item else {
             return
         }
 
-        presenter.didSelect(viewModel: model)
+        presenter.didSelect(viewModel: viewModel)
     }
 }

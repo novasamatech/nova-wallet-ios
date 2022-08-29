@@ -19,7 +19,7 @@ final class TransferSetupPresenter {
     private(set) var destinationChainAsset: ChainAsset?
     private(set) var availableDestinations: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
-    private var metaChainAccountResponses: [PossibleMetaAccountChainResponse] = []
+    private var metaChainAccountResponses: [MetaAccountChainResponse] = []
 
     init(
         interactor: TransferSetupInteractorIntputProtocol,
@@ -194,7 +194,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
     }
 
-    func didReceive(metaChainAccountResponses: [PossibleMetaAccountChainResponse]) {
+    func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
         self.metaChainAccountResponses = metaChainAccountResponses
         view?.changeYourWalletsViewState(isHidden: metaChainAccountResponses.isEmpty)
     }

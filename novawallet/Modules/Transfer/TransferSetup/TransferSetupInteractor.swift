@@ -97,7 +97,7 @@ final class TransferSetupInteractor: AccountFetching {
         }
     }
 
-    private func handleFetchAccountsResult(_ result: Result<[PossibleMetaAccountChainResponse], Error>) {
+    private func handleFetchAccountsResult(_ result: Result<[MetaAccountChainResponse], Error>) {
         switch result {
         case let .failure(error):
             presenter?.didReceive(error: error)

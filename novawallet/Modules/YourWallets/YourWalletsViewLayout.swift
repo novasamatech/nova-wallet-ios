@@ -1,6 +1,10 @@
 import UIKit
 
 final class YourWalletsViewLayout: UIView {
+    lazy var header: IconTitleHeaderView = .create {
+        $0.contentInsets = Constants.headerContentInsets
+    }
+  
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
         view.backgroundColor = .clear
@@ -34,9 +38,17 @@ final class YourWalletsViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(header)
         addSubview(collectionView)
-        collectionView.snp.makeConstraints {
+
+        header.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top)
+            $0.height.equalTo(46)
+            $0.leading.trailing.equalToSuperview()
+        }
+
+        collectionView.snp.makeConstraints {
+            $0.top.equalTo(header.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
@@ -72,5 +84,10 @@ extension YourWalletsViewLayout {
             bottom: 16,
             right: 0
         )
+        static let headerContentInsets = UIEdgeInsets(
+            top: 12,
+            left: 0,
+            bottom: 0,
+            right: 0)
     }
 }
