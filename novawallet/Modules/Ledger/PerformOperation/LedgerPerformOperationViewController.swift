@@ -1,15 +1,15 @@
 import UIKit
 import SoraFoundation
 
-final class LedgerPerformOperationViewController: UIViewController, ViewHolder {
+class LedgerPerformOperationViewController: UIViewController, ViewHolder {
     typealias RootViewType = LedgerPerformOperationViewLayout
 
-    let presenter: LedgerPerformOperationPresenterProtocol
+    let basePresenter: LedgerPerformOperationPresenterProtocol
 
     private var networkName: String?
 
-    init(presenter: LedgerPerformOperationPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
-        self.presenter = presenter
+    init(basePresenter: LedgerPerformOperationPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+        self.basePresenter = basePresenter
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -31,7 +31,7 @@ final class LedgerPerformOperationViewController: UIViewController, ViewHolder {
 
         updateActivityIndicator()
 
-        presenter.setup()
+        basePresenter.setup()
     }
 
     private func setupLocalization() {
@@ -68,7 +68,7 @@ final class LedgerPerformOperationViewController: UIViewController, ViewHolder {
             return
         }
 
-        presenter.selectDevice(at: index)
+        basePresenter.selectDevice(at: index)
     }
 }
 

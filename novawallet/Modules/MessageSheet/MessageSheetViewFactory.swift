@@ -18,14 +18,15 @@ struct MessageSheetViewFactory {
             R.string.localizable.noKeyMessage(preferredLanguages: locale.rLanguages)
         }
 
-        let viewModel = MessageSheetViewModel<UIImage>(
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
             title: title,
             message: message,
             graphics: R.image.imageNoKeys(),
+            content: nil,
             hasAction: true
         )
 
-        let view = MessageSheetViewController<MessageSheetImageView, UIImage>(
+        let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
@@ -53,14 +54,15 @@ struct MessageSheetViewFactory {
             R.string.localizable.commonParitySignerNotSupportedMessage(preferredLanguages: locale.rLanguages)
         }
 
-        let viewModel = MessageSheetViewModel<UIImage>(
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
             title: title,
             message: message,
             graphics: R.image.iconParitySignerInSheet(),
+            content: nil,
             hasAction: true
         )
 
-        let view = MessageSheetViewController<MessageSheetImageView, UIImage>(
+        let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
@@ -73,44 +75,33 @@ struct MessageSheetViewFactory {
         return view
     }
 
-    static func createVerifyLedgerView(for deviceName: String) -> MessageSheetViewProtocol? {
-        let wireframe = MessageSheetWireframe(completionCallback: nil)
+    static func createNoContentView(
+        title: LocalizableResource<String>,
+        message: LocalizableResource<String>,
+        image: UIImage?,
+        allowsSwipeDown: Bool,
+        completionCallback: @escaping MessageSheetCallback
+    ) -> MessageSheetViewProtocol? {
+        let wireframe = MessageSheetWireframe(completionCallback: completionCallback)
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
-        let title = LocalizableResource { locale in
-            R.string.localizable.ledgerAddressVerifyTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        let message = LocalizableResource { locale in
-            R.string.localizable.ledgerAddressVerifyMessage(deviceName, preferredLanguages: locale.rLanguages)
-        }
-
-        let hint = LocalizableResource { locale in
-            R.string.localizable.ledgerAddressVerifyConfirmation(preferredLanguages: locale.rLanguages)
-        }
-
-        let graphicsViewModel = MessageSheetLedgerViewModel(
-            backgroundImage: R.image.graphicsLedgerVerify()!,
-            text: hint,
-            icon: R.image.iconEye14()!,
-            infoRenderSize: CGSize(width: 100.0, height: 72.0)
-        )
-
-        let viewModel = MessageSheetViewModel<MessageSheetLedgerViewModel>(
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
             title: title,
             message: message,
-            graphics: graphicsViewModel,
-            hasAction: false
+            graphics: image,
+            content: nil,
+            hasAction: true
         )
 
-        let view = MessageSheetViewController<MessageSheetLedgerView, MessageSheetLedgerViewModel>(
+        let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
         )
 
-        view.controller.preferredContentSize = CGSize(width: 0.0, height: 320.0)
+        view.controller.preferredContentSize = CGSize(width: 0.0, height: 300.0)
+        view.allowsSwipeDown = allowsSwipeDown
 
         presenter.view = view
 

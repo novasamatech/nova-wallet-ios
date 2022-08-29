@@ -28,7 +28,7 @@ struct LedgerDiscoverViewFactory {
         )
 
         let view = LedgerPerformOperationViewController(
-            presenter: presenter,
+            basePresenter: presenter,
             localizationManager: LocalizationManager.shared
         )
 

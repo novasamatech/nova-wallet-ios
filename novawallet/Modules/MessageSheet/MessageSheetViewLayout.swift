@@ -1,7 +1,12 @@
 import UIKit
 
-final class MessageSheetViewLayout<I: UIView & MessageSheetGraphicsProtocol>: UIView {
+final class MessageSheetViewLayout<
+    I: UIView & MessageSheetGraphicsProtocol,
+    C: UIView & MessageSheetContentProtocol
+>: UIView {
     let graphicsView = I()
+
+    let contentView = C()
 
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -66,6 +71,12 @@ final class MessageSheetViewLayout<I: UIView & MessageSheetGraphicsProtocol>: UI
         detailsLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
             make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
+        }
+
+        addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.top.equalTo(detailsLabel.snp.bottom).offset(40.0)
         }
     }
 }

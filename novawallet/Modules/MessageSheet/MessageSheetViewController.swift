@@ -1,16 +1,22 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
-final class MessageSheetViewController<I: UIView & MessageSheetGraphicsProtocol, T>: UIViewController, ViewHolder
-    where I.GraphicsViewModel == T {
-    typealias RootViewType = MessageSheetViewLayout<I>
+final class MessageSheetViewController<
+    I: UIView & MessageSheetGraphicsProtocol,
+    C: UIView & MessageSheetContentProtocol
+>: UIViewController, ViewHolder {
+    typealias RootViewType = MessageSheetViewLayout<I, C>
 
     let presenter: MessageSheetPresenterProtocol
-    let viewModel: MessageSheetViewModel<T>
+    let viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>
+
+    var allowsSwipeDown: Bool = true
+    var closeOnSwipeDownClosure: (() -> Void)?
 
     init(
         presenter: MessageSheetPresenterProtocol,
-        viewModel: MessageSheetViewModel<T>,
+        viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -27,20 +33,21 @@ final class MessageSheetViewController<I: UIView & MessageSheetGraphicsProtocol,
     }
 
     override func loadView() {
-        view = MessageSheetViewLayout<I>()
+        view = MessageSheetViewLayout<I, C>()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupLocalization()
         setupHandlers()
+        setupLocalization()
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
         rootView.graphicsView.bind(messageSheetGraphics: viewModel.graphics, locale: selectedLocale)
+        rootView.contentView.bind(messageSheetContent: viewModel.content, locale: selectedLocale)
 
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
         rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
@@ -65,6 +72,16 @@ final class MessageSheetViewController<I: UIView & MessageSheetGraphicsProtocol,
 }
 
 extension MessageSheetViewController: MessageSheetViewProtocol {}
+
+extension MessageSheetViewController: ModalPresenterDelegate {
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool {
+        allowsSwipeDown
+    }
+
+    func presenterDidHide(_: ModalPresenterProtocol) {
+        closeOnSwipeDownClosure?()
+    }
+}
 
 extension MessageSheetViewController: Localizable {
     func applyLocalization() {
