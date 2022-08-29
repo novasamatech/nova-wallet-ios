@@ -107,10 +107,11 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
         updateActionButtonState()
 
+        let selectYourWalletTitle = R.string.localizable.assetsSelectSendYourWallets(
+            preferredLanguages: selectedLocale.rLanguages
+        )
         rootView.yourWalletsView.bind(model: .init(
-            name: R.string.localizable.walletTransferYourWallets(
-                preferredLanguages: selectedLocale.rLanguages
-            ),
+            name: selectYourWalletTitle,
             image: R.image.iconUsers()
         ))
     }

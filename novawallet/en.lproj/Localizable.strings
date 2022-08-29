@@ -159,7 +159,6 @@
 "wallet.balance.available" = "Transferable";
 "wallet.transfer.total.title" = "Total";
 "wallet.search.contacts" = "Contacts";
-"wallet.transfer.your.wallets" = "Your Wallets";
 "common.retry" = "Retry";
 "wallet.balance.frozen" = "Frozen";
 "transaction.status.completed" = "Completed";
@@ -893,4 +892,4 @@
 "currency.category.popularFiat" = "Popular fiat currencies";
 "currency.category.cryptocurrencies" = "Cryptocurrencies";
 "profile.currency.title" = "Currency";
-"yourwallets.title" = "Your Wallets";
+"assets.select.send.your.wallets" = "Your wallets";

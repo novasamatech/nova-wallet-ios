@@ -17,7 +17,10 @@ final class IconSubtitleView: UIView {
         $0.numberOfLines = 0
     }
 
-    let subtitleImageView = PolkadotIconView()
+    let subtitleImageView: PolkadotIconView = .create {
+        $0.backgroundColor = .clear
+        $0.fillColor = .clear
+    }
 
     let subtitleLabel: UILabel = .create {
         $0.textColor = Colors.colorWhite64()
@@ -108,7 +111,7 @@ extension IconSubtitleView {
     }
 }
 
-//MARK: - Constants
+// MARK: - Constants
 
 extension IconSubtitleView {
     enum Constants {

@@ -4,7 +4,7 @@ final class YourWalletsViewLayout: UIView {
     lazy var header: IconTitleHeaderView = .create {
         $0.contentInsets = Constants.headerContentInsets
     }
-  
+
     lazy var collectionView: UICollectionView = {
         let view = UICollectionView(frame: .zero, collectionViewLayout: compositionalLayout)
         view.backgroundColor = .clear
@@ -88,6 +88,7 @@ extension YourWalletsViewLayout {
             top: 12,
             left: 0,
             bottom: 0,
-            right: 0)
+            right: 0
+        )
     }
 }

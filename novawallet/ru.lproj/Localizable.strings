@@ -159,7 +159,6 @@
 "wallet.balance.available" = "Доступно";
 "wallet.transfer.total.title" = "Всего";
 "wallet.search.contacts" = "Контакты";
-"wallet.transfer.your.wallets" = "Ваши кошельки";
 "common.retry" = "Повторить";
 "wallet.balance.frozen" = "Заморожено";
 "transaction.status.completed" = "Успешно";
@@ -893,4 +892,4 @@
 "currency.category.popularFiat" = "Популярные фиатные валюты";
 "currency.category.cryptocurrencies" = "Криптовалюты";
 "profile.currency.title" = "Валюта";
-"yourwallets.title" = "Ваши кошельки";
+"assets.select.send.your.wallets" = "Ваши кошельки";

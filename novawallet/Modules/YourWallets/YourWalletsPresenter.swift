@@ -43,7 +43,7 @@ final class YourWalletsPresenter {
             }
         }
 
-        let title = R.string.localizable.yourwalletsTitle(preferredLanguages: selectedLocale.rLanguages)
+        let title = R.string.localizable.assetsSelectSendYourWallets(preferredLanguages: selectedLocale.rLanguages)
         view?.update(viewModel: sections)
         view?.update(header: title)
     }
@@ -83,7 +83,7 @@ final class YourWalletsPresenter {
             let message = R.string.localizable.accountNotFoundCaption(preferredLanguages: selectedLocale.rLanguages)
             return .warning(.init(accountName: name, warning: message, imageViewModel: imageViewModel))
         }
-        
+
         let chainAccountIcon = icon(
             generator: chainIconGenerator,
             from: chainAccountResponse.chainAccount.accountId

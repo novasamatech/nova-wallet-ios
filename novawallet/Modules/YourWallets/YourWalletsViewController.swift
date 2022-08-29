@@ -79,7 +79,7 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     }
 
     private static func mapWarningModel(_ model: YourWalletsCellViewModel.WarningModel) ->
-    SelectableIconSubtitleCollectionViewCell.Model {
+        SelectableIconSubtitleCollectionViewCell.Model {
         .init(
             iconSubtitle: .init(
                 icon: model.imageViewModel,
@@ -119,7 +119,7 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
 
         dataSource.apply(snapshot)
     }
-    
+
     func update(header: String) {
         rootView.header.bind(title: header, icon: nil)
     }

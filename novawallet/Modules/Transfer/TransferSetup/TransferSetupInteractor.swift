@@ -86,7 +86,7 @@ final class TransferSetupInteractor: AccountFetching {
             addressPrefix: chain.addressPrefix,
             isEthereumBased: chain.isEthereumBased
         )
-        fetchAllPossibleMetaAccountChainResponse(
+        fetchAllMetaAccountChainResponses(
             for: request,
             repository: accountsRepository,
             operationManager: operationManager

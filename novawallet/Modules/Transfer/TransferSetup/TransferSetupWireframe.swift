@@ -42,7 +42,7 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
 
     func showYourWallets(
         from view: TransferSetupViewProtocol?,
-        accounts: [PossibleMetaAccountChainResponse],
+        accounts: [MetaAccountChainResponse],
         address: AccountAddress?,
         delegate: YourWalletsDelegate
     ) {

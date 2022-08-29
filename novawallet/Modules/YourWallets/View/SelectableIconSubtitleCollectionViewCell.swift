@@ -22,6 +22,8 @@ final class SelectableIconSubtitleCollectionViewCell: UICollectionViewCell {
     }
 
     override func prepareForReuse() {
+        super.prepareForReuse()
+
         view.clear()
     }
 }
@@ -36,7 +38,7 @@ extension SelectableIconSubtitleCollectionViewCell {
     }
 }
 
-//MARK: - Constants
+// MARK: - Constants
 
 extension SelectableIconSubtitleCollectionViewCell {
     enum Constants {
