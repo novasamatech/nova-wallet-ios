@@ -80,7 +80,7 @@ final class LedgerAccountConfirmationPresenter {
                 on: view,
                 error: ledgerError,
                 networkName: chain.name,
-                locale: localizationManager.selectedLocale,
+                cancelClosure: {},
                 retryClosure: retryClosure
             )
         } else {

@@ -6,7 +6,7 @@ struct MessageSheetViewFactory {
     static func createNoSigningView(
         with completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
-        let wireframe = MessageSheetWireframe(completionCallback: completionCallback)
+        let wireframe = MessageSheetWireframe()
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
@@ -23,7 +23,8 @@ struct MessageSheetViewFactory {
             message: message,
             graphics: R.image.imageNoKeys(),
             content: nil,
-            hasAction: true
+            mainAction: .okBackAction(for: completionCallback),
+            secondaryAction: nil
         )
 
         let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
@@ -42,7 +43,7 @@ struct MessageSheetViewFactory {
     static func createParitySignerNotSupportedView(
         with completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
-        let wireframe = MessageSheetWireframe(completionCallback: completionCallback)
+        let wireframe = MessageSheetWireframe()
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
 
@@ -59,7 +60,8 @@ struct MessageSheetViewFactory {
             message: message,
             graphics: R.image.iconParitySignerInSheet(),
             content: nil,
-            hasAction: true
+            mainAction: .okBackAction(for: completionCallback),
+            secondaryAction: nil
         )
 
         let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
@@ -76,23 +78,12 @@ struct MessageSheetViewFactory {
     }
 
     static func createNoContentView(
-        title: LocalizableResource<String>,
-        message: LocalizableResource<String>,
-        image: UIImage?,
-        allowsSwipeDown: Bool,
-        completionCallback: @escaping MessageSheetCallback
+        viewModel: MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>,
+        allowsSwipeDown: Bool
     ) -> MessageSheetViewProtocol? {
-        let wireframe = MessageSheetWireframe(completionCallback: completionCallback)
+        let wireframe = MessageSheetWireframe()
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
-
-        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
-            title: title,
-            message: message,
-            graphics: image,
-            content: nil,
-            hasAction: true
-        )
 
         let view = MessageSheetViewController<MessageSheetImageView, MessageSheetNoContentView>(
             presenter: presenter,

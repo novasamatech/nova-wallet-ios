@@ -1,26 +1,22 @@
 import Foundation
 import SoraUI
 
-class LedgerBaseAccountConfirmationWireframe {
+class LedgerBaseAccountConfirmationWireframe: MessageSheetPresentable {
     func showAddressVerification(
         on view: LedgerAccountConfirmationViewProtocol?,
         deviceName: String,
         address: AccountAddress
     ) {
         guard
-            let confirmationView = LedgerBottomSheetViewFactory.createVerifyLedgerView(
+            let view = view,
+            let confirmationView = LedgerMessageSheetViewFactory.createVerifyLedgerView(
                 for: deviceName,
                 address: address
             ) else {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
-
-        confirmationView.controller.modalTransitioningFactory = factory
-        confirmationView.controller.modalPresentationStyle = .custom
-
-        view?.controller.navigationController?.present(confirmationView.controller, animated: true, completion: nil)
+        transitToMessageSheet(confirmationView, on: view)
     }
 
     func closeAddressVerification(on view: LedgerAccountConfirmationViewProtocol?) {

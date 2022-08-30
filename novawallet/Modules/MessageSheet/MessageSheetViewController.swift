@@ -44,30 +44,41 @@ final class MessageSheetViewController<
     }
 
     private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
-
         rootView.graphicsView.bind(messageSheetGraphics: viewModel.graphics, locale: selectedLocale)
         rootView.contentView.bind(messageSheetContent: viewModel.content, locale: selectedLocale)
 
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
         rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
 
-        rootView.actionButton?.imageWithTitleView?.title = R.string.localizable.commonOkBack(
-            preferredLanguages: languages
-        )
+        if let action = viewModel.mainAction {
+            rootView.mainActionButton?.imageWithTitleView?.title = action.title.value(for: selectedLocale)
+            rootView.mainActionButton?.invalidateLayout()
+        }
 
-        rootView.actionButton?.invalidateLayout()
-    }
-
-    private func setupHandlers() {
-        if viewModel.hasAction {
-            rootView.setupActionButton()
-            rootView.actionButton?.addTarget(self, action: #selector(actionGoBack), for: .touchUpInside)
+        if let action = viewModel.secondaryAction {
+            rootView.secondaryActionButton?.imageWithTitleView?.title = action.title.value(for: selectedLocale)
+            rootView.secondaryActionButton?.invalidateLayout()
         }
     }
 
-    @objc private func actionGoBack() {
-        presenter.goBack()
+    private func setupHandlers() {
+        if viewModel.mainAction != nil {
+            rootView.setupMainActionButton()
+            rootView.mainActionButton?.addTarget(self, action: #selector(actionMain), for: .touchUpInside)
+        }
+
+        if viewModel.secondaryAction != nil {
+            rootView.setupSecondaryActionButton()
+            rootView.secondaryActionButton?.addTarget(self, action: #selector(actionSecondary), for: .touchUpInside)
+        }
+    }
+
+    @objc private func actionMain() {
+        presenter.goBack(with: viewModel.mainAction)
+    }
+
+    @objc private func actionSecondary() {
+        presenter.goBack(with: viewModel.secondaryAction)
     }
 }
 
