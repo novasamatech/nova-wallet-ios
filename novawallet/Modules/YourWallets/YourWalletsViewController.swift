@@ -5,9 +5,9 @@ import SubstrateSdk
 
 final class YourWalletsViewController: UIViewController, ViewHolder {
     typealias RootViewType = YourWalletsViewLayout
-   
+
     let presenter: YourWalletsPresenterProtocol
- 
+
     init(presenter: YourWalletsPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -21,22 +21,18 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     override func loadView() {
         view = YourWalletsViewLayout()
     }
-
 }
 
 // MARK: - YourWalletsViewProtocol
 
 extension YourWalletsViewController: YourWalletsViewProtocol {
-    func update(viewModel: [YourWalletsViewSectionModel]) {
-    }
+    func update(viewModel _: [YourWalletsViewSectionModel]) {}
 
-    func update(header: String) {
-    }
+    func update(header _: String) {}
 }
 
 // MARK: - UICollectionViewDelegate
 
 extension YourWalletsViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    }
+    func collectionView(_: UICollectionView, didSelectItemAt _: IndexPath) {}
 }

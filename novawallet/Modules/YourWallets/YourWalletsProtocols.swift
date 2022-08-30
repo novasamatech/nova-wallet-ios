@@ -11,5 +11,5 @@ protocol YourWalletsPresenterProtocol: AnyObject {
 }
 
 protocol YourWalletsDelegate: AnyObject {
-    func selectWallet(address: AccountAddress)
+    func didSelectYourWallet(address: AccountAddress)
 }

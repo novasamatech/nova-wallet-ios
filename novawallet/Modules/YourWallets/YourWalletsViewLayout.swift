@@ -13,6 +13,5 @@ final class YourWalletsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
-    }
+    private func setupLayout() {}
 }

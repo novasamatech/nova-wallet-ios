@@ -44,7 +44,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
-    func setup()
+    func setup(destinationChain: ChainModel)
     func destinationChainDidChanged(_ chain: ChainModel)
 }
 

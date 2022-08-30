@@ -16,16 +16,13 @@ final class TransferSetupInteractor: AccountFetching {
         originChainAssetId: ChainAssetId,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
-        accountRepositoryFactory: AccountRepositoryFactoryProtocol,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
-        accountsRepository = accountRepositoryFactory.createMetaAccountRepository(
-            for: nil,
-            sortDescriptors: [NSSortDescriptor.accountsByOrder]
-        )
+        accountsRepository = accountRepository
         self.operationManager = operationManager
     }
 
@@ -81,13 +78,8 @@ final class TransferSetupInteractor: AccountFetching {
     }
 
     private func fetchAccounts(for chain: ChainModel) {
-        let request = ChainAccountRequest(
-            chainId: chain.chainId,
-            addressPrefix: chain.addressPrefix,
-            isEthereumBased: chain.isEthereumBased
-        )
         fetchAllMetaAccountChainResponses(
-            for: request,
+            for: chain.accountRequest(),
             repository: accountsRepository,
             operationManager: operationManager
         ) { [weak self] result in
@@ -110,9 +102,10 @@ final class TransferSetupInteractor: AccountFetching {
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup() {
+    func setup(destinationChain: ChainModel) {
         setupChainsStore()
         setupXcmTransfersSyncService()
+        fetchAccounts(for: destinationChain)
     }
 
     func destinationChainDidChanged(_ chain: ChainModel) {
