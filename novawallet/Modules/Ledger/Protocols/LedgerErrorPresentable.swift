@@ -1,103 +1,182 @@
 import Foundation
 
-protocol LedgerErrorPresentable {
+protocol LedgerErrorPresentable: MessageSheetPresentable {
     func presentLedgerError(
         on view: ControllerBackedProtocol,
         error: LedgerError,
         networkName: String,
-        locale: Locale,
-        retryClosure: @escaping () -> Void
+        cancelClosure: @escaping MessageSheetCallback,
+        retryClosure: @escaping MessageSheetCallback
     )
 }
 
-extension LedgerErrorPresentable where Self: AlertPresentable & CommonRetryable {
+extension LedgerErrorPresentable {
     func presentLedgerError(
         on view: ControllerBackedProtocol,
         error: LedgerError,
         networkName: String,
-        locale: Locale,
-        retryClosure: @escaping () -> Void
+        cancelClosure: @escaping MessageSheetCallback,
+        retryClosure: @escaping MessageSheetCallback
     ) {
         switch error {
         case .deviceNotFound, .deviceDisconnected:
-            presentRequestStatus(
-                on: view,
-                title: R.string.localizable.ledgerOperationTitle(preferredLanguages: locale.rLanguages),
-                message: R.string.localizable.ledgerOperationDeviceNotConnected(preferredLanguages: locale.rLanguages),
-                cancelAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
-                locale: locale,
-                retryAction: retryClosure
-            )
+            guard let messageSheetView = LedgerMessageSheetViewFactory.createDeviceNotConnectedView(
+                cancelClosure: cancelClosure,
+                retryClosure: retryClosure
+            ) else {
+                return
+            }
+
+            transitToMessageSheet(messageSheetView, on: view)
         case let .response(ledgerResponseError):
             presentLedger(
                 on: view,
-                response: ledgerResponseError.code,
+                response: ledgerResponseError,
                 networkName: networkName,
-                locale: locale,
+                cancelClosure: cancelClosure,
                 retryClosure: retryClosure
             )
         case let .unexpectedData(message):
-            present(
+            guard let messageSheetView = LedgerMessageSheetViewFactory.createMessageErrorView(
                 message: message,
-                title: R.string.localizable.ledgerOperationTitle(preferredLanguages: locale.rLanguages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
-                from: view
-            )
+                cancelClosure: cancelClosure,
+                retryClosure: retryClosure
+            ) else {
+                return
+            }
+
+            transitToMessageSheet(messageSheetView, on: view)
         case .internalTransport:
-            present(
-                message: R.string.localizable.ledgerOperationMessageError(preferredLanguages: locale.rLanguages),
-                title: R.string.localizable.ledgerOperationTitle(preferredLanguages: locale.rLanguages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
-                from: view
-            )
+            guard let messageSheetView = LedgerMessageSheetViewFactory.createUnknownErrorView(
+                cancelClosure: cancelClosure,
+                retryClosure: retryClosure
+            ) else {
+                return
+            }
+
+            transitToMessageSheet(messageSheetView, on: view)
         }
     }
 
     private func presentLedger(
         on view: ControllerBackedProtocol,
-        response: LedgerResponseCode,
+        response: LedgerResponseError,
         networkName: String,
-        locale: Locale,
+        cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping () -> Void
     ) {
-        switch response {
+        switch response.code {
         case .noError:
             break
         case .appNotOpen, .wrongAppOpen:
-            presentRequestStatus(
-                on: view,
-                title: R.string.localizable.ledgerAppNotOpenTitle(networkName, preferredLanguages: locale.rLanguages),
-                message: R.string.localizable.ledgerAppNotOpenMessage(
-                    networkName,
-                    preferredLanguages: locale.rLanguages
-                ),
-                cancelAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
-                locale: locale,
-                retryAction: retryClosure
-            )
-        case .deviceBusy:
-            presentRequestStatus(
-                on: view,
-                title: R.string.localizable.ledgerDeviceBusyTitle(preferredLanguages: locale.rLanguages),
-                message: R.string.localizable.ledgerDeviceBusyMessage(preferredLanguages: locale.rLanguages),
-                cancelAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
-                locale: locale,
-                retryAction: retryClosure
-            )
+            guard let messageSheetView = LedgerMessageSheetViewFactory.createNetworkAppNotLaunchedView(
+                chainName: networkName,
+                cancelClosure: cancelClosure,
+                retryClosure: retryClosure
+            ) else {
+                return
+            }
+
+            transitToMessageSheet(messageSheetView, on: view)
         case .transactionRejected:
-            present(
-                message: R.string.localizable.ledgerOperationMessageCancelled(preferredLanguages: locale.rLanguages),
-                title: R.string.localizable.ledgerOperationTitle(preferredLanguages: locale.rLanguages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
-                from: view
-            )
+            guard let messageSheetView = LedgerMessageSheetViewFactory.createOperationCancelledView(
+                cancelClosure: cancelClosure,
+                retryClosure: retryClosure
+            ) else {
+                return
+            }
+
+            transitToMessageSheet(messageSheetView, on: view)
+        case .invalidData:
+            if let reason = response.reason {
+                presentInvalidDataReasonError(
+                    on: view,
+                    reason: LedgerInvaliDataPolkadotReason(rawReason: reason),
+                    networkName: networkName,
+                    cancelClosure: cancelClosure,
+                    retryClosure: retryClosure
+                )
+            } else {
+                presentUnknownLedgerError(on: view, cancelClosure: cancelClosure, retryClosure: retryClosure)
+            }
         default:
-            present(
-                message: R.string.localizable.ledgerOperationMessageError(preferredLanguages: locale.rLanguages),
-                title: R.string.localizable.ledgerOperationTitle(preferredLanguages: locale.rLanguages),
-                closeAction: R.string.localizable.commonClose(preferredLanguages: locale.rLanguages),
-                from: view
-            )
+            if let reason = response.reason {
+                presentMessageLedgerError(
+                    on: view,
+                    message: reason,
+                    cancelClosure: cancelClosure,
+                    retryClosure: retryClosure
+                )
+            } else {
+                presentUnknownLedgerError(on: view, cancelClosure: cancelClosure, retryClosure: retryClosure)
+            }
         }
+    }
+
+    private func presentInvalidDataReasonError(
+        on view: ControllerBackedProtocol,
+        reason: LedgerInvaliDataPolkadotReason,
+        networkName: String,
+        cancelClosure: @escaping MessageSheetCallback,
+        retryClosure: @escaping () -> Void
+    ) {
+        switch reason {
+        case let .unknown(reason):
+            presentMessageLedgerError(
+                on: view,
+                message: reason,
+                cancelClosure: cancelClosure,
+                retryClosure: retryClosure
+            )
+        case .unsupportedOperation:
+            guard let messageSheetView = LedgerMessageSheetViewFactory.createTransactionNotSupportedView(
+                completionClosure: cancelClosure
+            ) else {
+                return
+            }
+
+            transitToMessageSheet(messageSheetView, on: view)
+        case .outdatedMetadata:
+            guard let messageSheetView = LedgerMessageSheetViewFactory.createMetadataOutdatedView(
+                chainName: networkName,
+                completionClosure: cancelClosure
+            ) else {
+                return
+            }
+
+            transitToMessageSheet(messageSheetView, on: view)
+        }
+    }
+
+    private func presentMessageLedgerError(
+        on view: ControllerBackedProtocol,
+        message: String,
+        cancelClosure: @escaping MessageSheetCallback,
+        retryClosure: @escaping () -> Void
+    ) {
+        guard let messageSheetView = LedgerMessageSheetViewFactory.createMessageErrorView(
+            message: message,
+            cancelClosure: cancelClosure,
+            retryClosure: retryClosure
+        ) else {
+            return
+        }
+
+        transitToMessageSheet(messageSheetView, on: view)
+    }
+
+    private func presentUnknownLedgerError(
+        on view: ControllerBackedProtocol,
+        cancelClosure: @escaping MessageSheetCallback,
+        retryClosure: @escaping () -> Void
+    ) {
+        guard let messageSheetView = LedgerMessageSheetViewFactory.createUnknownErrorView(
+            cancelClosure: cancelClosure,
+            retryClosure: retryClosure
+        ) else {
+            return
+        }
+
+        transitToMessageSheet(messageSheetView, on: view)
     }
 }
