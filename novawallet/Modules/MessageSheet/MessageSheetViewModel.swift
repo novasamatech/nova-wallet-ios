@@ -27,7 +27,7 @@ extension MessageSheetAction {
 
     static func cancelAction(for handler: @escaping MessageSheetCallback) -> MessageSheetAction {
         let title = LocalizableResource { locale in
-            R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
+            R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
         }
 
         return MessageSheetAction(title: title, handler: handler)
