@@ -3,7 +3,11 @@ import SoraFoundation
 import UIKit
 
 enum LedgerMessageSheetViewFactory {
-    static func createVerifyLedgerView(for deviceName: String, address: String) -> MessageSheetViewProtocol? {
+    static func createVerifyLedgerView(
+        for deviceName: String,
+        address: String,
+        cancelClosure: @escaping () -> Void
+    ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe()
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
@@ -32,6 +36,9 @@ enum LedgerMessageSheetViewFactory {
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
         )
+
+        view.allowsSwipeDown = true
+        view.closeOnSwipeDownClosure = cancelClosure
 
         view.controller.preferredContentSize = CGSize(width: 0.0, height: 396.0)
 
