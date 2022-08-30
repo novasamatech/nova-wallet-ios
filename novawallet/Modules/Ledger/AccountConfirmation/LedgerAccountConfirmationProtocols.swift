@@ -16,6 +16,7 @@ protocol LedgerAccountConfirmationPresenterProtocol: AnyObject {
 protocol LedgerAccountConfirmationInteractorInputProtocol: AnyObject {
     func fetchAccount(for index: UInt32)
     func confirm(address: AccountAddress, at index: UInt32)
+    func cancelRequest()
 }
 
 protocol LedgerAccountConfirmationInteractorOutputProtocol: AnyObject {
@@ -28,7 +29,8 @@ protocol LedgerAccountConfirmationWireframeProtocol: AlertPresentable, ErrorPres
     func showAddressVerification(
         on view: LedgerAccountConfirmationViewProtocol?,
         deviceName: String,
-        address: AccountAddress
+        address: AccountAddress,
+        cancelClosure: @escaping () -> Void
     )
 
     func complete(on view: LedgerAccountConfirmationViewProtocol?)

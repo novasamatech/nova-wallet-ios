@@ -5,13 +5,15 @@ class LedgerBaseAccountConfirmationWireframe: MessageSheetPresentable {
     func showAddressVerification(
         on view: LedgerAccountConfirmationViewProtocol?,
         deviceName: String,
-        address: AccountAddress
+        address: AccountAddress,
+        cancelClosure: @escaping () -> Void
     ) {
         guard
             let view = view,
             let confirmationView = LedgerMessageSheetViewFactory.createVerifyLedgerView(
                 for: deviceName,
-                address: address
+                address: address,
+                cancelClosure: cancelClosure
             ) else {
             return
         }
