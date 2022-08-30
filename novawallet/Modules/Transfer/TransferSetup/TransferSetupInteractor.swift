@@ -7,7 +7,7 @@ final class TransferSetupInteractor: AccountFetching {
     let originChainAssetId: ChainAssetId
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let chainsStore: ChainsStoreProtocol
-    let accountsRepository: AnyDataProviderRepository<MetaAccountModel>
+    let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
 
     private var xcmTransfers: XcmTransfers?
@@ -22,7 +22,7 @@ final class TransferSetupInteractor: AccountFetching {
         self.originChainAssetId = originChainAssetId
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
-        accountsRepository = accountRepository
+        self.accountRepository = accountRepository
         self.operationManager = operationManager
     }
 
@@ -80,7 +80,7 @@ final class TransferSetupInteractor: AccountFetching {
     private func fetchAccounts(for chain: ChainModel) {
         fetchAllMetaAccountChainResponses(
             for: chain.accountRequest(),
-            repository: accountsRepository,
+            repository: accountRepository,
             operationManager: operationManager
         ) { [weak self] result in
             DispatchQueue.main.async {
