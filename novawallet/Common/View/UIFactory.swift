@@ -25,6 +25,7 @@ struct UIConstants {
     static let verticalTitleInset: CGFloat = 8.0
     static let navigationAccountIconSize: CGFloat = 40.0
     static let walletSwitchSize = CGSize(width: 79.0, height: 40.0)
+    static let bouncesOffset: CGFloat = 100
 }
 
 enum AccountViewMode {
