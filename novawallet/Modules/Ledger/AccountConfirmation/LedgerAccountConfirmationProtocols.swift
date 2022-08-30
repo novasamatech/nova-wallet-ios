@@ -31,6 +31,5 @@ protocol LedgerAccountConfirmationWireframeProtocol: AlertPresentable, ErrorPres
         address: AccountAddress
     )
 
-    func closeAddressVerification(on view: LedgerAccountConfirmationViewProtocol?)
     func complete(on view: LedgerAccountConfirmationViewProtocol?)
 }
