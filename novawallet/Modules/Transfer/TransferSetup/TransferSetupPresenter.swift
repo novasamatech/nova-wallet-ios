@@ -196,7 +196,8 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
         self.metaChainAccountResponses = metaChainAccountResponses
-        view?.changeYourWalletsViewState(metaChainAccountResponses.isEmpty ? .hidden : .inactive)
+        let isShowYourWallets = metaChainAccountResponses.contains { $0.chainAccountResponse != nil }
+        view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
     }
 }
 
