@@ -912,8 +912,6 @@
 "ledger.accounts.button.add" = "Добавьте аккаунт";
 "ledger.account.confirm.title" = "Выберите аккаунты для добавления в кошелёк";
 "common.load.more.accounts" = "Загрузить больше аккаунтов";
-"ledger.device.busy.title" = "Ledger занят";
-"ledger.device.busy.message" = "Пожалуйста, завершите или отмените текущую операцию на Ledger";
 "ledger.address.verify.message" = "Нажмите обе кнопки на Вашем %@ для подтверждения адреса";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "Этот кошелёк добавлен из Ledger устройства. Nova Wallet поможет создать любую операцию, и вам будет необходимо подписать ее с помощью Ledger устройства";

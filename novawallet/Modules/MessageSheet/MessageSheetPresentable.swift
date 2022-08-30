@@ -20,18 +20,24 @@ private enum MessageSheetPresentableConstants {
 
 extension MessageSheetPresentable {
     func getMessageSheetForHolder(view: ControllerBackedProtocol) -> MessageSheetViewProtocol? {
-        objc_getAssociatedObject(
-            view,
-            &MessageSheetPresentableConstants.viewKey
-        ) as? MessageSheetViewProtocol
+        let object = objc_getAssociatedObject(view, &MessageSheetPresentableConstants.viewKey) as? WeakWrapper
+        return object?.target as? MessageSheetViewProtocol
     }
 
     func setMessageSheetView(_ newMessageSheetView: MessageSheetViewProtocol?, for view: ControllerBackedProtocol) {
+        let object: WeakWrapper?
+
+        if let newMessageSheetView = newMessageSheetView {
+            object = WeakWrapper(target: newMessageSheetView)
+        } else {
+            object = nil
+        }
+
         objc_setAssociatedObject(
             view,
             &MessageSheetPresentableConstants.viewKey,
-            newMessageSheetView,
-            .OBJC_ASSOCIATION_ASSIGN
+            object,
+            .OBJC_ASSOCIATION_RETAIN
         )
     }
 
@@ -41,12 +47,15 @@ extension MessageSheetPresentable {
         newMessageSheetView.controller.modalTransitioningFactory = factory
         newMessageSheetView.controller.modalPresentationStyle = .custom
 
-        if getMessageSheetForHolder(view: view) != nil {
-            view.controller.dismiss(animated: false)
+        if
+            let messageSheet = getMessageSheetForHolder(view: view),
+            messageSheet.controller.presentingViewController != nil,
+            !messageSheet.controller.isBeingDismissed {
+            view.controller.dismiss(animated: true)
 
             setMessageSheetView(newMessageSheetView, for: view)
 
-            view.controller.present(newMessageSheetView.controller, animated: false)
+            view.controller.present(newMessageSheetView.controller, animated: true)
         } else {
             setMessageSheetView(newMessageSheetView, for: view)
 

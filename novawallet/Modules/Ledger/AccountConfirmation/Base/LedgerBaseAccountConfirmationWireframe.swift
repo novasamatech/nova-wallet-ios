@@ -18,16 +18,4 @@ class LedgerBaseAccountConfirmationWireframe: MessageSheetPresentable {
 
         transitToMessageSheet(confirmationView, on: view)
     }
-
-    func closeAddressVerification(on view: LedgerAccountConfirmationViewProtocol?) {
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-
-        let sheetPresented = navigationController.presentedViewController is MessageSheetViewProtocol
-
-        if sheetPresented {
-            navigationController.dismiss(animated: true, completion: nil)
-        }
-    }
 }

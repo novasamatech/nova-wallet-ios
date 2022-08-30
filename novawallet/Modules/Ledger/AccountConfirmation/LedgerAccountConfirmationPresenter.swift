@@ -84,6 +84,7 @@ final class LedgerAccountConfirmationPresenter {
                 retryClosure: retryClosure
             )
         } else {
+            wireframe.closeMessageSheet(on: view)
             _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
         }
     }
@@ -126,10 +127,13 @@ extension LedgerAccountConfirmationPresenter: LedgerAccountConfirmationInteracto
     }
 
     func didReceiveConfirmation(result: Result<AccountId, Error>, at index: UInt32) {
-        wireframe.closeAddressVerification(on: view)
-
         switch result {
         case .success:
+            guard let view = view else {
+                return
+            }
+
+            wireframe.closeMessageSheet(on: view)
             wireframe.complete(on: view)
         case let .failure(error):
             handle(error: error) { [weak self] in
