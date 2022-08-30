@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -27,7 +27,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ruq-rw-p1b" customClass="BorderedContainerView" customModule="SoraUI">
                     <rect key="frame" x="0.0" y="1" width="414" height="40"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XwS-f7-PDQ" customClass="ImageWithTitleView" customModule="SoraUI">
+                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XwS-f7-PDQ" customClass="ImageWithTitleView" customModule="SoraUI">
                             <rect key="frame" x="16" y="1" width="129.33333333333334" height="20"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
@@ -99,11 +99,6 @@
             <point key="canvasLocation" x="139" y="153"/>
         </view>
     </objects>
-    <designables>
-        <designable name="XwS-f7-PDQ">
-            <size key="intrinsicContentSize" width="129.33333333333334" height="20"/>
-        </designable>
-    </designables>
     <resources>
         <namedColor name="color0x1D1D20">
             <color red="0.11372549019607843" green="0.11372549019607843" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
