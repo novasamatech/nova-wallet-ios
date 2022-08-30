@@ -20,6 +20,7 @@ struct YourWalletsViewFactory {
         let view = YourWalletsViewController(
             presenter: presenter
         )
+        view.preferredContentSize = .init(width: 0, height: 572)
         presenter.view = view
 
         return view

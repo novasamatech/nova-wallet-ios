@@ -54,6 +54,10 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
             return
         }
 
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        viewController.controller.modalTransitioningFactory = factory
+        viewController.controller.modalPresentationStyle = .custom
+
         view?.controller.present(viewController.controller, animated: true)
     }
 

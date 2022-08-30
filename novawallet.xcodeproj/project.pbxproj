@@ -1999,6 +1999,9 @@
 		8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E7289D7CF400C0BF86 /* Atomic.swift */; };
 		886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62FA66143B25AA70B02CE461 /* ExportSeedViewFactory.swift */; };
 		887AFC8728BC95F0002A0422 /* MetaAccountChainResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */; };
+		887AFC8C28BCB314002A0422 /* IconSubtitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887AFC8928BCB313002A0422 /* IconSubtitleView.swift */; };
+		887AFC8D28BCB314002A0422 /* SelectableIconSubtitleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887AFC8A28BCB313002A0422 /* SelectableIconSubtitleCollectionViewCell.swift */; };
+		887AFC8E28BCB314002A0422 /* SelectableIconSubtitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887AFC8B28BCB313002A0422 /* SelectableIconSubtitleView.swift */; };
 		8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */; };
 		8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */; };
 		8887814028B7AAB700E7290F /* RoundedIconTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */; };
@@ -4555,6 +4558,9 @@
 		8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SectionProtocol.swift"; sourceTree = "<group>"; };
 		8860F3E7289D7CF400C0BF86 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountChainResponse.swift; sourceTree = "<group>"; };
+		887AFC8928BCB313002A0422 /* IconSubtitleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconSubtitleView.swift; sourceTree = "<group>"; };
+		887AFC8A28BCB313002A0422 /* SelectableIconSubtitleCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableIconSubtitleCollectionViewCell.swift; sourceTree = "<group>"; };
+		887AFC8B28BCB313002A0422 /* SelectableIconSubtitleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableIconSubtitleView.swift; sourceTree = "<group>"; };
 		8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleSpaceView.swift; sourceTree = "<group>"; };
 		8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleCollectionHeaderView.swift; sourceTree = "<group>"; };
 		8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleView.swift; sourceTree = "<group>"; };
@@ -5106,6 +5112,7 @@
 		018DE0E8A60963E2BDD94D13 /* YourWallets */ = {
 			isa = PBXGroup;
 			children = (
+				887AFC8828BCB313002A0422 /* View */,
 				88A5317E28B9327C00AF18F5 /* Model */,
 				62C5AF7E89A8C6CFF5AE03B1 /* YourWalletsProtocols.swift */,
 				CF7A019F89C6CD418AEEE79C /* YourWalletsPresenter.swift */,
@@ -10750,6 +10757,16 @@
 			path = Currency;
 			sourceTree = "<group>";
 		};
+		887AFC8828BCB313002A0422 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				887AFC8928BCB313002A0422 /* IconSubtitleView.swift */,
+				887AFC8A28BCB313002A0422 /* SelectableIconSubtitleCollectionViewCell.swift */,
+				887AFC8B28BCB313002A0422 /* SelectableIconSubtitleView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		88A0E0FB28A284C700A9C940 /* Currency */ = {
 			isa = PBXGroup;
 			children = (
@@ -12752,6 +12769,7 @@
 				AEF73FB525DBA24300407D41 /* PhishingCheckExecutor.swift in Sources */,
 				AEE5FB1826457AC1002B8FDC /* StakingRewardDestSetupViewController.swift in Sources */,
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
+				887AFC8D28BCB314002A0422 /* SelectableIconSubtitleCollectionViewCell.swift in Sources */,
 				840DFF57289482F5001B11EA /* ActionsManagePresentable.swift in Sources */,
 				F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */,
 				842D1E8624D1A90400C30A7A /* NSPredicate+Validation.swift in Sources */,
@@ -12999,6 +13017,7 @@
 				848DAF042822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift in Sources */,
 				840689FC26321F2700A017B1 /* StorageQuery.swift in Sources */,
 				8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */,
+				887AFC8E28BCB314002A0422 /* SelectableIconSubtitleView.swift in Sources */,
 				8490152924ABCFDA008F705E /* WalletCommandDecorator.swift in Sources */,
 				84FD3DB92540F70400A234E3 /* TransactionHistoryItem+Extrinsic.swift in Sources */,
 				849A4EF8279ABBDD00AB6709 /* AssetBalance.swift in Sources */,
@@ -13596,6 +13615,7 @@
 				843910B4253EE52100E3C217 /* WalletBalanceChanged.swift in Sources */,
 				D9046DBC27453D5C00C29F2E /* ParallelContributionResponse.swift in Sources */,
 				8499FED227BFA39300712589 /* DataChangesDiffCalculator.swift in Sources */,
+				887AFC8C28BCB314002A0422 /* IconSubtitleView.swift in Sources */,
 				84CEAAF526D7ADF20021B881 /* KeystoreMigrator.swift in Sources */,
 				84FAB0692542EBDE00319F74 /* SearchData+Contacts.swift in Sources */,
 				8428765924ADDE0200D91AD8 /* SettingsProtocols.swift in Sources */,
