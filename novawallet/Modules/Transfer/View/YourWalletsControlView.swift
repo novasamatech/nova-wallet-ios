@@ -1,19 +1,21 @@
 import UIKit
 import SoraUI
 
-final class YourWalletsControlView: UIView {
-    let iconView: UIImageView = .create {
-        $0.contentMode = .center
+final class YourWalletsControl: BaseActionControl, ComfortTouchAreaControl {
+    let color = R.color.colorNovaBlue()!
+
+    lazy var iconDetailsView: YourWalletsIconDetailsView = .create {
+        $0.detailsLabel.textColor = color
+        $0.detailsLabel.font = .caption1
+        $0.spacing = 5
+        $0.isUserInteractionEnabled = false
     }
 
-    let actionControl: ActionTitleControl = .create {
-        let color = R.color.colorNovaBlue()!
-        $0.imageView.image = R.image.iconLinkChevron()?.tinted(with: color)
+    lazy var imageActionIndicator: ImageActionIndicator = .create {
+        $0.image = R.image.iconLinkChevron()?.tinted(with: color)
         $0.identityIconAngle = CGFloat.pi / 2.0
         $0.activationIconAngle = -CGFloat.pi / 2.0
-        $0.titleLabel.textColor = color
-        $0.titleLabel.font = .caption1
-        $0.horizontalSpacing = 0
+        $0.isUserInteractionEnabled = false
     }
 
     override init(frame: CGRect) {
@@ -30,35 +32,47 @@ final class YourWalletsControlView: UIView {
     }
 
     private func setupLayout() {
-        let stackView = UIStackView(arrangedSubviews: [
-            iconView,
-            actionControl
-        ])
-        stackView.alignment = .center
-        stackView.spacing = 5
-
-        addSubview(stackView)
-        stackView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-    }
-
-    override var intrinsicContentSize: CGSize {
-        .init(width: UIView.noIntrinsicMetric, height: 26)
+        title = iconDetailsView
+        indicator = imageActionIndicator
+        horizontalSpacing = 0
     }
 }
 
-extension YourWalletsControlView {
+extension YourWalletsControl {
     struct Model {
         let name: String
         let image: UIImage?
     }
 
     func bind(model: Model) {
-        actionControl.titleLabel.text = model.name
-        iconView.image = model.image
+        iconDetailsView.detailsLabel.text = model.name
+        iconDetailsView.imageView.image = model.image?.withRenderingMode(.alwaysTemplate).tinted(with: color)
 
-        actionControl.invalidateLayout()
+        invalidateLayout()
+        setNeedsLayout()
+    }
+}
+
+extension YourWalletsControl {
+    enum State {
+        case hidden
+        case active
+        case inactive
+    }
+
+    func apply(state: State) {
+        switch state {
+        case .hidden:
+            isHidden = true
+            deactivate(animated: false)
+        case .active:
+            isHidden = false
+            activate(animated: true)
+        case .inactive:
+            isHidden = false
+            deactivate(animated: true)
+        }
+        invalidateLayout()
         setNeedsLayout()
     }
 }

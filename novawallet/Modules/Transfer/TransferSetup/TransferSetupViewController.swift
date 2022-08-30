@@ -76,7 +76,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.yourWalletsView.actionControl.addTarget(
+        rootView.yourWalletsControl.addTarget(
             self,
             action: #selector(actionYourWallets),
             for: .touchUpInside
@@ -110,7 +110,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         let selectYourWalletTitle = R.string.localizable.assetsSelectSendYourWallets(
             preferredLanguages: selectedLocale.rLanguages
         )
-        rootView.yourWalletsView.bind(model: .init(
+        rootView.yourWalletsControl.bind(model: .init(
             name: selectYourWalletTitle,
             image: R.image.iconUsers()
         ))
@@ -206,8 +206,8 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         rootView.switchOnChain()
     }
 
-    func changeYourWalletsViewState(isHidden: Bool) {
-        rootView.yourWalletsView.isHidden = isHidden
+    func changeYourWalletsViewState(_ state: YourWalletsControl.State) {
+        rootView.yourWalletsControl.apply(state: state)
     }
 
     func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?) {

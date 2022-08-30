@@ -28,6 +28,10 @@ final class YourWalletsPresenter {
         self.localizationManager = localizationManager
     }
 
+    deinit {
+        delegate?.didCloseYourWalletSelection()
+    }
+
     private func updateView() {
         var createdSections: [MetaAccountModelType: Int] = [:]
 
@@ -117,6 +121,10 @@ extension YourWalletsPresenter: YourWalletsPresenterProtocol {
         selectedAddress = viewModel.displayAddress.address
         updateSelectedCell()
         delegate?.didSelectYourWallet(address: viewModel.displayAddress.address)
+    }
+
+    func viewDidDisappear() {
+        delegate?.didCloseYourWalletSelection()
     }
 }
 

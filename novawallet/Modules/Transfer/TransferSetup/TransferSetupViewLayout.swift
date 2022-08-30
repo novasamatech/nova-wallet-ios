@@ -25,8 +25,10 @@ final class TransferSetupViewLayout: UIView {
         return label
     }()
 
-    let yourWalletsView: YourWalletsControlView = .create {
-        $0.isHidden = true
+    let yourWalletsControl: YourWalletsControl = .create {
+        $0.apply(state: .hidden)
+        $0.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
     let recepientInputView: AccountInputView = {
@@ -104,7 +106,7 @@ final class TransferSetupViewLayout: UIView {
         let titleStackView = UIStackView(arrangedSubviews: [
             recepientTitleLabel,
             FlexibleSpaceView(),
-            yourWalletsView
+            yourWalletsControl
         ])
         containerView.stackView.addArrangedSubview(titleStackView)
         containerView.stackView.setCustomSpacing(8.0, after: titleStackView)

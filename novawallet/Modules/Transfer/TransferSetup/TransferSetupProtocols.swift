@@ -19,7 +19,7 @@ protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
     func didCompleteDestinationSelection()
     func didSwitchCrossChain()
     func didSwitchOnChain()
-    func changeYourWalletsViewState(isHidden: Bool)
+    func changeYourWalletsViewState(_ state: YourWalletsControl.State)
 }
 
 protocol TransferSetupCommonPresenterProtocol: AnyObject {

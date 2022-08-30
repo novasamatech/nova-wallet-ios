@@ -24,11 +24,18 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     override func loadView() {
         view = YourWalletsViewLayout()
     }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupCollectionView()
         presenter.setup()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        presenter.viewDidDisappear()
     }
 
     private func setupCollectionView() {
@@ -117,6 +124,7 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
         }
 
         dataSource.apply(snapshot)
+    }
 
     func update(header: String) {
         rootView.header.bind(title: header, icon: nil)

@@ -196,7 +196,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
         self.metaChainAccountResponses = metaChainAccountResponses
-        view?.changeYourWalletsViewState(isHidden: metaChainAccountResponses.isEmpty)
+        view?.changeYourWalletsViewState(metaChainAccountResponses.isEmpty ? .hidden : .inactive)
     }
 }
 
@@ -246,5 +246,10 @@ extension TransferSetupPresenter: YourWalletsDelegate {
         wireframe.hideYourWallets(from: view)
 
         childPresenter?.changeRecepient(address: address)
+        view?.changeYourWalletsViewState(.inactive)
+    }
+
+    func didCloseYourWalletSelection() {
+        view?.changeYourWalletsViewState(.inactive)
     }
 }
