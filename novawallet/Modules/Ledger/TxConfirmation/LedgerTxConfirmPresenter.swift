@@ -57,7 +57,9 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
                 on: view,
                 error: ledgerError,
                 networkName: chainName,
-                cancelClosure: {},
+                cancelClosure: { [weak self] in
+                    self?.performCancellation()
+                },
                 retryClosure: { [weak self] in
                     guard let index = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
                         return
