@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-final class AccountManagementViewLayout: UIView {
+final class AccountManagementViewLayout: UIView, TableHeaderLayoutUpdatable {
     let tableView: UITableView = {
         let view = UITableView()
         view.backgroundColor = .clear
@@ -24,23 +24,14 @@ final class AccountManagementViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func updateHeaderLayout() {
+        updateTableHeaderLayout(headerView)
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
         updateHeaderLayout()
-    }
-
-    func updateHeaderLayout() {
-        let height = headerView.systemLayoutSizeFitting(
-            CGSize(width: bounds.width, height: UIView.layoutFittingCompressedSize.height),
-            withHorizontalFittingPriority: .fittingSizeLevel,
-            verticalFittingPriority: .fittingSizeLevel
-        ).height
-
-        let size = CGSize(width: bounds.width, height: height)
-        if size != headerView.frame.size {
-            headerView.frame = CGRect(origin: .zero, size: size)
-        }
     }
 
     private func setupLayout() {
