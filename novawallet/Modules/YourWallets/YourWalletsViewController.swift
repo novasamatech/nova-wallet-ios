@@ -24,7 +24,6 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     override func loadView() {
         view = YourWalletsViewLayout()
     }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -118,7 +117,6 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
         }
 
         dataSource.apply(snapshot)
-    }
 
     func update(header: String) {
         rootView.header.bind(title: header, icon: nil)

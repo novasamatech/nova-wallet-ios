@@ -7,7 +7,7 @@ final class TransferSetupInteractor: AccountFetching {
     let originChainAssetId: ChainAssetId
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let chainsStore: ChainsStoreProtocol
-    let accountsRepository: AnyDataProviderRepository<MetaAccountModel>
+    let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
 
     private var xcmTransfers: XcmTransfers?
@@ -16,16 +16,13 @@ final class TransferSetupInteractor: AccountFetching {
         originChainAssetId: ChainAssetId,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
-        accountRepositoryFactory: AccountRepositoryFactoryProtocol,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
-        accountsRepository = accountRepositoryFactory.createMetaAccountRepository(
-            for: nil,
-            sortDescriptors: [NSSortDescriptor.accountsByOrder]
-        )
+        self.accountRepository = accountRepository
         self.operationManager = operationManager
     }
 
@@ -81,14 +78,9 @@ final class TransferSetupInteractor: AccountFetching {
     }
 
     private func fetchAccounts(for chain: ChainModel) {
-        let request = ChainAccountRequest(
-            chainId: chain.chainId,
-            addressPrefix: chain.addressPrefix,
-            isEthereumBased: chain.isEthereumBased
-        )
         fetchAllMetaAccountChainResponses(
-            for: request,
-            repository: accountsRepository,
+            for: chain.accountRequest(),
+            repository: accountRepository,
             operationManager: operationManager
         ) { [weak self] result in
             DispatchQueue.main.async {
@@ -110,9 +102,10 @@ final class TransferSetupInteractor: AccountFetching {
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup() {
+    func setup(destinationChain: ChainModel) {
         setupChainsStore()
         setupXcmTransfersSyncService()
+        fetchAccounts(for: destinationChain)
     }
 
     func destinationChainDidChanged(_ chain: ChainModel) {

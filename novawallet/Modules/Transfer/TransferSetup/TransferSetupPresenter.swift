@@ -102,10 +102,10 @@ final class TransferSetupPresenter {
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func setup() {
         provideChainsViewModel()
-
         childPresenter?.setup()
-        interactor.setup()
-        interactor.destinationChainDidChanged(destinationChainAsset?.chain ?? originChainAsset.chain)
+
+        let destinationChain = destinationChainAsset?.chain ?? originChainAsset.chain
+        interactor.setup(destinationChain: destinationChain)
     }
 
     func updateRecepient(partialAddress: String) {
@@ -242,7 +242,7 @@ extension TransferSetupPresenter: AddressScanDelegate {
 }
 
 extension TransferSetupPresenter: YourWalletsDelegate {
-    func selectWallet(address: AccountAddress) {
+    func didSelectYourWallet(address: AccountAddress) {
         wireframe.hideYourWallets(from: view)
 
         childPresenter?.changeRecepient(address: address)

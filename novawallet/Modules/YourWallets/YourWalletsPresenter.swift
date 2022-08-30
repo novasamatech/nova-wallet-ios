@@ -116,9 +116,7 @@ extension YourWalletsPresenter: YourWalletsPresenterProtocol {
     func didSelect(viewModel: YourWalletsCellViewModel.CommonModel) {
         selectedAddress = viewModel.displayAddress.address
         updateSelectedCell()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.delegate?.selectWallet(address: viewModel.displayAddress.address)
-        }
+        delegate?.didSelectYourWallet(address: viewModel.displayAddress.address)
     }
 }
 
