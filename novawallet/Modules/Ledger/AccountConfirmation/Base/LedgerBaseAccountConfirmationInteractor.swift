@@ -133,4 +133,8 @@ class LedgerBaseAccountConfirmationInteractor {
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
+
+    func cancelRequest() {
+        application.connectionManager.cancelRequest(for: deviceId)
+    }
 }

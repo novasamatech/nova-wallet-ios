@@ -28,8 +28,8 @@ class ChainAccountListSectionView: UITableViewHeaderFooterView {
     func setupLayout() {
         contentView.addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview().inset(16.0)
-            make.top.equalToSuperview().inset(16.0)
+            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.bottom.equalToSuperview().inset(8.0)
         }
     }
 
