@@ -59,8 +59,8 @@ extension SelectableIconSubtitleView {
         self.viewModel = viewModel
 
         iconSubtitleView.detailsView.valueTop.text = viewModel.title
-        iconSubtitleView.detailsView.valueBottom.subtitleLabel.text = viewModel.subtitle
-        iconSubtitleView.detailsView.valueBottom.subtitleLabel.lineBreakMode = viewModel.lineBreakMode
+        iconSubtitleView.detailsView.valueBottom.titleLabel.text = viewModel.subtitle
+        iconSubtitleView.detailsView.valueBottom.titleLabel.lineBreakMode = viewModel.lineBreakMode
 
         viewModel.icon?.loadImage(
             on: iconSubtitleView.imageView,
