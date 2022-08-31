@@ -45,7 +45,10 @@ struct LedgerDiscoverViewFactory {
             logger: Logger.shared
         )
 
-        let wireframe = LedgerDiscoverWalletCreateWireframe(accountsStore: accountsStore, application: ledgerApplication)
+        let wireframe = LedgerDiscoverWalletCreateWireframe(
+            accountsStore: accountsStore,
+            application: ledgerApplication
+        )
 
         return createView(interactor: interactor, wireframe: wireframe, chain: chain)
     }

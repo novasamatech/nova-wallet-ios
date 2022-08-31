@@ -47,52 +47,33 @@ final class LedgerTxConfirmPresenter: LedgerPerformOperationPresenter {
         completion(.failure(HardwareSigningError.signingCancelled))
     }
 
-    private func handleInvalidData(reason: LedgerInvaliDataPolkadotReason) {
-        switch reason {
-        case let .unknown(reason):
-            wireframe?.transitToInvalidData(on: view, reason: reason) { [weak self] in
-                self?.performCancellation()
-            }
-        case .unsupportedOperation:
-            wireframe?.transitToTransactionNotSupported(on: view) { [weak self] in
-                self?.performCancellation()
-            }
-        case .outdatedMetadata:
-            wireframe?.transitToMetadataOutdated(on: view, chainName: chainName) { [weak self] in
-                self?.performCancellation()
-            }
-        }
-    }
-
     override func handleAppConnection(error: Error, deviceId: UUID) {
-        if let ledgerError = error as? LedgerError, case let .response(ledgerResponseError) = ledgerError {
-            switch ledgerResponseError.code {
-            case .transactionRejected:
-                wireframe?.closeTransactionStatus(on: view)
-            case .instructionNotSupported:
-                wireframe?.transitToTransactionNotSupported(on: view) { [weak self] in
+        guard let view = view else {
+            return
+        }
+
+        if let ledgerError = error as? LedgerError {
+            wireframe?.presentLedgerError(
+                on: view,
+                error: ledgerError,
+                networkName: chainName,
+                cancelClosure: { [weak self] in
                     self?.performCancellation()
+                },
+                retryClosure: { [weak self] in
+                    guard let index = self?.devices.firstIndex(where: { $0.identifier == deviceId }) else {
+                        return
+                    }
+
+                    self?.selectDevice(at: index)
                 }
-            case .invalidData:
-                if let reason = ledgerResponseError.reason() {
-                    handleInvalidData(reason: LedgerInvaliDataPolkadotReason(rawReason: reason))
-                } else {
-                    wireframe?.closeTransactionStatus(on: view)
-                    super.handleAppConnection(error: error, deviceId: deviceId)
-                }
-            default:
-                wireframe?.closeTransactionStatus(on: view)
-                super.handleAppConnection(error: error, deviceId: deviceId)
-            }
+            )
         } else if
             let signatureError = error as? LedgerTxConfirmInteractorError,
             signatureError == .invalidSignature {
             wireframe?.transitToInvalidSignature(on: view) { [weak self] in
                 self?.performCancellation()
             }
-        } else {
-            wireframe?.closeTransactionStatus(on: view)
-            super.handleAppConnection(error: error, deviceId: deviceId)
         }
     }
 
@@ -142,7 +123,11 @@ extension LedgerTxConfirmPresenter: LedgerTxConfirmInteractorOutputProtocol {
 
         switch result {
         case let .success(signature):
-            wireframe?.closeTransactionStatus(on: view)
+            guard let view = view else {
+                return
+            }
+
+            wireframe?.closeMessageSheet(on: view)
             wireframe?.complete(on: view)
             completion(.success(signature))
         case let .failure(error):

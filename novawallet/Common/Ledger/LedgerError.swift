@@ -12,7 +12,7 @@ struct LedgerResponseError {
     let code: LedgerResponseCode
     let reasonData: Data
 
-    func reason() -> String? {
+    var reason: String? {
         String(data: reasonData, encoding: .utf8)
     }
 }
