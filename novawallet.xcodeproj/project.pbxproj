@@ -596,6 +596,7 @@
 		84300B2826C107AD00D64514 /* ConnectionAutobalancing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84300B2726C107AD00D64514 /* ConnectionAutobalancing.swift */; };
 		84300B2C26C10C9B00D64514 /* ConnectionStateReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84300B2B26C10C9B00D64514 /* ConnectionStateReporting.swift */; };
 		84300B2F26C1112300D64514 /* ConnectionPoolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84300B2E26C1112300D64514 /* ConnectionPoolTests.swift */; };
+		843074F928BF6201009D463B /* NoAccountSupportPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843074F828BF6201009D463B /* NoAccountSupportPresentable.swift */; };
 		8430AACC2602249B005B1066 /* InitialStakingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AACB2602249B005B1066 /* InitialStakingState.swift */; };
 		8430AAD42602285B005B1066 /* StakingStateCommonData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AAD32602285B005B1066 /* StakingStateCommonData.swift */; };
 		8430AADC26022C58005B1066 /* NoStashState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AADB26022C58005B1066 /* NoStashState.swift */; };
@@ -3214,6 +3215,7 @@
 		84300B2726C107AD00D64514 /* ConnectionAutobalancing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAutobalancing.swift; sourceTree = "<group>"; };
 		84300B2B26C10C9B00D64514 /* ConnectionStateReporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionStateReporting.swift; sourceTree = "<group>"; };
 		84300B2E26C1112300D64514 /* ConnectionPoolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionPoolTests.swift; sourceTree = "<group>"; };
+		843074F828BF6201009D463B /* NoAccountSupportPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoAccountSupportPresentable.swift; sourceTree = "<group>"; };
 		8430AACB2602249B005B1066 /* InitialStakingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialStakingState.swift; sourceTree = "<group>"; };
 		8430AAD32602285B005B1066 /* StakingStateCommonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateCommonData.swift; sourceTree = "<group>"; };
 		8430AADB26022C58005B1066 /* NoStashState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoStashState.swift; sourceTree = "<group>"; };
@@ -8357,6 +8359,7 @@
 				8443CA49289D04E900FA4A95 /* TransactionSigningPresenting.swift */,
 				846A835528B8A5C700D92892 /* WalletCreationFlowCompleting.swift */,
 				846A835928B8C5EC00D92892 /* TransactionExpiredPresentable.swift */,
+				843074F828BF6201009D463B /* NoAccountSupportPresentable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -13420,6 +13423,7 @@
 				84FB9E24285C6ACC00B42FC0 /* XcmMultiasset.swift in Sources */,
 				841E5547282D7F5800C8438F /* StakingMainPresenterFactory+Parachain.swift in Sources */,
 				84F4A90A254CC863000CF0A3 /* KeystoreExportWrapper.swift in Sources */,
+				843074F928BF6201009D463B /* NoAccountSupportPresentable.swift in Sources */,
 				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
 				84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */,
 				8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */,

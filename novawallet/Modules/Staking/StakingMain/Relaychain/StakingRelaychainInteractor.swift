@@ -111,12 +111,11 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     func setupSelectedAccountAndChainAsset() {
         guard
             let wallet = selectedWalletSettings.value,
-            let chainAsset = stakingSettings.value,
-            let response = wallet.fetch(for: chainAsset.chain.accountRequest()) else {
+            let chainAsset = stakingSettings.value else {
             return
         }
 
-        selectedAccount = response
+        selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest())
         selectedChainAsset = chainAsset
     }
 
