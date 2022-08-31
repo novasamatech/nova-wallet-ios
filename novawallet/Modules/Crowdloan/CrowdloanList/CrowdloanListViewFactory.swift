@@ -29,6 +29,7 @@ struct CrowdloanListViewFactory {
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
             crowdloansCalculator: CrowdloansCalculator(),
+            accountManagementFilter: AccountManagementFilter(),
             logger: Logger.shared
         )
 
