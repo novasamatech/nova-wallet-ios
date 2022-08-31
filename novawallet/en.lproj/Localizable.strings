@@ -939,3 +939,4 @@
 "common.invalid.data" = "Invalid data";
 "ledger.review.approve" = "Review and Approve";
 "common.wallet.not.support.chain" = "%@ doesn't support %@";
+"common.chain.crowdloan.account.missing.message" = "You should add %@ account to the wallet in order to contribute";
