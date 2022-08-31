@@ -6,13 +6,12 @@ enum LedgerAccountConfirmationInteractorError: Error {
     case accountVerificationFailed
 }
 
-final class LedgerAccountConfirmationInteractor {
+class LedgerBaseAccountConfirmationInteractor {
     weak var presenter: LedgerAccountConfirmationInteractorOutputProtocol?
 
     let chain: ChainModel
     let deviceId: UUID
     let application: LedgerApplication
-    let accountsStore: LedgerAccountsStore
     let requestFactory: StorageRequestFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -22,7 +21,6 @@ final class LedgerAccountConfirmationInteractor {
         chain: ChainModel,
         deviceId: UUID,
         application: LedgerApplication,
-        accountsStore: LedgerAccountsStore,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
@@ -35,7 +33,10 @@ final class LedgerAccountConfirmationInteractor {
         self.requestFactory = requestFactory
         self.connection = connection
         self.runtimeService = runtimeService
-        self.accountsStore = accountsStore
+    }
+
+    func addAccount(for _: LedgerChainAccount.Info, chain _: ChainModel, derivationPath _: Data, index _: UInt32) {
+        assertionFailure("Child interactor must override this method")
     }
 
     private func verify(response: LedgerAccountResponse, expectedAddress: AccountAddress, index: UInt32) {
@@ -50,9 +51,7 @@ final class LedgerAccountConfirmationInteractor {
                 cryptoType: LedgerApplication.defaultCryptoScheme.walletCryptoType
             )
 
-            accountsStore.add(chain: chain, info: info, derivationPath: response.derivationPath)
-
-            presenter?.didReceiveConfirmation(result: .success(accountId), at: index)
+            addAccount(for: info, chain: chain, derivationPath: response.derivationPath, index: index)
         } else {
             presenter?.didReceiveConfirmation(
                 result: .failure(LedgerAccountConfirmationInteractorError.accountVerificationFailed),
@@ -60,9 +59,7 @@ final class LedgerAccountConfirmationInteractor {
             )
         }
     }
-}
 
-extension LedgerAccountConfirmationInteractor: LedgerAccountConfirmationInteractorInputProtocol {
     func fetchAccount(for index: UInt32) {
         let ledgerWrapper = application.getAccountWrapper(for: deviceId, chainId: chain.chainId, index: index)
 

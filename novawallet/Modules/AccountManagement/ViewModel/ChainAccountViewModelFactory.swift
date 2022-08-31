@@ -153,22 +153,31 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
         let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
 
-        guard !customSecretAccountList.isEmpty else {
-            return [ChainAccountListSectionViewModel(
-                section: .sharedSecret,
-                chainAccounts: sharedSecretAccountList
-            )]
-        }
+        switch wallet.type {
+        case .secrets, .watchOnly, .paritySigner:
+            guard !customSecretAccountList.isEmpty else {
+                return [ChainAccountListSectionViewModel(
+                    section: .sharedSecret,
+                    chainAccounts: sharedSecretAccountList
+                )]
+            }
 
-        return [
-            ChainAccountListSectionViewModel(
-                section: .customSecret,
-                chainAccounts: customSecretAccountList
-            ),
-            ChainAccountListSectionViewModel(
-                section: .sharedSecret,
-                chainAccounts: sharedSecretAccountList
-            )
-        ]
+            return [
+                ChainAccountListSectionViewModel(
+                    section: .customSecret,
+                    chainAccounts: customSecretAccountList
+                ),
+                ChainAccountListSectionViewModel(
+                    section: .sharedSecret,
+                    chainAccounts: sharedSecretAccountList
+                )
+            ]
+        case .ledger:
+            let allChainAccounts = sharedSecretAccountList + customSecretAccountList
+
+            let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)
+
+            return [section]
+        }
     }
 }
