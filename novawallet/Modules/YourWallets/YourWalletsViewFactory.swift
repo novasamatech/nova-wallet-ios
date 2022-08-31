@@ -22,7 +22,10 @@ struct YourWalletsViewFactory {
         )
         presenter.view = view
 
-        view.preferredContentSize = .init(width: 0, height: presenter.contentHeight)
+        view.preferredContentSize = .init(
+            width: 0,
+            height: presenter.contentHeight + 20
+        )
 
         return view
     }

@@ -28,10 +28,6 @@ final class YourWalletsPresenter {
         self.localizationManager = localizationManager
     }
 
-    deinit {
-        delegate?.didCloseYourWalletSelection()
-    }
-
     private func updateView() {
         var createdSections: [MetaAccountModelType: Int] = [:]
 
