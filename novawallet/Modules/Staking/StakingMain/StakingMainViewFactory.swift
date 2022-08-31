@@ -21,6 +21,7 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
         let presenter = StakingMainPresenter(
             childPresenterFactory: StakingMainPresenterFactory(),
             viewModelFactory: StakingMainViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory),
+            accountManagementFilter: AccountManagementFilter(),
             logger: Logger.shared
         )
 
