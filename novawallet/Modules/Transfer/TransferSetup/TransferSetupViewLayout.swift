@@ -109,7 +109,7 @@ final class TransferSetupViewLayout: UIView {
             yourWalletsControl
         ])
         containerView.stackView.addArrangedSubview(titleStackView)
-        containerView.stackView.setCustomSpacing(8.0, after: titleStackView)
+        containerView.stackView.setCustomSpacing(0, after: titleStackView)
         containerView.stackView.addArrangedSubview(recepientInputView)
         containerView.stackView.setCustomSpacing(8.0, after: recepientInputView)
 

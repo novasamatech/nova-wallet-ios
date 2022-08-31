@@ -8,7 +8,7 @@ protocol YourWalletsViewProtocol: ControllerBackedProtocol {
 protocol YourWalletsPresenterProtocol: AnyObject {
     func setup()
     func didSelect(viewModel: YourWalletsCellViewModel.CommonModel)
-    func viewDidDisappear()
+    func viewWillDisappear()
 }
 
 protocol YourWalletsDelegate: AnyObject {

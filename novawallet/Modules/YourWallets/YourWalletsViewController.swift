@@ -32,10 +32,10 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
 
-        presenter.viewDidDisappear()
+        presenter.viewWillDisappear()
     }
 
     private func setupCollectionView() {

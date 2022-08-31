@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class YourWalletsControl: BaseActionControl, ComfortTouchAreaControl {
+final class YourWalletsControl: BaseActionControl {
     let color = R.color.colorNovaBlue()!
 
     lazy var iconDetailsView: YourWalletsIconDetailsView = .create {
@@ -35,6 +35,7 @@ final class YourWalletsControl: BaseActionControl, ComfortTouchAreaControl {
         title = iconDetailsView
         indicator = imageActionIndicator
         horizontalSpacing = 0
+        contentInsets = .init(top: 5, left: 0, bottom: 5, right: 0)
     }
 }
 

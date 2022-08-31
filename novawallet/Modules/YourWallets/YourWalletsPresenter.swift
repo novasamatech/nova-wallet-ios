@@ -123,7 +123,7 @@ extension YourWalletsPresenter: YourWalletsPresenterProtocol {
         delegate?.didSelectYourWallet(address: viewModel.displayAddress.address)
     }
 
-    func viewDidDisappear() {
+    func viewWillDisappear() {
         delegate?.didCloseYourWalletSelection()
     }
 }
