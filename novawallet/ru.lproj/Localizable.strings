@@ -938,3 +938,4 @@
 "ledger.transaction.update.metadata" = "Пожалуйста, обновите %@ приложение, используя Ledger Live";
 "common.invalid.data" = "Неверные данные";
 "ledger.review.approve" = "Проверьте и Подтвердите";
+"common.wallet.not.support.chain" = "%@ не поддерживает %@";

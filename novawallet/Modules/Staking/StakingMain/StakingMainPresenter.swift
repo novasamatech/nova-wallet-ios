@@ -9,6 +9,7 @@ final class StakingMainPresenter {
 
     let childPresenterFactory: StakingMainPresenterFactoryProtocol
     let viewModelFactory: StakingMainViewModelFactoryProtocol
+    let accountManagementFilter: AccountManagementFilterProtocol
     let logger: LoggerProtocol?
 
     private var childPresenter: StakingMainChildPresenterProtocol?
@@ -19,10 +20,12 @@ final class StakingMainPresenter {
     init(
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
         viewModelFactory: StakingMainViewModelFactoryProtocol,
+        accountManagementFilter: AccountManagementFilterProtocol,
         logger: LoggerProtocol?
     ) {
         self.childPresenterFactory = childPresenterFactory
         self.viewModelFactory = viewModelFactory
+        self.accountManagementFilter = accountManagementFilter
         self.logger = logger
     }
 
@@ -38,53 +41,6 @@ final class StakingMainPresenter {
         )
 
         view?.didReceive(viewModel: viewModel)
-    }
-
-    private func createAccountCreateAction(for chain: ChainModel, wallet: MetaAccountModel) -> AlertPresentableAction {
-        let createAccountTitle = R.string.localizable.accountCreateOptionTitle(
-            preferredLanguages: view?.selectedLocale.rLanguages
-        )
-
-        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.wireframe.showCreateAccount(from: self?.view, wallet: wallet, chain: chain)
-        }
-    }
-
-    private func createAccountImportAction(for chain: ChainModel, wallet: MetaAccountModel) -> AlertPresentableAction {
-        let importAccountTitle = R.string.localizable.accountImportOptionTitle(
-            preferredLanguages: view?.selectedLocale.rLanguages
-        )
-
-        return AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.wireframe.showImportAccount(from: self?.view, wallet: wallet, chain: chain)
-        }
-    }
-
-    private func addAccount(for chain: ChainModel, wallet: MetaAccountModel) {
-        let createAccountAction = createAccountCreateAction(for: chain, wallet: wallet)
-        let importAccountAction = createAccountImportAction(for: chain, wallet: wallet)
-
-        let actions: [AlertPresentableAction] = [createAccountAction, importAccountAction]
-
-        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: view?.selectedLocale.rLanguages)
-
-        let title = R.string.localizable.accountNotFoundActionsTitle(
-            chain.name,
-            preferredLanguages: view?.selectedLocale.rLanguages
-        )
-
-        let actionsViewModel = AlertPresentableViewModel(
-            title: title,
-            message: nil,
-            actions: actions,
-            closeAction: closeTitle
-        )
-
-        wireframe.present(
-            viewModel: actionsViewModel,
-            style: .actionSheet,
-            from: view
-        )
     }
 }
 
@@ -115,38 +71,19 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
 
         if wallet.fetchMetaChainAccount(for: chain.accountRequest()) != nil {
             childPresenter?.performMainAction()
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
+            wireframe.showWalletDetails(from: view, wallet: wallet)
         } else {
-            let languages = view?.selectedLocale.rLanguages
-
-            let title = R.string.localizable.commonChainAccountMissingTitleFormat(
-                chain.name,
-                preferredLanguages: languages
-            )
-
-            let messages = R.string.localizable.commonChainAccountMissingMessageFormat(
-                chain.name,
-                preferredLanguages: languages
-            )
-
-            let cancelAction = AlertPresentableAction(
-                title: R.string.localizable.commonCancel(preferredLanguages: languages),
-                style: .destructive
-            )
-
-            let addAction = AlertPresentableAction(
-                title: R.string.localizable.commonAdd(preferredLanguages: languages)
-            ) { [weak self] in
-                self?.addAccount(for: chain, wallet: wallet)
+            guard let view = view, let locale = view.localizationManager?.selectedLocale else {
+                return
             }
 
-            let viewModel = AlertPresentableViewModel(
-                title: title,
-                message: messages,
-                actions: [cancelAction, addAction],
-                closeAction: nil
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chain.name,
+                locale: locale
             )
-
-            wireframe.present(viewModel: viewModel, style: .alert, from: view)
         }
     }
 
