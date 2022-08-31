@@ -36,6 +36,7 @@ final class SelectableIconSubtitleView: UIView {
 
         iconSubtitleView.spacing = Constants.iconSpace
         iconSubtitleView.iconWidth = Constants.iconSize.width
+        iconSubtitleView.detailsView.stackView.alignment = .leading
     }
 }
 
