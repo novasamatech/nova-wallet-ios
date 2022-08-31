@@ -13,12 +13,7 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
             return
         }
 
-        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            presenter.didReceiveAccountInfo(
-                result: .failure(ChainAccountFetchingError.accountNotExists)
-            )
-            return
-        }
+        let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
 
         setup(with: accountId, chain: chain)
     }
