@@ -77,7 +77,7 @@ extension StakingRelaychainInteractor {
         guard let accountResponse = selectedAccount.fetch(
             for: chainAsset.chain.accountRequest()
         ) else {
-            presenter?.didReceive(balanceError: ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceive(accountInfo: nil)
             return
         }
 
@@ -99,7 +99,7 @@ extension StakingRelaychainInteractor {
 
     func performStashControllerSubscription() {
         guard let address = selectedAccount?.toAddress() else {
-            presenter?.didReceive(stashItemError: ChainAccountFetchingError.accountNotExists)
+            handle(stashItem: nil)
             return
         }
 
