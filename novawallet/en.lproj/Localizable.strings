@@ -912,7 +912,7 @@
 "ledger.accounts.button.add" = "Add at least one account";
 "ledger.account.confirm.title" = "Select an account to pair in Nova Wallet";
 "common.load.more.accounts" = "Load more accounts";
-"ledger.address.verify.message" = "Press both buttons on your %@ to verify address";
+"ledger.address.verify.message" = "Press both buttons on your %@ to approve address";
 "common.ledger" = "Ledger";
 "ledger.details.hint" = "This wallet is paired with Ledger. Nova will help you to form any operations you want, and you will be requested to sign them using Ledger";
 "ledger.instructions.title" = "Connect Ledger Nano X";
@@ -926,14 +926,14 @@
 "ledger.instructions.step4" = "Select account to add to wallet";
 "ledger.instructions.step4.highlighted" = "Select account";
 "welcome.hardware.wallet.subtitle.v3_7" = "Use Parity Signer and Ledger";
-"ledger.sign.transaction.details" = "Press both buttons on your %@ to sign the transaction";
+"ledger.sign.transaction.details" = "Press both buttons on your %@ to approve the transaction";
 "common.transaction.expired" = "Transaction has expired";
-"ledger.transaction.expired.details" = "For security reasons generated operations valid for only %@. Please try again and sign it with Ledger";
+"ledger.transaction.expired.details" = "For security reasons generated operations valid for only %@. Please try again and approve it with Ledger";
 "common.transaction.valid.format" = "Transaction is valid for %@";
 "ledger.transaction.not.supported.title" = "Transaction is not supported";
-"ledger.transaction.not.supported.message" = "Ledger does not support signing this transaction";
+"ledger.transaction.not.supported.message" = "Ledger does not support this transaction";
 "common.signature.invalid" = "Signature is invalid";
-"ledger.transaction.signature.invalid" = "Please, make sure you have selected the right Ledger device for currently signing operation";
+"ledger.transaction.signature.invalid" = "Please, make sure you have selected the right Ledger device for currently approving operation";
 "common.outdated.metadata" = "Metadata is outdated";
 "ledger.transaction.update.metadata" = "Please, update Kusama app using Ledger Live app";
 "common.invalid.data" = "Invalid data";

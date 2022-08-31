@@ -928,10 +928,10 @@
 "welcome.hardware.wallet.subtitle.v3_7" = "Использовать Parity Signer и Ledger";
 "ledger.sign.transaction.details" = "Нажмите обе кнопки на Вашем %@ для подтверждения транзакции";
 "common.transaction.expired" = "Срок действия транзакции истек";
-"ledger.transaction.expired.details" = "В целях безопасности сгенерированные операции действительны только в течение %@. Пожалуйста, попробуйте еще раз и подпишите транзакцию с помощью Ledger";
+"ledger.transaction.expired.details" = "В целях безопасности сгенерированные операции действительны только в течение %@. Пожалуйста, попробуйте еще раз и подтвердите транзакцию с помощью Ledger";
 "common.transaction.valid.format" = "Транзакция валидна %@";
 "ledger.transaction.not.supported.title" = "Транзакция не поддерживается";
-"ledger.transaction.not.supported.message" = "Ledger не поддерживает подпись данной транзакции";
+"ledger.transaction.not.supported.message" = "Ledger не поддерживает данную транзакции";
 "common.signature.invalid" = "Неверная подпись";
 "ledger.transaction.signature.invalid" = "Пожалуйста, удостоверьтесь, что Вы выбрали верное устройство Ledger";
 "common.outdated.metadata" = "Метаданные устарели";
