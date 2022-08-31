@@ -9,6 +9,7 @@ final class CrowdloanListPresenter {
     let interactor: CrowdloanListInteractorInputProtocol
     let viewModelFactory: CrowdloansViewModelFactoryProtocol
     let logger: LoggerProtocol?
+    let accountManagementFilter: AccountManagementFilterProtocol
 
     private var selectedChainResult: Result<ChainModel, Error>?
     private var accountInfoResult: Result<AccountInfo?, Error>?
@@ -23,7 +24,6 @@ final class CrowdloanListPresenter {
     private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
     private var wallet: MetaAccountModel?
-    private var accountManagementFilter: AccountManagementFilterProtocol
 
     private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
     private let crowdloansCalculator: CrowdloansCalculatorProtocol
