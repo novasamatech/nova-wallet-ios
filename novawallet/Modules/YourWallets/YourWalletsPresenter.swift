@@ -108,6 +108,14 @@ final class YourWalletsPresenter {
 
         return DrawableIconViewModel(icon: icon)
     }
+
+    var contentHeight: CGFloat {
+        let sections = Dictionary(grouping: metaAccounts) { $0.metaAccount.type }.count
+        return view?.calculateEstimatedHeight(
+            sections: sections,
+            items: metaAccounts.count
+        ) ?? 0
+    }
 }
 
 // MARK: - YourWalletsPresenterProtocol

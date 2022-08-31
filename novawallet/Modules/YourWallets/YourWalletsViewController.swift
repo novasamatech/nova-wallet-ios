@@ -129,6 +129,10 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
     func update(header: String) {
         rootView.header.bind(title: header, icon: nil)
     }
+
+    func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat {
+        RootViewType.contentHeight(sections: sections, items: items)
+    }
 }
 
 // MARK: - UICollectionViewDelegate

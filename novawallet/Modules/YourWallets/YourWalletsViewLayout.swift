@@ -42,7 +42,7 @@ final class YourWalletsViewLayout: UIView {
 
         header.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top)
-            $0.height.equalTo(46)
+            $0.height.equalTo(Constants.headerHeight)
             $0.leading.trailing.equalToSuperview()
         }
 
@@ -56,7 +56,7 @@ final class YourWalletsViewLayout: UIView {
         .createSectionLayoutWithFullWidthRow(settings:
             .init(
                 estimatedRowHeight: Constants.estimatedRowHeight,
-                estimatedHeaderHeight: Constants.estimatedHeaderHeight,
+                estimatedHeaderHeight: Constants.estimatedSectionHeaderHeight,
                 sectionContentInsets: Constants.sectionContentInsets,
                 sectionInterGroupSpacing: Constants.interGroupSpacing,
                 header: showHeader ? .init(pinToVisibleBounds: true) : nil
@@ -68,8 +68,9 @@ final class YourWalletsViewLayout: UIView {
 
 extension YourWalletsViewLayout {
     private enum Constants {
+        static let headerHeight: CGFloat = 46
         static let estimatedRowHeight: CGFloat = 56
-        static let estimatedHeaderHeight: CGFloat = 44
+        static let estimatedSectionHeaderHeight: CGFloat = 46
         static let sectionContentInsets = NSDirectionalEdgeInsets(
             top: 4,
             leading: 16,
@@ -89,5 +90,24 @@ extension YourWalletsViewLayout {
             bottom: 12,
             right: 0
         )
+    }
+}
+
+extension YourWalletsViewLayout {
+    static func contentHeight(sections: Int, items: Int) -> CGFloat {
+        let itemHeight =
+            Constants.estimatedRowHeight +
+            Constants.estimatedSectionHeaderHeight
+
+        let sectionsHeight = Constants.estimatedSectionHeaderHeight +
+            Constants.sectionContentInsets.top +
+            Constants.sectionContentInsets.bottom
+
+        let estimatedHeight = Constants.collectionViewContentInset.top +
+            CGFloat(items) * itemHeight +
+            CGFloat(max(sections - 1, 0)) * sectionsHeight +
+            Constants.collectionViewContentInset.bottom
+
+        return estimatedHeight
     }
 }

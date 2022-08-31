@@ -3,6 +3,7 @@ import UIKit
 protocol YourWalletsViewProtocol: ControllerBackedProtocol {
     func update(viewModel: [YourWalletsViewSectionModel])
     func update(header: String)
+    func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat
 }
 
 protocol YourWalletsPresenterProtocol: AnyObject {
