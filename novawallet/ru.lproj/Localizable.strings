@@ -892,3 +892,4 @@
 "currency.category.popularFiat" = "Популярные фиатные валюты";
 "currency.category.cryptocurrencies" = "Криптовалюты";
 "profile.currency.title" = "Валюта";
+"common.wallet.not.support.chain" = "%@ не поддерживает %@";
