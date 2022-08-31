@@ -6,7 +6,7 @@ enum LedgerBottomSheetViewFactory {
         static let ledgerInfoRenderSize = CGSize(width: 100.0, height: 72.0)
     }
 
-    static func createVerifyLedgerView(for deviceName: String) -> MessageSheetViewProtocol? {
+    static func createVerifyLedgerView(for deviceName: String, address: String) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe(completionCallback: nil)
 
         let presenter = MessageSheetPresenter(wireframe: wireframe)
@@ -30,21 +30,21 @@ enum LedgerBottomSheetViewFactory {
             infoRenderSize: Constants.ledgerInfoRenderSize
         )
 
-        let viewModel = MessageSheetViewModel<MessageSheetLedgerViewModel, MessageSheetNoContentViewModel>(
+        let viewModel = MessageSheetViewModel<MessageSheetLedgerViewModel, String>(
             title: title,
             message: message,
             graphics: graphicsViewModel,
-            content: nil,
+            content: address.twoLineAddress,
             hasAction: false
         )
 
-        let view = MessageSheetViewController<MessageSheetLedgerView, MessageSheetNoContentView>(
+        let view = MessageSheetViewController<MessageSheetLedgerView, MessageSheetContentLabel>(
             presenter: presenter,
             viewModel: viewModel,
             localizationManager: LocalizationManager.shared
         )
 
-        view.controller.preferredContentSize = CGSize(width: 0.0, height: 320.0)
+        view.controller.preferredContentSize = CGSize(width: 0.0, height: 396.0)
 
         presenter.view = view
 

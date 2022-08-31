@@ -1,9 +1,17 @@
 import Foundation
 import SoraUI
 
-final class LedgerAccountConfirmationWireframe: LedgerAccountConfirmationWireframeProtocol {
-    func showAddressVerification(on view: LedgerAccountConfirmationViewProtocol?, deviceName: String) {
-        guard let confirmationView = LedgerBottomSheetViewFactory.createVerifyLedgerView(for: deviceName) else {
+class LedgerBaseAccountConfirmationWireframe {
+    func showAddressVerification(
+        on view: LedgerAccountConfirmationViewProtocol?,
+        deviceName: String,
+        address: AccountAddress
+    ) {
+        guard
+            let confirmationView = LedgerBottomSheetViewFactory.createVerifyLedgerView(
+                for: deviceName,
+                address: address
+            ) else {
             return
         }
 
@@ -25,17 +33,5 @@ final class LedgerAccountConfirmationWireframe: LedgerAccountConfirmationWirefra
         if sheetPresented {
             navigationController.dismiss(animated: true, completion: nil)
         }
-    }
-
-    func complete(on view: LedgerAccountConfirmationViewProtocol?) {
-        guard
-            let navigationController = view?.controller.navigationController,
-            let networkSelectionView = navigationController.viewControllers.first(
-                where: { $0 is LedgerNetworkSelectionViewProtocol }
-            ) else {
-            return
-        }
-
-        navigationController.popToViewController(networkSelectionView, animated: true)
     }
 }
