@@ -10,6 +10,7 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
 
     let presenter: YourWalletsPresenterProtocol
     private lazy var dataSource = createDataSource()
+    private var viewModel: [YourWalletsViewSectionModel] = []
 
     init(presenter: YourWalletsPresenterProtocol) {
         self.presenter = presenter
@@ -46,6 +47,9 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
             RoundedIconTitleCollectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
+        rootView.showHeader = { [weak self] section in
+            self?.viewModel[section].header != nil
+        }
     }
 
     private func createDataSource() -> DataSource {
@@ -113,6 +117,8 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
 
 extension YourWalletsViewController: YourWalletsViewProtocol {
     func update(viewModel: [YourWalletsViewSectionModel]) {
+        self.viewModel = viewModel
+
         var snapshot = NSDiffableDataSourceSnapshot<YourWalletsViewSectionModel, YourWalletsCellViewModel>()
         snapshot.appendSections(viewModel)
         viewModel.forEach { section in

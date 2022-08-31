@@ -61,7 +61,11 @@ final class YourWalletsPresenter {
     }
 
     private func header(response: MetaAccountChainResponse) -> YourWalletsViewSectionModel.HeaderViewModel? {
-        switch response.metaAccount.type {
+        header(metaAccountType: response.metaAccount.type)
+    }
+
+    private func header(metaAccountType: MetaAccountModelType) -> YourWalletsViewSectionModel.HeaderViewModel? {
+        switch metaAccountType {
         case .watchOnly, .secrets:
             return nil
         case .paritySigner:
@@ -106,7 +110,10 @@ final class YourWalletsPresenter {
     }
 
     var contentHeight: CGFloat {
-        let sections = Dictionary(grouping: metaAccounts) { $0.metaAccount.type }.count
+        let sections = Dictionary(grouping: metaAccounts) { $0.metaAccount.type }
+            .keys
+            .compactMap(header)
+            .count
         return view?.calculateEstimatedHeight(
             sections: sections,
             items: metaAccounts.count

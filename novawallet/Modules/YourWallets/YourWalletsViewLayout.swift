@@ -13,14 +13,12 @@ final class YourWalletsViewLayout: UIView {
         return view
     }()
 
+    var showHeader: (Int) -> Bool = { _ in false }
+
     private lazy var compositionalLayout: UICollectionViewCompositionalLayout = {
-        .init { sectionIndex, _ -> NSCollectionLayoutSection? in
-            switch sectionIndex {
-            case 0:
-                return Self.createCompositionalLayout(showHeader: false)
-            default:
-                return Self.createCompositionalLayout(showHeader: true)
-            }
+        .init { [weak self] sectionIndex, _ -> NSCollectionLayoutSection? in
+            let showHeader = self?.showHeader(sectionIndex) ?? false
+            return Self.createCompositionalLayout(showHeader: showHeader)
         }
     }()
 
@@ -105,7 +103,7 @@ extension YourWalletsViewLayout {
 
         let estimatedHeight = Constants.collectionViewContentInset.top +
             CGFloat(items) * itemHeight +
-            CGFloat(max(sections - 1, 0)) * sectionsHeight +
+            CGFloat(sections) * sectionsHeight +
             Constants.collectionViewContentInset.bottom
 
         return estimatedHeight
