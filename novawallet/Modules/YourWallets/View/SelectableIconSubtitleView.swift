@@ -69,8 +69,8 @@ extension SelectableIconSubtitleView {
         )
 
         viewModel.subtitleIcon.map {
-            iconSubtitleView.detailsView.valueBottom.subtitleImageView.fillColor = $0.fillColor
-            iconSubtitleView.detailsView.valueBottom.subtitleImageView.bind(icon: $0.icon)
+            iconSubtitleView.detailsView.valueBottom.imageView.fillColor = $0.fillColor
+            iconSubtitleView.detailsView.valueBottom.imageView.bind(icon: $0.icon)
         }
 
         guard let isSelected = viewModel.isSelected else {

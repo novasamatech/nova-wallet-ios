@@ -2,12 +2,12 @@ import UIKit
 import SubstrateSdk
 
 final class PolkadotIconDetailsView: UIView {
-    let subtitleImageView: PolkadotIconView = .create {
+    let imageView: PolkadotIconView = .create {
         $0.backgroundColor = .clear
         $0.fillColor = .clear
     }
 
-    let subtitleLabel: UILabel = .create {
+    let titleLabel: UILabel = .create {
         $0.textColor = R.color.colorWhite64()
         $0.font = .regularFootnote
         $0.numberOfLines = 0
@@ -26,11 +26,11 @@ final class PolkadotIconDetailsView: UIView {
 
     private func setupLayout() {
         let subtitleView = UIStackView(arrangedSubviews: [
-            subtitleImageView,
-            subtitleLabel
+            imageView,
+            titleLabel
         ])
         subtitleView.spacing = Constants.horizontalSubtileViewSpace
-        subtitleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
         addSubview(subtitleView)
 
@@ -38,7 +38,7 @@ final class PolkadotIconDetailsView: UIView {
             $0.edges.equalToSuperview()
         }
 
-        subtitleImageView.snp.makeConstraints {
+        imageView.snp.makeConstraints {
             $0.width.equalTo(Constants.subtitleImageViewSize)
             $0.height.equalTo(Constants.subtitleImageViewSize)
         }
