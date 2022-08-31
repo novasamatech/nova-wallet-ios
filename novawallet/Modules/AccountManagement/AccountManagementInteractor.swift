@@ -46,12 +46,7 @@ final class AccountManagementInteractor {
 
     private func filterChainsAndNotify(for chains: [ChainModel], wallet: MetaAccountModel) {
         let filteredChains = chains.filter { chainsFilter.checkWallet(wallet: wallet, supports: $0) }
-
-        let chainsById: [ChainModel.Id: ChainModel] = filteredChains.reduce(into: [:]) { result, chain in
-            result[chain.chainId] = chain
-        }
-
-        presenter?.didReceiveChains(.success(chainsById))
+        presenter?.didReceiveChains(.success(filteredChains.reduceToDict()))
     }
 
     private func fetchChains(for wallet: MetaAccountModel) {
