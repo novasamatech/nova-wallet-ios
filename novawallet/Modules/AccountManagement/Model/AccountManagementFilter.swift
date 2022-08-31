@@ -1,7 +1,8 @@
 import Foundation
 
 protocol AccountManagementFilterProtocol {
-    func checkWallet(wallet: MetaAccountModel, supports chain: ChainModel) -> Bool
+    func accountManagementSupports(wallet: MetaAccountModel, for chain: ChainModel) -> Bool
+    func canAddAccount(to wallet: MetaAccountModel, chain: ChainModel) -> Bool
 }
 
 final class AccountManagementFilter: AccountManagementFilterProtocol {
@@ -10,10 +11,21 @@ final class AccountManagementFilter: AccountManagementFilterProtocol {
         return Set(allIds)
     }()
 
-    func checkWallet(wallet: MetaAccountModel, supports chain: ChainModel) -> Bool {
+    func accountManagementSupports(wallet: MetaAccountModel, for chain: ChainModel) -> Bool {
         switch wallet.type {
         case .watchOnly, .paritySigner, .secrets:
             return true
+        case .ledger:
+            return supportedLedgerChains.contains(chain.chainId)
+        }
+    }
+
+    func canAddAccount(to wallet: MetaAccountModel, chain: ChainModel) -> Bool {
+        switch wallet.type {
+        case .watchOnly, .secrets:
+            return true
+        case .paritySigner:
+            return !chain.isEthereumBased
         case .ledger:
             return supportedLedgerChains.contains(chain.chainId)
         }

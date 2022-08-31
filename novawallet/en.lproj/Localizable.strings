@@ -938,3 +938,4 @@
 "ledger.transaction.update.metadata" = "Please, update Kusama app using Ledger Live app";
 "common.invalid.data" = "Invalid data";
 "ledger.review.approve" = "Review and Approve";
+"common.wallet.not.support.chain" = "%@ doesn't support %@";
