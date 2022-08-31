@@ -87,13 +87,11 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     private static func mapWarningModel(_ model: YourWalletsCellViewModel.WarningModel) ->
         SelectableIconSubtitleCollectionViewCell.Model {
         .init(
-            iconSubtitle: .init(
-                icon: model.imageViewModel,
-                title: model.accountName ?? "",
-                subtitle: model.warning,
-                subtitleIcon: DrawableIconViewModel(icon: R.image.iconWarning()!),
-                lineBreakMode: .byTruncatingTail
-            ),
+            icon: model.imageViewModel,
+            title: model.accountName ?? "",
+            subtitle: model.warning,
+            subtitleIcon: DrawableIconViewModel(icon: R.image.iconWarning()!),
+            lineBreakMode: .byTruncatingTail,
             isSelected: nil
         )
     }
@@ -101,13 +99,11 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     private static func mapCommonModel(_ model: YourWalletsCellViewModel.CommonModel) ->
         SelectableIconSubtitleCollectionViewCell.Model {
         .init(
-            iconSubtitle: .init(
-                icon: model.imageViewModel,
-                title: model.displayAddress.username,
-                subtitle: model.displayAddress.address,
-                subtitleIcon: model.chainIcon,
-                lineBreakMode: .byTruncatingMiddle
-            ),
+            icon: model.imageViewModel,
+            title: model.displayAddress.username,
+            subtitle: model.displayAddress.address,
+            subtitleIcon: model.chainIcon,
+            lineBreakMode: .byTruncatingMiddle,
             isSelected: model.isSelected
         )
     }

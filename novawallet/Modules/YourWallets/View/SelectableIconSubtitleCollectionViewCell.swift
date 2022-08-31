@@ -31,10 +31,10 @@ final class SelectableIconSubtitleCollectionViewCell: UICollectionViewCell {
 // MARK: - Model
 
 extension SelectableIconSubtitleCollectionViewCell {
-    typealias Model = SelectableIconSubtitleView.Model
+    typealias Model = SelectableIconSubtitleView.ViewModel
 
     func bind(model: Model) {
-        view.bind(model: model)
+        view.bind(viewModel: model)
     }
 }
 

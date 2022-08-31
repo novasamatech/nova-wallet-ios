@@ -1,8 +1,11 @@
 import UIKit
+import SubstrateSdk
 
 final class SelectableIconSubtitleView: UIView {
-    let iconSubtitleView = IconSubtitleView()
+    let iconSubtitleView = IconDetailsGenericView<GenericMultiValueView<PolkadotIconDetailsView>>()
     let radioSelectorView = RadioSelectorView()
+
+    private var viewModel: ViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,20 +33,47 @@ final class SelectableIconSubtitleView: UIView {
             $0.width.equalTo(Constants.radioButtonSize.width)
             $0.height.equalTo(Constants.radioButtonSize.height)
         }
+
+        iconSubtitleView.spacing = Constants.iconSpace
+        iconSubtitleView.iconWidth = Constants.iconSize.width
     }
 }
 
 // MARK: - Model
 
 extension SelectableIconSubtitleView {
-    struct Model {
-        let iconSubtitle: IconSubtitleView.Model
+    struct ViewModel {
+        let icon: ImageViewModelProtocol?
+        let title: String
+        let subtitle: String
+        let subtitleIcon: DrawableIconViewModel?
+        let lineBreakMode: NSLineBreakMode
+
         let isSelected: Bool?
     }
 
-    func bind(model: Model) {
-        iconSubtitleView.bind(model: model.iconSubtitle)
-        guard let isSelected = model.isSelected else {
+    func bind(viewModel: ViewModel) {
+        self.viewModel?.icon?.cancel(on: iconSubtitleView.imageView)
+        iconSubtitleView.imageView.image = nil
+
+        self.viewModel = viewModel
+
+        iconSubtitleView.detailsView.valueTop.text = viewModel.title
+        iconSubtitleView.detailsView.valueBottom.subtitleLabel.text = viewModel.subtitle
+        iconSubtitleView.detailsView.valueBottom.subtitleLabel.lineBreakMode = viewModel.lineBreakMode
+
+        viewModel.icon?.loadImage(
+            on: iconSubtitleView.imageView,
+            targetSize: Constants.iconSize,
+            animated: true
+        )
+
+        viewModel.subtitleIcon.map {
+            iconSubtitleView.detailsView.valueBottom.subtitleImageView.fillColor = $0.fillColor
+            iconSubtitleView.detailsView.valueBottom.subtitleImageView.bind(icon: $0.icon)
+        }
+
+        guard let isSelected = viewModel.isSelected else {
             radioSelectorView.isHidden = true
             return
         }
@@ -53,7 +83,7 @@ extension SelectableIconSubtitleView {
     }
 
     func clear() {
-        iconSubtitleView.clear()
+        viewModel?.icon?.cancel(on: iconSubtitleView.imageView)
     }
 }
 
@@ -63,5 +93,7 @@ extension SelectableIconSubtitleView {
     enum Constants {
         static let horizontalSpace: CGFloat = 25
         static let radioButtonSize = CGSize(width: 20, height: 20)
+        static let iconSize = CGSize(width: 32, height: 32)
+        static let iconSpace: CGFloat = 12
     }
 }
