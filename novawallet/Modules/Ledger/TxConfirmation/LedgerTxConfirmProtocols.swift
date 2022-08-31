@@ -30,27 +30,8 @@ protocol LedgerTxConfirmWireframeProtocol: LedgerPerformOperationWireframeProtoc
         completion: @escaping MessageSheetCallback
     )
 
-    func transitToTransactionNotSupported(
-        on view: ControllerBackedProtocol?,
-        completion: @escaping MessageSheetCallback
-    )
-
-    func transitToMetadataOutdated(
-        on view: ControllerBackedProtocol?,
-        chainName: String,
-        completion: @escaping MessageSheetCallback
-    )
-
     func transitToInvalidSignature(
         on view: ControllerBackedProtocol?,
         completion: @escaping MessageSheetCallback
     )
-
-    func transitToInvalidData(
-        on view: ControllerBackedProtocol?,
-        reason: String,
-        completion: @escaping MessageSheetCallback
-    )
-
-    func closeTransactionStatus(on view: ControllerBackedProtocol?)
 }

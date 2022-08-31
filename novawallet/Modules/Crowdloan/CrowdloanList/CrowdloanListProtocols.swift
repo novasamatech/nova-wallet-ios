@@ -41,7 +41,7 @@ protocol CrowdloanListInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>?)
 }
 
-protocol CrowdloanListWireframeProtocol: AnyObject, WalletSwitchPresentable {
+protocol CrowdloanListWireframeProtocol: WalletSwitchPresentable, AlertPresentable, NoAccountSupportPresentable {
     func presentContributionSetup(
         from view: CrowdloanListViewProtocol?,
         crowdloan: Crowdloan,
@@ -60,4 +60,6 @@ protocol CrowdloanListWireframeProtocol: AnyObject, WalletSwitchPresentable {
         delegate: AssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?
     )
+
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
 }
