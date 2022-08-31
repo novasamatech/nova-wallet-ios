@@ -23,6 +23,7 @@ final class CrowdloanListPresenter {
     private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
     private var wallet: MetaAccountModel?
+    private var accountManagementFilter: AccountManagementFilterProtocol
 
     private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
     private let crowdloansCalculator: CrowdloansCalculatorProtocol
@@ -33,6 +34,7 @@ final class CrowdloanListPresenter {
         viewModelFactory: CrowdloansViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         crowdloansCalculator: CrowdloansCalculatorProtocol,
+        accountManagementFilter: AccountManagementFilterProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -40,6 +42,7 @@ final class CrowdloanListPresenter {
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.crowdloansCalculator = crowdloansCalculator
+        self.accountManagementFilter = accountManagementFilter
         self.localizationManager = localizationManager
     }
 
@@ -202,6 +205,22 @@ final class CrowdloanListPresenter {
             provideViewErrorState()
         }
     }
+
+    private func openCrowdloan(for paraId: ParaId) {
+        let displayInfoDict = try? displayInfoResult?.get()
+        let displayInfo = displayInfoDict?[paraId]
+
+        guard
+            let crowdloans = try? crowdloansResult?.get(),
+            let selectedCrowdloan = crowdloans.first(where: { $0.paraId == paraId })
+        else { return }
+
+        wireframe.presentContributionSetup(
+            from: view,
+            crowdloan: selectedCrowdloan,
+            displayInfo: displayInfo
+        )
+    }
 }
 
 extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
@@ -224,19 +243,42 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func selectCrowdloan(_ paraId: ParaId) {
-        let displayInfoDict = try? displayInfoResult?.get()
-        let displayInfo = displayInfoDict?[paraId]
+        guard let wallet = wallet, let chain = try? selectedChainResult?.get() else {
+            return
+        }
 
-        guard
-            let crowdloans = try? crowdloansResult?.get(),
-            let selectedCrowdloan = crowdloans.first(where: { $0.paraId == paraId })
-        else { return }
+        if wallet.fetch(for: chain.accountRequest()) != nil {
+            openCrowdloan(for: paraId)
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
+            guard let view = view else {
+                return
+            }
 
-        wireframe.presentContributionSetup(
-            from: view,
-            crowdloan: selectedCrowdloan,
-            displayInfo: displayInfo
-        )
+            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
+                chain.name,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
+            }
+        } else {
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chain.name,
+                locale: selectedLocale
+            )
+        }
     }
 
     func becomeOnline() {

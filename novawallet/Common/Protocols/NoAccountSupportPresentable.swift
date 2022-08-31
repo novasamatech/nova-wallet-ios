@@ -7,6 +7,14 @@ protocol NoAccountSupportPresentable {
         chainName: String,
         locale: Locale
     )
+
+    func presentAddAccount(
+        from view: ControllerBackedProtocol,
+        chainName: String,
+        message: String,
+        locale: Locale,
+        addClosure: @escaping () -> Void
+    )
 }
 
 extension NoAccountSupportPresentable where Self: AlertPresentable {
@@ -44,5 +52,39 @@ extension NoAccountSupportPresentable where Self: AlertPresentable {
 
         let close = R.string.localizable.commonClose(preferredLanguages: locale.rLanguages)
         present(message: nil, title: title, closeAction: close, from: view)
+    }
+
+    func presentAddAccount(
+        from view: ControllerBackedProtocol,
+        chainName: String,
+        message: String,
+        locale: Locale,
+        addClosure: @escaping () -> Void
+    ) {
+        let languages = locale.rLanguages
+
+        let title = R.string.localizable.commonChainAccountMissingTitleFormat(
+            chainName,
+            preferredLanguages: languages
+        )
+
+        let cancelAction = AlertPresentableAction(
+            title: R.string.localizable.commonCancel(preferredLanguages: languages),
+            style: .destructive
+        )
+
+        let addAction = AlertPresentableAction(
+            title: R.string.localizable.commonAdd(preferredLanguages: languages),
+            handler: addClosure
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [cancelAction, addAction],
+            closeAction: nil
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 }

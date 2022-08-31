@@ -72,7 +72,25 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         if wallet.fetchMetaChainAccount(for: chain.accountRequest()) != nil {
             childPresenter?.performMainAction()
         } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
-            wireframe.showWalletDetails(from: view, wallet: wallet)
+            guard let view = view else {
+                return
+            }
+
+            let locale = view.selectedLocale
+
+            let message = R.string.localizable.commonChainAccountMissingMessageFormat(
+                chain.name,
+                preferredLanguages: locale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: locale
+            ) { [weak self] in
+                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
+            }
         } else {
             guard let view = view, let locale = view.localizationManager?.selectedLocale else {
                 return
