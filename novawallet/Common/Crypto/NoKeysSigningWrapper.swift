@@ -23,6 +23,17 @@ extension Error {
         }
     }
 
+    var isHardwareWalletSigningCancelled: Bool {
+        guard let hardwareWalletError = self as? HardwareSigningError else {
+            return false
+        }
+
+        switch hardwareWalletError {
+        case .signingCancelled:
+            return true
+        }
+    }
+
     var isNotSupportedByParitySigner: Bool {
         guard let notSupportedError = self as? NoSigningSupportError else {
             return false
