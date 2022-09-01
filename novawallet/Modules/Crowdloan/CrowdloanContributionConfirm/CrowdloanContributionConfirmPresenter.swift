@@ -314,6 +314,8 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
 
             if error.isWatchOnlySigning {
                 wireframe.presentPopingNoSigningView(from: view)
+            } else if error.isHardwareWalletSigningCancelled {
+                return
             } else if !wireframe.present(error: error, from: view, locale: selectedLocale) {
                 wireframe.presentExtrinsicFailed(from: view, locale: selectedLocale)
             }
