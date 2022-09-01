@@ -38,7 +38,9 @@ final class RoundedIconTitleHeaderView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = R.color.colorBlack()
+        self.backgroundView = backgroundView
 
         setupLayout()
     }
