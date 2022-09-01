@@ -40,8 +40,9 @@ struct MessageSheetViewFactory {
         return view
     }
 
-    static func createParitySignerNotSupportedView(
-        with completionCallback: @escaping MessageSheetCallback
+    static func createSignerNotSupportedView(
+        type: NoSigningSupportType,
+        completionCallback: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
         let wireframe = MessageSheetWireframe()
 
@@ -51,14 +52,26 @@ struct MessageSheetViewFactory {
             R.string.localizable.commonSigningNotSupportedTitle(preferredLanguages: locale.rLanguages)
         }
 
-        let message = LocalizableResource { locale in
-            R.string.localizable.commonParitySignerNotSupportedMessage(preferredLanguages: locale.rLanguages)
+        let icon: UIImage?
+        let message: LocalizableResource<String>
+
+        switch type {
+        case .paritySigner:
+            icon = R.image.iconParitySignerInSheet()
+            message = LocalizableResource { locale in
+                R.string.localizable.commonParitySignerNotSupportedMessage(preferredLanguages: locale.rLanguages)
+            }
+        case .ledger:
+            icon = R.image.iconLedgerInSheet()
+            message = LocalizableResource { locale in
+                R.string.localizable.commonLedgerNotSupportedMessage(preferredLanguages: locale.rLanguages)
+            }
         }
 
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
             title: title,
             message: message,
-            graphics: R.image.iconParitySignerInSheet(),
+            graphics: icon,
             content: nil,
             mainAction: .okBackAction(for: completionCallback),
             secondaryAction: nil
