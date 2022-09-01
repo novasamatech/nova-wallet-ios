@@ -892,3 +892,5 @@
 "currency.category.popularFiat" = "Популярные фиатные валюты";
 "currency.category.cryptocurrencies" = "Криптовалюты";
 "profile.currency.title" = "Валюта";
+"assets.select.send.your.wallets" = "Ваши кошельки";
+"common.wallet.not.support.chain" = "%@ не поддерживает %@";
