@@ -893,3 +893,4 @@
 "currency.category.cryptocurrencies" = "Cryptocurrencies";
 "profile.currency.title" = "Currency";
 "assets.select.send.your.wallets" = "Your wallets";
+"common.wallet.not.support.chain" = "%@ doesn't support %@";
