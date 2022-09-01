@@ -70,7 +70,7 @@ final class YourWalletsPresenter {
             return nil
         case .paritySigner:
             return .init(
-                title: R.string.localizable.commonParitySigner(preferredLanguages: selectedLocale.rLanguages),
+                title: R.string.localizable.commonParitySigner(preferredLanguages: selectedLocale.rLanguages).uppercased(),
                 icon: R.image.iconParitySigner()
             )
         }
