@@ -8,8 +8,9 @@ protocol MessageSheetPresentable: AnyObject {
 
     func presentNoSigningView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void)
 
-    func presentParitySignerNotSupportedView(
+    func presentSignerNotSupportedView(
         from presentationView: ControllerBackedProtocol,
+        type: NoSigningSupportType,
         completion: @escaping () -> Void
     )
 }
@@ -99,33 +100,14 @@ extension MessageSheetPresentable {
         transitToMessageSheet(confirmationView, on: presentationView)
     }
 
-    func presentDismissingParitySignerNotSupportedView(from presentationView: ControllerBackedProtocol?) {
-        guard let presentationView = presentationView else {
-            return
-        }
-
-        presentParitySignerNotSupportedView(from: presentationView) {
-            let presenter = presentationView.controller.presentingViewController
-            presenter?.dismiss(animated: true, completion: nil)
-        }
-    }
-
-    func presentPopingParitySignerNotSupportedView(from presentationView: ControllerBackedProtocol?) {
-        guard let presentationView = presentationView else {
-            return
-        }
-
-        presentParitySignerNotSupportedView(from: presentationView) {
-            presentationView.controller.navigationController?.popToRootViewController(animated: true)
-        }
-    }
-
-    func presentParitySignerNotSupportedView(
+    func presentSignerNotSupportedView(
         from presentationView: ControllerBackedProtocol,
+        type: NoSigningSupportType,
         completion: @escaping () -> Void
     ) {
-        guard let confirmationView = MessageSheetViewFactory.createParitySignerNotSupportedView(
-            with: completion
+        guard let confirmationView = MessageSheetViewFactory.createSignerNotSupportedView(
+            type: type,
+            completionCallback: completion
         ) else {
             return
         }

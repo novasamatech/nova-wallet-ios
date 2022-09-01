@@ -910,7 +910,7 @@
 "ledger.accounts.title" = "Add accounts to your wallet";
 "ledger.accounts.subtitle" = "Make sure Network app is installed to your Ledger device using Ledger Live app. Open the network app on your Ledger device.";
 "ledger.accounts.button.add" = "Add at least one account";
-"ledger.account.confirm.title" = "Select an account to pair in Nova Wallet";
+"ledger.account.confirm.title" = "Select an account to add to wallet";
 "common.load.more.accounts" = "Load more accounts";
 "ledger.address.verify.message" = "Press both buttons on your %@ to approve address";
 "common.ledger" = "Ledger";
@@ -940,3 +940,6 @@
 "ledger.review.approve" = "Review and Approve";
 "common.wallet.not.support.chain" = "%@ doesn't support %@";
 "common.chain.crowdloan.account.missing.message" = "You should add %@ account to the wallet in order to contribute";
+"common.ledger.not.supported.message" = "Ledger does not support signing arbitrary messages — only transactions";
+"ledger.not.support.token.title" = "Ledger does not support this token";
+"ledger.not.support.token.message" = "Do not transfer %@ to the Ledger-controlled account since Ledger does not support sending of %@, so assets will be stuck on this account";

@@ -301,4 +301,40 @@ enum LedgerMessageSheetViewFactory {
             retryClosure: retryClosure
         )
     }
+
+    static func createLedgerNotSupportTokenView(
+        for tokenName: String,
+        cancelClosure: MessageSheetCallback?
+    ) -> MessageSheetViewProtocol? {
+        let image = R.image.iconLedgerInSheet()
+
+        let mainAction: MessageSheetAction = .okBackAction { cancelClosure?() }
+
+        let title = LocalizableResource { locale in
+            R.string.localizable.ledgerNotSupportTokenTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let message = LocalizableResource { locale in
+            R.string.localizable.ledgerNotSupportTokenMessage(
+                tokenName,
+                tokenName,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
+            title: title,
+            message: message,
+            graphics: image,
+            content: nil,
+            mainAction: mainAction,
+            secondaryAction: nil
+        )
+
+        let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: false)
+
+        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 335.0)
+
+        return view
+    }
 }
