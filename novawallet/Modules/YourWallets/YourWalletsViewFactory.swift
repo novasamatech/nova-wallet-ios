@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import SoraFoundation
+import UIKit
 
 struct YourWalletsViewFactory {
     static func createView(
@@ -22,9 +23,12 @@ struct YourWalletsViewFactory {
         )
         presenter.view = view
 
+        let maxHeight = UIScreen.main.bounds.height * 0.8
+        let preferredContentSize = min(presenter.contentHeight + 20, maxHeight)
+
         view.preferredContentSize = .init(
             width: 0,
-            height: presenter.contentHeight + 20
+            height: preferredContentSize
         )
 
         return view
