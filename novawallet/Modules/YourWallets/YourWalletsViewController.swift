@@ -82,6 +82,7 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
                 for: indexPath
             )
             header?.bind(viewModel: .init(title: headerModel.title, icon: headerModel.icon))
+            header?.contentInsets = .init(top: 16, left: 0, bottom: 8, right: 0)
             return header
         }
 

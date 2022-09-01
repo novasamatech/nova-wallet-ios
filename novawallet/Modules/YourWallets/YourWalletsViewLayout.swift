@@ -70,9 +70,9 @@ extension YourWalletsViewLayout {
         static let estimatedRowHeight: CGFloat = 56
         static let estimatedSectionHeaderHeight: CGFloat = 46
         static let sectionContentInsets = NSDirectionalEdgeInsets(
-            top: 4,
+            top: 0,
             leading: 16,
-            bottom: 16,
+            bottom: 0,
             trailing: 16
         )
         static let interGroupSpacing: CGFloat = 0
