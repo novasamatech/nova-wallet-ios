@@ -940,3 +940,4 @@
 "ledger.review.approve" = "Проверьте и Подтвердите";
 "common.wallet.not.support.chain" = "%@ не поддерживает %@";
 "common.chain.crowdloan.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелек для того, чтобы внести вклад";
+"common.ledger.not.supported.message" = "Ledger не поддерживает подписание произвольных сообщений — только транзакции";
