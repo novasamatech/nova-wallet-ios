@@ -13,12 +13,14 @@ extension MetaAccountModelType {
         }
     }
 
-    var supportsSigningRawBytes: Bool {
+    var notSupportedRawBytesSigner: NoSigningSupportType? {
         switch self {
         case .secrets, .watchOnly:
-            return true
-        case .paritySigner, .ledger:
-            return false
+            return nil
+        case .paritySigner:
+            return .paritySigner
+        case .ledger:
+            return .ledger
         }
     }
 }
