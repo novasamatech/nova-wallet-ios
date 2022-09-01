@@ -32,34 +32,17 @@ final class CurrencyViewLayout: UIView {
     }()
 
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .fractionalHeight(1)
+        let settings = NSCollectionLayoutSection.Settings(
+            estimatedRowHeight: Constants.estimatedRowHeight,
+            estimatedHeaderHeight: Constants.estimatedHeaderHeight,
+            sectionContentInsets: Constants.sectionContentInsets,
+            sectionInterGroupSpacing: Constants.interGroupSpacing,
+            header: .init(pinToVisibleBounds: false)
         )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(Constants.estimatedRowHeight)
+        return UICollectionViewCompositionalLayout(section:
+            .createSectionLayoutWithFullWidthRow(settings: settings)
         )
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(Constants.estimatedHeaderHeight)
-        )
-        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .topLeading
-        )
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = Constants.sectionContentInsets
-        section.interGroupSpacing = Constants.interGroupSpacing
-        section.boundarySupplementaryItems = [sectionHeader]
-
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        return layout
     }
 }
 
@@ -79,7 +62,7 @@ extension CurrencyViewLayout {
         static let collectionViewContentInset = UIEdgeInsets(
             top: 8,
             left: 0,
-            bottom: 16.0,
+            bottom: 16,
             right: 0
         )
     }
