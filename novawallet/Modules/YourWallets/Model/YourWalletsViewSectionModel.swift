@@ -15,12 +15,14 @@ enum YourWalletsCellViewModel: Hashable {
     case warning(WarningModel)
 
     struct WarningModel {
+        let metaId: String
         let accountName: String?
         let warning: String
         let imageViewModel: DrawableIconViewModel?
     }
 
     struct CommonModel {
+        let metaId: String
         let displayAddress: DisplayAddress
         let imageViewModel: DrawableIconViewModel?
         let chainIcon: DrawableIconViewModel?
@@ -32,6 +34,7 @@ enum YourWalletsCellViewModel: Hashable {
 
 extension YourWalletsCellViewModel.WarningModel: Hashable {
     func hash(into hasher: inout Hasher) {
+        hasher.combine(metaId)
         hasher.combine(accountName ?? "")
         hasher.combine(warning)
     }
@@ -40,12 +43,15 @@ extension YourWalletsCellViewModel.WarningModel: Hashable {
         lhs: YourWalletsCellViewModel.WarningModel,
         rhs: YourWalletsCellViewModel.WarningModel
     ) -> Bool {
-        rhs.accountName == lhs.accountName && rhs.warning == lhs.warning
+        rhs.metaId == lhs.metaId &&
+            rhs.accountName == lhs.accountName &&
+            rhs.warning == lhs.warning
     }
 }
 
 extension YourWalletsCellViewModel.CommonModel: Hashable {
     func hash(into hasher: inout Hasher) {
+        hasher.combine(metaId)
         hasher.combine(displayAddress.address)
         hasher.combine(displayAddress.username)
         hasher.combine(isSelected)
@@ -55,7 +61,8 @@ extension YourWalletsCellViewModel.CommonModel: Hashable {
         lhs: YourWalletsCellViewModel.CommonModel,
         rhs: YourWalletsCellViewModel.CommonModel
     ) -> Bool {
-        lhs.displayAddress.address == rhs.displayAddress.address &&
+        lhs.metaId == rhs.metaId &&
+            lhs.displayAddress.address == rhs.displayAddress.address &&
             lhs.displayAddress.username == rhs.displayAddress.username &&
             lhs.isSelected == rhs.isSelected
     }

@@ -80,10 +80,11 @@ final class YourWalletsPresenter {
             generator: accountIconGenerator,
             from: response.metaAccount.substrateAccountId
         )
+        let metaId = response.metaAccount.metaId
         guard let chainAccountResponse = response.chainAccountResponse,
               let displayAddress = try? chainAccountResponse.chainAccount.toDisplayAddress() else {
             let message = R.string.localizable.accountNotFoundCaption(preferredLanguages: selectedLocale.rLanguages)
-            return .warning(.init(accountName: name, warning: message, imageViewModel: imageViewModel))
+            return .warning(.init(metaId: metaId, accountName: name, warning: message, imageViewModel: imageViewModel))
         }
 
         let chainAccountIcon = icon(
@@ -91,6 +92,7 @@ final class YourWalletsPresenter {
             from: chainAccountResponse.chainAccount.accountId
         )
         return .common(.init(
+            metaId: metaId,
             displayAddress: displayAddress,
             imageViewModel: imageViewModel,
             chainIcon: chainAccountIcon,
