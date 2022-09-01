@@ -1,22 +1,29 @@
 import Foundation
+import RobinHood
 
-final class TransferSetupInteractor {
+final class TransferSetupInteractor: AccountFetching {
     weak var presenter: TransferSetupInteractorOutputProtocol?
 
     let originChainAssetId: ChainAssetId
     let xcmTransfersSyncService: XcmTransfersSyncServiceProtocol
     let chainsStore: ChainsStoreProtocol
+    let accountRepository: AnyDataProviderRepository<MetaAccountModel>
+    let operationManager: OperationManagerProtocol
 
     private var xcmTransfers: XcmTransfers?
 
     init(
         originChainAssetId: ChainAssetId,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
-        chainsStore: ChainsStoreProtocol
+        chainsStore: ChainsStoreProtocol,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
+        self.accountRepository = accountRepository
+        self.operationManager = operationManager
     }
 
     deinit {
@@ -69,12 +76,40 @@ final class TransferSetupInteractor {
 
         presenter?.didReceiveAvailableXcm(destinations: destinations, xcmTransfers: xcmTransfers)
     }
+
+    private func fetchAccounts(for chain: ChainModel) {
+        fetchAllMetaAccountChainResponses(
+            for: chain.accountRequest(),
+            repository: accountRepository,
+            operationManager: operationManager
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.handleFetchAccountsResult(result)
+            }
+        }
+    }
+
+    private func handleFetchAccountsResult(_ result: Result<[MetaAccountChainResponse], Error>) {
+        switch result {
+        case let .failure(error):
+            presenter?.didReceive(error: error)
+            presenter?.didReceive(metaChainAccountResponses: [])
+        case let .success(accounts):
+            let notWatchOnlyAccounts = accounts.filter { $0.metaAccount.type != .watchOnly }
+            presenter?.didReceive(metaChainAccountResponses: notWatchOnlyAccounts)
+        }
+    }
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup() {
+    func setup(destinationChain: ChainModel) {
         setupChainsStore()
         setupXcmTransfersSyncService()
+        fetchAccounts(for: destinationChain)
+    }
+
+    func destinationChainDidChanged(_ chain: ChainModel) {
+        fetchAccounts(for: chain)
     }
 }
 
