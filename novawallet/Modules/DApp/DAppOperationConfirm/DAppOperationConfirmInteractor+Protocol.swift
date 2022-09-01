@@ -45,6 +45,8 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
                     let interactorError: Error
                     if let noKeysError = error as? NoKeysSigningWrapperError {
                         interactorError = noKeysError
+                    } else if let hardwareSigningError = error as? HardwareSigningError {
+                        interactorError = hardwareSigningError
                     } else if let operationError = error as? DAppOperationConfirmInteractorError {
                         interactorError = operationError
                     } else {
