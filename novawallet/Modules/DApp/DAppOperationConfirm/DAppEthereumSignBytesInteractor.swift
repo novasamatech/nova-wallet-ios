@@ -90,8 +90,8 @@ extension DAppEthereumSignBytesInteractor: DAppOperationConfirmInteractorInputPr
         }
 
         do {
-            guard account.type.supportsSigningRawBytes else {
-                throw NoSigningSupportError.notSupported
+            if let notSupportedSigner = account.type.notSupportedRawBytesSigner {
+                throw NoSigningSupportError.notSupported(type: notSupportedSigner)
             }
 
             let signer = signingWrapperFactory.createEthereumSigner(for: account)

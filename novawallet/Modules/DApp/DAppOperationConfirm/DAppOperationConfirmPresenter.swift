@@ -177,12 +177,12 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
                 wireframe.presentNoSigningView(from: view) { [weak self] in
                     self?.interactor.reject()
                 }
-            } else if error.isNotSupportedByParitySigner {
+            } else if let notSupportedSigner = error.notSupportedSignerType {
                 guard let view = view else {
                     return
                 }
 
-                wireframe.presentParitySignerNotSupportedView(from: view) { [weak self] in
+                wireframe.presentSignerNotSupportedView(from: view, type: notSupportedSigner) { [weak self] in
                     self?.interactor.reject()
                 }
             } else if !wireframe.present(error: error, from: view, locale: selectedLocale) {
