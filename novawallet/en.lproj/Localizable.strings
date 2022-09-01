@@ -910,7 +910,7 @@
 "ledger.accounts.title" = "Add accounts to your wallet";
 "ledger.accounts.subtitle" = "Make sure Network app is installed to your Ledger device using Ledger Live app. Open the network app on your Ledger device.";
 "ledger.accounts.button.add" = "Add at least one account";
-"ledger.account.confirm.title" = "Select an account to pair in Nova Wallet";
+"ledger.account.confirm.title" = "Select an account to add to wallet";
 "common.load.more.accounts" = "Load more accounts";
 "ledger.address.verify.message" = "Press both buttons on your %@ to approve address";
 "common.ledger" = "Ledger";
