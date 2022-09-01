@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 import SoraUI
 
-final class RoundedIconTitleHeaderView: UITableViewHeaderFooterView {
+final class RoundedIconTitleCollectionHeaderView: UICollectionReusableView {
     private let view = RoundedIconTitleView()
 
     var contentInsets: UIEdgeInsets {
@@ -22,23 +22,36 @@ final class RoundedIconTitleHeaderView: UITableViewHeaderFooterView {
         view.roundedBackgroundView
     }
 
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         backgroundColor = .clear
 
-        contentView.addSubview(view)
+        addSubview(view)
         view.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        .init(width: UIView.noIntrinsicMetric, height: 22)
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    func bind(title: String, icon: UIImage?) {
-        view.bind(title: title, icon: icon)
+// MARK: - Model
+
+extension RoundedIconTitleCollectionHeaderView {
+    struct Model {
+        let title: String
+        let icon: UIImage?
+    }
+
+    func bind(viewModel: Model) {
+        view.bind(title: viewModel.title, icon: viewModel.icon)
     }
 }
