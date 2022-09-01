@@ -177,6 +177,8 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
                 wireframe.presentNoSigningView(from: view) { [weak self] in
                     self?.interactor.reject()
                 }
+            } else if error.isHardwareWalletSigningCancelled {
+                return
             } else if error.isNotSupportedByParitySigner {
                 guard let view = view else {
                     return

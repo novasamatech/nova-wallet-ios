@@ -216,6 +216,8 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         case let .failure(error):
             if error.isWatchOnlySigning {
                 wireframe.presentDismissingNoSigningView(from: view)
+            } else if error.isHardwareWalletSigningCancelled {
+                return
             } else {
                 wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
             }
