@@ -5,6 +5,7 @@ on:
     types: [labeled]
   pull_request:
     branches: [ develop ]
+    
 
 jobs:
   build:
