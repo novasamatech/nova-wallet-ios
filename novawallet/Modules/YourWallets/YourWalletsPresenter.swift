@@ -9,6 +9,8 @@ final class YourWalletsPresenter {
     let metaAccounts: [MetaAccountChainResponse]
     let accountIconGenerator: IconGenerating
     let chainIconGenerator: IconGenerating
+    let sectionTypes: [MetaAccountModelType] = [.secrets, .paritySigner, .watchOnly]
+
     private(set) var selectedAddress: AccountAddress?
     private(set) var sections: [YourWalletsViewSectionModel] = []
 
@@ -29,18 +31,18 @@ final class YourWalletsPresenter {
     }
 
     private func updateView() {
-        var createdSections: [MetaAccountModelType: Int] = [:]
+        let metaAccountsGroups = Dictionary(grouping: metaAccounts) {
+            $0.metaAccount.type
+        }
 
-        for metaAccount in metaAccounts {
-            if let existsSectionIndex = createdSections[metaAccount.metaAccount.type] {
-                sections[existsSectionIndex].cells.append(cell(response: metaAccount))
-            } else {
-                sections.append(.init(
-                    header: header(response: metaAccount),
-                    cells: [cell(response: metaAccount)]
-                ))
-                createdSections[metaAccount.metaAccount.type] = createdSections.count
+        sections = sectionTypes.compactMap {
+            guard let accounts = metaAccountsGroups[$0] else {
+                return nil
             }
+            return .init(
+                header: header(metaAccountType: $0),
+                cells: accounts.map(cell)
+            )
         }
 
         let title = R.string.localizable.assetsSelectSendYourWallets(preferredLanguages: selectedLocale.rLanguages)
@@ -58,10 +60,6 @@ final class YourWalletsPresenter {
         }
 
         view?.update(viewModel: sections)
-    }
-
-    private func header(response: MetaAccountChainResponse) -> YourWalletsViewSectionModel.HeaderViewModel? {
-        header(metaAccountType: response.metaAccount.type)
     }
 
     private func header(metaAccountType: MetaAccountModelType) -> YourWalletsViewSectionModel.HeaderViewModel? {
@@ -82,10 +80,11 @@ final class YourWalletsPresenter {
             generator: accountIconGenerator,
             from: response.metaAccount.substrateAccountId
         )
+        let metaId = response.metaAccount.metaId
         guard let chainAccountResponse = response.chainAccountResponse,
               let displayAddress = try? chainAccountResponse.chainAccount.toDisplayAddress() else {
             let message = R.string.localizable.accountNotFoundCaption(preferredLanguages: selectedLocale.rLanguages)
-            return .warning(.init(accountName: name, warning: message, imageViewModel: imageViewModel))
+            return .warning(.init(metaId: metaId, accountName: name, warning: message, imageViewModel: imageViewModel))
         }
 
         let chainAccountIcon = icon(
@@ -93,6 +92,7 @@ final class YourWalletsPresenter {
             from: chainAccountResponse.chainAccount.accountId
         )
         return .common(.init(
+            metaId: metaId,
             displayAddress: displayAddress,
             imageViewModel: imageViewModel,
             chainIcon: chainAccountIcon,
