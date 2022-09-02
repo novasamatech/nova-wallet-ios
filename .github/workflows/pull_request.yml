@@ -3,8 +3,8 @@ name: Build and Test on PR
 on:
   pull_request_target:
     types: [labeled]
-  # pull_request:
-  #   branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
 
 jobs:
   build:
