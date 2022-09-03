@@ -1,6 +1,7 @@
 import XCTest
 @testable import novawallet
 import BigInt
+import SubstrateSdk
 
 class AutocompounDelegateStakeTests: XCTestCase {
     func testFetchExtrinsicParams() {
@@ -25,6 +26,50 @@ class AutocompounDelegateStakeTests: XCTestCase {
         let wrapper = ParaStkYieldBoostOperationFactory().createAutocompoundParamsOperation(
             for: connection,
             request: request
+        )
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        // then
+
+        do {
+            let response = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            Logger.shared.info("Response: \(response)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testFetchStakingTasks() throws {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = "0f62b701fb12d02237a33b84818c11f621653d2b1614c777973babf4652b535d"
+        let accountId = try "6Agvz83pASAvHw4NFUCUhDvs4ZuFd1rMcDjayzUx1Hqg3hU3".toAccountId()
+
+        // when
+
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            XCTFail("Can't find connection")
+            return
+        }
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
+            XCTFail("Can't find runtime provider")
+            return
+        }
+
+        let remoteRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        let wrapper = AutomationTimeOperationFactory(requestFactory: remoteRequestFactory).createTasksFetchOperation(
+            for: connection,
+            runtimeProvider: runtimeProvider,
+            account: accountId
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
