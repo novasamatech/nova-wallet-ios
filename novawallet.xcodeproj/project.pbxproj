@@ -1548,6 +1548,8 @@
 		84BFE89E28C23A4C00140F1F /* AutomationTimeTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE89D28C23A4C00140F1F /* AutomationTimeTask.swift */; };
 		84BFE8A028C23D7A00140F1F /* AutomationTimeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE89F28C23D7A00140F1F /* AutomationTimeOperationFactory.swift */; };
 		84BFE8A228C2420A00140F1F /* AutocompounDelegateStakeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE8A128C2420A00140F1F /* AutocompounDelegateStakeTests.swift */; };
+		84BFE8AA28C3881800140F1F /* StorageCodingPath+AutomationTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE8A928C3881800140F1F /* StorageCodingPath+AutomationTime.swift */; };
+		84BFE8AC28C38C6B00140F1F /* RemoteStorageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE8AB28C38C6B00140F1F /* RemoteStorageRequest.swift */; };
 		84BFFA0C288FFFA100069846 /* WalletsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFFA0B288FFFA100069846 /* WalletsListViewModel.swift */; };
 		84BFFA0E2890014600069846 /* WalletsListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFFA0D2890014600069846 /* WalletsListViewModelFactory.swift */; };
 		84C07EDC24AF1924008FC35B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84C07EDA24AF1924008FC35B /* InfoPlist.strings */; };
@@ -4113,6 +4115,8 @@
 		84BFE89D28C23A4C00140F1F /* AutomationTimeTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationTimeTask.swift; sourceTree = "<group>"; };
 		84BFE89F28C23D7A00140F1F /* AutomationTimeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationTimeOperationFactory.swift; sourceTree = "<group>"; };
 		84BFE8A128C2420A00140F1F /* AutocompounDelegateStakeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutocompounDelegateStakeTests.swift; sourceTree = "<group>"; };
+		84BFE8A928C3881800140F1F /* StorageCodingPath+AutomationTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageCodingPath+AutomationTime.swift"; sourceTree = "<group>"; };
+		84BFE8AB28C38C6B00140F1F /* RemoteStorageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteStorageRequest.swift; sourceTree = "<group>"; };
 		84BFFA0B288FFFA100069846 /* WalletsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsListViewModel.swift; sourceTree = "<group>"; };
 		84BFFA0D2890014600069846 /* WalletsListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletsListViewModelFactory.swift; sourceTree = "<group>"; };
 		84C07EDD24AF1935008FC35B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -7375,9 +7379,11 @@
 		846CD24B2656FE9D00A2E4B6 /* StorageQueryService */ = {
 			isa = PBXGroup;
 			children = (
+				84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */,
 				846CD24C2656FEB800A2E4B6 /* StorageKeysQueryService.swift */,
 				846CD25A265709A800A2E4B6 /* StorageKeySuffixMapper.swift */,
 				8499FE7A27BE58A000712589 /* IdentityMapper.swift */,
+				84BFE8AB28C38C6B00140F1F /* RemoteStorageRequest.swift */,
 			);
 			path = StorageQueryService;
 			sourceTree = "<group>";
@@ -8245,7 +8251,6 @@
 				843910C8253F591D00E3C217 /* ScaleDecoderOperation.swift */,
 				848FFE8225E686C200652AA5 /* StorageDecodingOperation.swift */,
 				848FFE8F25E6CF4300652AA5 /* StorageKeyEncodingOperation.swift */,
-				84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */,
 				840D8917262429C900AB231B /* LocalStorageRequestFactory.swift */,
 				840D891C26242AE500AB231B /* StorageRequest.swift */,
 				84E6D57B262E2CE8000EA3F5 /* OperationCombiningService.swift */,
@@ -9746,6 +9751,7 @@
 			children = (
 				84BFE89B28C23A2500140F1F /* AutomationTime.swift */,
 				84BFE89D28C23A4C00140F1F /* AutomationTimeTask.swift */,
+				84BFE8A928C3881800140F1F /* StorageCodingPath+AutomationTime.swift */,
 			);
 			path = AutomationTime;
 			sourceTree = "<group>";
@@ -14130,6 +14136,7 @@
 				8436E94626C85405003D4EA7 /* RuntimeSnapshot.swift in Sources */,
 				846F758527B54F8300536547 /* EthereumTransaction.swift in Sources */,
 				84216FDC2827E0E100479375 /* BaseParaStakingRewardCalculatoService+Fetch.swift in Sources */,
+				84BFE8AC28C38C6B00140F1F /* RemoteStorageRequest.swift in Sources */,
 				847C965425536199002D288F /* ExportRestoreJsonProtocols.swift in Sources */,
 				844CB56826F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift in Sources */,
 				8409C26A2522192B0049B5C8 /* WalletFearlessDefinition.swift in Sources */,
@@ -14829,6 +14836,7 @@
 				1633E4E12AF8B5C16F141944 /* DAppAuthSettingsInteractor.swift in Sources */,
 				48D5EFA462A597368024E9ED /* DAppAuthSettingsViewController.swift in Sources */,
 				8857E02F28A4FA6000260BA2 /* Currency+usd.swift in Sources */,
+				84BFE8AA28C3881800140F1F /* StorageCodingPath+AutomationTime.swift in Sources */,
 				2B682D343F75EBEB8A1E65BD /* DAppAuthSettingsViewLayout.swift in Sources */,
 				148748ACAE23B7D15144015B /* DAppAuthSettingsViewFactory.swift in Sources */,
 				B1F86CA723BB4D69C5EF989D /* ParaStkStakeSetupProtocols.swift in Sources */,
