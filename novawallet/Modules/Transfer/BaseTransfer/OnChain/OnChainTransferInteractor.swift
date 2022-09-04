@@ -227,9 +227,67 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         }
     }
 
+    func addingOrmlTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recepient: AccountId,
+        currencyId: JSON,
+        module: String
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        switch amount {
+        case let .concrete(value):
+            let call = callFactory.ormlTransfer(
+                in: module,
+                currencyId: currencyId,
+                receiverId: recepient,
+                amount: value
+            )
+
+            let newBuilder = try builder.adding(call: call)
+            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        case .all:
+            let call = callFactory.ormlTransferAll(in: module, currencyId: currencyId, receiverId: recepient)
+            let newBuilder = try builder.adding(call: call)
+            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        }
+    }
+
+    func addingNativeTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recepient: AccountId
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        switch amount {
+        case let .concrete(value):
+            let call = callFactory.nativeTransfer(to: recepient, amount: value)
+            let newBuilder = try builder.adding(call: call)
+            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        case .all:
+            let call = callFactory.nativeTransferAll(to: recepient)
+            let newBuilder = try builder.adding(call: call)
+            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        }
+    }
+
+    func addingAssetsTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recepient: AccountId,
+        extras: StatemineAssetExtras
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.assetsTransfer(
+            to: recepient,
+            assetId: extras.assetId,
+            amount: amount.value
+        )
+
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+    }
+
     func addingTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
-        amount: BigUInt,
+        amount: OnChainTransferAmount<BigUInt>,
         recepient: AccountId
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         guard let sendingAssetInfo = sendingAssetInfo else {
@@ -238,28 +296,22 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
         switch sendingAssetInfo {
         case let .orml(currencyId, _, module, _):
-            let call = callFactory.ormlTransfer(
-                in: module,
+            return try addingOrmlTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
                 currencyId: currencyId,
-                receiverId: recepient,
-                amount: amount
+                module: module
             )
-
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         case let .statemine(extras):
-            let call = callFactory.assetsTransfer(
-                to: recepient,
-                assetId: extras.assetId,
-                amount: amount
+            return try addingAssetsTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                extras: extras
             )
-
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         case .native:
-            let call = callFactory.nativeTransfer(to: recepient, amount: amount)
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+            return try addingNativeTransferCommand(to: builder, amount: amount, recepient: recepient)
         }
     }
 
@@ -393,10 +445,10 @@ extension OnChainTransferInteractor {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateFee(for amount: BigUInt, recepient: AccountId?) {
+    func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?) {
         let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
 
-        let identifier = String(amount) + "-" + recepientAccountId.toHex()
+        let identifier = String(amount.value) + "-" + recepientAccountId.toHex() + "-" + amount.name
 
         feeProxy.estimateFee(
             using: extrinsicService,

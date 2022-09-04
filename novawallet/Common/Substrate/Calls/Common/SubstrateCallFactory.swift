@@ -9,6 +9,8 @@ protocol SubstrateCallFactoryProtocol {
         amount: BigUInt
     ) -> RuntimeCall<TransferCall>
 
+    func nativeTransferAll(to receiver: AccountId) -> RuntimeCall<TransferAllCall>
+
     func assetsTransfer(
         to receiver: AccountId,
         assetId: String,
@@ -21,6 +23,12 @@ protocol SubstrateCallFactoryProtocol {
         receiverId: AccountId,
         amount: BigUInt
     ) -> RuntimeCall<OrmlTokenTransfer>
+
+    func ormlTransferAll(
+        in moduleName: String,
+        currencyId: JSON,
+        receiverId: AccountId
+    ) -> RuntimeCall<OrmlTokenTransferAll>
 
     func bond(
         amount: BigUInt,
@@ -135,6 +143,11 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
     }
 
+    func nativeTransferAll(to receiver: AccountId) -> RuntimeCall<TransferAllCall> {
+        let args = TransferAllCall(dest: .accoundId(receiver), keepAlive: false)
+        return RuntimeCall(moduleName: "Balances", callName: "transfer_all", args: args)
+    }
+
     func ormlTransfer(
         in moduleName: String,
         currencyId: JSON,
@@ -148,6 +161,20 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         )
 
         return RuntimeCall(moduleName: moduleName, callName: "transfer", args: args)
+    }
+
+    func ormlTransferAll(
+        in moduleName: String,
+        currencyId: JSON,
+        receiverId: AccountId
+    ) -> RuntimeCall<OrmlTokenTransferAll> {
+        let args = OrmlTokenTransferAll(
+            dest: .accoundId(receiverId),
+            currencyId: currencyId,
+            keepAlive: false
+        )
+
+        return RuntimeCall(moduleName: moduleName, callName: "transfer_all", args: args)
     }
 
     func setPayee(for destination: RewardDestinationArg) -> RuntimeCall<SetPayeeCall> {
