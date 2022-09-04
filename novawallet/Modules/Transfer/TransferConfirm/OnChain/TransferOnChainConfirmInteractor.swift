@@ -68,7 +68,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
 }
 
 extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress, lastFee: BigUInt?) {
+    func submit(amount: OnChainTransferAmount<BigUInt>, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
             let accountId = try recepient.toAccountId(using: chain.chainFormat)
 
@@ -105,7 +105,7 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInpu
                             let details = PersistTransferDetails(
                                 sender: sender,
                                 receiver: recepient,
-                                amount: amount,
+                                amount: amount.value,
                                 txHash: txHashData,
                                 callPath: callCodingPath,
                                 fee: lastFee
