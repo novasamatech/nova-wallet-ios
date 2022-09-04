@@ -199,10 +199,18 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
         let assetInfo = chainAsset.assetDisplayInfo
 
-        guard let amount = inputAmount.toSubstrateAmount(
+        guard let amountValue = inputAmount.toSubstrateAmount(
             precision: assetInfo.assetPrecision
         ) else {
             return
+        }
+
+        let amount: OnChainTransferAmount<BigUInt>
+
+        if let inputResult = inputResult, inputResult.isMax {
+            amount = .all(value: amountValue)
+        } else {
+            amount = .concrete(value: amountValue)
         }
 
         updateFee(nil)
@@ -339,13 +347,21 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard
-                let amount = sendingAmount,
+                let amountValue = sendingAmount,
                 let recepient = self?.partialRecepientAddress,
                 let chainAsset = self?.chainAsset else {
                 return
             }
 
             self?.logger?.debug("Did complete validation")
+
+            let amount: OnChainTransferAmount<Decimal>
+
+            if let inputResult = self?.inputResult, inputResult.isMax {
+                amount = .all(value: amountValue)
+            } else {
+                amount = .concrete(value: amountValue)
+            }
 
             self?.wireframe.showConfirmation(
                 from: self?.view,

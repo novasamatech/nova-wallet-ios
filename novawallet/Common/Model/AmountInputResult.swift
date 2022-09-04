@@ -12,4 +12,13 @@ enum AmountInputResult {
             return value
         }
     }
+
+    var isMax: Bool {
+        switch self {
+        case let .rate(value):
+            return value == 1
+        case .absolute:
+            return false
+        }
+    }
 }
