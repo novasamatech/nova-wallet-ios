@@ -50,6 +50,7 @@ final class WalletRemoteSubscriptionWrapper {
     ) -> UUID? {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
         let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
+        let locksRepository = repositoryFactory.createAssetLocksRepository()
 
         let balanceUpdater = AssetsBalanceUpdater(
             chainAssetId: chainAssetId,
@@ -65,7 +66,9 @@ final class WalletRemoteSubscriptionWrapper {
         return remoteSubscriptionService.attachToAsset(
             of: accountId,
             assetId: extras.assetId,
+            asset: chainAssetId.assetId,
             chainId: chainAssetId.chainId,
+            locksRepository: locksRepository,
             queue: .main,
             closure: completion,
             assetBalanceUpdater: balanceUpdater,

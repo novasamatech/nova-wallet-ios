@@ -1,0 +1,35 @@
+import BigInt
+import RobinHood
+
+struct AssetLock: Equatable {
+    let chainAssetId: ChainAssetId
+    let accountId: AccountId
+    let type: Data
+    let amount: BigUInt
+
+    var lockType: LockType? {
+        guard let typeString = type.toUTF8String() else {
+            return nil
+        }
+        return LockType(rawValue: typeString)
+    }
+}
+
+extension AssetLock: Identifiable {
+    static func createIdentifier(
+        for chainAssetId: ChainAssetId,
+        accountId: AccountId,
+        type: Data
+    ) -> String {
+        let data = [
+            chainAssetId.stringValue,
+            accountId.toHex(),
+            type.toUTF8String()!
+        ].joined(separator: "-").data(using: .utf8)!
+        return data.sha256().toHex()
+    }
+
+    var identifier: String {
+        Self.createIdentifier(for: chainAssetId, accountId: accountId, type: type)
+    }
+}

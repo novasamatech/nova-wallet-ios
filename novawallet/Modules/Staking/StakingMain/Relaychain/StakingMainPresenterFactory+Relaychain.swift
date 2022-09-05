@@ -85,6 +85,7 @@ extension StakingMainPresenterFactory {
         )
 
         let chainItemRepository = substrateRepositoryFactory.createChainStorageItemRepository()
+        let locksRepository = substrateRepositoryFactory.createAssetLocksRepository()
 
         let stakingRemoteSubscriptionService = StakingRemoteSubscriptionService(
             chainRegistry: ChainRegistryFacade.sharedRegistry,

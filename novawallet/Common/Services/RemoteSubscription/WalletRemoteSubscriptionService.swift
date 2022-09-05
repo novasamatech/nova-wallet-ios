@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
 
 protocol WalletRemoteSubscriptionServiceProtocol {
     // swiftlint:disable:next function_parameter_count
@@ -24,7 +25,9 @@ protocol WalletRemoteSubscriptionServiceProtocol {
     func attachToAsset(
         of accountId: AccountId,
         assetId: String,
+        asset: AssetModel.Id,
         chainId: ChainModel.Id,
+        locksRepository: AnyDataProviderRepository<AssetLock>,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
         assetBalanceUpdater: AssetsBalanceUpdater,
@@ -141,7 +144,9 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     func attachToAsset(
         of accountId: AccountId,
         assetId: String,
+        asset: AssetModel.Id,
         chainId: ChainModel.Id,
+        locksRepository: AnyDataProviderRepository<AssetLock>,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
         assetBalanceUpdater: AssetsBalanceUpdater,
@@ -178,17 +183,35 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 keyParamClosure: { StringScaleMapper(value: assetId) }
             )
 
+            let locksStoragePath = StorageCodingPath.balanceLocks
+            let locksLocalKey = try localKeyFactory.createFromStoragePath(
+                locksStoragePath,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+
+            let locksRequest = MapSubscriptionRequest(
+                storagePath: .balanceLocks,
+                localKey: locksLocalKey,
+                keyParamClosure: { [accountId] }
+            )
+
             let handlingFactory = AssetsSubscriptionHandlingFactory(
                 assetAccountKey: accountLocalKey,
                 assetDetailsKey: detailsLocalKey,
+                assetLocksKey: locksLocalKey,
+                chainAssetId: .init(chainId: chainId, assetId: asset),
+                accountId: accountId,
+                chainRegistry: chainRegistry,
+                repository: locksRepository,
                 assetBalanceUpdater: assetBalanceUpdater,
                 transactionSubscription: transactionSubscription
             )
 
             return attachToSubscription(
-                with: [detailsRequest, accountRequest],
+                with: [detailsRequest, accountRequest, locksRequest],
                 chainId: chainId,
-                cacheKey: accountLocalKey,
+                cacheKey: accountLocalKey + detailsLocalKey + locksLocalKey,
                 queue: queue,
                 closure: closure,
                 subscriptionHandlingFactory: handlingFactory

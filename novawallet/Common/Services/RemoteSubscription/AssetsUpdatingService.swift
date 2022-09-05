@@ -144,6 +144,7 @@ final class AssetsUpdatingService {
 
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
         let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
+        let locksRepository = repositoryFactory.createAssetLocksRepository()
 
         let assetBalanceUpdater = AssetsBalanceUpdater(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
@@ -159,7 +160,9 @@ final class AssetsUpdatingService {
         let maybeSubscriptionId = remoteSubscriptionService.attachToAsset(
             of: accountId,
             assetId: assetExtras.assetId,
+            asset: asset.assetId,
             chainId: chainId,
+            locksRepository: locksRepository,
             queue: nil,
             closure: nil,
             assetBalanceUpdater: assetBalanceUpdater,

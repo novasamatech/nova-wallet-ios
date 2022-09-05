@@ -1,6 +1,48 @@
 import RobinHood
 
-final class OrmLocksSubscribtion: StorageChildSubscribing {
+final class OrmLocksSubscribtion: LocksSubscribtion {
+    init(
+        remoteStorageKey: Data,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId,
+        chainRegistry: ChainRegistryProtocol,
+        repository: AnyDataProviderRepository<AssetLock>,
+        operationManager: OperationManagerProtocol
+    ) {
+        super.init(
+            storageCodingPath: .ormlTokenLocks,
+            remoteStorageKey: remoteStorageKey,
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            repository: repository,
+            operationManager: operationManager
+        )
+    }
+}
+
+final class BalanceLocksSubscribtion: LocksSubscribtion {
+    init(
+        remoteStorageKey: Data,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId,
+        chainRegistry: ChainRegistryProtocol,
+        repository: AnyDataProviderRepository<AssetLock>,
+        operationManager: OperationManagerProtocol
+    ) {
+        super.init(
+            storageCodingPath: .balanceLocks,
+            remoteStorageKey: remoteStorageKey,
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            repository: repository,
+            operationManager: operationManager
+        )
+    }
+}
+
+class LocksSubscribtion: StorageChildSubscribing {
     var remoteStorageKey: Data
 
     let chainAssetId: ChainAssetId
@@ -8,8 +50,10 @@ final class OrmLocksSubscribtion: StorageChildSubscribing {
     let chainRegistry: ChainRegistryProtocol
     let repository: AnyDataProviderRepository<AssetLock>
     let operationManager: OperationManagerProtocol
+    let storageCodingPath: StorageCodingPath
 
     init(
+        storageCodingPath: StorageCodingPath,
         remoteStorageKey: Data,
         chainAssetId: ChainAssetId,
         accountId: AccountId,
@@ -23,6 +67,7 @@ final class OrmLocksSubscribtion: StorageChildSubscribing {
         self.chainRegistry = chainRegistry
         self.repository = repository
         self.operationManager = operationManager
+        self.storageCodingPath = storageCodingPath
     }
 
     func processUpdate(_ data: Data?, blockHash _: Data?) {
@@ -61,7 +106,7 @@ final class OrmLocksSubscribtion: StorageChildSubscribing {
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let decodingOperation = StorageFallbackDecodingOperation<[BalanceLock]>(
-            path: .ormlTokenLocks,
+            path: storageCodingPath,
             data: data
         )
 
@@ -156,40 +201,5 @@ final class OrmLocksSubscribtion: StorageChildSubscribing {
 
         saveOperation.addDependency(operation.targetOperation)
         return saveOperation
-    }
-}
-
-import BigInt
-
-struct AssetLock: Equatable {
-    let chainAssetId: ChainAssetId
-    let accountId: AccountId
-    let type: Data
-    let amount: BigUInt
-
-    var lockType: LockType? {
-        guard let typeString = type.toUTF8String() else {
-            return nil
-        }
-        return LockType(rawValue: typeString)
-    }
-}
-
-extension AssetLock: Identifiable {
-    static func createIdentifier(
-        for chainAssetId: ChainAssetId,
-        accountId: AccountId,
-        type: Data
-    ) -> String {
-        let data = [
-            chainAssetId.stringValue,
-            accountId.toHex(),
-            type.toUTF8String()!
-        ].joined(separator: "-").data(using: .utf8)!
-        return data.sha256().toHex()
-    }
-
-    var identifier: String {
-        Self.createIdentifier(for: chainAssetId, accountId: accountId, type: type)
     }
 }
