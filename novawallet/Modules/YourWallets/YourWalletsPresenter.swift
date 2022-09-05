@@ -9,7 +9,7 @@ final class YourWalletsPresenter {
     let metaAccounts: [MetaAccountChainResponse]
     let accountIconGenerator: IconGenerating
     let chainIconGenerator: IconGenerating
-    let sectionTypes: [MetaAccountModelType] = [.secrets, .paritySigner, .watchOnly]
+    let sectionTypes: [MetaAccountModelType] = [.secrets, .paritySigner, .ledger, .watchOnly]
 
     private(set) var selectedAddress: AccountAddress?
     private(set) var sections: [YourWalletsViewSectionModel] = []
