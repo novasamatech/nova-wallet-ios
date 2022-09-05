@@ -87,7 +87,7 @@ final class YourWalletsPresenter {
         let name = response.metaAccount.name
         let imageViewModel = icon(
             generator: accountIconGenerator,
-            from: response.metaAccount.substrateAccountId
+            from: response.metaAccount.walletIdenticonData()
         )
         let metaId = response.metaAccount.metaId
         guard let chainAccountResponse = response.chainAccountResponse,
