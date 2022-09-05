@@ -93,9 +93,7 @@ extension YourWalletsViewLayout {
 
 extension YourWalletsViewLayout {
     static func contentHeight(sections: Int, items: Int) -> CGFloat {
-        let itemHeight =
-            Constants.estimatedRowHeight +
-            Constants.estimatedSectionHeaderHeight
+        let itemHeight = Constants.estimatedRowHeight
 
         let sectionsHeight = Constants.estimatedSectionHeaderHeight +
             Constants.sectionContentInsets.top +
