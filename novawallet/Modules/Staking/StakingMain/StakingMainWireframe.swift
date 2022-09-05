@@ -25,10 +25,7 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showWalletDetails(
-        from view: ControllerBackedProtocol?,
-        wallet: MetaAccountModel
-    ) {
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel) {
         guard let accountManagementView = AccountManagementViewFactory.createView(for: wallet.identifier) else {
             return
         }

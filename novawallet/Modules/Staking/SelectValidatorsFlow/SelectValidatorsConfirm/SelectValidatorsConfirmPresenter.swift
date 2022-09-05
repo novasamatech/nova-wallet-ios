@@ -98,6 +98,8 @@ final class SelectValidatorsConfirmPresenter {
 
         if error.isWatchOnlySigning {
             wireframe.presentDismissingNoSigningView(from: view)
+        } else if error.isHardwareWalletSigningCancelled {
+            return
         } else if let confirmError = error as? SelectValidatorsConfirmError {
             guard let view = view else {
                 return

@@ -943,3 +943,5 @@
 "common.ledger.not.supported.message" = "Ledger does not support signing arbitrary messages — only transactions";
 "ledger.not.support.token.title" = "Ledger does not support this token";
 "ledger.not.support.token.message" = "Do not transfer %@ to the Ledger-controlled account since Ledger does not support sending of %@, so assets will be stuck on this account";
+"assets.select.send.your.wallets" = "Your wallets";
+"common.wallet.not.support.chain" = "%@ doesn't support %@";

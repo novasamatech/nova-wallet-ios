@@ -49,10 +49,7 @@ protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, Staki
         delegate: AssetSelectionDelegate
     )
 
-    func showWalletDetails(
-        from view: ControllerBackedProtocol?,
-        wallet: MetaAccountModel
-    )
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
 }
 
 protocol StakingMainViewFactoryProtocol: AnyObject {
