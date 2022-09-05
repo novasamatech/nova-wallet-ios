@@ -13,6 +13,7 @@ final class MessageSheetViewLayout<
         label.textColor = R.color.colorWhite()
         label.font = .semiBoldTitle3
         label.textAlignment = .center
+        label.numberOfLines = 0
         return label
     }()
 
