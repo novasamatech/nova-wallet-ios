@@ -347,7 +347,6 @@
 "tabbar.crowdloan.title" = "Crowdloans";
 "crowdloan.list.section.format" = "Select parachains to contribute your %@. You will receive rewards if the parachain acquires a slot by the end of the auction.";
 "crowdloan.you.contributions.title" = "Your contributions";
-"crowdloan.you.contributions.total" = "Total";
 "crowdloan.about.crowdloans" = "About crowdloans";
 "crowdloan.progress.format" = "Raised: %@ of %@";
 "crowdloan.empty.message" = "Information about crowdloans\n will appear here";
@@ -892,6 +891,8 @@
 "currency.category.popularFiat" = "Popular fiat currencies";
 "currency.category.cryptocurrencies" = "Cryptocurrencies";
 "profile.currency.title" = "Currency";
+"assets.select.send.your.wallets" = "Your wallets";
+"common.wallet.not.support.chain" = "%@ doesn't support %@";
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Select hardware wallet";
 "ledger.discover.title" = "Select your Ledger device";
@@ -935,13 +936,12 @@
 "common.signature.invalid" = "Signature is invalid";
 "ledger.transaction.signature.invalid" = "Please, make sure you have selected the right Ledger device for currently approving operation";
 "common.outdated.metadata" = "Metadata is outdated";
-"ledger.transaction.update.metadata" = "Please, update Kusama app using Ledger Live app";
+"ledger.transaction.update.metadata" = "Please, update %@ using Ledger Live app";
 "common.invalid.data" = "Invalid data";
 "ledger.review.approve" = "Review and Approve";
-"common.wallet.not.support.chain" = "%@ doesn't support %@";
 "common.chain.crowdloan.account.missing.message" = "You should add %@ account to the wallet in order to contribute";
 "common.ledger.not.supported.message" = "Ledger does not support signing arbitrary messages — only transactions";
 "ledger.not.support.token.title" = "Ledger does not support this token";
 "ledger.not.support.token.message" = "Do not transfer %@ to the Ledger-controlled account since Ledger does not support sending of %@, so assets will be stuck on this account";
-"assets.select.send.your.wallets" = "Your wallets";
-"common.wallet.not.support.chain" = "%@ doesn't support %@";
+"NSBluetoothAlwaysUsageDescription" = "Bluetooth is used to communicate with Ledger Nano X device";
+"crowdloan.you.contributions.total" = "Total";
