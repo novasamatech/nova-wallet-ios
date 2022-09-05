@@ -10,6 +10,7 @@ extension AutomationTime {
     }
 
     enum Action: Decodable {
+        case unknown
         case notify
         case nativeTransfer
         case xcmp
@@ -30,10 +31,7 @@ extension AutomationTime {
                 let params = try container.decode(ActionAutoCompoundDelegatedStake.self)
                 self = .autoCompoundDelegatedStake(params)
             default:
-                throw DecodingError.dataCorruptedError(
-                    in: container,
-                    debugDescription: "Unexpected type"
-                )
+                self = .unknown
             }
         }
     }
@@ -43,7 +41,7 @@ extension AutomationTime {
 
         var autocompoundStakeCollator: AccountId? {
             switch action {
-            case .notify, .nativeTransfer, .xcmp:
+            case .unknown, .notify, .nativeTransfer, .xcmp:
                 return nil
             case let .autoCompoundDelegatedStake(params):
                 return params.collator
