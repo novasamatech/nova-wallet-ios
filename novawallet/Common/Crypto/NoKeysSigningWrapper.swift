@@ -23,6 +23,17 @@ extension Error {
         }
     }
 
+    var isHardwareWalletSigningCancelled: Bool {
+        guard let hardwareWalletError = self as? HardwareSigningError else {
+            return false
+        }
+
+        switch hardwareWalletError {
+        case .signingCancelled:
+            return true
+        }
+    }
+
     var notSupportedSignerType: NoSigningSupportType? {
         guard let notSupportedError = self as? NoSigningSupportError else {
             return nil

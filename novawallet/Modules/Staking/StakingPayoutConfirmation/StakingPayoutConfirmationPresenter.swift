@@ -66,6 +66,8 @@ final class StakingPayoutConfirmationPresenter {
 
         if error.isWatchOnlySigning {
             wireframe.presentDismissingNoSigningView(from: view)
+        } else if error.isHardwareWalletSigningCancelled {
+            return
         } else if !wireframe.present(error: error, from: view, locale: locale) {
             _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
             logger?.error("Did receive error: \(error)")
