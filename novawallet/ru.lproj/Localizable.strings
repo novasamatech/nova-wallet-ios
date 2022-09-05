@@ -347,7 +347,6 @@
 "tabbar.crowdloan.title" = "Краудлоуны";
 "crowdloan.list.section.format" = "Выберите парачейны для внесения своего вклада %@. Вы получите вознаграждение, если парачейн приобретет слот до конца аукциона.";
 "crowdloan.you.contributions.title" = "Ваш вклад";
-"crowdloan.you.contributions.total" = "Всего";
 "crowdloan.about.crowdloans" = "О краудлоунах";
 "crowdloan.progress.format" = "Собрано: %@ из %@";
 "crowdloan.empty.message" = "Информация о краудлоунах \n появится здесь.";
@@ -892,6 +891,8 @@
 "currency.category.popularFiat" = "Популярные фиатные валюты";
 "currency.category.cryptocurrencies" = "Криптовалюты";
 "profile.currency.title" = "Валюта";
+"assets.select.send.your.wallets" = "Ваши кошельки";
+"common.wallet.not.support.chain" = "%@ не поддерживает %@";
 "common.ledger.nano.x" = "Ledger Nano X";
 "hardware.wallet.options.title" = "Выберите аппаратный кошелёк";
 "ledger.discover.title" = "Выберите устройство Ledger";
@@ -925,7 +926,7 @@
 "ledger.instructions.step3.highlighted" = "доступ к Bluetooth";
 "ledger.instructions.step4" = "Выберите аккаунт для добавления в кошелёк";
 "ledger.instructions.step4.highlighted" = "Выберите аккаунт";
-"welcome.hardware.wallet.subtitle.v3_7" = "Использовать Parity Signer и Ledger";
+"welcome.hardware.wallet.subtitle.v3_7" = "Использовать Parity Signer или Ledger";
 "ledger.sign.transaction.details" = "Нажмите обе кнопки на Вашем %@ для подтверждения транзакции";
 "common.transaction.expired" = "Срок действия транзакции истек";
 "ledger.transaction.expired.details" = "В целях безопасности сгенерированные операции действительны только в течение %@. Пожалуйста, попробуйте еще раз и подтвердите транзакцию с помощью Ledger";
@@ -938,9 +939,9 @@
 "ledger.transaction.update.metadata" = "Пожалуйста, обновите %@ приложение, используя Ledger Live";
 "common.invalid.data" = "Неверные данные";
 "ledger.review.approve" = "Проверьте и Подтвердите";
-"common.chain.crowdloan.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелек для того, чтобы внести вклад";
-"common.ledger.not.supported.message" = "Ledger не поддерживает подписание произвольных сообщений — только транзакции";
+"common.chain.crowdloan.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелёк для того, чтобы внести вклад";
+"common.ledger.not.supported.message" = "Ledger не поддерживает подтверждение произвольных сообщений — только транзакции";
 "ledger.not.support.token.title" = "Ledger не поддерживает этот токен";
-"ledger.not.support.token.message" = "Не переводите %@ на Ledger аккаунт так как Ledger не поддерживает переводы %@, таким образом ассет застрянет на этом аккаунте";
-"assets.select.send.your.wallets" = "Ваши кошельки";
-"common.wallet.not.support.chain" = "%@ не поддерживает %@";
+"ledger.not.support.token.message" = "Не переводите %@ на Ledger аккаунт так как Ledger не поддерживает переводы %@, таким образом ассет будет недоступен для перевода на этом аккаунте";
+"NSBluetoothAlwaysUsageDescription" = "Bluetooth будет использоваться для взаимодействия с устройством Ledger Nano X";
+"crowdloan.you.contributions.total" = "Всего";
