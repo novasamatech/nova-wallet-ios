@@ -126,7 +126,7 @@ enum LedgerMessageSheetViewFactory {
 
         let view = MessageSheetViewFactory.createNoContentView(viewModel: viewModel, allowsSwipeDown: false)
 
-        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 400.0)
+        view?.controller.preferredContentSize = CGSize(width: 0.0, height: 420.0)
 
         return view
     }
