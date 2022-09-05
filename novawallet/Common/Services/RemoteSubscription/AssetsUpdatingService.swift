@@ -185,11 +185,14 @@ final class AssetsUpdatingService {
         }
 
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
+        let locksRepository = repositoryFactory.createAssetLocksRepository()
         let subscriptionHandlingFactory = OrmlAccountSubscriptionHandlingFactory(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
             accountId: accountId,
+            currencyId: currencyId,
             chainRegistry: chainRegistry,
             assetRepository: assetsRepository,
+            locksRepository: locksRepository,
             eventCenter: eventCenter,
             transactionSubscription: transactionSubscription
         )

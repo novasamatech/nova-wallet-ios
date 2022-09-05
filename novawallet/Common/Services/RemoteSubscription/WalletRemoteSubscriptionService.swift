@@ -235,24 +235,39 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
     ) -> UUID? {
         do {
-            let storagePath = StorageCodingPath.ormlTokenAccount
+            let accountRequestLocalKey = try LocalStorageKeyFactory().createFromStoragePath(.ormlTokenAccount, encodableElement: accountId + currencyId, chainId: chainId)
+            let locksRequestLocalKey = try LocalStorageKeyFactory().createFromStoragePath(.ormlTokenLocks, encodableElement: accountId + currencyId, chainId: chainId)
 
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                storagePath,
+                .init(
+                    moduleName: StorageCodingPath.ormlTokenAccount.moduleName,
+                    itemName: [
+                        StorageCodingPath.ormlTokenAccount.itemName,
+                        StorageCodingPath.ormlTokenLocks.itemName
+                    ].joined(separator: "-")
+                ),
                 encodableElement: accountId + currencyId,
                 chainId: chainId
             )
 
-            let request = DoubleMapSubscriptionRequest(
-                storagePath: storagePath,
-                localKey: localKey,
+            let accountRequest = DoubleMapSubscriptionRequest(
+                storagePath: .ormlTokenAccount,
+                localKey: accountRequestLocalKey,
+                keyParamClosure: { (accountId, currencyId) },
+                param1Encoder: nil,
+                param2Encoder: { $0 }
+            )
+
+            let locksRequest = DoubleMapSubscriptionRequest(
+                storagePath: .ormlTokenLocks,
+                localKey: locksRequestLocalKey,
                 keyParamClosure: { (accountId, currencyId) },
                 param1Encoder: nil,
                 param2Encoder: { $0 }
             )
 
             return attachToSubscription(
-                with: [request],
+                with: [accountRequest, locksRequest],
                 chainId: chainId,
                 cacheKey: localKey,
                 queue: queue,
@@ -276,9 +291,14 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let storagePath = StorageCodingPath.ormlTokenAccount
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                storagePath,
+                .init(
+                    moduleName: StorageCodingPath.ormlTokenAccount.moduleName,
+                    itemName: [
+                        StorageCodingPath.ormlTokenAccount.itemName,
+                        StorageCodingPath.ormlTokenLocks.itemName
+                    ].joined(separator: "-")
+                ),
                 encodableElement: accountId + currencyId,
                 chainId: chainId
             )

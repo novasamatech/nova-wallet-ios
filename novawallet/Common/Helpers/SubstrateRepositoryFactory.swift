@@ -6,6 +6,7 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository(filter: NSPredicate) -> AnyDataProviderRepository<ChainStorageItem>
 
     func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance>
+    func createAssetLocksRepository() -> AnyDataProviderRepository<AssetLock>
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
@@ -178,6 +179,13 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(mapper)
         )
+
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createAssetLocksRepository() -> AnyDataProviderRepository<AssetLock> {
+        let mapper = AssetLockMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         return AnyDataProviderRepository(repository)
     }
