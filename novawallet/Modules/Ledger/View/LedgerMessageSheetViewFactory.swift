@@ -249,12 +249,12 @@ enum LedgerMessageSheetViewFactory {
         cancelClosure: @escaping MessageSheetCallback,
         retryClosure: @escaping MessageSheetCallback
     ) -> MessageSheetViewProtocol? {
-        let title = LocalizableResource { _ in
-            R.string.localizable.ledgerAppNotOpenTitle(chainName)
+        let title = LocalizableResource { locale in
+            R.string.localizable.ledgerAppNotOpenTitle(chainName, preferredLanguages: locale.rLanguages)
         }
 
-        let message = LocalizableResource { _ in
-            R.string.localizable.ledgerAppNotOpenMessage(chainName)
+        let message = LocalizableResource { locale in
+            R.string.localizable.ledgerAppNotOpenMessage(chainName, preferredLanguages: locale.rLanguages)
         }
 
         return createLedgerWarningView(
