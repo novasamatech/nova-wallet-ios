@@ -941,3 +941,7 @@
 "common.wallet.not.support.chain" = "%@ не поддерживает %@";
 "common.chain.crowdloan.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелек для того, чтобы внести вклад";
 "common.ledger.not.supported.message" = "Ledger не поддерживает подписание произвольных сообщений — только транзакции";
+"ledger.not.support.token.title" = "Ledger не поддерживает этот токен";
+"ledger.not.support.token.message" = "Не переводите %@ на Ledger аккаунт так как Ledger не поддерживает переводы %@, таким образом ассет застрянет на этом аккаунте";
+"assets.select.send.your.wallets" = "Ваши кошельки";
+"common.wallet.not.support.chain" = "%@ не поддерживает %@";

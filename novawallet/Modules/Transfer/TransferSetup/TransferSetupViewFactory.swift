@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import CommonWallet
+import RobinHood
 
 struct TransferSetupViewFactory {
     static func createView(
@@ -75,11 +76,17 @@ struct TransferSetupViewFactory {
         )
 
         let chainsStore = ChainsStore(chainRegistry: ChainRegistryFacade.sharedRegistry)
-
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let accountRepository = accountRepositoryFactory.createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: [NSSortDescriptor.accountsByOrder]
+        )
         return TransferSetupInteractor(
             originChainAssetId: chainAsset.chainAssetId,
             xcmTransfersSyncService: syncService,
-            chainsStore: chainsStore
+            chainsStore: chainsStore,
+            accountRepository: accountRepository,
+            operationManager: OperationManager()
         )
     }
 }
