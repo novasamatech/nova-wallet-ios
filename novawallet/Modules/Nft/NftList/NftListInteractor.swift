@@ -24,12 +24,14 @@ final class NftListInteractor {
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
+        nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
+        self.currencyManager = currencyManager
     }
 
     private func updateNftsFromModel(changes: [DataProviderChange<NftModel>]) -> [DataProviderChange<NftChainModel>] {
@@ -171,7 +173,7 @@ final class NftListInteractor {
 
         priceIdsToAdd.forEach { priceId in
             let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
-            priceProviders[priceId] = subscribeToPrice(for: priceId, options: options)
+            priceProviders[priceId] = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
         }
     }
 
@@ -263,5 +265,15 @@ extension NftListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHand
         case let .failure(error):
             presenter.didReceive(error: error)
         }
+    }
+}
+
+extension NftListInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil else {
+            return
+        }
+
+        updatePriceProviders()
     }
 }

@@ -18,20 +18,22 @@ final class AnalyticsRewardsInteractor {
         chainAsset: ChainAsset,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccountAddress = selectedAccountAddress
         self.chainAsset = chainAsset
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 }
 
 extension AnalyticsRewardsInteractor: AnalyticsRewardsInteractorInputProtocol {
     func setup() {
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -67,5 +69,16 @@ extension AnalyticsRewardsInteractor: StakingLocalStorageSubscriber, StakingLoca
 extension AnalyticsRewardsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         presenter.didReceivePriceData(result: result)
+    }
+}
+
+extension AnalyticsRewardsInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

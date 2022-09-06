@@ -108,7 +108,7 @@ class StakingUnbondSetupTests: XCTestCase {
         )
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", usdDayChange: nil)
+            priceData: PriceData(price: "0.1", dayChange: nil, currencyId: Currency.usd.id)
         )
 
         let interactor = StakingUnbondSetupInteractor(
@@ -122,10 +122,14 @@ class StakingUnbondSetupTests: XCTestCase {
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: CurrencyManagerStub()
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
 
         let presenter = StakingUnbondSetupPresenter(
             interactor: interactor,

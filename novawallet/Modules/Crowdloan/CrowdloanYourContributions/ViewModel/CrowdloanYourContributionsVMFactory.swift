@@ -6,85 +6,144 @@ import BigInt
 final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFactoryProtocol {
     let chainDateCalculator: ChainDateCalculatorProtocol
     let calendar: Calendar
+    let balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+
     private lazy var iconGenerator = PolkadotIconGenerator()
 
-    init(chainDateCalculator: ChainDateCalculatorProtocol, calendar: Calendar) {
+    init(
+        chainDateCalculator: ChainDateCalculatorProtocol,
+        calendar: Calendar,
+        balanceViewModelFactoryFacade: BalanceViewModelFactoryFacadeProtocol
+    ) {
         self.chainDateCalculator = chainDateCalculator
         self.calendar = calendar
+        self.balanceViewModelFactoryFacade = balanceViewModelFactoryFacade
     }
 
     func createReturnInIntervals(
         input: CrowdloanYourContributionsViewInput,
         externalContributions: [ExternalContribution]?,
         metadata: CrowdloanMetadata
-    ) -> [TimeInterval] {
-        let onChainIntervals: [TimeInterval] = input.crowdloans.compactMap { crowdloan in
-            guard input.contributions[crowdloan.fundInfo.index]?.balance != nil else {
-                return nil
-            }
+    ) -> [ReturnInIntervalsViewModel] {
+        let onChainIntervals: [ReturnInIntervalsViewModel] = input.crowdloans
+            .enumerated()
+            .compactMap { index, crowdloan in
+                guard input.contributions[crowdloan.fundInfo.index]?.balance != nil else {
+                    return nil
+                }
 
-            return chainDateCalculator.intervalTillPeriod(
-                crowdloan.fundInfo.lastPeriod + 1,
-                metadata: metadata,
-                calendar: calendar
-            )?.duration
-        }
+                let interval = chainDateCalculator.intervalTillPeriod(
+                    crowdloan.fundInfo.lastPeriod + 1,
+                    metadata: metadata,
+                    calendar: calendar
+                )?.duration
+
+                return .init(index: index, interval: interval ?? 0)
+            }
 
         let crowdloansDict = input.crowdloans.reduce(into: [ParaId: CrowdloanFunds]()) { result, item in
             result[item.paraId] = item.fundInfo
         }
 
-        let externalIntervals: [TimeInterval] = (externalContributions ?? []).compactMap { contribution in
+        let crowdloansCount = input.crowdloans.count
+        let externalIntervals: [ReturnInIntervalsViewModel] = (externalContributions ?? []).enumerated().compactMap { index, contribution in
             guard let crowdloanInfo = crowdloansDict[contribution.paraId] else {
                 return nil
             }
 
-            return chainDateCalculator.intervalTillPeriod(
+            let interval = chainDateCalculator.intervalTillPeriod(
                 crowdloanInfo.lastPeriod + 1,
                 metadata: metadata,
                 calendar: calendar
             )?.duration
+
+            return .init(index: index + crowdloansCount, interval: interval ?? 0)
         }
 
-        return onChainIntervals + externalIntervals
+        return (onChainIntervals + externalIntervals)
     }
 
     func createViewModel(
         input: CrowdloanYourContributionsViewInput,
         externalContributions: [ExternalContribution]?,
+        amount: Decimal,
         price: PriceData?,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel {
-        let contributions = input.crowdloans.compactMap { crowdloan in
-            crowdloanCotribution(
+        let contributions = input.crowdloans.enumerated().compactMap { index, crowdloan in
+            crowdloanContribution(
                 from: crowdloan,
                 input: input,
                 chainAsset: input.chainAsset,
                 price: price,
+                index: index,
                 locale: locale
             )
         }
 
-        let externalContributions = (externalContributions ?? []).compactMap { externalContribution in
-            crowdloanExternalContribution(
-                externalContribution: externalContribution,
-                input: input,
-                chainAsset: input.chainAsset,
-                price: price,
-                locale: locale
-            )
-        }
+        let crowdloansCount = input.crowdloans.count
+        let externalContributions = (externalContributions ?? [])
+            .enumerated()
+            .compactMap { index, externalContribution in
+                crowdloanExternalContribution(
+                    externalContribution: externalContribution,
+                    input: input,
+                    chainAsset: input.chainAsset,
+                    price: price,
+                    index: index + crowdloansCount,
+                    locale: locale
+                )
+            }
 
-        return CrowdloanYourContributionsViewModel(contributions: contributions + externalContributions)
+        let total = createTotalSection(
+            chainAsset: input.chainAsset,
+            amount: amount,
+            priceData: price,
+            locale: locale
+        )
+
+        let sortedContributions = (contributions + externalContributions)
+            .sorted { $0.lastPeriod < $1.lastPeriod }
+            .map(\.viewModel)
+        let sections: [CrowdloanYourContributionsSection] = [
+            .total(total),
+            .contributions(sortedContributions)
+        ]
+        return CrowdloanYourContributionsViewModel(sections: sections)
     }
 
-    private func crowdloanCotribution(
+    private func createTotalSection(
+        chainAsset: ChainAssetDisplayInfo,
+        amount: Decimal,
+        priceData: PriceData?,
+        locale: Locale
+    ) -> YourContributionsView.Model {
+        let title = R.string.localizable.crowdloanYouContributionsTotal(
+            preferredLanguages: locale.rLanguages
+        )
+        let balance = balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: chainAsset.asset,
+            amount: amount,
+            priceData: priceData
+        ).value(for: locale)
+
+        let model = YourContributionsView.Model(
+            title: title,
+            count: nil,
+            amount: balance.amount,
+            amountDetails: balance.price ?? ""
+        )
+        return model
+    }
+
+    private func crowdloanContribution(
         from model: Crowdloan,
         input: CrowdloanYourContributionsViewInput,
         chainAsset: ChainAssetDisplayInfo,
         price: PriceData?,
+        index: Int,
         locale: Locale
-    ) -> CrowdloanContributionViewModel? {
+    ) -> LimitedCrowdloanContributionViewModel? {
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
         let displayInfo = input.displayInfo?[model.paraId]
 
@@ -102,11 +161,13 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         let iconViewModel = createIconViewModel(model: model, displayInfo: displayInfo, chainAsset: chainAsset)
 
-        return CrowdloanContributionViewModel(
+        let viewModel = CrowdloanContributionViewModel(
+            index: index,
             name: title,
             iconViewModel: iconViewModel,
             contributed: contributedViewModel
         )
+        return .init(viewModel: viewModel, lastPeriod: model.fundInfo.lastPeriod)
     }
 
     private func crowdloanExternalContribution(
@@ -114,8 +175,9 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         input: CrowdloanYourContributionsViewInput,
         chainAsset: ChainAssetDisplayInfo,
         price: PriceData?,
+        index: Int,
         locale: Locale
-    ) -> CrowdloanContributionViewModel? {
+    ) -> LimitedCrowdloanContributionViewModel? {
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
         let contributedInParaId = externalContribution.paraId
         let displayInfo = input.displayInfo?[contributedInParaId]
@@ -140,11 +202,13 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
             preferredLanguages: locale.rLanguages
         )
 
-        return CrowdloanContributionViewModel(
+        let viewModel = CrowdloanContributionViewModel(
+            index: index,
             name: title,
             iconViewModel: iconViewModel,
             contributed: contributedViewModel
         )
+        return .init(viewModel: viewModel, lastPeriod: crowdloan.fundInfo.lastPeriod)
     }
 
     private func createIconViewModel(
@@ -178,9 +242,17 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
     ) -> BalanceViewModelProtocol {
         let decimalAmount = Decimal.fromSubstrateAmount(contributed, precision: chainAsset.asset.assetPrecision) ?? 0
 
-        return BalanceViewModelFactory(targetAssetInfo: chainAsset.asset).balanceFromPrice(
-            decimalAmount,
+        return balanceViewModelFactoryFacade.balanceFromPrice(
+            targetAssetInfo: chainAsset.asset,
+            amount: decimalAmount,
             priceData: price
         ).value(for: locale)
+    }
+}
+
+extension CrowdloanYourContributionsVMFactory {
+    struct LimitedCrowdloanContributionViewModel {
+        let viewModel: CrowdloanContributionViewModel
+        let lastPeriod: UInt32
     }
 }

@@ -24,6 +24,7 @@ class AssetListBaseInteractor {
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -31,6 +32,7 @@ class AssetListBaseInteractor {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     func clearAccountSubscriptions() {
@@ -151,11 +153,14 @@ class AssetListBaseInteractor {
         }
 
         if prevPrices != availableTokenPrice {
-            updatePriceProvider(for: Set(availableTokenPrice.values))
+            updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
         }
     }
 
-    private func updatePriceProvider(for priceIdSet: Set<AssetModel.PriceId>) {
+    private func updatePriceProvider(
+        for priceIdSet: Set<AssetModel.PriceId>,
+        currency: Currency
+    ) {
         priceSubscription = nil
 
         let priceIds = Array(priceIdSet).sorted()
@@ -164,7 +169,10 @@ class AssetListBaseInteractor {
             return
         }
 
-        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(for: priceIds)
+        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(
+            for: priceIds,
+            currency: currency
+        )
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
             let finalValue = changes.reduceToLastChange()
@@ -306,5 +314,15 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         case let .failure(error):
             handleAccountBalanceError(error, accountId: accountId)
         }
+    }
+}
+
+extension AssetListBaseInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard basePresenter != nil else {
+            return
+        }
+
+        updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 }

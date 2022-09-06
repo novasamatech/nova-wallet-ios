@@ -49,7 +49,10 @@ extension ParaStkStateViewModelFactory {
                 redeembaleAmount,
                 precision: assetDisplayInfo.assetPrecision
             ) {
-            let balanceFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+            let balanceFactory = BalanceViewModelFactory(
+                targetAssetInfo: assetDisplayInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
             let localizableAmount = balanceFactory.amountFromValue(decimalAmount)
             return .redeemUnbonded(localizableAmount)
         } else {

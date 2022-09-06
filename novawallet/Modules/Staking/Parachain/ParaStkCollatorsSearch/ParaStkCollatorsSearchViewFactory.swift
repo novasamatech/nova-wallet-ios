@@ -7,7 +7,8 @@ struct ParaStkCollatorsSearchViewFactory {
         collators: [CollatorSelectionInfo],
         delegate: ParaStkSelectCollatorsDelegate
     ) -> ParaStkCollatorsSearchViewProtocol? {
-        guard let chainAsset = state.settings.value else {
+        guard let chainAsset = state.settings.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -15,8 +16,12 @@ struct ParaStkCollatorsSearchViewFactory {
         let wireframe = ParaStkCollatorsSearchWireframe(sharedState: state)
 
         let localizationManager = LocalizationManager.shared
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let presenter = ParaStkCollatorsSearchPresenter(
             interactor: interactor,

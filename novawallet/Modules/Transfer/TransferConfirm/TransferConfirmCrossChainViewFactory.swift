@@ -15,6 +15,7 @@ struct TransferConfirmCrossChainViewFactory {
 
         guard
             let wallet = walletSettings.value,
+            let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: originChainAsset,
                 destinationChainAsset: destinationAsset,
@@ -26,10 +27,11 @@ struct TransferConfirmCrossChainViewFactory {
         let wireframe = TransferConfirmWireframe()
 
         let localizationManager = LocalizationManager.shared
-
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let networkViewModelFactory = NetworkViewModelFactory()
         let sendingBalanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: originChainAsset.assetDisplayInfo
+            targetAssetInfo: originChainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
@@ -39,7 +41,8 @@ struct TransferConfirmCrossChainViewFactory {
             utilityAsset.assetId != originChainAsset.asset.assetId {
             let utilityAssetInfo = utilityAsset.displayInfo(with: originChainAsset.chain.icon)
             utilityBalanceViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAssetInfo
+                targetAssetInfo: utilityAssetInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
             )
         } else {
             utilityBalanceViewModelFactory = nil
@@ -48,7 +51,8 @@ struct TransferConfirmCrossChainViewFactory {
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: originChainAsset.assetDisplayInfo,
-            utilityAssetInfo: originChainAsset.chain.utilityAssets().first?.displayInfo
+            utilityAssetInfo: originChainAsset.chain.utilityAssets().first?.displayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let presenter = TransferCrossChainConfirmPresenter(
@@ -87,7 +91,8 @@ struct TransferConfirmCrossChainViewFactory {
     ) -> TransferCrossChainConfirmInteractor? {
         guard
             let wallet = SelectedWalletSettings.shared.value,
-            let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()) else {
+            let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -148,6 +153,7 @@ struct TransferConfirmCrossChainViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

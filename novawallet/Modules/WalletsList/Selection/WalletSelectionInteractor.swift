@@ -20,7 +20,8 @@ final class WalletSelectionInteractor: WalletsListInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         settings: SelectedWalletSettings,
-        eventCenter: EventCenterProtocol
+        eventCenter: EventCenterProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.settings = settings
         self.eventCenter = eventCenter
@@ -29,7 +30,8 @@ final class WalletSelectionInteractor: WalletsListInteractor {
             chainRegistry: chainRegistry,
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager
         )
     }
 }

@@ -1,3 +1,4 @@
+source 'https://cdn.cocoapods.org/'
 platform :ios, '13.0'
 
 abstract_target 'novawalletAll' do

@@ -5,15 +5,18 @@ import IrohaCrypto
 
 struct WalletCommonConfigurator {
     let localizationManager: LocalizationManagerProtocol
+    let currencyManager: CurrencyManagerProtocol
     let chainAccount: ChainAccountResponse
     let assets: [WalletAsset]
 
     init(
         chainAccount: ChainAccountResponse,
         localizationManager: LocalizationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         assets: [WalletAsset]
     ) {
         self.localizationManager = localizationManager
+        self.currencyManager = currencyManager
         self.chainAccount = chainAccount
         self.assets = assets
     }
@@ -35,7 +38,10 @@ struct WalletCommonConfigurator {
             assets: assets
         )
 
-        let singleProviderIdFactory = WalletSingleProviderIdFactory()
+        let singleProviderIdFactory = WalletSingleProviderIdFactory(
+            currencyId: currencyManager.selectedCurrency.id
+        )
+
         let transactionTypes = TransactionType.allCases.map { $0.toWalletType() }
 
         builder

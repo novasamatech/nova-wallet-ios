@@ -13,6 +13,7 @@ struct ParaStkRebondViewFactory {
             let chainAsset = state.settings.value,
             let interactor = createInteractor(from: state),
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared,
             let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(
                 for: chainAsset.chain.accountRequest()
             ) else {
@@ -24,11 +25,16 @@ struct ParaStkRebondViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidationFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
-            assetDisplayInfo: assetDisplayInfo
+            assetDisplayInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let hintViewModelFactory = ParaStkHintsViewModelFactory()
@@ -66,7 +72,8 @@ struct ParaStkRebondViewFactory {
             let chainAsset = state.settings.value,
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -101,6 +108,7 @@ struct ParaStkRebondViewFactory {
             identityOperationFactory: identityOperationFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

@@ -10,7 +10,6 @@ protocol StakingRewardDestConfirmVMFactoryProtocol {
 
 final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactoryProtocol {
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
-    private lazy var amountFactory = AmountFormatterFactory()
 
     func createViewModel(
         rewardDestination: RewardDestination<MetaChainAccountResponse>,

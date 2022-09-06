@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
     typealias RootViewType = ParitySignerAddressesViewLayout
@@ -7,9 +8,11 @@ final class ParitySignerAddressesViewController: UIViewController, ViewHolder {
 
     private var viewModels: [ChainAccountViewModelItem] = []
 
-    init(presenter: ParitySignerAddressesPresenterProtocol) {
+    init(presenter: ParitySignerAddressesPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)

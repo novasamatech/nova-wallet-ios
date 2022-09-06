@@ -35,7 +35,8 @@ final class StakingAmountInteractor {
         extrinsicService: ExtrinsicServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         rewardService: RewardCalculatorServiceProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
@@ -47,6 +48,7 @@ final class StakingAmountInteractor {
         self.rewardService = rewardService
         self.runtimeService = runtimeService
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 
     private func provideRewardCalculator() {
@@ -74,7 +76,7 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
     AccountFetching {
     func setup() {
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceive(price: nil)
         }
@@ -211,5 +213,16 @@ extension StakingAmountInteractor: PriceLocalStorageSubscriber, PriceLocalSubscr
         case let .failure(error):
             presenter.didReceive(error: error)
         }
+    }
+}
+
+extension StakingAmountInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

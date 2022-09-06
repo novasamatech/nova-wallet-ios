@@ -7,6 +7,11 @@ protocol ParaStkStateViewModelFactoryProtocol {
 
 final class ParaStkStateViewModelFactory {
     private var lastViewModel: StakingViewState = .undefined
+    private(set) var priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+
+    init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
+        self.priceAssetInfoFactory = priceAssetInfoFactory
+    }
 
     private func createDelegationStatus(
         for collatorStatuses: [ParaStkDelegationStatus]?,
@@ -58,7 +63,10 @@ final class ParaStkStateViewModelFactory {
         viewStatus: NominationViewStatus
     ) -> LocalizableResource<NominationViewModel> {
         let displayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: displayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: displayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let stakedAmount = Decimal.fromSubstrateAmount(
             delegator.staked,
@@ -85,10 +93,14 @@ final class ParaStkStateViewModelFactory {
     private func createUnstakingViewModel(
         from requests: [ParachainStaking.DelegatorScheduledRequest],
         chainAsset: ChainAsset,
-        roundCountdown: RoundCountdown?
+        roundCountdown: RoundCountdown?,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> StakingUnbondingViewModel {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        let balanceFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let viewModels = requests
             .sorted(by: { $0.whenExecutable < $1.whenExecutable })
@@ -113,7 +125,10 @@ final class ParaStkStateViewModelFactory {
         for chainAsset: ChainAsset,
         commonData: ParachainStaking.CommonData
     ) -> LocalizableResource<StakingRewardViewModel> {
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         if let totalReward = commonData.totalReward {
             let localizableReward = balanceViewModelFactory.balanceFromPrice(
@@ -197,7 +212,12 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
 
         let roundCountdown = state.commonData.roundCountdown
         let unbondings: StakingUnbondingViewModel? = state.scheduledRequests.map {
-            createUnstakingViewModel(from: $0, chainAsset: chainAsset, roundCountdown: roundCountdown)
+            createUnstakingViewModel(
+                from: $0,
+                chainAsset: chainAsset,
+                roundCountdown: roundCountdown,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
         }
 
         let alerts = createAlerts(

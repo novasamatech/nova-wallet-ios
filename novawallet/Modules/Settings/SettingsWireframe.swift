@@ -47,6 +47,17 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         }
     }
 
+    func showCurrencies(from view: ControllerBackedProtocol?) {
+        guard let currencySelection = CurrencyViewFactory.createView() else {
+            return
+        }
+
+        if let navigationController = view?.controller.navigationController {
+            currencySelection.controller.hidesBottomBarWhenPushed = true
+            navigationController.pushViewController(currencySelection.controller, animated: true)
+        }
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

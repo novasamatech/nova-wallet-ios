@@ -17,7 +17,8 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
         operationManager: OperationManagerProtocol,
         signer: SigningWrapperProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
-        nomination: PreparedNomination<ExistingBonding>
+        nomination: PreparedNomination<ExistingBonding>,
+        currencyManager: CurrencyManagerProtocol
     ) {
         guard let balanceAccountAddress = nomination.bonding.controllerAccount.chainAccount.toAddress() else {
             return nil
@@ -36,7 +37,8 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             runtimeService: runtimeService,
             durationOperationFactory: durationOperationFactory,
             operationManager: operationManager,
-            signer: signer
+            signer: signer,
+            currencyManager: currencyManager
         )
     }
 
