@@ -51,7 +51,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        childSubscribingFactory: OrmlTokenStorageChildSubscribingFactoryProtocol
     ) -> UUID?
 
     // swiftlint:disable:next function_parameter_count
@@ -255,44 +255,47 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        childSubscribingFactory: OrmlTokenStorageChildSubscribingFactoryProtocol
     ) -> UUID? {
         do {
-            let accountRequestLocalKey = try LocalStorageKeyFactory().createFromStoragePath(.ormlTokenAccount, encodableElement: accountId + currencyId, chainId: chainId)
-            let locksRequestLocalKey = try LocalStorageKeyFactory().createFromStoragePath(.ormlTokenLocks, encodableElement: accountId + currencyId, chainId: chainId)
-
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                .init(
-                    moduleName: StorageCodingPath.ormlTokenAccount.moduleName,
-                    itemName: [
-                        StorageCodingPath.ormlTokenAccount.itemName,
-                        StorageCodingPath.ormlTokenLocks.itemName
-                    ].joined(separator: "-")
-                ),
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let accountLocalKey = try storageKeyFactory.createFromStoragePath(
+                .ormlTokenAccount,
                 encodableElement: accountId + currencyId,
                 chainId: chainId
             )
 
             let accountRequest = DoubleMapSubscriptionRequest(
                 storagePath: .ormlTokenAccount,
-                localKey: accountRequestLocalKey,
+                localKey: accountLocalKey,
+                keyParamClosure: { (accountId, currencyId) },
+                param1Encoder: nil,
+                param2Encoder: { $0 }
+            )
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                .ormlTokenLocks,
+                encodableElement: accountId + currencyId,
+                chainId: chainId
+            )
+
+            let locksRequest = DoubleMapSubscriptionRequest(
+                storagePath: .ormlTokenLocks,
+                localKey: locksLocalKey,
                 keyParamClosure: { (accountId, currencyId) },
                 param1Encoder: nil,
                 param2Encoder: { $0 }
             )
 
-            let locksRequest = DoubleMapSubscriptionRequest(
-                storagePath: .ormlTokenLocks,
-                localKey: locksRequestLocalKey,
-                keyParamClosure: { (accountId, currencyId) },
-                param1Encoder: nil,
-                param2Encoder: { $0 }
+            let subscriptionHandlingFactory = OrmlTokenSubscriptionHandlingFactory(
+                accountLocalStorageKey: accountLocalKey,
+                locksLocalStorageKey: locksLocalKey,
+                factory: childSubscribingFactory
             )
 
             return attachToSubscription(
                 with: [accountRequest, locksRequest],
                 chainId: chainId,
-                cacheKey: localKey,
+                cacheKey: accountLocalKey,
                 queue: queue,
                 closure: closure,
                 subscriptionHandlingFactory: subscriptionHandlingFactory

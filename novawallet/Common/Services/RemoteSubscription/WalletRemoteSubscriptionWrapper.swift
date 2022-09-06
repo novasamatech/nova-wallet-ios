@@ -84,10 +84,9 @@ final class WalletRemoteSubscriptionWrapper {
     ) -> UUID? {
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
-        let subscriptionHandlingFactory = OrmlAccountSubscriptionHandlingFactory(
+        let subscriptionHandlingFactory = OrmlTokenStorageChildSubscribingFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
-            currencyId: currencyId,
             chainRegistry: chainRegistry,
             assetRepository: assetsRepository,
             locksRepository: locksRepository,
@@ -101,7 +100,7 @@ final class WalletRemoteSubscriptionWrapper {
             chainId: chainAssetId.chainId,
             queue: .main,
             closure: completion,
-            subscriptionHandlingFactory: subscriptionHandlingFactory
+            childSubscribingFactory: subscriptionHandlingFactory
         )
     }
 

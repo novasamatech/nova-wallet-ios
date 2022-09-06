@@ -189,10 +189,9 @@ final class AssetsUpdatingService {
 
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
-        let subscriptionHandlingFactory = OrmlAccountSubscriptionHandlingFactory(
+        let subscriptionHandlingFactory = OrmlTokenStorageChildSubscribingFactory(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
             accountId: accountId,
-            currencyId: currencyId,
             chainRegistry: chainRegistry,
             assetRepository: assetsRepository,
             locksRepository: locksRepository,
@@ -206,7 +205,7 @@ final class AssetsUpdatingService {
             chainId: chainId,
             queue: nil,
             closure: nil,
-            subscriptionHandlingFactory: subscriptionHandlingFactory
+            childSubscribingFactory: subscriptionHandlingFactory
         )
 
         return maybeSubscriptionId.map { subscriptionId in
