@@ -49,7 +49,7 @@ class YourValidatorListTests: XCTestCase {
         )
 
         let electedValidators: [EraValidatorInfo] = (0..<16).map { _ in
-            let accountId = AccountGenerator.generateMetaAccount().substrateAccountId
+            let accountId = AccountGenerator.generateMetaAccount().substrateAccountId!
 
             let nominator = IndividualExposure(who: selectedAccount.accountId, value: BigUInt(1e+12))
 

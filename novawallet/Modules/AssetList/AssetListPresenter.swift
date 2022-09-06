@@ -15,7 +15,7 @@ final class AssetListPresenter: AssetListBasePresenter {
 
     private(set) var nftList: ListDifferenceCalculator<NftModel>
 
-    private var genericAccountId: AccountId?
+    private var walletIdenticon: Data?
     private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
@@ -44,14 +44,14 @@ final class AssetListPresenter: AssetListBasePresenter {
     }
 
     private func provideHeaderViewModel() {
-        guard let genericAccountId = genericAccountId, let walletType = walletType, let name = name else {
+        guard let walletType = walletType, let name = name else {
             return
         }
 
         guard case let .success(priceMapping) = priceResult, !balanceResults.isEmpty else {
             let viewModel = viewModelFactory.createHeaderViewModel(
                 from: name,
-                accountId: genericAccountId,
+                walletIdenticon: walletIdenticon,
                 walletType: walletType,
                 prices: nil,
                 locale: selectedLocale
@@ -63,7 +63,7 @@ final class AssetListPresenter: AssetListBasePresenter {
 
         provideHeaderViewModel(
             with: priceMapping,
-            genericAccountId: genericAccountId,
+            walletIdenticon: walletIdenticon,
             walletType: walletType,
             name: name
         )
@@ -71,7 +71,7 @@ final class AssetListPresenter: AssetListBasePresenter {
 
     private func provideHeaderViewModel(
         with priceMapping: [ChainAssetId: PriceData],
-        genericAccountId: AccountId,
+        walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         name: String
     ) {
@@ -135,7 +135,7 @@ final class AssetListPresenter: AssetListBasePresenter {
 
         let viewModel = viewModelFactory.createHeaderViewModel(
             from: name,
-            accountId: genericAccountId,
+            walletIdenticon: walletIdenticon,
             walletType: walletType,
             prices: priceState,
             locale: selectedLocale
@@ -352,8 +352,8 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         nftList = Self.createNftDiffCalculator()
     }
 
-    func didReceive(genericAccountId: AccountId, walletType: MetaAccountModelType, name: String) {
-        self.genericAccountId = genericAccountId
+    func didReceive(walletIdenticon: Data?, walletType: MetaAccountModelType, name: String) {
+        self.walletIdenticon = walletIdenticon
         self.walletType = walletType
         self.name = name
 

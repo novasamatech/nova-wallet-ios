@@ -87,6 +87,21 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         }
     }
 
+    func showAddLedgerAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel
+    ) {
+        guard let ledgerView = LedgerDiscoverViewFactory.createExistingPairingView(
+            chain: chain,
+            wallet: wallet
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(ledgerView.controller, animated: true)
+    }
+
     // MARK: Private
 
     private func performExportPresentation(

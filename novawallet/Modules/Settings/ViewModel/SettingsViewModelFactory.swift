@@ -11,7 +11,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     }
 
     func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel {
-        let icon = try? iconGenerator.generateFromAccountId(wallet.substrateAccountId)
+        let icon = wallet.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }?
             .imageWithFillColor(
                 .clear,
                 size: UIConstants.normalAddressIconSize,
