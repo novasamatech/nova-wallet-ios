@@ -41,7 +41,8 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
             operationManager: OperationManagerFacade.sharedManager,
             settings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
-            keystore: Keychain()
+            keystore: Keychain(),
+            chainsFilter: AccountManagementFilter()
         )
 
         presenter.view = view

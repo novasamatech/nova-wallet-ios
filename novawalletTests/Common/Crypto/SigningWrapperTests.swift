@@ -163,7 +163,7 @@ class SigningWrapperTests: XCTestCase {
 
         guard let metaAccount = settings.value else { return }
 
-        let publicKeyData = metaAccount.substratePublicKey
+        let publicKeyData = metaAccount.substratePublicKey!
 
         let signer = SigningWrapper(
             keystore: keychain,
@@ -192,7 +192,7 @@ class SigningWrapperTests: XCTestCase {
 
         guard let metaAccount = settings.value else { return }
 
-        let publicKeyData = metaAccount.substratePublicKey
+        let publicKeyData = metaAccount.substratePublicKey!
 
         let signer = SigningWrapper(
             keystore: keychain,
@@ -220,7 +220,7 @@ class SigningWrapperTests: XCTestCase {
 
         guard let metaAccount = settings.value else { return }
 
-        let publicKeyData = metaAccount.substratePublicKey
+        let publicKeyData = metaAccount.substratePublicKey!
 
         let signer = SigningWrapper(
             keystore: keychain,

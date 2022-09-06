@@ -15,7 +15,7 @@ final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelF
             iconViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
         }
 
-        let walletIcon = try? NovaIconGenerator().generateFromAccountId(model.walletAccountId)
+        let walletIcon = model.walletIdenticon.flatMap { try? NovaIconGenerator().generateFromAccountId($0) }
 
         let addressIcon = try? PolkadotIconGenerator().generateFromAccountId(model.chainAccountId)
 
