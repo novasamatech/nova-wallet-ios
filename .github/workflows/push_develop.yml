@@ -27,7 +27,6 @@ jobs:
             ${{ runner.os }}-pods-
 
       - name: Install Cocoapods
-        if: steps.cache-cocoapods.outputs.cache-hit != 'true'
         run: pod install --repo-update
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
