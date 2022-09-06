@@ -1842,7 +1842,7 @@
 		84F13F1426F20AA2006725FF /* StakingSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F1326F20AA2006725FF /* StakingSettingsTests.swift */; };
 		84F13F1C26F2B8C2006725FF /* JSONRPCError+Presentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F1B26F2B8C1006725FF /* JSONRPCError+Presentable.swift */; };
 		84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4927A1869E00CA7554 /* OrmlAccount.swift */; };
-		84F18D4C27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4B27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift */; };
+		84F18D4C27A1874000CA7554 /* TokenSubscribtionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4B27A1874000CA7554 /* TokenSubscribtionFactory.swift */; };
 		84F18D4E27A18C1400CA7554 /* OrmlAccountSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4D27A18C1400CA7554 /* OrmlAccountSubscription.swift */; };
 		84F1A0712869DA51007DB053 /* AssetBalanceExistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1A0702869DA51007DB053 /* AssetBalanceExistence.swift */; };
 		84F1A073286A5DDA007DB053 /* CommonRetryable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1A072286A5DDA007DB053 /* CommonRetryable.swift */; };
@@ -4408,7 +4408,7 @@
 		84F13F1326F20AA2006725FF /* StakingSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSettingsTests.swift; sourceTree = "<group>"; };
 		84F13F1B26F2B8C1006725FF /* JSONRPCError+Presentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONRPCError+Presentable.swift"; sourceTree = "<group>"; };
 		84F18D4927A1869E00CA7554 /* OrmlAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAccount.swift; sourceTree = "<group>"; };
-		84F18D4B27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAccountSubcriptionHandlingFactory.swift; sourceTree = "<group>"; };
+		84F18D4B27A1874000CA7554 /* TokenSubscribtionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenSubscribtionFactory.swift; sourceTree = "<group>"; };
 		84F18D4D27A18C1400CA7554 /* OrmlAccountSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAccountSubscription.swift; sourceTree = "<group>"; };
 		84F1A0702869DA51007DB053 /* AssetBalanceExistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceExistence.swift; sourceTree = "<group>"; };
 		84F1A072286A5DDA007DB053 /* CommonRetryable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonRetryable.swift; sourceTree = "<group>"; };
@@ -6009,7 +6009,7 @@
 				841E2E4D2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift */,
 				841E2E4F27381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift */,
 				84B73AD9279D265A0071AE16 /* AssetsSubscriptionHandlingFactory.swift */,
-				84F18D4B27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift */,
+				84F18D4B27A1874000CA7554 /* TokenSubscribtionFactory.swift */,
 				84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */,
 				848DAEF6282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift */,
 				841E553B282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift */,
@@ -13900,7 +13900,7 @@
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,
 				84FB1F792527065A00E0242B /* HistoryConstants.swift in Sources */,
 				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
-				84F18D4C27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift in Sources */,
+				84F18D4C27A1874000CA7554 /* TokenSubscribtionFactory.swift in Sources */,
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,
 				84DF21A92535AA8F005454AE /* ExistentialDepositInfoCommand.swift in Sources */,
 				84E6D57C262E2CE8000EA3F5 /* OperationCombiningService.swift in Sources */,

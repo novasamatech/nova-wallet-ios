@@ -50,7 +50,6 @@ final class WalletRemoteSubscriptionWrapper {
     ) -> UUID? {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
         let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
-        let locksRepository = repositoryFactory.createAssetLocksRepository()
 
         let balanceUpdater = AssetsBalanceUpdater(
             chainAssetId: chainAssetId,
@@ -66,9 +65,7 @@ final class WalletRemoteSubscriptionWrapper {
         return remoteSubscriptionService.attachToAsset(
             of: accountId,
             assetId: extras.assetId,
-            asset: chainAssetId.assetId,
             chainId: chainAssetId.chainId,
-            locksRepository: locksRepository,
             queue: .main,
             closure: completion,
             assetBalanceUpdater: balanceUpdater,
@@ -84,7 +81,7 @@ final class WalletRemoteSubscriptionWrapper {
     ) -> UUID? {
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
-        let subscriptionHandlingFactory = OrmlTokenStorageChildSubscribingFactory(
+        let subscriptionHandlingFactory = TokenSubscribtionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
@@ -111,14 +108,16 @@ final class WalletRemoteSubscriptionWrapper {
         completion: RemoteSubscriptionClosure?
     ) -> UUID? {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
+        let locksRepository = repositoryFactory.createAssetLocksRepository()
 
-        let subscriptionHandlingFactory = AccountInfoSubscriptionHandlingFactory(
+        let subscriptionHandlingFactory = TokenSubscribtionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
-            transactionSubscription: nil,
-            eventCenter: eventCenter
+            locksRepository: locksRepository,
+            eventCenter: eventCenter,
+            transactionSubscription: nil
         )
 
         return remoteSubscriptionService.attachToAccountInfo(
@@ -127,7 +126,7 @@ final class WalletRemoteSubscriptionWrapper {
             chainFormat: chainFormat,
             queue: .main,
             closure: completion,
-            subscriptionHandlingFactory: subscriptionHandlingFactory
+            childSubscribingFactory: subscriptionHandlingFactory
         )
     }
 }

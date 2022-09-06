@@ -2,27 +2,18 @@ import Foundation
 import RobinHood
 
 final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol {
-    let chainAssetId: ChainAssetId
-    let accountId: AccountId
-    let chainRegistry: ChainRegistryProtocol
-    let assetRepository: AnyDataProviderRepository<AssetBalance>
-    let eventCenter: EventCenterProtocol
-    let transactionSubscription: TransactionSubscription?
+    let accountLocalStorageKey: String
+    let locksLocalStorageKey: String
+    let factory: NativeTokenSubscribtionFactoryProtocol
 
     init(
-        chainAssetId: ChainAssetId,
-        accountId: AccountId,
-        chainRegistry: ChainRegistryProtocol,
-        assetRepository: AnyDataProviderRepository<AssetBalance>,
-        transactionSubscription: TransactionSubscription?,
-        eventCenter: EventCenterProtocol
+        accountLocalStorageKey: String,
+        locksLocalStorageKey: String,
+        factory: NativeTokenSubscribtionFactoryProtocol
     ) {
-        self.chainAssetId = chainAssetId
-        self.accountId = accountId
-        self.chainRegistry = chainRegistry
-        self.assetRepository = assetRepository
-        self.transactionSubscription = transactionSubscription
-        self.eventCenter = eventCenter
+        self.accountLocalStorageKey = accountLocalStorageKey
+        self.locksLocalStorageKey = locksLocalStorageKey
+        self.factory = factory
     }
 
     func createHandler(
@@ -32,18 +23,19 @@ final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing {
-        AccountInfoSubscription(
-            chainAssetId: chainAssetId,
-            accountId: accountId,
-            chainRegistry: chainRegistry,
-            assetRepository: assetRepository,
-            transactionSubscription: transactionSubscription,
+        if locksLocalStorageKey == localStorageKey {
+            return factory.createBalanceLocksSubscribtion(
+                remoteStorageKey: remoteStorageKey,
+                operationManager: operationManager,
+                logger: logger
+            )
+        }
+        return factory.createAccountInfoSubscription(
             remoteStorageKey: remoteStorageKey,
             localStorageKey: localStorageKey,
             storage: storage,
             operationManager: operationManager,
-            logger: logger,
-            eventCenter: eventCenter
+            logger: logger
         )
     }
 }

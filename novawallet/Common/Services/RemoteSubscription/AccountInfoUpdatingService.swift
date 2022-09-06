@@ -115,15 +115,18 @@ final class AccountInfoUpdatingService {
         )
 
         let assetBalanceMapper = AssetBalanceMapper()
+        let assetLockMapper = AssetLockMapper()
         let assetRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetBalanceMapper))
+        let locksRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetLockMapper))
 
-        let subscriptionHandlingFactory = AccountInfoSubscriptionHandlingFactory(
+        let subscriptionHandlingFactory = TokenSubscribtionFactory(
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: AnyDataProviderRepository(assetRepository),
-            transactionSubscription: transactionSubscription,
-            eventCenter: eventCenter
+            locksRepository: AnyDataProviderRepository(locksRepository),
+            eventCenter: eventCenter,
+            transactionSubscription: transactionSubscription
         )
 
         let maybeSubscriptionId = remoteSubscriptionService.attachToAccountInfo(
@@ -132,7 +135,7 @@ final class AccountInfoUpdatingService {
             chainFormat: chain.chainFormat,
             queue: nil,
             closure: nil,
-            subscriptionHandlingFactory: subscriptionHandlingFactory
+            childSubscribingFactory: subscriptionHandlingFactory
         )
 
         if let subsciptionId = maybeSubscriptionId {

@@ -145,9 +145,10 @@ final class AssetsUpdatingService {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
         let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
+        let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
 
         let assetBalanceUpdater = AssetsBalanceUpdater(
-            chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
+            chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
@@ -160,9 +161,7 @@ final class AssetsUpdatingService {
         let maybeSubscriptionId = remoteSubscriptionService.attachToAsset(
             of: accountId,
             assetId: assetExtras.assetId,
-            asset: asset.assetId,
             chainId: chainId,
-            locksRepository: locksRepository,
             queue: nil,
             closure: nil,
             assetBalanceUpdater: assetBalanceUpdater,
@@ -189,7 +188,7 @@ final class AssetsUpdatingService {
 
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
-        let subscriptionHandlingFactory = OrmlTokenStorageChildSubscribingFactory(
+        let subscriptionHandlingFactory = TokenSubscribtionFactory(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
             accountId: accountId,
             chainRegistry: chainRegistry,
