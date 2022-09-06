@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct StakingMainViewModel {
-    let accountId: AccountId
+    let walletIdenticon: Data?
     let walletType: WalletsListSectionViewModel.SectionType
     let chainName: String
     let assetName: String

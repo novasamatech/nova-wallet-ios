@@ -105,7 +105,7 @@ extension ParitySignerTxQrViewController: ParitySignerTxQrViewProtocol {
     }
 
     func didReceiveExpiration(viewModel: ExpirationTimeViewModel) {
-        rootView.timerLabel.bind(viewModel: viewModel, locale: selectedLocale)
+        rootView.timerLabel.bindQr(viewModel: viewModel, locale: selectedLocale)
     }
 }
 

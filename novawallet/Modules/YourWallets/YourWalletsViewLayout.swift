@@ -1,8 +1,9 @@
 import UIKit
 
 final class YourWalletsViewLayout: UIView {
-    lazy var header: IconTitleHeaderView = .create {
-        $0.contentInsets = Constants.headerContentInsets
+    lazy var header: UILabel = .create {
+        $0.font = .semiBoldBody
+        $0.textColor = R.color.colorWhite()
     }
 
     lazy var collectionView: UICollectionView = {
@@ -39,13 +40,14 @@ final class YourWalletsViewLayout: UIView {
         addSubview(collectionView)
 
         header.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide.snp.top)
-            $0.height.equalTo(Constants.headerHeight)
-            $0.leading.trailing.equalToSuperview()
+            $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.headerContentInsets.top)
+            $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
+        header.setContentHuggingPriority(.defaultLow, for: .vertical)
+
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(header.snp.bottom)
+            $0.top.equalTo(header.snp.bottom).offset(Constants.headerContentInsets.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
@@ -66,7 +68,7 @@ final class YourWalletsViewLayout: UIView {
 
 extension YourWalletsViewLayout {
     private enum Constants {
-        static let headerHeight: CGFloat = 46
+        static let estimatedHeaderHeight: CGFloat = 36
         static let estimatedRowHeight: CGFloat = 56
         static let estimatedSectionHeaderHeight: CGFloat = 46
         static let sectionContentInsets = NSDirectionalEdgeInsets(
@@ -83,9 +85,9 @@ extension YourWalletsViewLayout {
             right: 0
         )
         static let headerContentInsets = UIEdgeInsets(
-            top: 12,
+            top: 3.0,
             left: 0,
-            bottom: 12,
+            bottom: 12.0,
             right: 0
         )
     }
@@ -93,19 +95,17 @@ extension YourWalletsViewLayout {
 
 extension YourWalletsViewLayout {
     static func contentHeight(sections: Int, items: Int) -> CGFloat {
-        let itemHeight =
-            Constants.estimatedRowHeight +
-            Constants.estimatedSectionHeaderHeight
+        let itemHeight = Constants.estimatedRowHeight
 
         let sectionsHeight = Constants.estimatedSectionHeaderHeight +
             Constants.sectionContentInsets.top +
             Constants.sectionContentInsets.bottom
 
-        let estimatedHeight = Constants.collectionViewContentInset.top +
+        let estimatedListHeight = Constants.collectionViewContentInset.top +
             CGFloat(items) * itemHeight +
             CGFloat(sections) * sectionsHeight +
             Constants.collectionViewContentInset.bottom
 
-        return estimatedHeight
+        return Constants.estimatedHeaderHeight + estimatedListHeight
     }
 }
