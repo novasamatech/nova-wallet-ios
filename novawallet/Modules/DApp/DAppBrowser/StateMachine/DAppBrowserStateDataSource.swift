@@ -34,14 +34,6 @@ final class DAppBrowserStateDataSource {
     }
 
     func fetchAccountList() throws -> [PolkadotExtensionAccount] {
-        let substrateAccount = try createExtensionAccount(
-            for: wallet.substrateAccountId,
-            genesisHash: nil,
-            name: wallet.name,
-            chainFormat: .substrate(42),
-            rawCryptoType: wallet.substrateCryptoType
-        )
-
         let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
             guard let chain = chainStore[chainAccount.chainId], !chain.isEthereumBased else {
                 return nil
@@ -59,7 +51,19 @@ final class DAppBrowserStateDataSource {
             )
         }
 
-        return [substrateAccount] + chainAccounts
+        if let substrateAccountId = wallet.substrateAccountId, let cryptoType = wallet.substrateCryptoType {
+            let substrateAccount = try createExtensionAccount(
+                for: substrateAccountId,
+                genesisHash: nil,
+                name: wallet.name,
+                chainFormat: .substrate(42),
+                rawCryptoType: cryptoType
+            )
+
+            return [substrateAccount] + chainAccounts
+        } else {
+            return chainAccounts
+        }
     }
 
     func fetchChainByEthereumChainId(_ chainId: String) -> ChainModel? {

@@ -12,7 +12,7 @@ struct AssetListAssetAccountPrice {
 protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtocol {
     func createHeaderViewModel(
         from title: String,
-        accountId: AccountId,
+        walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
         locale: Locale
@@ -81,12 +81,12 @@ final class AssetListViewModelFactory: AssetListAssetViewModelFactory {
 extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
     func createHeaderViewModel(
         from title: String,
-        accountId: AccountId,
+        walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
         locale: Locale
     ) -> AssetListHeaderViewModel {
-        let icon = try? iconGenerator.generateFromAccountId(accountId)
+        let icon = walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
         let walletSwitch = WalletSwitchViewModel(
             type: WalletsListSectionViewModel.SectionType(walletType: walletType),
             iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }

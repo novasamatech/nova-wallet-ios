@@ -14,7 +14,9 @@ struct ParitySignerWelcomeViewFactory {
         createView(wireframe: SwitchAccount.ParitySignerWelcomeWireframe())
     }
 
-    private static func createView(wireframe: ParitySignerWelcomeWireframeProtocol) -> ParitySignerWelcomeViewProtocol? {
+    private static func createView(
+        wireframe: ParitySignerWelcomeWireframeProtocol
+    ) -> ParitySignerWelcomeViewProtocol? {
         let presenter = ParitySignerWelcomePresenter(wireframe: wireframe)
 
         let view = ParitySignerWelcomeViewController(

@@ -84,7 +84,10 @@ final class ChainAddressDetailsViewLayout: UIView {
             make.trailing.lessThanOrEqualToSuperview().inset(UIConstants.horizontalInset)
         }
 
-        containerView.stackView.setCustomSpacing(ChainAddressDetailsMeasurement.headerSpacing, after: networkContainerView)
+        containerView.stackView.setCustomSpacing(
+            ChainAddressDetailsMeasurement.headerSpacing,
+            after: networkContainerView
+        )
 
         let addressContainerView = UIView()
         addressContainerView.backgroundColor = .clear

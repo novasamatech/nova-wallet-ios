@@ -30,6 +30,16 @@ final class AccountManagementHeaderView: UIView {
 
     private(set) var hintView: BorderedIconLabelView?
 
+    var bottomInset: CGFloat = 0.0 {
+        didSet {
+            if let hintView = hintView {
+                hintView.snp.updateConstraints { make in
+                    make.bottom.equalToSuperview().inset(bottomInset)
+                }
+            }
+        }
+    }
+
     var showsHintView: Bool {
         get {
             hintView != nil
@@ -85,7 +95,7 @@ final class AccountManagementHeaderView: UIView {
 
         view.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(bottomInset)
         }
 
         hintView = view
