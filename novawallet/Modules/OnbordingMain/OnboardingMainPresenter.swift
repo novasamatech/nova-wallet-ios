@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class OnboardingMainPresenter {
     weak var view: OnboardingMainViewProtocol?
@@ -60,12 +61,62 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
     }
 
     func activateHardwareWalletCreate() {
-        wireframe.showHardwareWalletCreate(from: view)
+        guard let view = view else {
+            return
+        }
+
+        let viewModels: [LocalizableResource<ActionManageViewModel>] = HardwareWalletOptions.allCases.map { option in
+            switch option {
+            case .paritySigner:
+                return LocalizableResource { locale in
+                    ActionManageViewModel(
+                        icon: R.image.iconParitySignerAction(),
+                        title: R.string.localizable.commonParitySigner(preferredLanguages: locale.rLanguages),
+                        details: nil
+                    )
+                }
+            case .ledger:
+                return LocalizableResource { locale in
+                    ActionManageViewModel(
+                        icon: R.image.iconLedgerAction(),
+                        title: R.string.localizable.commonLedgerNanoX(preferredLanguages: locale.rLanguages),
+                        details: nil
+                    )
+                }
+            }
+        }
+
+        let title = LocalizableResource { locale in
+            R.string.localizable.hardwareWalletOptionsTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        wireframe.presentActionsManage(
+            from: view,
+            actions: viewModels,
+            title: title,
+            delegate: self,
+            context: nil
+        )
     }
 }
 
 extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
     func didSuggestKeystoreImport() {
         wireframe.showKeystoreImport(from: view)
+    }
+}
+
+extension OnboardingMainPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
+        guard let option = HardwareWalletOptions(rawValue: UInt8(index)) else {
+            return
+        }
+
+        switch option {
+        case .paritySigner:
+            wireframe.showParitySignerWalletCreation(from: view)
+        case .ledger:
+            wireframe.showLedgerWalletCreation(from: view)
+        }
     }
 }

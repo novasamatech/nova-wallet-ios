@@ -14,7 +14,7 @@ protocol AccountManagementPresenterProtocol: AnyObject {
     func numberOfSections() -> Int
     func numberOfItems(in section: Int) -> Int
     func item(at indexPath: IndexPath) -> ChainAccountViewModelItem
-    func titleForSection(_ section: Int) -> LocalizableResource<String>
+    func titleForSection(_ section: Int) -> LocalizableResource<String>?
     func activateDetails(at indexPath: IndexPath)
     func selectItem(at indexPath: IndexPath)
     func finalizeName()
@@ -65,6 +65,12 @@ protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable,
         chain: ChainModel,
         options: [SecretSource],
         from view: AccountManagementViewProtocol?
+    )
+
+    func showAddLedgerAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel
     )
 }
 

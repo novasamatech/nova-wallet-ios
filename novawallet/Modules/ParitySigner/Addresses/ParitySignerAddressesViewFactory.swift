@@ -11,7 +11,9 @@ struct ParitySignerAddressesViewFactory {
         createView(with: addressScan, wireframe: AddAccount.ParitySignerAddressesWireframe())
     }
 
-    static func createSwitchAccountView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
+    static func createSwitchAccountView(
+        with addressScan: ParitySignerAddressScan
+    ) -> ParitySignerAddressesViewProtocol? {
         createView(with: addressScan, wireframe: SwitchAccount.ParitySignerAddressesWireframe())
     }
 
