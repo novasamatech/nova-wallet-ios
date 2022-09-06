@@ -2,6 +2,12 @@ import UIKit
 import SubstrateSdk
 
 final class ChainAccountView: UIView {
+    private enum Constants {
+        static let networkIconSize: CGFloat = 32.0
+        static let addressIconSize: CGFloat = 16.0
+        static let horizontalInsets: CGFloat = 12.0
+    }
+
     let networkIconView: UIImageView = {
         let view = UIImageView()
         return view
@@ -9,20 +15,12 @@ final class ChainAccountView: UIView {
 
     let networkLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         label.textColor = R.color.colorWhite()
         return label
     }()
 
-    let accountIconView = PolkadotIconView()
-
-    let addressLabel: UILabel = {
-        let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorTransparentText()
-        label.lineBreakMode = .byTruncatingMiddle
-        return label
-    }()
+    private(set) var accountView: IconDetailsGenericView<UILabel>?
 
     let actionIconView: UIImageView = {
         let view = UIImageView()
@@ -45,24 +43,94 @@ final class ChainAccountView: UIView {
 
     func bind(viewModel: ChainAccountViewModel) {
         self.viewModel?.networkIconViewModel?.cancel(on: networkIconView)
+
+        if let accountView = accountView {
+            self.viewModel?.displayAddressViewModel?.imageViewModel?.cancel(on: accountView.imageView)
+        }
+
         self.viewModel = viewModel
 
         networkLabel.text = viewModel.networkName
-        addressLabel.text = viewModel.address
-        accountIconView.bind(icon: viewModel.accountIcon)
+
+        if let displayAddressViewModel = viewModel.displayAddressViewModel {
+            setupAccountViewIfNeeded()
+
+            guard let accountView = accountView else {
+                return
+            }
+
+            displayAddressViewModel.imageViewModel?.loadImage(
+                on: accountView.imageView,
+                targetSize: CGSize(width: Constants.addressIconSize, height: Constants.addressIconSize),
+                animated: true
+            )
+
+            accountView.detailsView.text = displayAddressViewModel.details
+        } else {
+            clearAccountView()
+        }
 
         viewModel.networkIconViewModel?.loadImage(
             on: networkIconView,
-            targetSize: CGSize(width: 44, height: 44),
+            targetSize: CGSize(width: Constants.networkIconSize, height: Constants.networkIconSize),
             animated: true
         )
+
+        setNeedsLayout()
+    }
+
+    private func setupAccountViewIfNeeded() {
+        guard accountView == nil else {
+            return
+        }
+
+        let view = IconDetailsGenericView<UILabel>()
+        view.spacing = 4.0
+        view.iconWidth = 16.0
+        view.detailsView.textColor = R.color.colorTransparentText()
+        view.detailsView.font = .regularFootnote
+        view.detailsView.lineBreakMode = .byTruncatingMiddle
+
+        addSubview(view)
+
+        accountView = view
+
+        updateLayout()
+    }
+
+    private func clearAccountView() {
+        accountView?.removeFromSuperview()
+        accountView = nil
+
+        updateLayout()
+    }
+
+    private func updateLayout() {
+        if let accountView = accountView {
+            networkLabel.snp.remakeConstraints { make in
+                make.top.equalToSuperview()
+                make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
+                make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
+            }
+
+            accountView.snp.makeConstraints { make in
+                make.bottom.equalToSuperview()
+                make.leading.trailing.equalTo(networkLabel)
+            }
+        } else {
+            networkLabel.snp.remakeConstraints { make in
+                make.centerY.equalToSuperview()
+                make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
+                make.trailing.lessThanOrEqualTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
+            }
+        }
     }
 
     private func setupLayout() {
         addSubview(networkIconView)
         networkIconView.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
-            make.size.equalTo(32.0)
+            make.size.equalTo(Constants.networkIconSize)
         }
 
         addSubview(actionIconView)
@@ -72,23 +140,9 @@ final class ChainAccountView: UIView {
 
         addSubview(networkLabel)
         networkLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(0.0)
-            make.leading.equalTo(networkIconView.snp.trailing).offset(12.0)
-            make.trailing.equalTo(actionIconView.snp.leading).offset(-16.0)
-        }
-
-        addSubview(accountIconView)
-        accountIconView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview()
-            make.leading.equalTo(networkIconView.snp.trailing).offset(12.0)
-            make.size.equalTo(16.0)
-        }
-
-        addSubview(addressLabel)
-        addressLabel.snp.makeConstraints { make in
-            make.leading.equalTo(accountIconView.snp.trailing).offset(4.0)
-            make.centerY.equalTo(accountIconView)
-            make.trailing.equalTo(actionIconView.snp.leading).offset(-16.0)
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(networkIconView.snp.trailing).offset(Constants.horizontalInsets)
+            make.trailing.equalTo(actionIconView.snp.leading).offset(-Constants.horizontalInsets)
         }
     }
 }
