@@ -200,6 +200,7 @@ enum ModalPickerFactory {
         viewController.headerBorderType = []
         viewController.cellHeight = 56.0
         viewController.footerHeight = 16.0
+        viewController.isScrollEnabled = true
 
         if let selectedAccount = selectedAccount {
             viewController.selectedIndex = accounts.firstIndex { account in

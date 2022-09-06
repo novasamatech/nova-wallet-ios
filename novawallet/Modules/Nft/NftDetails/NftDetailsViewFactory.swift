@@ -4,7 +4,8 @@ import SoraFoundation
 
 struct NftDetailsViewFactory {
     static func createView(from model: NftChainModel) -> NftDetailsViewProtocol? {
-        guard let interactor = createInteractor(from: model) else {
+        guard let interactor = createInteractor(from: model),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -13,7 +14,11 @@ struct NftDetailsViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let assetInfo = model.chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let quantityFormatter = NumberFormatter.quantity.localizableResource()
 

@@ -19,6 +19,7 @@ final class TransferSetupPresenter {
     private(set) var destinationChainAsset: ChainAsset?
     private(set) var availableDestinations: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
+    private var metaChainAccountResponses: [MetaAccountChainResponse] = []
 
     init(
         interactor: TransferSetupInteractorIntputProtocol,
@@ -101,9 +102,10 @@ final class TransferSetupPresenter {
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func setup() {
         provideChainsViewModel()
-
         childPresenter?.setup()
-        interactor.setup()
+
+        let destinationChain = destinationChainAsset?.chain ?? originChainAsset.chain
+        interactor.setup(destinationChain: destinationChain)
     }
 
     func updateRecepient(partialAddress: String) {
@@ -155,6 +157,15 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             context: selectionState
         )
     }
+
+    func didTapOnYourWallets() {
+        wireframe.showYourWallets(
+            from: view,
+            accounts: metaChainAccountResponses,
+            address: childPresenter?.inputState.recepient,
+            delegate: self
+        )
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
@@ -182,6 +193,12 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
         _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
     }
+
+    func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
+        self.metaChainAccountResponses = metaChainAccountResponses
+        let isShowYourWallets = metaChainAccountResponses.contains { $0.chainAccountResponse != nil }
+        view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
+    }
 }
 
 extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
@@ -203,10 +220,12 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         provideChainsViewModel()
 
-        if destinationChainAsset != nil {
+        if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
+            interactor.destinationChainDidChanged(destinationChainAsset.chain)
         } else {
             setupOnChainChildPresenter()
+            interactor.destinationChainDidChanged(originChainAsset.chain)
         }
     }
 
@@ -220,5 +239,18 @@ extension TransferSetupPresenter: AddressScanDelegate {
         wireframe.hideRecepientScan(from: view)
 
         childPresenter?.changeRecepient(address: address)
+    }
+}
+
+extension TransferSetupPresenter: YourWalletsDelegate {
+    func didSelectYourWallet(address: AccountAddress) {
+        wireframe.hideYourWallets(from: view)
+
+        childPresenter?.changeRecepient(address: address)
+        view?.changeYourWalletsViewState(.inactive)
+    }
+
+    func didCloseYourWalletSelection() {
+        view?.changeYourWalletsViewState(.inactive)
     }
 }

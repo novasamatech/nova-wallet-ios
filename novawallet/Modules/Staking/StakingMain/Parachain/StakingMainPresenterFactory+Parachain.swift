@@ -7,12 +7,15 @@ extension StakingMainPresenterFactory {
     func createParachainPresenter(
         for stakingAssetSettings: StakingAssetSettings,
         view: StakingMainViewProtocol
-    ) -> StakingParachainPresenter {
+    ) -> StakingParachainPresenter? {
         let sharedState = createParachainSharedState(for: stakingAssetSettings)
 
         // MARK: - Interactor
 
-        let interactor = createParachainInteractor(state: sharedState)
+        guard let interactor = createParachainInteractor(state: sharedState),
+              let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
 
         // MARK: - Router
 
@@ -20,14 +23,16 @@ extension StakingMainPresenterFactory {
 
         // MARK: - Presenter
 
-        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory()
-        let stateViewModelFactory = ParaStkStateViewModelFactory()
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
+        let stateViewModelFactory = ParaStkStateViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let presenter = StakingParachainPresenter(
             interactor: interactor,
             wireframe: wireframe,
             networkInfoViewModelFactory: networkInfoViewModelFactory,
             stateViewModelFactory: stateViewModelFactory,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             logger: Logger.shared
         )
 
@@ -37,7 +42,10 @@ extension StakingMainPresenterFactory {
         return presenter
     }
 
-    func createParachainInteractor(state: ParachainStakingSharedState) -> StakingParachainInteractor {
+    func createParachainInteractor(state: ParachainStakingSharedState) -> StakingParachainInteractor? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let storageFacade = SubstrateDataStorageFacade.shared
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -101,6 +109,7 @@ extension StakingMainPresenterFactory {
             collatorsOperationFactory: collatorsOperationFactory,
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
+            currencyManager: currencyManager,
             operationQueue: operationQueue,
             logger: logger
         )

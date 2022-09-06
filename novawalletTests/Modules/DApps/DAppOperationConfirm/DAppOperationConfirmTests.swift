@@ -113,13 +113,15 @@ class DAppOperationConfirmTests: XCTestCase {
             connection: connection,
             signingWrapperFactory: signingWrapperFactory,
             priceProviderFactory: priceProvider,
+            currencyManager: CurrencyManagerStub(),
             operationQueue: OperationQueue()
         )
 
         let delegate = MockDAppOperationConfirmDelegate()
 
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chain.assets.first!.displayInfo
+            targetAssetInfo: chain.assets.first!.displayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
         let presenter = DAppOperationConfirmPresenter(
@@ -235,7 +237,8 @@ class DAppOperationConfirmTests: XCTestCase {
         let delegate = MockDAppOperationConfirmDelegate()
 
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chain.assets.first!.displayInfo
+            targetAssetInfo: chain.assets.first!.displayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
         let presenter = DAppOperationConfirmPresenter(

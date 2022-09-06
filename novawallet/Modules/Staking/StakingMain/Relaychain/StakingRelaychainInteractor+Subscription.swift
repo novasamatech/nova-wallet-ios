@@ -63,7 +63,7 @@ extension StakingRelaychainInteractor {
             return
         }
 
-        priceProvider = subscribeToPrice(for: priceId)
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
     func performAccountInfoSubscription() {
@@ -77,7 +77,7 @@ extension StakingRelaychainInteractor {
         guard let accountResponse = selectedAccount.fetch(
             for: chainAsset.chain.accountRequest()
         ) else {
-            presenter?.didReceive(balanceError: ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceive(accountInfo: nil)
             return
         }
 
@@ -99,7 +99,7 @@ extension StakingRelaychainInteractor {
 
     func performStashControllerSubscription() {
         guard let address = selectedAccount?.toAddress() else {
-            presenter?.didReceive(stashItemError: ChainAccountFetchingError.accountNotExists)
+            handle(stashItem: nil)
             return
         }
 
@@ -291,5 +291,17 @@ extension StakingRelaychainInteractor: AccountLocalSubscriptionHandler, AccountL
         case .failure:
             presenter?.didReceiveAccount(nil, for: accountId)
         }
+    }
+}
+
+extension StakingRelaychainInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let chainAsset = stakingSettings.value,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

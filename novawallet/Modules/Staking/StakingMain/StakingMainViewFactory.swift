@@ -6,6 +6,9 @@ import RobinHood
 
 final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
     static func createView() -> StakingMainViewProtocol? {
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
         let settings = SettingsManager.shared
 
         // MARK: - View
@@ -13,10 +16,12 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
         let interactor = createInteractor(with: settings)
 
         let wireframe = StakingMainWireframe()
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let presenter = StakingMainPresenter(
             childPresenterFactory: StakingMainPresenterFactory(),
-            viewModelFactory: StakingMainViewModelFactory(),
+            viewModelFactory: StakingMainViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory),
+            accountManagementFilter: AccountManagementFilter(),
             logger: Logger.shared
         )
 

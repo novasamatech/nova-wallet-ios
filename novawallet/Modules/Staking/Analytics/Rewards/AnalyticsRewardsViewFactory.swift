@@ -9,7 +9,8 @@ struct AnalyticsRewardsViewFactory {
     ) -> AnalyticsRewardsViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state)
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -17,7 +18,11 @@ struct AnalyticsRewardsViewFactory {
         let wireframe = AnalyticsRewardsWireframe(state: state)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let viewModelFactory = AnalyticsRewardsViewModelFactory(
             assetInfo: assetInfo,
@@ -48,6 +53,7 @@ struct AnalyticsRewardsViewFactory {
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
             let chainAsset = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
             let selectedAddress = metaAccount.fetch(
                 for: chainAsset.chain.accountRequest()
             )?.toAddress() else {
@@ -59,7 +65,8 @@ struct AnalyticsRewardsViewFactory {
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            currencyManager: currencyManager
         )
 
         return interactor

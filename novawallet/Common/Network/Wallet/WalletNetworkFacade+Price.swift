@@ -3,7 +3,10 @@ import RobinHood
 import CommonWallet
 
 extension WalletNetworkFacade {
-    func fetchPriceOperation(assets: [WalletAsset]) -> CompoundOperationWrapper<[String: Price]> {
+    func fetchPriceOperation(
+        assets: [WalletAsset],
+        currency: Currency
+    ) -> CompoundOperationWrapper<[String: Price]> {
         let priceIdMapping: [String: WalletAsset] = assets.reduce(
             into: [:]
         ) { result, walletAsset in
@@ -20,7 +23,10 @@ extension WalletNetworkFacade {
 
         let allPriceIds = [String](priceIdMapping.keys)
 
-        let priceOperation = coingeckoOperationFactory.fetchPriceOperation(for: allPriceIds)
+        let priceOperation = coingeckoOperationFactory.fetchPriceOperation(
+            for: allPriceIds,
+            currency: currency
+        )
 
         let mappingOperation: BaseOperation<[String: Price]> = ClosureOperation {
             let priceDataList = try priceOperation.extractNoCancellableResultData()
@@ -38,7 +44,8 @@ extension WalletNetworkFacade {
 
                 let price = Price(
                     lastValue: Decimal(string: priceData.price) ?? 0.0,
-                    change: (priceData.usdDayChange ?? 0.0) / 100.0
+                    change: (priceData.dayChange ?? 0.0) / 100.0,
+                    currencyId: priceData.currencyId
                 )
 
                 result[asset.identifier] = price

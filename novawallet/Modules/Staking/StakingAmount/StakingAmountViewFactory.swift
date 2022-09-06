@@ -12,6 +12,7 @@ final class StakingAmountViewFactory {
         guard
             let chainAsset = stakingState.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared,
             let chainAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
@@ -23,7 +24,11 @@ final class StakingAmountViewFactory {
         let wireframe = StakingAmountWireframe(stakingState: stakingState)
 
         let assetInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(
             presentable: wireframe,
@@ -66,7 +71,8 @@ final class StakingAmountViewFactory {
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
             let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
-            let rewardCalculationService = state.rewardCalculationService else {
+            let rewardCalculationService = state.rewardCalculationService,
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -103,7 +109,8 @@ final class StakingAmountViewFactory {
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             rewardService: rewardCalculationService,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
 
         return interactor

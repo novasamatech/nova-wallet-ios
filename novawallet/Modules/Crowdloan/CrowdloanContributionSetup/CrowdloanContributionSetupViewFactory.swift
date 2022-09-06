@@ -11,6 +11,7 @@ struct CrowdloanContributionSetupViewFactory {
         guard
             let chain = state.settings.value,
             let asset = chain.utilityAssets().first,
+            let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(for: paraId, chain: chain, asset: asset, state: state) else {
             return nil
         }
@@ -18,7 +19,11 @@ struct CrowdloanContributionSetupViewFactory {
         let wireframe = CrowdloanContributionSetupWireframe(state: state)
 
         let assetInfo = asset.displayInfo(with: chain.icon)
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let localizationManager = LocalizationManager.shared
 
@@ -63,7 +68,8 @@ struct CrowdloanContributionSetupViewFactory {
         asset: AssetModel,
         state: CrowdloanSharedState
     ) -> CrowdloanContributionSetupInteractor? {
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value,
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -115,7 +121,8 @@ struct CrowdloanContributionSetupViewFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             jsonLocalSubscriptionFactory: jsonLocalSubscriptionFactory,
-            operationManager: operationManager
+            operationManager: operationManager,
+            currencyManager: currencyManager
         )
     }
 }

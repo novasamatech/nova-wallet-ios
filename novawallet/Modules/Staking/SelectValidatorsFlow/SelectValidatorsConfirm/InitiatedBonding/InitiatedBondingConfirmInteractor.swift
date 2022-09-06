@@ -17,7 +17,8 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
         signer: SigningWrapperProtocol,
-        nomination: PreparedNomination<InitiatedBonding>
+        nomination: PreparedNomination<InitiatedBonding>,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.nomination = nomination
         self.selectedAccount = selectedAccount
@@ -32,7 +33,8 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
             runtimeService: runtimeService,
             durationOperationFactory: durationOperationFactory,
             operationManager: operationManager,
-            signer: signer
+            signer: signer,
+            currencyManager: currencyManager
         )
     }
 
