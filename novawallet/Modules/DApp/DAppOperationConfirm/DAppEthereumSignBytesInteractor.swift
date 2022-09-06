@@ -44,7 +44,7 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
-            walletAccountId: request.wallet.substrateAccountId,
+            walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: accountId,
             chainAddress: address,
             networkName: chain.chainName,
@@ -90,8 +90,8 @@ extension DAppEthereumSignBytesInteractor: DAppOperationConfirmInteractorInputPr
         }
 
         do {
-            guard account.type.supportsSigningRawBytes else {
-                throw NoSigningSupportError.notSupported
+            if let notSupportedSigner = account.type.notSupportedRawBytesSigner {
+                throw NoSigningSupportError.notSupported(type: notSupportedSigner)
             }
 
             let signer = signingWrapperFactory.createEthereumSigner(for: account)

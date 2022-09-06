@@ -1,15 +1,22 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
-final class MessageSheetViewController: UIViewController, ViewHolder {
-    typealias RootViewType = MessageSheetViewLayout
+final class MessageSheetViewController<
+    I: UIView & MessageSheetGraphicsProtocol,
+    C: UIView & MessageSheetContentProtocol
+>: UIViewController, ViewHolder {
+    typealias RootViewType = MessageSheetViewLayout<I, C>
 
     let presenter: MessageSheetPresenterProtocol
-    let viewModel: MessageSheetViewModel
+    let viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>
+
+    var allowsSwipeDown: Bool = true
+    var closeOnSwipeDownClosure: (() -> Void)?
 
     init(
         presenter: MessageSheetPresenterProtocol,
-        viewModel: MessageSheetViewModel,
+        viewModel: MessageSheetViewModel<I.GraphicsViewModel, C.ContentViewModel>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -26,43 +33,66 @@ final class MessageSheetViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = MessageSheetViewLayout()
+        view = MessageSheetViewLayout<I, C>()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupLocalization()
-        setupIcon()
         setupHandlers()
+        setupLocalization()
     }
 
     private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
+        rootView.graphicsView.bind(messageSheetGraphics: viewModel.graphics, locale: selectedLocale)
+        rootView.contentView.bind(messageSheetContent: viewModel.content, locale: selectedLocale)
 
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
         rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonOkBack(
-            preferredLanguages: languages
-        )
-        rootView.actionButton.invalidateLayout()
-    }
+        if let action = viewModel.mainAction {
+            rootView.mainActionButton?.imageWithTitleView?.title = action.title.value(for: selectedLocale)
+            rootView.mainActionButton?.invalidateLayout()
+        }
 
-    private func setupIcon() {
-        rootView.iconView.image = viewModel.icon
+        if let action = viewModel.secondaryAction {
+            rootView.secondaryActionButton?.imageWithTitleView?.title = action.title.value(for: selectedLocale)
+            rootView.secondaryActionButton?.invalidateLayout()
+        }
     }
 
     private func setupHandlers() {
-        rootView.actionButton.addTarget(self, action: #selector(actionGoBack), for: .touchUpInside)
+        if viewModel.mainAction != nil {
+            rootView.setupMainActionButton()
+            rootView.mainActionButton?.addTarget(self, action: #selector(actionMain), for: .touchUpInside)
+        }
+
+        if viewModel.secondaryAction != nil {
+            rootView.setupSecondaryActionButton()
+            rootView.secondaryActionButton?.addTarget(self, action: #selector(actionSecondary), for: .touchUpInside)
+        }
     }
 
-    @objc private func actionGoBack() {
-        presenter.goBack()
+    @objc private func actionMain() {
+        presenter.goBack(with: viewModel.mainAction)
+    }
+
+    @objc private func actionSecondary() {
+        presenter.goBack(with: viewModel.secondaryAction)
     }
 }
 
 extension MessageSheetViewController: MessageSheetViewProtocol {}
+
+extension MessageSheetViewController: ModalPresenterDelegate {
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool {
+        allowsSwipeDown
+    }
+
+    func presenterDidHide(_: ModalPresenterProtocol) {
+        closeOnSwipeDownClosure?()
+    }
+}
 
 extension MessageSheetViewController: Localizable {
     func applyLocalization() {
