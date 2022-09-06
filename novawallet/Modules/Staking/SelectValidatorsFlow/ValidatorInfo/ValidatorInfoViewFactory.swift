@@ -9,7 +9,14 @@ final class ValidatorInfoViewFactory {
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel
     ) -> ValidatorInfoViewProtocol? {
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        guard let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory
@@ -45,12 +52,14 @@ extension ValidatorInfoViewFactory {
         with validatorInfo: ValidatorInfoProtocol,
         state: StakingSharedState
     ) -> ValidatorInfoViewProtocol? {
-        guard let chainAsset = state.settings.value else { return nil }
+        guard let chainAsset = state.settings.value,
+              let currencyManager = CurrencyManager.shared else { return nil }
 
         let interactor = AnyValidatorInfoInteractor(
             selectedAsset: chainAsset.asset,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            validatorInfo: validatorInfo
+            validatorInfo: validatorInfo,
+            currencyManager: currencyManager
         )
 
         return createView(
@@ -71,7 +80,8 @@ extension ValidatorInfoViewFactory {
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let eraValidatorService = state.eraValidatorService,
-            let rewardCalculationService = state.rewardCalculationService
+            let rewardCalculationService = state.rewardCalculationService,
+            let currencyManager = CurrencyManager.shared
         else { return nil }
 
         let storageRequestFactory = StorageRequestFactory(
@@ -94,7 +104,8 @@ extension ValidatorInfoViewFactory {
             selectedAsset: chainAsset.asset,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             validatorOperationFactory: validatorOperationFactory,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            currencyManager: currencyManager
         )
 
         return createView(

@@ -13,6 +13,7 @@ struct ParaStkStakeConfirmViewFactory {
         guard
             let chainAsset = state.settings.value,
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared,
             let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest())
         else {
             return nil
@@ -27,11 +28,16 @@ struct ParaStkStakeConfirmViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidatingFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
-            assetDisplayInfo: assetDisplayInfo
+            assetDisplayInfo: assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let presenter = ParaStkStakeConfirmPresenter(
@@ -85,7 +91,8 @@ struct ParaStkStakeConfirmViewFactory {
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let blockEstimationService = state.blockTimeService
+            let blockEstimationService = state.blockTimeService,
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
@@ -119,6 +126,7 @@ struct ParaStkStakeConfirmViewFactory {
             runtimeProvider: runtimeProvider,
             stakingDurationFactory: stakingDurationFactory,
             blockEstimationService: blockEstimationService,
+            currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

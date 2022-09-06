@@ -18,12 +18,14 @@ class WalletsListInteractor {
         chainRegistry: ChainRegistryProtocol,
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.currencyManager = currencyManager
     }
 
     private func subscribeWallets() {
@@ -62,11 +64,17 @@ class WalletsListInteractor {
         }
 
         if prevPrices != availableTokenPrice {
-            updatePriceProvider(for: Set(availableTokenPrice.values))
+            updatePriceProvider(
+                for: Set(availableTokenPrice.values),
+                currency: selectedCurrency
+            )
         }
     }
 
-    private func updatePriceProvider(for priceIdSet: Set<AssetModel.PriceId>) {
+    private func updatePriceProvider(
+        for priceIdSet: Set<AssetModel.PriceId>,
+        currency: Currency
+    ) {
         priceSubscription = nil
 
         let priceIds = Array(priceIdSet).sorted()
@@ -75,7 +83,10 @@ class WalletsListInteractor {
             return
         }
 
-        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(for: priceIds)
+        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(
+            for: priceIds,
+            currency: currency
+        )
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
             if let prices = changes.reduceToLastChange() {
@@ -143,5 +154,15 @@ extension WalletsListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscr
         case let .failure(error):
             basePresenter?.didReceiveError(error)
         }
+    }
+}
+
+extension WalletsListInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard basePresenter != nil else {
+            return
+        }
+
+        updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
 }

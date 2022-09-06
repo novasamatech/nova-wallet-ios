@@ -11,6 +11,7 @@ final class WalletManageInteractor: WalletsListInteractor {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.repository = repository
@@ -20,7 +21,8 @@ final class WalletManageInteractor: WalletsListInteractor {
             chainRegistry: chainRegistry,
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager
         )
     }
 }

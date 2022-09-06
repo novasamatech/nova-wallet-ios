@@ -1,6 +1,8 @@
 import UIKit
 
 final class CrowdloanYourContributionsCell: UITableViewCell {
+    private(set) var model: CrowdloanContributionViewModel?
+
     private let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -77,6 +79,7 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
             animated: true
         )
         iconViewModel = contributionViewModel.iconViewModel
+        model = contributionViewModel
     }
 
     func bind(returnInViewModel: String?) {

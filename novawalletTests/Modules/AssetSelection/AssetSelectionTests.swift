@@ -36,7 +36,9 @@ class AssetSelectionTests: XCTestCase {
             balance: BigUInt(1e+18)
         )
 
-        let priceProviderFactory = PriceProviderFactoryStub(priceData: PriceData(price: "1.5", usdDayChange: nil))
+        let priceProviderFactory = PriceProviderFactoryStub(
+            priceData: PriceData(price: "1.5", dayChange: nil, currencyId: Currency.usd.id)
+        )
 
         let interactor = AssetSelectionInteractor(
             selectedMetaAccount: selectedAccount,
@@ -44,6 +46,7 @@ class AssetSelectionTests: XCTestCase {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             assetFilter: { chainAsset in StakingType(rawType: chainAsset.asset.staking) != .unsupported },
+            currencyManager: CurrencyManagerStub(),
             operationQueue: operationQueue
         )
 

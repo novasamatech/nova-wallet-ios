@@ -64,6 +64,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         collatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
@@ -83,6 +84,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     deinit {

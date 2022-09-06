@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 struct ParitySignerAddressesViewFactory {
     static func createOnboardingView(with addressScan: ParitySignerAddressScan) -> ParitySignerAddressesViewProtocol? {
@@ -31,7 +32,10 @@ struct ParitySignerAddressesViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParitySignerAddressesViewController(presenter: presenter)
+        let view = ParitySignerAddressesViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

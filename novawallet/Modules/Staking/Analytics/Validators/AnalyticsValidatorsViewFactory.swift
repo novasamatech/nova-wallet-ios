@@ -8,7 +8,8 @@ struct AnalyticsValidatorsViewFactory {
     static func createView(for state: StakingSharedState) -> AnalyticsValidatorsViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let interactor = createInteractor(state: state) else {
+            let interactor = createInteractor(state: state),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -16,7 +17,8 @@ struct AnalyticsValidatorsViewFactory {
         let presenter = createPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            chainAssetInfo: chainAsset.chainAssetInfo
+            chainAssetInfo: chainAsset.chainAssetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
         let view = AnalyticsValidatorsViewController(presenter: presenter)
@@ -75,9 +77,13 @@ struct AnalyticsValidatorsViewFactory {
     private static func createPresenter(
         interactor: AnalyticsValidatorsInteractor,
         wireframe: AnalyticsValidatorsWireframe,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAssetInfo: ChainAssetDisplayInfo,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> AnalyticsValidatorsPresenter {
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAssetInfo.asset)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAssetInfo.asset,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let viewModelFactory = AnalyticsValidatorsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,

@@ -8,18 +8,21 @@ struct StakingBondMoreConfirmViewFactory {
         from amount: Decimal,
         state: StakingSharedState
     ) -> StakingBondMoreConfirmationViewProtocol? {
-        guard let interactor = createInteractor(for: state) else {
+        guard let interactor = createInteractor(for: state),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
         let wireframe = StakingBondMoreConfirmationWireframe(state: state)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
         let presenter = createPresenter(
             from: interactor,
             wireframe: wireframe,
             amount: amount,
             assetInfo: state.settings.value.assetDisplayInfo,
-            chain: state.settings.value.chain
+            chain: state.settings.value.chain,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let view = StakingBondMoreConfirmationVC(
@@ -38,9 +41,13 @@ struct StakingBondMoreConfirmViewFactory {
         wireframe: StakingBondMoreConfirmationWireframeProtocol,
         amount: Decimal,
         assetInfo: AssetBalanceDisplayInfo,
-        chain: ChainModel
+        chain: ChainModel,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> StakingBondMoreConfirmationPresenter {
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let confirmationViewModelFactory = StakingBondMoreConfirmViewModelFactory()
 
@@ -65,7 +72,8 @@ struct StakingBondMoreConfirmViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let accountResponse = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let accountResponse = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -97,7 +105,8 @@ struct StakingBondMoreConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: ExtrinsicFeeProxy(),
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            currencyManager: currencyManager
         )
     }
 }

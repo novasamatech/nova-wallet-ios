@@ -30,6 +30,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
@@ -41,6 +42,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            currencyManager: currencyManager,
             logger: logger
         )
     }

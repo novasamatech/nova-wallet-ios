@@ -43,6 +43,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         runtimeProvider: RuntimeCodingServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         identityOperationFactory: IdentityOperationFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -59,6 +60,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         self.repositoryFactory = repositoryFactory
         self.identityOperationFactory = identityOperationFactory
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -90,7 +92,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         )
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 
@@ -310,5 +312,16 @@ extension ParaStkStakeSetupInteractor: ParastakingLocalStorageSubscriber, Parast
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
+    }
+}
+
+extension ParaStkStakeSetupInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

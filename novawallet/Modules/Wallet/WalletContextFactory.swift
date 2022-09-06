@@ -9,6 +9,7 @@ import SubstrateSdk
 enum WalletContextFactoryError: Error {
     case missingAccount
     case missingAsset
+    case missingCurrencyProvider
 }
 
 protocol WalletContextFactoryProtocol {
@@ -31,6 +32,9 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         guard let metaAccount = SelectedWalletSettings.shared.value,
               let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
             throw WalletContextFactoryError.missingAccount
+        }
+        guard let currencyManager = CurrencyManager.shared else {
+            throw WalletContextFactoryError.missingCurrencyProvider
         }
 
         let accountId = chainAccountResponse.accountId
@@ -130,7 +134,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             repositoryFactory: repositoryFactory,
             contactsOperationFactory: contactOperationFactory,
             accountsRepository: accountsRepository,
-            assetBalanceRepository: assetBalanceRepository
+            assetBalanceRepository: assetBalanceRepository,
+            currencyManager: currencyManager
         )
 
         let builder = CommonWalletBuilder.builder(
@@ -143,6 +148,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         WalletCommonConfigurator(
             chainAccount: chainAccountResponse,
             localizationManager: localizationManager,
+            currencyManager: currencyManager,
             assets: [walletAsset]
         ).configure(builder: builder)
 
@@ -155,17 +161,17 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             accountType: chainAccountResponse.type,
             chainAsset: chainAsset,
             purchaseProvider: purchaseProvider,
-            priceAsset: priceAsset,
+            priceAssetFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
             localizationManager: localizationManager
         )
 
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
 
-        let amountFormatterFactory = AmountFormatterFactory()
+        let balanceFormatterFactory = AssetBalanceFormatterFactory()
 
         TransactionHistoryConfigurator(
             chainAsset: chainAsset,
-            amountFormatterFactory: amountFormatterFactory,
+            balanceFormatterFactory: balanceFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
 

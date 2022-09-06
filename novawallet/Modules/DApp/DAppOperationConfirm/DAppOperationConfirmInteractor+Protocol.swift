@@ -7,7 +7,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
         processRequestAndContinueSetup(request, chain: chain)
 
         if let priceId = chain.utilityAssets().first?.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 
@@ -45,6 +45,8 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
                     let interactorError: Error
                     if let noKeysError = error as? NoKeysSigningWrapperError {
                         interactorError = noKeysError
+                    } else if let hardwareSigningError = error as? HardwareSigningError {
+                        interactorError = hardwareSigningError
                     } else if let operationError = error as? DAppOperationConfirmInteractorError {
                         interactorError = operationError
                     } else {
@@ -161,5 +163,16 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
 extension DAppOperationConfirmInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         presenter?.didReceive(priceResult: result)
+    }
+}
+
+extension DAppOperationConfirmInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chain.utilityAssets().first?.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

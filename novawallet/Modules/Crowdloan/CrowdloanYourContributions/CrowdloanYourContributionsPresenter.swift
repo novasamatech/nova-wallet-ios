@@ -9,8 +9,9 @@ final class CrowdloanYourContributionsPresenter {
     let viewModelFactory: CrowdloanYourContributionsVMFactoryProtocol
     let timeFormatter: TimeFormatterProtocol
     let logger: LoggerProtocol?
+    let crowdloansCalculator: CrowdloansCalculatorProtocol
 
-    private var returnInIntervals: [TimeInterval]?
+    private var returnInIntervals: [ReturnInIntervalsViewModel]?
     private var maxReturnInInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
 
@@ -49,6 +50,7 @@ final class CrowdloanYourContributionsPresenter {
         wireframe: CrowdloanYourContributionsWireframeProtocol,
         timeFormatter: TimeFormatterProtocol,
         localizationManager: LocalizationManagerProtocol,
+        crowdloansCalculator: CrowdloansCalculatorProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.input = input
@@ -57,18 +59,25 @@ final class CrowdloanYourContributionsPresenter {
         self.wireframe = wireframe
         self.timeFormatter = timeFormatter
         self.logger = logger
+        self.crowdloansCalculator = crowdloansCalculator
         self.localizationManager = localizationManager
     }
 
     private func updateCrowdloans() {
+        let amount = crowdloansCalculator.calculateTotal(
+            precision: input.chainAsset.asset.assetPrecision,
+            contributions: input.contributions,
+            externalContributions: externalContributions
+        )
         let viewModel = viewModelFactory.createViewModel(
             input: input,
             externalContributions: externalContributions,
+            amount: amount ?? 0,
             price: price,
             locale: selectedLocale
         )
 
-        view?.reload(contributions: viewModel.contributions)
+        view?.reload(model: viewModel)
     }
 
     private func updateReturnInTimeIntervals() {
@@ -82,7 +91,7 @@ final class CrowdloanYourContributionsPresenter {
             metadata: crowloanMetadata
         )
 
-        maxReturnInInterval = returnInIntervals?.max()
+        maxReturnInInterval = returnInIntervals?.max { $0.interval < $1.interval }?.interval
 
         invalidateTimer()
         setupTimer()
@@ -114,18 +123,20 @@ final class CrowdloanYourContributionsPresenter {
 
         let elapsedTime = maxReturnInInterval >= remainedTimeInterval ? maxReturnInInterval - remainedTimeInterval : 0
 
-        let returnInViewModels: [String?] = returnInIntervals?.map { timeInterval in
-            guard timeInterval > elapsedTime else {
-                return nil
+        let returnInViewModels: [FormattedReturnInIntervalsViewModel] = returnInIntervals?.map { model in
+            guard model.interval > elapsedTime else {
+                return .init(index: model.index, interval: nil)
             }
 
-            let remainedTime = timeInterval - elapsedTime
+            let remainedTime = model.interval - elapsedTime
 
+            let remainedTimeString: String?
             if remainedTime.daysFromSeconds > 0 {
-                return remainedTime.localizedDaysHours(for: selectedLocale)
+                remainedTimeString = remainedTime.localizedDaysHours(for: selectedLocale)
             } else {
-                return try? timeFormatter.string(from: remainedTime)
+                remainedTimeString = try? timeFormatter.string(from: remainedTime)
             }
+            return .init(index: model.index, interval: remainedTimeString)
         } ?? []
 
         view?.reload(returnInIntervals: returnInViewModels)

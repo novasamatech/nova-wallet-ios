@@ -7,7 +7,8 @@ final class StakingRebondSetupViewFactory {
     static func createView(for state: StakingSharedState) -> StakingRebondSetupViewProtocol? {
         // MARK: Interactor
 
-        guard let interactor = createInteractor(state: state) else {
+        guard let interactor = createInteractor(state: state),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -18,7 +19,11 @@ final class StakingRebondSetupViewFactory {
         // MARK: - Presenter
 
         let assetInfo = state.settings.value.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -58,7 +63,8 @@ final class StakingRebondSetupViewFactory {
                 for: chainAsset.chain.accountRequest()
             ),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -83,6 +89,7 @@ final class StakingRebondSetupViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             feeProxy: feeProxy,
+            currencyManager: currencyManager,
             operationManager: operationManager
         )
     }

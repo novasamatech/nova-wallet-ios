@@ -68,6 +68,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         eventCenter: EventCenterProtocol,
         operationManager: OperationManagerProtocol,
         applicationHandler: ApplicationHandlerProtocol,
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.selectedWalletSettings = selectedWalletSettings
@@ -83,6 +84,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         self.operationManager = operationManager
         self.applicationHandler = applicationHandler
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -109,12 +111,11 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     func setupSelectedAccountAndChainAsset() {
         guard
             let wallet = selectedWalletSettings.value,
-            let chainAsset = stakingSettings.value,
-            let response = wallet.fetch(for: chainAsset.chain.accountRequest()) else {
+            let chainAsset = stakingSettings.value else {
             return
         }
 
-        selectedAccount = response
+        selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest())
         selectedChainAsset = chainAsset
     }
 

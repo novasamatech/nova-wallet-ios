@@ -9,6 +9,7 @@ enum SettingsKey: String {
     case stakingAsset
     case stakingNetworkExpansion
     case hidesZeroBalances
+    case selectedCurrency
 }
 
 extension SettingsManagerProtocol {
@@ -71,6 +72,20 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.hidesZeroBalances.rawValue)
+        }
+    }
+
+    var selectedCurrencyId: Int? {
+        get {
+            integer(for: SettingsKey.selectedCurrency.rawValue)
+        }
+
+        set {
+            if let existingValue = newValue {
+                set(value: existingValue, for: SettingsKey.selectedCurrency.rawValue)
+            } else {
+                removeValue(for: SettingsKey.selectedCurrency.rawValue)
+            }
         }
     }
 }

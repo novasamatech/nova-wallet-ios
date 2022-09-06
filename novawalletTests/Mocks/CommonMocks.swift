@@ -1101,6 +1101,106 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
+import RobinHood
+
+
+ class MockCurrencyRepositoryProtocol: CurrencyRepositoryProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = CurrencyRepositoryProtocol
+    
+     typealias Stubbing = __StubbingProxy_CurrencyRepositoryProtocol
+     typealias Verification = __VerificationProxy_CurrencyRepositoryProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: CurrencyRepositoryProtocol?
+
+     func enableDefaultImplementation(_ stub: CurrencyRepositoryProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]> {
+        
+    return cuckoo_manager.call("fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.fetchAvailableCurrenciesWrapper())
+        
+    }
+    
+
+	 struct __StubbingProxy_CurrencyRepositoryProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func fetchAvailableCurrenciesWrapper() -> Cuckoo.ProtocolStubFunction<(), CompoundOperationWrapper<[Currency]>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCurrencyRepositoryProtocol.self, method: "fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]>", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_CurrencyRepositoryProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func fetchAvailableCurrenciesWrapper() -> Cuckoo.__DoNotUse<(), CompoundOperationWrapper<[Currency]>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class CurrencyRepositoryProtocolStub: CurrencyRepositoryProtocol {
+    
+
+    
+
+    
+    
+    
+     func fetchAvailableCurrenciesWrapper() -> CompoundOperationWrapper<[Currency]>  {
+        return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[Currency]>).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+@testable import SoraKeystore
+
+import Foundation
 
 
  class MockEventProtocol: EventProtocol, Cuckoo.ProtocolMock {

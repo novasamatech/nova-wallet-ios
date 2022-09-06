@@ -1,0 +1,11 @@
+[
+    {
+        "code": "USD",
+        "name": "United States Dollar",
+        "symbol": "$",
+        "category": "fiat",
+        "popular": true,
+        "id": 0,
+        "coingeckoId": "usd"
+    }
+]

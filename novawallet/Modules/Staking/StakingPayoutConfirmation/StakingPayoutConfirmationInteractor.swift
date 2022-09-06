@@ -47,6 +47,7 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         operationManager: OperationManagerProtocol,
         payouts: [PayoutInfo],
+        currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.selectedAccount = selectedAccount
@@ -62,6 +63,7 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
         self.operationManager = operationManager
         self.payouts = payouts
         self.logger = logger
+        self.currencyManager = currencyManager
     }
 
     // MARK: - Private functions
@@ -233,7 +235,7 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
         )
 
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -296,5 +298,16 @@ extension StakingPayoutConfirmationInteractor: WalletLocalStorageSubscriber, Wal
 extension StakingPayoutConfirmationInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         presenter.didReceivePriceData(result: result)
+    }
+}
+
+extension StakingPayoutConfirmationInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

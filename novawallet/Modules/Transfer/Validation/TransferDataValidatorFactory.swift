@@ -71,17 +71,20 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
     var basePresentable: BaseErrorPresentable { presentable }
     let assetDisplayInfo: AssetBalanceDisplayInfo
     let utilityAssetInfo: AssetBalanceDisplayInfo?
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     let presentable: TransferErrorPresentable
 
     init(
         presentable: TransferErrorPresentable,
         assetDisplayInfo: AssetBalanceDisplayInfo,
-        utilityAssetInfo: AssetBalanceDisplayInfo?
+        utilityAssetInfo: AssetBalanceDisplayInfo?,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.presentable = presentable
         self.assetDisplayInfo = assetDisplayInfo
         self.utilityAssetInfo = utilityAssetInfo
+        self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
     func canSend(
@@ -303,12 +306,20 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         }
 
         return ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view, let originAsset = self?.assetDisplayInfo else {
+            guard let view = self?.view,
+                  let originAsset = self?.assetDisplayInfo,
+                  let priceAssetInfoFactory = self?.priceAssetInfoFactory else {
                 return
             }
 
-            let destBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: destinationAsset)
-            let originBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: originAsset)
+            let destBalanceViewModelFactory = BalanceViewModelFactory(
+                targetAssetInfo: destinationAsset,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
+            let originBalanceViewModelFactory = BalanceViewModelFactory(
+                targetAssetInfo: originAsset,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
 
             let crossChainFeeDecimal = Decimal.fromSubstrateAmount(
                 fee?.crossChain ?? 0,

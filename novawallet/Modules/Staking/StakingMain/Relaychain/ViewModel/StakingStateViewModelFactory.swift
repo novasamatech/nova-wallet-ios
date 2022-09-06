@@ -18,15 +18,18 @@ final class StakingStateViewModelFactory {
     let logger: LoggerProtocol?
 
     private var lastViewModel: StakingViewState = .undefined
+    private let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
 
     var balanceViewModelFactory: BalanceViewModelFactoryProtocol?
     private var cachedChainAsset: ChainAsset?
 
     init(
         analyticsRewardsViewModelFactoryBuilder: @escaping AnalyticsRewardsViewModelFactoryBuilder,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.analyticsRewardsViewModelFactoryBuilder = analyticsRewardsViewModelFactoryBuilder
+        self.priceAssetInfoFactory = priceAssetInfoFactory
         self.logger = logger
     }
 
@@ -57,7 +60,10 @@ final class StakingStateViewModelFactory {
             return factory
         }
 
-        let factory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+        let factory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
 
         balanceViewModelFactory = factory
 

@@ -38,7 +38,8 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         jsonLocalSubscriptionFactory: JsonDataProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.paraId = paraId
         self.selectedMetaAccount = selectedMetaAccount
@@ -53,6 +54,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         self.jsonLocalSubscriptionFactory = jsonLocalSubscriptionFactory
 
         self.operationManager = operationManager
+        self.currencyManager = currencyManager
     }
 
     private func provideConstants() {
@@ -123,7 +125,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
 
     private func subscribeToPrice() {
         if let priceId = asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -218,5 +220,15 @@ extension CrowdloanContributionInteractor: JsonLocalStorageSubscriber, JsonLocal
 extension CrowdloanContributionInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter.didReceiveFee(result: result)
+    }
+}
+
+extension CrowdloanContributionInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil, let priceId = asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

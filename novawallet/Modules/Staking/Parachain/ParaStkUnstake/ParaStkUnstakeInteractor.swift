@@ -29,6 +29,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         stakingDurationFactory: ParaStkDurationOperationFactoryProtocol,
         blocktimeEstimationService: BlockTimeEstimationServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.identityOperationFactory = identityOperationFactory
@@ -46,6 +47,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
             stakingDurationFactory: stakingDurationFactory,
             blocktimeEstimationService: blocktimeEstimationService,
             repositoryFactory: repositoryFactory,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

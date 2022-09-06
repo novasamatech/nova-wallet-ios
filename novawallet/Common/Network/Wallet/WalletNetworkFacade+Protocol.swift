@@ -13,10 +13,10 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
             return accountSettings.assets.first { $0.identifier == identifier }
         }
-
         let balanceOperation = fetchBalanceInfoForAsset(userAssets)
         let priceWrapper: CompoundOperationWrapper<[String: Price]> = fetchPriceOperation(
-            assets: userAssets
+            assets: userAssets,
+            currency: currencyManager.selectedCurrency
         )
 
         let currentPriceId = totalPriceId
@@ -35,7 +35,11 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
                     let contextWithPrice: BalanceContext = {
                         guard let price = prices[balanceData.identifier] else { return context }
-                        return context.byChangingPrice(price.lastValue, newPriceChange: price.change)
+                        return context.byChangingPrice(
+                            price.lastValue,
+                            newPriceChange: price.change,
+                            newPriceId: price.currencyId
+                        )
                     }()
 
                     return BalanceData(

@@ -11,6 +11,7 @@ extension TransferSetupPresenterFactory {
     ) -> TransferSetupChildPresenterProtocol? {
         guard
             let wallet = SelectedWalletSettings.shared.value,
+            let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: originChainAsset,
                 destinationChainAsset: destinationChainAsset,
@@ -24,9 +25,10 @@ extension TransferSetupPresenterFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
-
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let sendBalanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: originChainAsset.assetDisplayInfo
+            targetAssetInfo: originChainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
@@ -36,7 +38,8 @@ extension TransferSetupPresenterFactory {
             utilityAsset.assetId != originChainAsset.asset.assetId {
             let utilityAssetInfo = utilityAsset.displayInfo(with: originChainAsset.chain.icon)
             utilityBalanceViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAssetInfo
+                targetAssetInfo: utilityAssetInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
             )
         } else {
             utilityBalanceViewModelFactory = nil
@@ -45,7 +48,8 @@ extension TransferSetupPresenterFactory {
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: originChainAsset.assetDisplayInfo,
-            utilityAssetInfo: originChainAsset.chain.utilityAssets().first?.displayInfo
+            utilityAssetInfo: originChainAsset.chain.utilityAssets().first?.displayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         let phishingRepository = SubstrateRepositoryFactory().createPhishingRepository()
@@ -84,7 +88,8 @@ extension TransferSetupPresenterFactory {
         destinationChainAsset: ChainAsset,
         xcmTransfers: XcmTransfers
     ) -> CrossChainTransferSetupInteractor? {
-        guard let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()) else {
+        guard let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()),
+              let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -127,6 +132,7 @@ extension TransferSetupPresenterFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            currencyManager: currencyManager,
             operationQueue: operationQueue
         )
     }

@@ -347,6 +347,7 @@
 "tabbar.crowdloan.title" = "Crowdloans";
 "crowdloan.list.section.format" = "Select parachains to contribute your %@. You will receive rewards if the parachain acquires a slot by the end of the auction.";
 "crowdloan.you.contributions.title" = "Your contributions";
+"crowdloan.you.contributions.total" = "Total";
 "crowdloan.about.crowdloans" = "About crowdloans";
 "crowdloan.progress.format" = "Raised: %@ of %@";
 "crowdloan.empty.message" = "Information about crowdloans\n will appear here";
@@ -886,3 +887,10 @@
 "common.scan.qr.code" = "Scan QR code";
 "parity.signer.address.scan.error" = "Can't extract address from the QR code";
 "common.unsupported.qr.code" = "QR code has unsupported format";
+"currency.title" = "Currency";
+"currency.category.fiat" = "Fiat currencies";
+"currency.category.popularFiat" = "Popular fiat currencies";
+"currency.category.cryptocurrencies" = "Cryptocurrencies";
+"profile.currency.title" = "Currency";
+"assets.select.send.your.wallets" = "Your wallets";
+"common.wallet.not.support.chain" = "%@ doesn't support %@";

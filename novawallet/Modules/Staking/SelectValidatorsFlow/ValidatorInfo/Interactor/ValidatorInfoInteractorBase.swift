@@ -10,15 +10,17 @@ class ValidatorInfoInteractorBase: ValidatorInfoInteractorInputProtocol {
 
     init(
         selectedAsset: AssetModel,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedAsset = selectedAsset
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.currencyManager = currencyManager
     }
 
     func setup() {
         if let priceId = selectedAsset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
@@ -32,5 +34,16 @@ class ValidatorInfoInteractorBase: ValidatorInfoInteractorInputProtocol {
 extension ValidatorInfoInteractorBase: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         presenter.didReceivePriceData(result: result)
+    }
+}
+
+extension ValidatorInfoInteractorBase: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = selectedAsset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }

@@ -347,6 +347,7 @@
 "tabbar.crowdloan.title" = "Краудлоуны";
 "crowdloan.list.section.format" = "Выберите парачейны для внесения своего вклада %@. Вы получите вознаграждение, если парачейн приобретет слот до конца аукциона.";
 "crowdloan.you.contributions.title" = "Ваш вклад";
+"crowdloan.you.contributions.total" = "Всего";
 "crowdloan.about.crowdloans" = "О краудлоунах";
 "crowdloan.progress.format" = "Собрано: %@ из %@";
 "crowdloan.empty.message" = "Информация о краудлоунах \n появится здесь.";
@@ -886,3 +887,10 @@
 "common.scan.qr.code" = "Сканировать QR код";
 "parity.signer.address.scan.error" = "Не удается получить адрес из QR-кода";
 "common.unsupported.qr.code" = "Формат QR кода не поддерживается";
+"currency.title" = "Валюта";
+"currency.category.fiat" = "Фиатные валюты";
+"currency.category.popularFiat" = "Популярные фиатные валюты";
+"currency.category.cryptocurrencies" = "Криптовалюты";
+"profile.currency.title" = "Валюта";
+"assets.select.send.your.wallets" = "Ваши кошельки";
+"common.wallet.not.support.chain" = "%@ не поддерживает %@";

@@ -12,10 +12,10 @@ final class AssetDetailsConfigurator {
         accountType: MetaAccountModelType,
         chainAsset: ChainAsset,
         purchaseProvider: PurchaseProviderProtocol,
-        priceAsset: WalletAsset,
+        priceAssetFactory: PriceAssetInfoFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
-        let amountFormatterFactory = AmountFormatterFactory()
+        let balanceFormatterFactory = AssetBalanceFormatterFactory()
 
         containingViewFactory = AssetDetailsContainingViewFactory(
             chainAsset: chainAsset,
@@ -26,8 +26,8 @@ final class AssetDetailsConfigurator {
         )
 
         viewModelFactory = AssetDetailsViewModelFactory(
-            amountFormatterFactory: amountFormatterFactory,
-            priceAsset: priceAsset
+            balanceFormatterFactory: balanceFormatterFactory,
+            priceInfoFactory: priceAssetFactory
         )
     }
 

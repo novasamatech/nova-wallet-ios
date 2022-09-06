@@ -51,14 +51,14 @@ final class TransactionHistoryConfigurator {
 
     init(
         chainAsset: ChainAsset,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
+        balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         assets: [WalletAsset]
     ) {
         supportsFilters = chainAsset.asset.assetId == chainAsset.chain.utilityAssets().first?.assetId
 
         viewModelFactory = TransactionHistoryViewModelFactory(
             chainAsset: chainAsset,
-            amountFormatterFactory: amountFormatterFactory,
+            balanceFormatterFactory: balanceFormatterFactory,
             dateFormatter: DateFormatter.txHistory,
             assets: assets
         )

@@ -6,6 +6,7 @@ struct BalanceContext {
     static let frozen = "account.balance.frozen.key"
     static let priceKey = "account.balance.price.key"
     static let priceChangeKey = "account.balance.price.change.key"
+    static let priceIdKey = "account.balance.price.id.key"
     static let balanceLocksKey = "account.balance.locks.key"
 
     let free: Decimal
@@ -13,6 +14,7 @@ struct BalanceContext {
     let frozen: Decimal
     let price: Decimal
     let priceChange: Decimal
+    let priceId: Int?
     let balanceLocks: BalanceLocks
 }
 
@@ -30,6 +32,7 @@ extension BalanceContext {
 
         price = Self.parseContext(key: BalanceContext.priceKey, context: context)
         priceChange = Self.parseContext(key: BalanceContext.priceChangeKey, context: context)
+        priceId = context[BalanceContext.priceIdKey].flatMap { Int($0) }
 
         balanceLocks = Self.parseJSONContext(key: BalanceContext.balanceLocksKey, context: context)
     }
@@ -43,7 +46,7 @@ extension BalanceContext {
             return String(data: locksJSON, encoding: .utf8) ?? ""
         }()
 
-        return [
+        var dict = [
             BalanceContext.freeKey: free.stringWithPointSeparator,
             BalanceContext.reservedKey: reserved.stringWithPointSeparator,
             BalanceContext.frozen: frozen.stringWithPointSeparator,
@@ -51,6 +54,12 @@ extension BalanceContext {
             BalanceContext.priceChangeKey: priceChange.stringWithPointSeparator,
             BalanceContext.balanceLocksKey: locksStringRepresentation
         ]
+
+        if let priceId = priceId {
+            dict[BalanceContext.priceIdKey] = String(priceId)
+        }
+
+        return dict
     }
 
     private static func parseContext(key: String, context: [String: String]) -> Decimal {
@@ -94,6 +103,7 @@ extension BalanceContext {
             frozen: max(miscFrozen, feeFrozen),
             price: price,
             priceChange: priceChange,
+            priceId: priceId,
             balanceLocks: balanceLocks
         )
     }
@@ -112,6 +122,7 @@ extension BalanceContext {
             frozen: frozen,
             price: price,
             priceChange: priceChange,
+            priceId: priceId,
             balanceLocks: balanceLocks
         )
     }
@@ -125,17 +136,19 @@ extension BalanceContext {
             frozen: frozen,
             price: price,
             priceChange: priceChange,
+            priceId: priceId,
             balanceLocks: updatedLocks
         )
     }
 
-    func byChangingPrice(_ newPrice: Decimal, newPriceChange: Decimal) -> BalanceContext {
+    func byChangingPrice(_ newPrice: Decimal, newPriceChange: Decimal, newPriceId: Int?) -> BalanceContext {
         BalanceContext(
             free: free,
             reserved: reserved,
             frozen: frozen,
             price: newPrice,
             priceChange: newPriceChange,
+            priceId: newPriceId,
             balanceLocks: balanceLocks
         )
     }

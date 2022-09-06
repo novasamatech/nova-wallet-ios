@@ -13,6 +13,12 @@ protocol ParaStkNetworkInfoViewModelFactoryProtocol {
 
 extension ParachainStaking {
     final class NetworkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol {
+        private let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+
+        init(priceAssetInfoFactory: PriceAssetInfoFactoryProtocol) {
+            self.priceAssetInfoFactory = priceAssetInfoFactory
+        }
+
         private func createStakeViewModel(
             stake: BigUInt,
             displayInfo: AssetBalanceDisplayInfo,
@@ -96,7 +102,8 @@ extension ParachainStaking {
         ) -> LocalizableResource<NetworkStakingInfoViewModel> {
             let assetDisplayInfo = chainAsset.assetDisplayInfo
             let balanceViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: assetDisplayInfo
+                targetAssetInfo: assetDisplayInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
             )
 
             let localizedTotalStake = createTotalStakeViewModel(

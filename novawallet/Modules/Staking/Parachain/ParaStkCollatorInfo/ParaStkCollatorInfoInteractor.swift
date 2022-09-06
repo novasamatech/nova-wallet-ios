@@ -16,12 +16,14 @@ final class ParaStkCollatorInfoInteractor: AnyProviderAutoCleaning {
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.currencyManager = currencyManager
     }
 
     private func subscribeDelegator() {
@@ -37,7 +39,7 @@ final class ParaStkCollatorInfoInteractor: AnyProviderAutoCleaning {
 extension ParaStkCollatorInfoInteractor: ParaStkCollatorInfoInteractorInputProtocol {
     func setup() {
         if let priceId = chainAsset.asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId)
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceivePrice(nil)
         }
@@ -78,5 +80,16 @@ extension ParaStkCollatorInfoInteractor: ParastakingLocalStorageSubscriber, Para
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
+    }
+}
+
+extension ParaStkCollatorInfoInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }
