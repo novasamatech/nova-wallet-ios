@@ -26,6 +26,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
     let durationOperationFactory: ParaStkDurationOperationFactoryProtocol
     let yieldBoostSupport: ParaStkYieldBoostSupportProtocol
+    let yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
@@ -38,7 +39,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var networkInfoCancellable: CancellableCall?
     var delegationsCancellable: CancellableCall?
     var durationCancellable: CancellableCall?
-    var automationTimeCancellable: CancellableCall?
 
     var priceProvider: AnySingleValueProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
@@ -47,6 +47,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
     var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
+    var yieldBoostTasksProvider: AnySingleValueProvider<[ParaStkYieldBoostState.Task]>?
 
     var selectedAccount: MetaChainAccountResponse?
     var selectedChainAsset: ChainAsset?
@@ -65,6 +66,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         scheduledRequestsFactory: ParaStkScheduledRequestsQueryFactoryProtocol,
         collatorsOperationFactory: ParaStkCollatorsOperationFactoryProtocol,
         yieldBoostSupport: ParaStkYieldBoostSupportProtocol,
+        yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -84,6 +86,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         self.scheduledRequestsFactory = scheduledRequestsFactory
         self.collatorsOperationFactory = collatorsOperationFactory
         self.yieldBoostSupport = yieldBoostSupport
+        self.yieldBoostProviderFactory = yieldBoostProviderFactory
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
@@ -110,7 +113,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clear(cancellable: &networkInfoCancellable)
         clear(cancellable: &delegationsCancellable)
         clear(cancellable: &durationCancellable)
-        clear(cancellable: &automationTimeCancellable)
     }
 
     func setupSelectedAccountAndChainAsset() {
@@ -181,8 +183,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         performAssetBalanceSubscription()
         performDelegatorSubscription()
         performTotalRewardSubscription()
-
-        provideYieldBoostState()
+        performYieldBoostTasksSubscription()
 
         provideRewardCalculator(from: rewardCalculationService)
         provideSelectedCollatorsInfo(from: collatorService)
@@ -199,7 +200,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clear(streamableProvider: &balanceProvider)
         clear(dataProvider: &delegatorProvider)
         clear(singleValueProvider: &totalRewardProvider)
-        clear(cancellable: &automationTimeCancellable)
+        clear(singleValueProvider: &yieldBoostTasksProvider)
 
         guard let selectedChain = selectedChainAsset?.chain else {
             return
@@ -216,10 +217,10 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         performAssetBalanceSubscription()
         performDelegatorSubscription()
         performTotalRewardSubscription()
-        provideYieldBoostState()
+        performYieldBoostTasksSubscription()
     }
 
     func updateOnAssetBalanceReceive() {
-        provideYieldBoostState()
+        yieldBoostTasksProvider?.refresh()
     }
 }
