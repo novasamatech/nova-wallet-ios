@@ -1010,6 +1010,8 @@
 		846F758527B54F8300536547 /* EthereumTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758427B54F8300536547 /* EthereumTransaction.swift */; };
 		846F758727B5550700536547 /* EthereumRpcRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758627B5550700536547 /* EthereumRpcRequest.swift */; };
 		846F758927B5584100536547 /* EthereumRpcResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758827B5584100536547 /* EthereumRpcResponse.swift */; };
+		846FB02C28C74F9700CA5444 /* ParaStkYieldBoostState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */; };
+		846FB02E28C7524200CA5444 /* StakingParachainInteractor+Provide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846FB02D28C7524200CA5444 /* StakingParachainInteractor+Provide.swift */; };
 		8470D6CD253E3170009E9A5D /* AccountInfoSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */; };
 		8470D6D0253E321C009E9A5D /* StorageSubscriptionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */; };
 		8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */; };
@@ -1599,7 +1601,6 @@
 		84BEE0F02562897100D05EB3 /* AccountImportJsonFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BEE0EF2562897100D05EB3 /* AccountImportJsonFactory.swift */; };
 		84BEE22325646AC000D05EB3 /* SelectedUsernameChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BEE22225646ABF00D05EB3 /* SelectedUsernameChanged.swift */; };
 		84BEE63026CBFDBC00757009 /* ChainRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BEE62F26CBFDBC00757009 /* ChainRegistryTests.swift */; };
-		84BF9037288A8D2A0072C2D5 /* MessageSheetPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BF9036288A8D2A0072C2D5 /* MessageSheetPresentable.swift */; };
 		84BFE89728C2314300140F1F /* ParaStkYieldBoostOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE89628C2314300140F1F /* ParaStkYieldBoostOperationFactory.swift */; };
 		84BFE89928C2320700140F1F /* ParaStkYieldBoostQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE89828C2320700140F1F /* ParaStkYieldBoostQuery.swift */; };
 		84BFE89C28C23A2500140F1F /* AutomationTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BFE89B28C23A2500140F1F /* AutomationTime.swift */; };
@@ -2014,6 +2015,7 @@
 		84FB9E24285C6ACC00B42FC0 /* XcmMultiasset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */; };
 		84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */; };
 		84FB9E28285C736A00B42FC0 /* XcmTransferFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */; };
+		84FBDBDB28C7737200CC1037 /* ParaStkYieldBoostSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBDBDA28C7737200CC1037 /* ParaStkYieldBoostSupport.swift */; };
 		84FD19FC27A32973008E5E68 /* HistoryRewardContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */; };
 		84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */; };
 		84FD3DAF2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */; };
@@ -3664,6 +3666,8 @@
 		846F758427B54F8300536547 /* EthereumTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransaction.swift; sourceTree = "<group>"; };
 		846F758627B5550700536547 /* EthereumRpcRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumRpcRequest.swift; sourceTree = "<group>"; };
 		846F758827B5584100536547 /* EthereumRpcResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumRpcResponse.swift; sourceTree = "<group>"; };
+		846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostState.swift; sourceTree = "<group>"; };
+		846FB02D28C7524200CA5444 /* StakingParachainInteractor+Provide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingParachainInteractor+Provide.swift"; sourceTree = "<group>"; };
 		8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoSubscription.swift; sourceTree = "<group>"; };
 		8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionProtocols.swift; sourceTree = "<group>"; };
 		8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionContainer.swift; sourceTree = "<group>"; };
@@ -4260,7 +4264,6 @@
 		84BEE0EF2562897100D05EB3 /* AccountImportJsonFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportJsonFactory.swift; sourceTree = "<group>"; };
 		84BEE22225646ABF00D05EB3 /* SelectedUsernameChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedUsernameChanged.swift; sourceTree = "<group>"; };
 		84BEE62F26CBFDBC00757009 /* ChainRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryTests.swift; sourceTree = "<group>"; };
-		84BF9036288A8D2A0072C2D5 /* MessageSheetPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSheetPresentable.swift; sourceTree = "<group>"; };
 		84BFE89628C2314300140F1F /* ParaStkYieldBoostOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostOperationFactory.swift; sourceTree = "<group>"; };
 		84BFE89828C2320700140F1F /* ParaStkYieldBoostQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostQuery.swift; sourceTree = "<group>"; };
 		84BFE89B28C23A2500140F1F /* AutomationTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationTime.swift; sourceTree = "<group>"; };
@@ -4676,6 +4679,7 @@
 		84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultiasset.swift; sourceTree = "<group>"; };
 		84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmVersionedMultiasset.swift; sourceTree = "<group>"; };
 		84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferFactory.swift; sourceTree = "<group>"; };
+		84FBDBDA28C7737200CC1037 /* ParaStkYieldBoostSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSupport.swift; sourceTree = "<group>"; };
 		84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRewardContext.swift; sourceTree = "<group>"; };
 		84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesWithdrawEvent.swift; sourceTree = "<group>"; };
 		84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionHistoryItem+Wallet.swift"; sourceTree = "<group>"; };
@@ -6244,6 +6248,7 @@
 				841E5550282E2C1700C8438F /* StakingParachainInteractor+Subscription.swift */,
 				841E5552282E35D000C8438F /* StakingParachainPresenter.swift */,
 				84C34203283124C600156569 /* StakingParachainWireframe.swift */,
+				846FB02D28C7524200CA5444 /* StakingParachainInteractor+Provide.swift */,
 			);
 			path = Parachain;
 			sourceTree = "<group>";
@@ -9345,6 +9350,7 @@
 				841E5544282D793900C8438F /* ParachainStakingSharedState.swift */,
 				841E555C282E72F500C8438F /* ParachainStakingNetworkInfo.swift */,
 				84A3B8A52836E08600DE2669 /* CollatorSelectionInfo.swift */,
+				846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */,
 			);
 			path = ParachainStaking;
 			sourceTree = "<group>";
@@ -10123,6 +10129,7 @@
 				84BFE89628C2314300140F1F /* ParaStkYieldBoostOperationFactory.swift */,
 				84BFE89828C2320700140F1F /* ParaStkYieldBoostQuery.swift */,
 				84BFE89F28C23D7A00140F1F /* AutomationTimeOperationFactory.swift */,
+				84FBDBDA28C7737200CC1037 /* ParaStkYieldBoostSupport.swift */,
 			);
 			path = YieldBoost;
 			sourceTree = "<group>";
@@ -14209,6 +14216,7 @@
 				8490144F24A93E2E008F705E /* UIImage+Drawing.swift in Sources */,
 				8444D13F267133CF00AF6D8C /* CrowdloanAddMemo.swift in Sources */,
 				848B59C028BCB8530009543C /* LedgerBaseAccountConfirmationInteractor.swift in Sources */,
+				84FBDBDB28C7737200CC1037 /* ParaStkYieldBoostSupport.swift in Sources */,
 				84EBC54324F656D100459D15 /* SortDescriptor+Storage.swift in Sources */,
 				845532D02684690D00C2645D /* ParachainSlotLease.swift in Sources */,
 				84CD82B3263C30BC001A6F01 /* SubstrateProviderSubscriptionHandler.swift in Sources */,
@@ -14245,6 +14253,7 @@
 				AEE4E34D25E915ED00D6DF31 /* RewardCalculatorServiceProtocol.swift in Sources */,
 				8499FEE627C105DB00712589 /* RMRKV2SyncService.swift in Sources */,
 				849013DD24A927E2008F705E /* KeystoreExtensions.swift in Sources */,
+				846FB02C28C74F9700CA5444 /* ParaStkYieldBoostState.swift in Sources */,
 				844B2E7C27C426A7000CC079 /* NftLocalSubscriptionHandler.swift in Sources */,
 				8487584B27F1834E00495306 /* ImageGalleryPresentable.swift in Sources */,
 				AE20602C2636EA5800357578 /* MoonPayKeys.swift in Sources */,
@@ -14878,6 +14887,7 @@
 				84FB9E20285C5C9E00B42FC0 /* XcmJunction.swift in Sources */,
 				84EBA4F027AD26A5000AEEAD /* AssetBalanceId.swift in Sources */,
 				8436B6DC2848998200F24360 /* StakingAccountDetailsViewModelFactory.swift in Sources */,
+				846FB02E28C7524200CA5444 /* StakingParachainInteractor+Provide.swift in Sources */,
 				BA7AEE82627CFC0AFD69B299 /* RecommendedValidatorListPresenter.swift in Sources */,
 				8472C5B3265CF9C500E2481B /* StakingRewardDestConfirmViewController.swift in Sources */,
 				B071927DF8DD5C3CA84494BA /* RecommendedValidatorListViewController.swift in Sources */,
