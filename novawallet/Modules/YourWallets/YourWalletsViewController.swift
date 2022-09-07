@@ -41,7 +41,8 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
 
     private func setupCollectionView() {
         rootView.collectionView.dataSource = dataSource
-        rootView.collectionView.delegate = self
+        rootView.collectionView.delegate = createDelegate()
+
         rootView.collectionView.registerCellClass(SelectableIconSubtitleCollectionViewCell.self)
         rootView.collectionView.registerClass(
             RoundedIconTitleCollectionHeaderView.self,
@@ -89,6 +90,22 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
         return dataSource
     }
 
+    private func createDelegate() -> UICollectionViewDelegate {
+        ModalSheetCollectionViewDelegate(
+            collectionView: rootView.collectionView,
+            selectItemClosure: { [weak self] indexPath in
+                guard let self = self else {
+                    return
+                }
+                guard let item = self.dataSource.itemIdentifier(for: indexPath),
+                      case let .common(viewModel) = item else {
+                    return
+                }
+                self.presenter.didSelect(viewModel: viewModel)
+            }
+        )
+    }
+
     private static func mapWarningModel(_ model: YourWalletsCellViewModel.WarningModel) ->
         SelectableIconSubtitleCollectionViewCell.Model {
         .init(
@@ -120,13 +137,7 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
     func update(viewModel: [YourWalletsViewSectionModel]) {
         self.viewModel = viewModel
 
-        var snapshot = NSDiffableDataSourceSnapshot<YourWalletsViewSectionModel, YourWalletsCellViewModel>()
-        snapshot.appendSections(viewModel)
-        viewModel.forEach { section in
-            snapshot.appendItems(section.cells, toSection: section)
-        }
-
-        dataSource.apply(snapshot)
+        dataSource.apply(viewModel)
     }
 
     func update(header: String) {
@@ -135,32 +146,5 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
 
     func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat {
         RootViewType.contentHeight(sections: sections, items: items)
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-
-extension YourWalletsViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-        guard let item = dataSource.itemIdentifier(for: indexPath),
-              case let .common(viewModel) = item else {
-            return
-        }
-
-        presenter.didSelect(viewModel: viewModel)
-    }
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        scrollView.bounces = scrollView.contentOffset.y > UIConstants.bouncesOffset
-    }
-}
-
-// MARK: - ModalSheetPresenterDelegate
-
-extension YourWalletsViewController: ModalSheetPresenterDelegate {
-    func presenterCanDrag(_: ModalPresenterProtocol) -> Bool {
-        let offset = rootView.collectionView.contentOffset.y + rootView.collectionView.contentInset.top
-        return offset == 0
     }
 }

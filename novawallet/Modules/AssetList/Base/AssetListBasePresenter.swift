@@ -8,7 +8,9 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
 
     private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
+    private(set) var balances: [ChainAssetId: Result<AssetBalance, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var allLocks: [AssetLock] = []
 
     init() {
         groups = Self.createGroupsDiffCalculator(from: [])
@@ -20,6 +22,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
 
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
+        allLocks = []
     }
 
     func storeChainChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -130,7 +133,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         groups.apply(changes: groupChanges)
     }
 
-    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+    func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         var assetsChanges: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]] = [:]
         var changedGroups: [ChainModel.Id: ChainModel] = [:]
 
@@ -138,12 +141,16 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
             switch result {
             case let .success(maybeAmount):
                 if let amount = maybeAmount {
-                    balanceResults[chainAssetId] = .success(amount)
+                    balanceResults[chainAssetId] = .success(amount.total)
+                    amount.balance.map {
+                        balances[chainAssetId] = .success($0)
+                    }
                 } else if balanceResults[chainAssetId] == nil {
                     balanceResults[chainAssetId] = .success(0)
                 }
             case let .failure(error):
                 balanceResults[chainAssetId] = .failure(error)
+                balances[chainAssetId] = .failure(error)
             }
         }
 
@@ -179,5 +186,9 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         }
 
         groups.apply(changes: groupChanges)
+    }
+
+    func didReceive(locks: [AssetLock]) {
+        allLocks = locks
     }
 }

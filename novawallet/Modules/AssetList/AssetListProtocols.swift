@@ -18,6 +18,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func refresh()
     func presentSettings()
     func presentSearch()
+    func didTapTotalBalance()
 }
 
 protocol AssetListInteractorInputProtocol: AssetListBaseInteractorInputProtocol {
@@ -32,6 +33,7 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
+    func didReceive(locks: [AssetLock])
 }
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
@@ -45,4 +47,12 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
     )
 
     func showNfts(from view: AssetListViewProtocol?)
+
+    func showBalanceBreakdown(
+        from view: AssetListViewProtocol?,
+        prices: [ChainAssetId: PriceData],
+        balances: [AssetBalance],
+        chains: [ChainModel.Id: ChainModel],
+        locks: [AssetLock]
+    )
 }

@@ -10,7 +10,7 @@ protocol OrmlTokenSubscribtionFactoryProtocol {
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
-  
+
     func createOrmLocksSubscribtion(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
@@ -26,7 +26,7 @@ protocol NativeTokenSubscribtionFactoryProtocol {
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
-   
+
     func createBalanceLocksSubscribtion(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,

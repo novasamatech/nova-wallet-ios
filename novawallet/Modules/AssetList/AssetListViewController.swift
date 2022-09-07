@@ -119,7 +119,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
         switch cellType {
-        case .account, .totalBalance, .settings, .emptyState:
+        case .account, .settings, .emptyState:
             break
         case .asset:
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
@@ -130,6 +130,8 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
             }
         case .yourNfts:
             presenter.selectNfts()
+        case .totalBalance:
+            presenter.didTapTotalBalance()
         }
     }
 

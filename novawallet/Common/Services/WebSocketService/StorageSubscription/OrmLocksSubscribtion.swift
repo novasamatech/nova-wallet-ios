@@ -16,6 +16,7 @@ final class OrmLocksSubscribtion: LocksSubscribtion {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: repository,
+            changesFilter: { $0.accountId == accountId && $0.chainAssetId == chainAssetId },
             operationManager: operationManager
         )
     }
@@ -37,6 +38,7 @@ final class BalanceLocksSubscribtion: LocksSubscribtion {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: repository,
+            changesFilter: { $0.accountId == accountId },
             operationManager: operationManager
         )
     }
@@ -51,6 +53,7 @@ class LocksSubscribtion: StorageChildSubscribing {
     let repository: AnyDataProviderRepository<AssetLock>
     let operationManager: OperationManagerProtocol
     let storageCodingPath: StorageCodingPath
+    let changesFilter: (AssetLock) -> Bool
 
     init(
         storageCodingPath: StorageCodingPath,
@@ -59,6 +62,7 @@ class LocksSubscribtion: StorageChildSubscribing {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<AssetLock>,
+        changesFilter: @escaping (AssetLock) -> Bool,
         operationManager: OperationManagerProtocol
     ) {
         self.remoteStorageKey = remoteStorageKey
@@ -67,6 +71,7 @@ class LocksSubscribtion: StorageChildSubscribing {
         self.chainRegistry = chainRegistry
         self.repository = repository
         self.operationManager = operationManager
+        self.changesFilter = changesFilter
         self.storageCodingPath = storageCodingPath
     }
 
@@ -133,12 +138,15 @@ class LocksSubscribtion: StorageChildSubscribing {
     ) -> CompoundOperationWrapper<[DataProviderChange<AssetLock>]?> {
         let fetchOperation = repository.fetchAllOperation(with: .init())
 
-        let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> {
-            guard let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() else {
+        let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> { [weak self] in
+            guard let self = self,
+                  let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() else {
                 return nil
             }
 
-            let localModels = try fetchOperation.extractNoCancellableResultData()
+            let localModels = try fetchOperation.extractNoCancellableResultData().filter {
+                self.changesFilter($0)
+            }
 
             var remoteModels = locks.map {
                 AssetLock(

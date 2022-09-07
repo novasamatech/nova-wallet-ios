@@ -204,6 +204,16 @@ extension NSPredicate {
         )
     }
 
+    static func assetLock(
+        for accountId: AccountId
+    ) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.chainAccountId),
+            accountId.toHex()
+        )
+    }
+
     static func nfts(for chainId: ChainModel.Id, ownerId: AccountId) -> NSPredicate {
         let chainPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.chainId), chainId)
         let ownerPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.ownerId), ownerId.toHex())

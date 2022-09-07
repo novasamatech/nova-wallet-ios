@@ -14,10 +14,12 @@ class AssetListBaseInteractor {
     let logger: LoggerProtocol?
 
     private(set) var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
+    private(set) var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private(set) var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
     private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private(set) var availableChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var accountLocks: [AccountId: [AssetLock]] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -40,6 +42,9 @@ class AssetListBaseInteractor {
         assetBalanceSubscriptions = [:]
 
         assetBalanceIdMapping = [:]
+
+        assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
+        assetLocksSubscriptions = [:]
     }
 
     private func handle(changes: [DataProviderChange<ChainModel>]) {
@@ -113,22 +118,18 @@ class AssetListBaseInteractor {
             }
         }
 
-        assetBalanceSubscriptions = changes.reduce(into: assetBalanceSubscriptions) { result, change in
-            switch change {
-            case let .insert(chain), let .update(chain):
-                guard let accountId = selectedMetaAccount.fetch(
-                    for: chain.accountRequest()
-                )?.accountId else {
-                    return
-                }
+        assetBalanceSubscriptions = changes.reduce(
+            intitial: assetBalanceSubscriptions,
+            selectedMetaAccount: selectedMetaAccount
+        ) { [weak self] in
+            self?.subscribeToAccountBalanceProvider(for: $0)
+        }
 
-                if result[accountId] == nil {
-                    result[accountId] = subscribeToAccountBalanceProvider(for: accountId)
-                }
-            case .delete:
-                // we might have the same account id used in other
-                break
-            }
+        assetLocksSubscriptions = changes.reduce(
+            intitial: assetLocksSubscriptions,
+            selectedMetaAccount: selectedMetaAccount
+        ) { [weak self] in
+            self?.subscribeToAllLocksProvider(for: $0)
         }
     }
 
@@ -233,7 +234,7 @@ extension AssetListBaseInteractor: AssetListBaseInteractorInputProtocol {}
 extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
         let results = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
+            into: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -250,13 +251,38 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         basePresenter?.didReceiveBalance(results: results)
     }
 
+    func handleAccountLocks(result: Result<[DataProviderChange<AssetLock>], Error>, accountId: AccountId) {
+        var locks: [AssetLock] = accountLocks[accountId] ?? []
+
+        switch result {
+        case let .failure(error):
+            // TODO:
+            break
+        case let .success(changes):
+            changes.forEach {
+                switch $0 {
+                case let .insert(newItem), let .update(newItem):
+                    guard let index = locks.firstIndex(where: { $0.identifier == newItem.identifier }) else {
+                        locks.append(newItem)
+                        return
+                    }
+                    locks[index] = newItem
+                case let .delete(deletedIdentifier):
+                    locks.removeAll(where: { $0.identifier == deletedIdentifier })
+                }
+            }
+            accountLocks[accountId] = locks
+        }
+        basePresenter?.didReceive(locks: locks)
+    }
+
     private func handleAccountBalanceChanges(
         _ changes: [DataProviderChange<AssetBalance>],
         accountId: AccountId
     ) {
         // prepopulate non existing balances with zeros
         let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
+            into: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -286,7 +312,7 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(balance.totalInPlank)
+                accum[chainAssetId] = .success(.init(balance: balance, total: balance.totalInPlank))
             case let .delete(deletedIdentifier):
                 guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
                     return
@@ -297,7 +323,7 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(0)
+                accum[chainAssetId] = .success(.init(total: 0))
             }
         }
 
@@ -325,4 +351,34 @@ extension AssetListBaseInteractor: SelectedCurrencyDepending {
 
         updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
+}
+
+extension Array where Element == DataProviderChange<ChainModel> {
+    func reduce<Value>(
+        intitial: [AccountId: StreamableProvider<Value>],
+        selectedMetaAccount: MetaAccountModel,
+        subscription: @escaping (AccountId) -> StreamableProvider<Value>?
+    ) -> [AccountId: StreamableProvider<Value>] {
+        reduce(into: intitial) { result, change in
+            switch change {
+            case let .insert(chain), let .update(chain):
+                guard let accountId = selectedMetaAccount.fetch(
+                    for: chain.accountRequest()
+                )?.accountId else {
+                    return
+                }
+
+                if result[accountId] == nil {
+                    result[accountId] = subscription(accountId)
+                }
+            case .delete:
+                break
+            }
+        }
+    }
+}
+
+struct CalculatedAssetBalance {
+    var balance: AssetBalance?
+    var total: BigUInt
 }

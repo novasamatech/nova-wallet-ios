@@ -296,7 +296,7 @@ final class AssetListPresenter: AssetListBasePresenter {
         updateAssetsView()
     }
 
-    override func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         super.didReceiveBalance(results: results)
 
         updateAssetsView()
@@ -336,6 +336,19 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         )
 
         wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
+    }
+
+    func didTapTotalBalance() {
+        guard let priceResult = priceResult, let prices = try? priceResult.get() else {
+            return
+        }
+        wireframe.showBalanceBreakdown(
+            from: view,
+            prices: prices,
+            balances: balances.values.compactMap { try? $0.get() },
+            chains: allChains,
+            locks: allLocks
+        )
     }
 }
 
