@@ -73,6 +73,9 @@ final class StakingActionsView: UIView {
             let newCellsCount = actions.count - self.actions.count
             let newCells: [StackActionCell] = (0 ..< newCellsCount).map { _ in
                 let cell = StackActionCell()
+                cell.rowContentView.disclosureIndicatorView.image = R.image.iconSmallArrow()?
+                    .tinted(with: R.color.colorWhite32()!)
+                cell.rowContentView.detailsView.titleLabel.textColor = R.color.colorWhite80()
                 cell.addTarget(self, action: #selector(actionCell(on:)), for: .touchUpInside)
 
                 return cell
