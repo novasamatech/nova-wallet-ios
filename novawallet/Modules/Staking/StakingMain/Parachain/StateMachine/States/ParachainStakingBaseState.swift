@@ -34,6 +34,7 @@ extension ParachainStaking {
             let commonData = commonData
                 .byReplacing(account: account)
                 .byReplacing(balance: nil)
+                .byReplacing(yieldBoostState: nil)
 
             let nextState = ParachainStaking.InitState(
                 stateMachine: stateMachine,
@@ -93,6 +94,12 @@ extension ParachainStaking {
 
         func process(totalReward: TotalRewardItem?) {
             commonData = commonData.byReplacing(totalReward: totalReward)
+
+            stateMachine?.transit(to: self)
+        }
+
+        func process(yieldBoostState: ParaStkYieldBoostState?) {
+            commonData = commonData.byReplacing(yieldBoostState: yieldBoostState)
 
             stateMachine?.transit(to: self)
         }

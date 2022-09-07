@@ -176,6 +176,9 @@ extension StakingParachainInteractor: WalletLocalStorageSubscriber,
         switch result {
         case let .success(balance):
             presenter?.didReceiveAssetBalance(balance)
+
+            // as we don't have subscription option for yield boost state
+            updateOnAssetBalanceReceive()
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

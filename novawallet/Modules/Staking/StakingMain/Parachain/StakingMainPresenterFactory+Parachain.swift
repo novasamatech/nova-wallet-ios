@@ -107,6 +107,7 @@ extension StakingMainPresenterFactory {
             durationOperationFactory: durationFactory,
             scheduledRequestsFactory: ParachainStaking.ScheduledRequestsQueryFactory(operationQueue: operationQueue),
             collatorsOperationFactory: collatorsOperationFactory,
+            yieldBoostSupport: ParaStkYieldBoostSupport(),
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
             currencyManager: currencyManager,
