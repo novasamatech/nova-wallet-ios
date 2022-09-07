@@ -145,12 +145,16 @@ extension StakingParachainInteractor {
     }
 
     func performYieldBoostTasksSubscription() {
-        guard let chainId = selectedChainAsset?.chain.chainId else {
+        guard let chainAsset = selectedChainAsset else {
             presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
             return
         }
 
-        guard let accountId = selectedAccount?.chainAccount.accountId else {
+        let chainId = chainAsset.chain.chainId
+
+        guard
+            yieldBoostSupport.checkSupport(for: chainAsset),
+            let accountId = selectedAccount?.chainAccount.accountId else {
             presenter?.didReceiveYieldBoost(state: .unsupported)
             return
         }
