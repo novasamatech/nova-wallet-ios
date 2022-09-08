@@ -22,6 +22,7 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
     func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?)
     func didReceiveTotalReward(_ totalReward: TotalRewardItem?)
+    func didReceiveYieldBoost(state: ParaStkYieldBoostState)
     func didReceiveError(_ error: Error)
 }
 
@@ -63,4 +64,6 @@ protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable, 
         collatorId: AccountId,
         collatorIdentity: AccountIdentity?
     )
+
+    func showYieldBoost(from view: ControllerBackedProtocol?)
 }

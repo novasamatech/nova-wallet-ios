@@ -945,3 +945,6 @@
 "ledger.not.support.token.message" = "Do not transfer %@ to the Ledger-controlled account since Ledger does not support sending of %@, so assets will be stuck on this account";
 "NSBluetoothAlwaysUsageDescription" = "Bluetooth is used to communicate with Ledger Nano X device";
 "crowdloan.you.contributions.total" = "Total";
+"common.yield.boost" = "Yield Boost";
+"common.on" = "on";
+"common.off" = "off";

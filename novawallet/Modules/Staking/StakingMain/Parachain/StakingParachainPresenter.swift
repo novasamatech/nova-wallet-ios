@@ -204,6 +204,8 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
             handleUnstakeAction()
         case .setupValidators, .changeValidators, .yourValidator:
             wireframe.showYourCollators(from: view)
+        case .yieldBoost:
+            wireframe.showYieldBoost(from: view)
         default:
             break
         }
@@ -291,6 +293,10 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 
     func didReceiveTotalReward(_ totalReward: TotalRewardItem?) {
         stateMachine.state.process(totalReward: totalReward)
+    }
+
+    func didReceiveYieldBoost(state: ParaStkYieldBoostState) {
+        stateMachine.state.process(yieldBoostState: state)
     }
 
     func didReceiveError(_ error: Error) {
