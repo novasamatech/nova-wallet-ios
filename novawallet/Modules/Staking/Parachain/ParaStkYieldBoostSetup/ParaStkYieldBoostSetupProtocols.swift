@@ -23,6 +23,9 @@ protocol ParaStkYieldBoostSetupPresenterProtocol: AnyObject {
 protocol ParaStkYieldBoostSetupInteractorInputProtocol: AnyObject {
     func setup()
     func requestParams(for stake: BigUInt, collator: AccountId)
+    func retrySubscriptions()
+    func fetchIdentities(for collators: [AccountId])
+    func fetchRewardCalculator()
 }
 
 protocol ParaStkYieldBoostSetupInteractorOutputProtocol: AnyObject {
@@ -37,7 +40,7 @@ protocol ParaStkYieldBoostSetupInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError)
 }
 
-protocol ParaStkYieldBoostSetupWireframeProtocol: AnyObject {
+protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, CommonRetryable {
     func showDelegationSelection(
         from view: ParaStkYieldBoostSetupViewProtocol?,
         viewModels: [AccountDetailsPickerViewModel],
