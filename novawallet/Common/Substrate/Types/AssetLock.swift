@@ -8,10 +8,11 @@ struct AssetLock: Equatable {
     let amount: BigUInt
 
     var lockType: LockType? {
-        guard let typeString = type.toUTF8String() else {
+        guard let typeString =
+            String(data: type, encoding: .utf8)?.trimmingCharacters(in: .whitespaces) else {
             return nil
         }
-        return LockType(rawValue: typeString)
+        return LockType(rawValue: typeString.lowercased())
     }
 }
 
