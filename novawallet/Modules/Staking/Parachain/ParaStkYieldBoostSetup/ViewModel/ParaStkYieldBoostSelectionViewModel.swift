@@ -3,7 +3,7 @@ import Foundation
 struct ParaStkYieldBoostComparisonViewModel {
     struct Reward {
         let percent: String
-        let amount: BalanceViewModelProtocol
+        let balance: BalanceViewModelProtocol
     }
 
     let apr: Reward?
