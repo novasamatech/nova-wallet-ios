@@ -953,4 +953,5 @@
 "with.yield.boost" = "with Yield Boost";
 "without.yield.boost" = "without Yield Boost";
 "yield.boost.setup.period.details" = "to automatically stake every %@ all my transferable tokens above";
+"yield.boost.setup.period.update" = "(updating from %@)";
 "yield.boost.threshold" = "Boost threshold";

@@ -783,6 +783,7 @@
 		8448F7A8288401A60080CEA9 /* AssetListInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448F7A7288401A60080CEA9 /* AssetListInitState.swift */; };
 		84490E7427F2CE2C00941837 /* TransferMetadataContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */; };
 		8449660A25E15ECA00F2E9F5 /* RewardDestinationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */; };
+		844ADE7528CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */; };
 		844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */; };
 		844B2E7A27C425E3000CC079 /* NftLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */; };
 		844B2E7C27C426A7000CC079 /* NftLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */; };
@@ -3452,6 +3453,7 @@
 		8448F7A7288401A60080CEA9 /* AssetListInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListInitState.swift; sourceTree = "<group>"; };
 		84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransferMetadataContext.swift; sourceTree = "<group>"; };
 		8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModel.swift; sourceTree = "<group>"; };
+		844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostPeriodViewModel.swift; sourceTree = "<group>"; };
 		844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferService.swift; sourceTree = "<group>"; };
 		844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
@@ -7182,6 +7184,7 @@
 			isa = PBXGroup;
 			children = (
 				8445F41528C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift */,
+				844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -13738,6 +13741,7 @@
 				844138EE28303A2E00AFEF6D /* ParaStkStateViewModelFactory.swift in Sources */,
 				84100F3826A6085C00A5054E /* YourValidatorListDescSectionView.swift in Sources */,
 				843E9B3427C8B804009C143A /* FileDownloadOperationFactory.swift in Sources */,
+				844ADE7528CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift in Sources */,
 				841E5549282D88FC00C8438F /* StakingParachainInteractor.swift in Sources */,
 				AE528E4F26852E410058935A /* ValidatorSearchViewModelFactory.swift in Sources */,
 				84B72C712756092A0042118E /* ExportGenericViewLayout.swift in Sources */,
