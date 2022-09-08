@@ -29,6 +29,7 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
@@ -36,6 +37,8 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
+
+        title = R.string.localizable.commonYieldBoost(preferredLanguages: languages)
 
         rootView.collatorTitleLabel.text = R.string.localizable.yieldBoostSetupCollatorTitle(
             preferredLanguages: languages
@@ -62,7 +65,50 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
+        setupThresholdAmountInputAccessoryView()
+
         updateActionButtonState()
+    }
+
+    private func setupThresholdAmountInputAccessoryView() {
+        let accessoryView = UIFactory.default.createAmountAccessoryView(
+            for: self,
+            locale: selectedLocale
+        )
+
+        rootView.amountInputView.textField.inputAccessoryView = accessoryView
+    }
+
+    private func setupHandlers() {
+        rootView.collatorActionView.addTarget(
+            self,
+            action: #selector(actionSelectCollator),
+            for: .touchUpInside
+        )
+
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionProceed),
+            for: .touchUpInside
+        )
+
+        rootView.withoutYieldBoostOptionView.addTarget(
+            self,
+            action: #selector(actionWithoutYiedBoostSelected),
+            for: .touchUpInside
+        )
+
+        rootView.withYieldBoostOptionView.addTarget(
+            self,
+            action: #selector(actionWithYiedBoostSelected),
+            for: .touchUpInside
+        )
+
+        rootView.amountInputView.addTarget(
+            self,
+            action: #selector(actionAmountChange),
+            for: .editingChanged
+        )
     }
 
     private func applyYieldBoostPeriod(viewModel: ParaStkYieldBoostPeriodViewModel?) {
@@ -162,6 +208,49 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
         rootView.actionButton.invalidateLayout()
+    }
+
+    @objc private func actionProceed() {
+        presenter.proceed()
+    }
+
+    @objc private func actionWithoutYiedBoostSelected() {
+        guard !rootView.withoutYieldBoostOptionView.isChoosen else {
+            return
+        }
+
+        presenter.switchRewardsOption(to: false)
+    }
+
+    @objc private func actionWithYiedBoostSelected() {
+        guard !rootView.withYieldBoostOptionView.isChoosen else {
+            return
+        }
+
+        presenter.switchRewardsOption(to: true)
+    }
+
+    @objc private func actionSelectCollator() {
+        presenter.selectCollator()
+    }
+
+    @objc func actionAmountChange() {
+        let amount = rootView.amountInputView.inputViewModel?.decimalAmount
+        presenter.updateThresholdAmount(amount)
+
+        updateActionButtonState()
+    }
+}
+
+extension ParaStkYieldBoostSetupViewController: AmountInputAccessoryViewDelegate {
+    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
+        rootView.amountInputView.textField.resignFirstResponder()
+
+        presenter.selectThresholdAmountPercentage(percentage)
+    }
+
+    func didSelectDone(on _: AmountInputAccessoryView) {
+        rootView.amountInputView.textField.resignFirstResponder()
     }
 }
 

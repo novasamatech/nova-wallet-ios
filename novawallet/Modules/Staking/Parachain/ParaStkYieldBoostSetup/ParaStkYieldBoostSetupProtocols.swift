@@ -12,6 +12,11 @@ protocol ParaStkYieldBoostSetupViewProtocol: ControllerBackedProtocol, LoadableV
 
 protocol ParaStkYieldBoostSetupPresenterProtocol: AnyObject {
     func setup()
+    func switchRewardsOption(to isYieldBoosted: Bool)
+    func updateThresholdAmount(_ newValue: Decimal?)
+    func selectThresholdAmountPercentage(_ percentage: Float)
+    func selectCollator()
+    func proceed()
 }
 
 protocol ParaStkYieldBoostSetupInteractorInputProtocol: AnyObject {
@@ -31,4 +36,12 @@ protocol ParaStkYieldBoostSetupInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError)
 }
 
-protocol ParaStkYieldBoostSetupWireframeProtocol: AnyObject {}
+protocol ParaStkYieldBoostSetupWireframeProtocol: AnyObject {
+    func showDelegationSelection(
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    )
+}

@@ -295,6 +295,66 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
         provideViewModels()
     }
+
+    func switchRewardsOption(to isYieldBoosted: Bool) {
+        guard isYieldBoostSelected != isYieldBoosted else {
+            return
+        }
+
+        isYieldBoostSelected = isYieldBoosted
+
+        provideRewardOptionSelectionViewModel()
+
+        if isYieldBoostSelected {
+            provideYieldBoostSpecificViewModels()
+        }
+    }
+
+    func updateThresholdAmount(_ newValue: Decimal?) {
+        thresholdInput = newValue.map { .absolute($0) }
+
+        provideAssetViewModel()
+    }
+
+    func selectThresholdAmountPercentage(_ percentage: Float) {
+        thresholdInput = .rate(Decimal(Double(percentage)))
+
+        provideThresholdInputViewModel()
+        provideAssetViewModel()
+    }
+
+    func selectCollator() {
+        guard let delegator = delegator else {
+            return
+        }
+
+        let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
+        let disabledCollators = Self.disabledCollatorsForYieldBoost(from: scheduledRequests ?? [])
+
+        guard delegations.count > disabledCollators.count else {
+            return
+        }
+
+        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
+            from: delegations,
+            identities: delegationIdentities,
+            disabled: disabledCollators
+        )
+
+        let selectedIndex = delegations.firstIndex { $0.owner == selectedCollator } ?? NSNotFound
+
+        wireframe.showDelegationSelection(
+            from: view,
+            viewModels: accountDetailsViewModels,
+            selectedIndex: selectedIndex,
+            delegate: self,
+            context: delegations as NSArray
+        )
+    }
+
+    func proceed() {
+        // TODO: Implement transition to confirmation
+    }
 }
 
 extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutputProtocol {
@@ -396,6 +456,23 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
         case let .yieldBoostParamsFailed(_, stake, collator):
             view?.didStopLoading()
         }
+    }
+}
+
+extension ParaStkYieldBoostSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let delegations = context as? [ParachainStaking.Bond] else {
+            return
+        }
+
+        selectedCollator = delegations[index].owner
+
+        yieldBoostParams = nil
+        isYieldBoostSelected = yieldBoostTasks?.contains { $0.collatorId == selectedCollator } ?? false
+        thresholdInput = nil
+
+        refreshYieldBoostParamsIfNeeded()
+        provideViewModels()
     }
 }
 
