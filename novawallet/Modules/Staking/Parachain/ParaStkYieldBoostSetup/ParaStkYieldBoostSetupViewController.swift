@@ -9,6 +9,7 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
 
     private var collatorViewModel: AccountDetailsSelectionViewModel?
     private var yieldBoostPeriod: ParaStkYieldBoostPeriodViewModel?
+    private var hasChanges: Bool = false
 
     init(presenter: ParaStkYieldBoostSetupPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -180,34 +181,32 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
 
     private func updateActionButtonState() {
         if collatorViewModel == nil {
-            rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.isUserInteractionEnabled = false
+            let title = R.string.localizable.parachainStakingHintSelectCollator(
+                preferredLanguages: selectedLocale.rLanguages
+            )
 
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .parachainStakingHintSelectCollator(preferredLanguages: selectedLocale.rLanguages)
-            rootView.actionButton.invalidateLayout()
+            rootView.actionButton.applyState(title: title, enabled: false)
 
             return
         }
 
         if !rootView.amountInputView.completed {
-            rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.isUserInteractionEnabled = false
-
-            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
-                .transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
-            rootView.actionButton.invalidateLayout()
+            let title = R.string.localizable.transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.applyState(title: title, enabled: false)
 
             return
         }
 
-        rootView.actionButton.applyEnabledStyle()
-        rootView.actionButton.isUserInteractionEnabled = true
+        if !hasChanges {
+            let title = R.string.localizable.commonNoChanges(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.applyState(title: title, enabled: false)
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.actionButton.invalidateLayout()
+            return
+        }
+
+        let title = R.string.localizable.commonContinue(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.actionButton.applyState(title: title, enabled: true)
     }
 
     @objc private func actionProceed() {
@@ -308,6 +307,12 @@ extension ParaStkYieldBoostSetupViewController: ParaStkYieldBoostSetupViewProtoc
 
     func didStopLoading() {
         rootView.actionLoadableView.stopLoading()
+    }
+
+    func didReceiveHasChanges(viewModel: Bool) {
+        hasChanges = viewModel
+
+        updateActionButtonState()
     }
 }
 
