@@ -23,6 +23,7 @@ protocol ParaStkStateProtocol {
     func process(blockNumber: BlockNumber?)
     func process(roundInfo: ParachainStaking.RoundInfo?)
     func process(totalReward: TotalRewardItem?)
+    func process(yieldBoostState: ParaStkYieldBoostState?)
 }
 
 protocol ParaStkStateMachineProtocol: AnyObject {

@@ -157,6 +157,16 @@ final class ParaStkStateViewModelFactory {
             }
         }
     }
+
+    private func createYieldBoostManageOption(from state: ParaStkYieldBoostState?) -> StakingManageOption? {
+        switch state {
+        case let .supported(tasks):
+            let enabled = !tasks.isEmpty
+            return .yieldBoost(enabled: enabled)
+        case .none, .unsupported:
+            return nil
+        }
+    }
 }
 
 extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
@@ -228,17 +238,23 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
 
         let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
 
+        var actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .changeValidators(count: state.delegatorState.delegations.count)
+        ]
+
+        if let yieldBoostOption = createYieldBoostManageOption(from: state.commonData.yieldBoostState) {
+            actions = [yieldBoostOption] + actions
+        }
+
         lastViewModel = .nominator(
             viewModel: delegationViewModel,
             alerts: alerts,
             reward: reward,
             analyticsViewModel: nil,
             unbondings: unbondings,
-            actions: [
-                .stakeMore,
-                .unstake,
-                .changeValidators(count: state.delegatorState.delegations.count)
-            ]
+            actions: actions
         )
     }
 }

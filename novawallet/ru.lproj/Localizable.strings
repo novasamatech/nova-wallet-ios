@@ -945,3 +945,6 @@
 "ledger.not.support.token.message" = "Не переводите %@ на Ledger аккаунт так как Ledger не поддерживает переводы %@, таким образом ассет будет недоступен для перевода на этом аккаунте";
 "NSBluetoothAlwaysUsageDescription" = "Bluetooth будет использоваться для взаимодействия с устройством Ledger Nano X";
 "crowdloan.you.contributions.total" = "Всего";
+"common.yield.boost" = "Yield Boost";
+"common.on" = "включен";
+"common.off" = "выключен";
