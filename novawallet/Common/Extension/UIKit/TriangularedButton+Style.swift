@@ -73,4 +73,17 @@ extension TriangularedButton {
 
         contentOpacityWhenDisabled = 1.0
     }
+
+    func applyState(title: String, enabled: Bool) {
+        if enabled {
+            applyEnabledStyle()
+        } else {
+            applyDisabledStyle()
+        }
+
+        isUserInteractionEnabled = enabled
+
+        imageWithTitleView?.title = title
+        invalidateLayout()
+    }
 }
