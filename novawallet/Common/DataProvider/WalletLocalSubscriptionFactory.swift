@@ -176,7 +176,7 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     }
 
     func getLocksProvider(for accountId: AccountId) throws -> StreamableProvider<AssetLock> {
-        let cacheKey = "all-locks"
+        let cacheKey = "locks-\(accountId.toHex())"
 
         if let provider = getProvider(for: cacheKey) as? StreamableProvider<AssetLock> {
             return provider
@@ -196,7 +196,9 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
-            predicate: { _ in true }
+            predicate: { entity in
+                accountId.toHex() == entity.chainAccountId
+            }
         )
 
         observable.start { [weak self] error in

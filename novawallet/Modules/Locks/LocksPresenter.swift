@@ -40,7 +40,7 @@ final class LocksPresenter {
     }
 
     private func createTranferrableSection(balanceModel: FormattedBalance) -> LocksViewSectionModel {
-        var percent = balanceModel.totalPrice > 0 ?
+        let percent = balanceModel.totalPrice > 0 ?
             balanceModel.transferrablePrice / balanceModel.totalPrice : 0
         let displayPercent = (percent * Decimal(100)).rounded(.toNearestOrAwayFromZero)
         return LocksViewSectionModel(
