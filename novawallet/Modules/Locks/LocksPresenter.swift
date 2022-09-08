@@ -28,7 +28,11 @@ final class LocksPresenter {
             locale: selectedLocale
         )
 
-        view?.update(header: "Total balance: \(balanceModel.total)")
+        let header = R.string.localizable.walletSendBalanceTotal(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        view?.updateHeader(title: header, value: balanceModel.total)
         view?.update(viewModel: [
             createTranferrableSection(balanceModel: balanceModel),
             createLocksSection(balanceModel: balanceModel)
@@ -36,11 +40,16 @@ final class LocksPresenter {
     }
 
     private func createTranferrableSection(balanceModel: FormattedBalance) -> LocksViewSectionModel {
-        LocksViewSectionModel(
+        var percent = balanceModel.totalPrice > 0 ?
+            balanceModel.transferrablePrice / balanceModel.totalPrice : 0
+        let displayPercent = (percent * Decimal(100)).rounded(.toNearestOrAwayFromZero)
+        return LocksViewSectionModel(
             header: .init(
-                icon: R.image.iconActionChange(),
-                title: "Transferrable",
-                details: "%",
+                icon: R.image.iconTransferable(),
+                title: R.string.localizable.walletBalanceAvailable(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                details: "\(percent: displayPercent)",
                 value: "\(balanceModel.transferrable)"
             ),
             cells: []
@@ -48,15 +57,20 @@ final class LocksPresenter {
     }
 
     private func createLocksSection(balanceModel: FormattedBalance) -> LocksViewSectionModel {
+        let percent = balanceModel.totalPrice > 0 ?
+            balanceModel.locksPrice / balanceModel.totalPrice : 0
+        let displayPercent = (percent * Decimal(100)).rounded(.toNearestOrAwayFromZero)
         let locksCells = createLocksCells().sorted {
             $0.value.compare($1.value, options: .numeric) == .orderedDescending
         }
 
         return LocksViewSectionModel(
             header: .init(
-                icon: R.image.iconLock(),
-                title: "Locks",
-                details: "%",
+                icon: R.image.iconBrowserSecurity(),
+                title: R.string.localizable.walletBalanceLocked(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                details: "\(percent: displayPercent)",
                 value: balanceModel.locks
             ),
             cells: locksCells
@@ -68,7 +82,8 @@ final class LocksPresenter {
             createCell(
                 amountInPlank: $0.amount,
                 chainAssetId: $0.chainAssetId,
-                type: String(data: $0.type, encoding: .utf8) ?? "",
+                title: $0.lockType.map { $0.displayType.value(for: selectedLocale) } ??
+                    String(data: $0.type, encoding: .utf8)?.capitalized ?? "",
                 identifier: $0.identifier
             )
         }
@@ -77,7 +92,9 @@ final class LocksPresenter {
             createCell(
                 amountInPlank: $0.reservedInPlank,
                 chainAssetId: $0.chainAssetId,
-                type: "reserved",
+                title: R.string.localizable.walletBalanceReserved(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
                 identifier: $0.identifier
             )
         }
@@ -88,7 +105,7 @@ final class LocksPresenter {
     private func createCell(
         amountInPlank: BigUInt,
         chainAssetId: ChainAssetId,
-        type: String,
+        title: String,
         identifier: String
     ) -> LocksViewSectionModel.CellViewModel? {
         guard let chain = input.chains[chainAssetId.chainId] else {
@@ -97,7 +114,7 @@ final class LocksPresenter {
         guard let asset = chain.asset(for: chainAssetId.assetId) else {
             return nil
         }
-        let title = [asset.symbol, type].joined(separator: " ")
+        let title = [asset.symbol, title].joined(separator: " ")
 
         guard let value = priceViewModelFactory.formatPlankValue(
             plank: amountInPlank,
@@ -112,13 +129,18 @@ final class LocksPresenter {
         return LocksViewSectionModel.CellViewModel(
             id: identifier,
             title: title,
-            value: value
+            value: value.amount
         )
     }
 
     var contentHeight: CGFloat {
-        let reservedCellsCount = input.balances.filter { $0.reservedInPlank > 0 }.count
-        return view?.calculateEstimatedHeight(sections: 2, items: input.locks.count + reservedCellsCount) ?? 0
+        let reservedCellsCount = input.balances.filter {
+            $0.reservedInPlank > 0 && input.prices[$0.chainAssetId] != nil
+        }.count
+        let locksCount = input.locks.filter {
+            $0.amount > 0 && input.prices[$0.chainAssetId] != nil
+        }.count
+        return view?.calculateEstimatedHeight(sections: 2, items: locksCount + reservedCellsCount) ?? 0
     }
 }
 
@@ -126,10 +148,20 @@ extension LocksPresenter: LocksPresenterProtocol {
     func setup() {
         updateView()
     }
+
+    func didTapOnCell() {
+        wireframe.close(view: view)
+    }
 }
 
 extension LocksPresenter: Localizable {
     func applyLocalization() {
         updateView()
+    }
+}
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(percent: Decimal) {
+        appendLiteral("\(percent)%")
     }
 }

@@ -2086,9 +2086,13 @@
 		88A6BCFF28CA15400047E4C2 /* PriceViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A6BCFE28CA15400047E4C2 /* PriceViewModelFactory.swift */; };
 		88A6BD0128CA15710047E4C2 /* LocksViewInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */; };
 		88AA0FB828B60E6A00931800 /* YourWalletsControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AA0FB728B60E6A00931800 /* YourWalletsControlView.swift */; };
+		88AC186128CA3EE100892A9B /* LocksViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186028CA3EE100892A9B /* LocksViewLayout.swift */; };
+		88AC186328CA3F0000892A9B /* GenericCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186228CA3F0000892A9B /* GenericCollectionViewLayout.swift */; };
+		88AC186528CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186428CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift */; };
+		88AC186728CA562F00892A9B /* Decimal+round.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186628CA562F00892A9B /* Decimal+round.swift */; };
 		88AF35DE28C21D28003730DA /* OrmLocksSubscribtion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AF35DD28C21D28003730DA /* OrmLocksSubscribtion.swift */; };
 		88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C017E528C60A65003B2D28 /* AssetLockMapper.swift */; };
-		88C7165428C894510015D1E9 /* ModalSheetCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165328C894510015D1E9 /* ModalSheetCollectionViewDelegate.swift */; };
+		88C7165428C894510015D1E9 /* CollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */; };
 		88C7165628C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165528C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift */; };
 		88C7165828C8D3280015D1E9 /* LockCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165728C8D3270015D1E9 /* LockCollectionViewCell.swift */; };
 		88C7165A28C8D3450015D1E9 /* LocksHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165928C8D3450015D1E9 /* LocksHeaderView.swift */; };
@@ -4760,9 +4764,13 @@
 		88A6BCFE28CA15400047E4C2 /* PriceViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceViewModelFactory.swift; sourceTree = "<group>"; };
 		88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksViewInput.swift; sourceTree = "<group>"; };
 		88AA0FB728B60E6A00931800 /* YourWalletsControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsControlView.swift; sourceTree = "<group>"; };
+		88AC186028CA3EE100892A9B /* LocksViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksViewLayout.swift; sourceTree = "<group>"; };
+		88AC186228CA3F0000892A9B /* GenericCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericCollectionViewLayout.swift; sourceTree = "<group>"; };
+		88AC186428CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalSheetCollectionViewProtocol.swift; sourceTree = "<group>"; };
+		88AC186628CA562F00892A9B /* Decimal+round.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+round.swift"; sourceTree = "<group>"; };
 		88AF35DD28C21D28003730DA /* OrmLocksSubscribtion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmLocksSubscribtion.swift; sourceTree = "<group>"; };
 		88C017E528C60A65003B2D28 /* AssetLockMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetLockMapper.swift; sourceTree = "<group>"; };
-		88C7165328C894510015D1E9 /* ModalSheetCollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalSheetCollectionViewDelegate.swift; sourceTree = "<group>"; };
+		88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewDelegate.swift; sourceTree = "<group>"; };
 		88C7165528C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewDiffableDataSource+apply.swift"; sourceTree = "<group>"; };
 		88C7165728C8D3270015D1E9 /* LockCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockCollectionViewCell.swift; sourceTree = "<group>"; };
 		88C7165928C8D3450015D1E9 /* LocksHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksHeaderView.swift; sourceTree = "<group>"; };
@@ -5336,7 +5344,9 @@
 				84ED3A7899C88876AB3DCA5F /* YourWalletsViewController.swift */,
 				6E2509FEA85677165C4CCCFF /* YourWalletsViewLayout.swift */,
 				C9978451AB2F4958E6FF117D /* YourWalletsViewFactory.swift */,
-				88C7165328C894510015D1E9 /* ModalSheetCollectionViewDelegate.swift */,
+				88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */,
+				88AC186228CA3F0000892A9B /* GenericCollectionViewLayout.swift */,
+				88AC186428CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift */,
 			);
 			path = YourWallets;
 			sourceTree = "<group>";
@@ -6072,6 +6082,7 @@
 				7B81B239BD9C150BFE9A82B0 /* LocksViewFactory.swift */,
 				88A6BCFE28CA15400047E4C2 /* PriceViewModelFactory.swift */,
 				88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */,
+				88AC186028CA3EE100892A9B /* LocksViewLayout.swift */,
 			);
 			path = Locks;
 			sourceTree = "<group>";
@@ -8609,6 +8620,7 @@
 				840DC83F288090030039A054 /* Bool+Int.swift */,
 				844DAAE028AD106B008E11DA /* UInt+Serialization.swift */,
 				84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */,
+				88AC186628CA562F00892A9B /* Decimal+round.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -13497,6 +13509,7 @@
 				84D17ED628053D6D00F7BAFF /* DAppFavorite.swift in Sources */,
 				84EE2FB1289128E400A98816 /* WalletManageProtocols.swift in Sources */,
 				84364D55252FAD7100281F9A /* AssetDetailsConfigurator.swift in Sources */,
+				88AC186528CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift in Sources */,
 				8460E711284AB99E002896E9 /* ParaStkHintsViewModelFactory.swift in Sources */,
 				2A66CFAF25D10EDF0006E4C1 /* PhishingItem.swift in Sources */,
 				8487583E27F070B300495306 /* ApplicationSettingsPresentable.swift in Sources */,
@@ -13805,6 +13818,7 @@
 				848E6BDB2761E0E100C91022 /* StakingRewardViewModel.swift in Sources */,
 				84333BDB285772F300C76A4F /* UInt64+TimeInterval.swift in Sources */,
 				847999AD2888646000D1BAD2 /* WatchOnlyWalletOperationFactory.swift in Sources */,
+				88AC186728CA562F00892A9B /* Decimal+round.swift in Sources */,
 				8472C5B4265CF9C500E2481B /* StakingRewardDestConfirmPresenter.swift in Sources */,
 				8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */,
 				2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */,
@@ -14638,7 +14652,7 @@
 				848B59C228BCC1E60009543C /* LedgerAddAccountConfirmationInteractor.swift in Sources */,
 				843461CF26E25AD400DCE0CD /* SubscanHistoryItem+Wallet.swift in Sources */,
 				882A5CED28AFCE3600D0D798 /* ReturnInIntervalsViewModel.swift in Sources */,
-				88C7165428C894510015D1E9 /* ModalSheetCollectionViewDelegate.swift in Sources */,
+				88C7165428C894510015D1E9 /* CollectionViewDelegate.swift in Sources */,
 				F458D3982642911B0055CB75 /* ControllerAccountViewModel.swift in Sources */,
 				84DAC198268D3DD9002D0DF4 /* SNAddressType.swift in Sources */,
 				84AC0B6A28C0D8CE00FA5B5D /* NoLedgerSupportCommand.swift in Sources */,
@@ -14992,6 +15006,7 @@
 				F4223ED127329767003D8E4E /* AcalaTransferRequest.swift in Sources */,
 				8473F4B8282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift in Sources */,
 				841E2E5027381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift in Sources */,
+				88AC186128CA3EE100892A9B /* LocksViewLayout.swift in Sources */,
 				A32E1373E3671D518FFC3BC2 /* YourValidatorListViewController.swift in Sources */,
 				84D2F1A927744C280040C680 /* PolkadotExtensionError.swift in Sources */,
 				37E1E9782B9752BC50AF2476 /* YourValidatorListViewFactory.swift in Sources */,
@@ -15275,6 +15290,7 @@
 				9BADFCBF3AF5186094DB8D67 /* DAppTxDetailsInteractor.swift in Sources */,
 				B409644ED1E20062A3EA0316 /* DAppTxDetailsViewController.swift in Sources */,
 				DAD46B2B29A446C19A6ABF2D /* DAppTxDetailsViewLayout.swift in Sources */,
+				88AC186328CA3F0000892A9B /* GenericCollectionViewLayout.swift in Sources */,
 				A97F32D057BFEFBCC478A09C /* DAppTxDetailsViewFactory.swift in Sources */,
 				D567BAAF620EDB9F4975C800 /* DAppAuthConfirmProtocols.swift in Sources */,
 				84C342092831645800156569 /* EraCountdownDisplay.swift in Sources */,

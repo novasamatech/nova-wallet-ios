@@ -3,13 +3,18 @@ import SoraFoundation
 import SoraUI
 import SubstrateSdk
 
-final class YourWalletsViewController: UIViewController, ViewHolder {
+final class YourWalletsViewController: UIViewController, ViewHolder, ModalSheetCollectionViewProtocol {
+    var collectionView: UICollectionView {
+        rootView.collectionView
+    }
+
     typealias RootViewType = YourWalletsViewLayout
     typealias DataSource =
         UICollectionViewDiffableDataSource<YourWalletsViewSectionModel, YourWalletsCellViewModel>
 
     let presenter: YourWalletsPresenterProtocol
     private lazy var dataSource = createDataSource()
+    private lazy var delegate = createDelegate()
     private var viewModel: [YourWalletsViewSectionModel] = []
 
     init(presenter: YourWalletsPresenterProtocol) {
@@ -41,7 +46,7 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
 
     private func setupCollectionView() {
         rootView.collectionView.dataSource = dataSource
-        rootView.collectionView.delegate = createDelegate()
+        rootView.collectionView.delegate = delegate
 
         rootView.collectionView.registerCellClass(SelectableIconSubtitleCollectionViewCell.self)
         rootView.collectionView.registerClass(
@@ -91,8 +96,7 @@ final class YourWalletsViewController: UIViewController, ViewHolder {
     }
 
     private func createDelegate() -> UICollectionViewDelegate {
-        ModalSheetCollectionViewDelegate(
-            collectionView: rootView.collectionView,
+        CollectionViewDelegate(
             selectItemClosure: { [weak self] indexPath in
                 guard let self = self else {
                     return
@@ -145,6 +149,6 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
     }
 
     func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat {
-        RootViewType.contentHeight(sections: sections, items: items)
+        rootView.contentHeight(sections: sections, items: items)
     }
 }

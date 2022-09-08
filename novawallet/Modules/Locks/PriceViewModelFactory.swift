@@ -1,4 +1,5 @@
 import BigInt
+import Foundation
 
 protocol PriceViewModelFactoryProtocol {
     func formatBalance(
@@ -13,13 +14,22 @@ protocol PriceViewModelFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
         locale: Locale
-    ) -> String?
+    ) -> FormattedPlank?
 }
 
 struct FormattedBalance {
     let total: String
     let transferrable: String
     let locks: String
+
+    let totalPrice: Decimal
+    let transferrablePrice: Decimal
+    let locksPrice: Decimal
+}
+
+struct FormattedPlank {
+    let amount: String
+    let price: Decimal
 }
 
 final class PriceViewModelFactory: PriceViewModelFactoryProtocol {
@@ -79,7 +89,14 @@ final class PriceViewModelFactory: PriceViewModelFactoryProtocol {
         let formattedTotal = formatPrice(amount: totalPrice, priceData: lastPriceData, locale: locale)
         let formattedTransferrable = formatPrice(amount: transferrablePrice, priceData: lastPriceData, locale: locale)
         let formattedLocks = formatPrice(amount: locksPrice, priceData: lastPriceData, locale: locale)
-        return .init(total: formattedTotal, transferrable: formattedTransferrable, locks: formattedLocks)
+        return .init(
+            total: formattedTotal,
+            transferrable: formattedTransferrable,
+            locks: formattedLocks,
+            totalPrice: totalPrice,
+            transferrablePrice: transferrablePrice,
+            locksPrice: locksPrice
+        )
     }
 
     func formatPlankValue(
@@ -88,7 +105,7 @@ final class PriceViewModelFactory: PriceViewModelFactoryProtocol {
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
         locale: Locale
-    ) -> String? {
+    ) -> FormattedPlank? {
         guard let priceData = prices[chainAssetId] else {
             return nil
         }
@@ -97,17 +114,18 @@ final class PriceViewModelFactory: PriceViewModelFactoryProtocol {
         }
         let rate = Decimal(string: priceData.price) ?? 0.0
 
-        let amount = calculateAmount(
+        let price = calculateAmount(
             from: plank,
             precision: assetPrecision,
             rate: rate
         )
 
-        guard amount > 0 else {
+        guard price > 0 else {
             return nil
         }
 
-        return formatPrice(amount: amount, priceData: priceData, locale: locale)
+        let formattedPrice = formatPrice(amount: price, priceData: priceData, locale: locale)
+        return .init(amount: formattedPrice, price: price)
     }
 
     private func calculateAmount(from plank: BigUInt, precision: UInt16, rate: Decimal) -> Decimal {

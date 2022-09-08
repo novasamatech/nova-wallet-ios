@@ -2,15 +2,18 @@ import UIKit
 
 protocol LocksViewProtocol: ControllerBackedProtocol {
     func update(viewModel: [LocksViewSectionModel])
-    func update(header: String)
+    func updateHeader(title: String, value: String)
     func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat
 }
 
 protocol LocksPresenterProtocol: AnyObject {
     func setup()
+    func didTapOnCell()
 }
 
-protocol LocksWireframeProtocol: AnyObject {}
+protocol LocksWireframeProtocol: AnyObject {
+    func close(view: LocksViewProtocol?)
+}
 
 struct LocksViewSectionModel: SectionProtocol, Hashable {
     let header: HeaderViewModel

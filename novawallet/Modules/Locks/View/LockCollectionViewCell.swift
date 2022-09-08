@@ -29,7 +29,7 @@ final class LockCollectionViewCell: UICollectionViewCell {
     private func setupLayout() {
         contentView.addSubview(view)
         view.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 14, left: 24, bottom: 14, right: 0))
         }
     }
 

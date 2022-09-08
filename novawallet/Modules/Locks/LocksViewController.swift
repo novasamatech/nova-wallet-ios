@@ -1,12 +1,17 @@
 import UIKit
 
-final class LocksViewController: UIViewController, ViewHolder {
-    typealias RootViewType = YourWalletsViewLayout
+final class LocksViewController: UIViewController, ViewHolder, ModalSheetCollectionViewProtocol {
+    typealias RootViewType = LocksViewLayout
     typealias DataSource =
         UICollectionViewDiffableDataSource<LocksViewSectionModel, LocksViewSectionModel.CellViewModel>
 
     let presenter: LocksPresenterProtocol
+    var collectionView: UICollectionView {
+        rootView.collectionView
+    }
+
     private lazy var dataSource = createDataSource()
+    private lazy var delegate = createDelegate()
     private var viewModel: [LocksViewSectionModel] = []
 
     init(presenter: LocksPresenterProtocol) {
@@ -20,7 +25,7 @@ final class LocksViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = YourWalletsViewLayout()
+        view = LocksViewLayout()
     }
 
     override func viewDidLoad() {
@@ -32,7 +37,7 @@ final class LocksViewController: UIViewController, ViewHolder {
 
     private func setupCollectionView() {
         rootView.collectionView.dataSource = dataSource
-        rootView.collectionView.delegate = createDelegate()
+        rootView.collectionView.delegate = delegate
 
         rootView.collectionView.registerCellClass(LockCollectionViewCell.self)
         rootView.collectionView.registerClass(
@@ -81,7 +86,9 @@ final class LocksViewController: UIViewController, ViewHolder {
     }
 
     private func createDelegate() -> UICollectionViewDelegate {
-        ModalSheetCollectionViewDelegate(collectionView: rootView.collectionView)
+        CollectionViewDelegate { [weak self] _ in
+            self?.presenter.didTapOnCell()
+        }
     }
 }
 
@@ -92,11 +99,12 @@ extension LocksViewController: LocksViewProtocol {
         dataSource.apply(viewModel)
     }
 
-    func update(header: String) {
-        rootView.header.text = header
+    func updateHeader(title: String, value: String) {
+        rootView.titleLabel.text = title
+        rootView.valueLabel.text = value
     }
 
     func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat {
-        RootViewType.contentHeight(sections: sections, items: items)
+        rootView.contentHeight(sections: sections, items: items)
     }
 }
