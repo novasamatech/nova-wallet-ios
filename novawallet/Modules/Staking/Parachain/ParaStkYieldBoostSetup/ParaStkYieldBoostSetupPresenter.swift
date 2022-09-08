@@ -22,8 +22,8 @@ final class ParaStkYieldBoostSetupPresenter {
     private(set) var yieldBoostParams: ParaStkYieldBoostResponse?
     private(set) var isYieldBoostSelected: Bool = false
 
-    private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
-    private lazy var apyFormatter = NumberFormatter.positivePercentAPY.localizableResource()
+    private(set) lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
+    private(set) lazy var apyFormatter = NumberFormatter.positivePercentAPY.localizableResource()
 
     private(set) var selectedCollator: AccountId?
 
@@ -144,6 +144,14 @@ final class ParaStkYieldBoostSetupPresenter {
             .owner
     }
 
+    func updateYieldBoostSelected(_ newValue: Bool) {
+        isYieldBoostSelected = newValue
+    }
+
+    func updateThresholdInput(_ newValue: AmountInputResult?) {
+        thresholdInput = newValue
+    }
+
     func setupCollatorIfNeeded() {
         guard selectedCollator == nil else {
             return
@@ -175,27 +183,6 @@ final class ParaStkYieldBoostSetupPresenter {
         interactor.requestParams(for: activeStake, collator: selectedCollator)
     }
 
-    func provideCollatorViewModel() {
-        if
-            let selectedCollator = selectedCollator,
-            let address = try? selectedCollator.toAddress(using: chainAsset.chain.chainFormat) {
-            let collatorDisplayAddress = DisplayAddress(
-                address: address,
-                username: delegationIdentities?[selectedCollator]?.name ?? ""
-            )
-
-            let collatorViewModel = accountDetailsViewModelFactory.createCollator(
-                from: collatorDisplayAddress,
-                delegator: delegator,
-                locale: selectedLocale
-            )
-
-            view?.didReceiveCollator(viewModel: collatorViewModel)
-        } else {
-            view?.didReceiveCollator(viewModel: nil)
-        }
-    }
-
     func createRewardViewModel(
         from percent: Decimal?,
         stake: Decimal?,
@@ -215,181 +202,6 @@ final class ParaStkYieldBoostSetupPresenter {
         let percentString = formatter.value(for: selectedLocale).stringFromDecimal(percent) ?? ""
 
         return ParaStkYieldBoostComparisonViewModel.Reward(percent: percentString, balance: amountViewModel)
-    }
-
-    func provideRewardsOptionComparisonViewModel() {
-        guard let activeStake = activeCollatorDelegationInPlank(), let selectedCollator = selectedCollator else {
-            view?.didReceiveRewardComparison(viewModel: .empty)
-            return
-        }
-
-        let activeStakeDecimal = Decimal.fromSubstrateAmount(
-            activeStake,
-            precision: chainAsset.assetDisplayInfo.assetPrecision
-        )
-
-        let apr: ParaStkYieldBoostComparisonViewModel.Reward?
-
-        if
-            let rewardCalculator = rewardCalculator,
-            let calculatedApr = try? rewardCalculator.calculateEarnings(
-                amount: 1.0,
-                collatorAccountId: selectedCollator,
-                period: .year
-            ) {
-            apr = createRewardViewModel(from: calculatedApr, stake: activeStakeDecimal, formatter: aprFormatter)
-        } else {
-            apr = nil
-        }
-
-        let apy = createRewardViewModel(from: yieldBoostParams?.apy, stake: activeStakeDecimal, formatter: apyFormatter)
-
-        let viewModel = ParaStkYieldBoostComparisonViewModel(apr: apr, apy: apy)
-        view?.didReceiveRewardComparison(viewModel: viewModel)
-    }
-
-    func provideRewardOptionSelectionViewModel() {
-        view?.didReceiveYieldBoostSelected(isYieldBoostSelected)
-    }
-
-    func provideYieldBoostPeriodViewModel() {
-        guard let newPeriod = yieldBoostParams?.period else {
-            view?.didReceiveYieldBoostPeriod(viewModel: nil)
-            return
-        }
-
-        let viewModel = ParaStkYieldBoostPeriodViewModel(
-            old: selectedRemoteBoostPeriod(),
-            new: newPeriod
-        )
-
-        view?.didReceiveYieldBoostPeriod(viewModel: viewModel)
-    }
-
-    func provideAssetViewModel() {
-        let balanceDecimal = balance.flatMap { value in
-            Decimal.fromSubstrateAmount(
-                value.transferable,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            )
-        } ?? 0
-
-        let inputAmount = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ?? 0
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            inputAmount,
-            balance: balanceDecimal,
-            priceData: price
-        ).value(for: selectedLocale)
-
-        view?.didReceiveAssetBalance(viewModel: viewModel)
-    }
-
-    func provideThresholdInputViewModel() {
-        let inputAmount = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ??
-            selectedRemoteBoostThreshold()
-
-        let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
-            inputAmount
-        ).value(for: selectedLocale)
-
-        view?.didReceiveAmount(inputViewModel: viewModel)
-    }
-
-    func updateHasChanges() {
-        view?.didReceiveHasChanges(viewModel: checkChanges())
-    }
-
-    func provideYieldBoostSpecificViewModels() {
-        provideYieldBoostPeriodViewModel()
-        provideAssetViewModel()
-        provideThresholdInputViewModel()
-    }
-
-    func provideViewModels() {
-        provideCollatorViewModel()
-        provideRewardsOptionComparisonViewModel()
-        provideRewardOptionSelectionViewModel()
-
-        if isYieldBoostSelected {
-            provideYieldBoostSpecificViewModels()
-        }
-
-        updateHasChanges()
-    }
-}
-
-extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtocol {
-    func setup() {
-        interactor.setup()
-
-        setupCollatorIfNeeded()
-        refreshYieldBoostParamsIfNeeded()
-
-        provideViewModels()
-    }
-
-    func switchRewardsOption(to isYieldBoosted: Bool) {
-        guard isYieldBoostSelected != isYieldBoosted else {
-            return
-        }
-
-        isYieldBoostSelected = isYieldBoosted
-
-        provideRewardOptionSelectionViewModel()
-
-        if isYieldBoostSelected {
-            provideYieldBoostSpecificViewModels()
-        }
-
-        updateHasChanges()
-    }
-
-    func updateThresholdAmount(_ newValue: Decimal?) {
-        thresholdInput = newValue.map { .absolute($0) }
-
-        provideAssetViewModel()
-        updateHasChanges()
-    }
-
-    func selectThresholdAmountPercentage(_ percentage: Float) {
-        thresholdInput = .rate(Decimal(Double(percentage)))
-
-        provideThresholdInputViewModel()
-        provideAssetViewModel()
-        updateHasChanges()
-    }
-
-    func selectCollator() {
-        guard let delegator = delegator else {
-            return
-        }
-
-        let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
-        let disabledCollators = Self.disabledCollatorsForYieldBoost(from: scheduledRequests ?? [])
-
-        guard delegations.count > disabledCollators.count else {
-            return
-        }
-
-        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
-            from: delegations,
-            identities: delegationIdentities,
-            disabled: disabledCollators
-        )
-
-        let selectedIndex = delegations.firstIndex { $0.owner == selectedCollator } ?? NSNotFound
-
-        wireframe.showDelegationSelection(
-            from: view,
-            viewModels: accountDetailsViewModels,
-            selectedIndex: selectedIndex,
-            delegate: self,
-            context: delegations as NSArray
-        )
-    }
-
-    func proceed() {
-        // TODO: Implement transition to confirmation
     }
 }
 
@@ -482,21 +294,26 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
 
         switch error {
         case .rewardCalculatorFetchFailed:
-            break
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.fetchRewardCalculator()
+            }
         case .identitiesFetchFailed:
-            break
-        case .balanceSubscriptionFailed:
-            break
-        case .priceSubscriptionFailed:
-            break
-        case .delegatorSubscriptionFailed:
-            break
-        case .scheduledRequestsSubscriptionFailed:
-            break
-        case .yieldBoostTaskSubscriptionFailed:
-            break
-        case let .yieldBoostParamsFailed(_, stake, collator):
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                if let collators = self?.delegator?.collators() {
+                    self?.interactor.fetchIdentities(for: collators)
+                }
+            }
+        case .balanceSubscriptionFailed, .priceSubscriptionFailed, .delegatorSubscriptionFailed,
+             .scheduledRequestsSubscriptionFailed, .yieldBoostTaskSubscriptionFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retrySubscriptions()
+            }
+        case .yieldBoostParamsFailed:
             view?.didStopLoading()
+
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshYieldBoostParamsIfNeeded()
+            }
         }
     }
 }

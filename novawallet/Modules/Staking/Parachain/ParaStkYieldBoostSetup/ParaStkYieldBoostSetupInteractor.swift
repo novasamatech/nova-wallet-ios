@@ -138,15 +138,30 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
-}
 
-extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostSetupInteractorInputProtocol {
-    func setup() {
+    private func setupSubscriptions() {
         subscribeAssetBalanceAndPrice()
         subscribeDelegator()
         subscribeScheduledRequests()
         subscribeYieldBoostTasks()
+    }
+}
 
+extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostSetupInteractorInputProtocol {
+    func setup() {
+        setupSubscriptions()
+        provideRewardCalculator()
+    }
+
+    func retrySubscriptions() {
+        setupSubscriptions()
+    }
+
+    func fetchIdentities(for collators: [AccountId]) {
+        provideIdentities(for: collators)
+    }
+
+    func fetchRewardCalculator() {
         provideRewardCalculator()
     }
 
