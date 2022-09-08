@@ -21,7 +21,11 @@ final class ProcessStepView: UIView {
     }()
 
     var spacing: CGFloat = 16.0 {
-        didSet {}
+        didSet {
+            descriptionLabel.snp.updateConstraints { make in
+                make.leading.equalTo(stepNumberView.snp.trailing).offset(spacing)
+            }
+        }
     }
 
     override init(frame: CGRect) {
