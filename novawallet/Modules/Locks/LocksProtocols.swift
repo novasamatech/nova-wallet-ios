@@ -11,3 +11,21 @@ protocol LocksPresenterProtocol: AnyObject {
 }
 
 protocol LocksWireframeProtocol: AnyObject {}
+
+struct LocksViewSectionModel: SectionProtocol, Hashable {
+    let header: HeaderViewModel
+    var cells: [CellViewModel]
+
+    struct HeaderViewModel: Hashable {
+        let icon: UIImage?
+        let title: String
+        let details: String
+        let value: String
+    }
+
+    struct CellViewModel: Hashable {
+        let id: String
+        let title: String
+        let value: String
+    }
+}

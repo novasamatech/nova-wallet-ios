@@ -1,22 +1,5 @@
 import UIKit
 
-struct LocksViewSectionModel: SectionProtocol, Hashable {
-    let header: HeaderViewModel
-    var cells: [CellViewModel]
-
-    struct HeaderViewModel: Hashable {
-        let icon: UIImage?
-        let title: String
-        let details: String
-        let value: String
-    }
-
-    struct CellViewModel: Hashable {
-        let title: String
-        let value: String
-    }
-}
-
 final class LocksViewController: UIViewController, ViewHolder {
     typealias RootViewType = YourWalletsViewLayout
     typealias DataSource =

@@ -2083,6 +2083,8 @@
 		88A5317B28B9149600AF18F5 /* UIImage+DrawableIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A5317A28B9149600AF18F5 /* UIImage+DrawableIcon.swift */; };
 		88A5317D28B9170100AF18F5 /* NSCollectionLayoutSection+create.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A5317C28B9170100AF18F5 /* NSCollectionLayoutSection+create.swift */; };
 		88A5318028B9328E00AF18F5 /* YourWalletsViewSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A5317F28B9328E00AF18F5 /* YourWalletsViewSectionModel.swift */; };
+		88A6BCFF28CA15400047E4C2 /* PriceViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A6BCFE28CA15400047E4C2 /* PriceViewModelFactory.swift */; };
+		88A6BD0128CA15710047E4C2 /* LocksViewInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */; };
 		88AA0FB828B60E6A00931800 /* YourWalletsControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AA0FB728B60E6A00931800 /* YourWalletsControlView.swift */; };
 		88AF35DE28C21D28003730DA /* OrmLocksSubscribtion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AF35DD28C21D28003730DA /* OrmLocksSubscribtion.swift */; };
 		88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C017E528C60A65003B2D28 /* AssetLockMapper.swift */; };
@@ -4755,6 +4757,8 @@
 		88A5317A28B9149600AF18F5 /* UIImage+DrawableIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+DrawableIcon.swift"; sourceTree = "<group>"; };
 		88A5317C28B9170100AF18F5 /* NSCollectionLayoutSection+create.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCollectionLayoutSection+create.swift"; sourceTree = "<group>"; };
 		88A5317F28B9328E00AF18F5 /* YourWalletsViewSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsViewSectionModel.swift; sourceTree = "<group>"; };
+		88A6BCFE28CA15400047E4C2 /* PriceViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceViewModelFactory.swift; sourceTree = "<group>"; };
+		88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksViewInput.swift; sourceTree = "<group>"; };
 		88AA0FB728B60E6A00931800 /* YourWalletsControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsControlView.swift; sourceTree = "<group>"; };
 		88AF35DD28C21D28003730DA /* OrmLocksSubscribtion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmLocksSubscribtion.swift; sourceTree = "<group>"; };
 		88C017E528C60A65003B2D28 /* AssetLockMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetLockMapper.swift; sourceTree = "<group>"; };
@@ -6066,6 +6070,8 @@
 				26F9E9C70B0C14570AB783AF /* LocksPresenter.swift */,
 				F3D4D2E89D40718677685CE1 /* LocksViewController.swift */,
 				7B81B239BD9C150BFE9A82B0 /* LocksViewFactory.swift */,
+				88A6BCFE28CA15400047E4C2 /* PriceViewModelFactory.swift */,
+				88A6BD0028CA15710047E4C2 /* LocksViewInput.swift */,
 			);
 			path = Locks;
 			sourceTree = "<group>";
@@ -15034,6 +15040,7 @@
 				88C7165828C8D3280015D1E9 /* LockCollectionViewCell.swift in Sources */,
 				C0B0DDF638915E8259B1CD67 /* StakingRedeemPresenter.swift in Sources */,
 				C4A4D40A08DAB4A71C21C1A8 /* StakingRedeemInteractor.swift in Sources */,
+				88A6BD0128CA15710047E4C2 /* LocksViewInput.swift in Sources */,
 				F409672B26B29C3B008CD244 /* RewardAnalyticsWidgetView.swift in Sources */,
 				B1CCC5B7BF30F6ACA309B112 /* StakingRedeemViewController.swift in Sources */,
 				C21129B2B8D8B33BCBD5843E /* StakingRedeemViewFactory.swift in Sources */,
@@ -15119,6 +15126,7 @@
 				8499FED827BFCABD00712589 /* NftModel+Identifier.swift in Sources */,
 				88421064289BBD9100306F2C /* Currency.swift in Sources */,
 				921E4891E85C0DC6FDD8A0D0 /* CrowdloanContributionConfirmInteractor.swift in Sources */,
+				88A6BCFF28CA15400047E4C2 /* PriceViewModelFactory.swift in Sources */,
 				5C796EF8ED29F564B5D1126B /* CrowdloanContributionConfirmViewController.swift in Sources */,
 				2793D406FD618A892D54EA84 /* CrowdloanContributionConfirmViewLayout.swift in Sources */,
 				840D92A3278EDB2E0007B979 /* DAppParsedCall.swift in Sources */,
