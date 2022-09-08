@@ -124,4 +124,8 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func showYieldBoost(from _: ControllerBackedProtocol?) {
+        // TODO: Add transition to Start/Stop Yield Boost screen
+    }
 }

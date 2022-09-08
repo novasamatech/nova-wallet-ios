@@ -332,6 +332,7 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
         wireframe.showAnalytics(from: view, mode: isNominator.union(includeValidators))
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:
@@ -355,6 +356,9 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
                 let stashAddress = validatorState.stashItem.stash
                 wireframe.showYourValidatorInfo(stashAddress, from: view)
             }
+        case .yieldBoost:
+            // not supported yet for relaychain staking
+            break
         }
     }
 }
