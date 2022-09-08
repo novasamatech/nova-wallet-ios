@@ -183,7 +183,7 @@ final class ParaStkYieldBoostSetupPresenter {
 
         let amountViewModel = balanceViewModelFactory.balanceFromPrice(
             rewardAmount,
-            priceData: price
+            priceData: price ?? PriceData.zero()
         ).value(for: selectedLocale)
 
         let percentString = formatter.value(for: selectedLocale).stringFromDecimal(percent) ?? ""
