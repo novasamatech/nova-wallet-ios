@@ -34,7 +34,10 @@ struct ParaStkYieldBoostSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParaStkYieldBoostSetupViewController(presenter: presenter)
+        let view = ParaStkYieldBoostSetupViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
