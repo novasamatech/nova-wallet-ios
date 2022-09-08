@@ -9,6 +9,7 @@ final class ParaStkYieldBoostSetupPresenter {
     let chainAsset: ChainAsset
     let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let logger: LoggerProtocol
 
     private(set) var thresholdInput: AmountInputResult?
     private(set) var delegator: ParachainStaking.Delegator?
@@ -58,24 +59,26 @@ final class ParaStkYieldBoostSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
         chainAsset: ChainAsset,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.delegator = initState.delegator
+        delegator = initState.delegator
         self.chainAsset = chainAsset
-        self.scheduledRequests = initState.scheduledRequests
-        self.delegationIdentities = initState.delegationIdentities
+        scheduledRequests = initState.scheduledRequests
+        delegationIdentities = initState.delegationIdentities
         self.balanceViewModelFactory = balanceViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
-        self.yieldBoostTasks = initState.yieldBoostTasks
+        yieldBoostTasks = initState.yieldBoostTasks
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
     private static func disabledCollatorsForYieldBoost(
         from scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]
     ) -> Set<AccountId> {
-        Set(scheduledRequests.filter({ $0.isRevoke }).map({ $0.collatorId }))
+        Set(scheduledRequests.filter { $0.isRevoke }.map(\.collatorId))
     }
 
     private static func findPreferredCollator(
@@ -186,7 +189,6 @@ final class ParaStkYieldBoostSetupPresenter {
                 collatorAccountId: selectedCollator,
                 period: .year
             ) {
-
             apr = createRewardViewModel(from: calculatedApr, stake: activeStakeDecimal, formatter: aprFormatter)
         } else {
             apr = nil
@@ -265,38 +267,73 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
+
+        if isYieldBoostSelected {
+            provideAssetViewModel()
+        }
     }
 
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
-        self.rewardCalculator = calculator
+        rewardCalculator = calculator
+
+        provideRewardsOptionComparisonViewModel()
     }
 
     func didReceivePrice(_ priceData: PriceData?) {
-        self.price = priceData
+        price = priceData
+
+        provideRewardsOptionComparisonViewModel()
+
+        if isYieldBoostSelected {
+            provideAssetViewModel()
+        }
     }
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
         self.delegator = delegator
+
+        setupCollatorIfNeeded()
+
+        provideCollatorViewModel()
+
+        provideRewardsOptionComparisonViewModel()
     }
 
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?) {
-        self.delegationIdentities = identities
+        delegationIdentities = identities
+
+        provideCollatorViewModel()
     }
 
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
         self.scheduledRequests = scheduledRequests
+
+        setupCollatorIfNeeded()
+
+        provideCollatorViewModel()
+        provideRewardsOptionComparisonViewModel()
     }
 
     func didReceiveYieldBoostTasks(_ tasks: [ParaStkYieldBoostState.Task]) {
-        self.yieldBoostTasks = tasks
+        yieldBoostTasks = tasks
+
+        setupCollatorIfNeeded()
+
+        provideRewardsOptionComparisonViewModel()
     }
 
-    func didReceiveYieldBoostParams(_ params: ParaStkYieldBoostResponse, stake: BigUInt, collator: AccountId) {
-        self.yieldBoostParams = params
+    func didReceiveYieldBoostParams(_ params: ParaStkYieldBoostResponse, stake _: BigUInt, collator _: AccountId) {
+        yieldBoostParams = params
+
+        provideRewardsOptionComparisonViewModel()
+
+        if isYieldBoostSelected {
+            provideYieldBoostPeriodViewModel()
+        }
     }
 
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError) {
-
+        logger.error("Did receive error \(error)")
     }
 }
 
