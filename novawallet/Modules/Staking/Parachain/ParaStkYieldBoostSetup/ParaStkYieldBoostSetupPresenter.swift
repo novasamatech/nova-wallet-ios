@@ -163,10 +163,14 @@ final class ParaStkYieldBoostSetupPresenter {
 
         let rewardAmount = percent * stake
 
-        let amountViewModel = balanceViewModelFactory.balanceFromPrice(rewardAmount, priceData: price).value(for: selectedLocale)
+        let amountViewModel = balanceViewModelFactory.balanceFromPrice(
+            rewardAmount,
+            priceData: price
+        ).value(for: selectedLocale)
+
         let percentString = formatter.value(for: selectedLocale).stringFromDecimal(percent) ?? ""
 
-        return ParaStkYieldBoostComparisonViewModel.Reward(percent: percentString, amount: amountViewModel)
+        return ParaStkYieldBoostComparisonViewModel.Reward(percent: percentString, balance: amountViewModel)
     }
 
     private func provideRewardsOptionComparisonViewModel() {
@@ -325,6 +329,8 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
     func didReceiveYieldBoostParams(_ params: ParaStkYieldBoostResponse, stake _: BigUInt, collator _: AccountId) {
         yieldBoostParams = params
 
+        view?.didStopLoading()
+
         provideRewardsOptionComparisonViewModel()
 
         if isYieldBoostSelected {
@@ -334,6 +340,25 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
 
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError) {
         logger.error("Did receive error \(error)")
+
+        switch error {
+        case .rewardCalculatorFetchFailed:
+            break
+        case .identitiesFetchFailed:
+            break
+        case .balanceSubscriptionFailed:
+            break
+        case .priceSubscriptionFailed:
+            break
+        case .delegatorSubscriptionFailed:
+            break
+        case .scheduledRequestsSubscriptionFailed:
+            break
+        case .yieldBoostTaskSubscriptionFailed:
+            break
+        case let .yieldBoostParamsFailed(_, stake, collator):
+            view?.didStopLoading()
+        }
     }
 }
 

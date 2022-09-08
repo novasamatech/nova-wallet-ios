@@ -948,3 +948,9 @@
 "common.yield.boost" = "Yield Boost";
 "common.on" = "on";
 "common.off" = "off";
+"yield.boost.setup.collator.title" = "For my collator";
+"yield.boost.setup.reward.comparison.title" = "I want to stake";
+"with.yield.boost" = "with Yield Boost";
+"without.yield.boost" = "without Yield Boost";
+"yield.boost.setup.period.details" = "to automatically stake every %@ all my transferable tokens above";
+"yield.boost.threshold" = "Boost threshold";
