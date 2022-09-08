@@ -3,10 +3,14 @@ import UIKit
 
 extension MultiValueView {
     static func createTableHeaderView() -> MultiValueView {
-        let view = MultiValueView()
-
         let horInset = UIConstants.horizontalInset
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: horInset, bottom: 12.0, right: horInset)
+        let margins = UIEdgeInsets(top: 16.0, left: horInset, bottom: 12.0, right: horInset)
+        return createTableHeaderView(with: margins)
+    }
+
+    static func createTableHeaderView(with margins: UIEdgeInsets) -> MultiValueView {
+        let view = MultiValueView()
+        view.stackView.layoutMargins = margins
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.spacing = 8.0
 

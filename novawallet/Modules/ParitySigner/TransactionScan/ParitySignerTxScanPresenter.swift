@@ -114,8 +114,7 @@ extension ParitySignerTxScanPresenter: ParitySignerTxScanInteractorOutputProtoco
             on: view,
             title: R.string.localizable.paritySignerTxScanInvalidTitle(preferredLanguages: locale.rLanguages),
             message: R.string.localizable.paritySignerTxScanInvalidMessage(preferredLanguages: locale.rLanguages),
-            actionTitle: R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages),
-            locale: locale
+            actionTitle: R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages)
         ) { [weak self] in
             self?.setLastCode(nil)
         }

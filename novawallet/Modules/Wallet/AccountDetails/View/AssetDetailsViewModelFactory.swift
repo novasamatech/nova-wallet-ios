@@ -6,7 +6,10 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
     let balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let priceInfoFactory: PriceAssetInfoFactoryProtocol
 
-    init(balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol, priceInfoFactory: PriceAssetInfoFactoryProtocol) {
+    init(
+        balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        priceInfoFactory: PriceAssetInfoFactoryProtocol
+    ) {
         self.balanceFormatterFactory = balanceFormatterFactory
         self.priceInfoFactory = priceInfoFactory
     }
