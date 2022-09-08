@@ -3,7 +3,7 @@ import UIKit
 final class ParaStkYieldBoostSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
@@ -80,14 +80,12 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
         }
 
         containerView.stackView.addArrangedSubview(collatorTitleLabel)
-        collatorTitleLabel.snp.makeConstraints { make in
-            make.height.equalTo(34.0)
-        }
+        containerView.stackView.setCustomSpacing(8.0, after: collatorTitleLabel)
 
         containerView.stackView.addArrangedSubview(collatorTableView)
         collatorTableView.addArrangedSubview(collatorActionView)
 
-        containerView.stackView.setCustomSpacing(8.0, after: collatorTableView)
+        containerView.stackView.setCustomSpacing(16.0, after: collatorTableView)
 
         containerView.stackView.addArrangedSubview(rewardComparisonTitleLabel)
         containerView.stackView.setCustomSpacing(8.0, after: rewardComparisonTitleLabel)
@@ -107,11 +105,10 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
         containerView.stackView.setCustomSpacing(16.0, after: withYieldBoostOptionView)
 
         containerView.stackView.addArrangedSubview(thresholdDetailsLabel)
-        containerView.stackView.setCustomSpacing(8.0, after: thresholdDetailsLabel)
 
         containerView.stackView.addArrangedSubview(amountView)
         amountView.snp.makeConstraints { make in
-            make.height.equalTo(34.0)
+            make.height.equalTo(36.0)
         }
 
         containerView.stackView.addArrangedSubview(amountInputView)
