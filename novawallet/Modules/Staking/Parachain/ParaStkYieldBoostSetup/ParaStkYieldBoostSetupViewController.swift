@@ -7,6 +7,8 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
 
     let presenter: ParaStkYieldBoostSetupPresenterProtocol
 
+    var keyboardHandler: KeyboardHandler?
+
     private var collatorViewModel: AccountDetailsSelectionViewModel?
     private var yieldBoostPeriod: ParaStkYieldBoostPeriodViewModel?
     private var hasChanges: Bool = false
@@ -34,6 +36,20 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
         setupLocalization()
 
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if keyboardHandler == nil {
+            setupKeyboardHandler()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 
     private func setupLocalization() {
@@ -238,6 +254,30 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
         presenter.updateThresholdAmount(amount)
 
         updateActionButtonState()
+    }
+}
+
+extension ParaStkYieldBoostSetupViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let localKeyboardFrame = view.convert(frame, from: nil)
+        let bottomInset = view.bounds.height - localKeyboardFrame.minY
+        let scrollView = rootView.containerView.scrollView
+        let scrollViewOffset = view.bounds.height - scrollView.frame.maxY
+
+        var contentInsets = scrollView.contentInset
+        contentInsets.bottom = max(0.0, bottomInset - scrollViewOffset)
+        scrollView.contentInset = contentInsets
+
+        if contentInsets.bottom > 0.0 {
+            let responderView = rootView.amountInputView
+
+            let fieldFrame = scrollView.convert(
+                responderView.frame,
+                from: responderView.superview
+            )
+
+            scrollView.scrollRectToVisible(fieldFrame, animated: true)
+        }
     }
 }
 
