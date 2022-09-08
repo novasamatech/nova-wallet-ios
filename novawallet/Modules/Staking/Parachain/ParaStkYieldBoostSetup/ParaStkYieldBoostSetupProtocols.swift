@@ -8,6 +8,7 @@ protocol ParaStkYieldBoostSetupViewProtocol: ControllerBackedProtocol, LoadableV
     func didReceiveYieldBoostPeriod(viewModel: ParaStkYieldBoostPeriodViewModel?)
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
+    func didReceiveHasChanges(viewModel: Bool)
 }
 
 protocol ParaStkYieldBoostSetupPresenterProtocol: AnyObject {
