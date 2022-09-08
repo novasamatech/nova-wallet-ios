@@ -7,7 +7,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     weak var presenter: ParaStkYieldBoostSetupInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
-    let selectedAccount: MetaChainAccountResponse
+    let selectedAccount: ChainAccountResponse
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
@@ -28,7 +28,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
 
     init(
         chainAsset: ChainAsset,
-        selectedAccount: MetaChainAccountResponse,
+        selectedAccount: ChainAccountResponse,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
@@ -38,6 +38,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
         identityOperationFactory: IdentityOperationFactoryProtocol,
         yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol,
         yieldBoostOperationFactory: ParaStkYieldBoostOperationFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -52,6 +53,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
         self.yieldBoostProviderFactory = yieldBoostProviderFactory
         self.yieldBoostOperationFactory = yieldBoostOperationFactory
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     deinit {
@@ -77,7 +79,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
 
     private func subscribeAssetBalanceAndPrice() {
         balanceProvider = subscribeToAssetBalanceProvider(
-            for: selectedAccount.chainAccount.accountId,
+            for: selectedAccount.accountId,
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
@@ -90,21 +92,21 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     private func subscribeDelegator() {
         delegatorProvider = subscribeToDelegatorState(
             for: chainAsset.chain.chainId,
-            accountId: selectedAccount.chainAccount.accountId
+            accountId: selectedAccount.accountId
         )
     }
 
     private func subscribeScheduledRequests() {
         scheduledRequestsProvider = subscribeToScheduledRequests(
             for: chainAsset.chain.chainId,
-            delegatorId: selectedAccount.chainAccount.accountId
+            delegatorId: selectedAccount.accountId
         )
     }
 
     private func subscribeYieldBoostTasks() {
         yieldBoostProvider = subscribeYieldBoostTasks(
             for: chainAsset.chain.chainId,
-            accountId: selectedAccount.chainAccount.accountId
+            accountId: selectedAccount.accountId
         )
     }
 
@@ -188,7 +190,6 @@ extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostSetupInteractorInpu
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
-
 }
 
 extension ParaStkYieldBoostSetupInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
@@ -253,8 +254,8 @@ extension ParaStkYieldBoostSetupInteractor: ParastakingLocalStorageSubscriber, P
 extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostStorageSubscriber, ParaStkYieldBoostSubscriptionHandler {
     func handleYieldBoostTasks(
         result: Result<[ParaStkYieldBoostState.Task]?, Error>,
-        chainId: ChainModel.Id,
-        accountId: AccountId
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
     ) {
         switch result {
         case let .success(tasks):

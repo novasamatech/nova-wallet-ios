@@ -1,4 +1,5 @@
 import UIKit
+import CommonWallet
 
 final class ParaStkYieldBoostSetupViewController: UIViewController {
     typealias RootViewType = ParaStkYieldBoostSetupViewLayout
@@ -26,4 +27,16 @@ final class ParaStkYieldBoostSetupViewController: UIViewController {
     }
 }
 
-extension ParaStkYieldBoostSetupViewController: ParaStkYieldBoostSetupViewProtocol {}
+extension ParaStkYieldBoostSetupViewController: ParaStkYieldBoostSetupViewProtocol {
+    func didReceiveCollator(viewModel _: AccountDetailsSelectionViewModel?) {}
+
+    func didReceiveRewardComparison(viewModel _: ParaStkYieldBoostComparisonViewModel) {}
+
+    func didReceiveYieldBoostSelected(_: Bool) {}
+
+    func didReceiveYieldBoostPeriod(days _: UInt?) {}
+
+    func didReceiveAssetBalance(viewModel _: AssetBalanceViewModelProtocol) {}
+
+    func didReceiveAmount(inputViewModel _: AmountInputViewModelProtocol) {}
+}
