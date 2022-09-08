@@ -5,7 +5,7 @@ protocol ParaStkYieldBoostSetupViewProtocol: ControllerBackedProtocol, LoadableV
     func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?)
     func didReceiveRewardComparison(viewModel: ParaStkYieldBoostComparisonViewModel)
     func didReceiveYieldBoostSelected(_ isSelected: Bool)
-    func didReceiveYieldBoostPeriod(days: UInt?)
+    func didReceiveYieldBoostPeriod(viewModel: ParaStkYieldBoostPeriodViewModel?)
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
 }

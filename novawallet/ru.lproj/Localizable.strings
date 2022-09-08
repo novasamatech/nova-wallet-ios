@@ -953,4 +953,5 @@
 "with.yield.boost" = "с Yield Boost";
 "without.yield.boost" = "без Yield Boost";
 "yield.boost.setup.period.details" = "автоматически отправлять в стейк каждый %@ все доступный баланс выше";
+"yield.boost.setup.period.update" = "(текущее значение %@)";
 "yield.boost.threshold" = "Boost граница";
