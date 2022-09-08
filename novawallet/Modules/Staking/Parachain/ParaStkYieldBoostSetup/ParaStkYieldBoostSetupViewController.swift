@@ -8,7 +8,7 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
     let presenter: ParaStkYieldBoostSetupPresenterProtocol
 
     private var collatorViewModel: AccountDetailsSelectionViewModel?
-    private var yieldBoostPeriod: UInt?
+    private var yieldBoostPeriod: ParaStkYieldBoostPeriodViewModel?
 
     init(presenter: ParaStkYieldBoostSetupPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -55,7 +55,7 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        applyYieldBoostPeriod(days: yieldBoostPeriod)
+        applyYieldBoostPeriod(viewModel: yieldBoostPeriod)
 
         rootView.amountView.titleView.text = R.string.localizable.yieldBoostThreshold(preferredLanguages: languages)
         rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
@@ -65,14 +65,33 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
         updateActionButtonState()
     }
 
-    private func applyYieldBoostPeriod(days: UInt?) {
+    private func applyYieldBoostPeriod(viewModel: ParaStkYieldBoostPeriodViewModel?) {
         let period: String
 
-        if let days = days {
-            period = R.string.localizable.commonDaysFormat(
-                format: Int(bitPattern: days),
+        if let newDays = viewModel?.new {
+            let newDaysString = R.string.localizable.commonDaysFormat(
+                format: Int(bitPattern: newDays),
                 preferredLanguages: selectedLocale.rLanguages
             )
+
+            let updating: String
+
+            if let oldDays = viewModel?.old, oldDays != newDays {
+                let oldDaysString = R.string.localizable.commonDaysFormat(
+                    format: Int(bitPattern: oldDays),
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                updating = R.string.localizable.yieldBoostSetupPeriodUpdate(
+                    oldDaysString,
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+            } else {
+                updating = ""
+            }
+
+            period = newDaysString + " " + updating
+
         } else {
             period = "⌛"
         }
@@ -170,10 +189,10 @@ extension ParaStkYieldBoostSetupViewController: ParaStkYieldBoostSetupViewProtoc
         rootView.poweredByView.isHidden = !isYieldBoosted
     }
 
-    func didReceiveYieldBoostPeriod(days: UInt?) {
-        yieldBoostPeriod = days
+    func didReceiveYieldBoostPeriod(viewModel: ParaStkYieldBoostPeriodViewModel?) {
+        yieldBoostPeriod = viewModel
 
-        applyYieldBoostPeriod(days: days)
+        applyYieldBoostPeriod(viewModel: viewModel)
     }
 
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol) {

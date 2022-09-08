@@ -52,6 +52,24 @@ final class ParaStkYieldBoostSetupPresenter {
         return balance
     }
 
+    func selectedRemoteBoostThreshold() -> Decimal? {
+        guard let task = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator }) else {
+            return nil
+        }
+
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+        return Decimal.fromSubstrateAmount(task.accountMinimum, precision: precision)
+    }
+
+    func selectedRemoteBoostPeriod() -> UInt? {
+        guard let task = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator }) else {
+            return nil
+        }
+
+        return UInt(bitPattern: TimeInterval(task.frequency).daysFromSeconds)
+    }
+
     init(
         interactor: ParaStkYieldBoostSetupInteractorInputProtocol,
         wireframe: ParaStkYieldBoostSetupWireframeProtocol,
@@ -209,7 +227,17 @@ final class ParaStkYieldBoostSetupPresenter {
     }
 
     private func provideYieldBoostPeriodViewModel() {
-        view?.didReceiveYieldBoostPeriod(days: yieldBoostParams?.period)
+        guard let newPeriod = yieldBoostParams?.period else {
+            view?.didReceiveYieldBoostPeriod(viewModel: nil)
+            return
+        }
+
+        let viewModel = ParaStkYieldBoostPeriodViewModel(
+            old: selectedRemoteBoostPeriod(),
+            new: newPeriod
+        )
+
+        view?.didReceiveYieldBoostPeriod(viewModel: viewModel)
     }
 
     private func provideAssetViewModel() {
@@ -231,7 +259,8 @@ final class ParaStkYieldBoostSetupPresenter {
     }
 
     private func provideThresholdInputViewModel() {
-        let inputAmount = thresholdInput?.absoluteValue(from: maxSpendingAmount())
+        let inputAmount = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ??
+            selectedRemoteBoostThreshold()
 
         let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
             inputAmount
@@ -324,6 +353,14 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
         setupCollatorIfNeeded()
 
         provideRewardsOptionComparisonViewModel()
+
+        if isYieldBoostSelected, thresholdInput == nil {
+            provideThresholdInputViewModel()
+        }
+
+        if isYieldBoostSelected {
+            provideYieldBoostPeriodViewModel()
+        }
     }
 
     func didReceiveYieldBoostParams(_ params: ParaStkYieldBoostResponse, stake _: BigUInt, collator _: AccountId) {
