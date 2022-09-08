@@ -12,12 +12,13 @@ protocol OnboardingMainPresenterProtocol: AnyObject {
     func activatePrivacy()
 }
 
-protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable {
+protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable, ActionsManagePresentable {
     func showSignup(from view: OnboardingMainViewProtocol?)
     func showAccountRestore(from view: OnboardingMainViewProtocol?)
     func showKeystoreImport(from view: OnboardingMainViewProtocol?)
     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)
-    func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?)
+    func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?)
+    func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?)
 }
 
 protocol OnboardingMainInteractorInputProtocol: AnyObject {

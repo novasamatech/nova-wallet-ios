@@ -21,6 +21,8 @@ final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol 
         selectedBackgroundView.backgroundColor = R.color.colorHighlightedAccent()
         self.selectedBackgroundView = selectedBackgroundView
 
+        backgroundColor = .clear
+
         setupLayot()
     }
 
