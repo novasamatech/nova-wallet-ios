@@ -65,5 +65,5 @@ protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable, 
         collatorIdentity: AccountIdentity?
     )
 
-    func showYieldBoost(from view: ControllerBackedProtocol?)
+    func showYieldBoost(from view: ControllerBackedProtocol?, initData: ParaStkYieldBoostInitState)
 }
