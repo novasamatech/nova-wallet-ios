@@ -786,6 +786,7 @@
 		844ADE7528CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */; };
 		844ADE7728CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7628CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift */; };
 		844ADE7928CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */; };
+		844ADE7B28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7A28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift */; };
 		844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */; };
 		844B2E7A27C425E3000CC079 /* NftLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */; };
 		844B2E7C27C426A7000CC079 /* NftLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */; };
@@ -3458,6 +3459,7 @@
 		844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostPeriodViewModel.swift; sourceTree = "<group>"; };
 		844ADE7628CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+ViewUpdate.swift"; sourceTree = "<group>"; };
 		844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+Protocol.swift"; sourceTree = "<group>"; };
+		844ADE7A28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostFeeRequest.swift; sourceTree = "<group>"; };
 		844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferService.swift; sourceTree = "<group>"; };
 		844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
@@ -10195,6 +10197,7 @@
 				84FBDBDE28C8811D00CC1037 /* ParaStkYieldBoostProviderFactory.swift */,
 				84FBDBE028C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift */,
 				84FBDBE228C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift */,
+				844ADE7A28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift */,
 			);
 			path = YieldBoost;
 			sourceTree = "<group>";
@@ -14274,6 +14277,7 @@
 				84C6801224D6F44400006BF5 /* ExpandableActionControl+Inspectable.swift in Sources */,
 				845C407B27027AA000BFA50B /* SubscriptionStorageKeys.swift in Sources */,
 				84F1CB2B27CE4E4B0095D523 /* NftListViewModel.swift in Sources */,
+				844ADE7B28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift in Sources */,
 				847119CD262EF61F00716580 /* PayoutValidatorForValidatorFactory.swift in Sources */,
 				F40966E426B29919008CD244 /* Stacks.swift in Sources */,
 				848CCB502833D1D900A1FD00 /* StakingRelaychainStatics.swift in Sources */,
