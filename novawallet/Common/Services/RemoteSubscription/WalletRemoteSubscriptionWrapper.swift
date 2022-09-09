@@ -81,7 +81,7 @@ final class WalletRemoteSubscriptionWrapper {
     ) -> UUID? {
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
-        let subscriptionHandlingFactory = TokenSubscribtionFactory(
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
@@ -97,7 +97,7 @@ final class WalletRemoteSubscriptionWrapper {
             chainId: chainAssetId.chainId,
             queue: .main,
             closure: completion,
-            childSubscribingFactory: subscriptionHandlingFactory
+            subscriptionHandlingFactory: subscriptionHandlingFactory
         )
     }
 
@@ -110,7 +110,7 @@ final class WalletRemoteSubscriptionWrapper {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
 
-        let subscriptionHandlingFactory = TokenSubscribtionFactory(
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
@@ -126,7 +126,7 @@ final class WalletRemoteSubscriptionWrapper {
             chainFormat: chainFormat,
             queue: .main,
             closure: completion,
-            childSubscribingFactory: subscriptionHandlingFactory
+            subscriptionHandlingFactory: subscriptionHandlingFactory
         )
     }
 }

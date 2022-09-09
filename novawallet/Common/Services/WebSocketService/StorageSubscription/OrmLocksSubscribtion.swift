@@ -1,6 +1,6 @@
 import RobinHood
 
-final class OrmLocksSubscribtion: LocksSubscribtion {
+final class OrmLocksSubscription: LocksSubscription {
     init(
         remoteStorageKey: Data,
         chainAssetId: ChainAssetId,
@@ -22,7 +22,7 @@ final class OrmLocksSubscribtion: LocksSubscribtion {
     }
 }
 
-final class BalanceLocksSubscribtion: LocksSubscribtion {
+final class BalanceLocksSubscription: LocksSubscription {
     init(
         remoteStorageKey: Data,
         chainAssetId: ChainAssetId,
@@ -44,7 +44,7 @@ final class BalanceLocksSubscribtion: LocksSubscribtion {
     }
 }
 
-class LocksSubscribtion: StorageChildSubscribing {
+class LocksSubscription: StorageChildSubscribing {
     var remoteStorageKey: Data
 
     let chainAssetId: ChainAssetId

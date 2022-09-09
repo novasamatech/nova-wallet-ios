@@ -188,7 +188,7 @@ final class AssetsUpdatingService {
 
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
         let locksRepository = repositoryFactory.createAssetLocksRepository()
-        let subscriptionHandlingFactory = TokenSubscribtionFactory(
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
             accountId: accountId,
             chainRegistry: chainRegistry,
@@ -204,7 +204,7 @@ final class AssetsUpdatingService {
             chainId: chainId,
             queue: nil,
             closure: nil,
-            childSubscribingFactory: subscriptionHandlingFactory
+            subscriptionHandlingFactory: subscriptionHandlingFactory
         )
 
         return maybeSubscriptionId.map { subscriptionId in

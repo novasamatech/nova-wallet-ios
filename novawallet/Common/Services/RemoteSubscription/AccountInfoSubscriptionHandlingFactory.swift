@@ -4,12 +4,12 @@ import RobinHood
 final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol {
     let accountLocalStorageKey: String
     let locksLocalStorageKey: String
-    let factory: NativeTokenSubscribtionFactoryProtocol
+    let factory: NativeTokenSubscriptionFactoryProtocol
 
     init(
         accountLocalStorageKey: String,
         locksLocalStorageKey: String,
-        factory: NativeTokenSubscribtionFactoryProtocol
+        factory: NativeTokenSubscriptionFactoryProtocol
     ) {
         self.accountLocalStorageKey = accountLocalStorageKey
         self.locksLocalStorageKey = locksLocalStorageKey
@@ -24,7 +24,7 @@ final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
         logger: LoggerProtocol
     ) -> StorageChildSubscribing {
         if locksLocalStorageKey == localStorageKey {
-            return factory.createBalanceLocksSubscribtion(
+            return factory.createBalanceLocksSubscription(
                 remoteStorageKey: remoteStorageKey,
                 operationManager: operationManager,
                 logger: logger

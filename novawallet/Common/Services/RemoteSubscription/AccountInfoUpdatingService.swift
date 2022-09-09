@@ -119,7 +119,7 @@ final class AccountInfoUpdatingService {
         let assetRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetBalanceMapper))
         let locksRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetLockMapper))
 
-        let subscriptionHandlingFactory = TokenSubscribtionFactory(
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             accountId: accountId,
             chainRegistry: chainRegistry,
@@ -135,7 +135,7 @@ final class AccountInfoUpdatingService {
             chainFormat: chain.chainFormat,
             queue: nil,
             closure: nil,
-            childSubscribingFactory: subscriptionHandlingFactory
+            subscriptionHandlingFactory: subscriptionHandlingFactory
         )
 
         if let subsciptionId = maybeSubscriptionId {

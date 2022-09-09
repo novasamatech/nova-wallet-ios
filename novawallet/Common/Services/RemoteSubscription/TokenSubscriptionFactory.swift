@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-protocol OrmlTokenSubscribtionFactoryProtocol {
+protocol OrmlTokenSubscriptionFactoryProtocol {
     func createOrmlAccountSubscription(
         remoteStorageKey: Data,
         localStorageKey: String,
@@ -11,14 +11,14 @@ protocol OrmlTokenSubscribtionFactoryProtocol {
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
 
-    func createOrmLocksSubscribtion(
+    func createOrmLocksSubscription(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
 }
 
-protocol NativeTokenSubscribtionFactoryProtocol {
+protocol NativeTokenSubscriptionFactoryProtocol {
     func createAccountInfoSubscription(
         remoteStorageKey: Data,
         localStorageKey: String,
@@ -27,16 +27,16 @@ protocol NativeTokenSubscribtionFactoryProtocol {
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
 
-    func createBalanceLocksSubscribtion(
+    func createBalanceLocksSubscription(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing
 }
 
-// MARK: - OrmlTokenSubscribtionFactoryProtocol
+// MARK: - OrmlTokenSubscriptionFactoryProtocol
 
-final class TokenSubscribtionFactory: OrmlTokenSubscribtionFactoryProtocol {
+final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
@@ -85,12 +85,12 @@ final class TokenSubscribtionFactory: OrmlTokenSubscribtionFactoryProtocol {
         )
     }
 
-    func createOrmLocksSubscribtion(
+    func createOrmLocksSubscription(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
         logger _: LoggerProtocol
     ) -> StorageChildSubscribing {
-        OrmLocksSubscribtion(
+        OrmLocksSubscription(
             remoteStorageKey: remoteStorageKey,
             chainAssetId: chainAssetId,
             accountId: accountId,
@@ -101,9 +101,9 @@ final class TokenSubscribtionFactory: OrmlTokenSubscribtionFactoryProtocol {
     }
 }
 
-// MARK: - NativeTokenSubscribtionFactoryProtocol
+// MARK: - NativeTokenSubscriptionFactoryProtocol
 
-extension TokenSubscribtionFactory: NativeTokenSubscribtionFactoryProtocol {
+extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
     func createAccountInfoSubscription(
         remoteStorageKey: Data,
         localStorageKey: String,
@@ -126,12 +126,12 @@ extension TokenSubscribtionFactory: NativeTokenSubscribtionFactoryProtocol {
         )
     }
 
-    func createBalanceLocksSubscribtion(
+    func createBalanceLocksSubscription(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
         logger _: LoggerProtocol
     ) -> StorageChildSubscribing {
-        BalanceLocksSubscribtion(
+        BalanceLocksSubscription(
             remoteStorageKey: remoteStorageKey,
             chainAssetId: chainAssetId,
             accountId: accountId,
