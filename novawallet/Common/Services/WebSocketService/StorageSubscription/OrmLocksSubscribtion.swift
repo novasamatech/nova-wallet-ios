@@ -16,7 +16,7 @@ final class OrmLocksSubscription: LocksSubscription {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: repository,
-            changesFilter: { $0.accountId == accountId && $0.chainAssetId == chainAssetId },
+            localModelsPredicate: { $0.accountId == accountId && $0.chainAssetId == chainAssetId },
             operationManager: operationManager
         )
     }
@@ -38,7 +38,7 @@ final class BalanceLocksSubscription: LocksSubscription {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: repository,
-            changesFilter: { $0.accountId == accountId },
+            localModelsPredicate: { $0.accountId == accountId },
             operationManager: operationManager
         )
     }
@@ -53,7 +53,7 @@ class LocksSubscription: StorageChildSubscribing {
     let repository: AnyDataProviderRepository<AssetLock>
     let operationManager: OperationManagerProtocol
     let storageCodingPath: StorageCodingPath
-    let changesFilter: (AssetLock) -> Bool
+    let localModelsPredicate: (AssetLock) -> Bool
 
     init(
         storageCodingPath: StorageCodingPath,
@@ -62,7 +62,7 @@ class LocksSubscription: StorageChildSubscribing {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<AssetLock>,
-        changesFilter: @escaping (AssetLock) -> Bool,
+        localModelsPredicate: @escaping (AssetLock) -> Bool,
         operationManager: OperationManagerProtocol
     ) {
         self.remoteStorageKey = remoteStorageKey
@@ -71,7 +71,7 @@ class LocksSubscription: StorageChildSubscribing {
         self.chainRegistry = chainRegistry
         self.repository = repository
         self.operationManager = operationManager
-        self.changesFilter = changesFilter
+        self.localModelsPredicate = localModelsPredicate
         self.storageCodingPath = storageCodingPath
     }
 
@@ -89,7 +89,7 @@ class LocksSubscription: StorageChildSubscribing {
             accountId: accountId
         )
 
-        let saveOperation = createSaveWrapper(dependingOn: changesWrapper)
+        let saveOperation = createSaveOperation(dependingOn: changesWrapper)
 
         changesWrapper.addDependency(wrapper: decodingWrapper)
         saveOperation.addDependency(changesWrapper.targetOperation)
@@ -139,14 +139,12 @@ class LocksSubscription: StorageChildSubscribing {
         let fetchOperation = repository.fetchAllOperation(with: .init())
 
         let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> { [weak self] in
-            guard let self = self,
+            guard let localModelsPredicate = self?.localModelsPredicate,
                   let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() else {
                 return nil
             }
 
-            let localModels = try fetchOperation.extractNoCancellableResultData().filter {
-                self.changesFilter($0)
-            }
+            let localModels = try fetchOperation.extractNoCancellableResultData().filter(localModelsPredicate)
 
             var remoteModels = locks.map {
                 AssetLock(
@@ -174,11 +172,10 @@ class LocksSubscription: StorageChildSubscribing {
                 }
             }
 
-            let inserted = remoteModels.map {
-                DataProviderChange.update(newItem: $0)
-            }
+            let newItems = remoteModels.map(DataProviderChange.update)
+            changes.append(contentsOf: newItems)
 
-            return changes + inserted
+            return changes
         }
 
         changesOperation.addDependency(fetchOperation)
@@ -186,7 +183,7 @@ class LocksSubscription: StorageChildSubscribing {
         return CompoundOperationWrapper(targetOperation: changesOperation, dependencies: [fetchOperation])
     }
 
-    private func createSaveWrapper(
+    private func createSaveOperation(
         dependingOn operation: CompoundOperationWrapper<[DataProviderChange<AssetLock>]?>
     ) -> BaseOperation<Void> {
         let saveOperation = repository.saveOperation({

@@ -62,7 +62,9 @@ final class PriceViewModelFactory: PriceViewModelFactoryProtocol {
             guard let priceData = prices[balance.chainAssetId] else {
                 continue
             }
-            guard let assetPrecision = chains[balance.chainAssetId.chainId]?.asset(for: balance.chainAssetId.assetId)?.precision else {
+            guard let assetPrecision = chains[balance.chainAssetId.chainId]?
+                .asset(for: balance.chainAssetId.assetId)?
+                .precision else {
                 continue
             }
             let rate = Decimal(string: priceData.price) ?? 0.0

@@ -255,7 +255,7 @@ extension WalletLocalStorageSubscriber {
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) -> StreamableProvider<AssetLock>? {
-        // TODO: 
+        // TODO:
         nil
     }
 }

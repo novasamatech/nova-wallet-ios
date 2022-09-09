@@ -51,7 +51,7 @@ final class LocksPresenter {
                     preferredLanguages: selectedLocale.rLanguages
                 ),
                 details: displayPercent,
-                value: "\(balanceModel.transferrable)"
+                value: balanceModel.transferrable
             ),
             cells: []
         )
