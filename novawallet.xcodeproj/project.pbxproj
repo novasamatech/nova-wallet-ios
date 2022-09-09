@@ -787,6 +787,8 @@
 		844ADE7728CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7628CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift */; };
 		844ADE7928CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */; };
 		844ADE7B28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7A28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift */; };
+		844ADE7E28CB351500EE29F7 /* AutomationTimeAutocompound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7D28CB351500EE29F7 /* AutomationTimeAutocompound.swift */; };
+		844ADE8028CB35EC00EE29F7 /* AutomationTimeCancelTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7F28CB35EC00EE29F7 /* AutomationTimeCancelTask.swift */; };
 		844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */; };
 		844B2E7A27C425E3000CC079 /* NftLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */; };
 		844B2E7C27C426A7000CC079 /* NftLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */; };
@@ -3460,6 +3462,8 @@
 		844ADE7628CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+ViewUpdate.swift"; sourceTree = "<group>"; };
 		844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+Protocol.swift"; sourceTree = "<group>"; };
 		844ADE7A28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostFeeRequest.swift; sourceTree = "<group>"; };
+		844ADE7D28CB351500EE29F7 /* AutomationTimeAutocompound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationTimeAutocompound.swift; sourceTree = "<group>"; };
+		844ADE7F28CB35EC00EE29F7 /* AutomationTimeCancelTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomationTimeCancelTask.swift; sourceTree = "<group>"; };
 		844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferService.swift; sourceTree = "<group>"; };
 		844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
@@ -7229,6 +7233,15 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		844ADE7C28CB34F600EE29F7 /* AutomationTime */ = {
+			isa = PBXGroup;
+			children = (
+				844ADE7D28CB351500EE29F7 /* AutomationTimeAutocompound.swift */,
+				844ADE7F28CB35EC00EE29F7 /* AutomationTimeCancelTask.swift */,
+			);
+			path = AutomationTime;
+			sourceTree = "<group>";
+		};
 		844D228F25EE5CB700C022F7 /* DataProviders */ = {
 			isa = PBXGroup;
 			children = (
@@ -7353,6 +7366,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				844ADE7C28CB34F600EE29F7 /* AutomationTime */,
 				84EBFCEC285E82AB0006327E /* Xcm */,
 				8445CC252836654B003B26CD /* Common */,
 				8445CC2428366536003B26CD /* ParachainStaking */,
@@ -13822,6 +13836,7 @@
 				849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */,
 				8467F4C526B1E4E200C5B6F4 /* StakingDurationFetching.swift in Sources */,
 				F4A6C9E4265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift in Sources */,
+				844ADE8028CB35EC00EE29F7 /* AutomationTimeCancelTask.swift in Sources */,
 				8422F2F02888193F00C7B840 /* UsernameViewModel+Handler.swift in Sources */,
 				8419377F25441D5E00CFA50C /* ReceiveHeaderView.swift in Sources */,
 				84452F5825D5C30600F47EC5 /* FilesRepository.swift in Sources */,
@@ -13964,6 +13979,7 @@
 				8494D8702525321700614D8F /* SubscanDefinitions.swift in Sources */,
 				84DB9E902640A48E00F23DD3 /* StakingRedeemViewModel.swift in Sources */,
 				84D8F16124D8193200AF43E9 /* IconWithTitleTableViewCell.swift in Sources */,
+				844ADE7E28CB351500EE29F7 /* AutomationTimeAutocompound.swift in Sources */,
 				AEF507F226259DF00098574D /* ValidationViewModel.swift in Sources */,
 				847F2D4827A9DDC700AFD476 /* MultigradientView+Default.swift in Sources */,
 				8448F7A6288314250080CEA9 /* AssetListAssetsViewModelFactory.swift in Sources */,
