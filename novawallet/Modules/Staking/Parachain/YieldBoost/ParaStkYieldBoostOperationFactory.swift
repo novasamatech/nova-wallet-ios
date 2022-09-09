@@ -70,7 +70,7 @@ final class ParaStkYieldBoostOperationFactory: ParaStkYieldBoostOperationFactory
         runtimeProvider: RuntimeProviderProtocol,
         requestFactory: StorageRequestFactoryProtocol,
         periodInDays: Int
-    ) -> CompoundOperationWrapper<AutomationTime.Seconds> {
+    ) -> CompoundOperationWrapper<AutomationTime.UnixTime> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let timestampWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BlockTime>>> =
@@ -82,7 +82,7 @@ final class ParaStkYieldBoostOperationFactory: ParaStkYieldBoostOperationFactory
 
         timestampWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<AutomationTime.Seconds> {
+        let mapOperation = ClosureOperation<AutomationTime.UnixTime> {
             let response = try timestampWrapper.targetOperation.extractNoCancellableResultData().value
 
             guard let timeInMilliseconds = response?.value else {
@@ -91,7 +91,7 @@ final class ParaStkYieldBoostOperationFactory: ParaStkYieldBoostOperationFactory
 
             let seconds = timeInMilliseconds.timeInterval + TimeInterval(periodInDays).secondsFromDays
 
-            return AutomationTime.Seconds(seconds.roundingUpToHour())
+            return AutomationTime.UnixTime(seconds.roundingUpToHour())
         }
 
         mapOperation.addDependency(timestampWrapper.targetOperation)

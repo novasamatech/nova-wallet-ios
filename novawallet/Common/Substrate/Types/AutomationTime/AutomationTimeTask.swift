@@ -5,6 +5,7 @@ import BigInt
 extension AutomationTime {
     typealias TaskId = Data
     typealias Seconds = UInt64
+    typealias UnixTime = UInt64
 
     struct ActionAutoCompoundDelegatedStake: Decodable {
         @BytesCodable var delegator: AccountId
