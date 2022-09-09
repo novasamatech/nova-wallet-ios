@@ -163,6 +163,9 @@ extension LocksPresenter: LocksPresenterProtocol {
 
 extension LocksPresenter: Localizable {
     func applyLocalization() {
+        guard view?.isSetup == true else {
+            return
+        }
         updateView()
     }
 }
