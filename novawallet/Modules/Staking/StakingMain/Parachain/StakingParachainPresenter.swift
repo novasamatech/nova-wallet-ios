@@ -74,6 +74,25 @@ final class StakingParachainPresenter {
         )
     }
 
+    private func handleYieldBoostAction() {
+        guard
+            let delegator = stateMachine.viewState(
+                using: { (state: ParachainStaking.DelegatorState) in state }
+            ),
+            case let .supported(tasks) = delegator.commonData.yieldBoostState else {
+            return
+        }
+
+        let initData = ParaStkYieldBoostInitState(
+            delegator: delegator.delegatorState,
+            delegationIdentities: delegator.delegations?.identitiesDict(),
+            scheduledRequests: delegator.scheduledRequests,
+            yieldBoostTasks: tasks
+        )
+
+        wireframe.showYieldBoost(from: view, initData: initData)
+    }
+
     private func handleUnstakeAction() {
         guard
             let delegator = stateMachine.viewState(
@@ -205,7 +224,7 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         case .setupValidators, .changeValidators, .yourValidator:
             wireframe.showYourCollators(from: view)
         case .yieldBoost:
-            wireframe.showYieldBoost(from: view)
+            handleYieldBoostAction()
         default:
             break
         }
