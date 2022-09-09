@@ -7,7 +7,13 @@ final class LocksPresenter {
     let wireframe: LocksWireframeProtocol
     let input: LocksViewInput
     let priceViewModelFactory: PriceViewModelFactoryProtocol
-    let formatter = NumberFormatter.percent
+    lazy var transferrableFormatter: NumberFormatter = {
+        let formatter = NumberFormatter.percent
+        formatter.roundingMode = .up
+        return formatter
+    }()
+
+    lazy var locksFormatter = NumberFormatter.percent
 
     init(
         input: LocksViewInput,
@@ -43,7 +49,7 @@ final class LocksPresenter {
     private func createTranferrableSection(balanceModel: FormattedBalance) -> LocksViewSectionModel {
         let percent = balanceModel.totalPrice > 0 ?
             balanceModel.transferrablePrice / balanceModel.totalPrice : 0
-        let displayPercent = formatter.stringFromDecimal(percent) ?? ""
+        let displayPercent = transferrableFormatter.stringFromDecimal(percent) ?? ""
         return LocksViewSectionModel(
             header: .init(
                 icon: R.image.iconTransferable(),
@@ -60,7 +66,7 @@ final class LocksPresenter {
     private func createLocksSection(balanceModel: FormattedBalance) -> LocksViewSectionModel {
         let percent = balanceModel.totalPrice > 0 ?
             balanceModel.locksPrice / balanceModel.totalPrice : 0
-        let displayPercent = formatter.stringFromDecimal(percent) ?? ""
+        let displayPercent = locksFormatter.stringFromDecimal(percent) ?? ""
         let locksCells = createLocksCells().sorted {
             $0.value.compare($1.value, options: .numeric) == .orderedDescending
         }

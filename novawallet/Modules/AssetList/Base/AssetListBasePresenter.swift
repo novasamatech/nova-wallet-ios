@@ -19,7 +19,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
     func resetStorages() {
         allChains = [:]
         balanceResults = [:]
-
+        balances = [:]
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
         allLocks = []
