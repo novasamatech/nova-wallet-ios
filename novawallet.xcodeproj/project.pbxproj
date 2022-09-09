@@ -2089,7 +2089,6 @@
 		88AC186128CA3EE100892A9B /* LocksViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186028CA3EE100892A9B /* LocksViewLayout.swift */; };
 		88AC186328CA3F0000892A9B /* GenericCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186228CA3F0000892A9B /* GenericCollectionViewLayout.swift */; };
 		88AC186528CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186428CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift */; };
-		88AC186728CA562F00892A9B /* Decimal+round.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186628CA562F00892A9B /* Decimal+round.swift */; };
 		88AF35DE28C21D28003730DA /* OrmLocksSubscribtion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AF35DD28C21D28003730DA /* OrmLocksSubscribtion.swift */; };
 		88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C017E528C60A65003B2D28 /* AssetLockMapper.swift */; };
 		88C7165428C894510015D1E9 /* CollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */; };
@@ -4767,7 +4766,6 @@
 		88AC186028CA3EE100892A9B /* LocksViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksViewLayout.swift; sourceTree = "<group>"; };
 		88AC186228CA3F0000892A9B /* GenericCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericCollectionViewLayout.swift; sourceTree = "<group>"; };
 		88AC186428CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalSheetCollectionViewProtocol.swift; sourceTree = "<group>"; };
-		88AC186628CA562F00892A9B /* Decimal+round.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+round.swift"; sourceTree = "<group>"; };
 		88AF35DD28C21D28003730DA /* OrmLocksSubscribtion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmLocksSubscribtion.swift; sourceTree = "<group>"; };
 		88C017E528C60A65003B2D28 /* AssetLockMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetLockMapper.swift; sourceTree = "<group>"; };
 		88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewDelegate.swift; sourceTree = "<group>"; };
@@ -8620,7 +8618,6 @@
 				840DC83F288090030039A054 /* Bool+Int.swift */,
 				844DAAE028AD106B008E11DA /* UInt+Serialization.swift */,
 				84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */,
-				88AC186628CA562F00892A9B /* Decimal+round.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -13818,7 +13815,6 @@
 				848E6BDB2761E0E100C91022 /* StakingRewardViewModel.swift in Sources */,
 				84333BDB285772F300C76A4F /* UInt64+TimeInterval.swift in Sources */,
 				847999AD2888646000D1BAD2 /* WatchOnlyWalletOperationFactory.swift in Sources */,
-				88AC186728CA562F00892A9B /* Decimal+round.swift in Sources */,
 				8472C5B4265CF9C500E2481B /* StakingRewardDestConfirmPresenter.swift in Sources */,
 				8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */,
 				2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */,

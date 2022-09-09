@@ -7,6 +7,7 @@ final class LocksPresenter {
     let wireframe: LocksWireframeProtocol
     let input: LocksViewInput
     let priceViewModelFactory: PriceViewModelFactoryProtocol
+    let formatter = NumberFormatter.percent
 
     init(
         input: LocksViewInput,
@@ -42,14 +43,14 @@ final class LocksPresenter {
     private func createTranferrableSection(balanceModel: FormattedBalance) -> LocksViewSectionModel {
         let percent = balanceModel.totalPrice > 0 ?
             balanceModel.transferrablePrice / balanceModel.totalPrice : 0
-        let displayPercent = (percent * Decimal(100)).rounded(.toNearestOrAwayFromZero)
+        let displayPercent = formatter.stringFromDecimal(percent) ?? ""
         return LocksViewSectionModel(
             header: .init(
                 icon: R.image.iconTransferable(),
                 title: R.string.localizable.walletBalanceAvailable(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
-                details: "\(percent: displayPercent)",
+                details: displayPercent,
                 value: "\(balanceModel.transferrable)"
             ),
             cells: []
@@ -59,7 +60,7 @@ final class LocksPresenter {
     private func createLocksSection(balanceModel: FormattedBalance) -> LocksViewSectionModel {
         let percent = balanceModel.totalPrice > 0 ?
             balanceModel.locksPrice / balanceModel.totalPrice : 0
-        let displayPercent = (percent * Decimal(100)).rounded(.toNearestOrAwayFromZero)
+        let displayPercent = formatter.stringFromDecimal(percent) ?? ""
         let locksCells = createLocksCells().sorted {
             $0.value.compare($1.value, options: .numeric) == .orderedDescending
         }
@@ -70,7 +71,7 @@ final class LocksPresenter {
                 title: R.string.localizable.walletBalanceLocked(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
-                details: "\(percent: displayPercent)",
+                details: displayPercent,
                 value: balanceModel.locks
             ),
             cells: locksCells
@@ -157,11 +158,5 @@ extension LocksPresenter: LocksPresenterProtocol {
 extension LocksPresenter: Localizable {
     func applyLocalization() {
         updateView()
-    }
-}
-
-public extension String.StringInterpolation {
-    mutating func appendInterpolation(percent: Decimal) {
-        appendLiteral("\(percent)%")
     }
 }
