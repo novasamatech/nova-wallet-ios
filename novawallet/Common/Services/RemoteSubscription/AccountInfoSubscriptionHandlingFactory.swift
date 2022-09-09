@@ -29,13 +29,14 @@ final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
                 operationManager: operationManager,
                 logger: logger
             )
+        } else {
+            return factory.createAccountInfoSubscription(
+                remoteStorageKey: remoteStorageKey,
+                localStorageKey: localStorageKey,
+                storage: storage,
+                operationManager: operationManager,
+                logger: logger
+            )
         }
-        return factory.createAccountInfoSubscription(
-            remoteStorageKey: remoteStorageKey,
-            localStorageKey: localStorageKey,
-            storage: storage,
-            operationManager: operationManager,
-            logger: logger
-        )
     }
 }

@@ -33,7 +33,6 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
-    func didReceive(locks: [AssetLock])
 }
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {

@@ -339,7 +339,9 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     }
 
     func didTapTotalBalance() {
-        guard let priceResult = priceResult, let prices = try? priceResult.get() else {
+        guard let priceResult = priceResult,
+              let prices = try? priceResult.get(),
+              let locks = try? locksResult?.get() else {
             return
         }
         wireframe.showBalanceBreakdown(
@@ -347,7 +349,7 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             prices: prices,
             balances: balances.values.compactMap { try? $0.get() },
             chains: allChains,
-            locks: allLocks
+            locks: locks
         )
     }
 }

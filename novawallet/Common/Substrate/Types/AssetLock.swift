@@ -34,3 +34,14 @@ extension AssetLock: Identifiable {
         Self.createIdentifier(for: chainAssetId, accountId: accountId, type: type)
     }
 }
+
+extension AssetLock: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "ChainAsset: \(chainAssetId.stringValue)",
+            "AccountId: \(accountId.toHex())",
+            "Type: \(type.toUTF8String() ?? "")",
+            "Amount: \(amount)"
+        ].joined(separator: "\n")
+    }
+}

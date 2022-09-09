@@ -126,7 +126,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             return attachToSubscription(
                 with: [accountRequest, locksRequest],
                 chainId: chainId,
-                cacheKey: accountLocalKey,
+                cacheKey: accountLocalKey + locksLocalKey,
                 queue: queue,
                 closure: closure,
                 subscriptionHandlingFactory: handlingFactory
@@ -147,12 +147,21 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     ) {
         do {
             let storagePath = StorageCodingPath.account
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let accountLocalKey = try storageKeyFactory.createFromStoragePath(
                 storagePath,
                 accountId: accountId,
                 chainId: chainId
             )
 
+            let locksStoragePath = StorageCodingPath.balanceLocks
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                locksStoragePath,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+
+            let localKey = accountLocalKey + locksLocalKey
             detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
@@ -293,7 +302,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             return attachToSubscription(
                 with: [accountRequest, locksRequest],
                 chainId: chainId,
-                cacheKey: accountLocalKey,
+                cacheKey: accountLocalKey + locksLocalKey,
                 queue: queue,
                 closure: closure,
                 subscriptionHandlingFactory: handlingFactory
@@ -315,11 +324,18 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let accountLocalKey = try storageKeyFactory.createFromStoragePath(
                 .ormlTokenAccount,
                 encodableElement: accountId + currencyId,
                 chainId: chainId
             )
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                .ormlTokenLocks,
+                encodableElement: accountId + currencyId,
+                chainId: chainId
+            )
+            let localKey = accountLocalKey + locksLocalKey
 
             detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
 

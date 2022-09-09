@@ -28,13 +28,14 @@ final class OrmlTokenSubscriptionHandlingFactory: RemoteSubscriptionHandlingFact
                 operationManager: operationManager,
                 logger: logger
             )
+        } else {
+            return factory.createOrmlAccountSubscription(
+                remoteStorageKey: remoteStorageKey,
+                localStorageKey: localStorageKey,
+                storage: storage,
+                operationManager: operationManager,
+                logger: logger
+            )
         }
-        return factory.createOrmlAccountSubscription(
-            remoteStorageKey: remoteStorageKey,
-            localStorageKey: localStorageKey,
-            storage: storage,
-            operationManager: operationManager,
-            logger: logger
-        )
     }
 }

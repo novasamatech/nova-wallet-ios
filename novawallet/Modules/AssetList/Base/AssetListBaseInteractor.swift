@@ -251,14 +251,12 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         basePresenter?.didReceiveBalance(results: results)
     }
 
-    func handleAccountLocks(result: Result<[DataProviderChange<AssetLock>], Error>, accountId: AccountId) {
-        var locks: [AssetLock] = accountLocks[accountId] ?? []
-
+    func handleAccountLocks(result: Result<[DataProviderChange<AssetLock>], Error>, accountId _: AccountId) {
         switch result {
         case let .failure(error):
-            // TODO:
-            break
+            basePresenter?.didReceiveLocks(result: .failure(error))
         case let .success(changes):
+            var locks: [AssetLock] = []
             changes.forEach {
                 switch $0 {
                 case let .insert(newItem), let .update(newItem):
@@ -271,9 +269,8 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
                     locks.removeAll(where: { $0.identifier == deletedIdentifier })
                 }
             }
-            accountLocks[accountId] = locks
+            basePresenter?.didReceiveLocks(result: .success(locks))
         }
-        basePresenter?.didReceive(locks: locks)
     }
 
     private func handleAccountBalanceChanges(

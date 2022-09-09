@@ -8,7 +8,7 @@ struct LocksViewFactory {
             return nil
         }
         let wireframe = LocksWireframe()
-        let viewModelFactory = PriceViewModelFactory(
+        let viewModelFactory = LocksBalanceViewModelFactory(
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager),
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             currencyManager: currencyManager

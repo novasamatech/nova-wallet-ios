@@ -1,7 +1,7 @@
 import BigInt
 import Foundation
 
-protocol PriceViewModelFactoryProtocol {
+protocol LocksBalanceViewModelFactoryProtocol {
     func formatBalance(
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
@@ -32,7 +32,7 @@ struct FormattedPlank {
     let price: Decimal
 }
 
-final class PriceViewModelFactory: PriceViewModelFactoryProtocol {
+final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
@@ -80,7 +80,7 @@ final class PriceViewModelFactory: PriceViewModelFactoryProtocol {
                 rate: rate
             )
             locksPrice += calculateAmount(
-                from: balance.frozenInPlank,
+                from: balance.frozenInPlank + balance.reservedInPlank,
                 precision: assetPrecision,
                 rate: rate
             )

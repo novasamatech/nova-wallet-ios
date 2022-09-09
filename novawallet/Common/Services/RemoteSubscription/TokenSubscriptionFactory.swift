@@ -88,7 +88,7 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
     func createOrmLocksSubscription(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
-        logger _: LoggerProtocol
+        logger: LoggerProtocol
     ) -> StorageChildSubscribing {
         OrmLocksSubscription(
             remoteStorageKey: remoteStorageKey,
@@ -96,7 +96,8 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: locksRepository,
-            operationManager: operationManager
+            operationManager: operationManager,
+            logger: logger
         )
     }
 }
@@ -129,7 +130,7 @@ extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
     func createBalanceLocksSubscription(
         remoteStorageKey: Data,
         operationManager: OperationManagerProtocol,
-        logger _: LoggerProtocol
+        logger: LoggerProtocol
     ) -> StorageChildSubscribing {
         BalanceLocksSubscription(
             remoteStorageKey: remoteStorageKey,
@@ -137,7 +138,8 @@ extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: locksRepository,
-            operationManager: operationManager
+            operationManager: operationManager,
+            logger: logger
         )
     }
 }

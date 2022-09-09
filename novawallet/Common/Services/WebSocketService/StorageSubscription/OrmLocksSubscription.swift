@@ -7,7 +7,8 @@ final class OrmLocksSubscription: LocksSubscription {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<AssetLock>,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         super.init(
             storageCodingPath: .ormlTokenLocks,
@@ -17,7 +18,8 @@ final class OrmLocksSubscription: LocksSubscription {
             chainRegistry: chainRegistry,
             repository: repository,
             localModelsPredicate: { $0.accountId == accountId && $0.chainAssetId == chainAssetId },
-            operationManager: operationManager
+            operationManager: operationManager,
+            logger: logger
         )
     }
 }
@@ -29,7 +31,8 @@ final class BalanceLocksSubscription: LocksSubscription {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<AssetLock>,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         super.init(
             storageCodingPath: .balanceLocks,
@@ -39,7 +42,8 @@ final class BalanceLocksSubscription: LocksSubscription {
             chainRegistry: chainRegistry,
             repository: repository,
             localModelsPredicate: { $0.accountId == accountId },
-            operationManager: operationManager
+            operationManager: operationManager,
+            logger: logger
         )
     }
 }
@@ -54,6 +58,7 @@ class LocksSubscription: StorageChildSubscribing {
     let operationManager: OperationManagerProtocol
     let storageCodingPath: StorageCodingPath
     let localModelsPredicate: (AssetLock) -> Bool
+    let logger: LoggerProtocol
 
     init(
         storageCodingPath: StorageCodingPath,
@@ -63,7 +68,8 @@ class LocksSubscription: StorageChildSubscribing {
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<AssetLock>,
         localModelsPredicate: @escaping (AssetLock) -> Bool,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.remoteStorageKey = remoteStorageKey
         self.chainAssetId = chainAssetId
@@ -73,12 +79,15 @@ class LocksSubscription: StorageChildSubscribing {
         self.operationManager = operationManager
         self.localModelsPredicate = localModelsPredicate
         self.storageCodingPath = storageCodingPath
+        self.logger = logger
     }
 
     func processUpdate(_ data: Data?, blockHash _: Data?) {
         guard let data = data else {
             return
         }
+        logger.debug("Did receive locks update")
+
         let decodingWrapper = createDecodingOperationWrapper(
             data: data,
             chainAssetId: chainAssetId
@@ -104,6 +113,7 @@ class LocksSubscription: StorageChildSubscribing {
         chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<[BalanceLock]?> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
+            logger.error("Runtime metada unavailable for chain: \(chainAssetId.chainId)")
             return CompoundOperationWrapper.createWithError(
                 ChainRegistryError.runtimeMetadaUnavailable
             )
@@ -115,10 +125,11 @@ class LocksSubscription: StorageChildSubscribing {
             data: data
         )
 
-        decodingOperation.configurationBlock = {
+        decodingOperation.configurationBlock = { [weak self] in
             do {
                 decodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             } catch {
+                self?.logger.error("Error occur while decoding data: \(error.localizedDescription)")
                 decodingOperation.result = .failure(error)
             }
         }
@@ -141,10 +152,14 @@ class LocksSubscription: StorageChildSubscribing {
         let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> { [weak self] in
             guard let localModelsPredicate = self?.localModelsPredicate,
                   let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() else {
+                self?.logger.debug("No locks received")
                 return nil
             }
 
-            let localModels = try fetchOperation.extractNoCancellableResultData().filter(localModelsPredicate)
+            let localModels = try fetchOperation
+                .extractNoCancellableResultData()
+                .filter(localModelsPredicate)
+                .sorted { $0.identifier < $1.identifier }
 
             var remoteModels = locks.map {
                 AssetLock(
@@ -153,9 +168,10 @@ class LocksSubscription: StorageChildSubscribing {
                     type: $0.identifier,
                     amount: $0.amount
                 )
-            }
+            }.sorted { $0.identifier < $1.identifier }
 
             guard localModels != remoteModels else {
+                self?.logger.debug("Local locks are actual")
                 return nil
             }
 
@@ -163,17 +179,23 @@ class LocksSubscription: StorageChildSubscribing {
 
             for localModel in localModels {
                 if let remoteModelIndex = remoteModels.firstIndex(where: { $0.type == localModel.type }) {
-                    if localModel != remoteModels[remoteModelIndex] {
-                        changes.append(DataProviderChange.update(newItem: remoteModels[remoteModelIndex]))
+                    let remoteModel = remoteModels[remoteModelIndex]
+                    if localModel != remoteModel {
+                        self?.logger.debug("Local lock: \(localModel) was updated. New amount: \(remoteModel.amount)")
+                        changes.append(DataProviderChange.update(newItem: remoteModel))
                     }
                     remoteModels.remove(at: remoteModelIndex)
                 } else {
+                    self?.logger.debug("Lock: \(localModel) was removed")
                     changes.append(DataProviderChange.delete(deletedIdentifier: localModel.identifier))
                 }
             }
 
-            let newItems = remoteModels.map(DataProviderChange.update)
-            changes.append(contentsOf: newItems)
+            if !remoteModels.isEmpty {
+                let newItems = remoteModels.map(DataProviderChange.update)
+                self?.logger.debug("Locks: \(remoteModels) was added")
+                changes.append(contentsOf: newItems)
+            }
 
             return changes
         }

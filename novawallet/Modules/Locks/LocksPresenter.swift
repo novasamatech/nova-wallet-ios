@@ -6,7 +6,7 @@ final class LocksPresenter {
     weak var view: LocksViewProtocol?
     let wireframe: LocksWireframeProtocol
     let input: LocksViewInput
-    let priceViewModelFactory: PriceViewModelFactoryProtocol
+    let priceViewModelFactory: LocksBalanceViewModelFactoryProtocol
     lazy var transferrableFormatter: NumberFormatter = {
         let formatter = NumberFormatter.percent
         formatter.roundingMode = .up
@@ -19,7 +19,7 @@ final class LocksPresenter {
         input: LocksViewInput,
         wireframe: LocksWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
-        priceViewModelFactory: PriceViewModelFactoryProtocol
+        priceViewModelFactory: LocksBalanceViewModelFactoryProtocol
     ) {
         self.input = input
         self.wireframe = wireframe
@@ -144,10 +144,10 @@ final class LocksPresenter {
         let reservedCellsCount = input.balances.filter {
             $0.reservedInPlank > 0 && input.prices[$0.chainAssetId] != nil
         }.count
-        let locksCount = input.locks.filter {
+        let locksCellsCount = input.locks.filter {
             $0.amount > 0 && input.prices[$0.chainAssetId] != nil
         }.count
-        return view?.calculateEstimatedHeight(sections: 2, items: locksCount + reservedCellsCount) ?? 0
+        return view?.calculateEstimatedHeight(sections: 2, items: locksCellsCount + reservedCellsCount) ?? 0
     }
 }
 
