@@ -1,12 +1,16 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 extension AutomationTime {
     typealias TaskId = Data
+    typealias Seconds = UInt64
 
     struct ActionAutoCompoundDelegatedStake: Decodable {
         @BytesCodable var delegator: AccountId
         @BytesCodable var collator: AccountId
+        @StringCodable var accountMinimum: BigUInt
+        @StringCodable var frequency: Seconds
     }
 
     enum Action: Decodable {
