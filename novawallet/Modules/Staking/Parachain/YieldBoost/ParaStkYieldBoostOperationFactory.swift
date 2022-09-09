@@ -5,7 +5,7 @@ import SubstrateSdk
 
 protocol ParaStkYieldBoostOperationFactoryProtocol {
     func createAutocompoundParamsOperation(
-        for connection: ChainConnection,
+        for connection: JSONRPCEngine,
         request: ParaStkYieldBoostRequest
     ) -> CompoundOperationWrapper<ParaStkYieldBoostResponse>
 }
@@ -16,7 +16,7 @@ final class ParaStkYieldBoostOperationFactory: ParaStkYieldBoostOperationFactory
     }
 
     func createAutocompoundParamsOperation(
-        for connection: ChainConnection,
+        for connection: JSONRPCEngine,
         request: ParaStkYieldBoostRequest
     ) -> CompoundOperationWrapper<ParaStkYieldBoostResponse> {
         let operation: JSONRPCOperation<ParaStkYieldBoostRequest, ParaStkYieldBoostResponse> = JSONRPCOperation(
