@@ -15,7 +15,7 @@ protocol ParaStkYieldBoostOperationFactoryProtocol {
         for connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         requestFactory: StorageRequestFactoryProtocol,
-        periodInDays: Int
+        periodInDays: UInt
     ) -> CompoundOperationWrapper<AutomationTime.Seconds>
 }
 
@@ -69,7 +69,7 @@ final class ParaStkYieldBoostOperationFactory: ParaStkYieldBoostOperationFactory
         for connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         requestFactory: StorageRequestFactoryProtocol,
-        periodInDays: Int
+        periodInDays: UInt
     ) -> CompoundOperationWrapper<AutomationTime.UnixTime> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
