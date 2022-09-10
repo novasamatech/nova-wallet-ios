@@ -32,7 +32,6 @@ extension Xcm {
         case generalIndex(_ index: BigUInt)
         case generalKey(_ key: Data)
         case onlyChild
-        // TODO: support plurality
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()

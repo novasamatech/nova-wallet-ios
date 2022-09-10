@@ -20,7 +20,8 @@ protocol ParaStkYieldBoostSetupPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol ParaStkYieldBoostSetupInteractorInputProtocol: AnyObject {
+protocol ParaStkYieldBoostSetupInteractorInputProtocol: ParaStkYieldBoostScheduleInteractorInputProtocol,
+    ParaStkYieldBoostCancelInteractorInputProtocol {
     func setup()
     func requestParams(for stake: BigUInt, collator: AccountId)
     func retrySubscriptions()
@@ -28,7 +29,8 @@ protocol ParaStkYieldBoostSetupInteractorInputProtocol: AnyObject {
     func fetchRewardCalculator()
 }
 
-protocol ParaStkYieldBoostSetupInteractorOutputProtocol: AnyObject {
+protocol ParaStkYieldBoostSetupInteractorOutputProtocol: ParaStkYieldBoostScheduleInteractorOutputProtocol,
+    ParaStkYieldBoostCancelInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
@@ -40,7 +42,7 @@ protocol ParaStkYieldBoostSetupInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError)
 }
 
-protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, CommonRetryable {
+protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, CommonRetryable, FeeRetryable {
     func showDelegationSelection(
         from view: ParaStkYieldBoostSetupViewProtocol?,
         viewModels: [AccountDetailsPickerViewModel],

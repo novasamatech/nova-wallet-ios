@@ -5,9 +5,14 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         interactor.setup()
 
         setupCollatorIfNeeded()
-        refreshYieldBoostParamsIfNeeded()
-
         provideViewModels()
+
+        if isYieldBoostSelected {
+            refreshYieldBoostParamsIfNeeded()
+            refreshTaskExecutionTime()
+        }
+
+        refreshFeeIfNeeded()
     }
 
     func switchRewardsOption(to isYieldBoosted: Bool) {
@@ -21,9 +26,14 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
         if isYieldBoostSelected {
             provideYieldBoostSpecificViewModels()
+
+            refreshYieldBoostParamsIfNeeded()
+            refreshTaskExecutionTime()
         }
 
         updateHasChanges()
+
+        refreshFeeIfNeeded()
     }
 
     func updateThresholdAmount(_ newValue: Decimal?) {
@@ -33,6 +43,8 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
         provideAssetViewModel()
         updateHasChanges()
+
+        refreshExtrinsicFee()
     }
 
     func selectThresholdAmountPercentage(_ percentage: Float) {
@@ -43,6 +55,8 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         provideThresholdInputViewModel()
         provideAssetViewModel()
         updateHasChanges()
+
+        refreshExtrinsicFee()
     }
 
     func selectCollator() {
