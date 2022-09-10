@@ -324,6 +324,11 @@
 		8406B5AB26FBD9EB00635B61 /* AccountInfoUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8406B5AA26FBD9EB00635B61 /* AccountInfoUpdatingService.swift */; };
 		8406B5AD26FBE69200635B61 /* SelectableIconDetailsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8406B5AC26FBE69200635B61 /* SelectableIconDetailsListViewModel.swift */; };
 		8406B5AF26FBE7EF00635B61 /* SelectionIconDetailsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8406B5AE26FBE7EF00635B61 /* SelectionIconDetailsTableViewCell.swift */; };
+		8407715628CB7D6B007DBD24 /* ParaStkYieldBoostScheduleInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715528CB7D6B007DBD24 /* ParaStkYieldBoostScheduleInteractor.swift */; };
+		8407715828CB802C007DBD24 /* ParaStkYieldBoostBaseProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715728CB802C007DBD24 /* ParaStkYieldBoostBaseProtocols.swift */; };
+		8407715A28CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715928CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift */; };
+		8407715C28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715B28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift */; };
+		8407715E28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715D28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift */; };
 		840882B02514024800177E20 /* SelectedConnectionChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840882AF2514024800177E20 /* SelectedConnectionChanged.swift */; };
 		8409C264252210A70049B5C8 /* WalletDisplayAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409C263252210A70049B5C8 /* WalletDisplayAmountView.swift */; };
 		8409C2662522110F0049B5C8 /* WalletAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8409C2652522110F0049B5C8 /* WalletAmountView.xib */; };
@@ -2993,6 +2998,11 @@
 		8406B5AA26FBD9EB00635B61 /* AccountInfoUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoUpdatingService.swift; sourceTree = "<group>"; };
 		8406B5AC26FBE69200635B61 /* SelectableIconDetailsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableIconDetailsListViewModel.swift; sourceTree = "<group>"; };
 		8406B5AE26FBE7EF00635B61 /* SelectionIconDetailsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionIconDetailsTableViewCell.swift; sourceTree = "<group>"; };
+		8407715528CB7D6B007DBD24 /* ParaStkYieldBoostScheduleInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostScheduleInteractor.swift; sourceTree = "<group>"; };
+		8407715728CB802C007DBD24 /* ParaStkYieldBoostBaseProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostBaseProtocols.swift; sourceTree = "<group>"; };
+		8407715928CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostCancelInteractor.swift; sourceTree = "<group>"; };
+		8407715B28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+Schedule.swift"; sourceTree = "<group>"; };
+		8407715D28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+Cancel.swift"; sourceTree = "<group>"; };
 		840882AF2514024800177E20 /* SelectedConnectionChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedConnectionChanged.swift; sourceTree = "<group>"; };
 		8409C263252210A70049B5C8 /* WalletDisplayAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDisplayAmountView.swift; sourceTree = "<group>"; };
 		8409C2652522110F0049B5C8 /* WalletAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletAmountView.xib; sourceTree = "<group>"; };
@@ -5799,6 +5809,7 @@
 		39A771F6D252031C00568966 /* ParaStkYieldBoostSetup */ = {
 			isa = PBXGroup;
 			children = (
+				8407715428CB7D22007DBD24 /* Base */,
 				8445F41428C8CFAE009E61C4 /* ViewModel */,
 				84FBDBE428C897F900CC1037 /* Model */,
 				0C2437D345C3D9B12AEE1E28 /* ParaStkYieldBoostSetupProtocols.swift */,
@@ -5810,6 +5821,8 @@
 				BC8958927F940B9B638EF89D /* ParaStkYieldBoostSetupViewFactory.swift */,
 				844ADE7628CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift */,
 				844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */,
+				8407715B28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift */,
+				8407715D28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift */,
 			);
 			path = ParaStkYieldBoostSetup;
 			sourceTree = "<group>";
@@ -6149,6 +6162,16 @@
 				8401AEBD2642A71D000B03E3 /* StakingRebondConfirmationLayout.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		8407715428CB7D22007DBD24 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				8407715528CB7D6B007DBD24 /* ParaStkYieldBoostScheduleInteractor.swift */,
+				8407715728CB802C007DBD24 /* ParaStkYieldBoostBaseProtocols.swift */,
+				8407715928CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		840B3D612899BBB900DA1DA9 /* WalletScanner */ = {
@@ -13645,6 +13668,7 @@
 				AEE5FAFF26415E0C002B8FDC /* StakingRebondSetupPresenter.swift in Sources */,
 				84A3B8A02836D74B00DE2669 /* StorageKeyDecodingProtocol.swift in Sources */,
 				84FB9E1C285C57EF00B42FC0 /* XcmMultilocation.swift in Sources */,
+				8407715E28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift in Sources */,
 				8472975D260B1B71009B86D0 /* ExistingBonding.swift in Sources */,
 				8490144C24A93D0B008F705E /* FearlessNavigationController.swift in Sources */,
 				848077D02837C637003B7C79 /* ParachainStakingValidatorFactory.swift in Sources */,
@@ -14095,6 +14119,7 @@
 				8419C39626EA8F7300A3179C /* PriceData.swift in Sources */,
 				84D17EDC28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift in Sources */,
 				84E25BE627E750D500290BF1 /* AccountInputViewModel+Handler.swift in Sources */,
+				8407715A28CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift in Sources */,
 				849014E024AA8F60008F705E /* MainTabBarWireframe.swift in Sources */,
 				AE6F7FE42685E812002BBC3E /* ValidatorListFilterViewFactory.swift in Sources */,
 				842876AA24AE049B00D91AD8 /* SelectionTitleTableViewCell.swift in Sources */,
@@ -14320,6 +14345,7 @@
 				84CD82B3263C30BC001A6F01 /* SubstrateProviderSubscriptionHandler.swift in Sources */,
 				846A835A28B8C5EC00D92892 /* TransactionExpiredPresentable.swift in Sources */,
 				842EBB352890A79500B952D8 /* WalletSelectionViewFactory.swift in Sources */,
+				8407715828CB802C007DBD24 /* ParaStkYieldBoostBaseProtocols.swift in Sources */,
 				84DB4E1E25E93B1700A6DF41 /* Identity.swift in Sources */,
 				F47F5A822626FDB9009BCFF4 /* StakingPayoutViewModel.swift in Sources */,
 				F400A7C2260CE1670061D576 /* StakingRewardStatus.swift in Sources */,
@@ -14329,6 +14355,7 @@
 				84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */,
 				84F1A0712869DA51007DB053 /* AssetBalanceExistence.swift in Sources */,
 				84F1CB3127CE56740095D523 /* NftListStaticViewModel.swift in Sources */,
+				8407715C28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift in Sources */,
 				848CCB482832EF4400A1FD00 /* GeneralLocalStorageHandler.swift in Sources */,
 				849013D024A9267F008F705E /* R.generated.swift in Sources */,
 				84FB9E22285C5D6200B42FC0 /* XcmNetworkId.swift in Sources */,
@@ -15208,6 +15235,7 @@
 				2793D406FD618A892D54EA84 /* CrowdloanContributionConfirmViewLayout.swift in Sources */,
 				840D92A3278EDB2E0007B979 /* DAppParsedCall.swift in Sources */,
 				90A3F46EF181DC2B821CC80C /* CrowdloanContributionConfirmViewFactory.swift in Sources */,
+				8407715628CB7D6B007DBD24 /* ParaStkYieldBoostScheduleInteractor.swift in Sources */,
 				84D1ABDC27E1B4FE0073C631 /* ChainAssetViewModel.swift in Sources */,
 				AEE0C442272A9AF7009F9AD5 /* BaseChainAccountConfirmInteractor.swift in Sources */,
 				848CCB462832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift in Sources */,

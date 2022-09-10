@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import SoraFoundation
+import RobinHood
 
 struct ParaStkYieldBoostSetupViewFactory {
     static func createView(
@@ -72,9 +73,36 @@ struct ParaStkYieldBoostSetupViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManagerFacade.sharedManager
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
+
+        let yieldBoostOperationFactory = ParaStkYieldBoostOperationFactory()
+
+        let childScheduleInterator = ParaStkYieldBoostScheduleInteractor(
+            selectedAccount: selectedAccount,
+            extrinsicService: extrinsicService,
+            feeProxy: ExtrinsicFeeProxy(),
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            requestFactory: requestFactory,
+            yeildBoostOperationFactory: yieldBoostOperationFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let childCancelInteractor = ParaStkYieldBoostCancelInteractor(
+            selectedAccount: selectedAccount,
+            extrinsicService: extrinsicService,
+            feeProxy: ExtrinsicFeeProxy()
+        )
+
         return ParaStkYieldBoostSetupInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            childScheduleInteractor: childScheduleInterator,
+            childCancelInteractor: childCancelInteractor,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             rewardService: rewardService,
@@ -83,7 +111,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             identityOperationFactory: identityOperationFactory,
             yieldBoostProviderFactory: ParaStkYieldBoostProviderFactory.shared,
-            yieldBoostOperationFactory: ParaStkYieldBoostOperationFactory(),
+            yieldBoostOperationFactory: yieldBoostOperationFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

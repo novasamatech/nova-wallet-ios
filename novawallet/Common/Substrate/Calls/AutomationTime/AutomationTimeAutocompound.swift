@@ -17,7 +17,11 @@ extension AutomationTime {
         @StringCodable var accountMinimum: BigUInt
 
         var runtimeCall: RuntimeCall<ScheduleAutocompoundCall> {
-            RuntimeCall(moduleName: "AutomationTime", callName: "schedule_auto_compound_delegated_stake_task", args: self)
+            RuntimeCall(
+                moduleName: "AutomationTime",
+                callName: "schedule_auto_compound_delegated_stake_task",
+                args: self
+            )
         }
     }
 }
