@@ -6,9 +6,9 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
         setupCollatorIfNeeded()
         provideViewModels()
+        refreshYieldBoostParamsIfNeeded()
 
         if isYieldBoostSelected {
-            refreshYieldBoostParamsIfNeeded()
             refreshTaskExecutionTime()
         }
 
@@ -26,8 +26,6 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
         if isYieldBoostSelected {
             provideYieldBoostSpecificViewModels()
-
-            refreshYieldBoostParamsIfNeeded()
             refreshTaskExecutionTime()
         }
 
@@ -96,11 +94,10 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         }
     }
 
-    private func proceedWithYieldBoost() {
-        let assetDisplayInfo = chainAsset.assetDisplayInfo
-
-        let threshold = thresholdInput?.absoluteValue(from: maxSpendingAmount())
-
+    private func createYieldBoostValidationRunner(
+        for assetDisplayInfo: AssetBalanceDisplayInfo,
+        threshold: Decimal?
+    ) -> DataValidationRunnerProtocol {
         DataValidationRunner(validators: [
             dataValidatingFactory.hasInPlank(
                 fee: extrinsicFee,
@@ -150,7 +147,34 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
                 tasks: yieldBoostTasks,
                 locale: selectedLocale
             )
-        ]).runValidation { [weak self] in
+        ])
+    }
+
+    private func proceedWithYieldBoost() {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let optTreshold = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ??
+            selectedRemoteBoostThreshold()
+
+        let runner = createYieldBoostValidationRunner(for: assetDisplayInfo, threshold: optTreshold)
+
+        runner.runValidation { [weak self] in
+            guard
+                let selectedCollator = self?.selectedCollator,
+                let period = self?.yieldBoostParams?.period,
+                let executionTime = self?.taskExecutionTime,
+                let accountMinimum = optTreshold else {
+                return
+            }
+
+            let model = ParaStkYieldBoostConfirmModel(
+                collator: selectedCollator,
+                accountMinimum: accountMinimum,
+                period: period,
+                executionTime: executionTime,
+                collatorIdentity: self?.delegationIdentities?[selectedCollator]
+            )
+
+            self?.wireframe.showStartYieldBoostConfirmation(from: self?.view, model: model)
         }
     }
 
@@ -178,6 +202,15 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
                 locale: selectedLocale
             )
         ]).runValidation { [weak self] in
+            guard let selectedCollator = self?.selectedCollator else {
+                return
+            }
+
+            self?.wireframe.showStopYieldBoostConfirmation(
+                from: self?.view,
+                collatorId: selectedCollator,
+                collatorIdentity: self?.delegationIdentities?[selectedCollator]
+            )
         }
     }
 }

@@ -332,6 +332,8 @@
 		8407716028CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715F28CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift */; };
 		8407716228CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407716128CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift */; };
 		8407716428CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407716328CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift */; };
+		8407716628CE6B2A007DBD24 /* ParaStkYieldBoostConfirmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407716528CE6B2A007DBD24 /* ParaStkYieldBoostConfirmModel.swift */; };
+		8407716828CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407716728CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift */; };
 		840882B02514024800177E20 /* SelectedConnectionChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840882AF2514024800177E20 /* SelectedConnectionChanged.swift */; };
 		8409C264252210A70049B5C8 /* WalletDisplayAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409C263252210A70049B5C8 /* WalletDisplayAmountView.swift */; };
 		8409C2662522110F0049B5C8 /* WalletAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8409C2652522110F0049B5C8 /* WalletAmountView.xib */; };
@@ -3009,6 +3011,8 @@
 		8407715F28CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostValidatorFactory.swift; sourceTree = "<group>"; };
 		8407716128CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostTaskInitFee.swift; sourceTree = "<group>"; };
 		8407716328CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostErrorPresentable.swift; sourceTree = "<group>"; };
+		8407716528CE6B2A007DBD24 /* ParaStkYieldBoostConfirmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostConfirmModel.swift; sourceTree = "<group>"; };
+		8407716728CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupInteractor+Children.swift"; sourceTree = "<group>"; };
 		840882AF2514024800177E20 /* SelectedConnectionChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedConnectionChanged.swift; sourceTree = "<group>"; };
 		8409C263252210A70049B5C8 /* WalletDisplayAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDisplayAmountView.swift; sourceTree = "<group>"; };
 		8409C2652522110F0049B5C8 /* WalletAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletAmountView.xib; sourceTree = "<group>"; };
@@ -5829,6 +5833,7 @@
 				844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */,
 				8407715B28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift */,
 				8407715D28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift */,
+				8407716728CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift */,
 			);
 			path = ParaStkYieldBoostSetup;
 			sourceTree = "<group>";
@@ -11262,6 +11267,7 @@
 				84FBDBE528C8982B00CC1037 /* ParaStkYieldBoostSetupInteractorError.swift */,
 				8445F41228C8C6E0009E61C4 /* ParaStkYieldBoostInitState.swift */,
 				8407716128CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift */,
+				8407716528CE6B2A007DBD24 /* ParaStkYieldBoostConfirmModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -15013,6 +15019,7 @@
 				41B29C1C9239BB2DCB7903A7 /* SelectValidatorsStartViewFactory.swift in Sources */,
 				25381484F16FB930B8A90CE3 /* SelectValidatorsConfirmProtocols.swift in Sources */,
 				B02EAF42C91E069FE6872EE0 /* SelectValidatorsConfirmWireframe.swift in Sources */,
+				8407716628CE6B2A007DBD24 /* ParaStkYieldBoostConfirmModel.swift in Sources */,
 				AEA0C8B4267BA40C00F9666F /* SelectedValidatorListViewModelFactory.swift in Sources */,
 				6ECD0116CD39D8F55D246864 /* SelectValidatorsConfirmPresenter.swift in Sources */,
 				84906FEA28AFCC3F0049B57D /* LoadableStackCellView.swift in Sources */,
@@ -15572,6 +15579,7 @@
 				8448F7A8288401A60080CEA9 /* AssetListInitState.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
+				8407716828CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift in Sources */,
 				73B9C322A5033A4534238B25 /* AssetsSearchViewLayout.swift in Sources */,
 				6BBD025775841F8B055CA367 /* AssetsSearchViewFactory.swift in Sources */,
 				5188FF070CD05F92C93A5055 /* CreateWatchOnlyProtocols.swift in Sources */,
