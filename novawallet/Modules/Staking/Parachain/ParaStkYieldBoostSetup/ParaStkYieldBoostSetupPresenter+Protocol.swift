@@ -89,6 +89,95 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
     }
 
     func proceed() {
-        // TODO: Implement transition to confirmation
+        if isYieldBoostSelected {
+            proceedWithYieldBoost()
+        } else {
+            proceedWithoutYieldBoost()
+        }
+    }
+
+    private func proceedWithYieldBoost() {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+
+        let threshold = thresholdInput?.absoluteValue(from: maxSpendingAmount())
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: extrinsicFee,
+                locale: selectedLocale,
+                precision: assetDisplayInfo.assetPrecision,
+                onError: { [weak self] in
+                    self?.refreshFeeIfNeeded()
+                }
+            ),
+            dataValidatingFactory.hasInPlank(
+                fee: taskExecutionFee,
+                locale: selectedLocale,
+                precision: assetDisplayInfo.assetPrecision,
+                onError: { [weak self] in
+                    self?.interactor.estimateTaskExecutionFee()
+                }
+            ),
+            dataValidatingFactory.hasExecutionTime(
+                taskExecutionTime,
+                locale: selectedLocale,
+                errorClosure: { [weak self] in
+                    self?.refreshTaskExecutionTime()
+                }
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: balance?.transferable,
+                fee: extrinsicFee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.enoughBalanceForThreshold(
+                threshold,
+                balance: balance?.transferable,
+                extrinsicFee: extrinsicFee,
+                assetInfo: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.enoughBalanceForExecutionFee(
+                taskExecutionFee,
+                balance: balance?.transferable,
+                extrinsicFee: extrinsicFee,
+                assetInfo: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.cancelForOtherCollatorsExcept(
+                selectedCollatorId: selectedCollator,
+                tasks: yieldBoostTasks,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+        }
+    }
+
+    private func proceedWithoutYieldBoost() {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: extrinsicFee,
+                locale: selectedLocale,
+                precision: assetDisplayInfo.assetPrecision,
+                onError: { [weak self] in
+                    self?.refreshFeeIfNeeded()
+                }
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: balance?.transferable,
+                fee: extrinsicFee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.cancellingTaskExists(
+                for: selectedCollator,
+                tasks: yieldBoostTasks,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+        }
     }
 }

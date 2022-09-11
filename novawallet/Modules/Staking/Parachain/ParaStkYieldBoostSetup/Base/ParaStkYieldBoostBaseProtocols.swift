@@ -8,7 +8,8 @@ protocol ParaStkYieldBoostScheduleInteractorInputProtocol: AnyObject {
         for collatorId: AccountId,
         initTime: AutomationTime.UnixTime,
         frequency: AutomationTime.Seconds,
-        accountMinimum: BigUInt
+        accountMinimum: BigUInt,
+        cancellingTaskIds: Set<AutomationTime.TaskId>
     )
 
     func estimateTaskExecutionFee()

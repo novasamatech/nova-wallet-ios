@@ -44,22 +44,31 @@ extension ParaStkYieldBoostScheduleInteractor: ParaStkYieldBoostScheduleInteract
         for collatorId: AccountId,
         initTime: AutomationTime.UnixTime,
         frequency: AutomationTime.Seconds,
-        accountMinimum: BigUInt
+        accountMinimum: BigUInt,
+        cancellingTaskIds: Set<AutomationTime.TaskId>
     ) {
-        let identifier = "schedule-\(collatorId.toHex())-\(initTime)-\(frequency)-\(accountMinimum)"
+        let identifierPrefix = "schedule-\(collatorId.toHex())-\(initTime)-\(frequency)-\(accountMinimum)"
+        let cancelId = AutomationTime.TaskId(cancellingTaskIds.joined()).twox256()
 
-        let call = AutomationTime.ScheduleAutocompoundCall(
+        let identifier = identifierPrefix + "-" + cancelId.toHex()
+
+        let scheduleCall = AutomationTime.ScheduleAutocompoundCall(
             executionTime: initTime,
             frequency: frequency,
             collatorId: collatorId,
             accountMinimum: accountMinimum
         )
 
+        let cancelTasks = cancellingTaskIds.map { AutomationTime.CancelTaskCall(taskId: $0) }
+
         feeProxy.estimateFee(
             using: extrinsicService,
             reuseIdentifier: identifier
         ) { builder in
-            try builder.adding(call: call.runtimeCall)
+            try cancelTasks.reduce(builder) { currentBuilder, task in
+                try currentBuilder.adding(call: task.runtimeCall)
+            }
+            .adding(call: scheduleCall.runtimeCall)
         }
     }
 
