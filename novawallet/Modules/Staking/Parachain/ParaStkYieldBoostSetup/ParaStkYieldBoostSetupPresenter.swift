@@ -80,13 +80,7 @@ final class ParaStkYieldBoostSetupPresenter {
 
         let extrinsicFeeDecimal = Decimal.fromSubstrateAmount(extrinsicFee ?? 0, precision: precision) ?? 0
 
-        if isYieldBoostSelected {
-            return max(balance - extrinsicFeeDecimal, 0)
-        } else {
-            let taskExecutionFeeDecimal = Decimal.fromSubstrateAmount(taskExecutionFee ?? 0, precision: precision) ?? 0
-
-            return max(balance - extrinsicFeeDecimal - taskExecutionFeeDecimal, 0)
-        }
+        return max(balance - extrinsicFeeDecimal, 0)
     }
 
     func isRemoteYieldBoosted() -> Bool {

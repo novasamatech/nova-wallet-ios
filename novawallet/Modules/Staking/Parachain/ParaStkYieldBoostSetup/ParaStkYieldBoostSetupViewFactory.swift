@@ -48,10 +48,12 @@ struct ParaStkYieldBoostSetupViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
 
+    // swiftlint:disable:next function_body_length
     private static func createInteractor(
         with state: ParachainStakingSharedState,
         currencyManager: CurrencyManagerProtocol
@@ -104,7 +106,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             feeProxy: ExtrinsicFeeProxy()
         )
 
-        return ParaStkYieldBoostSetupInteractor(
+        let interactor = ParaStkYieldBoostSetupInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             childScheduleInteractor: childScheduleInterator,
@@ -121,5 +123,10 @@ struct ParaStkYieldBoostSetupViewFactory {
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+
+        childScheduleInterator.presenter = interactor
+        childCancelInteractor.presenter = interactor
+
+        return interactor
     }
 }

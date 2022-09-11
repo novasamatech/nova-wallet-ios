@@ -87,12 +87,15 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
                 return
             }
 
-            let formatter = formatterFactory.createDisplayFormatter(for: assetInfo)
+            let formatter = formatterFactory.createTokenFormatter(for: assetInfo)
                 .value(for: locale ?? Locale.current)
 
             guard
                 let balanceDecimal = Decimal.fromSubstrateAmount(balance ?? 0, precision: assetInfo.assetPrecision),
-                let feeDecimal = Decimal.fromSubstrateAmount(extrinsicFee ?? 0, precision: assetInfo.assetPrecision) else {
+                let feeDecimal = Decimal.fromSubstrateAmount(
+                    extrinsicFee ?? 0,
+                    precision: assetInfo.assetPrecision
+                ) else {
                 return
             }
 
@@ -132,7 +135,7 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
                 return
             }
 
-            let formatter = formatterFactory.createDisplayFormatter(for: assetInfo)
+            let formatter = formatterFactory.createTokenFormatter(for: assetInfo)
                 .value(for: locale ?? Locale.current)
 
             let precision = assetInfo.assetPrecision
