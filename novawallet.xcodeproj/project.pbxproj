@@ -329,6 +329,9 @@
 		8407715A28CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715928CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift */; };
 		8407715C28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715B28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift */; };
 		8407715E28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715D28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift */; };
+		8407716028CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407715F28CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift */; };
+		8407716228CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407716128CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift */; };
+		8407716428CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8407716328CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift */; };
 		840882B02514024800177E20 /* SelectedConnectionChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840882AF2514024800177E20 /* SelectedConnectionChanged.swift */; };
 		8409C264252210A70049B5C8 /* WalletDisplayAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8409C263252210A70049B5C8 /* WalletDisplayAmountView.swift */; };
 		8409C2662522110F0049B5C8 /* WalletAmountView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8409C2652522110F0049B5C8 /* WalletAmountView.xib */; };
@@ -3003,6 +3006,9 @@
 		8407715928CBD990007DBD24 /* ParaStkYieldBoostCancelInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostCancelInteractor.swift; sourceTree = "<group>"; };
 		8407715B28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+Schedule.swift"; sourceTree = "<group>"; };
 		8407715D28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+Cancel.swift"; sourceTree = "<group>"; };
+		8407715F28CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostValidatorFactory.swift; sourceTree = "<group>"; };
+		8407716128CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostTaskInitFee.swift; sourceTree = "<group>"; };
+		8407716328CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostErrorPresentable.swift; sourceTree = "<group>"; };
 		840882AF2514024800177E20 /* SelectedConnectionChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedConnectionChanged.swift; sourceTree = "<group>"; };
 		8409C263252210A70049B5C8 /* WalletDisplayAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDisplayAmountView.swift; sourceTree = "<group>"; };
 		8409C2652522110F0049B5C8 /* WalletAmountView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletAmountView.xib; sourceTree = "<group>"; };
@@ -10235,6 +10241,8 @@
 				84FBDBE028C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift */,
 				84FBDBE228C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift */,
 				844ADE7A28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift */,
+				8407715F28CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift */,
+				8407716328CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift */,
 			);
 			path = YieldBoost;
 			sourceTree = "<group>";
@@ -11253,6 +11261,7 @@
 			children = (
 				84FBDBE528C8982B00CC1037 /* ParaStkYieldBoostSetupInteractorError.swift */,
 				8445F41228C8C6E0009E61C4 /* ParaStkYieldBoostInitState.swift */,
+				8407716128CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -13315,6 +13324,7 @@
 				8409C27425227DC60049B5C8 /* WalletSingleActionAccessoryFactory.swift in Sources */,
 				D9D163662744F9BF00681C1F /* ExternalContributionSource.swift in Sources */,
 				840DFF5528942CA9001B11EA /* ChainAddressDetailsPresentable.swift in Sources */,
+				8407716428CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift in Sources */,
 				F477CD26262EAD30004DF739 /* StakingPayoutViewModelFactory.swift in Sources */,
 				84C07EE824AF2E4D008FC35B /* WalletHistoryStyle.swift in Sources */,
 				84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */,
@@ -13882,6 +13892,7 @@
 				84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */,
 				84A2C90C24E192F50020D3B7 /* ShakeAnimator.swift in Sources */,
 				AEE0C43E272A8C16009F9AD5 /* AddChainAccount+AccountConfirmInteractor.swift in Sources */,
+				8407716028CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift in Sources */,
 				8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */,
 				8460E1162541E03400826F55 /* WalletFormCellStyle+Internal.swift in Sources */,
 				84F4A9A42551A8F3000CF0A3 /* AccountExportPasswordError.swift in Sources */,
@@ -14538,6 +14549,7 @@
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,
 				84DF21A92535AA8F005454AE /* ExistentialDepositInfoCommand.swift in Sources */,
 				84E6D57C262E2CE8000EA3F5 /* OperationCombiningService.swift in Sources */,
+				8407716228CE09DA007DBD24 /* ParaStkYieldBoostTaskInitFee.swift in Sources */,
 				8460E1252542293A00826F55 /* WalletCompoundDetailsView.swift in Sources */,
 				846C372E26B199D10098F303 /* BabeStakingDurationFactory.swift in Sources */,
 				8475AE39258B958300B058F3 /* ErrorContent+Wallet.swift in Sources */,
