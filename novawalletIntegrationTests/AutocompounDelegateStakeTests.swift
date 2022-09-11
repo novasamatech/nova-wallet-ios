@@ -128,7 +128,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
     func testScheduleAutocompoundFee() throws {
         let delegatorId = try "6Agvz83pASAvHw4NFUCUhDvs4ZuFd1rMcDjayzUx1Hqg3hU3".toAccountId()
         let collatorId = try "6AEG2WKRVvZteWWT3aMkk2ZE21FvURqiJkYpXimukub8Zb9C".toAccountId()
-        let period = 1
+        let period: UInt = 1
         let accountMinimum = BigUInt(10_000_000_000_000)
 
         try performScheduleAutocompoundFeeEstimation(
@@ -148,7 +148,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
     private func performScheduleAutocompoundFeeEstimation(
         for delegator: AccountId,
         collator: AccountId,
-        period: Int,
+        period: UInt,
         accountMinimum: BigUInt
     ) throws {
         // given
@@ -303,7 +303,7 @@ class AutocompounDelegateStakeTests: XCTestCase {
         }
     }
 
-    private func perforExecutionTimeTest(for period: Int) {
+    private func perforExecutionTimeTest(for period: UInt) {
         // given
 
         let storageFacade = SubstrateStorageTestFacade()
