@@ -222,13 +222,15 @@ extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostScheduleInteractorI
         for collatorId: AccountId,
         initTime: AutomationTime.UnixTime,
         frequency: AutomationTime.Seconds,
-        accountMinimum: BigUInt
+        accountMinimum: BigUInt,
+        cancellingTaskIds: Set<AutomationTime.TaskId>
     ) {
         childScheduleInteractor.estimateScheduleAutocompoundFee(
             for: collatorId,
             initTime: initTime,
             frequency: frequency,
-            accountMinimum: accountMinimum
+            accountMinimum: accountMinimum,
+            cancellingTaskIds: cancellingTaskIds
         )
     }
 

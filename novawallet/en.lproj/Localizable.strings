@@ -956,3 +956,15 @@
 "yield.boost.setup.period.update" = "(updating from %@)";
 "yield.boost.threshold" = "Boost threshold";
 "common.no.changes" = "No changes";
+"common.not.enough.fee.title" = "Not enough tokens to pay the fee";
+"common.not.enough.fee.message_v3.8.0" = "You don’t have enough balance to pay the network fee of %@.\nAvailable balance to pay the fee: %@";
+"yield.boost.time.not.loaded.title" = "Execution time calculation is in progress";
+"yield.boost.time.not.loaded.message" = "Please, wait until execution time is calculated";
+"yield.boost.not.enough.threshold.title" = "Not enough tokens to stay above threshold";
+"yield.boost.not.enough.threshold.message" = "You don’t have enough balance to pay the network fee of %@ and not drop below the threshold %@.\nAvailable balance to pay the fee: %@";
+"yield.boost.not.enough.execution.fee.title" = "Not enough tokens to pay execution fee";
+"yield.boost.not.enough.execution.fee.message" = "You don’t have enough balance to pay the network fee of %@ and the yield boost execution fee of %@.\nAvailable balance to pay the fee: %@";
+"yield.boost.already.enabled.title" = "Yield Boost is already enabled";
+"yield.boost.already.enabled.message" = "Yield Boost can be enabled only for one collator. Would like to enable Yield Boost for the selected collator and disable for others?";
+"yield.boost.task.not.found.title" = "Yield boost already disabled";
+"yield.boost.task.not.found.message" = "Yield boost already disabled for the selected collator";

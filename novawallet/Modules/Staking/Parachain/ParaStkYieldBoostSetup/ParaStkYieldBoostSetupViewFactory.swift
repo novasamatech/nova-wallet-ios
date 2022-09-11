@@ -24,12 +24,18 @@ struct ParaStkYieldBoostSetupViewFactory {
 
         let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(chainAsset: chainAsset)
 
+        let dataValidatingFactory = ParaStkYieldBoostValidatorFactory(
+            presentable: wireframe,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory()
+        )
+
         let presenter = ParaStkYieldBoostSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             initState: initData,
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsViewModelFactory,
+            dataValidatingFactory: dataValidatingFactory,
             chainAsset: chainAsset,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared

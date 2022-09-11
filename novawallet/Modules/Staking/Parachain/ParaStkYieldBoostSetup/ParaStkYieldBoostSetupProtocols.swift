@@ -42,7 +42,8 @@ protocol ParaStkYieldBoostSetupInteractorOutputProtocol: ParaStkYieldBoostSchedu
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError)
 }
 
-protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, CommonRetryable, FeeRetryable {
+protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+    ParaStkYieldBoostErrorPresentable {
     func showDelegationSelection(
         from view: ParaStkYieldBoostSetupViewProtocol?,
         viewModels: [AccountDetailsPickerViewModel],

@@ -9,6 +9,7 @@ final class ParaStkYieldBoostSetupPresenter {
     let chainAsset: ChainAsset
     let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) var thresholdInput: AmountInputResult?
@@ -36,6 +37,7 @@ final class ParaStkYieldBoostSetupPresenter {
         initState: ParaStkYieldBoostInitState,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
+        dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -48,6 +50,7 @@ final class ParaStkYieldBoostSetupPresenter {
         delegationIdentities = initState.delegationIdentities
         self.balanceViewModelFactory = balanceViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
+        self.dataValidatingFactory = dataValidatingFactory
         yieldBoostTasks = initState.yieldBoostTasks
         self.logger = logger
         self.localizationManager = localizationManager
@@ -199,11 +202,14 @@ final class ParaStkYieldBoostSetupPresenter {
                 let executionTime = taskExecutionTime,
                 let period = yieldBoostParams?.period,
                 let accountMinimum = accountMinimumDecimal?.toSubstrateAmount(precision: precision) {
+                let existingTaskIds = yieldBoostTasks?.map(\.taskId)
+
                 interactor.estimateScheduleAutocompoundFee(
                     for: selectedCollator,
                     initTime: executionTime,
                     frequency: AutomationTime.Seconds(TimeInterval(period).secondsFromDays),
-                    accountMinimum: accountMinimum
+                    accountMinimum: accountMinimum,
+                    cancellingTaskIds: Set(existingTaskIds ?? [])
                 )
             }
         } else {
