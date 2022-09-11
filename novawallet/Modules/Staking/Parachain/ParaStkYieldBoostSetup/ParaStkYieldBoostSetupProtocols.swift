@@ -51,4 +51,15 @@ protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, ErrorPresent
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     )
+
+    func showStartYieldBoostConfirmation(
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        model: ParaStkYieldBoostConfirmModel
+    )
+
+    func showStopYieldBoostConfirmation(
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        collatorId: AccountId,
+        collatorIdentity: AccountIdentity?
+    )
 }
