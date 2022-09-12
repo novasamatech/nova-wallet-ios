@@ -19,7 +19,7 @@ class AssetListBaseInteractor {
     private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private(set) var availableChains: [ChainModel.Id: ChainModel] = [:]
-    private(set) var accountLocks: [AccountId: [AssetLock]] = [:]
+    private(set) var locks: [String: AssetLock] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -45,6 +45,7 @@ class AssetListBaseInteractor {
 
         assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
         assetLocksSubscriptions = [:]
+        locks = [:]
     }
 
     private func handle(changes: [DataProviderChange<ChainModel>]) {
@@ -256,20 +257,15 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         case let .failure(error):
             basePresenter?.didReceiveLocks(result: .failure(error))
         case let .success(changes):
-            var locks: [AssetLock] = []
             changes.forEach {
                 switch $0 {
                 case let .insert(newItem), let .update(newItem):
-                    guard let index = locks.firstIndex(where: { $0.identifier == newItem.identifier }) else {
-                        locks.append(newItem)
-                        return
-                    }
-                    locks[index] = newItem
+                    locks[newItem.identifier] = newItem
                 case let .delete(deletedIdentifier):
-                    locks.removeAll(where: { $0.identifier == deletedIdentifier })
+                    locks.removeValue(forKey: deletedIdentifier)
                 }
             }
-            basePresenter?.didReceiveLocks(result: .success(locks))
+            basePresenter?.didReceiveLocks(result: .success(Array(locks.values)))
         }
     }
 
