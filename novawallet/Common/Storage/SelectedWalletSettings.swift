@@ -102,4 +102,63 @@ final class SelectedWalletSettings: PersistentValueSettings<MetaAccountModel> {
 
         operationQueue.addOperations(dependencies + [saveOperation], waitUntilFinished: false)
     }
+
+    override func performRemove(
+        value: MetaAccountModel,
+        completionClosure: @escaping (Result<MetaAccountModel?, Error>) -> Void
+    ) {
+        let mapper = ManagedMetaAccountMapper()
+        let repository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [NSSortDescriptor.accountsByOrder],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        let fetchAllWalletsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        let newSelectedWalletOperation = ClosureOperation<ManagedMetaAccountModel?> {
+            let allWallets = try fetchAllWalletsOperation.extractNoCancellableResultData()
+
+            guard let selectedWallet = allWallets.first(where: { $0.isSelected }) else {
+                return allWallets.first(where: { $0.identifier != value.identifier })
+            }
+
+            if
+                selectedWallet.identifier == value.identifier,
+                let firstWalletByOrder = allWallets.first(where: { $0.identifier != value.identifier }) {
+                return firstWalletByOrder.replacingSelection(true)
+            } else {
+                return nil
+            }
+        }
+
+        newSelectedWalletOperation.addDependency(fetchAllWalletsOperation)
+
+        let saveOperation = repository.saveOperation({
+            if let newSelectedWallet = try newSelectedWalletOperation.extractNoCancellableResultData() {
+                return [newSelectedWallet]
+            } else {
+                return []
+            }
+        }, {
+            [value.identifier]
+        })
+
+        saveOperation.addDependency(newSelectedWalletOperation)
+
+        saveOperation.completionBlock = {
+            do {
+                _ = try saveOperation.extractNoCancellableResultData()
+                let newSelectedWallet = try newSelectedWalletOperation.extractNoCancellableResultData()
+                completionClosure(.success(newSelectedWallet?.info))
+            } catch {
+                completionClosure(.failure(error))
+            }
+        }
+
+        operationQueue.addOperations(
+            [fetchAllWalletsOperation, newSelectedWalletOperation, saveOperation],
+            waitUntilFinished: false
+        )
+    }
 }
