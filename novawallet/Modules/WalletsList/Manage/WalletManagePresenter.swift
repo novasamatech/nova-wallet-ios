@@ -74,6 +74,10 @@ final class WalletManagePresenter: WalletsListPresenter {
 }
 
 extension WalletManagePresenter: WalletManagePresenterProtocol {
+    func canDeleteItem(at _: Int, section _: Int) -> Bool {
+        true
+    }
+
     func selectItem(at index: Int, section: Int) {
         let identifier = viewModels[section].items[index].identifier
 
@@ -128,5 +132,11 @@ extension WalletManagePresenter: WalletManagePresenterProtocol {
 
     func activateAddWallet() {
         wireframe?.showAddWallet(from: view)
+    }
+}
+
+extension WalletManagePresenter: WalletManageInteractorOutputProtocol {
+    func didRemoveAllWallets() {
+        wireframe?.showOnboarding(from: view)
     }
 }

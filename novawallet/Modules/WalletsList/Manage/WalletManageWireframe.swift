@@ -1,6 +1,19 @@
 import Foundation
 
-final class WalletManageWireframe: WalletsListWireframe, WalletManageWireframeProtocol {
+class WalletBaseManageWireframe: WalletsListWireframe {
+    func showOnboarding(from _: WalletManageViewProtocol?) {
+        guard let onboarding = OnboardingMainViewFactory.createViewForOnboarding() else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: onboarding.controller)
+
+        let rootAnimator = RootControllerAnimationCoordinator()
+        rootAnimator.animateTransition(to: navigationController)
+    }
+}
+
+final class WalletManageWireframe: WalletBaseManageWireframe, WalletManageWireframeProtocol {
     func showWalletDetails(from view: WalletManageViewProtocol?, metaAccount: MetaAccountModel) {
         guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount.identifier) else {
             return
