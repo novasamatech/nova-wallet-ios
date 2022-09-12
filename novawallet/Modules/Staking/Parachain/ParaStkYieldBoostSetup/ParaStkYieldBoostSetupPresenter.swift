@@ -9,6 +9,7 @@ final class ParaStkYieldBoostSetupPresenter {
     let chainAsset: ChainAsset
     let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) var thresholdInput: AmountInputResult?
@@ -21,6 +22,9 @@ final class ParaStkYieldBoostSetupPresenter {
     private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
     private(set) var yieldBoostParams: ParaStkYieldBoostResponse?
     private(set) var isYieldBoostSelected: Bool = false
+    private(set) var extrinsicFee: BigUInt?
+    private(set) var taskExecutionFee: BigUInt?
+    private(set) var taskExecutionTime: AutomationTime.UnixTime?
 
     private(set) lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
     private(set) lazy var apyFormatter = NumberFormatter.positivePercentAPY.localizableResource()
@@ -33,6 +37,7 @@ final class ParaStkYieldBoostSetupPresenter {
         initState: ParaStkYieldBoostInitState,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
+        dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -45,6 +50,7 @@ final class ParaStkYieldBoostSetupPresenter {
         delegationIdentities = initState.delegationIdentities
         self.balanceViewModelFactory = balanceViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
+        self.dataValidatingFactory = dataValidatingFactory
         yieldBoostTasks = initState.yieldBoostTasks
         self.logger = logger
         self.localizationManager = localizationManager
@@ -72,7 +78,9 @@ final class ParaStkYieldBoostSetupPresenter {
             return 0
         }
 
-        return balance
+        let extrinsicFeeDecimal = Decimal.fromSubstrateAmount(extrinsicFee ?? 0, precision: precision) ?? 0
+
+        return max(balance - extrinsicFeeDecimal, 0)
     }
 
     func isRemoteYieldBoosted() -> Bool {
@@ -152,6 +160,77 @@ final class ParaStkYieldBoostSetupPresenter {
         thresholdInput = newValue
     }
 
+    func updateExtrinsicFee(_ newValue: BigUInt?) {
+        extrinsicFee = newValue
+
+        if case .rate = thresholdInput {
+            provideThresholdInputViewModel()
+        }
+    }
+
+    func updateTaskExecutionFee(_ newValue: BigUInt?) {
+        taskExecutionFee = newValue
+
+        if case .rate = thresholdInput {
+            provideThresholdInputViewModel()
+        }
+    }
+
+    func updateTaskExecutionTime(_ newValue: AutomationTime.UnixTime?) {
+        taskExecutionTime = newValue
+    }
+
+    func refreshExtrinsicFee() {
+        extrinsicFee = nil
+
+        if isYieldBoostSelected {
+            interactor.estimateTaskExecutionFee()
+
+            let accountMinimumDecimal = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ??
+                selectedRemoteBoostThreshold()
+
+            let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+            if
+                let selectedCollator = selectedCollator,
+                let executionTime = taskExecutionTime,
+                let period = yieldBoostParams?.period,
+                let accountMinimum = accountMinimumDecimal?.toSubstrateAmount(precision: precision) {
+                let existingTaskIds = yieldBoostTasks?.map(\.taskId)
+
+                interactor.estimateScheduleAutocompoundFee(
+                    for: selectedCollator,
+                    initTime: executionTime,
+                    frequency: AutomationTime.Seconds(TimeInterval(period).secondsFromDays),
+                    accountMinimum: accountMinimum,
+                    cancellingTaskIds: Set(existingTaskIds ?? [])
+                )
+            }
+        } else {
+            if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator })?.taskId {
+                interactor.estimateCancelAutocompoundFee(for: taskId)
+            }
+        }
+    }
+
+    func refreshFeeIfNeeded() {
+        taskExecutionFee = nil
+
+        if isYieldBoostSelected {
+            interactor.estimateTaskExecutionFee()
+        }
+
+        refreshExtrinsicFee()
+    }
+
+    func refreshTaskExecutionTime() {
+        taskExecutionTime = nil
+
+        if let period = yieldBoostParams?.period {
+            interactor.fetchTaskExecutionTime(for: period)
+        }
+    }
+
     func setupCollatorIfNeeded() {
         guard selectedCollator == nil else {
             return
@@ -211,8 +290,12 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
 
         if isYieldBoostSelected {
             provideAssetViewModel()
-            provideThresholdInputViewModel()
             updateHasChanges()
+            refreshFeeIfNeeded()
+
+            if case .rate = thresholdInput {
+                provideThresholdInputViewModel()
+            }
         }
     }
 
@@ -273,6 +356,8 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
         }
 
         updateHasChanges()
+
+        refreshFeeIfNeeded()
     }
 
     func didReceiveYieldBoostParams(_ params: ParaStkYieldBoostResponse, stake _: BigUInt, collator _: AccountId) {
@@ -282,11 +367,14 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
 
         provideRewardsOptionComparisonViewModel()
 
+        updateHasChanges()
+
         if isYieldBoostSelected {
             provideYieldBoostPeriodViewModel()
-        }
 
-        updateHasChanges()
+            refreshFeeIfNeeded()
+            refreshTaskExecutionTime()
+        }
     }
 
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError) {
@@ -331,6 +419,8 @@ extension ParaStkYieldBoostSetupPresenter: ModalPickerViewControllerDelegate {
         thresholdInput = nil
 
         refreshYieldBoostParamsIfNeeded()
+        refreshFeeIfNeeded()
+
         provideViewModels()
     }
 }

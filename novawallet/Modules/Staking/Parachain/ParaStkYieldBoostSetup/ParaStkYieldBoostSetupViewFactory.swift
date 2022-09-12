@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import SoraFoundation
+import RobinHood
 
 struct ParaStkYieldBoostSetupViewFactory {
     static func createView(
@@ -23,12 +24,18 @@ struct ParaStkYieldBoostSetupViewFactory {
 
         let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(chainAsset: chainAsset)
 
+        let dataValidatingFactory = ParaStkYieldBoostValidatorFactory(
+            presentable: wireframe,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory()
+        )
+
         let presenter = ParaStkYieldBoostSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             initState: initData,
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsViewModelFactory,
+            dataValidatingFactory: dataValidatingFactory,
             chainAsset: chainAsset,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
@@ -41,10 +48,12 @@ struct ParaStkYieldBoostSetupViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
 
+    // swiftlint:disable:next function_body_length
     private static func createInteractor(
         with state: ParachainStakingSharedState,
         currencyManager: CurrencyManagerProtocol
@@ -72,9 +81,36 @@ struct ParaStkYieldBoostSetupViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        return ParaStkYieldBoostSetupInteractor(
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManagerFacade.sharedManager
+        ).createService(account: selectedAccount, chain: chainAsset.chain)
+
+        let yieldBoostOperationFactory = ParaStkYieldBoostOperationFactory()
+
+        let childScheduleInterator = ParaStkYieldBoostScheduleInteractor(
+            selectedAccount: selectedAccount,
+            extrinsicService: extrinsicService,
+            feeProxy: ExtrinsicFeeProxy(),
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            requestFactory: requestFactory,
+            yeildBoostOperationFactory: yieldBoostOperationFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let childCancelInteractor = ParaStkYieldBoostCancelInteractor(
+            selectedAccount: selectedAccount,
+            extrinsicService: extrinsicService,
+            feeProxy: ExtrinsicFeeProxy()
+        )
+
+        let interactor = ParaStkYieldBoostSetupInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            childScheduleInteractor: childScheduleInterator,
+            childCancelInteractor: childCancelInteractor,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             rewardService: rewardService,
@@ -83,9 +119,14 @@ struct ParaStkYieldBoostSetupViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             identityOperationFactory: identityOperationFactory,
             yieldBoostProviderFactory: ParaStkYieldBoostProviderFactory.shared,
-            yieldBoostOperationFactory: ParaStkYieldBoostOperationFactory(),
+            yieldBoostOperationFactory: yieldBoostOperationFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+
+        childScheduleInterator.presenter = interactor
+        childCancelInteractor.presenter = interactor
+
+        return interactor
     }
 }
