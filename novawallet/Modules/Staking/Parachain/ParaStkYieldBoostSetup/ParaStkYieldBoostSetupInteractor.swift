@@ -19,6 +19,9 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     let yieldBoostOperationFactory: ParaStkYieldBoostOperationFactoryProtocol
     let operationQueue: OperationQueue
 
+    let childScheduleInteractor: ParaStkYieldBoostScheduleInteractorInputProtocol
+    let childCancelInteractor: ParaStkYieldBoostCancelInteractorInputProtocol
+
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
@@ -29,6 +32,8 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     init(
         chainAsset: ChainAsset,
         selectedAccount: ChainAccountResponse,
+        childScheduleInteractor: ParaStkYieldBoostScheduleInteractorInputProtocol,
+        childCancelInteractor: ParaStkYieldBoostCancelInteractorInputProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
@@ -43,6 +48,8 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     ) {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
+        self.childScheduleInteractor = childScheduleInteractor
+        self.childCancelInteractor = childCancelInteractor
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.rewardService = rewardService
@@ -149,6 +156,9 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
 
 extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostSetupInteractorInputProtocol {
     func setup() {
+        childScheduleInteractor.setup()
+        childCancelInteractor.setup()
+
         setupSubscriptions()
         provideRewardCalculator()
     }
@@ -204,6 +214,38 @@ extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostSetupInteractorInpu
         }
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+}
+
+extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostScheduleInteractorInputProtocol {
+    func estimateScheduleAutocompoundFee(
+        for collatorId: AccountId,
+        initTime: AutomationTime.UnixTime,
+        frequency: AutomationTime.Seconds,
+        accountMinimum: BigUInt,
+        cancellingTaskIds: Set<AutomationTime.TaskId>
+    ) {
+        childScheduleInteractor.estimateScheduleAutocompoundFee(
+            for: collatorId,
+            initTime: initTime,
+            frequency: frequency,
+            accountMinimum: accountMinimum,
+            cancellingTaskIds: cancellingTaskIds
+        )
+    }
+
+    func estimateTaskExecutionFee() {
+        childScheduleInteractor.estimateTaskExecutionFee()
+    }
+
+    func fetchTaskExecutionTime(for period: UInt) {
+        childScheduleInteractor.fetchTaskExecutionTime(for: period)
+    }
+}
+
+extension ParaStkYieldBoostSetupInteractor: ParaStkYieldBoostCancelInteractorInputProtocol {
+    func estimateCancelAutocompoundFee(for taskId: AutomationTime.TaskId) {
+        childCancelInteractor.estimateCancelAutocompoundFee(for: taskId)
     }
 }
 

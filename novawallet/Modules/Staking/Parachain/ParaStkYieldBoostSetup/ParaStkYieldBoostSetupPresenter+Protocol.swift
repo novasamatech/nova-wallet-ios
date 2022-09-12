@@ -5,9 +5,14 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         interactor.setup()
 
         setupCollatorIfNeeded()
+        provideViewModels()
         refreshYieldBoostParamsIfNeeded()
 
-        provideViewModels()
+        if isYieldBoostSelected {
+            refreshTaskExecutionTime()
+        }
+
+        refreshFeeIfNeeded()
     }
 
     func switchRewardsOption(to isYieldBoosted: Bool) {
@@ -21,9 +26,12 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
         if isYieldBoostSelected {
             provideYieldBoostSpecificViewModels()
+            refreshTaskExecutionTime()
         }
 
         updateHasChanges()
+
+        refreshFeeIfNeeded()
     }
 
     func updateThresholdAmount(_ newValue: Decimal?) {
@@ -33,6 +41,8 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
         provideAssetViewModel()
         updateHasChanges()
+
+        refreshExtrinsicFee()
     }
 
     func selectThresholdAmountPercentage(_ percentage: Float) {
@@ -43,6 +53,8 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         provideThresholdInputViewModel()
         provideAssetViewModel()
         updateHasChanges()
+
+        refreshExtrinsicFee()
     }
 
     func selectCollator() {
@@ -75,6 +87,130 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
     }
 
     func proceed() {
-        // TODO: Implement transition to confirmation
+        if isYieldBoostSelected {
+            proceedWithYieldBoost()
+        } else {
+            proceedWithoutYieldBoost()
+        }
+    }
+
+    private func createYieldBoostValidationRunner(
+        for assetDisplayInfo: AssetBalanceDisplayInfo,
+        threshold: Decimal?
+    ) -> DataValidationRunnerProtocol {
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: extrinsicFee,
+                locale: selectedLocale,
+                precision: assetDisplayInfo.assetPrecision,
+                onError: { [weak self] in
+                    self?.refreshFeeIfNeeded()
+                }
+            ),
+            dataValidatingFactory.hasInPlank(
+                fee: taskExecutionFee,
+                locale: selectedLocale,
+                precision: assetDisplayInfo.assetPrecision,
+                onError: { [weak self] in
+                    self?.interactor.estimateTaskExecutionFee()
+                }
+            ),
+            dataValidatingFactory.hasExecutionTime(
+                taskExecutionTime,
+                locale: selectedLocale,
+                errorClosure: { [weak self] in
+                    self?.refreshTaskExecutionTime()
+                }
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: balance?.transferable,
+                fee: extrinsicFee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.enoughBalanceForThreshold(
+                threshold,
+                balance: balance?.transferable,
+                extrinsicFee: extrinsicFee,
+                assetInfo: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.enoughBalanceForExecutionFee(
+                taskExecutionFee,
+                balance: balance?.transferable,
+                extrinsicFee: extrinsicFee,
+                assetInfo: chainAsset.assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.cancelForOtherCollatorsExcept(
+                selectedCollatorId: selectedCollator,
+                tasks: yieldBoostTasks,
+                locale: selectedLocale
+            )
+        ])
+    }
+
+    private func proceedWithYieldBoost() {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let optTreshold = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ??
+            selectedRemoteBoostThreshold()
+
+        let runner = createYieldBoostValidationRunner(for: assetDisplayInfo, threshold: optTreshold)
+
+        runner.runValidation { [weak self] in
+            guard
+                let selectedCollator = self?.selectedCollator,
+                let period = self?.yieldBoostParams?.period,
+                let executionTime = self?.taskExecutionTime,
+                let accountMinimum = optTreshold else {
+                return
+            }
+
+            let model = ParaStkYieldBoostConfirmModel(
+                collator: selectedCollator,
+                accountMinimum: accountMinimum,
+                period: period,
+                executionTime: executionTime,
+                collatorIdentity: self?.delegationIdentities?[selectedCollator]
+            )
+
+            self?.wireframe.showStartYieldBoostConfirmation(from: self?.view, model: model)
+        }
+    }
+
+    private func proceedWithoutYieldBoost() {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: extrinsicFee,
+                locale: selectedLocale,
+                precision: assetDisplayInfo.assetPrecision,
+                onError: { [weak self] in
+                    self?.refreshFeeIfNeeded()
+                }
+            ),
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: balance?.transferable,
+                fee: extrinsicFee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.cancellingTaskExists(
+                for: selectedCollator,
+                tasks: yieldBoostTasks,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            guard let selectedCollator = self?.selectedCollator else {
+                return
+            }
+
+            self?.wireframe.showStopYieldBoostConfirmation(
+                from: self?.view,
+                collatorId: selectedCollator,
+                collatorIdentity: self?.delegationIdentities?[selectedCollator]
+            )
+        }
     }
 }
