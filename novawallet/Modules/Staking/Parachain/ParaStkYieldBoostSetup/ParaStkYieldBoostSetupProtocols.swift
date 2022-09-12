@@ -20,7 +20,8 @@ protocol ParaStkYieldBoostSetupPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol ParaStkYieldBoostSetupInteractorInputProtocol: AnyObject {
+protocol ParaStkYieldBoostSetupInteractorInputProtocol: ParaStkYieldBoostScheduleInteractorInputProtocol,
+    ParaStkYieldBoostCancelInteractorInputProtocol {
     func setup()
     func requestParams(for stake: BigUInt, collator: AccountId)
     func retrySubscriptions()
@@ -28,7 +29,8 @@ protocol ParaStkYieldBoostSetupInteractorInputProtocol: AnyObject {
     func fetchRewardCalculator()
 }
 
-protocol ParaStkYieldBoostSetupInteractorOutputProtocol: AnyObject {
+protocol ParaStkYieldBoostSetupInteractorOutputProtocol: ParaStkYieldBoostScheduleInteractorOutputProtocol,
+    ParaStkYieldBoostCancelInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
@@ -40,12 +42,24 @@ protocol ParaStkYieldBoostSetupInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ParaStkYieldBoostSetupInteractorError)
 }
 
-protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, CommonRetryable {
+protocol ParaStkYieldBoostSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+    ParaStkYieldBoostErrorPresentable {
     func showDelegationSelection(
         from view: ParaStkYieldBoostSetupViewProtocol?,
         viewModels: [AccountDetailsPickerViewModel],
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
+    )
+
+    func showStartYieldBoostConfirmation(
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        model: ParaStkYieldBoostConfirmModel
+    )
+
+    func showStopYieldBoostConfirmation(
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        collatorId: AccountId,
+        collatorIdentity: AccountIdentity?
     )
 }
