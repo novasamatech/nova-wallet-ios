@@ -114,13 +114,16 @@ final class AccountInfoUpdatingService {
             logger: logger
         )
 
+        let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
         let assetBalanceMapper = AssetBalanceMapper()
-        let assetLockMapper = AssetLockMapper()
         let assetRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetBalanceMapper))
-        let locksRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetLockMapper))
+        let locksRepository = repositoryFactory.createAssetLocksRepository(
+            for: accountId,
+            chainAssetId: chainAssetId
+        )
 
         let subscriptionHandlingFactory = TokenSubscriptionFactory(
-            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+            chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: AnyDataProviderRepository(assetRepository),

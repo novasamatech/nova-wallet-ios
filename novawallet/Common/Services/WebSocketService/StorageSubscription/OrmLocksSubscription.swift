@@ -145,11 +145,9 @@ class LocksSubscription: StorageChildSubscribing {
         let fetchOperation = repository.fetchAllOperation(with: .init())
 
         let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> { [weak self] in
-            let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() ?? []
-            let localModels = try fetchOperation
-                .extractNoCancellableResultData()
-                .filter { $0.accountId == accountId && $0.chainAssetId == chainAssetId }
-                .sorted { $0.identifier < $1.identifier }
+            let locks = try decodingWrapper
+                .targetOperation
+                .extractNoCancellableResultData() ?? []
 
             var remoteModels = locks.map {
                 AssetLock(
@@ -160,34 +158,7 @@ class LocksSubscription: StorageChildSubscribing {
                 )
             }.sorted { $0.identifier < $1.identifier }
 
-            guard localModels != remoteModels else {
-                self?.logger.debug("Local locks are actual")
-                return nil
-            }
-
-            var changes: [DataProviderChange<AssetLock>] = []
-
-            for localModel in localModels {
-                if let remoteModelIndex = remoteModels.firstIndex(where: { $0.type == localModel.type }) {
-                    let remoteModel = remoteModels[remoteModelIndex]
-                    if localModel != remoteModel {
-                        self?.logger.debug("Local lock: \(localModel) was updated. New amount: \(remoteModel.amount)")
-                        changes.append(DataProviderChange.update(newItem: remoteModel))
-                    }
-                    remoteModels.remove(at: remoteModelIndex)
-                } else {
-                    self?.logger.debug("Lock: \(localModel) was removed")
-                    changes.append(DataProviderChange.delete(deletedIdentifier: localModel.identifier))
-                }
-            }
-
-            if !remoteModels.isEmpty {
-                let newItems = remoteModels.map(DataProviderChange.update)
-                self?.logger.debug("Locks: \(remoteModels) was added")
-                changes.append(contentsOf: newItems)
-            }
-
-            return changes
+            return remoteModels.map(DataProviderChange.update)
         }
 
         changesOperation.addDependency(fetchOperation)
@@ -198,25 +169,14 @@ class LocksSubscription: StorageChildSubscribing {
     private func createSaveOperation(
         dependingOn operation: CompoundOperationWrapper<[DataProviderChange<AssetLock>]?>
     ) -> BaseOperation<Void> {
-        let saveOperation = repository.saveOperation({
+        let replaceOperation = repository.replaceOperation {
             guard let changes = try operation.targetOperation.extractNoCancellableResultData() else {
                 return []
             }
             return changes.compactMap(\.item)
-        }, {
-            guard let changes = try operation.targetOperation.extractNoCancellableResultData() else {
-                return []
-            }
+        }
 
-            return changes.compactMap { change in
-                guard case let .delete(identifier) = change else {
-                    return nil
-                }
-                return identifier
-            }
-        })
-
-        saveOperation.addDependency(operation.targetOperation)
-        return saveOperation
+        replaceOperation.addDependency(operation.targetOperation)
+        return replaceOperation
     }
 }

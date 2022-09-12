@@ -214,6 +214,29 @@ extension NSPredicate {
         )
     }
 
+    static func assetLock(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> NSPredicate {
+        let accountPredicate = assetLock(for: accountId)
+
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.chainId),
+            chainAssetId.chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetLock.assetId),
+            chainAssetId.assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainIdPredicate, assetIdPredicate
+        ])
+    }
+
     static func nfts(for chainId: ChainModel.Id, ownerId: AccountId) -> NSPredicate {
         let chainPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.chainId), chainId)
         let ownerPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.ownerId), ownerId.toHex())

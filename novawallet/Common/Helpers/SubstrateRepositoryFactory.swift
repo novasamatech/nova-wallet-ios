@@ -6,13 +6,17 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository(filter: NSPredicate) -> AnyDataProviderRepository<ChainStorageItem>
 
     func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance>
-    func createAssetLocksRepository() -> AnyDataProviderRepository<AssetLock>
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
 
     func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem>
     func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem>
+
+    func createAssetLocksRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock>
 
     func createChainAddressTxRepository(
         for address: AccountAddress,
@@ -183,10 +187,24 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         return AnyDataProviderRepository(repository)
     }
 
-    func createAssetLocksRepository() -> AnyDataProviderRepository<AssetLock> {
-        let mapper = AssetLockMapper()
-        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+    func createAssetLocksRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock> {
+        createAssetLocksRepository(.assetBalance(
+            for: accountId,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId
+        ))
+    }
 
+    private func createAssetLocksRepository(_ filter: NSPredicate) -> AnyDataProviderRepository<AssetLock> {
+        let mapper = AssetLockMapper()
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
         return AnyDataProviderRepository(repository)
     }
 }
