@@ -17,7 +17,6 @@ final class OrmLocksSubscription: LocksSubscription {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: repository,
-            localModelsPredicate: { $0.accountId == accountId && $0.chainAssetId == chainAssetId },
             operationManager: operationManager,
             logger: logger
         )
@@ -41,7 +40,6 @@ final class BalanceLocksSubscription: LocksSubscription {
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: repository,
-            localModelsPredicate: { $0.accountId == accountId },
             operationManager: operationManager,
             logger: logger
         )
@@ -57,7 +55,6 @@ class LocksSubscription: StorageChildSubscribing {
     let repository: AnyDataProviderRepository<AssetLock>
     let operationManager: OperationManagerProtocol
     let storageCodingPath: StorageCodingPath
-    let localModelsPredicate: (AssetLock) -> Bool
     let logger: LoggerProtocol
 
     init(
@@ -67,7 +64,6 @@ class LocksSubscription: StorageChildSubscribing {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<AssetLock>,
-        localModelsPredicate: @escaping (AssetLock) -> Bool,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -77,7 +73,6 @@ class LocksSubscription: StorageChildSubscribing {
         self.chainRegistry = chainRegistry
         self.repository = repository
         self.operationManager = operationManager
-        self.localModelsPredicate = localModelsPredicate
         self.storageCodingPath = storageCodingPath
         self.logger = logger
     }
@@ -150,15 +145,10 @@ class LocksSubscription: StorageChildSubscribing {
         let fetchOperation = repository.fetchAllOperation(with: .init())
 
         let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> { [weak self] in
-            guard let localModelsPredicate = self?.localModelsPredicate else {
-                self?.logger.debug("No locks received")
-                return nil
-            }
-
             let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() ?? []
             let localModels = try fetchOperation
                 .extractNoCancellableResultData()
-                .filter(localModelsPredicate)
+                .filter { $0.accountId == accountId && $0.chainAssetId == chainAssetId }
                 .sorted { $0.identifier < $1.identifier }
 
             var remoteModels = locks.map {
