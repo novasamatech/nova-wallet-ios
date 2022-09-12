@@ -43,7 +43,7 @@ class SelectedAccountSettingsTests: XCTestCase {
         XCTAssertEqual(allMetaAccounts.first?.isSelected, true)
     }
 
-    func testChangeSelectedAccount() throws {
+    func testChangeSelectedWallet() throws {
         // given
 
         let operationQueue = OperationQueue()
@@ -94,5 +94,102 @@ class SelectedAccountSettingsTests: XCTestCase {
         }
 
         XCTAssertEqual(expectedAccounts, actualAccounts)
+    }
+
+    func testRemoveSelectedWallet() throws {
+        // given
+
+        let operationQueue = OperationQueue()
+        let facade = UserDataStorageTestFacade()
+        let selectedAccountSettings = SelectedWalletSettings(
+            storageFacade: facade,
+            operationQueue: operationQueue
+        )
+
+        let mapper = ManagedMetaAccountMapper()
+        let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
+        let initialSelectedWallet = ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
+            isSelected: true
+        )
+
+        let nextSelectedWallet = ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
+            isSelected: false
+        )
+
+        let saveOperation = repository.saveOperation({ [initialSelectedWallet, nextSelectedWallet] }, { [] })
+        operationQueue.addOperations([saveOperation], waitUntilFinished: true)
+
+        // when
+
+        selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+
+        XCTAssertEqual(selectedAccountSettings.value, initialSelectedWallet.info)
+
+        selectedAccountSettings.remove(value: initialSelectedWallet.info)
+
+        // then
+
+        XCTAssertEqual(selectedAccountSettings.value, nextSelectedWallet.info)
+
+        let allMetaAccountsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
+
+        let allMetaAccounts = try allMetaAccountsOperation.extractNoCancellableResultData()
+
+        let expectedWallets = [nextSelectedWallet.info].reduceToDict()
+
+        let actualWallets = allMetaAccounts.map({ $0.info }).reduceToDict()
+
+        XCTAssertEqual(expectedWallets, actualWallets)
+
+        if let remoteSelectedWallet = allMetaAccounts.first(where: { $0.identifier == nextSelectedWallet.identifier }) {
+            XCTAssertTrue(remoteSelectedWallet.isSelected)
+        } else {
+            XCTFail("Can't find selected wallet in database")
+        }
+    }
+
+    func testRemoveLastWallet() throws {
+        // given
+
+        let operationQueue = OperationQueue()
+        let facade = UserDataStorageTestFacade()
+        let selectedAccountSettings = SelectedWalletSettings(
+            storageFacade: facade,
+            operationQueue: operationQueue
+        )
+
+        let mapper = ManagedMetaAccountMapper()
+        let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
+        let initialSelectedWallet = ManagedMetaAccountModel(
+            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
+            isSelected: true
+        )
+
+        let saveOperation = repository.saveOperation({ [initialSelectedWallet] }, { [] })
+        operationQueue.addOperations([saveOperation], waitUntilFinished: true)
+
+        // when
+
+        selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+
+        XCTAssertEqual(selectedAccountSettings.value, initialSelectedWallet.info)
+
+        selectedAccountSettings.remove(value: initialSelectedWallet.info)
+
+        // then
+
+        XCTAssertEqual(selectedAccountSettings.value, nil)
+
+        let allMetaAccountsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
+
+        let allMetaAccounts = try allMetaAccountsOperation.extractNoCancellableResultData()
+
+        XCTAssertTrue(allMetaAccounts.isEmpty)
     }
 }
