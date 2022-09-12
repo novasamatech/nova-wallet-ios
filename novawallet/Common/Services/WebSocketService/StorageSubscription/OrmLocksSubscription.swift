@@ -150,12 +150,12 @@ class LocksSubscription: StorageChildSubscribing {
         let fetchOperation = repository.fetchAllOperation(with: .init())
 
         let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> { [weak self] in
-            guard let localModelsPredicate = self?.localModelsPredicate,
-                  let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() else {
+            guard let localModelsPredicate = self?.localModelsPredicate else {
                 self?.logger.debug("No locks received")
                 return nil
             }
 
+            let locks = try decodingWrapper.targetOperation.extractNoCancellableResultData() ?? []
             let localModels = try fetchOperation
                 .extractNoCancellableResultData()
                 .filter(localModelsPredicate)
