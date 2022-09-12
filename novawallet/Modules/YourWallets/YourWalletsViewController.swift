@@ -96,7 +96,7 @@ final class YourWalletsViewController: UIViewController, ViewHolder, ModalSheetC
     }
 
     private func createDelegate() -> UICollectionViewDelegate {
-        CollectionViewDelegate(
+        ModalSheetCollectionViewDelegate(
             selectItemClosure: { [weak self] indexPath in
                 guard let self = self else {
                     return

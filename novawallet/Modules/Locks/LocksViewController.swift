@@ -86,7 +86,7 @@ final class LocksViewController: UIViewController, ViewHolder, ModalSheetCollect
     }
 
     private func createDelegate() -> UICollectionViewDelegate {
-        CollectionViewDelegate { [weak self] _ in
+        ModalSheetCollectionViewDelegate { [weak self] _ in
             self?.presenter.didTapOnCell()
         }
     }

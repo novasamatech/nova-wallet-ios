@@ -26,7 +26,6 @@ protocol WalletLocalStorageSubscriber where Self: AnyObject {
     func subscribeToAllLocksProvider(
         for accountId: AccountId
     ) -> StreamableProvider<AssetLock>?
-
 }
 
 extension WalletLocalStorageSubscriber {
@@ -244,7 +243,6 @@ extension WalletLocalStorageSubscriber {
 
         return locksProvider
     }
-
 }
 
 extension WalletLocalStorageSubscriber where Self: WalletLocalSubscriptionHandler {
