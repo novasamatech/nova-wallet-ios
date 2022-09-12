@@ -956,7 +956,7 @@
 "yield.boost.setup.period.update" = "(текущее значение %@)";
 "yield.boost.threshold" = "Boost граница";
 "common.no.changes" = "Нет изменений";
-"common.not.enough.fee.title" = "Недостаточно токено для оплаты комиссии";
+"common.not.enough.fee.title" = "Недостаточно токенов для оплаты комиссии";
 "common.not.enough.fee.message_v3.8.0" = "У вас недостаточно токенов для оплаты комиссии сети в размере %@.\nДоступный баланс для оплаты комиссии: %@";
 "yield.boost.time.not.loaded.title" = "Время исполнения операции еще не подсчиталось";
 "yield.boost.time.not.loaded.message" = "Пожалуйста, подождите пока подсчитается время исполнения операции";
