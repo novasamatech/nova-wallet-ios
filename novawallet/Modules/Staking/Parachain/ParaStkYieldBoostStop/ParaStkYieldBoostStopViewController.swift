@@ -66,6 +66,10 @@ final class ParaStkYieldBoostStopViewController: UIViewController, ViewHolder {
         rootView.stakingTypeCell.bind(
             details: R.string.localizable.withoutYieldBoost(preferredLanguages: languages)
         )
+
+        let title = R.string.localizable.commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.actionLoadableView.actionButton.applyState(title: title, enabled: true)
     }
 
     @objc private func actionConfirm() {

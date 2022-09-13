@@ -50,13 +50,13 @@ final class ParaStkYieldBoostStopPresenter {
     func refreshFee() {
         extrinsicFee = nil
 
-        if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == collatorId})?.taskId {
+        if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == collatorId })?.taskId {
             interactor.estimateCancelAutocompoundFee(for: taskId)
         }
     }
 
     func performSubmition() {
-        if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == collatorId})?.taskId {
+        if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == collatorId })?.taskId {
             view?.didStartLoading()
 
             interactor.stopAutocompound(by: taskId)
@@ -170,7 +170,7 @@ extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopPresenterProtocol
 }
 
 extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopInteractorOutputProtocol {
-    func didStopAutocompound(with hash: String) {
+    func didStopAutocompound(with _: String) {
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
@@ -219,9 +219,9 @@ extension ParaStkYieldBoostStopPresenter: ParaStkYieldBoostStopInteractorOutputP
     }
 
     func didReceiveYieldBoost(tasks: [ParaStkYieldBoostState.Task]?) {
-        self.yieldBoostTasks = tasks
+        yieldBoostTasks = tasks
 
-        provideNetworkFeeViewModel()
+        refreshFee()
     }
 
     func didReceiveCommonInteractor(error: ParaStkYieldBoostCommonInteractorError) {
