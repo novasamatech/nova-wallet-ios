@@ -10261,6 +10261,13 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		84BF12A428D084E5007AA576 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		84BFE89528C230E400140F1F /* YieldBoost */ = {
 			isa = PBXGroup;
 			children = (
@@ -12319,6 +12326,7 @@
 		F17C9A028BBA02464B7A2265 /* ParaStkYieldBoostScheduleConfirm */ = {
 			isa = PBXGroup;
 			children = (
+				84BF12A428D084E5007AA576 /* ViewModel */,
 				84BF129F28CFCD51007AA576 /* Model */,
 				50829CD47D3F60E3067418B4 /* ParaStkYieldBoostScheduleConfirmProtocols.swift */,
 				98096689C3C8541FA585D179 /* ParaStkYieldBoostScheduleConfirmWireframe.swift */,
