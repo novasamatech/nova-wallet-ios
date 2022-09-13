@@ -11,7 +11,8 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
             let chainAsset = state.settings.value,
             let wallet = SelectedWalletSettings.shared.value,
             let selectedAccount = wallet.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
-            let interactor = createInteractor(for: chainAsset, selectedAccount: selectedAccount) else {
+            let interactor = createInteractor(for: chainAsset, selectedAccount: selectedAccount),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -24,18 +25,27 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory()
         )
 
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
         let presenter = ParaStkYieldBoostScheduleConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
-            selectedAccount: selectedAccount.chainAccount,
+            selectedAccount: selectedAccount,
             confirmModel: confirmModel,
             dataValidatingFactory: dataValidatingFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = ParaStkYieldBoostScheduleConfirmViewController(presenter: presenter)
+        let view = ParaStkYieldBoostScheduleConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

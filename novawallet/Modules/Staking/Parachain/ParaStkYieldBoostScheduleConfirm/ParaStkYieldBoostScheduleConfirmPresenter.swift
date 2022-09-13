@@ -8,9 +8,10 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
     let interactor: ParaStkYieldBoostScheduleConfirmInteractorInputProtocol
 
     let chainAsset: ChainAsset
-    let selectedAccount: ChainAccountResponse
+    let selectedAccount: MetaChainAccountResponse
     let confirmModel: ParaStkYieldBoostConfirmModel
     let dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) var yieldBoostTasks: [ParaStkYieldBoostState.Task]?
@@ -20,13 +21,17 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
 
+    private lazy var walletDisplayViewModelFactory = WalletAccountViewModelFactory()
+    private lazy var addressDisplayViewModelFactory = DisplayAddressViewModelFactory()
+
     init(
         interactor: ParaStkYieldBoostScheduleConfirmInteractorInputProtocol,
         wireframe: ParaStkYieldBoostScheduleConfirmWireframeProtocol,
         chainAsset: ChainAsset,
-        selectedAccount: ChainAccountResponse,
+        selectedAccount: MetaChainAccountResponse,
         confirmModel: ParaStkYieldBoostConfirmModel,
         dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,6 +41,7 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
         self.selectedAccount = selectedAccount
         self.confirmModel = confirmModel
         self.dataValidatingFactory = dataValidatingFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -69,6 +75,8 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
             ) {
             let cancellingTaskIds = yieldBoostTasks?.map(\.taskId)
 
+            view?.didStartLoading()
+
             interactor.schedule(
                 for: confirmModel.collator,
                 initTime: executionTime,
@@ -84,11 +92,82 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
 
         interactor.fetchTaskExecutionTime(for: confirmModel.period)
     }
+
+    func providePeriod() {
+        view?.didReceivePeriod(viewModel: confirmModel.period)
+    }
+
+    func provideThreshold() {
+        let amount = balanceViewModelFactory.amountFromValue(confirmModel.accountMinimum).value(for: selectedLocale)
+        view?.didReceiveThreshold(viewModel: amount)
+    }
+
+    func provideWalletViewModel() {
+        guard let viewModel = try? walletDisplayViewModelFactory.createDisplayViewModel(from: selectedAccount) else {
+            return
+        }
+
+        view?.didReceiveWallet(viewModel: viewModel.cellViewModel)
+    }
+
+    private func provideAccountViewModel() {
+        guard let address = try? selectedAccount.chainAccount.toDisplayAddress() else {
+            return
+        }
+
+        let viewModel = addressDisplayViewModelFactory.createViewModel(from: address)
+        view?.didReceiveSender(viewModel: viewModel)
+    }
+
+    private func provideCollatorViewModel() {
+        guard let address = try? confirmModel.collator.toAddress(using: chainAsset.chain.chainFormat) else {
+            return
+        }
+
+        let displayAddress = DisplayAddress(
+            address: address,
+            username: confirmModel.collatorIdentity?.displayName ?? ""
+        )
+
+        let viewModel = addressDisplayViewModelFactory.createViewModel(from: displayAddress)
+        view?.didReceiveCollator(viewModel: viewModel)
+    }
+
+    private func provideNetworkFeeViewModel() {
+        let assetInfo = chainAsset.assetDisplayInfo
+        if let fee = extrinsicFee {
+            let feeDecimal = Decimal.fromSubstrateAmount(
+                fee,
+                precision: assetInfo.assetPrecision
+            ) ?? 0.0
+
+            let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: price)
+                .value(for: selectedLocale)
+
+            view?.didReceiveNetworkFee(viewModel: viewModel)
+        } else {
+            view?.didReceiveNetworkFee(viewModel: nil)
+        }
+    }
+
+    func updateView() {
+        provideWalletViewModel()
+        provideAccountViewModel()
+        provideNetworkFeeViewModel()
+        provideCollatorViewModel()
+        providePeriod()
+        provideThreshold()
+    }
 }
 
 extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleConfirmPresenterProtocol {
     func setup() {
+        updateView()
+
         interactor.setup()
+
+        refreshExecutionTime()
+        refreshFee()
     }
 
     func submit() {
@@ -133,9 +212,7 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
     }
 
     func showSenderActions() {
-        guard
-            let view = view,
-            let address = try? selectedAccount.accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+        guard let view = view, let address = selectedAccount.chainAccount.toAddress() else {
             return
         }
 
@@ -159,6 +236,8 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
 
     func didReceiveAsset(price: PriceData?) {
         self.price = price
+
+        provideNetworkFeeViewModel()
     }
 
     func didReceiveCommonInteractor(error: ParaStkYieldBoostCommonInteractorError) {
@@ -170,13 +249,19 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
         }
     }
 
-    func didScheduleYieldBoost(for _: String) {}
+    func didScheduleYieldBoost(for _: String) {
+        view?.didStopLoading()
+
+        wireframe.complete(on: view, locale: selectedLocale)
+    }
 
     func didReceiveConfirmation(error: ParaStkYieldBoostScheduleConfirmError) {
         logger.error("Did receive confirmation error: \(error)")
 
         switch error {
         case let .yieldBoostScheduleFailed(error):
+            view?.didStopLoading()
+
             if error.isWatchOnlySigning {
                 wireframe.presentDismissingNoSigningView(from: view)
             } else {
@@ -187,6 +272,8 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
 
     func didReceiveScheduleAutocompound(feeInfo: RuntimeDispatchInfo) {
         extrinsicFee = BigUInt(feeInfo.fee)
+
+        provideNetworkFeeViewModel()
     }
 
     func didReceiveTaskExecution(fee: BigUInt) {
@@ -225,6 +312,9 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
 
 extension ParaStkYieldBoostScheduleConfirmPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {}
+        if let view = view, view.isSetup {
+            provideNetworkFeeViewModel()
+            provideThreshold()
+        }
     }
 }

@@ -952,7 +952,7 @@
 "yield.boost.setup.reward.comparison.title" = "I want to stake";
 "with.yield.boost" = "with Yield Boost";
 "without.yield.boost" = "without Yield Boost";
-"yield.boost.setup.period.details" = "to automatically stake every %@ all my transferable tokens above";
+"yield.boost.setup.period.details" = "to automatically stake %@ all my transferable tokens above";
 "yield.boost.setup.period.update" = "(updating from %@)";
 "yield.boost.threshold" = "Boost threshold";
 "common.no.changes" = "No changes";
@@ -968,3 +968,4 @@
 "yield.boost.already.enabled.message" = "Yield Boost can be enabled only for one collator. Would like to enable Yield Boost for the selected collator and disable for others?";
 "yield.boost.task.not.found.title" = "Yield boost already disabled";
 "yield.boost.task.not.found.message" = "Yield boost already disabled for the selected collator";
+"yield.boost.period.title" = "Stake increase time";
