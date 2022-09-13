@@ -3,42 +3,59 @@ import XCTest
 import RobinHood
 
 class SelectedAccountSettingsTests: XCTestCase {
+    struct Common {
+        let operationQueue: OperationQueue
+        let selectedAccountSettings: SelectedWalletSettings
+        let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
+
+        init() {
+            operationQueue = OperationQueue()
+            let facade = UserDataStorageTestFacade()
+
+            selectedAccountSettings = SelectedWalletSettings(
+                storageFacade: facade,
+                operationQueue: operationQueue
+            )
+
+            let mapper = ManagedMetaAccountMapper()
+            let coreDataRepository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
+            repository = AnyDataProviderRepository(coreDataRepository)
+        }
+    }
+
+    let initialSelectedWallet = ManagedMetaAccountModel(
+        info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
+        isSelected: true
+    )
+
+    let otherWallet = ManagedMetaAccountModel(
+        info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
+        isSelected: false
+    )
+
     func testSelectFirst() throws {
         // given
 
-        let operationQueue = OperationQueue()
-        let facade = UserDataStorageTestFacade()
-        let selectedAccountSettings = SelectedWalletSettings(
-            storageFacade: facade,
-            operationQueue: operationQueue
-        )
-
-        let mapper = ManagedMetaAccountMapper()
-        let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
-
-        let selectedAccount = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
-            isSelected: true
-        )
+        let common = Common()
 
         // when
 
-        selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
 
-        XCTAssertNil(selectedAccountSettings.value)
+        XCTAssertNil(common.selectedAccountSettings.value)
 
-        selectedAccountSettings.save(value: selectedAccount.info, runningCompletionIn: .global()) { _ in }
+        common.selectedAccountSettings.save(value: initialSelectedWallet.info, runningCompletionIn: .global()) { _ in }
 
         // then
 
-        XCTAssertEqual(selectedAccountSettings.value, selectedAccount.info)
+        XCTAssertEqual(common.selectedAccountSettings.value, initialSelectedWallet.info)
 
-        let allMetaAccountsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-        operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
+        let allMetaAccountsOperation = common.repository.fetchAllOperation(with: RepositoryFetchOptions())
+        common.operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
 
         let allMetaAccounts = try allMetaAccountsOperation.extractNoCancellableResultData()
 
-        XCTAssertEqual(selectedAccount.info, allMetaAccounts.first?.info)
+        XCTAssertEqual(initialSelectedWallet.info, allMetaAccounts.first?.info)
         XCTAssertEqual(allMetaAccounts.count, 1)
         XCTAssertEqual(allMetaAccounts.first?.isSelected, true)
     }
@@ -46,44 +63,29 @@ class SelectedAccountSettingsTests: XCTestCase {
     func testChangeSelectedWallet() throws {
         // given
 
-        let operationQueue = OperationQueue()
-        let facade = UserDataStorageTestFacade()
-        let selectedAccountSettings = SelectedWalletSettings(
-            storageFacade: facade,
-            operationQueue: operationQueue
-        )
+        let common = Common()
 
-        let mapper = ManagedMetaAccountMapper()
-        let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
-
-        let initialSelectedAccount = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
-            isSelected: true
-        )
-
-        let nextSelectedAccount = AccountGenerator.generateMetaAccount(generatingChainAccounts: 2)
-
-        let saveOperation = repository.saveOperation({ [initialSelectedAccount] }, { [] })
-        operationQueue.addOperations([saveOperation], waitUntilFinished: true)
+        let saveOperation = common.repository.saveOperation({ [self.initialSelectedWallet] }, { [] })
+        common.operationQueue.addOperations([saveOperation], waitUntilFinished: true)
 
         // when
 
-        selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
 
-        XCTAssertEqual(selectedAccountSettings.value, initialSelectedAccount.info)
+        XCTAssertEqual(common.selectedAccountSettings.value, initialSelectedWallet.info)
 
-        selectedAccountSettings.save(value: nextSelectedAccount, runningCompletionIn: .global()) { _ in }
+        common.selectedAccountSettings.save(value: otherWallet.info, runningCompletionIn: .global()) { _ in }
 
         // then
 
-        XCTAssertEqual(selectedAccountSettings.value, nextSelectedAccount)
+        XCTAssertEqual(common.selectedAccountSettings.value, otherWallet.info)
 
-        let allMetaAccountsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-        operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
+        let allMetaAccountsOperation = common.repository.fetchAllOperation(with: RepositoryFetchOptions())
+        common.operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
 
         let allMetaAccounts = try allMetaAccountsOperation.extractNoCancellableResultData()
 
-        let expectedAccounts = [initialSelectedAccount.info, nextSelectedAccount].reduce(
+        let expectedAccounts = [initialSelectedWallet.info, otherWallet.info].reduce(
             into: [String: MetaAccountModel]()
         ) { result, account in
             result[account.metaId] = account
@@ -99,53 +101,35 @@ class SelectedAccountSettingsTests: XCTestCase {
     func testRemoveSelectedWallet() throws {
         // given
 
-        let operationQueue = OperationQueue()
-        let facade = UserDataStorageTestFacade()
-        let selectedAccountSettings = SelectedWalletSettings(
-            storageFacade: facade,
-            operationQueue: operationQueue
-        )
+        let common = Common()
 
-        let mapper = ManagedMetaAccountMapper()
-        let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
-
-        let initialSelectedWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
-            isSelected: true
-        )
-
-        let nextSelectedWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
-            isSelected: false
-        )
-
-        let saveOperation = repository.saveOperation({ [initialSelectedWallet, nextSelectedWallet] }, { [] })
-        operationQueue.addOperations([saveOperation], waitUntilFinished: true)
+        let saveOperation = common.repository.saveOperation({ [self.initialSelectedWallet, self.otherWallet] }, { [] })
+        common.operationQueue.addOperations([saveOperation], waitUntilFinished: true)
 
         // when
 
-        selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
 
-        XCTAssertEqual(selectedAccountSettings.value, initialSelectedWallet.info)
+        XCTAssertEqual(common.selectedAccountSettings.value, initialSelectedWallet.info)
 
-        selectedAccountSettings.remove(value: initialSelectedWallet.info)
+        common.selectedAccountSettings.remove(value: initialSelectedWallet.info)
 
         // then
 
-        XCTAssertEqual(selectedAccountSettings.value, nextSelectedWallet.info)
+        XCTAssertEqual(common.selectedAccountSettings.value, otherWallet.info)
 
-        let allMetaAccountsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-        operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
+        let allMetaAccountsOperation = common.repository.fetchAllOperation(with: RepositoryFetchOptions())
+        common.operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
 
         let allMetaAccounts = try allMetaAccountsOperation.extractNoCancellableResultData()
 
-        let expectedWallets = [nextSelectedWallet.info].reduceToDict()
+        let expectedWallets = [otherWallet.info].reduceToDict()
 
         let actualWallets = allMetaAccounts.map({ $0.info }).reduceToDict()
 
         XCTAssertEqual(expectedWallets, actualWallets)
 
-        if let remoteSelectedWallet = allMetaAccounts.first(where: { $0.identifier == nextSelectedWallet.identifier }) {
+        if let remoteSelectedWallet = allMetaAccounts.first(where: { $0.identifier == otherWallet.identifier }) {
             XCTAssertTrue(remoteSelectedWallet.isSelected)
         } else {
             XCTFail("Can't find selected wallet in database")
@@ -155,38 +139,25 @@ class SelectedAccountSettingsTests: XCTestCase {
     func testRemoveLastWallet() throws {
         // given
 
-        let operationQueue = OperationQueue()
-        let facade = UserDataStorageTestFacade()
-        let selectedAccountSettings = SelectedWalletSettings(
-            storageFacade: facade,
-            operationQueue: operationQueue
-        )
+        let common = Common()
 
-        let mapper = ManagedMetaAccountMapper()
-        let repository = facade.createRepository(mapper: AnyCoreDataMapper(mapper))
-
-        let initialSelectedWallet = ManagedMetaAccountModel(
-            info: AccountGenerator.generateMetaAccount(generatingChainAccounts: 2),
-            isSelected: true
-        )
-
-        let saveOperation = repository.saveOperation({ [initialSelectedWallet] }, { [] })
-        operationQueue.addOperations([saveOperation], waitUntilFinished: true)
+        let saveOperation = common.repository.saveOperation({ [self.initialSelectedWallet] }, { [] })
+        common.operationQueue.addOperations([saveOperation], waitUntilFinished: true)
 
         // when
 
-        selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
+        common.selectedAccountSettings.setup(runningCompletionIn: .global()) { _ in}
 
-        XCTAssertEqual(selectedAccountSettings.value, initialSelectedWallet.info)
+        XCTAssertEqual(common.selectedAccountSettings.value, initialSelectedWallet.info)
 
-        selectedAccountSettings.remove(value: initialSelectedWallet.info)
+        common.selectedAccountSettings.remove(value: initialSelectedWallet.info)
 
         // then
 
-        XCTAssertEqual(selectedAccountSettings.value, nil)
+        XCTAssertEqual(common.selectedAccountSettings.value, nil)
 
-        let allMetaAccountsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-        operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
+        let allMetaAccountsOperation = common.repository.fetchAllOperation(with: RepositoryFetchOptions())
+        common.operationQueue.addOperations([allMetaAccountsOperation], waitUntilFinished: true)
 
         let allMetaAccounts = try allMetaAccountsOperation.extractNoCancellableResultData()
 
