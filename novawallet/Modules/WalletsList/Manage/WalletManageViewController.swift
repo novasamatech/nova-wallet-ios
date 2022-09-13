@@ -126,7 +126,7 @@ final class WalletManageViewController: WalletsListViewController<
             return .none
         }
 
-        return !presenter.item(at: indexPath.row, in: indexPath.section).isSelected ? .delete : .none
+        return presenter.canDeleteItem(at: indexPath.row, section: indexPath.section) ? .delete : .none
     }
 
     override func tableView(
