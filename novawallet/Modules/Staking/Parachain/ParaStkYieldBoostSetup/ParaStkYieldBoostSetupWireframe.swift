@@ -23,11 +23,19 @@ final class ParaStkYieldBoostSetupWireframe: ParaStkYieldBoostSetupWireframeProt
     }
 
     func showStopYieldBoostConfirmation(
-        from _: ParaStkYieldBoostSetupViewProtocol?,
-        collatorId _: AccountId,
-        collatorIdentity _: AccountIdentity?
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        collatorId: AccountId,
+        collatorIdentity: AccountIdentity?
     ) {
-        // TODO: Implement transition to confirmation screen
+        guard let cancelConfirmView = ParaStkYieldBoostStopViewFactory.createView(
+            with: state,
+            collatorId: collatorId,
+            collatorIdentity: collatorIdentity
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(cancelConfirmView.controller, animated: true)
     }
 
     func showDelegationSelection(
