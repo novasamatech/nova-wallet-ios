@@ -14,17 +14,17 @@ protocol ParaStkYieldBoostStopPresenterProtocol: AnyObject {
 }
 
 protocol ParaStkYieldBoostStopInteractorInputProtocol: ParaStkYieldBoostCancelInteractorInputProtocol,
-                                                        ParaStkYieldBoostCommonInteractorInputProtocol {
+    ParaStkYieldBoostCommonInteractorInputProtocol {
     func stopAutocompound(by taskId: AutomationTime.TaskId)
 }
 
 protocol ParaStkYieldBoostStopInteractorOutputProtocol: ParaStkYieldBoostCancelInteractorOutputProtocol,
-                                                            ParaStkYieldBoostCommonInteractorOutputProtocol {
+    ParaStkYieldBoostCommonInteractorOutputProtocol {
     func didStopAutocompound(with hash: String)
     func didReceiveStopAutocompound(error: ParaStkYieldBoostStopError)
 }
 
 protocol ParaStkYieldBoostStopWireframeProtocol: AlertPresentable, ErrorPresentable,
-                                                 CommonRetryable, FeeRetryable, MessageSheetPresentable,
-                                                 ParaStkYieldBoostErrorPresentable, AddressOptionsPresentable,
-                                                 ExtrinsicSubmissionPresenting {}
+    CommonRetryable, FeeRetryable, MessageSheetPresentable,
+    ParaStkYieldBoostErrorPresentable, AddressOptionsPresentable,
+    ExtrinsicSubmissionPresenting {}

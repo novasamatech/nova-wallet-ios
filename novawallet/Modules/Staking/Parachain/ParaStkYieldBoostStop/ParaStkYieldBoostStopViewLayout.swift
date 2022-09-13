@@ -66,5 +66,4 @@ final class ParaStkYieldBoostStopViewLayout: UIView {
         parametersTableView.addArrangedSubview(collatorCell)
         parametersTableView.addArrangedSubview(stakingTypeCell)
     }
-
 }
