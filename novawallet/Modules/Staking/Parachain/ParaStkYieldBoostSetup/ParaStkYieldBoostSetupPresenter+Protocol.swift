@@ -122,12 +122,6 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
                     self?.refreshTaskExecutionTime()
                 }
             ),
-            dataValidatingFactory.canPayFeeInPlank(
-                balance: balance?.transferable,
-                fee: extrinsicFee,
-                asset: assetDisplayInfo,
-                locale: selectedLocale
-            ),
             dataValidatingFactory.enoughBalanceForThreshold(
                 threshold,
                 balance: balance?.transferable,
