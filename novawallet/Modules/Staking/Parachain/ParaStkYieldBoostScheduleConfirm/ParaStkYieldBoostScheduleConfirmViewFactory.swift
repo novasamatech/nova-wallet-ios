@@ -49,6 +49,7 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
