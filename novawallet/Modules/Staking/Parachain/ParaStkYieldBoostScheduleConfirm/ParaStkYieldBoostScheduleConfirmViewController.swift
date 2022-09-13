@@ -31,9 +31,24 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.actionLoadableView.actionButton.addTarget(
+            self,
+            action: #selector(actionConfirm),
+            for: .touchUpInside
+        )
+
+        rootView.acceptTermsView.addTarget(
+            self,
+            action: #selector(actionAcceptTerms),
+            for: .valueChanged
+        )
     }
 
     private func setupLocalization() {
@@ -54,6 +69,10 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
             preferredLanguages: languages
         )
 
+        rootView.stakingTypeCell.bind(
+            details: R.string.localizable.withYieldBoost(preferredLanguages: languages)
+        )
+
         rootView.thresholdCell.titleLabel.text = R.string.localizable.yieldBoostThreshold(preferredLanguages: languages)
 
         rootView.periodCell.titleLabel.text = R.string.localizable.yieldBoostPeriodTitle(preferredLanguages: languages)
@@ -61,11 +80,7 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
         applyPeriodViewModel()
         applyConfirmationViewModel()
 
-        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
-            preferredLanguages: languages
-        )
-
-        rootView.actionLoadableView.actionButton.invalidateLayout()
+        updateActionButtonState()
     }
 
     private func applyPeriodViewModel() {
@@ -89,6 +104,36 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
             let thresholdViewModel = thresholdViewModel else {
             return
         }
+
+        let period = R.string.localizable.commonEveryDaysFormat(
+            format: Int(bitPattern: periodViewModel),
+            preferredLanguages: selectedLocale.rLanguages
+        ).lowercased()
+
+        rootView.acceptTermsView.controlContentView.detailsLabel.text = R.string.localizable.yieldBoostTermsMessage(
+            period,
+            thresholdViewModel
+        )
+    }
+
+    private func updateActionButtonState() {
+        if rootView.acceptTermsView.isCheckboxed {
+            let title = R.string.localizable.commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+
+            rootView.actionLoadableView.actionButton.applyState(title: title, enabled: true)
+        } else {
+            let title = R.string.localizable.commonAcceptTerms(preferredLanguages: selectedLocale.rLanguages)
+
+            rootView.actionLoadableView.actionButton.applyState(title: title, enabled: false)
+        }
+    }
+
+    @objc private func actionAcceptTerms() {
+        updateActionButtonState()
+    }
+
+    @objc private func actionConfirm() {
+        presenter.submit()
     }
 }
 

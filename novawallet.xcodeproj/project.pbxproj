@@ -1887,6 +1887,7 @@
 		84E8AC7127BB949300402635 /* RMRKNftV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8AC7027BB949300402635 /* RMRKNftV1.swift */; };
 		84E8AC7527BB975700402635 /* RMRKV1OperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8AC7427BB975700402635 /* RMRKV1OperationFactory.swift */; };
 		84E8AC7727BBC8E400402635 /* NFTIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8AC7627BBC8E400402635 /* NFTIntegrationTests.swift */; };
+		84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E90BA028D0B51000529633 /* CheckboxControlView.swift */; };
 		84EA0B2A25E579DF00AFB0DC /* AssetBalanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EA0B2925E579DF00AFB0DC /* AssetBalanceViewModel.swift */; };
 		84EB6C4E281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EB6C4D281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift */; };
 		84EBA4F027AD26A5000AEEAD /* AssetBalanceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBA4EF27AD26A5000AEEAD /* AssetBalanceId.swift */; };
@@ -4594,6 +4595,7 @@
 		84E8AC7027BB949300402635 /* RMRKNftV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKNftV1.swift; sourceTree = "<group>"; };
 		84E8AC7427BB975700402635 /* RMRKV1OperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV1OperationFactory.swift; sourceTree = "<group>"; };
 		84E8AC7627BBC8E400402635 /* NFTIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTIntegrationTests.swift; sourceTree = "<group>"; };
+		84E90BA028D0B51000529633 /* CheckboxControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxControlView.swift; sourceTree = "<group>"; };
 		84EA0B2925E579DF00AFB0DC /* AssetBalanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceViewModel.swift; sourceTree = "<group>"; };
 		84EB6C4D281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutTimeViewModelFactory.swift; sourceTree = "<group>"; };
 		84EBA4EF27AD26A5000AEEAD /* AssetBalanceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceId.swift; sourceTree = "<group>"; };
@@ -8883,6 +8885,7 @@
 				84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */,
 				8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */,
 				8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */,
+				84E90BA028D0B51000529633 /* CheckboxControlView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -15694,6 +15697,7 @@
 				211725E26764530359F53A38 /* ParitySignerTxQrInteractor.swift in Sources */,
 				41DE96F778AE909978775438 /* ParitySignerTxQrViewController.swift in Sources */,
 				87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */,
+				84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */,
 				821518375113295E41E0481C /* ParitySignerTxQrViewFactory.swift in Sources */,
 				641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */,
 				1EE4FBB79EE6015D7D3EBDC1 /* ParitySignerTxScanWireframe.swift in Sources */,

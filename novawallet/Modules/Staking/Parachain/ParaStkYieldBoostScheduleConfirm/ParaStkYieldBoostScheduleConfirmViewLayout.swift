@@ -28,6 +28,10 @@ final class ParaStkYieldBoostScheduleConfirmViewLayout: UIView {
     let thresholdCell = StackTableCell()
     let periodCell = StackTableCell()
 
+    let acceptTermsView: CheckboxControlView = .create {
+        $0.contentInsets = UIEdgeInsets(top: 16.0, left: 16, bottom: 16, right: 16)
+    }
+
     let actionLoadableView = LoadableActionView()
 
     override init(frame: CGRect) {
@@ -51,10 +55,16 @@ final class ParaStkYieldBoostScheduleConfirmViewLayout: UIView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
+        addSubview(acceptTermsView)
+        acceptTermsView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionLoadableView.snp.top).offset(-4.0)
+        }
+
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionLoadableView.snp.top).offset(-8.0)
+            make.bottom.equalTo(acceptTermsView.snp.top).offset(-8.0)
         }
 
         containerView.stackView.addArrangedSubview(senderTableView)
