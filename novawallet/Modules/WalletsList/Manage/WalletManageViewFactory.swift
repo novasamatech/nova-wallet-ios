@@ -58,6 +58,8 @@ final class WalletManageViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             repository: repository,
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
