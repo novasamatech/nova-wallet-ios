@@ -150,7 +150,7 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
 
 extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleConfirmInteractorOutputProtocol {
     func didReceiveYieldBoost(tasks: [ParaStkYieldBoostState.Task]?) {
-        self.yieldBoostTasks = tasks
+        yieldBoostTasks = tasks
     }
 
     func didReceiveAsset(balance: AssetBalance?) {

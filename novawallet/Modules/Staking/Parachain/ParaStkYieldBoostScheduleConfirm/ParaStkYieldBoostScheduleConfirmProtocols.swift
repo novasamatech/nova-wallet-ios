@@ -10,7 +10,7 @@ protocol ParaStkYieldBoostScheduleConfirmPresenterProtocol: AnyObject {
 }
 
 protocol ParaStkYieldBoostScheduleConfirmInteractorInputProtocol: ParaStkYieldBoostScheduleInteractorInputProtocol,
-                                                                    ParaStkYieldBoostCommonInteractorInputProtocol {
+    ParaStkYieldBoostCommonInteractorInputProtocol {
     func schedule(
         for collatorId: AccountId,
         initTime: AutomationTime.UnixTime,
@@ -21,7 +21,7 @@ protocol ParaStkYieldBoostScheduleConfirmInteractorInputProtocol: ParaStkYieldBo
 }
 
 protocol ParaStkYieldBoostScheduleConfirmInteractorOutputProtocol: ParaStkYieldBoostScheduleInteractorOutputProtocol,
-                                                                   ParaStkYieldBoostCommonInteractorOutputProtocol {
+    ParaStkYieldBoostCommonInteractorOutputProtocol {
     func didScheduleYieldBoost(for extrinsicHash: String)
     func didReceiveConfirmation(error: ParaStkYieldBoostScheduleConfirmError)
 }
