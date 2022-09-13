@@ -969,3 +969,5 @@
 "yield.boost.task.not.found.title" = "Yield boost already disabled";
 "yield.boost.task.not.found.message" = "Yield boost already disabled for the selected collator";
 "yield.boost.period.title" = "Stake increase time";
+"yield.boost.terms.message" = "Yield Boost will automatically stake %@ all my transferable tokens above %@";
+"common.accept.terms" = "Accept terms...";
