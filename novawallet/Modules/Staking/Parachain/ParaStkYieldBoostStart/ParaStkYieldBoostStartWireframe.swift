@@ -1,8 +1,8 @@
 import Foundation
 
-final class ParaStkYieldBoostScheduleConfirmWireframe: ParaStkYieldBoostScheduleConfirmWireframeProtocol,
+final class ParaStkYieldBoostStartWireframe: ParaStkYieldBoostStartWireframeProtocol,
     ModalAlertPresenting {
-    func complete(on view: ParaStkYieldBoostScheduleConfirmViewProtocol?, locale: Locale) {
+    func complete(on view: ParaStkYieldBoostStartViewProtocol?, locale: Locale) {
         let title = R.string.localizable
             .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
 

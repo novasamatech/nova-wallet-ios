@@ -2,10 +2,10 @@ import Foundation
 import BigInt
 import SoraFoundation
 
-final class ParaStkYieldBoostScheduleConfirmPresenter {
-    weak var view: ParaStkYieldBoostScheduleConfirmViewProtocol?
-    let wireframe: ParaStkYieldBoostScheduleConfirmWireframeProtocol
-    let interactor: ParaStkYieldBoostScheduleConfirmInteractorInputProtocol
+final class ParaStkYieldBoostStartPresenter {
+    weak var view: ParaStkYieldBoostStartViewProtocol?
+    let wireframe: ParaStkYieldBoostStartWireframeProtocol
+    let interactor: ParaStkYieldBoostStartInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let selectedAccount: MetaChainAccountResponse
@@ -25,8 +25,8 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
     private lazy var addressDisplayViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: ParaStkYieldBoostScheduleConfirmInteractorInputProtocol,
-        wireframe: ParaStkYieldBoostScheduleConfirmWireframeProtocol,
+        interactor: ParaStkYieldBoostStartInteractorInputProtocol,
+        wireframe: ParaStkYieldBoostStartWireframeProtocol,
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
         confirmModel: ParaStkYieldBoostConfirmModel,
@@ -162,7 +162,7 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
     }
 }
 
-extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleConfirmPresenterProtocol {
+extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartPresenterProtocol {
     func setup() {
         updateView()
 
@@ -227,7 +227,7 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
     }
 }
 
-extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleConfirmInteractorOutputProtocol {
+extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartInteractorOutputProtocol {
     func didReceiveYieldBoost(tasks: [ParaStkYieldBoostState.Task]?) {
         yieldBoostTasks = tasks
     }
@@ -257,7 +257,7 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
         wireframe.complete(on: view, locale: selectedLocale)
     }
 
-    func didReceiveConfirmation(error: ParaStkYieldBoostScheduleConfirmError) {
+    func didReceiveConfirmation(error: ParaStkYieldBoostStartError) {
         logger.error("Did receive confirmation error: \(error)")
 
         switch error {
@@ -312,7 +312,7 @@ extension ParaStkYieldBoostScheduleConfirmPresenter: ParaStkYieldBoostScheduleCo
     }
 }
 
-extension ParaStkYieldBoostScheduleConfirmPresenter: Localizable {
+extension ParaStkYieldBoostStartPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideNetworkFeeViewModel()

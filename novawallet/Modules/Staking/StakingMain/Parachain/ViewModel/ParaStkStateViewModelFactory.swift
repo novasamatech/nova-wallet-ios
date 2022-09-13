@@ -178,6 +178,26 @@ final class ParaStkStateViewModelFactory {
             return nil
         }
     }
+
+    private func createDelegatorStateManageOptions(
+        for state: ParachainStaking.DelegatorState
+    ) -> [StakingManageOption] {
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .changeValidators(count: state.delegatorState.delegations.count)
+        ]
+
+        if let yieldBoostOption = createYieldBoostManageOption(
+            from: state.commonData.yieldBoostState,
+            delegator: state.delegatorState,
+            scheduledRequests: state.scheduledRequests ?? []
+        ) {
+            return [yieldBoostOption] + actions
+        } else {
+            return actions
+        }
+    }
 }
 
 extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
@@ -249,19 +269,7 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
 
         let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
 
-        var actions: [StakingManageOption] = [
-            .stakeMore,
-            .unstake,
-            .changeValidators(count: state.delegatorState.delegations.count)
-        ]
-
-        if let yieldBoostOption = createYieldBoostManageOption(
-            from: state.commonData.yieldBoostState,
-            delegator: state.delegatorState,
-            scheduledRequests: state.scheduledRequests ?? []
-        ) {
-            actions = [yieldBoostOption] + actions
-        }
+        let actions = createDelegatorStateManageOptions(for: state)
 
         lastViewModel = .nominator(
             viewModel: delegationViewModel,
