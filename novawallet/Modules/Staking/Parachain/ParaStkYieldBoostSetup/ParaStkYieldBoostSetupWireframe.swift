@@ -2,11 +2,24 @@ import Foundation
 import SoraFoundation
 
 final class ParaStkYieldBoostSetupWireframe: ParaStkYieldBoostSetupWireframeProtocol {
+    let state: ParachainStakingSharedState
+
+    init(state: ParachainStakingSharedState) {
+        self.state = state
+    }
+
     func showStartYieldBoostConfirmation(
-        from _: ParaStkYieldBoostSetupViewProtocol?,
-        model _: ParaStkYieldBoostConfirmModel
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        model: ParaStkYieldBoostConfirmModel
     ) {
-        // TODO: Implement transition to confirmation screen
+        guard let scheduleConfirmView = ParaStkYieldBoostScheduleConfirmViewFactory.createView(
+            with: state,
+            confirmModel: model
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(scheduleConfirmView.controller, animated: true)
     }
 
     func showStopYieldBoostConfirmation(

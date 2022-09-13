@@ -15,7 +15,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             return nil
         }
 
-        let wireframe = ParaStkYieldBoostSetupWireframe()
+        let wireframe = ParaStkYieldBoostSetupWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
