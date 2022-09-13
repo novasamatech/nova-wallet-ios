@@ -113,7 +113,7 @@ final class ParaStkYieldBoostStartPresenter {
     }
 
     private func provideAccountViewModel() {
-        guard let address = try? selectedAccount.chainAccount.toDisplayAddress() else {
+        guard let address = selectedAccount.chainAccount.toAddress() else {
             return
         }
 
