@@ -1,9 +1,9 @@
 import UIKit
 
-final class ParaStkYieldBoostScheduleConfirmViewLayout: UIView {
+final class ParaStkYieldBoostStartViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view

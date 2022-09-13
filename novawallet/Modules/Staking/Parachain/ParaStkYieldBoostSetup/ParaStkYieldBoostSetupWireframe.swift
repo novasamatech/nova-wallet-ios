@@ -12,7 +12,7 @@ final class ParaStkYieldBoostSetupWireframe: ParaStkYieldBoostSetupWireframeProt
         from view: ParaStkYieldBoostSetupViewProtocol?,
         model: ParaStkYieldBoostConfirmModel
     ) {
-        guard let scheduleConfirmView = ParaStkYieldBoostScheduleConfirmViewFactory.createView(
+        guard let scheduleConfirmView = ParaStkYieldBoostStartViewFactory.createView(
             with: state,
             confirmModel: model
         ) else {

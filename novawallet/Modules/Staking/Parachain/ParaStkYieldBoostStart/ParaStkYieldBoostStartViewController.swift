@@ -1,16 +1,16 @@
 import UIKit
 import SoraFoundation
 
-final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ParaStkYieldBoostScheduleConfirmViewLayout
+final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder {
+    typealias RootViewType = ParaStkYieldBoostStartViewLayout
 
-    let presenter: ParaStkYieldBoostScheduleConfirmPresenterProtocol
+    let presenter: ParaStkYieldBoostStartPresenterProtocol
 
     private var periodViewModel: UInt?
     private var thresholdViewModel: String?
 
     init(
-        presenter: ParaStkYieldBoostScheduleConfirmPresenterProtocol,
+        presenter: ParaStkYieldBoostStartPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -25,7 +25,7 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
     }
 
     override func loadView() {
-        view = ParaStkYieldBoostScheduleConfirmViewLayout()
+        view = ParaStkYieldBoostStartViewLayout()
     }
 
     override func viewDidLoad() {
@@ -48,6 +48,12 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
             self,
             action: #selector(actionAcceptTerms),
             for: .valueChanged
+        )
+
+        rootView.senderCell.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
         )
     }
 
@@ -136,9 +142,13 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
     @objc private func actionConfirm() {
         presenter.submit()
     }
+
+    @objc private func actionSender() {
+        presenter.showSenderActions()
+    }
 }
 
-extension ParaStkYieldBoostScheduleConfirmViewController: ParaStkYieldBoostScheduleConfirmViewProtocol {
+extension ParaStkYieldBoostStartViewController: ParaStkYieldBoostStartViewProtocol {
     func didReceiveSender(viewModel: DisplayAddressViewModel) {
         rootView.senderCell.bind(viewModel: viewModel.cellViewModel)
     }
@@ -179,7 +189,7 @@ extension ParaStkYieldBoostScheduleConfirmViewController: ParaStkYieldBoostSched
     }
 }
 
-extension ParaStkYieldBoostScheduleConfirmViewController: Localizable {
+extension ParaStkYieldBoostStartViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
