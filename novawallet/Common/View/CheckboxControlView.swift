@@ -26,6 +26,8 @@ final class CheckboxControlView: ControlView<UIView, IconDetailsView> {
 
         controlContentView.detailsLabel.textColor = R.color.colorTransparentText()
         controlContentView.detailsLabel.font = .regularFootnote
+
+        controlContentView.stackView.alignment = .top
     }
 
     private func updateCheckboxState() {

@@ -1,5 +1,5 @@
 import Foundation
 
-enum ParaStkYieldBoostScheduleConfirmError {
+enum ParaStkYieldBoostStartError {
     case yieldBoostScheduleFailed(_ internalError: Error)
 }

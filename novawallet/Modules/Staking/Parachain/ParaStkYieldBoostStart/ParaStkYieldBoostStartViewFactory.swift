@@ -2,11 +2,11 @@ import Foundation
 import SubstrateSdk
 import SoraFoundation
 
-struct ParaStkYieldBoostScheduleConfirmViewFactory {
+struct ParaStkYieldBoostStartViewFactory {
     static func createView(
         with state: ParachainStakingSharedState,
         confirmModel: ParaStkYieldBoostConfirmModel
-    ) -> ParaStkYieldBoostScheduleConfirmViewProtocol? {
+    ) -> ParaStkYieldBoostStartViewProtocol? {
         guard
             let chainAsset = state.settings.value,
             let wallet = SelectedWalletSettings.shared.value,
@@ -16,7 +16,7 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
             return nil
         }
 
-        let wireframe = ParaStkYieldBoostScheduleConfirmWireframe()
+        let wireframe = ParaStkYieldBoostStartWireframe()
 
         let localizationManager = LocalizationManager.shared
 
@@ -30,7 +30,7 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
-        let presenter = ParaStkYieldBoostScheduleConfirmPresenter(
+        let presenter = ParaStkYieldBoostStartPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
@@ -42,7 +42,7 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let view = ParaStkYieldBoostScheduleConfirmViewController(
+        let view = ParaStkYieldBoostStartViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )
@@ -57,7 +57,7 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
     private static func createInteractor(
         for chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse
-    ) -> ParaStkYieldBoostScheduleConfirmInteractor? {
+    ) -> ParaStkYieldBoostStartInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chain = chainAsset.chain
 
@@ -95,7 +95,7 @@ struct ParaStkYieldBoostScheduleConfirmViewFactory {
             currencyManager: currencyManager
         )
 
-        let interactor = ParaStkYieldBoostScheduleConfirmInteractor(
+        let interactor = ParaStkYieldBoostStartInteractor(
             chain: chain,
             selectedAccount: selectedAccount.chainAccount,
             extrinsicService: extrinsicService,

@@ -2,10 +2,10 @@ import UIKit
 import SubstrateSdk
 import BigInt
 
-final class ParaStkYieldBoostScheduleConfirmInteractor: ParaStkYieldBoostScheduleInteractor {
-    var confirmPresenter: ParaStkYieldBoostScheduleConfirmInteractorOutputProtocol? {
+final class ParaStkYieldBoostStartInteractor: ParaStkYieldBoostScheduleInteractor {
+    var confirmPresenter: ParaStkYieldBoostStartInteractorOutputProtocol? {
         get {
-            presenter as? ParaStkYieldBoostScheduleConfirmInteractorOutputProtocol
+            presenter as? ParaStkYieldBoostStartInteractorOutputProtocol
         }
 
         set {
@@ -53,7 +53,7 @@ final class ParaStkYieldBoostScheduleConfirmInteractor: ParaStkYieldBoostSchedul
     }
 }
 
-extension ParaStkYieldBoostScheduleConfirmInteractor: ParaStkYieldBoostScheduleConfirmInteractorInputProtocol {
+extension ParaStkYieldBoostStartInteractor: ParaStkYieldBoostStartInteractorInputProtocol {
     func schedule(
         for collatorId: AccountId,
         initTime: AutomationTime.UnixTime,
@@ -87,13 +87,13 @@ extension ParaStkYieldBoostScheduleConfirmInteractor: ParaStkYieldBoostScheduleC
     }
 }
 
-extension ParaStkYieldBoostScheduleConfirmInteractor: ParaStkYieldBoostCommonInteractorInputProtocol {
+extension ParaStkYieldBoostStartInteractor: ParaStkYieldBoostCommonInteractorInputProtocol {
     func retryCommonSubscriptions() {
         childCommonInteractor.retryCommonSubscriptions()
     }
 }
 
-extension ParaStkYieldBoostScheduleConfirmInteractor: ParaStkYieldBoostCommonInteractorOutputProtocol {
+extension ParaStkYieldBoostStartInteractor: ParaStkYieldBoostCommonInteractorOutputProtocol {
     func didReceiveAsset(balance: AssetBalance?) {
         confirmPresenter?.didReceiveAsset(balance: balance)
     }

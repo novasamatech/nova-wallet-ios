@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-protocol ParaStkYieldBoostScheduleConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+protocol ParaStkYieldBoostStartViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveSender(viewModel: DisplayAddressViewModel)
     func didReceiveCollator(viewModel: DisplayAddressViewModel)
     func didReceiveWallet(viewModel: StackCellViewModel)
@@ -10,13 +10,13 @@ protocol ParaStkYieldBoostScheduleConfirmViewProtocol: ControllerBackedProtocol,
     func didReceivePeriod(viewModel: UInt)
 }
 
-protocol ParaStkYieldBoostScheduleConfirmPresenterProtocol: AnyObject {
+protocol ParaStkYieldBoostStartPresenterProtocol: AnyObject {
     func setup()
     func submit()
     func showSenderActions()
 }
 
-protocol ParaStkYieldBoostScheduleConfirmInteractorInputProtocol: ParaStkYieldBoostScheduleInteractorInputProtocol,
+protocol ParaStkYieldBoostStartInteractorInputProtocol: ParaStkYieldBoostScheduleInteractorInputProtocol,
     ParaStkYieldBoostCommonInteractorInputProtocol {
     func schedule(
         for collatorId: AccountId,
@@ -27,13 +27,14 @@ protocol ParaStkYieldBoostScheduleConfirmInteractorInputProtocol: ParaStkYieldBo
     )
 }
 
-protocol ParaStkYieldBoostScheduleConfirmInteractorOutputProtocol: ParaStkYieldBoostScheduleInteractorOutputProtocol,
+protocol ParaStkYieldBoostStartInteractorOutputProtocol: ParaStkYieldBoostScheduleInteractorOutputProtocol,
     ParaStkYieldBoostCommonInteractorOutputProtocol {
     func didScheduleYieldBoost(for extrinsicHash: String)
-    func didReceiveConfirmation(error: ParaStkYieldBoostScheduleConfirmError)
+    func didReceiveConfirmation(error: ParaStkYieldBoostStartError)
 }
 
-protocol ParaStkYieldBoostScheduleConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CommonRetryable, FeeRetryable, MessageSheetPresentable, ParaStkYieldBoostErrorPresentable, AddressOptionsPresentable {
-    func complete(on view: ParaStkYieldBoostScheduleConfirmViewProtocol?, locale: Locale)
+protocol ParaStkYieldBoostStartWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CommonRetryable, FeeRetryable, MessageSheetPresentable, ParaStkYieldBoostErrorPresentable,
+    AddressOptionsPresentable {
+    func complete(on view: ParaStkYieldBoostStartViewProtocol?, locale: Locale)
 }
