@@ -79,7 +79,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
                 }
                 let crowdloans = try fetchCrowdloansOperation.targetOperation.extractNoCancellableResultData()
 
-                let wrappers = crowdloans.map { crowdloan in
+                return crowdloans.map { crowdloan in
                     let fetchOperation = self.remoteOperationsFactory.fetchContributionOperation(
                         accountId: accountId,
                         index: crowdloan.fundInfo.index
@@ -98,14 +98,9 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
 
                     return CompoundOperationWrapper(
                         targetOperation: mapOperation,
-                        dependencies: [fetchOperation.targetOperation]
+                        dependencies: fetchOperation.allOperations
                     )
                 }
-
-                wrappers.forEach {
-                    $0.addDependency(wrapper: crowdloans)
-                }
-
             }.longrunOperation()
 
         contributionsOperation.addDependency(fetchCrowdloansOperation.targetOperation)
@@ -117,7 +112,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         dependingOn contributionsOperation: BaseOperation<[RemoteCrowdloanContribution]>,
         chainId: ChainModel.Id,
         accountId: AccountId
-    ) -> CompoundOperationWrapper<[DataProviderChange<CrowdloanContributionData>]?> {
+    ) -> BaseOperation<[DataProviderChange<CrowdloanContributionData>]?> {
         let changesOperation = ClosureOperation<[DataProviderChange<CrowdloanContributionData>]?> {
             let contributions = try contributionsOperation
                 .extractNoCancellableResultData()
@@ -141,23 +136,20 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
 
         changesOperation.addDependency(contributionsOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: changesOperation,
-            dependencies: [contributionsOperation]
-        )
+        return changesOperation
     }
 
     private func createSaveOperation(
-        dependingOn operation: CompoundOperationWrapper<[DataProviderChange<CrowdloanContributionData>]?>
+        dependingOn operation: BaseOperation<[DataProviderChange<CrowdloanContributionData>]?>
     ) -> BaseOperation<Void> {
         let replaceOperation = repository.replaceOperation {
-            guard let changes = try operation.targetOperation.extractNoCancellableResultData() else {
+            guard let changes = try operation.extractNoCancellableResultData() else {
                 return []
             }
             return changes.compactMap(\.item)
         }
 
-        replaceOperation.addDependency(operation.targetOperation)
+        replaceOperation.addDependency(operation)
         return replaceOperation
     }
 
@@ -174,9 +166,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         )
         let saveOperation = createSaveOperation(dependingOn: changesWrapper)
 
-        changesWrapper.addDependency(operations: [contributionsFetchOperation])
-        let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation]
-            + changesWrapper.allOperations // + [saveOperation]
+        let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation] + [changesWrapper] + [saveOperation]
 
         operationManager.enqueue(operations: operations, in: .transient)
     }
