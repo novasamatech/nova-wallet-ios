@@ -2035,7 +2035,7 @@
 		85A093F6055DDD2E2E9253F2 /* ControllerAccountProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F829E7F8B39EE7D977001510 /* ControllerAccountProtocols.swift */; };
 		86EB789787B731691B36C827 /* OnChainTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A2F7E5E278FDCC89FE097 /* OnChainTransferSetupPresenter.swift */; };
 		87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5DCA28ABF42D342BBDF9A /* ParitySignerTxQrViewLayout.swift */; };
-		880855ED28D062A9004255E7 /* Array+upsert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855EC28D062A9004255E7 /* Array+upsert.swift */; };
+		880855ED28D062A9004255E7 /* Array+AddOrReplace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855EC28D062A9004255E7 /* Array+AddOrReplace.swift */; };
 		8828C05828B4A67000555CB6 /* Prism.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8828C05728B4A67000555CB6 /* Prism.swift */; };
 		8828C05A28B4A6A800555CB6 /* Samples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8828C05928B4A6A800555CB6 /* Samples.swift */; };
 		8828F4F328AD2734009E0B7C /* CrowdloansCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8828F4F228AD2734009E0B7C /* CrowdloansCalculator.swift */; };
@@ -4712,7 +4712,7 @@
 		86F7A369E31DCB9ABD556EE9 /* CrowdloanListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanListPresenter.swift; sourceTree = "<group>"; };
 		86F9063B2DF46E7B65B5248E /* Pods_novawalletAll_novawalletIntegrationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawalletIntegrationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87CD8C618D61C78EA8C58532 /* ParitySignerTxScanViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanViewLayout.swift; sourceTree = "<group>"; };
-		880855EC28D062A9004255E7 /* Array+upsert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+upsert.swift"; sourceTree = "<group>"; };
+		880855EC28D062A9004255E7 /* Array+AddOrReplace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+AddOrReplace.swift"; sourceTree = "<group>"; };
 		8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewFactory.swift; sourceTree = "<group>"; };
 		8828C05728B4A67000555CB6 /* Prism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prism.swift; sourceTree = "<group>"; };
 		8828C05928B4A6A800555CB6 /* Samples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Samples.swift; sourceTree = "<group>"; };
@@ -8618,7 +8618,7 @@
 				840DC83F288090030039A054 /* Bool+Int.swift */,
 				844DAAE028AD106B008E11DA /* UInt+Serialization.swift */,
 				84D9C8F228ADA42F007FB23B /* Data+Chunk.swift */,
-				880855EC28D062A9004255E7 /* Array+upsert.swift */,
+				880855EC28D062A9004255E7 /* Array+AddOrReplace.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -14841,7 +14841,7 @@
 				84B5DE59283F8B5400193ED3 /* CollatorSelectionViewModel.swift in Sources */,
 				84E4932727325D4E000534F2 /* AssetListViewModelFactory.swift in Sources */,
 				8401AEC02642A71D000B03E3 /* StakingRebondConfirmationViewModelFactory.swift in Sources */,
-				880855ED28D062A9004255E7 /* Array+upsert.swift in Sources */,
+				880855ED28D062A9004255E7 /* Array+AddOrReplace.swift in Sources */,
 				8472C5AD265CF9C500E2481B /* StakingRewardDestConfirmViewModelFactory.swift in Sources */,
 				8422F2F328881C9B00C7B840 /* WatchOnlyWallet.swift in Sources */,
 				8446F5F228172BBC00B7A86C /* StakingUnbonHintView.swift in Sources */,

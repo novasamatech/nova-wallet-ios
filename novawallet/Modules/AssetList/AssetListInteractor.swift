@@ -245,7 +245,7 @@ extension AssetListInteractor {
                 )
 
                 var items = accum[chainAssetId] ?? []
-                items.upsertFirst(lock)
+                items.addOrReplaceSingle(lock)
                 accum[chainAssetId] = items
             case let .delete(deletedIdentifier):
                 for chainLocks in accum {
