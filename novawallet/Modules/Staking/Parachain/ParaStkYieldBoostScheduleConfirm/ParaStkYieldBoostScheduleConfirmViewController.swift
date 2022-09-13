@@ -112,7 +112,8 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController, Vi
 
         rootView.acceptTermsView.controlContentView.detailsLabel.text = R.string.localizable.yieldBoostTermsMessage(
             period,
-            thresholdViewModel
+            thresholdViewModel,
+            preferredLanguages: selectedLocale.rLanguages
         )
     }
 

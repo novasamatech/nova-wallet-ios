@@ -65,6 +65,8 @@ final class ParaStkYieldBoostScheduleConfirmPresenter {
                 cancellingTaskIds: Set(cancellingTaskIds ?? [])
             )
         }
+
+        interactor.estimateTaskExecutionFee()
     }
 
     func performSubmition() {
