@@ -21,6 +21,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
+    private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
+    private var locks: [ChainAssetId: [AssetLock]] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -50,7 +52,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
     private func resetWallet() {
         clearAccountSubscriptions()
         clearNftSubscription()
-
+        clearLocksSubscription()
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
@@ -66,8 +68,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
         presenter?.didReceiveChainModelChanges(changes)
 
         updateAccountInfoSubscription(from: changes)
-
         setupNftSubscription(from: Array(availableChains.values))
+        updateLocksSubscription(from: changes)
+    }
+
+    private func clearLocksSubscription() {
+        assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
+        assetLocksSubscriptions = [:]
+        locks = [:]
     }
 
     private func providerWalletInfo() {
@@ -102,6 +110,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
+        updateLocksSubscription(from: allChanges)
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
@@ -142,6 +151,28 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         eventCenter.add(observer: self, dispatchIn: .main)
     }
+
+    private func updateLocksSubscription(from changes: [DataProviderChange<ChainModel>]) {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
+        assetLocksSubscriptions = changes.reduce(
+            intitial: assetLocksSubscriptions,
+            selectedMetaAccount: selectedMetaAccount
+        ) { [weak self] in
+            self?.subscribeToAllLocksProvider(for: $0)
+        }
+    }
+
+    override func handleAccountLocks(result: Result<[DataProviderChange<AssetLock>], Error>, accountId: AccountId) {
+        switch result {
+        case let .success(changes):
+            handleAccountLocksChanges(changes, accountId: accountId)
+        case let .failure(error):
+            presenter?.didReceiveLocks(result: .failure(error))
+        }
+    }
 }
 
 extension AssetListInteractor: AssetListInteractorInputProtocol {
@@ -170,6 +201,60 @@ extension AssetListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHa
         case let .failure(error):
             presenter?.didReceiveNft(error: error)
         }
+    }
+}
+
+extension AssetListInteractor {
+    private func handleAccountLocksChanges(
+        _ changes: [DataProviderChange<AssetLock>],
+        accountId: AccountId
+    ) {
+        let initialItems = assetBalanceIdMapping.values.reduce(
+            into: [ChainAssetId: [AssetLock]]()
+        ) { accum, assetBalanceId in
+            guard assetBalanceId.accountId == accountId else {
+                return
+            }
+
+            let chainAssetId = ChainAssetId(
+                chainId: assetBalanceId.chainId,
+                assetId: assetBalanceId.assetId
+            )
+
+            accum[chainAssetId] = locks[chainAssetId]
+        }
+
+        locks = changes.reduce(
+            into: initialItems
+        ) { accum, change in
+            switch change {
+            case let .insert(lock), let .update(lock):
+                let groupIdentifier = AssetBalance.createIdentifier(
+                    for: lock.chainAssetId,
+                    accountId: lock.accountId
+                )
+                guard
+                    let assetBalanceId = assetBalanceIdMapping[groupIdentifier],
+                    assetBalanceId.accountId == accountId else {
+                    return
+                }
+
+                let chainAssetId = ChainAssetId(
+                    chainId: assetBalanceId.chainId,
+                    assetId: assetBalanceId.assetId
+                )
+
+                var items = accum[chainAssetId] ?? []
+                items.upsertFirst(lock)
+                accum[chainAssetId] = items
+            case let .delete(deletedIdentifier):
+                for chainLocks in accum {
+                    accum[chainLocks.key] = chainLocks.value.filter { $0.identifier != deletedIdentifier }
+                }
+            }
+        }
+
+        presenter?.didReceiveLocks(result: .success(Array(locks.values.flatMap { $0 })))
     }
 }
 

@@ -4,7 +4,7 @@ import SubstrateSdk
 import SoraKeystore
 import BigInt
 
-class AssetListBaseInteractor {
+class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     weak var basePresenter: AssetListBaseInteractorOutputProtocol?
 
     let selectedWalletSettings: SelectedWalletSettings
@@ -14,12 +14,10 @@ class AssetListBaseInteractor {
     let logger: LoggerProtocol?
 
     private(set) var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
-    private(set) var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private(set) var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
     private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private(set) var availableChains: [ChainModel.Id: ChainModel] = [:]
-    private(set) var locks: [String: AssetLock] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -42,10 +40,6 @@ class AssetListBaseInteractor {
         assetBalanceSubscriptions = [:]
 
         assetBalanceIdMapping = [:]
-
-        assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
-        assetLocksSubscriptions = [:]
-        locks = [:]
     }
 
     private func handle(changes: [DataProviderChange<ChainModel>]) {
@@ -124,13 +118,6 @@ class AssetListBaseInteractor {
             selectedMetaAccount: selectedMetaAccount
         ) { [weak self] in
             self?.subscribeToAccountBalanceProvider(for: $0)
-        }
-
-        assetLocksSubscriptions = changes.reduce(
-            intitial: assetLocksSubscriptions,
-            selectedMetaAccount: selectedMetaAccount
-        ) { [weak self] in
-            self?.subscribeToAllLocksProvider(for: $0)
         }
     }
 
@@ -228,11 +215,23 @@ class AssetListBaseInteractor {
     func setup() {
         subscribeChains()
     }
+
+    func handleAccountBalance(
+        result: Result<[DataProviderChange<AssetBalance>], Error>,
+        accountId: AccountId
+    ) {
+        switch result {
+        case let .success(changes):
+            handleAccountBalanceChanges(changes, accountId: accountId)
+        case let .failure(error):
+            handleAccountBalanceError(error, accountId: accountId)
+        }
+    }
+
+    func handleAccountLocks(result _: Result<[DataProviderChange<AssetLock>], Error>, accountId _: AccountId) {}
 }
 
-extension AssetListBaseInteractor: AssetListBaseInteractorInputProtocol {}
-
-extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension AssetListBaseInteractor {
     private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
         let results = assetBalanceIdMapping.values.reduce(
             into: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]()
@@ -250,23 +249,6 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         }
 
         basePresenter?.didReceiveBalance(results: results)
-    }
-
-    func handleAccountLocks(result: Result<[DataProviderChange<AssetLock>], Error>, accountId _: AccountId) {
-        switch result {
-        case let .failure(error):
-            basePresenter?.didReceiveLocks(result: .failure(error))
-        case let .success(changes):
-            changes.forEach {
-                switch $0 {
-                case let .insert(newItem), let .update(newItem):
-                    locks[newItem.identifier] = newItem
-                case let .delete(deletedIdentifier):
-                    locks.removeValue(forKey: deletedIdentifier)
-                }
-            }
-            basePresenter?.didReceiveLocks(result: .success(Array(locks.values)))
-        }
     }
 
     private func handleAccountBalanceChanges(
@@ -321,18 +303,6 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         }
 
         basePresenter?.didReceiveBalance(results: results)
-    }
-
-    func handleAccountBalance(
-        result: Result<[DataProviderChange<AssetBalance>], Error>,
-        accountId: AccountId
-    ) {
-        switch result {
-        case let .success(changes):
-            handleAccountBalanceChanges(changes, accountId: accountId)
-        case let .failure(error):
-            handleAccountBalanceError(error, accountId: accountId)
-        }
     }
 }
 

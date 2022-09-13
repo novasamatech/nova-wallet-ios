@@ -20,6 +20,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var name: String?
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
+    private(set) var locksResult: Result<[AssetLock], Error>?
 
     private var scheduler: SchedulerProtocol?
 
@@ -280,6 +281,11 @@ final class AssetListPresenter: AssetListBasePresenter {
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 
+    override func resetStorages() {
+        super.resetStorages()
+        locksResult = nil
+    }
+
     // MARK: Interactor Output overridings
 
     override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
@@ -396,6 +402,10 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         self.hidesZeroBalances = hidesZeroBalances
 
         updateAssetsView()
+    }
+
+    func didReceiveLocks(result: Result<[AssetLock], Error>) {
+        locksResult = result
     }
 }
 

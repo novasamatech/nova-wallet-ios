@@ -10,7 +10,6 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var balances: [ChainAssetId: Result<AssetBalance, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
-    private(set) var locksResult: Result<[AssetLock], Error>?
 
     init() {
         groups = Self.createGroupsDiffCalculator(from: [])
@@ -22,7 +21,6 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         balances = [:]
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
-        locksResult = nil
     }
 
     func storeChainChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -186,9 +184,5 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         }
 
         groups.apply(changes: groupChanges)
-    }
-
-    func didReceiveLocks(result: Result<[AssetLock], Error>) {
-        locksResult = result
     }
 }
