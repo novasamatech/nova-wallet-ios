@@ -83,6 +83,14 @@
         <attribute name="targetAddress" optional="YES" attributeType="String"/>
         <attribute name="updatedAt" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
+    <entity name="CDCrowdloanContribution" representedClassName="CDCrowdloanContribution" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" attributeType="String"/>
+        <attribute name="chainAccountId" attributeType="String"/>
+        <attribute name="chainId" attributeType="String"/>
+        <attribute name="identifier" attributeType="String"/>
+        <attribute name="paraId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="CDNft" representedClassName="CDNft" syncable="YES" codeGenerationType="class">
         <attribute name="chainId" attributeType="String"/>
         <attribute name="collectionId" optional="YES" attributeType="String"/>
@@ -139,6 +147,7 @@
     <elements>
         <element name="CDAsset" positionX="-36" positionY="90" width="128" height="194"/>
         <element name="CDAssetBalance" positionX="-36" positionY="153" width="128" height="134"/>
+        <element name="CDAssetLock" positionX="-36" positionY="153" width="128" height="119"/>
         <element name="CDChain" positionX="-45" positionY="81" width="128" height="359"/>
         <element name="CDChainNode" positionX="-27" positionY="99" width="128" height="119"/>
         <element name="CDChainStorageItem" positionX="-54" positionY="-9" width="128" height="73"/>
@@ -150,6 +159,6 @@
         <element name="CDSingleValue" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDStashItem" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDTransactionHistoryItem" positionX="-54" positionY="9" width="128" height="239"/>
-        <element name="CDAssetLock" positionX="-36" positionY="153" width="128" height="119"/>
+        <element name="CDCrowdloanContribution" positionX="-36" positionY="153" width="128" height="119"/>
     </elements>
 </model>

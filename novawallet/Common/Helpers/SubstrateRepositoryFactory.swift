@@ -40,6 +40,12 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createPhishingSitesRepositoryWithPredicate(
         _ filter: NSPredicate
     ) -> AnyDataProviderRepository<PhishingSite>
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        source: String?
+    ) -> AnyDataProviderRepository<CrowdloanContributionData>
 }
 
 final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
@@ -200,6 +206,25 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
 
     private func createAssetLocksRepository(_ filter: NSPredicate) -> AnyDataProviderRepository<AssetLock> {
         let mapper = AssetLockMapper()
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        source: String?
+    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+        let filter = NSPredicate.crowdloanContribution(
+            for: chainId,
+            accountId: accountId,
+            source: source
+        )
+        let mapper = CrowdloanContributionDataMapper()
         let repository = storageFacade.createRepository(
             filter: filter,
             sortDescriptors: [],

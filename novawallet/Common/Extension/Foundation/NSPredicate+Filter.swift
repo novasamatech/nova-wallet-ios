@@ -278,4 +278,18 @@ extension NSPredicate {
     static func filterAuthorizedDApps(by metaId: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDDAppSettings.metaId), metaId)
     }
+
+    static func crowdloanContribution(
+        for chainId: ChainModel.Id,
+        accountId: AccountId,
+        source: String?
+    ) -> NSPredicate {
+        let chainPredicate = NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.chainId), chainId)
+        let accountPredicate = NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.chainAccountId), accountId.toHex())
+        let sourcePredicate = source.map {
+            NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.source), $0)
+        } ?? NSPredicate(format: "%K = nil", #keyPath(CDCrowdloanContribution.source))
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, accountPredicate, sourcePredicate])
+    }
 }

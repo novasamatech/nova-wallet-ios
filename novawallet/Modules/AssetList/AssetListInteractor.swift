@@ -23,6 +23,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
     private var nftChainIds: Set<ChainModel.Id>?
     private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private var locks: [ChainAssetId: [AssetLock]] = [:]
+    private var crowdloansSubscriptions: [ChainModel.Id: StreamableProvider<CrowdloanContributionData>] = [:]
+    private var crowdloans: [ChainModel.Id: [CrowdloanContributionData]] = [:]
+    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -38,6 +41,19 @@ final class AssetListInteractor: AssetListBaseInteractor {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
+
+        let crowdloanOperationFactory = CrowdloanOperationFactory(
+            requestOperationFactory: StorageRequestFactory(remoteFactory: StorageKeyFactory(), operationManager: OperationManagerFacade.sharedManager),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        crowdloansLocalSubscriptionFactory = CrowdloanContributionLocalSubscriptionFactory(
+            crowdloanOperationFactory: crowdloanOperationFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            chainRegistry: chainRegistry,
+            storageFacade: SubstrateDataStorageFacade.shared,
+            logger: logger ?? Logger.shared
+        )
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -70,12 +86,16 @@ final class AssetListInteractor: AssetListBaseInteractor {
         updateAccountInfoSubscription(from: changes)
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: changes)
+        setupCrowdloansSubscription(from: Array(availableChains.values))
     }
 
     private func clearLocksSubscription() {
         assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
         assetLocksSubscriptions = [:]
         locks = [:]
+        crowdloansSubscriptions.values.forEach { $0.removeObserver(self) }
+        crowdloansSubscriptions = [:]
+        crowdloans = [:]
     }
 
     private func providerWalletInfo() {
@@ -111,6 +131,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: allChanges)
+        setupCrowdloansSubscription(from: Array(availableChains.values))
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
@@ -141,6 +162,28 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         nftSubscription = subscribeToNftProvider(for: selectedWalletSettings.value, chains: nftChains)
         nftSubscription?.refresh()
+    }
+
+    private func setupCrowdloansSubscription(from allChains: [ChainModel]) {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+        let crowdloanChains = allChains.filter { $0.hasCrowdloans }
+        clearLocksSubscription()
+
+        for chain in crowdloanChains {
+            guard let accountId = selectedMetaAccount.fetch(
+                for: chain.accountRequest()
+            )?.accountId else {
+                return
+            }
+            guard crowdloansSubscriptions[chain.identifier] == nil else {
+                return
+            }
+
+            crowdloansSubscriptions[chain.identifier] = subscribeToCrowdloansProvider(for: accountId, chain: chain)
+            crowdloansSubscriptions[chain.identifier]?.refresh()
+        }
     }
 
     override func setup() {
@@ -285,3 +328,5 @@ extension AssetListInteractor: EventVisitorProtocol {
         provideHidesZeroBalances()
     }
 }
+
+extension AssetListInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {}
