@@ -158,9 +158,20 @@ final class ParaStkStateViewModelFactory {
         }
     }
 
-    private func createYieldBoostManageOption(from state: ParaStkYieldBoostState?) -> StakingManageOption? {
+    private func createYieldBoostManageOption(
+        from state: ParaStkYieldBoostState?,
+        delegator: ParachainStaking.Delegator,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]
+    ) -> StakingManageOption? {
         switch state {
         case let .supported(tasks):
+            let allCollators = Set(delegator.collators())
+            let disabledCollators = scheduledRequests.filter { $0.isRevoke }.map(\.collatorId)
+
+            if allCollators == Set(disabledCollators) {
+                return nil
+            }
+
             let enabled = !tasks.isEmpty
             return .yieldBoost(enabled: enabled)
         case .none, .unsupported:
@@ -244,7 +255,11 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             .changeValidators(count: state.delegatorState.delegations.count)
         ]
 
-        if let yieldBoostOption = createYieldBoostManageOption(from: state.commonData.yieldBoostState) {
+        if let yieldBoostOption = createYieldBoostManageOption(
+            from: state.commonData.yieldBoostState,
+            delegator: state.delegatorState,
+            scheduledRequests: state.scheduledRequests ?? []
+        ) {
             actions = [yieldBoostOption] + actions
         }
 
