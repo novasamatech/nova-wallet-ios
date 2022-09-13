@@ -22,7 +22,7 @@
 			<string>%li дней</string>
 		</dict>
 	</dict>
-	<key>common.every.days.format </key>
+	<key>common.every.days.format</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@format@</string>
