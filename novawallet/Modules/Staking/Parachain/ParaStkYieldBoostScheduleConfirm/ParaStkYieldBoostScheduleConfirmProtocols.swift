@@ -1,7 +1,14 @@
 import Foundation
 import BigInt
 
-protocol ParaStkYieldBoostScheduleConfirmViewProtocol: ControllerBackedProtocol {}
+protocol ParaStkYieldBoostScheduleConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+    func didReceiveSender(viewModel: DisplayAddressViewModel)
+    func didReceiveCollator(viewModel: DisplayAddressViewModel)
+    func didReceiveWallet(viewModel: StackCellViewModel)
+    func didReceiveNetworkFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveThreshold(viewModel: String)
+    func didReceivePeriod(viewModel: UInt)
+}
 
 protocol ParaStkYieldBoostScheduleConfirmPresenterProtocol: AnyObject {
     func setup()
@@ -27,4 +34,6 @@ protocol ParaStkYieldBoostScheduleConfirmInteractorOutputProtocol: ParaStkYieldB
 }
 
 protocol ParaStkYieldBoostScheduleConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CommonRetryable, FeeRetryable, MessageSheetPresentable, ParaStkYieldBoostErrorPresentable, AddressOptionsPresentable {}
+    CommonRetryable, FeeRetryable, MessageSheetPresentable, ParaStkYieldBoostErrorPresentable, AddressOptionsPresentable {
+    func complete(on view: ParaStkYieldBoostScheduleConfirmViewProtocol?, locale: Locale)
+}

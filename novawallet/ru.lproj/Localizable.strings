@@ -952,7 +952,7 @@
 "yield.boost.setup.reward.comparison.title" = "Я хочу стейкать";
 "with.yield.boost" = "с Yield Boost";
 "without.yield.boost" = "без Yield Boost";
-"yield.boost.setup.period.details" = "автоматически отправлять в стейк каждый %@ весь доступный баланс выше";
+"yield.boost.setup.period.details" = "автоматически отправлять в стейк %@ весь доступный баланс выше";
 "yield.boost.setup.period.update" = "(текущее значение %@)";
 "yield.boost.threshold" = "Boost граница";
 "common.no.changes" = "Нет изменений";
@@ -968,3 +968,4 @@
 "yield.boost.already.enabled.message" = "Yield Boost может быть включен только для одного коллатора. Вы хотите включить Yield Boost для выбранного коллатора и отключить для остальных?";
 "yield.boost.task.not.found.title" = "Yield boost уже отключен";
 "yield.boost.task.not.found.message" = "Yield boost уже отключен для выбранного коллатора";
+"yield.boost.period.title" = "Период увеличения стейка";
