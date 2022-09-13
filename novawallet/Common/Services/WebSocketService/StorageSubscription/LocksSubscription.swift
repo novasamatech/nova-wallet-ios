@@ -108,7 +108,7 @@ class LocksSubscription: StorageChildSubscribing {
         chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<[BalanceLock]?> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
-            logger.error("Runtime metada unavailable for chain: \(chainAssetId.chainId)")
+            logger.error("Runtime metadata unavailable for chain: \(chainAssetId.chainId)")
             return CompoundOperationWrapper.createWithError(
                 ChainRegistryError.runtimeMetadaUnavailable
             )
@@ -144,7 +144,7 @@ class LocksSubscription: StorageChildSubscribing {
     ) -> CompoundOperationWrapper<[DataProviderChange<AssetLock>]?> {
         let fetchOperation = repository.fetchAllOperation(with: .init())
 
-        let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> { [weak self] in
+        let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> {
             let locks = try decodingWrapper
                 .targetOperation
                 .extractNoCancellableResultData() ?? []
@@ -156,7 +156,7 @@ class LocksSubscription: StorageChildSubscribing {
                     type: $0.identifier,
                     amount: $0.amount
                 )
-            }.sorted { $0.identifier < $1.identifier }
+            }
 
             return remoteModels.map(DataProviderChange.update)
         }
