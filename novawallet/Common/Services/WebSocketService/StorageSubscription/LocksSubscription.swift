@@ -149,7 +149,7 @@ class LocksSubscription: StorageChildSubscribing {
                 .targetOperation
                 .extractNoCancellableResultData() ?? []
 
-            var remoteModels = locks.map {
+            let remoteModels = locks.map {
                 AssetLock(
                     chainAssetId: chainAssetId,
                     accountId: accountId,
