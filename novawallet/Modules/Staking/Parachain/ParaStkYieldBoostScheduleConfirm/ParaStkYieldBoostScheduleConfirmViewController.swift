@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController {
     typealias RootViewType = ParaStkYieldBoostScheduleConfirmViewLayout
@@ -22,8 +23,22 @@ final class ParaStkYieldBoostScheduleConfirmViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupLocalization()
+
         presenter.setup()
+    }
+
+    private func setupLocalization() {
+
     }
 }
 
 extension ParaStkYieldBoostScheduleConfirmViewController: ParaStkYieldBoostScheduleConfirmViewProtocol {}
+
+extension ParaStkYieldBoostScheduleConfirmViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
+    }
+}
