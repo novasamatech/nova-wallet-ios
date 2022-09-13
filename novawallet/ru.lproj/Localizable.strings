@@ -969,3 +969,5 @@
 "yield.boost.task.not.found.title" = "Yield boost уже отключен";
 "yield.boost.task.not.found.message" = "Yield boost уже отключен для выбранного коллатора";
 "yield.boost.period.title" = "Период увеличения стейка";
+"yield.boost.terms.message" = "Yield Boost будет отправлять в стейк %@ весь мой доступный баланс выше %@";
+"common.accept.terms" = "Примите условия...";
