@@ -47,6 +47,8 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
+    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+
     let poweredByView: UIImageView = .create {
         $0.image = R.image.imageYieldBoostPowered()
         $0.contentMode = .center
@@ -117,6 +119,7 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
         }
 
         containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+        containerView.stackView.addArrangedSubview(networkFeeView)
         containerView.stackView.addArrangedSubview(poweredByView)
     }
 }
