@@ -20,6 +20,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var name: String?
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
+    private(set) var locksResult: Result<[AssetLock], Error>?
 
     private var scheduler: SchedulerProtocol?
 
@@ -280,6 +281,11 @@ final class AssetListPresenter: AssetListBasePresenter {
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 
+    override func resetStorages() {
+        super.resetStorages()
+        locksResult = nil
+    }
+
     // MARK: Interactor Output overridings
 
     override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
@@ -296,7 +302,7 @@ final class AssetListPresenter: AssetListBasePresenter {
         updateAssetsView()
     }
 
-    override func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         super.didReceiveBalance(results: results)
 
         updateAssetsView()
@@ -336,6 +342,21 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         )
 
         wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
+    }
+
+    func didTapTotalBalance() {
+        guard let priceResult = priceResult,
+              let prices = try? priceResult.get(),
+              let locks = try? locksResult?.get() else {
+            return
+        }
+        wireframe.showBalanceBreakdown(
+            from: view,
+            prices: prices,
+            balances: balances.values.compactMap { try? $0.get() },
+            chains: allChains,
+            locks: locks
+        )
     }
 }
 
@@ -381,6 +402,10 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         self.hidesZeroBalances = hidesZeroBalances
 
         updateAssetsView()
+    }
+
+    func didReceiveLocks(result: Result<[AssetLock], Error>) {
+        locksResult = result
     }
 }
 
