@@ -1655,6 +1655,9 @@
 		84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */; };
 		84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */; };
 		84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */; };
+		84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */; };
+		84C2063A28D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063928D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift */; };
+		84C2063C28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063B28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift */; };
 		84C2802126F541DE006E8014 /* WebSocketEngine+Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */; };
 		84C2F27725E296CD0050A4AD /* RewardDestinationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */; };
 		84C2F27D25E297350050A4AD /* CalculatedReward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27C25E297350050A4AD /* CalculatedReward.swift */; };
@@ -4367,6 +4370,9 @@
 		84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountTableViewCell.xib; sourceTree = "<group>"; };
 		84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAccountSubscribingState.swift; sourceTree = "<group>"; };
 		84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionPayload.swift; sourceTree = "<group>"; };
+		84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsSelectionDecorator.swift; sourceTree = "<group>"; };
+		84C2063928D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YieldBoostCollatorSelectionFactory.swift; sourceTree = "<group>"; };
+		84C2063B28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModalPickerFactory+YieldBoost.swift"; sourceTree = "<group>"; };
 		84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebSocketEngine+Connection.swift"; sourceTree = "<group>"; };
 		84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModelFactory.swift; sourceTree = "<group>"; };
 		84C2F27C25E297350050A4AD /* CalculatedReward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatedReward.swift; sourceTree = "<group>"; };
@@ -6264,8 +6270,6 @@
 				849842E526587573006BBB9F /* MultilineTableViewCell.swift */,
 				F4A8A328260DD0300059F2F1 /* AccountInfoTableViewCell.swift */,
 				84C91FA9261E724F002796B9 /* SwitchTableViewCell.swift */,
-				8436B6D92848119C00F24360 /* AccountDetailsSelectionCell.swift */,
-				84CEEDE1284E3DCE0039364A /* AccountDetailsNavigationCell.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -7268,6 +7272,7 @@
 			children = (
 				8445F41528C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift */,
 				844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */,
+				84C2063928D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -8806,6 +8811,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				84C2063628D1BEBD006D0D52 /* AccountDetailsSelection */,
 				8422F2EC2887E3B100C7B840 /* TextInputView */,
 				84C5ADE02813E8A2006D7388 /* GradientBanner */,
 				84C5ADD12811F68C006D7388 /* WalletAccount */,
@@ -8889,7 +8895,6 @@
 				844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */,
 				8479607D283B60AA0084E779 /* ActionLoadingView.swift */,
 				8479607F283B63240084E779 /* LoadableActionView.swift */,
-				842806F22847A51400702F3A /* AccountDetailsSelectionView.swift */,
 				842806F42847A82500702F3A /* StackAccountSelectionCell.swift */,
 				84D2F1AB2774B3A00040C680 /* CustomSearchBar.swift */,
 				8448F7A12882ABF50080CEA9 /* CustomSearchView.swift */,
@@ -10286,6 +10291,7 @@
 				844ADE7A28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift */,
 				8407715F28CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift */,
 				8407716328CE1408007DBD24 /* ParaStkYieldBoostErrorPresentable.swift */,
+				84C2063B28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift */,
 			);
 			path = YieldBoost;
 			sourceTree = "<group>";
@@ -10334,6 +10340,17 @@
 				84E258A22892CEA100DC8A51 /* AccountManagementHeaderView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		84C2063628D1BEBD006D0D52 /* AccountDetailsSelection */ = {
+			isa = PBXGroup;
+			children = (
+				8436B6D92848119C00F24360 /* AccountDetailsSelectionCell.swift */,
+				84CEEDE1284E3DCE0039364A /* AccountDetailsNavigationCell.swift */,
+				842806F22847A51400702F3A /* AccountDetailsSelectionView.swift */,
+				84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */,
+			);
+			path = AccountDetailsSelection;
 			sourceTree = "<group>";
 		};
 		84C2F27B25E2971A0050A4AD /* Model */ = {
@@ -13572,6 +13589,7 @@
 				8472979A260B3095009B86D0 /* InitBondSelectValidatorsStartWireframe.swift in Sources */,
 				84B73AD6279B4E0B0071AE16 /* AssetDetails.swift in Sources */,
 				88A5317B28B9149600AF18F5 /* UIImage+DrawableIcon.swift in Sources */,
+				84C2063A28D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift in Sources */,
 				843612BF278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift in Sources */,
 				842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */,
 				84C5ADE42813EBAB006D7388 /* GradientBannerView.swift in Sources */,
@@ -14577,6 +14595,7 @@
 				84E258A32892CEA100DC8A51 /* AccountManagementHeaderView.swift in Sources */,
 				84BEE22325646AC000D05EB3 /* SelectedUsernameChanged.swift in Sources */,
 				8467FD4124ED3C72005D486C /* AlignableContentControl.swift in Sources */,
+				84C2063C28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift in Sources */,
 				84D1ABDE27E1B5240073C631 /* AssetViewModel.swift in Sources */,
 				842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */,
 				8439399C2636FAB40087658D /* YourValidatorViewModel.swift in Sources */,
@@ -15651,6 +15670,7 @@
 				CC1723581BAC50E8B9E6DE48 /* AssetsSearchPresenter.swift in Sources */,
 				8448F7A8288401A60080CEA9 /* AssetListInitState.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
+				84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */,
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
 				8407716828CE8A1B007DBD24 /* ParaStkYieldBoostSetupInteractor+Children.swift in Sources */,
 				73B9C322A5033A4534238B25 /* AssetsSearchViewLayout.swift in Sources */,

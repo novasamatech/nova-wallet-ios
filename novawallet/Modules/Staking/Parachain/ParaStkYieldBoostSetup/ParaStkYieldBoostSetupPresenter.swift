@@ -7,6 +7,7 @@ final class ParaStkYieldBoostSetupPresenter {
     let wireframe: ParaStkYieldBoostSetupWireframeProtocol
     let interactor: ParaStkYieldBoostSetupInteractorInputProtocol
     let chainAsset: ChainAsset
+    let collatorSelectionViewModelFactory: YieldBoostCollatorSelectionFactoryProtocol
     let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol
@@ -36,6 +37,7 @@ final class ParaStkYieldBoostSetupPresenter {
         wireframe: ParaStkYieldBoostSetupWireframeProtocol,
         initState: ParaStkYieldBoostInitState,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        collatorSelectionViewModelFactory: YieldBoostCollatorSelectionFactoryProtocol,
         accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
         dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol,
         chainAsset: ChainAsset,
@@ -49,6 +51,7 @@ final class ParaStkYieldBoostSetupPresenter {
         scheduledRequests = initState.scheduledRequests
         delegationIdentities = initState.delegationIdentities
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.collatorSelectionViewModelFactory = collatorSelectionViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         yieldBoostTasks = initState.yieldBoostTasks

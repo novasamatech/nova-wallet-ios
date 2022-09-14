@@ -6,7 +6,9 @@ struct AccountDetailsSelectionViewModel {
     let details: TitleWithSubtitleViewModel?
 }
 
-final class AccountDetailsSelectionView: UIView {
+typealias AccountDetailsSelectionView = AccountDetailsGenericSelectionView<AccountDetailsBalanceDecorator>
+
+final class AccountDetailsGenericSelectionView<D: AccountDetailsSelectionDecorator>: UIView {
     let iconView = UIImageView()
 
     let titleLabel: UILabel = {
@@ -152,27 +154,7 @@ final class AccountDetailsSelectionView: UIView {
     }
 
     private func applyDetails(_ details: TitleWithSubtitleViewModel, enabled: Bool) {
-        let titleColor = enabled ? R.color.colorTransparentText()! : R.color.colorWhite32()!
-
-        let attributedString = NSMutableAttributedString(
-            string: details.title,
-            attributes: [
-                .foregroundColor: titleColor
-            ]
-        )
-
-        let subtitleColor = enabled ? R.color.colorWhite()! : R.color.colorWhite32()!
-
-        let subtitleAttributedString = NSAttributedString(
-            string: " " + details.subtitle,
-            attributes: [
-                .foregroundColor: subtitleColor
-            ]
-        )
-
-        attributedString.append(subtitleAttributedString)
-
-        detailsLabel?.attributedText = attributedString
+        detailsLabel?.attributedText = D.decorate(viewModel: details, enabled: enabled)
     }
 
     private func setupLayout() {
