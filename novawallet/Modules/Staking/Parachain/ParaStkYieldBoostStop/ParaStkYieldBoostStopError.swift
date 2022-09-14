@@ -1,5 +1,5 @@
 import Foundation
 
-enum ParaStkYieldBoostStopError {
+enum ParaStkYieldBoostStopError: Error {
     case yieldBoostStopFailed(_ internalError: Error)
 }
