@@ -197,8 +197,8 @@ final class ParaStkYieldBoostSetupPresenter {
             if
                 let selectedCollator = selectedCollator,
                 let executionTime = taskExecutionTime,
-                let period = yieldBoostParams?.period,
-                let accountMinimum = accountMinimumDecimal?.toSubstrateAmount(precision: precision) {
+                let period = yieldBoostParams?.period {
+                let accountMinimum = accountMinimumDecimal?.toSubstrateAmount(precision: precision) ?? 0
                 let existingTaskIds = yieldBoostTasks?.map(\.taskId)
 
                 interactor.estimateScheduleAutocompoundFee(
@@ -212,8 +212,13 @@ final class ParaStkYieldBoostSetupPresenter {
         } else {
             if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator })?.taskId {
                 interactor.estimateCancelAutocompoundFee(for: taskId)
+            } else {
+                let dummyTaskId = AutomationTime.TaskId(repeating: 0, count: 32)
+                interactor.estimateCancelAutocompoundFee(for: dummyTaskId)
             }
         }
+
+        provideNetworkFee()
     }
 
     func refreshFeeIfNeeded() {

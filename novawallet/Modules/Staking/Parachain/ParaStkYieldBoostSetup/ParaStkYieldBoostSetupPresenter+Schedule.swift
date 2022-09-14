@@ -19,6 +19,8 @@ extension ParaStkYieldBoostSetupPresenter {
     func didReceiveTaskExecution(time: AutomationTime.UnixTime) {
         if isYieldBoostSelected {
             updateTaskExecutionTime(time)
+
+            refreshExtrinsicFee()
         }
     }
 
