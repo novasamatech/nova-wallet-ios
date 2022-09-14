@@ -213,8 +213,16 @@ final class ParaStkYieldBoostSetupPresenter {
             if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator })?.taskId {
                 interactor.estimateCancelAutocompoundFee(for: taskId)
             } else {
-                let dummyTaskId = AutomationTime.TaskId(repeating: 0, count: 32)
-                interactor.estimateCancelAutocompoundFee(for: dummyTaskId)
+                // yield boost is not enabled so try to estimate using dummy parameters
+                let period = yieldBoostParams.map { AutomationTime.Seconds(TimeInterval($0.period).secondsFromDays) }
+
+                interactor.estimateScheduleAutocompoundFee(
+                    for: selectedCollator ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize),
+                    initTime: taskExecutionTime ?? 0,
+                    frequency: period ?? AutomationTime.Seconds(TimeInterval.secondsInHour),
+                    accountMinimum: 0,
+                    cancellingTaskIds: Set()
+                )
             }
         }
 
