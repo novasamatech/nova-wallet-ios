@@ -964,8 +964,8 @@
 "yield.boost.not.enough.threshold.message" = "У вас недостаточно токенов для оплаты сетевой комиссии %@ и сохранения установленного порога %@.\nДоступный баланс для оплаты комиссии: %@";
 "yield.boost.not.enough.execution.fee.title" = "Недостаточно средств для оплаты комиссии исполнения";
 "yield.boost.not.enough.execution.fee.message" = "У вас недостаточно токенов для оплаты сетевой комиссии %@ и комиссии за исполнение yield boost %@.\nДоступный баланс для оплаты комиссии: %@";
-"yield.boost.already.enabled.title" = "Yield Boost уже включен";
-"yield.boost.already.enabled.message" = "Yield Boost может быть включен только для одного коллатора. Вы хотите включить Yield Boost для выбранного коллатора и отключить для остальных?";
+"yield.boost.change.title" = "Изменить коллатора для Yield Boost?";
+"yield.boost.change.message" = "Yield Boost будет выключен для текущих коллаторов. Новый коллатор: %@";
 "yield.boost.task.not.found.title" = "Yield boost уже отключен";
 "yield.boost.task.not.found.message" = "Yield boost уже отключен для выбранного коллатора";
 "yield.boost.period.title" = "Период увеличения стейка";
