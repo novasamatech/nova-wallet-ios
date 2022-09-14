@@ -66,14 +66,16 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         prices: [ChainAssetId: PriceData],
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
-        locks: [AssetLock]
+        locks: [AssetLock],
+        crowdloans: [CrowdloanContributionData]
     ) {
         guard let viewController = LocksViewFactory.createView(input:
             .init(
                 prices: prices,
                 balances: balances,
                 chains: chains,
-                locks: locks
+                locks: locks,
+                crowdloans: crowdloans
             )) else {
             return
         }

@@ -121,7 +121,6 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
                 guard let contribution = $0.contribution else {
                     return nil
                 }
-
                 return CrowdloanContributionData(
                     accountId: accountId,
                     chainId: chainId,

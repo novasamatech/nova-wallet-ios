@@ -108,23 +108,18 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> FormattedPlank? {
-        guard let priceData = prices[chainAssetId] else {
-            return nil
-        }
         guard let assetPrecision = chains[chainAssetId.chainId]?.asset(for: chainAssetId.assetId)?.precision else {
             return nil
         }
-        let rate = Decimal(string: priceData.price) ?? 0.0
+        let priceData = prices[chainAssetId]
+
+        let rate = priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0
 
         let price = calculateAmount(
             from: plank,
             precision: assetPrecision,
             rate: rate
         )
-
-        guard price > 0 else {
-            return nil
-        }
 
         let formattedPrice = formatPrice(amount: price, priceData: priceData, locale: locale)
         return .init(amount: formattedPrice, price: price)

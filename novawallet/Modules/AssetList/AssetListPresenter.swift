@@ -21,6 +21,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
+    private(set) var crowdloansResult: Result<[CrowdloanContributionData], Error>?
 
     private var scheduler: SchedulerProtocol?
 
@@ -347,7 +348,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
     func didTapTotalBalance() {
         guard let priceResult = priceResult,
               let prices = try? priceResult.get(),
-              let locks = try? locksResult?.get() else {
+              let locks = try? locksResult?.get(),
+              let crowdloans = try? crowdloansResult?.get() else {
             return
         }
         wireframe.showBalanceBreakdown(
@@ -355,7 +357,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
             prices: prices,
             balances: balances.values.compactMap { try? $0.get() },
             chains: allChains,
-            locks: locks
+            locks: locks,
+            crowdloans: crowdloans
         )
     }
 }
@@ -406,6 +409,10 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
     func didReceiveLocks(result: Result<[AssetLock], Error>) {
         locksResult = result
+    }
+
+    func didReceiveCrowdloans(result: Result<[CrowdloanContributionData], Error>) {
+        crowdloansResult = result
     }
 }
 

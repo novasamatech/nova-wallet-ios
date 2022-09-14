@@ -69,6 +69,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         clearAccountSubscriptions()
         clearNftSubscription()
         clearLocksSubscription()
+        clearCrowdloansSubscription()
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
@@ -93,6 +94,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
         assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
         assetLocksSubscriptions = [:]
         locks = [:]
+    }
+
+    private func clearCrowdloansSubscription() {
         crowdloansSubscriptions.values.forEach { $0.removeObserver(self) }
         crowdloansSubscriptions = [:]
         crowdloans = [:]
@@ -169,7 +173,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
             return
         }
         let crowdloanChains = allChains.filter { $0.hasCrowdloans }
-        clearLocksSubscription()
+        clearCrowdloansSubscription()
 
         for chain in crowdloanChains {
             guard let accountId = selectedMetaAccount.fetch(
@@ -329,4 +333,39 @@ extension AssetListInteractor: EventVisitorProtocol {
     }
 }
 
-extension AssetListInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {}
+extension AssetListInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
+    func handleCrowdloans(
+        result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
+        account: AccountId,
+        chain: ChainModel
+    ) {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+        guard let accountId = selectedMetaAccount.fetch(
+            for: chain.accountRequest()
+        )?.accountId, accountId == account else {
+            return
+        }
+
+        switch result {
+        case let .failure(error):
+            presenter?.didReceiveCrowdloans(result: .failure(error))
+        case let .success(changes):
+            crowdloans = changes.reduce(
+                into: crowdloans
+            ) { result, change in
+                switch change {
+                case let .insert(crowdloan), let .update(crowdloan):
+                    var items = result[chain.chainId] ?? []
+                    items.addOrReplaceSingle(crowdloan)
+                    result[chain.chainId] = items
+                case let .delete(deletedIdentifier):
+                    result[chain.chainId]?.removeAll(where: { $0.identifier == deletedIdentifier })
+                }
+            }
+
+            presenter?.didReceiveCrowdloans(result: .success(crowdloans.values.flatMap { $0 }))
+        }
+    }
+}

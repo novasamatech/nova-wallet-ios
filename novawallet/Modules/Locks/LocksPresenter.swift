@@ -104,7 +104,21 @@ final class LocksPresenter {
             )
         }
 
-        return locksCells + reservedCells
+        let crowdloanCells: [LocksViewSectionModel.CellViewModel] = input.crowdloans.compactMap {
+            guard let utilityAsset = input.chains[$0.chainId]?.utilityAsset() else {
+                return nil
+            }
+            return createCell(
+                amountInPlank: $0.amount,
+                chainAssetId: ChainAssetId(chainId: $0.chainId, assetId: utilityAsset.assetId),
+                title: R.string.localizable.tabbarCrowdloanTitle(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                identifier: $0.identifier
+            )
+        }
+
+        return locksCells + reservedCells + crowdloanCells
     }
 
     private func createCell(
@@ -113,6 +127,9 @@ final class LocksPresenter {
         title: String,
         identifier: String
     ) -> LocksViewSectionModel.CellViewModel? {
+        guard amountInPlank > 0 else {
+            return nil
+        }
         guard let chain = input.chains[chainAssetId.chainId] else {
             return nil
         }
@@ -141,12 +158,18 @@ final class LocksPresenter {
 
     var contentHeight: CGFloat {
         let reservedCellsCount = input.balances.filter {
-            $0.reservedInPlank > 0 && input.prices[$0.chainAssetId] != nil
+            $0.reservedInPlank > 0
         }.count
         let locksCellsCount = input.locks.filter {
-            $0.amount > 0 && input.prices[$0.chainAssetId] != nil
+            $0.amount > 0
         }.count
-        return view?.calculateEstimatedHeight(sections: 2, items: locksCellsCount + reservedCellsCount) ?? 0
+        let crowdloanCellsCount = input.crowdloans.filter {
+            $0.amount > 0
+        }.count
+        return view?.calculateEstimatedHeight(
+            sections: 2,
+            items: locksCellsCount + reservedCellsCount + crowdloanCellsCount
+        ) ?? 0
     }
 }
 
