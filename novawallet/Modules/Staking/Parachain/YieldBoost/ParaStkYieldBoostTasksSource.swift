@@ -9,24 +9,30 @@ final class ParaStkYieldBoostTasksSource: SingleValueProviderSourceProtocol {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
     let accountId: AccountId
+    let assetChangeStore: AccountAssetBalanceChangeStoreProtocol
 
     init(
         operationFactory: AutomationTimeOperationFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
-        accountId: AccountId
+        accountId: AccountId,
+        assetChangeStore: AccountAssetBalanceChangeStoreProtocol
     ) {
         self.operationFactory = operationFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.accountId = accountId
+        self.assetChangeStore = assetChangeStore
     }
 
     func fetchOperation() -> CompoundOperationWrapper<Model?> {
+        let blockHash = assetChangeStore.consumeLastBlockHash()
+
         let wrapper = operationFactory.createTasksFetchOperation(
             for: connection,
             runtimeProvider: runtimeProvider,
-            account: accountId
+            account: accountId,
+            at: blockHash
         )
 
         let mapOperation = ClosureOperation<Model?> {
