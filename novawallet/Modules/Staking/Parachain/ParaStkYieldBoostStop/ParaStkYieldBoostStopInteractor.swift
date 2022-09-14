@@ -14,6 +14,8 @@ final class ParaStkYieldBoostStopInteractor: ParaStkYieldBoostCancelInteractor {
     let childCommonInteractor: ParaStkYieldBoostCommonInteractorInputProtocol
     let signingWrapper: SigningWrapperProtocol
 
+    private(set) var extrinsicSubscriptionId: UInt16?
+
     init(
         selectedAccount: ChainAccountResponse,
         extrinsicService: ExtrinsicServiceProtocol,
@@ -31,6 +33,17 @@ final class ParaStkYieldBoostStopInteractor: ParaStkYieldBoostCancelInteractor {
         )
     }
 
+    deinit {
+        cancelExtrinsicSubscriptionIfNeeded()
+    }
+
+    private func cancelExtrinsicSubscriptionIfNeeded() {
+        if let extrinsicSubscriptionId = extrinsicSubscriptionId {
+            extrinsicService.cancelExtrinsicWatch(for: extrinsicSubscriptionId)
+            self.extrinsicSubscriptionId = nil
+        }
+    }
+
     override func performSetup() {
         super.performSetup()
 
@@ -42,18 +55,36 @@ extension ParaStkYieldBoostStopInteractor: ParaStkYieldBoostStopInteractorInputP
     func stopAutocompound(by taskId: AutomationTime.TaskId) {
         let call = AutomationTime.CancelTaskCall(taskId: taskId)
 
-        let closure: ExtrinsicBuilderClosure = { builder in
+        let builderClosure: ExtrinsicBuilderClosure = { builder in
             try builder.adding(call: call.runtimeCall)
         }
 
-        extrinsicService.submit(closure, signer: signingWrapper, runningIn: .main) { [weak self] result in
+        let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
+            self?.extrinsicSubscriptionId = subscriptionId
+
+            return self != nil
+        }
+
+        let notificationClosure: ExtrinsicSubscriptionStatusClosure = { [weak self] result in
             switch result {
-            case let .success(hash):
-                self?.confirmPresenter?.didStopAutocompound(with: hash)
+            case let .success(status):
+                if case let .inBlock(extrinsicHash) = status {
+                    self?.cancelExtrinsicSubscriptionIfNeeded()
+                    self?.confirmPresenter?.didStopAutocompound(with: extrinsicHash)
+                }
             case let .failure(error):
+                self?.cancelExtrinsicSubscriptionIfNeeded()
                 self?.confirmPresenter?.didReceiveStopAutocompound(error: .yieldBoostStopFailed(error))
             }
         }
+
+        extrinsicService.submitAndWatch(
+            builderClosure,
+            signer: signingWrapper,
+            runningIn: .main,
+            subscriptionIdClosure: subscriptionIdClosure,
+            notificationClosure: notificationClosure
+        )
     }
 
     func retryCommonSubscriptions() {
