@@ -110,6 +110,23 @@ extension ParaStkYieldBoostSetupPresenter {
         provideThresholdInputViewModel()
     }
 
+    func provideNetworkFee() {
+        let assetInfo = chainAsset.assetDisplayInfo
+        if let fee = extrinsicFee {
+            let feeDecimal = Decimal.fromSubstrateAmount(
+                fee,
+                precision: assetInfo.assetPrecision
+            ) ?? 0.0
+
+            let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: price)
+                .value(for: selectedLocale)
+
+            view?.didReceiveNetworkFee(viewModel: viewModel)
+        } else {
+            view?.didReceiveNetworkFee(viewModel: nil)
+        }
+    }
+
     func provideViewModels() {
         provideCollatorViewModel()
         provideRewardsOptionComparisonViewModel()
@@ -118,6 +135,8 @@ extension ParaStkYieldBoostSetupPresenter {
         if isYieldBoostSelected {
             provideYieldBoostSpecificViewModels()
         }
+
+        provideNetworkFee()
 
         updateHasChanges()
     }
