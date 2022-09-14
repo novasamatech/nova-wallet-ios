@@ -35,6 +35,4 @@ protocol ParaStkYieldBoostStartInteractorOutputProtocol: ParaStkYieldBoostSchedu
 
 protocol ParaStkYieldBoostStartWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, FeeRetryable, MessageSheetPresentable, ParaStkYieldBoostErrorPresentable,
-    AddressOptionsPresentable {
-    func complete(on view: ParaStkYieldBoostStartViewProtocol?, locale: Locale)
-}
+    AddressOptionsPresentable, ExtrinsicSubmissionPresenting {}

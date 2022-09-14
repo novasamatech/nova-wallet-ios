@@ -254,7 +254,7 @@ extension ParaStkYieldBoostStartPresenter: ParaStkYieldBoostStartInteractorOutpu
     func didScheduleYieldBoost(for _: String) {
         view?.didStopLoading()
 
-        wireframe.complete(on: view, locale: selectedLocale)
+        wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
     }
 
     func didReceiveConfirmation(error: ParaStkYieldBoostStartError) {
