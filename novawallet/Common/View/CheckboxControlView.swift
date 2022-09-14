@@ -14,7 +14,7 @@ final class CheckboxControlView: ControlView<UIView, IconDetailsView> {
         addTarget(self, action: #selector(actionTap), for: .touchUpInside)
     }
 
-    var isCheckboxed: Bool = false {
+    var isChecked: Bool = false {
         didSet {
             updateCheckboxState()
         }
@@ -31,7 +31,7 @@ final class CheckboxControlView: ControlView<UIView, IconDetailsView> {
     }
 
     private func updateCheckboxState() {
-        if isCheckboxed {
+        if isChecked {
             controlContentView.imageView.image = R.image.iconCheckbox()
         } else {
             controlContentView.imageView.image = R.image.iconCheckboxEmpty()
@@ -39,7 +39,7 @@ final class CheckboxControlView: ControlView<UIView, IconDetailsView> {
     }
 
     @objc private func actionTap() {
-        isCheckboxed = !isCheckboxed
+        isChecked.toggle()
 
         sendActions(for: .valueChanged)
     }
