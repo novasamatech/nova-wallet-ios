@@ -21,6 +21,7 @@ protocol ParaStkYieldBoostErrorPresentable: BaseErrorPresentable {
 
     func presentCancelTasksForCollators(
         from view: ControllerBackedProtocol,
+        collator: String,
         action: @escaping () -> Void,
         locale: Locale?
     )
@@ -91,11 +92,12 @@ extension ParaStkYieldBoostErrorPresentable where Self: AlertPresentable & Error
 
     func presentCancelTasksForCollators(
         from view: ControllerBackedProtocol,
+        collator: String,
         action: @escaping () -> Void,
         locale: Locale?
     ) {
-        let title = R.string.localizable.yieldBoostAlreadyEnabledTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.yieldBoostAlreadyEnabledMessage(preferredLanguages: locale?.rLanguages)
+        let title = R.string.localizable.yieldBoostChangeTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.yieldBoostChangeMessage(collator, preferredLanguages: locale?.rLanguages)
 
         presentWarning(
             for: title,

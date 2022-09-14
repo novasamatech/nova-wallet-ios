@@ -106,6 +106,7 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
     private func createYieldBoostValidationRunner(
         for assetDisplayInfo: AssetBalanceDisplayInfo,
+        selectedCollatorName: String?,
         threshold: Decimal?
     ) -> DataValidationRunnerProtocol {
         DataValidationRunner(validators: [
@@ -149,6 +150,7 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
             dataValidatingFactory.cancelForOtherCollatorsExcept(
                 selectedCollatorId: selectedCollator,
                 tasks: yieldBoostTasks,
+                selectedCollatorName: selectedCollatorName,
                 locale: selectedLocale
             )
         ])
@@ -158,8 +160,19 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let optTreshold = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ??
             selectedRemoteBoostThreshold()
+        let selectedCollatorName: String? = selectedCollator.flatMap { accountId in
+            if let name = delegationIdentities?[accountId]?.displayName {
+                return name
+            } else {
+                return try? accountId.toAddress(using: chainAsset.chain.chainFormat)
+            }
+        }
 
-        let runner = createYieldBoostValidationRunner(for: assetDisplayInfo, threshold: optTreshold)
+        let runner = createYieldBoostValidationRunner(
+            for: assetDisplayInfo,
+            selectedCollatorName: selectedCollatorName,
+            threshold: optTreshold
+        )
 
         runner.runValidation { [weak self] in
             guard
