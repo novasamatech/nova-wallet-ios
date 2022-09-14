@@ -191,11 +191,7 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         for accountId: AccountId,
         chainAssetId: ChainAssetId
     ) -> AnyDataProviderRepository<AssetLock> {
-        createAssetLocksRepository(.assetBalance(
-            for: accountId,
-            chainId: chainAssetId.chainId,
-            assetId: chainAssetId.assetId
-        ))
+        createAssetLocksRepository(.assetLock(for: accountId, chainAssetId: chainAssetId))
     }
 
     private func createAssetLocksRepository(_ filter: NSPredicate) -> AnyDataProviderRepository<AssetLock> {
