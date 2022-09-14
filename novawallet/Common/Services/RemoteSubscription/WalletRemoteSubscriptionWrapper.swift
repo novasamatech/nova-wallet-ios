@@ -80,11 +80,13 @@ final class WalletRemoteSubscriptionWrapper {
         completion: RemoteSubscriptionClosure?
     ) -> UUID? {
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
-        let subscriptionHandlingFactory = OrmlAccountSubscriptionHandlingFactory(
+        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetsRepository,
+            locksRepository: locksRepository,
             eventCenter: eventCenter,
             transactionSubscription: nil
         )
@@ -106,14 +108,16 @@ final class WalletRemoteSubscriptionWrapper {
         completion: RemoteSubscriptionClosure?
     ) -> UUID? {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
+        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
 
-        let subscriptionHandlingFactory = AccountInfoSubscriptionHandlingFactory(
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
-            transactionSubscription: nil,
-            eventCenter: eventCenter
+            locksRepository: locksRepository,
+            eventCenter: eventCenter,
+            transactionSubscription: nil
         )
 
         return remoteSubscriptionService.attachToAccountInfo(

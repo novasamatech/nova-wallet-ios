@@ -1,15 +1,14 @@
-import Foundation
 import RobinHood
 
-final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol {
+final class OrmlTokenSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol {
     let accountLocalStorageKey: String
     let locksLocalStorageKey: String
-    let factory: NativeTokenSubscriptionFactoryProtocol
+    let factory: OrmlTokenSubscriptionFactoryProtocol
 
     init(
         accountLocalStorageKey: String,
         locksLocalStorageKey: String,
-        factory: NativeTokenSubscriptionFactoryProtocol
+        factory: OrmlTokenSubscriptionFactoryProtocol
     ) {
         self.accountLocalStorageKey = accountLocalStorageKey
         self.locksLocalStorageKey = locksLocalStorageKey
@@ -24,13 +23,13 @@ final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
         logger: LoggerProtocol
     ) -> StorageChildSubscribing {
         if locksLocalStorageKey == localStorageKey {
-            return factory.createBalanceLocksSubscription(
+            return factory.createOrmLocksSubscription(
                 remoteStorageKey: remoteStorageKey,
                 operationManager: operationManager,
                 logger: logger
             )
         } else {
-            return factory.createAccountInfoSubscription(
+            return factory.createOrmlAccountSubscription(
                 remoteStorageKey: remoteStorageKey,
                 localStorageKey: localStorageKey,
                 storage: storage,
