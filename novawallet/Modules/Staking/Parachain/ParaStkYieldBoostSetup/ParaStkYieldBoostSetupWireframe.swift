@@ -2,19 +2,40 @@ import Foundation
 import SoraFoundation
 
 final class ParaStkYieldBoostSetupWireframe: ParaStkYieldBoostSetupWireframeProtocol {
+    let state: ParachainStakingSharedState
+
+    init(state: ParachainStakingSharedState) {
+        self.state = state
+    }
+
     func showStartYieldBoostConfirmation(
-        from _: ParaStkYieldBoostSetupViewProtocol?,
-        model _: ParaStkYieldBoostConfirmModel
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        model: ParaStkYieldBoostConfirmModel
     ) {
-        // TODO: Implement transition to confirmation screen
+        guard let scheduleConfirmView = ParaStkYieldBoostStartViewFactory.createView(
+            with: state,
+            confirmModel: model
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(scheduleConfirmView.controller, animated: true)
     }
 
     func showStopYieldBoostConfirmation(
-        from _: ParaStkYieldBoostSetupViewProtocol?,
-        collatorId _: AccountId,
-        collatorIdentity _: AccountIdentity?
+        from view: ParaStkYieldBoostSetupViewProtocol?,
+        collatorId: AccountId,
+        collatorIdentity: AccountIdentity?
     ) {
-        // TODO: Implement transition to confirmation screen
+        guard let cancelConfirmView = ParaStkYieldBoostStopViewFactory.createView(
+            with: state,
+            collatorId: collatorId,
+            collatorIdentity: collatorIdentity
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(cancelConfirmView.controller, animated: true)
     }
 
     func showDelegationSelection(

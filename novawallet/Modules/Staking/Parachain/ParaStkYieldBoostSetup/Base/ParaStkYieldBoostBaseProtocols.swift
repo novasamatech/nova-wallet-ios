@@ -22,6 +22,11 @@ protocol ParaStkYieldBoostCancelInteractorInputProtocol: AnyObject {
     func estimateCancelAutocompoundFee(for taskId: AutomationTime.TaskId)
 }
 
+protocol ParaStkYieldBoostCommonInteractorInputProtocol: AnyObject {
+    func setup()
+    func retryCommonSubscriptions()
+}
+
 enum ParaStkYieldBoostScheduleInteractorError: Error {
     case scheduleFeeFetchFailed(_ internalError: Error)
     case taskExecutionFeeFetchFailed(_ internalError: Error)
@@ -30,6 +35,12 @@ enum ParaStkYieldBoostScheduleInteractorError: Error {
 
 enum ParaStkYieldBoostCancelInteractorError: Error {
     case cancelFeeFetchFailed(_ internalError: Error)
+}
+
+enum ParaStkYieldBoostCommonInteractorError: Error {
+    case balanceSubscriptionFailed(_ internalError: Error)
+    case priceSubscriptionFailed(_ internalError: Error)
+    case yieldBoostTasksSubscriptionFailed(_ internalError: Error)
 }
 
 protocol ParaStkYieldBoostScheduleInteractorOutputProtocol: AnyObject {
@@ -42,4 +53,11 @@ protocol ParaStkYieldBoostScheduleInteractorOutputProtocol: AnyObject {
 protocol ParaStkYieldBoostCancelInteractorOutputProtocol: AnyObject {
     func didReceiveCancelTask(feeInfo: RuntimeDispatchInfo)
     func didReceiveCancelInteractor(error: ParaStkYieldBoostCancelInteractorError)
+}
+
+protocol ParaStkYieldBoostCommonInteractorOutputProtocol: AnyObject {
+    func didReceiveAsset(balance: AssetBalance?)
+    func didReceiveAsset(price: PriceData?)
+    func didReceiveYieldBoost(tasks: [ParaStkYieldBoostState.Task]?)
+    func didReceiveCommonInteractor(error: ParaStkYieldBoostCommonInteractorError)
 }
