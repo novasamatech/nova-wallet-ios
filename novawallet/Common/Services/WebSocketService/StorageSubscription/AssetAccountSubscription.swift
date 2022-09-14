@@ -25,7 +25,7 @@ class BaseAssetAccountSubscription: BaseStorageChildSubscription {
         )
     }
 
-    func handle(storageItem _: ChainStorageItem?, isRemoved _: Bool, blockHash: Data?) {
+    func handle(storageItem _: ChainStorageItem?, isRemoved _: Bool, blockHash _: Data?) {
         fatalError("Must be overriden by subclass")
     }
 
