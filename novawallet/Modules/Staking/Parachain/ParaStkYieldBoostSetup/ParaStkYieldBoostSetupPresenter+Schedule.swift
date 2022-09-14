@@ -5,6 +5,8 @@ extension ParaStkYieldBoostSetupPresenter {
     func didReceiveScheduleAutocompound(feeInfo: RuntimeDispatchInfo) {
         if isYieldBoostSelected {
             updateExtrinsicFee(BigUInt(feeInfo.fee))
+
+            provideNetworkFee()
         }
     }
 

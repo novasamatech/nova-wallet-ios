@@ -84,6 +84,8 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
 
         setupThresholdAmountInputAccessoryView()
 
+        rootView.networkFeeView.locale = selectedLocale
+
         updateActionButtonState()
     }
 
@@ -339,6 +341,10 @@ extension ParaStkYieldBoostSetupViewController: ParaStkYieldBoostSetupViewProtoc
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
 
         updateActionButtonState()
+    }
+
+    func didReceiveNetworkFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.networkFeeView.bind(viewModel: viewModel)
     }
 
     func didStartLoading() {
