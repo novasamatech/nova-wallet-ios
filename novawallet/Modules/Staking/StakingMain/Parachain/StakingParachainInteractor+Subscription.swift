@@ -150,8 +150,6 @@ extension StakingParachainInteractor {
             return
         }
 
-        let chainId = chainAsset.chain.chainId
-
         guard
             yieldBoostSupport.checkSupport(for: chainAsset),
             let accountId = selectedAccount?.chainAccount.accountId else {
@@ -159,7 +157,7 @@ extension StakingParachainInteractor {
             return
         }
 
-        yieldBoostTasksProvider = subscribeYieldBoostTasks(for: chainId, accountId: accountId)
+        yieldBoostTasksProvider = subscribeYieldBoostTasks(for: chainAsset.chainAssetId, accountId: accountId)
     }
 }
 
@@ -194,9 +192,6 @@ extension StakingParachainInteractor: WalletLocalStorageSubscriber,
         switch result {
         case let .success(balance):
             presenter?.didReceiveAssetBalance(balance)
-
-            // as we don't have subscription option for yield boost state
-            updateOnAssetBalanceReceive()
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

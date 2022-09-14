@@ -1658,6 +1658,8 @@
 		84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */; };
 		84C2063A28D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063928D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift */; };
 		84C2063C28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063B28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift */; };
+		84C2063E28D1E8CE006D0D52 /* AssetBalanceChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063D28D1E8CE006D0D52 /* AssetBalanceChanged.swift */; };
+		84C2064028D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063F28D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift */; };
 		84C2802126F541DE006E8014 /* WebSocketEngine+Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */; };
 		84C2F27725E296CD0050A4AD /* RewardDestinationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */; };
 		84C2F27D25E297350050A4AD /* CalculatedReward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27C25E297350050A4AD /* CalculatedReward.swift */; };
@@ -4373,6 +4375,8 @@
 		84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsSelectionDecorator.swift; sourceTree = "<group>"; };
 		84C2063928D1CA90006D0D52 /* YieldBoostCollatorSelectionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YieldBoostCollatorSelectionFactory.swift; sourceTree = "<group>"; };
 		84C2063B28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModalPickerFactory+YieldBoost.swift"; sourceTree = "<group>"; };
+		84C2063D28D1E8CE006D0D52 /* AssetBalanceChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceChanged.swift; sourceTree = "<group>"; };
+		84C2063F28D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAssetBalanceTrigger.swift; sourceTree = "<group>"; };
 		84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebSocketEngine+Connection.swift"; sourceTree = "<group>"; };
 		84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModelFactory.swift; sourceTree = "<group>"; };
 		84C2F27C25E297350050A4AD /* CalculatedReward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatedReward.swift; sourceTree = "<group>"; };
@@ -7559,6 +7563,7 @@
 			isa = PBXGroup;
 			children = (
 				8463A72425E3A82A003B8160 /* DataProviderProxyTrigger.swift */,
+				84C2063F28D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift */,
 			);
 			path = Triggers;
 			sourceTree = "<group>";
@@ -11009,6 +11014,7 @@
 				2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */,
 				8452585227ABCA07004F9082 /* HideZeroBalancesChanged.swift */,
 				84C342122831BE8200156569 /* BlockTimeChanged.swift */,
+				84C2063D28D1E8CE006D0D52 /* AssetBalanceChanged.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -14320,6 +14326,7 @@
 				84DED410266659EC00A153BB /* CustomCrowdloanDelegate.swift in Sources */,
 				8418E7202617602000DCF6C8 /* WalletRemoteHistoryProtocols.swift in Sources */,
 				849ECD3926DF792800F542A3 /* SkeletonRow+View.swift in Sources */,
+				84C2063E28D1E8CE006D0D52 /* AssetBalanceChanged.swift in Sources */,
 				848F8B1B28635A6D00204BC4 /* TransferSetupInteractor.swift in Sources */,
 				AE1000F426679946004753B7 /* InitiatedBondingRecommendationWireframe.swift in Sources */,
 				848F8B222863BD1000204BC4 /* TransferSetupInputState.swift in Sources */,
@@ -14554,6 +14561,7 @@
 				84D1111126B932480016D962 /* AssetModel.swift in Sources */,
 				84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */,
 				84C5ADE628141D21006D7388 /* LinkView.swift in Sources */,
+				84C2064028D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift in Sources */,
 				848FFE8325E686C200652AA5 /* StorageDecodingOperation.swift in Sources */,
 				8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */,
 				84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */,
