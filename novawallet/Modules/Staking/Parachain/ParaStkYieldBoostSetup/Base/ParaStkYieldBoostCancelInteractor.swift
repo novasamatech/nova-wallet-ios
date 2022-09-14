@@ -16,11 +16,15 @@ class ParaStkYieldBoostCancelInteractor {
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
     }
+
+    func performSetup() {
+        feeProxy.delegate = self
+    }
 }
 
 extension ParaStkYieldBoostCancelInteractor: ParaStkYieldBoostCancelInteractorInputProtocol {
     func setup() {
-        feeProxy.delegate = self
+        performSetup()
     }
 
     func estimateCancelAutocompoundFee(for taskId: AutomationTime.TaskId) {

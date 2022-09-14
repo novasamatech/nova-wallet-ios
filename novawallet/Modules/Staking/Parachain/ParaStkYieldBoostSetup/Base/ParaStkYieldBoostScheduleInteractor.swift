@@ -33,11 +33,15 @@ class ParaStkYieldBoostScheduleInteractor {
         self.yeildBoostOperationFactory = yeildBoostOperationFactory
         self.operationQueue = operationQueue
     }
+
+    func performSetup() {
+        feeProxy.delegate = self
+    }
 }
 
 extension ParaStkYieldBoostScheduleInteractor: ParaStkYieldBoostScheduleInteractorInputProtocol {
     func setup() {
-        feeProxy.delegate = self
+        performSetup()
     }
 
     func estimateScheduleAutocompoundFee(

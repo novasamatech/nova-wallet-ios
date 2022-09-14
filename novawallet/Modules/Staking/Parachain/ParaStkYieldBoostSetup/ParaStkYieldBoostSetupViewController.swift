@@ -132,10 +132,10 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
         let period: String
 
         if let newDays = viewModel?.new {
-            let newDaysString = R.string.localizable.commonDaysFormat(
+            let newDaysString = R.string.localizable.commonEveryDaysFormat(
                 format: Int(bitPattern: newDays),
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).lowercased()
 
             let updating: String
 
