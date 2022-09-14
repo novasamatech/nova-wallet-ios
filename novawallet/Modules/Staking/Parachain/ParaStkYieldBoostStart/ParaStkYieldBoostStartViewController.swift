@@ -124,7 +124,7 @@ final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder {
     }
 
     private func updateActionButtonState() {
-        if rootView.acceptTermsView.isCheckboxed {
+        if rootView.acceptTermsView.isChecked {
             let title = R.string.localizable.commonConfirm(preferredLanguages: selectedLocale.rLanguages)
 
             rootView.actionLoadableView.actionButton.applyState(title: title, enabled: true)
