@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
 
 protocol WalletRemoteSubscriptionServiceProtocol {
     // swiftlint:disable:next function_parameter_count
@@ -9,7 +10,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainFormat: ChainFormat,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol
     ) -> UUID?
 
     func detachFromAccountInfo(
@@ -48,7 +49,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol
     ) -> UUID?
 
     // swiftlint:disable:next function_parameter_count
@@ -70,46 +71,67 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainFormat: ChainFormat,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol
     ) -> UUID? {
         do {
             let storagePath = StorageCodingPath.account
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let accountLocalKey = try storageKeyFactory.createFromStoragePath(
                 storagePath,
                 accountId: accountId,
                 chainId: chainId
             )
 
+            let locksStoragePath = StorageCodingPath.balanceLocks
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                locksStoragePath,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+
+            let accountRequest: SubscriptionRequestProtocol
+            let locksRequest: SubscriptionRequestProtocol
             switch chainFormat {
             case .substrate:
-                let request = MapSubscriptionRequest(
+                accountRequest = MapSubscriptionRequest(
                     storagePath: storagePath,
-                    localKey: localKey
+                    localKey: accountLocalKey
                 ) { accountId }
-
-                return attachToSubscription(
-                    with: [request],
-                    chainId: chainId,
-                    cacheKey: localKey,
-                    queue: queue,
-                    closure: closure,
-                    subscriptionHandlingFactory: subscriptionHandlingFactory
+                locksRequest = MapSubscriptionRequest(
+                    storagePath: .balanceLocks,
+                    localKey: locksLocalKey,
+                    keyParamClosure: {
+                        accountId
+                    }
                 )
             case .ethereum:
-                let request = MapSubscriptionRequest(
+                accountRequest = MapSubscriptionRequest(
                     storagePath: storagePath,
-                    localKey: localKey
+                    localKey: accountLocalKey
                 ) { accountId.map { StringScaleMapper(value: $0) } }
 
-                return attachToSubscription(
-                    with: [request],
-                    chainId: chainId,
-                    cacheKey: localKey,
-                    queue: queue,
-                    closure: closure,
-                    subscriptionHandlingFactory: subscriptionHandlingFactory
+                locksRequest = MapSubscriptionRequest(
+                    storagePath: .balanceLocks,
+                    localKey: locksLocalKey,
+                    keyParamClosure: { accountId.map { StringScaleMapper(value: $0) } }
                 )
             }
+
+            let handlingFactory = AccountInfoSubscriptionHandlingFactory(
+                accountLocalStorageKey: accountLocalKey,
+                locksLocalStorageKey: locksLocalKey,
+                factory: subscriptionHandlingFactory
+            )
+
+            return attachToSubscription(
+                with: [accountRequest, locksRequest],
+                chainId: chainId,
+                cacheKey: accountLocalKey + locksLocalKey,
+                queue: queue,
+                closure: closure,
+                subscriptionHandlingFactory: handlingFactory
+            )
+
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
             return nil
@@ -125,12 +147,21 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     ) {
         do {
             let storagePath = StorageCodingPath.account
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let accountLocalKey = try storageKeyFactory.createFromStoragePath(
                 storagePath,
                 accountId: accountId,
                 chainId: chainId
             )
 
+            let locksStoragePath = StorageCodingPath.balanceLocks
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                locksStoragePath,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+
+            let localKey = accountLocalKey + locksLocalKey
             detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
@@ -193,7 +224,6 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 closure: closure,
                 subscriptionHandlingFactory: handlingFactory
             )
-
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
 
@@ -232,32 +262,50 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol
     ) -> UUID? {
         do {
-            let storagePath = StorageCodingPath.ormlTokenAccount
-
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                storagePath,
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let accountLocalKey = try storageKeyFactory.createFromStoragePath(
+                .ormlTokenAccount,
                 encodableElement: accountId + currencyId,
                 chainId: chainId
             )
 
-            let request = DoubleMapSubscriptionRequest(
-                storagePath: storagePath,
-                localKey: localKey,
+            let accountRequest = DoubleMapSubscriptionRequest(
+                storagePath: .ormlTokenAccount,
+                localKey: accountLocalKey,
+                keyParamClosure: { (accountId, currencyId) },
+                param1Encoder: nil,
+                param2Encoder: { $0 }
+            )
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                .ormlTokenLocks,
+                encodableElement: accountId + currencyId,
+                chainId: chainId
+            )
+
+            let locksRequest = DoubleMapSubscriptionRequest(
+                storagePath: .ormlTokenLocks,
+                localKey: locksLocalKey,
                 keyParamClosure: { (accountId, currencyId) },
                 param1Encoder: nil,
                 param2Encoder: { $0 }
             )
 
+            let handlingFactory = OrmlTokenSubscriptionHandlingFactory(
+                accountLocalStorageKey: accountLocalKey,
+                locksLocalStorageKey: locksLocalKey,
+                factory: subscriptionHandlingFactory
+            )
+
             return attachToSubscription(
-                with: [request],
+                with: [accountRequest, locksRequest],
                 chainId: chainId,
-                cacheKey: localKey,
+                cacheKey: accountLocalKey + locksLocalKey,
                 queue: queue,
                 closure: closure,
-                subscriptionHandlingFactory: subscriptionHandlingFactory
+                subscriptionHandlingFactory: handlingFactory
             )
 
         } catch {
@@ -276,12 +324,18 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let storagePath = StorageCodingPath.ormlTokenAccount
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                storagePath,
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let accountLocalKey = try storageKeyFactory.createFromStoragePath(
+                .ormlTokenAccount,
                 encodableElement: accountId + currencyId,
                 chainId: chainId
             )
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                .ormlTokenLocks,
+                encodableElement: accountId + currencyId,
+                chainId: chainId
+            )
+            let localKey = accountLocalKey + locksLocalKey
 
             detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
 
