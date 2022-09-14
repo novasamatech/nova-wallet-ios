@@ -68,11 +68,11 @@ enum StakingManageOption {
         case .pendingRewards:
             return R.image.iconPendingRewards()
         case .rewardDestination:
-            return R.image.iconWallet()
+            return R.image.iconRewardsDest()
         case .changeValidators, .setupValidators, .yourValidator:
             return R.image.iconValidators()
         case .controllerAccount:
-            return R.image.iconAccount()
+            return R.image.iconControllerAccount()
         case .yieldBoost:
             return R.image.iconYieldBoost()
         }
