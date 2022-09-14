@@ -971,3 +971,5 @@
 "yield.boost.period.title" = "Stake increase time";
 "yield.boost.terms.message" = "Yield Boost will automatically stake %@ all my transferable tokens above %@";
 "common.accept.terms" = "Accept terms...";
+"common.yield.boosted" = "Yield Boosted";
+"common.not.available" = "N/A";

@@ -971,3 +971,5 @@
 "yield.boost.period.title" = "Период увеличения стейка";
 "yield.boost.terms.message" = "Yield Boost будет отправлять в стейк %@ весь мой доступный баланс выше %@";
 "common.accept.terms" = "Примите условия...";
+"common.yield.boosted" = "Yield Boosted";
+"common.not.available" = "N/A";

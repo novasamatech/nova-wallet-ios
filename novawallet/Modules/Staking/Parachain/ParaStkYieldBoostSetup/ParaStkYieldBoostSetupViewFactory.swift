@@ -23,6 +23,9 @@ struct ParaStkYieldBoostSetupViewFactory {
         )
 
         let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(chainAsset: chainAsset)
+        let yieldBoostCollatorViewModelFactory = YieldBoostCollatorSelectionFactory(
+            chainFormat: chainAsset.chain.chainFormat
+        )
 
         let dataValidatingFactory = ParaStkYieldBoostValidatorFactory(
             presentable: wireframe,
@@ -34,6 +37,7 @@ struct ParaStkYieldBoostSetupViewFactory {
             wireframe: wireframe,
             initState: initData,
             balanceViewModelFactory: balanceViewModelFactory,
+            collatorSelectionViewModelFactory: yieldBoostCollatorViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             chainAsset: chainAsset,
