@@ -219,8 +219,4 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         performTotalRewardSubscription()
         performYieldBoostTasksSubscription()
     }
-
-    func updateOnAssetBalanceReceive() {
-        yieldBoostTasksProvider?.refresh()
-    }
 }

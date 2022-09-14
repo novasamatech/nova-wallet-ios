@@ -97,6 +97,14 @@ extension ParaStkYieldBoostStopViewController: ParaStkYieldBoostStopViewProtocol
     func didReceiveCollator(viewModel: DisplayAddressViewModel) {
         rootView.collatorCell.bind(viewModel: viewModel.cellViewModel)
     }
+
+    func didStartLoading() {
+        rootView.actionLoadableView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.actionLoadableView.stopLoading()
+    }
 }
 
 extension ParaStkYieldBoostStopViewController: Localizable {

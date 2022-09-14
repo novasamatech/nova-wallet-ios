@@ -48,7 +48,8 @@ final class OrmlAccountSubscription: BaseStorageChildSubscription {
         decodeAndSaveAccountInfo(
             remoteItem,
             chainAssetId: chainAssetId,
-            accountId: accountId
+            accountId: accountId,
+            blockHash: blockHash
         )
 
         if case let .success(optionalChange) = result, optionalChange != nil, let blockHash = blockHash {
@@ -131,7 +132,8 @@ final class OrmlAccountSubscription: BaseStorageChildSubscription {
     private func decodeAndSaveAccountInfo(
         _ item: ChainStorageItem?,
         chainAssetId: ChainAssetId,
-        accountId: AccountId
+        accountId: AccountId,
+        blockHash: Data?
     ) {
         let decodingWrapper = createDecodingOperationWrapper(
             item,
@@ -171,6 +173,15 @@ final class OrmlAccountSubscription: BaseStorageChildSubscription {
 
                 if maybeItem != nil {
                     self?.eventCenter.notify(with: WalletBalanceChanged())
+
+                    let assetBalanceChangeEvent = AssetBalanceChanged(
+                        chainAssetId: chainAssetId,
+                        accountId: accountId,
+                        changes: item?.data,
+                        block: blockHash
+                    )
+
+                    self?.eventCenter.notify(with: assetBalanceChangeEvent)
                 }
             }
         }

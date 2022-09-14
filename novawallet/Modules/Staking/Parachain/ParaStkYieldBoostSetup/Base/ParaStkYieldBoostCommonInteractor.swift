@@ -38,7 +38,7 @@ class ParaStkYieldBoostCommonInteractor {
         )
 
         yieldBoostProvider = subscribeYieldBoostTasks(
-            for: chainAsset.chain.chainId,
+            for: chainAsset.chainAssetId,
             accountId: selectedAccount.accountId
         )
 

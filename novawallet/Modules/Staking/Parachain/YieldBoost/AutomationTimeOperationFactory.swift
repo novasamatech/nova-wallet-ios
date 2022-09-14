@@ -6,7 +6,8 @@ protocol AutomationTimeOperationFactoryProtocol {
     func createTasksFetchOperation(
         for connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
-        account: AccountId
+        account: AccountId,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<[AutomationTime.TaskId: AutomationTime.Task]>
 }
 
@@ -22,7 +23,8 @@ extension AutomationTimeOperationFactory: AutomationTimeOperationFactoryProtocol
     func createTasksFetchOperation(
         for connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
-        account: AccountId
+        account: AccountId,
+        at blockHash: Data?
     ) -> CompoundOperationWrapper<[AutomationTime.TaskId: AutomationTime.Task]> {
         let request = MapRemoteStorageRequest(storagePath: AutomationTime.accountTasksPath) { account }
 
@@ -35,7 +37,8 @@ extension AutomationTimeOperationFactory: AutomationTimeOperationFactoryProtocol
                 storagePath: AutomationTime.accountTasksPath,
                 factory: {
                     try codingFactoryOperation.extractNoCancellableResultData()
-                }
+                },
+                at: blockHash
             )
 
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
