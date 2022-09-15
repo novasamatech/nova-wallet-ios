@@ -424,11 +424,11 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupInteractorOutpu
 
 extension ParaStkYieldBoostSetupPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard let delegations = context as? [ParachainStaking.Bond] else {
+        guard let delegations = context as? [YieldBoostCollatorSelection] else {
             return
         }
 
-        selectedCollator = delegations[index].owner
+        selectedCollator = delegations[index].collatorId
 
         yieldBoostParams = nil
         isYieldBoostSelected = yieldBoostTasks?.contains { $0.collatorId == selectedCollator } ?? false
