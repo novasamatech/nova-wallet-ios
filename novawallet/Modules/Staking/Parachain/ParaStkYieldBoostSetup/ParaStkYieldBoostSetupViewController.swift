@@ -215,7 +215,7 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
             return
         }
 
-        if !rootView.amountInputView.completed {
+        if !rootView.amountInputView.hasValidNumber {
             let title = R.string.localizable.transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
             rootView.actionButton.applyState(title: title, enabled: false)
 

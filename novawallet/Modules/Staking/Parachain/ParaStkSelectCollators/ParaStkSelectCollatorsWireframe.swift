@@ -8,7 +8,7 @@ final class ParaStkSelectCollatorsWireframe: ParaStkSelectCollatorsWireframeProt
     }
 
     func close(view: ParaStkSelectCollatorsViewProtocol?) {
-        view?.controller.navigationController?.popToRootViewController(animated: true)
+        view?.controller.navigationController?.popViewController(animated: true)
     }
 
     func showFilters(
