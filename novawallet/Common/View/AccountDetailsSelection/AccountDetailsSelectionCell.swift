@@ -28,6 +28,8 @@ final class AccountDetailsGenericSelectionCell<D: AccountDetailsSelectionDecorat
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = .clear
+
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = .clear
 

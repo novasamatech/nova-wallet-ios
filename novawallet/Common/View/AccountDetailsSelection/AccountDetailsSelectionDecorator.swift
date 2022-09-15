@@ -34,7 +34,7 @@ struct AccountDetailsYieldBoostDecorator: AccountDetailsSelectionDecorator {
     static func decorate(viewModel: TitleWithSubtitleViewModel, enabled _: Bool) -> NSAttributedString {
         let hasSubtitle = !viewModel.subtitle.isEmpty
 
-        let title = hasSubtitle ? viewModel.title + "," : viewModel.subtitle
+        let title = hasSubtitle ? viewModel.title + "," : viewModel.title
 
         let attributedString = NSMutableAttributedString(
             string: title,
