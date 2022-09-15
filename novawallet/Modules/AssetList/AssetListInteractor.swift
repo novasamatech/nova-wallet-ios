@@ -357,15 +357,15 @@ extension AssetListInteractor: EventVisitorProtocol {
 extension AssetListInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
     func handleCrowdloans(
         result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
-        account: AccountId,
+        accountId: AccountId,
         chain: ChainModel
     ) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
-        guard let accountId = selectedMetaAccount.fetch(
+        guard let chainAccountId = selectedMetaAccount.fetch(
             for: chain.accountRequest()
-        )?.accountId, accountId == account else {
+        )?.accountId, chainAccountId == accountId else {
             logger?.warning("Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different")
             return
         }

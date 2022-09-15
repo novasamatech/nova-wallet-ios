@@ -139,7 +139,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         )
         let saveOperation = createSaveOperation(dependingOn: changesWrapper)
 
-        let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation] + [changesWrapper] + [saveOperation]
+        let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation, changesWrapper, saveOperation]
 
         operationManager.enqueue(operations: operations, in: .transient)
     }

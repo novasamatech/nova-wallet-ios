@@ -4,22 +4,13 @@ import RobinHood
 protocol CrowdloanContributionLocalSubscriptionHandler: AnyObject {
     func handleCrowdloans(
         result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
-        account: AccountId,
+        accountId: AccountId,
         chain: ChainModel
     )
 }
 
-extension CrowdloanContributionLocalSubscriptionHandler {
-    func handleCrowdloans(
-        result _: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
-        account _: AccountId,
-        chain _: ChainModel
-    ) {}
-}
-
 protocol CrowdloansLocalStorageSubscriber: AnyObject {
     var crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol { get }
-
     var crowdloansLocalSubscriptionHandler: CrowdloanContributionLocalSubscriptionHandler { get }
 
     func subscribeToCrowdloansProvider(
@@ -41,12 +32,20 @@ extension CrowdloansLocalStorageSubscriber {
         }
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<CrowdloanContributionData>]) in
-            self?.crowdloansLocalSubscriptionHandler.handleCrowdloans(result: .success(changes), account: accountId, chain: chain)
+            self?.crowdloansLocalSubscriptionHandler.handleCrowdloans(
+                result: .success(changes),
+                accountId: accountId,
+                chain: chain
+            )
             return
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.crowdloansLocalSubscriptionHandler.handleCrowdloans(result: .failure(error), account: accountId, chain: chain)
+            self?.crowdloansLocalSubscriptionHandler.handleCrowdloans(
+                result: .failure(error),
+                accountId: accountId,
+                chain: chain
+            )
             return
         }
 
@@ -54,7 +53,7 @@ extension CrowdloansLocalStorageSubscriber {
             alwaysNotifyOnRefresh: true,
             waitsInProgressSyncOnAdd: false,
             initialSize: 0,
-            refreshWhenEmpty: true
+            refreshWhenEmpty: false
         )
 
         provider.addObserver(

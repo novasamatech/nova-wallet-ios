@@ -284,12 +284,29 @@ extension NSPredicate {
         accountId: AccountId,
         source: String?
     ) -> NSPredicate {
-        let chainPredicate = NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.chainId), chainId)
-        let accountPredicate = NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.chainAccountId), accountId.toHex())
+        let accountChainPredicate = crowdloanContribution(for: chainId, accountId: accountId)
         let sourcePredicate = source.map {
             NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.source), $0)
         } ?? NSPredicate(format: "%K = nil", #keyPath(CDCrowdloanContribution.source))
 
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, accountPredicate, sourcePredicate])
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [accountChainPredicate, sourcePredicate])
+    }
+
+    static func crowdloanContribution(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) -> NSPredicate {
+        let chainPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDCrowdloanContribution.chainId),
+            chainId
+        )
+        let accountPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDCrowdloanContribution.chainAccountId),
+            accountId.toHex()
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, accountPredicate])
     }
 }

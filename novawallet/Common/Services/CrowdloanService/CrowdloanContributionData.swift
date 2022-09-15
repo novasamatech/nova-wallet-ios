@@ -8,6 +8,14 @@ struct CrowdloanContributionData {
     let source: String?
     let amount: BigUInt
 
+    var type: SourceType {
+        if let source = source, !source.isEmpty {
+            return .offChain
+        } else {
+            return .onChain
+        }
+    }
+    
     enum SourceType: String {
         case onChain
         case offChain

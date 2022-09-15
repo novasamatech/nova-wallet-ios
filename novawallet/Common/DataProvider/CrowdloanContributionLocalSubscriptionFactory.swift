@@ -11,22 +11,23 @@ protocol CrowdloanContributionLocalSubscriptionFactoryProtocol {
 final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     CrowdloanContributionLocalSubscriptionFactoryProtocol {
     let operationFactory: CrowdloanOperationFactoryProtocol
-    let operationQueue: OperationQueue
+    let syncQueue: OperationQueue
 
     init(
         operationFactory: CrowdloanOperationFactoryProtocol,
-        operationQueue: OperationQueue,
+        operationManager: OperationManagerProtocol,
+        syncQueue: OperationQueue,
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
         logger: LoggerProtocol
     ) {
         self.operationFactory = operationFactory
-        self.operationQueue = operationQueue
+        self.syncQueue = syncQueue
 
         super.init(
             chainRegistry: chainRegistry,
             storageFacade: storageFacade,
-            operationManager: OperationManager(operationQueue: operationQueue),
+            operationManager: operationManager,
             logger: logger
         )
     }
@@ -59,20 +60,20 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             repository: AnyDataProviderRepository(onChainCrowdloansRepository),
             accountId: accountId,
             chainId: chain.chainId,
-            operationQueue: operationQueue
+            operationQueue: syncQueue
         )
+
         let syncServices = [onChainSyncService]
 
         let source = CrowdloanContributionStreamableSource(syncServices: syncServices)
 
-        let filter = NSPredicate.crowdloanContribution(
+        let crowdloansFilter = NSPredicate.crowdloanContribution(
             for: chain.chainId,
-            accountId: accountId,
-            source: nil
+            accountId: accountId
         )
 
         let repository = storageFacade.createRepository(
-            filter: filter,
+            filter: crowdloansFilter,
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(mapper)
         )
@@ -106,15 +107,18 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
 }
 
 extension CrowdloanContributionLocalSubscriptionFactory {
+    static let remoteOperationManager = OperationManager(operationQueue: OperationManagerFacade.crowdloansQueue)
+
     static let shared = CrowdloanContributionLocalSubscriptionFactory(
         operationFactory: CrowdloanOperationFactory(
             requestOperationFactory: StorageRequestFactory(
                 remoteFactory: StorageKeyFactory(),
-                operationManager: OperationManagerFacade.sharedManager
+                operationManager: remoteOperationManager
             ),
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: remoteOperationManager
         ),
-        operationQueue: OperationManagerFacade.sharedDefaultQueue,
+        operationManager: OperationManagerFacade.sharedManager,
+        syncQueue: OperationManagerFacade.crowdloansQueue,
         chainRegistry: ChainRegistryFacade.sharedRegistry,
         storageFacade: SubstrateDataStorageFacade.shared,
         logger: Logger.shared

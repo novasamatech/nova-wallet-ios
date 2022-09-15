@@ -42,5 +42,11 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let crowdloansQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 30
+        return operationQueue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }
