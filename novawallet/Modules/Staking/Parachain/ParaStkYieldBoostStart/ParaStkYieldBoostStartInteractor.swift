@@ -17,6 +17,8 @@ final class ParaStkYieldBoostStartInteractor: ParaStkYieldBoostScheduleInteracto
     let signingWrapper: SigningWrapperProtocol
     let childCommonInteractor: ParaStkYieldBoostCommonInteractorInputProtocol
 
+    private(set) var extrinsicSubscriptionId: UInt16?
+
     init(
         chain: ChainModel,
         selectedAccount: ChainAccountResponse,
@@ -46,6 +48,17 @@ final class ParaStkYieldBoostStartInteractor: ParaStkYieldBoostScheduleInteracto
         )
     }
 
+    deinit {
+        cancelExtrinsicSubscriptionIfNeeded()
+    }
+
+    private func cancelExtrinsicSubscriptionIfNeeded() {
+        if let extrinsicSubscriptionId = extrinsicSubscriptionId {
+            extrinsicService.cancelExtrinsicWatch(for: extrinsicSubscriptionId)
+            self.extrinsicSubscriptionId = nil
+        }
+    }
+
     override func performSetup() {
         super.performSetup()
 
@@ -70,20 +83,38 @@ extension ParaStkYieldBoostStartInteractor: ParaStkYieldBoostStartInteractorInpu
 
         let cancelCalls = cancellingTaskIds.map { AutomationTime.CancelTaskCall(taskId: $0) }
 
-        let extrinsicClosure: ExtrinsicBuilderClosure = { builder in
+        let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
             let newBuilder = try builder.adding(call: scheduleCall.runtimeCall)
 
             return try cancelCalls.reduce(newBuilder) { try $0.adding(call: $1.runtimeCall) }
         }
 
-        extrinsicService.submit(extrinsicClosure, signer: signingWrapper, runningIn: .main) { [weak self] result in
+        let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
+            self?.extrinsicSubscriptionId = subscriptionId
+
+            return self != nil
+        }
+
+        let notificationClosure: ExtrinsicSubscriptionStatusClosure = { [weak self] result in
             switch result {
-            case let .success(hash):
-                self?.confirmPresenter?.didScheduleYieldBoost(for: hash)
+            case let .success(status):
+                if case let .inBlock(extrinsicHash) = status {
+                    self?.cancelExtrinsicSubscriptionIfNeeded()
+                    self?.confirmPresenter?.didScheduleYieldBoost(for: extrinsicHash)
+                }
             case let .failure(error):
+                self?.cancelExtrinsicSubscriptionIfNeeded()
                 self?.confirmPresenter?.didReceiveConfirmation(error: .yieldBoostScheduleFailed(error))
             }
         }
+
+        extrinsicService.submitAndWatch(
+            builderClosure,
+            signer: signingWrapper,
+            runningIn: .main,
+            subscriptionIdClosure: subscriptionIdClosure,
+            notificationClosure: notificationClosure
+        )
     }
 }
 

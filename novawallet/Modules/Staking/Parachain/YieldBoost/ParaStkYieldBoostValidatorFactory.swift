@@ -28,6 +28,7 @@ protocol ParaStkYieldBoostValidatorFactoryProtocol: BaseDataValidatingFactoryPro
     func cancelForOtherCollatorsExcept(
         selectedCollatorId: AccountId?,
         tasks: [ParaStkYieldBoostState.Task]?,
+        selectedCollatorName: String?,
         locale: Locale?
     ) -> DataValidating
 
@@ -173,6 +174,7 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
     func cancelForOtherCollatorsExcept(
         selectedCollatorId: AccountId?,
         tasks: [ParaStkYieldBoostState.Task]?,
+        selectedCollatorName: String?,
         locale: Locale?
     ) -> DataValidating {
         WarningConditionViolation(onWarning: { [weak self] delegate in
@@ -182,6 +184,7 @@ extension ParaStkYieldBoostValidatorFactory: ParaStkYieldBoostValidatorFactoryPr
 
             self?.presentable.presentCancelTasksForCollators(
                 from: view,
+                collator: selectedCollatorName ?? "",
                 action: {
                     delegate.didCompleteWarningHandling()
                 },

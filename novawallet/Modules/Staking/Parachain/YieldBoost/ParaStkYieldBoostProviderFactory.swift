@@ -4,7 +4,7 @@ import SubstrateSdk
 
 protocol ParaStkYieldBoostProviderFactoryProtocol {
     func getTasksProvider(
-        for chainId: ChainModel.Id,
+        for chainAssetId: ChainAssetId,
         accountId: AccountId
     ) throws -> AnySingleValueProvider<[ParaStkYieldBoostState.Task]>
 }
@@ -13,6 +13,7 @@ final class ParaStkYieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryPr
     static let shared = ParaStkYieldBoostProviderFactory(
         chainRegistry: ChainRegistryFacade.sharedRegistry,
         storageFacade: SubstrateDataStorageFacade.shared,
+        eventCenter: EventCenter.shared,
         operationQueue: OperationManagerFacade.sharedDefaultQueue
     )
 
@@ -20,15 +21,18 @@ final class ParaStkYieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryPr
 
     let chainRegistry: ChainRegistryProtocol
     let storageFacade: StorageFacadeProtocol
+    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
+        eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
+        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
     }
 
@@ -37,20 +41,20 @@ final class ParaStkYieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryPr
     }
 
     func getTasksProvider(
-        for chainId: ChainModel.Id,
+        for chainAssetId: ChainAssetId,
         accountId: AccountId
     ) throws -> AnySingleValueProvider<[ParaStkYieldBoostState.Task]> {
-        let targetIdentifier = "yield-boost-\(chainId)-\(accountId.toHex())"
+        let targetIdentifier = "yield-boost-\(chainAssetId.stringValue)-\(accountId.toHex())"
 
         if let provider = providers[targetIdentifier]?.target as? SingleValueProvider<[ParaStkYieldBoostState.Task]> {
             return AnySingleValueProvider(provider)
         }
 
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
+        guard let connection = chainRegistry.getConnection(for: chainAssetId.chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
@@ -59,17 +63,25 @@ final class ParaStkYieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryPr
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
+        let wrapperTrigger: DataProviderEventTrigger = [.onInitialization]
+        let trigger = AccountAssetBalanceTrigger(
+            chainAssetId: chainAssetId,
+            eventCenter: eventCenter,
+            wrappedTrigger: wrapperTrigger,
+            accountId: accountId
+        )
+
         let source = ParaStkYieldBoostTasksSource(
             operationFactory: AutomationTimeOperationFactory(requestFactory: storageRequestFactory),
             connection: connection,
             runtimeProvider: runtimeProvider,
-            accountId: accountId
+            accountId: accountId,
+            assetChangeStore: trigger
         )
 
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             storageFacade.createRepository()
 
-        let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]
         let provider = SingleValueProvider(
             targetIdentifier: targetIdentifier,
             source: AnySingleValueProviderSource(source),

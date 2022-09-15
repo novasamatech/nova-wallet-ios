@@ -58,24 +58,34 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
     }
 
     func selectCollator() {
-        guard let delegator = delegator else {
+        guard let delegator = delegator, let rewardCalculator = rewardCalculator else {
             return
         }
 
-        let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
+        let delegations: [YieldBoostCollatorSelection] = delegator.delegations.map { bond in
+            let apr = try? rewardCalculator.calculateAPR(for: bond.owner)
+
+            return YieldBoostCollatorSelection(apr: apr, collatorId: bond.owner)
+        }.sorted { collator1, collator2 in
+            if let apr1 = collator1.apr, let apr2 = collator2.apr {
+                return apr1 >= apr2
+            } else if collator1.apr != nil {
+                return true
+            } else {
+                return false
+            }
+        }
+
         let disabledCollators = Self.disabledCollatorsForYieldBoost(from: scheduledRequests ?? [])
 
-        guard delegations.count > disabledCollators.count else {
-            return
-        }
-
-        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
+        let accountDetailsViewModels = collatorSelectionViewModelFactory.createViewModels(
             from: delegations,
             identities: delegationIdentities,
-            disabled: disabledCollators
+            disabled: disabledCollators,
+            yieldBoostTasks: yieldBoostTasks ?? []
         )
 
-        let selectedIndex = delegations.firstIndex { $0.owner == selectedCollator } ?? NSNotFound
+        let selectedIndex = delegations.firstIndex { $0.collatorId == selectedCollator } ?? NSNotFound
 
         wireframe.showDelegationSelection(
             from: view,
@@ -96,6 +106,7 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
 
     private func createYieldBoostValidationRunner(
         for assetDisplayInfo: AssetBalanceDisplayInfo,
+        selectedCollatorName: String?,
         threshold: Decimal?
     ) -> DataValidationRunnerProtocol {
         DataValidationRunner(validators: [
@@ -139,6 +150,7 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
             dataValidatingFactory.cancelForOtherCollatorsExcept(
                 selectedCollatorId: selectedCollator,
                 tasks: yieldBoostTasks,
+                selectedCollatorName: selectedCollatorName,
                 locale: selectedLocale
             )
         ])
@@ -148,8 +160,19 @@ extension ParaStkYieldBoostSetupPresenter: ParaStkYieldBoostSetupPresenterProtoc
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let optTreshold = thresholdInput?.absoluteValue(from: maxSpendingAmount()) ??
             selectedRemoteBoostThreshold()
+        let selectedCollatorName: String? = selectedCollator.flatMap { accountId in
+            if let name = delegationIdentities?[accountId]?.displayName {
+                return name
+            } else {
+                return try? accountId.toAddress(using: chainAsset.chain.chainFormat)
+            }
+        }
 
-        let runner = createYieldBoostValidationRunner(for: assetDisplayInfo, threshold: optTreshold)
+        let runner = createYieldBoostValidationRunner(
+            for: assetDisplayInfo,
+            selectedCollatorName: selectedCollatorName,
+            threshold: optTreshold
+        )
 
         runner.runValidation { [weak self] in
             guard

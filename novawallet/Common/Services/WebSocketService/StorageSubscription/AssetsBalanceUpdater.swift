@@ -41,7 +41,7 @@ final class AssetsBalanceUpdater {
         self.logger = logger
     }
 
-    func handleAssetDetails(value: ChainStorageItem?, isRemoved: Bool) {
+    func handleAssetDetails(value: ChainStorageItem?, isRemoved: Bool, blockHash: Data?) {
         mutex.lock()
 
         defer {
@@ -55,10 +55,10 @@ final class AssetsBalanceUpdater {
             lastDetailsValue = value
         }
 
-        checkChanges(chainAssetId: chainAssetId, accountId: accountId, logger: logger)
+        checkChanges(chainAssetId: chainAssetId, accountId: accountId, blockHash: blockHash, logger: logger)
     }
 
-    func handleAssetAccount(value: ChainStorageItem?, isRemoved: Bool) {
+    func handleAssetAccount(value: ChainStorageItem?, isRemoved: Bool, blockHash: Data?) {
         mutex.lock()
 
         defer {
@@ -72,10 +72,10 @@ final class AssetsBalanceUpdater {
             lastAccountValue = value
         }
 
-        checkChanges(chainAssetId: chainAssetId, accountId: accountId, logger: logger)
+        checkChanges(chainAssetId: chainAssetId, accountId: accountId, blockHash: blockHash, logger: logger)
     }
 
-    private func checkChanges(chainAssetId: ChainAssetId, accountId: AccountId, logger: LoggerProtocol) {
+    private func checkChanges(chainAssetId: ChainAssetId, accountId: AccountId, blockHash: Data?, logger: LoggerProtocol) {
         if hasChanges, receivedAccount, receivedDetails {
             hasChanges = false
 
@@ -116,12 +116,23 @@ final class AssetsBalanceUpdater {
             changesWrapper.addDependency(wrapper: assetDetailsWrapper)
             saveOperation.addDependency(changesWrapper.targetOperation)
 
+            let accountData = lastAccountValue?.data
+
             saveOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
                     let maybeItem = try? changesWrapper.targetOperation.extractNoCancellableResultData()
 
                     if maybeItem != nil {
                         self?.eventCenter.notify(with: WalletBalanceChanged())
+
+                        let assetBalanceChangeEvent = AssetBalanceChanged(
+                            chainAssetId: chainAssetId,
+                            accountId: accountId,
+                            changes: accountData,
+                            block: blockHash
+                        )
+
+                        self?.eventCenter.notify(with: assetBalanceChangeEvent)
                     }
                 }
             }
