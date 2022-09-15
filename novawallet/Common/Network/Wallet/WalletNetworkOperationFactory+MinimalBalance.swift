@@ -79,7 +79,7 @@ extension WalletNetworkOperationFactory {
             let extras = try? asset.typeExtras?.map(to: StatemineAssetExtras.self),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let localKey = try? LocalStorageKeyFactory().createFromStoragePath(
-                .assetsDetails,
+                .assetsDetails(from: extras.palletName),
                 encodableElement: extras.assetId,
                 chainId: chain.chainId
             ) else {
@@ -93,7 +93,7 @@ extension WalletNetworkOperationFactory {
                 repository: chainStorage,
                 key: { localKey },
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                params: StorageRequestParams(path: .assetsDetails, shouldFallback: false)
+                params: StorageRequestParams(path: .assetsDetails(from: extras.palletName), shouldFallback: false)
             )
 
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
