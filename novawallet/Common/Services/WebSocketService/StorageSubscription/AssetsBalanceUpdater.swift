@@ -7,6 +7,7 @@ final class AssetsBalanceUpdater {
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
     let chainRepository: AnyDataProviderRepository<ChainStorageItem>
+    let extras: StatemineAssetExtras
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -24,6 +25,7 @@ final class AssetsBalanceUpdater {
     init(
         chainAssetId: ChainAssetId,
         accountId: AccountId,
+        extras: StatemineAssetExtras,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
         chainRepository: AnyDataProviderRepository<ChainStorageItem>,
@@ -33,6 +35,7 @@ final class AssetsBalanceUpdater {
     ) {
         self.chainAssetId = chainAssetId
         self.accountId = accountId
+        self.extras = extras
         self.chainRegistry = chainRegistry
         self.assetRepository = assetRepository
         self.chainRepository = chainRepository
@@ -79,11 +82,13 @@ final class AssetsBalanceUpdater {
         if hasChanges, receivedAccount, receivedDetails {
             hasChanges = false
 
+            let assetAccountPath = StorageCodingPath.assetsAccount(from: extras.palletName)
             let assetAccountWrapper: CompoundOperationWrapper<AssetAccount?> =
-                createStorageDecoderWrapper(for: lastAccountValue, path: .assetsAccount)
+                createStorageDecoderWrapper(for: lastAccountValue, path: assetAccountPath)
 
+            let assetDetailsPath = StorageCodingPath.assetsDetails(from: extras.palletName)
             let assetDetailsWrapper: CompoundOperationWrapper<AssetDetails?> =
-                createStorageDecoderWrapper(for: lastDetailsValue, path: .assetsDetails)
+                createStorageDecoderWrapper(for: lastDetailsValue, path: assetDetailsPath)
 
             let changesWrapper = createChangesOperationWrapper(
                 dependingOn: assetDetailsWrapper,
