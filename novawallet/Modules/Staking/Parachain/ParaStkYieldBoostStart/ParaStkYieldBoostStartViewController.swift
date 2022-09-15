@@ -90,17 +90,7 @@ final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder {
     }
 
     private func applyPeriodViewModel() {
-        let title: String
-
-        if let periodViewModel = periodViewModel {
-            title = R.string.localizable.commonEveryDaysFormat(
-                format: Int(bitPattern: periodViewModel),
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        } else {
-            title = ""
-        }
-
+        let title = periodViewModel?.localizedDaysPeriod(for: selectedLocale) ?? ""
         rootView.periodCell.bind(details: title)
     }
 
@@ -111,10 +101,7 @@ final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder {
             return
         }
 
-        let period = R.string.localizable.commonEveryDaysFormat(
-            format: Int(bitPattern: periodViewModel),
-            preferredLanguages: selectedLocale.rLanguages
-        ).lowercased()
+        let period = periodViewModel.localizedDaysPeriod(for: selectedLocale)
 
         rootView.acceptTermsView.controlContentView.detailsLabel.text = R.string.localizable.yieldBoostTermsMessage(
             period,
