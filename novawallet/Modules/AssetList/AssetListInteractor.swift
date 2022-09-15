@@ -78,7 +78,6 @@ final class AssetListInteractor: AssetListBaseInteractor {
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: changes)
         setupCrowdloansSubscription(from: Array(availableChains.values))
-        crowdloansSubscriptions.values.forEach { $0.refresh() }
     }
 
     private func clearLocksSubscription() {
@@ -165,8 +164,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
             return
         }
         let crowdloanChains = allChains.filter { $0.hasCrowdloans }
+        let newParachainIds = Set(crowdloanChains.map(\.chainId))
+
+        guard !crowdloanChains.isEmpty, parachainIds != newParachainIds else {
+            return
+        }
+
         clearCrowdloansSubscription()
-        parachainIds = .init()
+        parachainIds = newParachainIds
 
         for chain in crowdloanChains {
             guard let accountId = selectedMetaAccount.fetch(
@@ -174,8 +179,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
             )?.accountId else {
                 return
             }
-            parachainIds.insert(chain.chainId)
             crowdloansSubscriptions[chain.identifier] = subscribeToCrowdloansProvider(for: accountId, chain: chain)
+            crowdloansSubscriptions[chain.identifier]?.refresh()
+            logger?.debug("Crowdloans for chain: \(chain.name) will refresh")
         }
     }
 

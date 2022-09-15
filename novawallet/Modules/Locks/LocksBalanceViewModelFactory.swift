@@ -6,6 +6,7 @@ protocol LocksBalanceViewModelFactoryProtocol {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
+        crowdloans: [CrowdloanContributionData],
         locale: Locale
     ) -> FormattedBalance
     func formatPlankValue(
@@ -51,6 +52,7 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
+        crowdloans: [CrowdloanContributionData],
         locale: Locale
     ) -> FormattedBalance {
         var totalPrice: Decimal = 0
@@ -88,9 +90,30 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
             lastPriceData = priceData
         }
 
-        let formattedTotal = formatPrice(amount: totalPrice, priceData: lastPriceData, locale: locale)
+        let crowdloansTotalPrice: Decimal = crowdloans.reduce(0) { result, crowdloan in
+            guard let asset = chains[crowdloan.chainId]?.utilityAsset() else {
+                return result
+            }
+            let priceData = prices[.init(chainId: crowdloan.chainId, assetId: asset.assetId)]
+            let rate = priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0
+            return result + calculateAmount(
+                from: crowdloan.amount,
+                precision: asset.precision,
+                rate: rate
+            )
+        }
+
+        let formattedTotal = formatPrice(
+            amount: totalPrice + crowdloansTotalPrice,
+            priceData: lastPriceData,
+            locale: locale
+        )
         let formattedTransferrable = formatPrice(amount: transferrablePrice, priceData: lastPriceData, locale: locale)
-        let formattedLocks = formatPrice(amount: locksPrice, priceData: lastPriceData, locale: locale)
+        let formattedLocks = formatPrice(
+            amount: locksPrice + crowdloansTotalPrice,
+            priceData: lastPriceData,
+            locale: locale
+        )
         return .init(
             total: formattedTotal,
             transferrable: formattedTransferrable,

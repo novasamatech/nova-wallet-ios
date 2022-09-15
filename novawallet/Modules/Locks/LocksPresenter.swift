@@ -30,6 +30,7 @@ final class LocksPresenter {
             balances: input.balances,
             chains: input.chains,
             prices: input.prices,
+            crowdloans: input.crowdloans,
             locale: selectedLocale
         )
 
