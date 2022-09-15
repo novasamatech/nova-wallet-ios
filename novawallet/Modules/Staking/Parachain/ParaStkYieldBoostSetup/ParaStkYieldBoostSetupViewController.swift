@@ -84,6 +84,8 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
 
         setupThresholdAmountInputAccessoryView()
 
+        rootView.networkFeeView.locale = selectedLocale
+
         updateActionButtonState()
     }
 
@@ -206,15 +208,15 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
             return
         }
 
-        if !rootView.amountInputView.completed {
-            let title = R.string.localizable.transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+        if !hasChanges {
+            let title = R.string.localizable.commonNoChanges(preferredLanguages: selectedLocale.rLanguages)
             rootView.actionButton.applyState(title: title, enabled: false)
 
             return
         }
 
-        if !hasChanges {
-            let title = R.string.localizable.commonNoChanges(preferredLanguages: selectedLocale.rLanguages)
+        if !rootView.amountInputView.completed {
+            let title = R.string.localizable.transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
             rootView.actionButton.applyState(title: title, enabled: false)
 
             return
@@ -308,13 +310,7 @@ extension ParaStkYieldBoostSetupViewController: ParaStkYieldBoostSetupViewProtoc
     }
 
     func didReceiveYieldBoostSelected(_ isYieldBoosted: Bool) {
-        rootView.withoutYieldBoostOptionView.isChoosen = !isYieldBoosted
-        rootView.withYieldBoostOptionView.isChoosen = isYieldBoosted
-
-        rootView.thresholdDetailsLabel.isHidden = !isYieldBoosted
-        rootView.amountView.isHidden = !isYieldBoosted
-        rootView.amountInputView.isHidden = !isYieldBoosted
-        rootView.poweredByView.isHidden = !isYieldBoosted
+        rootView.apply(isYieldBoosted: isYieldBoosted)
     }
 
     func didReceiveYieldBoostPeriod(viewModel: ParaStkYieldBoostPeriodViewModel?) {
@@ -339,6 +335,10 @@ extension ParaStkYieldBoostSetupViewController: ParaStkYieldBoostSetupViewProtoc
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
 
         updateActionButtonState()
+    }
+
+    func didReceiveNetworkFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.networkFeeView.bind(viewModel: viewModel)
     }
 
     func didStartLoading() {

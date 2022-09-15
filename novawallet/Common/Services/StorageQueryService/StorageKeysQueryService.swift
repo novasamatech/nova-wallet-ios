@@ -2,6 +2,11 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
+enum StorageKeysRPCMethod {
+    public static let getStorageKeysPaged = "state_getKeysPaged"
+    public static let getStorageKeys = "state_getKeys"
+}
+
 final class StorageKeysQueryService<T>: Longrunable {
     typealias ResultType = [T]
 
@@ -18,9 +23,10 @@ final class StorageKeysQueryService<T>: Longrunable {
 
     let connection: JSONRPCEngine
     let operationManager: OperationManagerProtocol
-    let pageSize: UInt32
+    let pageSize: UInt32?
     let prefixKeyClosure: () throws -> Data
     let mapper: AnyMapper<Data, T>
+    let blockHash: Data?
 
     private var state: State = .none
     private var completionClosure: ((Result<ResultType, Error>) -> Void)?
@@ -32,13 +38,15 @@ final class StorageKeysQueryService<T>: Longrunable {
         operationManager: OperationManagerProtocol,
         prefixKeyClosure: @escaping () throws -> Data,
         mapper: AnyMapper<Data, T>,
-        pageSize: UInt32 = 1000
+        pageSize: UInt32? = 1000,
+        blockHash: Data? = nil
     ) {
         self.connection = connection
         self.operationManager = operationManager
         self.prefixKeyClosure = prefixKeyClosure
         self.pageSize = pageSize
         self.mapper = mapper
+        self.blockHash = blockHash
     }
 
     private func loadNext() {
@@ -49,15 +57,27 @@ final class StorageKeysQueryService<T>: Longrunable {
         do {
             let prefixKey = try prefixKeyClosure()
 
+            let offset: String?
+            let method: String
+
+            if pageSize != nil {
+                offset = lastKey
+                method = StorageKeysRPCMethod.getStorageKeysPaged
+            } else {
+                offset = nil
+                method = StorageKeysRPCMethod.getStorageKeys
+            }
+
             let request = PagedKeysRequest(
                 key: prefixKey.toHex(includePrefix: true),
                 count: pageSize,
-                offset: lastKey.map { $0 }
+                offset: offset,
+                blockHash: blockHash
             )
 
             let operation = JSONRPCOperation<PagedKeysRequest, [String]>(
                 engine: connection,
-                method: RPCMethod.getStorageKeysPaged,
+                method: method,
                 parameters: request
             )
 
@@ -100,11 +120,11 @@ final class StorageKeysQueryService<T>: Longrunable {
 
             let resultItems = oldItems + mappedItems
 
-            if mappedItems.count < pageSize {
-                completeWithResult(resultItems)
-            } else {
+            if let pageSize = pageSize, mappedItems.count >= pageSize {
                 state = .inProgress(partialResult: resultItems, lastKey: response.last)
                 loadNext()
+            } else {
+                completeWithResult(resultItems)
             }
         } catch {
             completeWithError(error)

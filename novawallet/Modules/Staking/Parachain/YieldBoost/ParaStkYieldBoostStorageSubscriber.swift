@@ -7,17 +7,21 @@ protocol ParaStkYieldBoostStorageSubscriber where Self: AnyObject {
     var yieldBoostSubscriptionHandler: ParaStkYieldBoostSubscriptionHandler { get }
 
     func subscribeYieldBoostTasks(
-        for chainId: ChainModel.Id,
+        for chainAssetId: ChainAssetId,
         accountId: AccountId
     ) -> AnySingleValueProvider<[ParaStkYieldBoostState.Task]>?
 }
 
 extension ParaStkYieldBoostStorageSubscriber {
     func subscribeYieldBoostTasks(
-        for chainId: ChainModel.Id,
+        for chainAssetId: ChainAssetId,
         accountId: AccountId
     ) -> AnySingleValueProvider<[ParaStkYieldBoostState.Task]>? {
-        guard let provider = try? yieldBoostProviderFactory.getTasksProvider(for: chainId, accountId: accountId) else {
+        guard
+            let provider = try? yieldBoostProviderFactory.getTasksProvider(
+                for: chainAssetId,
+                accountId: accountId
+            ) else {
             return nil
         }
 
@@ -25,7 +29,7 @@ extension ParaStkYieldBoostStorageSubscriber {
             let finalValue = changes.reduceToLastChange()
             self?.yieldBoostSubscriptionHandler.handleYieldBoostTasks(
                 result: .success(finalValue),
-                chainId: chainId,
+                chainId: chainAssetId.chainId,
                 accountId: accountId
             )
         }
@@ -33,7 +37,7 @@ extension ParaStkYieldBoostStorageSubscriber {
         let failureClosure = { [weak self] (error: Error) in
             self?.yieldBoostSubscriptionHandler.handleYieldBoostTasks(
                 result: .failure(error),
-                chainId: chainId,
+                chainId: chainAssetId.chainId,
                 accountId: accountId
             )
             return

@@ -45,9 +45,8 @@ final class ParaStkYieldBoostSetupWireframe: ParaStkYieldBoostSetupWireframeProt
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     ) {
-        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
+        guard let pickerVew = ModalPickerFactory.createYieldBoostCollatorsSelectionList(
             viewModels,
-            actionViewModel: nil,
             selectedIndex: selectedIndex,
             delegate: delegate,
             context: context
@@ -55,6 +54,6 @@ final class ParaStkYieldBoostSetupWireframe: ParaStkYieldBoostSetupWireframeProt
             return
         }
 
-        view?.controller.present(infoVew, animated: true, completion: nil)
+        view?.controller.present(pickerVew, animated: true, completion: nil)
     }
 }

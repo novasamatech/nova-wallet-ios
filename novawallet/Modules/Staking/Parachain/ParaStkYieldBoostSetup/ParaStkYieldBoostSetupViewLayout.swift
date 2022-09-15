@@ -1,6 +1,11 @@
 import UIKit
 
 final class ParaStkYieldBoostSetupViewLayout: UIView {
+    private enum Constants {
+        static let hasYieldBoostSpacing: CGFloat = 16.0
+        static let noYieldBoostSpacing: CGFloat = 8.0
+    }
+
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
@@ -47,6 +52,12 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
+    let networkFeeView: NetworkFeeView = {
+        let view = UIFactory.default.createNetwork26FeeView()
+        view.verticalOffset = 13.0
+        return view
+    }()
+
     let poweredByView: UIImageView = .create {
         $0.image = R.image.imageYieldBoostPowered()
         $0.contentMode = .center
@@ -63,6 +74,22 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func apply(isYieldBoosted: Bool) {
+        withoutYieldBoostOptionView.isChoosen = !isYieldBoosted
+        withYieldBoostOptionView.isChoosen = isYieldBoosted
+
+        thresholdDetailsLabel.isHidden = !isYieldBoosted
+        amountView.isHidden = !isYieldBoosted
+        amountInputView.isHidden = !isYieldBoosted
+        poweredByView.isHidden = !isYieldBoosted
+
+        if isYieldBoosted {
+            containerView.stackView.setCustomSpacing(Constants.hasYieldBoostSpacing, after: withYieldBoostOptionView)
+        } else {
+            containerView.stackView.setCustomSpacing(Constants.noYieldBoostSpacing, after: withYieldBoostOptionView)
+        }
     }
 
     private func setupLayout() {
@@ -102,7 +129,7 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
             make.height.equalTo(56.0)
         }
 
-        containerView.stackView.setCustomSpacing(16.0, after: withYieldBoostOptionView)
+        containerView.stackView.setCustomSpacing(Constants.hasYieldBoostSpacing, after: withYieldBoostOptionView)
 
         containerView.stackView.addArrangedSubview(thresholdDetailsLabel)
 
@@ -116,7 +143,12 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
             make.height.equalTo(64.0)
         }
 
-        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+        containerView.stackView.setCustomSpacing(8.0, after: amountInputView)
+
+        containerView.stackView.addArrangedSubview(networkFeeView)
+
+        containerView.stackView.setCustomSpacing(8.0, after: networkFeeView)
+
         containerView.stackView.addArrangedSubview(poweredByView)
     }
 }
