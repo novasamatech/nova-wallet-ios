@@ -142,12 +142,12 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "Balances", itemName: "Locks")
     }
 
-    static var assetsAccount: StorageCodingPath {
-        StorageCodingPath(moduleName: "Assets", itemName: "Account")
+    static func assetsAccount(from moduleName: String?) -> StorageCodingPath {
+        StorageCodingPath(moduleName: moduleName ?? "Assets", itemName: "Account")
     }
 
-    static var assetsDetails: StorageCodingPath {
-        StorageCodingPath(moduleName: "Assets", itemName: "Asset")
+    static func assetsDetails(from moduleName: String?) -> StorageCodingPath {
+        StorageCodingPath(moduleName: moduleName ?? "Assets", itemName: "Asset")
     }
 
     static var ormlTokenAccount: StorageCodingPath {
