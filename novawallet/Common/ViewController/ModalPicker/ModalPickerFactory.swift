@@ -370,6 +370,7 @@ enum ModalPickerFactory {
         viewController.headerHeight = 40.0
         viewController.footerHeight = 0.0
         viewController.headerBorderType = []
+        viewController.isScrollEnabled = true
 
         if let actionViewModel = actionViewModel {
             viewController.actionType = .iconTitle(viewModel: actionViewModel)
