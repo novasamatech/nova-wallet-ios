@@ -7,11 +7,13 @@ struct AssetListViewFactory {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
         let interactor = AssetListInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             nftLocalSubscriptionFactory: NftLocalSubscriptionFactory.shared,
+            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,
             settingsManager: SettingsManager.shared,

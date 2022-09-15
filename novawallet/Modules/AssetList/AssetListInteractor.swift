@@ -16,22 +16,24 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     let nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
+    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
+    private var parachainIds = Set<ChainModel.Id>()
     private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private var locks: [ChainAssetId: [AssetLock]] = [:]
     private var crowdloansSubscriptions: [ChainModel.Id: StreamableProvider<CrowdloanContributionData>] = [:]
     private var crowdloans: [ChainModel.Id: [CrowdloanContributionData]] = [:]
-    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
+        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
@@ -41,19 +43,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
-
-        let crowdloanOperationFactory = CrowdloanOperationFactory(
-            requestOperationFactory: StorageRequestFactory(remoteFactory: StorageKeyFactory(), operationManager: OperationManagerFacade.sharedManager),
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        crowdloansLocalSubscriptionFactory = CrowdloanContributionLocalSubscriptionFactory(
-            crowdloanOperationFactory: crowdloanOperationFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            chainRegistry: chainRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
-            logger: logger ?? Logger.shared
-        )
+        self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -88,18 +78,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: changes)
         setupCrowdloansSubscription(from: Array(availableChains.values))
+        crowdloansSubscriptions.values.forEach { $0.refresh() }
     }
 
     private func clearLocksSubscription() {
         assetLocksSubscriptions.values.forEach { $0.removeObserver(self) }
         assetLocksSubscriptions = [:]
         locks = [:]
-    }
-
-    private func clearCrowdloansSubscription() {
-        crowdloansSubscriptions.values.forEach { $0.removeObserver(self) }
-        crowdloansSubscriptions = [:]
-        crowdloans = [:]
     }
 
     private func providerWalletInfo() {
@@ -124,6 +109,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
         nftSubscription = nil
 
         nftChainIds = nil
+    }
+
+    private func clearCrowdloansSubscription() {
+        crowdloansSubscriptions.values.forEach { $0.removeObserver(self) }
+        crowdloansSubscriptions = [:]
+        crowdloans = [:]
+        parachainIds = .init()
     }
 
     override func applyChanges(
@@ -174,6 +166,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         }
         let crowdloanChains = allChains.filter { $0.hasCrowdloans }
         clearCrowdloansSubscription()
+        parachainIds = .init()
 
         for chain in crowdloanChains {
             guard let accountId = selectedMetaAccount.fetch(
@@ -181,12 +174,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
             )?.accountId else {
                 return
             }
-            guard crowdloansSubscriptions[chain.identifier] == nil else {
-                return
-            }
-
+            parachainIds.insert(chain.chainId)
             crowdloansSubscriptions[chain.identifier] = subscribeToCrowdloansProvider(for: accountId, chain: chain)
-            crowdloansSubscriptions[chain.identifier]?.refresh()
         }
     }
 
@@ -209,6 +198,32 @@ final class AssetListInteractor: AssetListBaseInteractor {
             selectedMetaAccount: selectedMetaAccount
         ) { [weak self] in
             self?.subscribeToAllLocksProvider(for: $0)
+        }
+    }
+
+    override func handleAccountBalance(
+        result: Result<[DataProviderChange<AssetBalance>], Error>,
+        accountId: AccountId
+    ) {
+        super.handleAccountBalance(result: result, accountId: accountId)
+
+        switch result {
+        case let .failure(error):
+            logger?.error(error.localizedDescription)
+        case let .success(changes):
+            var updatingChains = Set<ChainModel.Id>()
+            updatingChains = changes.reduce(into: updatingChains) { accum, change in
+                if let assetBalanceId = assetBalanceIdMapping[change.identifier],
+                   parachainIds.contains(assetBalanceId.chainId),
+                   assetBalanceId.accountId == accountId {
+                    accum.insert(assetBalanceId.chainId)
+                }
+            }
+
+            updatingChains.forEach { chainId in
+                crowdloansSubscriptions[chainId]?.refresh()
+                logger?.debug("Crowdloans for chain: \(chainId) will refresh")
+            }
         }
     }
 
@@ -345,6 +360,7 @@ extension AssetListInteractor: CrowdloanContributionLocalSubscriptionHandler, Cr
         guard let accountId = selectedMetaAccount.fetch(
             for: chain.accountRequest()
         )?.accountId, accountId == account else {
+            logger?.warning("Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different")
             return
         }
 

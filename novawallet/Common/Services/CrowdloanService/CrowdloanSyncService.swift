@@ -1,52 +1,9 @@
 import SubstrateSdk
 import RobinHood
 
-protocol CrowdloanContributionOperationFactoryProtocol {
-    func fetchCrowdloansOperation() -> CompoundOperationWrapper<[Crowdloan]>
-
-    func fetchContributionOperation(
-        accountId: AccountId,
-        index: FundIndex
-    ) -> CompoundOperationWrapper<CrowdloanContributionResponse>
-}
-
-final class CrowdloanContributionOperationFactory: CrowdloanContributionOperationFactoryProtocol {
-    let factory: CrowdloanOperationFactoryProtocol
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
-
-    init(
-        factory: CrowdloanOperationFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
-    ) {
-        self.factory = factory
-        self.connection = connection
-        self.runtimeService = runtimeService
-    }
-
-    func fetchCrowdloansOperation() -> CompoundOperationWrapper<[Crowdloan]> {
-        factory.fetchCrowdloansOperation(
-            connection: connection,
-            runtimeService: runtimeService
-        )
-    }
-
-    func fetchContributionOperation(
-        accountId: AccountId,
-        index: FundIndex
-    ) -> CompoundOperationWrapper<CrowdloanContributionResponse> {
-        factory.fetchContributionOperation(
-            connection: connection,
-            runtimeService: runtimeService,
-            accountId: accountId,
-            index: index
-        )
-    }
-}
-
 final class CrowdloanOnChainSyncService: BaseSyncService {
-    private let remoteOperationsFactory: CrowdloanContributionOperationFactoryProtocol
+    private let operationFactory: CrowdloanOperationFactoryProtocol
+    private let chainRegistry: ChainRegistryProtocol
     private let operationManager: OperationManagerProtocol
     private let operationQueue: OperationQueue
     private let accountId: AccountId
@@ -54,13 +11,15 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
     private let repository: AnyDataProviderRepository<CrowdloanContributionData>
 
     init(
-        remoteOperationsFactory: CrowdloanContributionOperationFactoryProtocol,
-        operationQueue: OperationQueue,
+        operationFactory: CrowdloanOperationFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<CrowdloanContributionData>,
         accountId: AccountId,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        operationQueue: OperationQueue
     ) {
-        self.remoteOperationsFactory = remoteOperationsFactory
+        self.operationFactory = operationFactory
+        self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.repository = repository
         self.accountId = accountId
@@ -70,6 +29,8 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
 
     private func contributionsFetchOperation(
         dependingOn fetchCrowdloansOperation: CompoundOperationWrapper<[Crowdloan]>,
+        connection: ChainConnection,
+        runtimeService: RuntimeProviderProtocol,
         accountId: AccountId
     ) -> BaseOperation<[RemoteCrowdloanContribution]> {
         let contributionsOperation: BaseOperation<[RemoteCrowdloanContribution]> =
@@ -77,10 +38,13 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
                 guard let self = self else {
                     return []
                 }
+
                 let crowdloans = try fetchCrowdloansOperation.targetOperation.extractNoCancellableResultData()
 
                 return crowdloans.map { crowdloan in
-                    let fetchOperation = self.remoteOperationsFactory.fetchContributionOperation(
+                    let fetchOperation = self.operationFactory.fetchContributionOperation(
+                        connection: connection,
+                        runtimeService: runtimeService,
                         accountId: accountId,
                         index: crowdloan.fundInfo.index
                     )
@@ -153,9 +117,19 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        let fetchCrowdloansOperation = remoteOperationsFactory.fetchCrowdloansOperation()
+        guard let connection = chainRegistry.getConnection(for: chainId),
+              let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            logger?.error("Sync is failed. Chain settings is invalid")
+            return
+        }
+        let fetchCrowdloansOperation = operationFactory.fetchCrowdloansOperation(
+            connection: connection,
+            runtimeService: runtimeService
+        )
         let contributionsFetchOperation = contributionsFetchOperation(
             dependingOn: fetchCrowdloansOperation,
+            connection: connection,
+            runtimeService: runtimeService,
             accountId: accountId
         )
         let changesWrapper = createChangesOperationWrapper(
