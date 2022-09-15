@@ -7,6 +7,7 @@ final class ParaStkYieldBoostSetupPresenter {
     let wireframe: ParaStkYieldBoostSetupWireframeProtocol
     let interactor: ParaStkYieldBoostSetupInteractorInputProtocol
     let chainAsset: ChainAsset
+    let collatorSelectionViewModelFactory: YieldBoostCollatorSelectionFactoryProtocol
     let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol
@@ -36,6 +37,7 @@ final class ParaStkYieldBoostSetupPresenter {
         wireframe: ParaStkYieldBoostSetupWireframeProtocol,
         initState: ParaStkYieldBoostInitState,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        collatorSelectionViewModelFactory: YieldBoostCollatorSelectionFactoryProtocol,
         accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
         dataValidatingFactory: ParaStkYieldBoostValidatorFactoryProtocol,
         chainAsset: ChainAsset,
@@ -49,6 +51,7 @@ final class ParaStkYieldBoostSetupPresenter {
         scheduledRequests = initState.scheduledRequests
         delegationIdentities = initState.delegationIdentities
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.collatorSelectionViewModelFactory = collatorSelectionViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         yieldBoostTasks = initState.yieldBoostTasks
@@ -194,8 +197,8 @@ final class ParaStkYieldBoostSetupPresenter {
             if
                 let selectedCollator = selectedCollator,
                 let executionTime = taskExecutionTime,
-                let period = yieldBoostParams?.period,
-                let accountMinimum = accountMinimumDecimal?.toSubstrateAmount(precision: precision) {
+                let period = yieldBoostParams?.period {
+                let accountMinimum = accountMinimumDecimal?.toSubstrateAmount(precision: precision) ?? 0
                 let existingTaskIds = yieldBoostTasks?.map(\.taskId)
 
                 interactor.estimateScheduleAutocompoundFee(
@@ -209,8 +212,21 @@ final class ParaStkYieldBoostSetupPresenter {
         } else {
             if let taskId = yieldBoostTasks?.first(where: { $0.collatorId == selectedCollator })?.taskId {
                 interactor.estimateCancelAutocompoundFee(for: taskId)
+            } else {
+                // yield boost is not enabled so try to estimate using dummy parameters
+                let period = yieldBoostParams.map { AutomationTime.Seconds(TimeInterval($0.period).secondsFromDays) }
+
+                interactor.estimateScheduleAutocompoundFee(
+                    for: selectedCollator ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize),
+                    initTime: taskExecutionTime ?? 0,
+                    frequency: period ?? AutomationTime.Seconds(TimeInterval.secondsInHour),
+                    accountMinimum: 0,
+                    cancellingTaskIds: Set()
+                )
             }
         }
+
+        provideNetworkFee()
     }
 
     func refreshFeeIfNeeded() {

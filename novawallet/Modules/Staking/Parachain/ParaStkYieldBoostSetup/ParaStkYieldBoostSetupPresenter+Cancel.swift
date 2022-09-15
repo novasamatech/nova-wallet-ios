@@ -5,6 +5,8 @@ extension ParaStkYieldBoostSetupPresenter {
     func didReceiveCancelTask(feeInfo: RuntimeDispatchInfo) {
         if !isYieldBoostSelected {
             updateExtrinsicFee(BigUInt(feeInfo.fee))
+
+            provideNetworkFee()
         }
     }
 
