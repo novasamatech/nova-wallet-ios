@@ -72,7 +72,8 @@ class AutocompounDelegateStakeTests: XCTestCase {
         let wrapper = AutomationTimeOperationFactory(requestFactory: remoteRequestFactory).createTasksFetchOperation(
             for: connection,
             runtimeProvider: runtimeProvider,
-            account: accountId
+            account: accountId,
+            at: nil
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
