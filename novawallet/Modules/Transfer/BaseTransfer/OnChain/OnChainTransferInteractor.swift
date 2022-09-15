@@ -250,7 +250,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         case let .statemine(extras):
             let call = callFactory.assetsTransfer(
                 to: recepient,
-                assetId: extras.assetId,
+                extras: extras,
                 amount: amount
             )
 

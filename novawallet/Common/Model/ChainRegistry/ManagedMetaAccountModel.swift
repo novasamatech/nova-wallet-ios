@@ -27,4 +27,8 @@ extension ManagedMetaAccountModel {
     func replacingInfo(_ newInfo: MetaAccountModel) -> ManagedMetaAccountModel {
         ManagedMetaAccountModel(info: newInfo, isSelected: isSelected, order: order)
     }
+
+    func replacingSelection(_ isSelected: Bool) -> ManagedMetaAccountModel {
+        ManagedMetaAccountModel(info: info, isSelected: isSelected, order: order)
+    }
 }
