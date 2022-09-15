@@ -1,7 +1,10 @@
 import Foundation
 import UIKit
 
-final class AccountDetailsSelectionCell: UITableViewCell, ModalPickerCellProtocol {
+typealias AccountDetailsSelectionCell = AccountDetailsGenericSelectionCell<AccountDetailsBalanceDecorator>
+
+final class AccountDetailsGenericSelectionCell<D: AccountDetailsSelectionDecorator>: UITableViewCell,
+    ModalPickerCellProtocol {
     typealias Model = SelectableViewModel<AccountDetailsSelectionViewModel>
 
     var checkmarked: Bool {
@@ -14,8 +17,8 @@ final class AccountDetailsSelectionCell: UITableViewCell, ModalPickerCellProtoco
         }
     }
 
-    let detailsView: AccountDetailsSelectionView = {
-        let view = AccountDetailsSelectionView()
+    let detailsView: AccountDetailsGenericSelectionView<D> = {
+        let view = AccountDetailsGenericSelectionView<D>()
         view.showsDisclosureIndicator = false
         return view
     }()
