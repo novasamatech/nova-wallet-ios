@@ -11,7 +11,7 @@ protocol SubstrateCallFactoryProtocol {
 
     func assetsTransfer(
         to receiver: AccountId,
-        assetId: String,
+        extras: StatemineAssetExtras,
         amount: BigUInt
     ) -> RuntimeCall<AssetsTransfer>
 
@@ -120,11 +120,17 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
 
     func assetsTransfer(
         to receiver: AccountId,
-        assetId: String,
+        extras: StatemineAssetExtras,
         amount: BigUInt
     ) -> RuntimeCall<AssetsTransfer> {
-        let args = AssetsTransfer(assetId: assetId, target: .accoundId(receiver), amount: amount)
-        return RuntimeCall(moduleName: "Assets", callName: "transfer", args: args)
+        let args = AssetsTransfer(assetId: extras.assetId, target: .accoundId(receiver), amount: amount)
+        let callCodingPath = CallCodingPath.assetsTransfer(for: extras.palletName)
+
+        return RuntimeCall(
+            moduleName: callCodingPath.moduleName,
+            callName: callCodingPath.callName,
+            args: args
+        )
     }
 
     func nativeTransfer(
