@@ -63,6 +63,12 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
         return cell
     }
 
+    private func dequeueCommonHeader(from tableView: UITableView) -> RoundedIconTitleHeaderView {
+        let view: RoundedIconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
+        view.contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 8.0, right: 16.0)
+        return view
+    }
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section = basePresenter.section(at: section)
 
@@ -70,8 +76,7 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
         case .secrets:
             return nil
         case .watchOnly:
-            let view: RoundedIconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-            view.contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 8.0, right: 16.0)
+            let view = dequeueCommonHeader(from: tableView)
             let icon = R.image.iconWatchOnlyHeader()
             let title = R.string.localizable.commonWatchOnly(
                 preferredLanguages: selectedLocale.rLanguages
@@ -80,10 +85,18 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
             view.bind(title: title, icon: icon)
             return view
         case .paritySigner:
-            let view: RoundedIconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-            view.contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 8.0, right: 16.0)
+            let view = dequeueCommonHeader(from: tableView)
             let icon = R.image.iconParitySignerHeader()
             let title = R.string.localizable.commonParitySigner(
+                preferredLanguages: selectedLocale.rLanguages
+            ).uppercased()
+
+            view.bind(title: title, icon: icon)
+            return view
+        case .ledger:
+            let view = dequeueCommonHeader(from: tableView)
+            let icon = R.image.iconLedgerHeader()
+            let title = R.string.localizable.commonLedger(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
 
@@ -104,7 +117,7 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
         switch section.type {
         case .secrets:
             return 0.0
-        case .watchOnly, .paritySigner:
+        case .watchOnly, .paritySigner, .ledger:
             return 46.0
         }
     }

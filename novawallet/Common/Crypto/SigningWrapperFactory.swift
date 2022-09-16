@@ -42,6 +42,12 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
                 metaId: metaId,
                 chainId: accountResponse.chainId
             )
+        case .ledger:
+            return LedgerSigningWrapper(
+                uiPresenter: uiPresenter,
+                metaId: metaId,
+                chainId: accountResponse.chainId
+            )
         }
     }
 
@@ -54,7 +60,9 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return NoSigningSupportWrapper()
+            return NoSigningSupportWrapper(type: .paritySigner)
+        case .ledger:
+            return NoSigningSupportWrapper(type: .ledger)
         }
     }
 
@@ -65,7 +73,9 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
-            return NoSigningSupportWrapper()
+            return NoSigningSupportWrapper(type: .paritySigner)
+        case .ledger:
+            return NoSigningSupportWrapper(type: .ledger)
         }
     }
 }

@@ -33,7 +33,7 @@ final class DAppAuthSettingsPresenter {
     }
 
     private func provideWalletViewModel() {
-        let iconModel = try? iconGenerator.generateFromAccountId(wallet.substrateAccountId)
+        let iconModel = wallet.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
         let iconViewModel = iconModel.map { DrawableIconViewModel(icon: $0) }
 
         let viewModel = DisplayWalletViewModel(

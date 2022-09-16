@@ -35,13 +35,24 @@ extension AddAccount {
             view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
         }
 
-        func showHardwareWalletCreate(from view: OnboardingMainViewProtocol?) {
+        func showParitySignerWalletCreation(from view: OnboardingMainViewProtocol?) {
             guard let paritySignerWelcomeView = ParitySignerWelcomeViewFactory.createAddAccountView() else {
                 return
             }
 
             view?.controller.navigationController?.pushViewController(
                 paritySignerWelcomeView.controller,
+                animated: true
+            )
+        }
+
+        func showLedgerWalletCreation(from view: OnboardingMainViewProtocol?) {
+            guard let ledgerInstructions = LedgerInstructionsViewFactory.createView(for: .addWallet) else {
+                return
+            }
+
+            view?.controller.navigationController?.pushViewController(
+                ledgerInstructions.controller,
                 animated: true
             )
         }

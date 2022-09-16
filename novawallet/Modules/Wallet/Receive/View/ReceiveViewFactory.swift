@@ -13,7 +13,7 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
 
     weak var commandFactory: WalletCommandFactoryProtocol?
 
-    private lazy var iconGenerator = PolkadotIconGenerator()
+    private lazy var viewModelFactory = DisplayAddressViewModelFactory()
 
     init(
         accountId: AccountId,
@@ -28,17 +28,16 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
     }
 
     func createHeaderView() -> UIView? {
-        guard
-            let accountIcon = try? PolkadotIconGenerator().generateFromAccountId(accountId),
-            let address = try? accountId.toAddress(using: chain.chainFormat) else {
+        guard let address = try? accountId.toAddress(using: chain.chainFormat) else {
             return nil
         }
 
+        let viewModel = viewModelFactory.createViewModel(from: address).cellViewModel
+
         let accountViewModel = ChainAccountViewModel(
             networkName: chain.name,
-            address: address,
-            accountIcon: accountIcon,
-            networkIconViewModel: RemoteImageViewModel(url: assetInfo.icon ?? chain.icon)
+            networkIconViewModel: RemoteImageViewModel(url: assetInfo.icon ?? chain.icon),
+            displayAddressViewModel: viewModel
         )
 
         let receiveView = ReceiveHeaderView()

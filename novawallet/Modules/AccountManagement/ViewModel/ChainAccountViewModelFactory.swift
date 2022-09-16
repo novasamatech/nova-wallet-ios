@@ -89,7 +89,7 @@ final class ChainAccountViewModelFactory {
             let hasAction: Bool
 
             switch wallet.type {
-            case .secrets, .watchOnly:
+            case .secrets, .watchOnly, .ledger:
                 warning = R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages)
                 hasAction = true
             case .paritySigner:
@@ -153,22 +153,31 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
         let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
 
-        guard !customSecretAccountList.isEmpty else {
-            return [ChainAccountListSectionViewModel(
-                section: .sharedSecret,
-                chainAccounts: sharedSecretAccountList
-            )]
-        }
+        switch wallet.type {
+        case .secrets, .watchOnly, .paritySigner:
+            guard !customSecretAccountList.isEmpty else {
+                return [ChainAccountListSectionViewModel(
+                    section: .sharedSecret,
+                    chainAccounts: sharedSecretAccountList
+                )]
+            }
 
-        return [
-            ChainAccountListSectionViewModel(
-                section: .customSecret,
-                chainAccounts: customSecretAccountList
-            ),
-            ChainAccountListSectionViewModel(
-                section: .sharedSecret,
-                chainAccounts: sharedSecretAccountList
-            )
-        ]
+            return [
+                ChainAccountListSectionViewModel(
+                    section: .customSecret,
+                    chainAccounts: customSecretAccountList
+                ),
+                ChainAccountListSectionViewModel(
+                    section: .sharedSecret,
+                    chainAccounts: sharedSecretAccountList
+                )
+            ]
+        case .ledger:
+            let allChainAccounts = customSecretAccountList + sharedSecretAccountList
+
+            let section = ChainAccountListSectionViewModel(section: .noSection, chainAccounts: allChainAccounts)
+
+            return [section]
+        }
     }
 }

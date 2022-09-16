@@ -24,7 +24,10 @@ final class ParitySignerTxScanInteractor {
         if let signaturePayload = signaturePayload {
             return signaturePayload
         } else {
-            signaturePayload = try? ExtrinsicSignatureConverter.convertParitySignerSignaturePayloadToRegular(signingData)
+            signaturePayload = try? ExtrinsicSignatureConverter.convertParitySignerSignaturePayloadToRegular(
+                signingData
+            )
+
             return signaturePayload
         }
     }

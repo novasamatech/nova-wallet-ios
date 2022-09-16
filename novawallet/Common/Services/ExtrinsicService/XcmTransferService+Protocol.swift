@@ -272,7 +272,10 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
-            let operationFactory = try createOperationFactory(for: request.unweighted.origin.chain, chainAccount: chainAccount)
+            let operationFactory = try createOperationFactory(
+                for: request.unweighted.origin.chain,
+                chainAccount: chainAccount
+            )
 
             let submitWrapper = operationFactory.submit({ builder in
                 let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0

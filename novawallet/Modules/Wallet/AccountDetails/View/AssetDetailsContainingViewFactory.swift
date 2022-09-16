@@ -112,6 +112,19 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
                     actions: actions,
                     commandFactory: commandFactory
                 )
+        case .ledger:
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                receiveCommand = NoLedgerSupportCommand(tokenName: chainAsset.asset.symbol)
+                buyCommand = actions.isEmpty ? nil : NoLedgerSupportCommand(tokenName: chainAsset.asset.symbol)
+            } else {
+                receiveCommand = commandFactory.prepareReceiveCommand(for: assetId)
+
+                buyCommand = actions.isEmpty ? nil :
+                    WalletSelectPurchaseProviderCommand(
+                        actions: actions,
+                        commandFactory: commandFactory
+                    )
+            }
 
         case .watchOnly:
             receiveCommand = NoKeysCommand()

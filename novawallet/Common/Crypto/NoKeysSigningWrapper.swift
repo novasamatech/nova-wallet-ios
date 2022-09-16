@@ -34,14 +34,14 @@ extension Error {
         }
     }
 
-    var isNotSupportedByParitySigner: Bool {
+    var notSupportedSignerType: NoSigningSupportType? {
         guard let notSupportedError = self as? NoSigningSupportError else {
-            return false
+            return nil
         }
 
         switch notSupportedError {
-        case .notSupported:
-            return true
+        case let .notSupported(type):
+            return type
         }
     }
 }

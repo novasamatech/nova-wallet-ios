@@ -7,6 +7,7 @@ final class AssetsBalanceUpdater {
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
     let chainRepository: AnyDataProviderRepository<ChainStorageItem>
+    let extras: StatemineAssetExtras
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -24,6 +25,7 @@ final class AssetsBalanceUpdater {
     init(
         chainAssetId: ChainAssetId,
         accountId: AccountId,
+        extras: StatemineAssetExtras,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
         chainRepository: AnyDataProviderRepository<ChainStorageItem>,
@@ -33,6 +35,7 @@ final class AssetsBalanceUpdater {
     ) {
         self.chainAssetId = chainAssetId
         self.accountId = accountId
+        self.extras = extras
         self.chainRegistry = chainRegistry
         self.assetRepository = assetRepository
         self.chainRepository = chainRepository
@@ -41,7 +44,7 @@ final class AssetsBalanceUpdater {
         self.logger = logger
     }
 
-    func handleAssetDetails(value: ChainStorageItem?, isRemoved: Bool) {
+    func handleAssetDetails(value: ChainStorageItem?, isRemoved: Bool, blockHash: Data?) {
         mutex.lock()
 
         defer {
@@ -55,10 +58,10 @@ final class AssetsBalanceUpdater {
             lastDetailsValue = value
         }
 
-        checkChanges(chainAssetId: chainAssetId, accountId: accountId, logger: logger)
+        checkChanges(chainAssetId: chainAssetId, accountId: accountId, blockHash: blockHash, logger: logger)
     }
 
-    func handleAssetAccount(value: ChainStorageItem?, isRemoved: Bool) {
+    func handleAssetAccount(value: ChainStorageItem?, isRemoved: Bool, blockHash: Data?) {
         mutex.lock()
 
         defer {
@@ -72,18 +75,20 @@ final class AssetsBalanceUpdater {
             lastAccountValue = value
         }
 
-        checkChanges(chainAssetId: chainAssetId, accountId: accountId, logger: logger)
+        checkChanges(chainAssetId: chainAssetId, accountId: accountId, blockHash: blockHash, logger: logger)
     }
 
-    private func checkChanges(chainAssetId: ChainAssetId, accountId: AccountId, logger: LoggerProtocol) {
+    private func checkChanges(chainAssetId: ChainAssetId, accountId: AccountId, blockHash: Data?, logger: LoggerProtocol) {
         if hasChanges, receivedAccount, receivedDetails {
             hasChanges = false
 
+            let assetAccountPath = StorageCodingPath.assetsAccount(from: extras.palletName)
             let assetAccountWrapper: CompoundOperationWrapper<AssetAccount?> =
-                createStorageDecoderWrapper(for: lastAccountValue, path: .assetsAccount)
+                createStorageDecoderWrapper(for: lastAccountValue, path: assetAccountPath)
 
+            let assetDetailsPath = StorageCodingPath.assetsDetails(from: extras.palletName)
             let assetDetailsWrapper: CompoundOperationWrapper<AssetDetails?> =
-                createStorageDecoderWrapper(for: lastDetailsValue, path: .assetsDetails)
+                createStorageDecoderWrapper(for: lastDetailsValue, path: assetDetailsPath)
 
             let changesWrapper = createChangesOperationWrapper(
                 dependingOn: assetDetailsWrapper,
@@ -116,12 +121,23 @@ final class AssetsBalanceUpdater {
             changesWrapper.addDependency(wrapper: assetDetailsWrapper)
             saveOperation.addDependency(changesWrapper.targetOperation)
 
+            let accountData = lastAccountValue?.data
+
             saveOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
                     let maybeItem = try? changesWrapper.targetOperation.extractNoCancellableResultData()
 
                     if maybeItem != nil {
                         self?.eventCenter.notify(with: WalletBalanceChanged())
+
+                        let assetBalanceChangeEvent = AssetBalanceChanged(
+                            chainAssetId: chainAssetId,
+                            accountId: accountId,
+                            changes: accountData,
+                            block: blockHash
+                        )
+
+                        self?.eventCenter.notify(with: assetBalanceChangeEvent)
                     }
                 }
             }

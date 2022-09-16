@@ -42,7 +42,7 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
-            walletAccountId: request.wallet.substrateAccountId,
+            walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: accountResponse.accountId,
             chainAddress: chainAddress,
             networkName: chain.name,
@@ -88,8 +88,8 @@ extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputPro
         }
 
         do {
-            guard account.type.supportsSigningRawBytes else {
-                throw NoSigningSupportError.notSupported
+            if let notSupportedSigner = account.type.notSupportedRawBytesSigner {
+                throw NoSigningSupportError.notSupported(type: notSupportedSigner)
             }
 
             let signer = signingWrapperFactory.createSigningWrapper(
