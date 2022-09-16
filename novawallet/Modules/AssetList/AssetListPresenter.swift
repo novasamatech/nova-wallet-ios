@@ -21,7 +21,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
-    private(set) var crowdloansResult: Result<[CrowdloanContributionData], Error>?
+    private(set) var crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
 
     private var scheduler: SchedulerProtocol?
 
@@ -411,7 +411,7 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         locksResult = result
     }
 
-    func didReceiveCrowdloans(result: Result<[CrowdloanContributionData], Error>) {
+    func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
         crowdloansResult = result
     }
 }

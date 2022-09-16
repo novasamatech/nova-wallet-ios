@@ -106,16 +106,16 @@ final class LocksPresenter {
         }
 
         let crowdloanCells: [LocksViewSectionModel.CellViewModel] = input.crowdloans.compactMap {
-            guard let utilityAsset = input.chains[$0.chainId]?.utilityAsset() else {
+            guard let utilityAsset = input.chains[$0.key]?.utilityAsset() else {
                 return nil
             }
             return createCell(
-                amountInPlank: $0.amount,
-                chainAssetId: ChainAssetId(chainId: $0.chainId, assetId: utilityAsset.assetId),
+                amountInPlank: $0.value.reduce(0) { $0 + $1.amount },
+                chainAssetId: ChainAssetId(chainId: $0.key, assetId: utilityAsset.assetId),
                 title: R.string.localizable.tabbarCrowdloanTitle(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
-                identifier: $0.identifier
+                identifier: $0.key
             )
         }
 
@@ -165,7 +165,7 @@ final class LocksPresenter {
             $0.amount > 0
         }.count
         let crowdloanCellsCount = input.crowdloans.filter {
-            $0.amount > 0
+            !$0.value.isEmpty
         }.count
         return view?.calculateEstimatedHeight(
             sections: 2,

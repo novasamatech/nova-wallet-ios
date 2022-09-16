@@ -34,7 +34,7 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
     func didChange(name: String)
     func didReceive(hidesZeroBalances: Bool)
     func didReceiveLocks(result: Result<[AssetLock], Error>)
-    func didReceiveCrowdloans(result: Result<[CrowdloanContributionData], Error>)
+    func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>)
 }
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
@@ -55,6 +55,6 @@ protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         locks: [AssetLock],
-        crowdloans: [CrowdloanContributionData]
+        crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
     )
 }

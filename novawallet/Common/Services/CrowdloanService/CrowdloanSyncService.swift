@@ -5,10 +5,10 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
     private let operationFactory: CrowdloanOperationFactoryProtocol
     private let chainRegistry: ChainRegistryProtocol
     private let operationManager: OperationManagerProtocol
-    private let operationQueue: OperationQueue
     private let accountId: AccountId
     private let chainId: ChainModel.Id
     private let repository: AnyDataProviderRepository<CrowdloanContributionData>
+    private var syncOperationWrapper: CompoundOperationWrapper<Void>?
 
     init(
         operationFactory: CrowdloanOperationFactoryProtocol,
@@ -16,15 +16,14 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         repository: AnyDataProviderRepository<CrowdloanContributionData>,
         accountId: AccountId,
         chainId: ChainModel.Id,
-        operationQueue: OperationQueue
+        operationManager: OperationManagerProtocol
     ) {
         self.operationFactory = operationFactory
         self.chainRegistry = chainRegistry
-        self.operationQueue = operationQueue
         self.repository = repository
         self.accountId = accountId
         self.chainId = chainId
-        operationManager = OperationManager(operationQueue: operationQueue)
+        self.operationManager = operationManager
     }
 
     private func contributionsFetchOperation(
@@ -117,11 +116,17 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        guard let connection = chainRegistry.getConnection(for: chainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            logger?.error("Sync is failed. Chain settings is invalid")
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            logger?.error("Connection for chainId: \(chainId) is unavailable")
+            complete(ChainRegistryError.connectionUnavailable)
             return
         }
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            logger?.error("Runtime metadata for chainId: \(chainId) is unavailable")
+            complete(ChainRegistryError.runtimeMetadaUnavailable)
+            return
+        }
+
         let fetchCrowdloansOperation = operationFactory.fetchCrowdloansOperation(
             connection: connection,
             runtimeService: runtimeService
@@ -139,12 +144,17 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         )
         let saveOperation = createSaveOperation(dependingOn: changesWrapper)
 
-        let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation, changesWrapper, saveOperation]
+        let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation, changesWrapper]
 
-        operationManager.enqueue(operations: operations, in: .transient)
+        let syncWrapper = CompoundOperationWrapper(
+            targetOperation: saveOperation,
+            dependencies: operations
+        )
+        syncOperationWrapper = syncWrapper
+        operationManager.enqueue(operations: syncWrapper.allOperations, in: .transient)
     }
 
     override func stopSyncUp() {
-        operationQueue.cancelAllOperations()
+        syncOperationWrapper?.cancel()
     }
 }

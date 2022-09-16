@@ -6,7 +6,7 @@ protocol LocksBalanceViewModelFactoryProtocol {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
-        crowdloans: [CrowdloanContributionData],
+        crowdloans: [ChainModel.Id: [CrowdloanContributionData]],
         locale: Locale
     ) -> FormattedBalance
     func formatPlankValue(
@@ -52,7 +52,7 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         prices: [ChainAssetId: PriceData],
-        crowdloans: [CrowdloanContributionData],
+        crowdloans: [ChainModel.Id: [CrowdloanContributionData]],
         locale: Locale
     ) -> FormattedBalance {
         var totalPrice: Decimal = 0
@@ -91,13 +91,13 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
         }
 
         let crowdloansTotalPrice: Decimal = crowdloans.reduce(0) { result, crowdloan in
-            guard let asset = chains[crowdloan.chainId]?.utilityAsset() else {
+            guard let asset = chains[crowdloan.key]?.utilityAsset() else {
                 return result
             }
-            let priceData = prices[.init(chainId: crowdloan.chainId, assetId: asset.assetId)]
+            let priceData = prices[.init(chainId: crowdloan.key, assetId: asset.assetId)]
             let rate = priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0
             return result + calculateAmount(
-                from: crowdloan.amount,
+                from: crowdloan.value.reduce(0) { $0 + $1.amount },
                 precision: asset.precision,
                 rate: rate
             )

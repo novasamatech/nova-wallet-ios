@@ -15,7 +15,7 @@ struct CrowdloanContributionData {
             return .onChain
         }
     }
-    
+
     enum SourceType: String {
         case onChain
         case offChain

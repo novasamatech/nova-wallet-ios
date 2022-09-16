@@ -22,7 +22,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
-    private var parachainIds = Set<ChainModel.Id>()
+    private var crowdloanChainIds = Set<ChainModel.Id>()
     private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private var locks: [ChainAssetId: [AssetLock]] = [:]
     private var crowdloansSubscriptions: [ChainModel.Id: StreamableProvider<CrowdloanContributionData>] = [:]
@@ -114,7 +114,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         crowdloansSubscriptions.values.forEach { $0.removeObserver(self) }
         crowdloansSubscriptions = [:]
         crowdloans = [:]
-        parachainIds = .init()
+        crowdloanChainIds = .init()
     }
 
     override func applyChanges(
@@ -164,14 +164,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
             return
         }
         let crowdloanChains = allChains.filter { $0.hasCrowdloans }
-        let newParachainIds = Set(crowdloanChains.map(\.chainId))
+        let newCrowdloanChainIds = Set(crowdloanChains.map(\.chainId))
 
-        guard !crowdloanChains.isEmpty, parachainIds != newParachainIds else {
+        guard !crowdloanChains.isEmpty, crowdloanChainIds != newCrowdloanChainIds else {
             return
         }
 
         clearCrowdloansSubscription()
-        parachainIds = newParachainIds
+        crowdloanChainIds = newCrowdloanChainIds
 
         for chain in crowdloanChains {
             guard let accountId = selectedMetaAccount.fetch(
@@ -220,7 +220,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
             var updatingChains = Set<ChainModel.Id>()
             updatingChains = changes.reduce(into: updatingChains) { accum, change in
                 if let assetBalanceId = assetBalanceIdMapping[change.identifier],
-                   parachainIds.contains(assetBalanceId.chainId),
+                   crowdloanChainIds.contains(assetBalanceId.chainId),
                    assetBalanceId.accountId == accountId {
                     accum.insert(assetBalanceId.chainId)
                 }
@@ -387,7 +387,7 @@ extension AssetListInteractor: CrowdloanContributionLocalSubscriptionHandler, Cr
                 }
             }
 
-            presenter?.didReceiveCrowdloans(result: .success(crowdloans.values.flatMap { $0 }))
+            presenter?.didReceiveCrowdloans(result: .success(crowdloans))
         }
     }
 }

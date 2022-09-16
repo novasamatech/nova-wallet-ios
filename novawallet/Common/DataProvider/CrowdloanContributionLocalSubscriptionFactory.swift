@@ -11,18 +11,15 @@ protocol CrowdloanContributionLocalSubscriptionFactoryProtocol {
 final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     CrowdloanContributionLocalSubscriptionFactoryProtocol {
     let operationFactory: CrowdloanOperationFactoryProtocol
-    let syncQueue: OperationQueue
 
     init(
         operationFactory: CrowdloanOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
-        syncQueue: OperationQueue,
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
         logger: LoggerProtocol
     ) {
         self.operationFactory = operationFactory
-        self.syncQueue = syncQueue
 
         super.init(
             chainRegistry: chainRegistry,
@@ -60,7 +57,7 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             repository: AnyDataProviderRepository(onChainCrowdloansRepository),
             accountId: accountId,
             chainId: chain.chainId,
-            operationQueue: syncQueue
+            operationManager: operationManager
         )
 
         let syncServices = [onChainSyncService]
@@ -107,18 +104,17 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
 }
 
 extension CrowdloanContributionLocalSubscriptionFactory {
-    static let remoteOperationManager = OperationManager(operationQueue: OperationManagerFacade.crowdloansQueue)
+    static let operationManager = OperationManagerFacade.sharedManager
 
     static let shared = CrowdloanContributionLocalSubscriptionFactory(
         operationFactory: CrowdloanOperationFactory(
             requestOperationFactory: StorageRequestFactory(
                 remoteFactory: StorageKeyFactory(),
-                operationManager: remoteOperationManager
+                operationManager: operationManager
             ),
-            operationManager: remoteOperationManager
+            operationManager: operationManager
         ),
-        operationManager: OperationManagerFacade.sharedManager,
-        syncQueue: OperationManagerFacade.crowdloansQueue,
+        operationManager: operationManager,
         chainRegistry: ChainRegistryFacade.sharedRegistry,
         storageFacade: SubstrateDataStorageFacade.shared,
         logger: Logger.shared

@@ -67,7 +67,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         balances: [AssetBalance],
         chains: [ChainModel.Id: ChainModel],
         locks: [AssetLock],
-        crowdloans: [CrowdloanContributionData]
+        crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
     ) {
         guard let viewController = LocksViewFactory.createView(input:
             .init(
