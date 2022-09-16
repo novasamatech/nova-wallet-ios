@@ -74,6 +74,12 @@ final class StackTableView: RoundedView {
         updateLayout()
     }
 
+    func clear() {
+        for cell in stackView.arrangedSubviews {
+            cell.removeFromSuperview()
+        }
+    }
+
     func setCustomHeight(_ height: CGFloat?, at index: Int) {
         customHeights[index] = height
 

@@ -65,7 +65,7 @@ final class RuntimeSnapshotFactory {
                     versioningData: chainTypes,
                     runtimeMetadata: metadata,
                     customExtensions: DefaultExtrinsicExtension.coders,
-                    customTypeMapper: SiDataTypeMapper(),
+                    customTypeMapper: CustomSiMappers.all,
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata
@@ -128,7 +128,7 @@ final class RuntimeSnapshotFactory {
                     versioningData: commonTypes,
                     runtimeMetadata: metadata,
                     customExtensions: DefaultExtrinsicExtension.coders,
-                    customTypeMapper: SiDataTypeMapper(),
+                    customTypeMapper: CustomSiMappers.all,
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata
@@ -190,7 +190,7 @@ final class RuntimeSnapshotFactory {
                     versioningData: ownTypes,
                     runtimeMetadata: metadata,
                     customExtensions: DefaultExtrinsicExtension.coders,
-                    customTypeMapper: SiDataTypeMapper(),
+                    customTypeMapper: CustomSiMappers.all,
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata

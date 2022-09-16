@@ -11,18 +11,20 @@ struct ChainAccountListSectionViewModel {
 enum ChainAccountSectionType {
     case sharedSecret
     case customSecret
+    case noSection
 
-    var title: LocalizableResource<String> {
-        LocalizableResource { locale in
-            switch self {
-            case .customSecret:
-                return R.string.localizable
-                    .chainAccountsSectionTitleCustomSecret(preferredLanguages: locale.rLanguages)
-
-            case .sharedSecret:
-                return R.string.localizable
-                    .chainAccountsSectionTitleSharedSecret(preferredLanguages: locale.rLanguages)
+    var title: LocalizableResource<String>? {
+        switch self {
+        case .customSecret:
+            return LocalizableResource { locale in
+                R.string.localizable.chainAccountsSectionTitleCustomSecret(preferredLanguages: locale.rLanguages)
             }
+        case .sharedSecret:
+            return LocalizableResource { locale in
+                R.string.localizable.chainAccountsSectionTitleSharedSecret(preferredLanguages: locale.rLanguages)
+            }
+        case .noSection:
+            return nil
         }
     }
 }

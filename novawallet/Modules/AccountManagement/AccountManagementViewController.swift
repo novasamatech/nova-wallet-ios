@@ -7,7 +7,9 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
 
     private enum Constants {
         static let cellHeight: CGFloat = 48.0
-        static let addActionVerticalInset: CGFloat = 16
+        static let headerHeight: CGFloat = 45.0
+        static let whenNoTableHeadersTopInset: CGFloat = 16.0
+        static let whenHasTableHeadersTopInset: CGFloat = 0.0
     }
 
     let presenter: AccountManagementPresenterProtocol
@@ -110,6 +112,16 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
             )
             let icon = R.image.iconParitySigner()
             rootView.headerView.bindHint(text: text, icon: icon)
+        case .ledger:
+            rootView.headerView.showsHintView = true
+
+            let text = R.string.localizable.ledgerDetailsHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            let icon = R.image.iconLedger()
+
+            rootView.headerView.bindHint(text: text, icon: icon)
         }
 
         rootView.updateHeaderLayout()
@@ -182,17 +194,28 @@ extension AccountManagementViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 
 extension AccountManagementViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        presenter.selectItem(at: indexPath)
+    }
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let title = presenter.titleForSection(section)?.value(for: selectedLocale) else {
+            return nil
+        }
+
         let headerView: ChainAccountListSectionView = tableView.dequeueReusableHeaderFooterView()
-        let title = presenter.titleForSection(section).value(for: selectedLocale)
         headerView.bind(description: title.uppercased())
 
         return headerView
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        presenter.selectItem(at: indexPath)
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard presenter.titleForSection(section)?.value(for: selectedLocale) != nil else {
+            return 0.0
+        }
+
+        return Constants.headerHeight
     }
 }
 
@@ -212,6 +235,14 @@ extension AccountManagementViewController: AccountManagementViewProtocol {
 
     func reload() {
         tableView.reloadData()
+
+        if presenter.numberOfSections() > 0, presenter.titleForSection(0) != nil {
+            rootView.headerView.bottomInset = Constants.whenHasTableHeadersTopInset
+        } else {
+            rootView.headerView.bottomInset = Constants.whenNoTableHeadersTopInset
+        }
+
+        rootView.updateHeaderLayout()
     }
 }
 

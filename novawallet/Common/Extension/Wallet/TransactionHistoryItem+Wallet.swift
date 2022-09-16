@@ -78,7 +78,7 @@ extension TransactionHistoryItem {
                     throw CommonError.undefined
                 }
 
-                let callPath = CallCodingPath.assetsTransfer
+                let callPath = CallCodingPath.assetsTransfer(for: typeExtras.palletName)
                 let callArgs = AssetsTransfer(
                     assetId: typeExtras.assetId,
                     target: .accoundId(receiver),

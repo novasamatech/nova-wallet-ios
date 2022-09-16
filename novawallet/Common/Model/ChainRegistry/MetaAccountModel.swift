@@ -5,10 +5,11 @@ enum MetaAccountModelType: UInt8 {
     case secrets
     case watchOnly
     case paritySigner
+    case ledger
 
     var canPerformOperations: Bool {
         switch self {
-        case .secrets, .paritySigner:
+        case .secrets, .paritySigner, .ledger:
             return true
         case .watchOnly:
             return false
@@ -19,9 +20,9 @@ enum MetaAccountModelType: UInt8 {
 struct MetaAccountModel: Equatable {
     let metaId: String
     let name: String
-    let substrateAccountId: Data
-    let substrateCryptoType: UInt8
-    let substratePublicKey: Data
+    let substrateAccountId: Data?
+    let substrateCryptoType: UInt8?
+    let substratePublicKey: Data?
     let ethereumAddress: Data?
     let ethereumPublicKey: Data?
     let chainAccounts: Set<ChainAccountModel>

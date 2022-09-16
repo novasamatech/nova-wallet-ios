@@ -215,7 +215,8 @@ class CrowdloanListTests: XCTestCase {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
-            crowdloansCalculator: CrowdloansCalculator()
+            crowdloansCalculator: CrowdloansCalculator(),
+            accountManagementFilter: AccountManagementFilter()
         )
 
         presenter.view = view

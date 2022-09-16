@@ -277,7 +277,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         let call = callFactory.assetsTransfer(
             to: recepient,
-            assetId: extras.assetId,
+            extras: extras,
             amount: amount.value
         )
 

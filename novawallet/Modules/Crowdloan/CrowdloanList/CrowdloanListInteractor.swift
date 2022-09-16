@@ -113,7 +113,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         }
 
         guard let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) else {
-            presenter.didReceiveContributions(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter.didReceiveContributions(result: .success([:]))
             return
         }
 
@@ -311,12 +311,18 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 }
 
 extension CrowdloanListInteractor {
-    func setup(with accountId: AccountId, chain: ChainModel) {
+    func setup(with accountId: AccountId?, chain: ChainModel) {
         presenter.didReceive(wallet: selectedMetaAccount)
         presenter.didReceiveSelectedChain(result: .success(chain))
 
-        subscribeToAccountInfo(for: accountId, chain: chain)
-        subscribeToExternalContributions(for: accountId, chain: chain)
+        if let accountId = accountId {
+            subscribeToAccountInfo(for: accountId, chain: chain)
+            subscribeToExternalContributions(for: accountId, chain: chain)
+        } else {
+            presenter.didReceiveAccountInfo(result: .success(nil))
+            presenter.didReceiveExternalContributions(result: .success([]))
+        }
+
         subscribePrice()
         provideCrowdloans(for: chain)
 
@@ -353,12 +359,7 @@ extension CrowdloanListInteractor {
     }
 
     func handleSelectionChange(to chain: ChainModel) {
-        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            presenter.didReceiveAccountInfo(
-                result: .failure(ChainAccountFetchingError.accountNotExists)
-            )
-            return
-        }
+        let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
 
         setup(with: accountId, chain: chain)
         becomeOnline(with: chain)

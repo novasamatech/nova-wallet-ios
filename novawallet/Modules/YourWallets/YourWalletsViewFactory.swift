@@ -1,7 +1,7 @@
-import Foundation
+import UIKit
 import SubstrateSdk
 import SoraFoundation
-import UIKit
+import SoraUI
 
 struct YourWalletsViewFactory {
     static func createView(
@@ -23,8 +23,8 @@ struct YourWalletsViewFactory {
         )
         presenter.view = view
 
-        let maxHeight = UIScreen.main.bounds.height * 0.8
-        let preferredContentSize = min(presenter.contentHeight + 20, maxHeight)
+        let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
+        let preferredContentSize = min(presenter.contentHeight, maxHeight)
 
         view.preferredContentSize = .init(
             width: 0,

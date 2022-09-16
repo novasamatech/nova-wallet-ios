@@ -17,9 +17,11 @@ final class DAppAuthViewModelFactory: DAppAuthViewModelFactoryProtocol {
             destinationViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
         }
 
-        let walletIcon = try? NovaIconGenerator().generateFromAccountId(
-            request.wallet.substrateAccountId
-        )
+        let iconGenerator = NovaIconGenerator()
+
+        let walletIcon = request.wallet.walletIdenticonData().flatMap {
+            try? iconGenerator.generateFromAccountId($0)
+        }
 
         return DAppAuthViewModel(
             sourceImageViewModel: sourceViewModel,

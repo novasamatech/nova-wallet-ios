@@ -4,8 +4,8 @@ import SubstrateSdk
 final class WalletSwitchViewModelFactory {
     private lazy var iconGenerator = NovaIconGenerator()
 
-    func createViewModel(from accountId: AccountId, walletType: MetaAccountModelType) -> WalletSwitchViewModel {
-        let icon = try? iconGenerator.generateFromAccountId(accountId)
+    func createViewModel(from walletIdenticon: Data?, walletType: MetaAccountModelType) -> WalletSwitchViewModel {
+        let icon = walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
 
         return WalletSwitchViewModel(
             type: WalletsListSectionViewModel.SectionType(walletType: walletType),

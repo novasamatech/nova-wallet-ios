@@ -91,7 +91,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
-            walletAccountId: request.wallet.substrateAccountId,
+            walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: result.account.accountId,
             chainAddress: result.account.toAddress() ?? "",
             networkName: chain.name,

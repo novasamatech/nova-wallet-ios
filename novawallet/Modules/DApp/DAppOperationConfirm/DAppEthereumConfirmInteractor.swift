@@ -132,7 +132,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
 
         let model = DAppOperationConfirmModel(
             accountName: request.wallet.name,
-            walletAccountId: request.wallet.substrateAccountId,
+            walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: chainAccountId,
             chainAddress: transaction.from,
             networkName: chain.chainName,
