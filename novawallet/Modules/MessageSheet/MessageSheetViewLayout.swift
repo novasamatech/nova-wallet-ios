@@ -1,13 +1,19 @@
 import UIKit
 
-final class MessageSheetViewLayout: UIView {
-    let iconView = UIImageView()
+final class MessageSheetViewLayout<
+    I: UIView & MessageSheetGraphicsProtocol,
+    C: UIView & MessageSheetContentProtocol
+>: UIView {
+    let graphicsView = I()
+
+    let contentView = C()
 
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
         label.font = .semiBoldTitle3
         label.textAlignment = .center
+        label.numberOfLines = 0
         return label
     }()
 
@@ -20,11 +26,9 @@ final class MessageSheetViewLayout: UIView {
         return label
     }()
 
-    let actionButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        return button
-    }()
+    private(set) var mainActionButton: TriangularedButton?
+    private(set) var secondaryActionButton: TriangularedButton?
+    private(set) var buttonsStackView: UIStackView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,9 +43,54 @@ final class MessageSheetViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private func setupButtonsStackViewIfNeeded() {
+        guard buttonsStackView == nil else {
+            return
+        }
+
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        stackView.distribution = .fillEqually
+        stackView.alignment = .fill
+        stackView.spacing = 12.0
+
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-16.0)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        buttonsStackView = stackView
+    }
+
+    func setupMainActionButton() {
+        setupButtonsStackViewIfNeeded()
+
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+
+        buttonsStackView?.addArrangedSubview(button)
+
+        mainActionButton = button
+    }
+
+    func setupSecondaryActionButton() {
+        setupButtonsStackViewIfNeeded()
+
+        let button = TriangularedButton()
+        button.applySecondaryDefaultStyle()
+
+        buttonsStackView?.insertArrangedSubview(button, at: 0)
+
+        secondaryActionButton = button
+    }
+
     private func setupLayout() {
-        addSubview(iconView)
-        iconView.snp.makeConstraints { make in
+        addSubview(graphicsView)
+        graphicsView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalToSuperview().inset(16.0)
         }
@@ -49,7 +98,7 @@ final class MessageSheetViewLayout: UIView {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
-            make.top.equalTo(iconView.snp.bottom).offset(24.0)
+            make.top.equalTo(graphicsView.snp.bottom).offset(24.0)
         }
 
         addSubview(detailsLabel)
@@ -58,11 +107,10 @@ final class MessageSheetViewLayout: UIView {
             make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
         }
 
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        addSubview(contentView)
+        contentView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-16.0)
-            make.height.equalTo(UIConstants.actionHeight)
+            make.top.equalTo(detailsLabel.snp.bottom).offset(40.0)
         }
     }
 }

@@ -9,7 +9,7 @@ final class YourWalletsPresenter {
     let metaAccounts: [MetaAccountChainResponse]
     let accountIconGenerator: IconGenerating
     let chainIconGenerator: IconGenerating
-    let sectionTypes: [MetaAccountModelType] = [.secrets, .paritySigner, .watchOnly]
+    let sectionTypes: [MetaAccountModelType] = [.secrets, .paritySigner, .ledger, .watchOnly]
 
     private(set) var selectedAddress: AccountAddress?
     private(set) var sections: [YourWalletsViewSectionModel] = []
@@ -68,8 +68,17 @@ final class YourWalletsPresenter {
             return nil
         case .paritySigner:
             return .init(
-                title: R.string.localizable.commonParitySigner(preferredLanguages: selectedLocale.rLanguages).uppercased(),
+                title: R.string.localizable.commonParitySigner(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).uppercased(),
                 icon: R.image.iconParitySigner()
+            )
+        case .ledger:
+            return .init(
+                title: R.string.localizable.commonLedger(
+                    preferredLanguages: selectedLocale.rLanguages
+                ).uppercased(),
+                icon: R.image.iconLedger()
             )
         }
     }
@@ -78,7 +87,7 @@ final class YourWalletsPresenter {
         let name = response.metaAccount.name
         let imageViewModel = icon(
             generator: accountIconGenerator,
-            from: response.metaAccount.substrateAccountId
+            from: response.metaAccount.walletIdenticonData()
         )
         let metaId = response.metaAccount.metaId
         guard let chainAccountResponse = response.chainAccountResponse,

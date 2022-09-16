@@ -79,7 +79,8 @@ extension ParitySignerMessageOperationFactory: ParitySignerMessageOperationFacto
 
             let genesisHashData = try Data(hexString: genesisHash)
 
-            return networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId + extrinsicPayload + genesisHashData
+            return networkCodeBytes + cryptoTypeBytes + messageTypeBytes + accountId +
+                extrinsicPayload + genesisHashData
         }
 
         return CompoundOperationWrapper(targetOperation: operation)

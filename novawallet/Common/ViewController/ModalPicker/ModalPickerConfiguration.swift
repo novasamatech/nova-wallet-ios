@@ -1,5 +1,6 @@
 import Foundation
 import SoraUI
+import UIKit
 
 extension ModalSheetPresentationStyle {
     static var fearless: ModalSheetPresentationStyle {
@@ -42,5 +43,9 @@ extension ModalSheetPresentationConfiguration {
             dismissCancelSpeedFactor: 0.6
         )
         return configuration
+    }
+
+    static var maximumContentHeight: CGFloat {
+        UIScreen.main.bounds.height * 0.75
     }
 }

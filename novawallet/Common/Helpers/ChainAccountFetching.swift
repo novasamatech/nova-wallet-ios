@@ -29,8 +29,9 @@ struct MetaEthereumAccountResponse {
 
 struct MetaChainAccountResponse {
     let metaId: String
-    let substrateAccountId: AccountId
+    let substrateAccountId: AccountId?
     let ethereumAccountId: AccountId?
+    let walletIdenticonData: Data?
     let chainAccount: ChainAccountResponse
 }
 
@@ -117,7 +118,11 @@ extension MetaAccountModel {
             )
         }
 
-        guard let cryptoType = MultiassetCryptoType(rawValue: substrateCryptoType) else {
+        guard
+            let substrateCryptoType = substrateCryptoType,
+            let substrateAccountId = substrateAccountId,
+            let substratePublicKey = substratePublicKey,
+            let cryptoType = MultiassetCryptoType(rawValue: substrateCryptoType) else {
             return nil
         }
 
@@ -174,6 +179,9 @@ extension MetaAccountModel {
 
         if
             !request.isEthereumBased,
+            let substrateAccountId = substrateAccountId,
+            let substratePublicKey = substratePublicKey,
+            let substrateCryptoType = substrateCryptoType,
             substrateAccountId == accountId,
             let cryptoType = MultiassetCryptoType(rawValue: substrateCryptoType) {
             return ChainAccountResponse(
@@ -244,6 +252,7 @@ extension MetaAccountModel {
                 metaId: metaId,
                 substrateAccountId: substrateAccountId,
                 ethereumAccountId: ethereumAddress,
+                walletIdenticonData: walletIdenticonData(),
                 chainAccount: $0
             )
         }

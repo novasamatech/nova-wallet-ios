@@ -30,9 +30,6 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            accountManagementView.controller,
-            animated: true
-        )
+        view?.controller.navigationController?.pushViewController(accountManagementView.controller, animated: true)
     }
 }

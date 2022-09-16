@@ -54,7 +54,7 @@ final class StakingMainViewModelFactory: StakingMainViewModelFactoryProtocol {
         }
 
         return StakingMainViewModel(
-            accountId: wallet.substrateAccountId,
+            walletIdenticon: wallet.walletIdenticonData(),
             walletType: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
             chainName: chainAsset.chain.name,
             assetName: chainAsset.asset.name ?? chainAsset.chain.name,

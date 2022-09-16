@@ -5,6 +5,7 @@ protocol CommonRetryable {
         on view: ControllerBackedProtocol?,
         title: String,
         message: String,
+        cancelAction: String,
         locale: Locale?,
         retryAction: @escaping () -> Void
     )
@@ -14,12 +15,28 @@ protocol CommonRetryable {
         title: String,
         message: String,
         actionTitle: String,
-        locale: Locale?,
         retryAction: @escaping () -> Void
     )
 }
 
 extension CommonRetryable where Self: AlertPresentable {
+    func presentRequestStatus(
+        on view: ControllerBackedProtocol?,
+        title: String,
+        message: String,
+        locale: Locale?,
+        retryAction: @escaping () -> Void
+    ) {
+        presentRequestStatus(
+            on: view,
+            title: title,
+            message: message,
+            cancelAction: R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages),
+            locale: locale,
+            retryAction: retryAction
+        )
+    }
+
     func presentRequestStatus(
         on view: ControllerBackedProtocol?,
         locale: Locale?,
@@ -32,15 +49,18 @@ extension CommonRetryable where Self: AlertPresentable {
             on: view,
             title: title,
             message: message,
+            cancelAction: R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages),
             locale: locale,
             retryAction: retryAction
         )
     }
 
+    // swiftlint:disable:next function_parameter_count
     func presentRequestStatus(
         on view: ControllerBackedProtocol?,
         title: String,
         message: String,
+        cancelAction: String,
         locale: Locale?,
         retryAction: @escaping () -> Void
     ) {
@@ -53,7 +73,7 @@ extension CommonRetryable where Self: AlertPresentable {
             title: title,
             message: message,
             actions: [retryViewModel],
-            closeAction: R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages)
+            closeAction: cancelAction
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
@@ -64,7 +84,6 @@ extension CommonRetryable where Self: AlertPresentable {
         title: String,
         message: String,
         actionTitle: String,
-        locale _: Locale?,
         retryAction: @escaping () -> Void
     ) {
         let retryViewModel = AlertPresentableAction(

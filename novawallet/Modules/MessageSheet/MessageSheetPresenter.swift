@@ -10,8 +10,8 @@ final class MessageSheetPresenter {
 }
 
 extension MessageSheetPresenter: MessageSheetPresenterProtocol {
-    func goBack() {
-        wireframe.complete(on: view)
+    func goBack(with action: MessageSheetAction?) {
+        wireframe.complete(on: view, with: action)
     }
 }
 

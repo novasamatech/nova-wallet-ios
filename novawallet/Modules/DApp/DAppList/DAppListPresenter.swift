@@ -73,16 +73,14 @@ final class DAppListPresenter {
             return
         }
 
-        do {
-            let icon = try iconGenerator.generateFromAccountId(wallet.substrateAccountId)
-            let viewModel = WalletSwitchViewModel(
-                type: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
-                iconViewModel: DrawableIconViewModel(icon: icon)
-            )
-            view?.didReceiveWalletSwitch(viewModel: viewModel)
-        } catch {
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-        }
+        let icon = wallet.walletIdenticonData().flatMap { try? iconGenerator.generateFromAccountId($0) }
+        let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
+        let viewModel = WalletSwitchViewModel(
+            type: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
+            iconViewModel: iconViewModel
+        )
+
+        view?.didReceiveWalletSwitch(viewModel: viewModel)
     }
 
     private func updateCategories() {

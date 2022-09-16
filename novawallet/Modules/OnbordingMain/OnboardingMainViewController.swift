@@ -54,7 +54,9 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
         rootView.watchOnlyButton.bind(title: watchOnlyTitle, details: watchOnlySubtitle)
 
         let hardwareWalletTitle = R.string.localizable.welcomeHardwareWalletTitle(preferredLanguages: languages)
-        let hardwareWalletSubtitle = R.string.localizable.welcomeHardwareWalletSubtitle(preferredLanguages: languages)
+        let hardwareWalletSubtitle = R.string.localizable.welcomeHardwareWalletSubtitleV3_7(
+            preferredLanguages: languages
+        )
         rootView.hardwareButton.bind(title: hardwareWalletTitle, details: hardwareWalletSubtitle)
 
         let termsText = R.string.localizable.onboardingTermsAndConditions1_v2_2_0(

@@ -69,7 +69,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
     private func provideWalletViewModel() {
         let name = wallet.name
 
-        let icon = try? walletIconGenerator.generateFromAccountId(wallet.substrateAccountId)
+        let icon = wallet.walletIdenticonData().flatMap { try? walletIconGenerator.generateFromAccountId($0) }
         let iconViewModel = icon.map { DrawableIconViewModel(icon: $0) }
         let viewModel = StackCellViewModel(details: name, imageViewModel: iconViewModel)
         view?.didReceiveWallet(viewModel: viewModel)

@@ -46,8 +46,9 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         do {
+            let assetsDetailsPath = StorageCodingPath.assetsDetails(from: extras.palletName)
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                .assetsDetails,
+                assetsDetailsPath,
                 encodableElement: extras.assetId,
                 chainId: chainId
             )
@@ -61,7 +62,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
                     repository: storage,
                     key: { localKey },
                     factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    params: StorageRequestParams(path: .assetsDetails, shouldFallback: false)
+                    params: StorageRequestParams(path: assetsDetailsPath, shouldFallback: false)
                 )
 
             fetchWrapper.addDependency(operations: [codingFactoryOperation])

@@ -8,15 +8,19 @@ extension MetaAccountModelType {
             return .regular
         case .paritySigner:
             return .paritySigner
+        case .ledger:
+            return .extrinsicPayload
         }
     }
 
-    var supportsSigningRawBytes: Bool {
+    var notSupportedRawBytesSigner: NoSigningSupportType? {
         switch self {
         case .secrets, .watchOnly:
-            return true
+            return nil
         case .paritySigner:
-            return false
+            return .paritySigner
+        case .ledger:
+            return .ledger
         }
     }
 }

@@ -80,20 +80,25 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
 
             typeImageView.image = nil
         case .watchOnly:
-            controlBackgroundView.fillColor = R.color.colorWhite16()!
-            controlBackgroundView.highlightedFillColor = R.color.colorWhite16()!
-            controlBackgroundView.strokeColor = R.color.colorWhite8()!
-            controlBackgroundView.highlightedStrokeColor = R.color.colorWhite8()!
+            applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconWatchOnly()
         case .paritySigner:
-            controlBackgroundView.fillColor = R.color.colorWhite16()!
-            controlBackgroundView.highlightedFillColor = R.color.colorWhite16()!
-            controlBackgroundView.strokeColor = R.color.colorWhite8()!
-            controlBackgroundView.highlightedStrokeColor = R.color.colorWhite8()!
+            applyCommonStyle(to: controlBackgroundView)
 
             typeImageView.image = R.image.iconParitySigner()
+        case .ledger:
+            applyCommonStyle(to: controlBackgroundView)
+
+            typeImageView.image = R.image.iconLedger()
         }
+    }
+
+    private func applyCommonStyle(to backgroundView: RoundedView) {
+        backgroundView.fillColor = R.color.colorWhite16()!
+        backgroundView.highlightedFillColor = R.color.colorWhite16()!
+        backgroundView.strokeColor = R.color.colorWhite8()!
+        backgroundView.highlightedStrokeColor = R.color.colorWhite8()!
     }
 
     private func configure() {

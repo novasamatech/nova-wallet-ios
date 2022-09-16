@@ -26,3 +26,16 @@ extension TimeInterval {
         return components.joined(separator: " ")
     }
 }
+
+extension UInt {
+    func localizedDaysPeriod(for locale: Locale) -> String {
+        if self == 1 {
+            return R.string.localizable.commonDaysEveryday(preferredLanguages: locale.rLanguages)
+        } else {
+            return R.string.localizable.commonEveryDaysFormat(
+                format: Int(bitPattern: self),
+                preferredLanguages: locale.rLanguages
+            )
+        }
+    }
+}

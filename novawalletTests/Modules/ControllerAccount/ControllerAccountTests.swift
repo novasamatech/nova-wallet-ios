@@ -87,6 +87,7 @@ class ControllerAccountTests: XCTestCase {
             metaId: UUID().uuidString,
             substrateAccountId: controllerId,
             ethereumAccountId: nil,
+            walletIdenticonData: nil,
             chainAccount: controllerAccount
         )
 

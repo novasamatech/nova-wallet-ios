@@ -19,4 +19,17 @@ extension TimeInterval {
     var secondsFromDays: TimeInterval { self * Self.secondsInDay }
     var hoursFromSeconds: Int { Int(self / Self.secondsInHour) }
     var intervalsInDay: Int { self > 0.0 ? Int(Self.secondsInDay / self) : 0 }
+
+    func roundingUpToHour() -> TimeInterval {
+        let inMillis = milliseconds
+        let hourInMillis = Self.secondsInHour.milliseconds
+
+        guard inMillis % hourInMillis != 0 else {
+            return UInt64(inMillis).timeInterval
+        }
+
+        let nextHour = (inMillis / hourInMillis) * hourInMillis + hourInMillis
+
+        return UInt64(nextHour).timeInterval
+    }
 }

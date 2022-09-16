@@ -130,7 +130,7 @@ extension YourWalletsViewController: YourWalletsViewProtocol {
     }
 
     func update(header: String) {
-        rootView.header.bind(title: header, icon: nil)
+        rootView.header.text = header
     }
 
     func calculateEstimatedHeight(sections: Int, items: Int) -> CGFloat {

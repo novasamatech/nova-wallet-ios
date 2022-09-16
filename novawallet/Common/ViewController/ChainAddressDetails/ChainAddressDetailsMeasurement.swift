@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SoraUI
 
 enum ChainAddressDetailsMeasurement {
     static let iconViewSize: CGFloat = 88.0
@@ -26,7 +27,7 @@ enum ChainAddressDetailsMeasurement {
         let calculatedHeight = networkHeight + headerSpacing + iconViewSize + headerSpacing +
             addressHeight + headerBottomInset + cellsHeight
 
-        let maxHeight = UIScreen.main.bounds.height * 0.75
+        let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
 
         return min(maxHeight, calculatedHeight)
     }

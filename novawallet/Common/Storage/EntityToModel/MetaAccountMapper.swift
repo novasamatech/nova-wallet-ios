@@ -25,15 +25,17 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
             )
         } ?? []
 
-        let substrateAccountId = try Data(hexString: entity.substrateAccountId!)
+        let substrateAccountId = try entity.substrateAccountId.map { try Data(hexString: $0) }
+        let substrateCryptoType = UInt8(bitPattern: Int8(entity.substrateCryptoType))
+
         let ethereumAddress = try entity.ethereumAddress.map { try Data(hexString: $0) }
 
         return DataProviderModel(
             metaId: entity.metaId!,
             name: entity.name!,
             substrateAccountId: substrateAccountId,
-            substrateCryptoType: UInt8(bitPattern: Int8(entity.substrateCryptoType)),
-            substratePublicKey: entity.substratePublicKey!,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: entity.substratePublicKey,
             ethereumAddress: ethereumAddress,
             ethereumPublicKey: entity.ethereumPublicKey,
             chainAccounts: Set(chainAccounts),
@@ -48,8 +50,8 @@ extension MetaAccountMapper: CoreDataMapperProtocol {
     ) throws {
         entity.metaId = model.metaId
         entity.name = model.name
-        entity.substrateAccountId = model.substrateAccountId.toHex()
-        entity.substrateCryptoType = Int16(bitPattern: UInt16(model.substrateCryptoType))
+        entity.substrateAccountId = model.substrateAccountId?.toHex()
+        entity.substrateCryptoType = model.substrateCryptoType.map { Int16(bitPattern: UInt16($0)) } ?? 0
         entity.substratePublicKey = model.substratePublicKey
         entity.ethereumPublicKey = model.ethereumPublicKey
         entity.ethereumAddress = model.ethereumAddress?.toHex()

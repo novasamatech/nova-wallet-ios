@@ -21,6 +21,10 @@ final class TransferSetupPresenter {
     private(set) var xcmTransfers: XcmTransfers?
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
 
+    private var isOnChainTransfer: Bool {
+        destinationChainAsset == nil
+    }
+
     init(
         interactor: TransferSetupInteractorIntputProtocol,
         wireframe: TransferSetupWireframeProtocol,
@@ -97,6 +101,20 @@ final class TransferSetupPresenter {
 
         view?.didReceiveOriginChain(originViewModel, destinationChain: destinationViewModel)
     }
+
+    private func getYourWallets() -> [MetaAccountChainResponse] {
+        if isOnChainTransfer {
+            return metaChainAccountResponses.filter { $0.metaAccount.metaId != wallet.metaId }
+        } else {
+            return metaChainAccountResponses
+        }
+    }
+
+    func updateYourWalletsButton() {
+        let isShowYourWallets = getYourWallets().contains { $0.chainAccountResponse != nil }
+
+        view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -161,7 +179,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func didTapOnYourWallets() {
         wireframe.showYourWallets(
             from: view,
-            accounts: metaChainAccountResponses,
+            accounts: getYourWallets(),
             address: childPresenter?.inputState.recepient,
             delegate: self
         )
@@ -196,8 +214,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
         self.metaChainAccountResponses = metaChainAccountResponses
-        let isShowYourWallets = metaChainAccountResponses.contains { $0.chainAccountResponse != nil }
-        view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
+        updateYourWalletsButton()
     }
 }
 
@@ -219,6 +236,7 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
         }
 
         provideChainsViewModel()
+        updateYourWalletsButton()
 
         if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
