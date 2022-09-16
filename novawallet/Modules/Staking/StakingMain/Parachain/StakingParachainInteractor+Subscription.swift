@@ -143,6 +143,22 @@ extension StakingParachainInteractor {
             presenter?.didReceiveTotalReward(nil)
         }
     }
+
+    func performYieldBoostTasksSubscription() {
+        guard let chainAsset = selectedChainAsset else {
+            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
+            return
+        }
+
+        guard
+            yieldBoostSupport.checkSupport(for: chainAsset),
+            let accountId = selectedAccount?.chainAccount.accountId else {
+            presenter?.didReceiveYieldBoost(state: .unsupported)
+            return
+        }
+
+        yieldBoostTasksProvider = subscribeYieldBoostTasks(for: chainAsset.chainAssetId, accountId: accountId)
+    }
 }
 
 extension StakingParachainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -247,6 +263,25 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
         switch result {
         case let .success(reward):
             presenter?.didReceiveTotalReward(reward)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+}
+
+extension StakingParachainInteractor: ParaStkYieldBoostStorageSubscriber, ParaStkYieldBoostSubscriptionHandler {
+    func handleYieldBoostTasks(
+        result: Result<[ParaStkYieldBoostState.Task]?, Error>,
+        chainId: ChainModel.Id,
+        accountId: AccountId
+    ) {
+        guard selectedChainAsset?.chain.chainId == chainId, selectedAccount?.chainAccount.accountId == accountId else {
+            return
+        }
+
+        switch result {
+        case let .success(tasks):
+            presenter?.didReceiveYieldBoost(state: .supported(tasks: tasks ?? []))
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
