@@ -134,37 +134,27 @@ final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
         let period: String
 
         if let newDays = viewModel?.new {
-            let newDaysString = R.string.localizable.commonEveryDaysFormat(
-                format: Int(bitPattern: newDays),
-                preferredLanguages: selectedLocale.rLanguages
-            ).lowercased()
-
-            let updating: String
-
             if let oldDays = viewModel?.old, oldDays != newDays {
-                let oldDaysString = R.string.localizable.commonDaysFormat(
-                    format: Int(bitPattern: oldDays),
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-
-                updating = R.string.localizable.yieldBoostSetupPeriodUpdate(
-                    oldDaysString,
+                period = R.string.localizable.yieldBoostSetupUpdatedPeriodDetails(
+                    newDays.localizedDaysPeriod(for: selectedLocale),
+                    oldDays.localizedDaysPeriod(for: selectedLocale),
                     preferredLanguages: selectedLocale.rLanguages
                 )
             } else {
-                updating = ""
+                period = R.string.localizable.yieldBoostSetupNewPeriodDetails(
+                    newDays.localizedDaysPeriod(for: selectedLocale),
+                    preferredLanguages: selectedLocale.rLanguages
+                )
             }
 
-            period = newDaysString + " " + updating
-
         } else {
-            period = "⌛"
+            period = R.string.localizable.yieldBoostSetupNewPeriodDetails(
+                "⌛",
+                preferredLanguages: selectedLocale.rLanguages
+            )
         }
 
-        rootView.thresholdDetailsLabel.text = R.string.localizable.yieldBoostSetupPeriodDetails(
-            period,
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        rootView.thresholdDetailsLabel.text = period
     }
 
     private func applyCollator(viewModel: AccountDetailsSelectionViewModel?) {
