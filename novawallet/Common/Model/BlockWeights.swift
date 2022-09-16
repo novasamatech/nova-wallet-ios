@@ -1,6 +1,6 @@
 import Foundation
 import SubstrateSdk
 
-struct BlockWeights: Codable {
+struct BlockWeights: Decodable {
     @StringCodable var maxBlock: UInt64
 }
