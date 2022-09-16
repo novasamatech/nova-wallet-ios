@@ -54,6 +54,7 @@ final class WalletRemoteSubscriptionWrapper {
         let balanceUpdater = AssetsBalanceUpdater(
             chainAssetId: chainAssetId,
             accountId: accountId,
+            extras: extras,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
             chainRepository: chainItemRepository,
@@ -64,7 +65,7 @@ final class WalletRemoteSubscriptionWrapper {
 
         return remoteSubscriptionService.attachToAsset(
             of: accountId,
-            assetId: extras.assetId,
+            extras: extras,
             chainId: chainAssetId.chainId,
             queue: .main,
             closure: completion,
@@ -183,7 +184,7 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
             remoteSubscriptionService.detachFromAsset(
                 for: subscriptionId,
                 accountId: accountId,
-                assetId: extras.assetId,
+                extras: extras,
                 chainId: chainAssetId.chainId,
                 queue: .main,
                 closure: completion
