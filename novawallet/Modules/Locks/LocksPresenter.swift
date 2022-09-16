@@ -164,8 +164,8 @@ final class LocksPresenter {
         let locksCellsCount = input.locks.filter {
             $0.amount > 0
         }.count
-        let crowdloanCellsCount = input.crowdloans.filter {
-            !$0.value.isEmpty
+        let crowdloanCellsCount = input.crowdloans.filter { crowdloan in
+            crowdloan.value.first(where: { $0.amount > 0 }) != nil
         }.count
         return view?.calculateEstimatedHeight(
             sections: 2,

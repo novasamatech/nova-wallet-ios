@@ -2,9 +2,12 @@ import UIKit
 
 final class AssetListViewLayout: UIView {
     let backgroundView = MultigradientView.background
+    var totalContainsLocks: () -> Bool = { false }
 
-    let collectionView: UICollectionView = {
-        let flowLayout = AssetListFlowLayout()
+    lazy var collectionView: UICollectionView = {
+        let flowLayout = AssetListFlowLayout { [unowned self] in
+            self.totalContainsLocks() ? AssetListMeasurement.totalBalanceWithLocksHeight : AssetListMeasurement.totalBalanceHeight
+        }
         flowLayout.scrollDirection = .vertical
         flowLayout.minimumLineSpacing = 0
         flowLayout.minimumInteritemSpacing = 0

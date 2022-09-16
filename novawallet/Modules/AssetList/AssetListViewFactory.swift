@@ -17,7 +17,8 @@ struct AssetListViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             eventCenter: EventCenter.shared,
             settingsManager: SettingsManager.shared,
-            currencyManager: currencyManager
+            currencyManager: currencyManager,
+            logger: Logger.shared
         )
 
         let wireframe = AssetListWireframe(walletUpdater: WalletDetailsUpdater.shared)

@@ -11,15 +11,18 @@ protocol CrowdloanContributionLocalSubscriptionFactoryProtocol {
 final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     CrowdloanContributionLocalSubscriptionFactoryProtocol {
     let operationFactory: CrowdloanOperationFactoryProtocol
+    let paraIdOperationFactory: ParaIdOperationFactoryProtocol
 
     init(
         operationFactory: CrowdloanOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
+        paraIdOperationFactory: ParaIdOperationFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.operationFactory = operationFactory
+        self.paraIdOperationFactory = paraIdOperationFactory
 
         super.init(
             chainRegistry: chainRegistry,
@@ -60,7 +63,35 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             operationManager: operationManager
         )
 
-        let syncServices = [onChainSyncService]
+        let offchainSources: [ExternalContributionSourceProtocol] = [
+            ParallelContributionSource(),
+            AcalaContributionSource(
+                paraIdOperationFactory: paraIdOperationFactory,
+                acalaChainId: KnowChainId.acala
+            )
+        ]
+
+        let offChainSyncServices: [SyncServiceProtocol] = offchainSources.map { source in
+            let chainFilter = NSPredicate.crowdloanContribution(
+                for: chain.chainId,
+                accountId: accountId,
+                source: source.sourceName
+            )
+            let serviceRepository = storageFacade.createRepository(
+                filter: chainFilter,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(mapper)
+            )
+            return CrowdloanOffChainSyncService(
+                source: source,
+                chain: chain,
+                accountId: accountId,
+                operationManager: operationManager,
+                repository: AnyDataProviderRepository(serviceRepository)
+            )
+        }
+
+        let syncServices = [onChainSyncService] + offChainSyncServices
 
         let source = CrowdloanContributionStreamableSource(syncServices: syncServices)
 
@@ -117,6 +148,7 @@ extension CrowdloanContributionLocalSubscriptionFactory {
         operationManager: operationManager,
         chainRegistry: ChainRegistryFacade.sharedRegistry,
         storageFacade: SubstrateDataStorageFacade.shared,
+        paraIdOperationFactory: ParaIdOperationFactory.shared,
         logger: Logger.shared
     )
 }

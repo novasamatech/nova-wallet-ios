@@ -27,7 +27,11 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AssetListViewLayout()
+        let assetListViewLayout = AssetListViewLayout()
+        assetListViewLayout.totalContainsLocks = {
+            self.headerViewModel?.locksAmount == nil
+        }
+        view = assetListViewLayout
     }
 
     override func viewDidLoad() {
@@ -93,7 +97,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-        return CGSize(width: collectionView.frame.width, height: cellType.height)
+        return CGSize(width: collectionView.frame.width, height: cellType.height(isContainsLocks: headerViewModel?.locksAmount != nil))
     }
 
     func collectionView(

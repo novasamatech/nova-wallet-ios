@@ -3,7 +3,7 @@ import SoraUI
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
     private enum Constants {
-        static let bottomInset: CGFloat = 16.0
+        static let bottomInset: CGFloat = 20.0
     }
 
     let backgroundBlurView: TriangularedBlurView = {
@@ -36,6 +36,16 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         view.textAlignment = .center
         return view
     }()
+
+    let locksView: BorderedIconLabelView = .create {
+        let color = R.color.colorWhite64()!
+        $0.iconDetailsView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
+        $0.iconDetailsView.detailsLabel.font = .regularFootnote
+        $0.iconDetailsView.detailsLabel.textColor = color
+        $0.iconDetailsView.spacing = 4.0
+        $0.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        $0.isHidden = true
+    }
 
     private var skeletonView: SkrullableView?
 
@@ -71,11 +81,12 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
             amountLabel.text = value
-
+            locksView.iconDetailsView.detailsLabel.text = viewModel.locksAmount
+            locksView.isHidden = viewModel.locksAmount == nil
             stopLoadingIfNeeded()
         case .loading:
             amountLabel.text = ""
-
+            locksView.isHidden = true
             startLoadingIfNeeded()
         }
     }
@@ -96,11 +107,24 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         contentView.addSubview(titleView)
         titleView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(backgroundBlurView.snp.top).offset(16.0)
+            make.top.equalTo(backgroundBlurView.snp.top).offset(20.0)
         }
 
-        contentView.addSubview(amountLabel)
-        amountLabel.snp.makeConstraints { make in
+        let amountView = UIStackView(arrangedSubviews: [
+            amountLabel,
+            locksView
+        ])
+        amountView.spacing = 8.0
+        amountView.axis = .vertical
+        amountView.alignment = .center
+        locksView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        locksView.setContentHuggingPriority(.required, for: .horizontal)
+        locksView.iconDetailsView.detailsLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        locksView.backgroundView.setContentHuggingPriority(.required, for: .horizontal)
+
+        contentView.addSubview(amountView)
+        amountView.snp.makeConstraints { make in
+            make.top.equalTo(titleView.snp.bottom).offset(3)
             make.leading.equalTo(backgroundBlurView).offset(8.0)
             make.trailing.equalTo(backgroundBlurView).offset(-8.0)
             make.bottom.equalToSuperview().inset(Constants.bottomInset)

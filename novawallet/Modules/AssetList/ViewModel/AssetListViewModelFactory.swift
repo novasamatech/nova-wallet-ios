@@ -15,6 +15,7 @@ protocol AssetListViewModelFactoryProtocol: AssetListAssetViewModelFactoryProtoc
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
+        locks: [AssetListAssetAccountPrice]?,
         locale: Locale
     ) -> AssetListHeaderViewModel
 
@@ -84,6 +85,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[AssetListAssetAccountPrice]>?,
+        locks: [AssetListAssetAccountPrice]?,
         locale: Locale
     ) -> AssetListHeaderViewModel {
         let icon = walletIdenticon.flatMap { try? iconGenerator.generateFromAccountId($0) }
@@ -97,12 +99,14 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
             return AssetListHeaderViewModel(
                 title: title,
                 amount: totalPrice,
+                locksAmount: locks.map { formatTotalPrice(from: $0, locale: locale) },
                 walletSwitch: walletSwitch
             )
         } else {
             return AssetListHeaderViewModel(
                 title: title,
                 amount: .loading,
+                locksAmount: "",
                 walletSwitch: walletSwitch
             )
         }
