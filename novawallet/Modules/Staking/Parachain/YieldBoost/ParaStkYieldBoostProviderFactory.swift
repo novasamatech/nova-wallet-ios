@@ -63,7 +63,7 @@ final class ParaStkYieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryPr
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let wrapperTrigger: DataProviderEventTrigger = [.onInitialization]
+        let wrapperTrigger: DataProviderEventTrigger = [.onInitialization, .onAddObserver]
         let trigger = AccountAssetBalanceTrigger(
             chainAssetId: chainAssetId,
             eventCenter: eventCenter,
