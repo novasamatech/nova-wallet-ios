@@ -84,9 +84,9 @@ extension ParaStkYieldBoostStartInteractor: ParaStkYieldBoostStartInteractorInpu
         let cancelCalls = cancellingTaskIds.map { AutomationTime.CancelTaskCall(taskId: $0) }
 
         let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
-            let newBuilder = try builder.adding(call: scheduleCall.runtimeCall)
+            let newBuilder = try cancelCalls.reduce(builder) { try $0.adding(call: $1.runtimeCall) }
 
-            return try cancelCalls.reduce(newBuilder) { try $0.adding(call: $1.runtimeCall) }
+            return try newBuilder.adding(call: scheduleCall.runtimeCall)
         }
 
         let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
