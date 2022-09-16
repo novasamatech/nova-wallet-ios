@@ -150,6 +150,7 @@ final class AssetsUpdatingService {
         let assetBalanceUpdater = AssetsBalanceUpdater(
             chainAssetId: chainAssetId,
             accountId: accountId,
+            extras: assetExtras,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
             chainRepository: chainItemRepository,
@@ -160,7 +161,7 @@ final class AssetsUpdatingService {
 
         let maybeSubscriptionId = remoteSubscriptionService.attachToAsset(
             of: accountId,
-            assetId: assetExtras.assetId,
+            extras: assetExtras,
             chainId: chainId,
             queue: nil,
             closure: nil,
@@ -239,7 +240,7 @@ final class AssetsUpdatingService {
                 remoteSubscriptionService.detachFromAsset(
                     for: subscriptionInfo.subscriptionId,
                     accountId: subscriptionInfo.accountId,
-                    assetId: assetExtras.assetId,
+                    extras: assetExtras,
                     chainId: chainId,
                     queue: nil,
                     closure: nil
