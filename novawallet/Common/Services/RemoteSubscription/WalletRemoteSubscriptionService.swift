@@ -24,7 +24,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
     // swiftlint:disable:next function_parameter_count
     func attachToAsset(
         of accountId: AccountId,
-        assetId: String,
+        extras: StatemineAssetExtras,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
@@ -36,7 +36,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
     func detachFromAsset(
         for subscriptionId: UUID,
         accountId: AccountId,
-        assetId: String,
+        extras: StatemineAssetExtras,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
@@ -171,7 +171,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     // swiftlint:disable:next function_parameter_count
     func attachToAsset(
         of accountId: AccountId,
-        assetId: String,
+        extras: StatemineAssetExtras,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
@@ -181,7 +181,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         do {
             let localKeyFactory = LocalStorageKeyFactory()
 
-            let accountStoragePath = StorageCodingPath.assetsAccount
+            let assetId = extras.assetId
+            let accountStoragePath = StorageCodingPath.assetsAccount(from: extras.palletName)
             let accountLocalKey = try localKeyFactory.createFromStoragePath(
                 accountStoragePath,
                 encodableElements: [assetId, accountId],
@@ -196,7 +197,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 param2Encoder: nil
             )
 
-            let detailsStoragePath = StorageCodingPath.assetsDetails
+            let detailsStoragePath = StorageCodingPath.assetsDetails(from: extras.palletName)
             let detailsLocalKey = try localKeyFactory.createFromStoragePath(
                 detailsStoragePath,
                 encodableElement: assetId,
@@ -235,13 +236,14 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     func detachFromAsset(
         for subscriptionId: UUID,
         accountId: AccountId,
-        assetId: String,
+        extras: StatemineAssetExtras,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let storagePath = StorageCodingPath.assetsAccount
+            let assetId = extras.assetId
+            let storagePath = StorageCodingPath.assetsAccount(from: extras.palletName)
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(
                 storagePath,
                 encodableElements: [assetId, accountId],
