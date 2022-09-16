@@ -90,7 +90,7 @@ final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder {
     }
 
     private func applyPeriodViewModel() {
-        let title = periodViewModel?.localizedDaysPeriod(for: selectedLocale) ?? ""
+        let title = periodViewModel?.localizedDaysPeriod(for: selectedLocale).firstLetterCapitalized() ?? ""
         rootView.periodCell.bind(details: title)
     }
 
