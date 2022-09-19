@@ -136,39 +136,12 @@ final class AssetListPresenter: AssetListBasePresenter {
             }
         }
 
-        let locksModel: [AssetListAssetAccountPrice]?
-        switch locksResult {
-        case .failure, .none:
-            locksModel = nil
-        case let .success(locks):
-            if !locks.isEmpty {
-                locksModel = locks.compactMap { lock in
-                    guard let price = priceMapping[lock.chainAssetId] else {
-                        return nil
-                    }
-                    guard let chain = allChains[lock.chainAssetId.chainId] else {
-                        return nil
-                    }
-                    guard let asset = chain.assets.first(where: { $0.assetId == lock.chainAssetId.assetId }) else {
-                        return nil
-                    }
-                    return AssetListAssetAccountPrice(
-                        assetInfo: asset.displayInfo,
-                        balance: lock.amount,
-                        price: price
-                    )
-                }
-            } else {
-                locksModel = nil
-            }
-        }
-
         let viewModel = viewModelFactory.createHeaderViewModel(
             from: name,
             walletIdenticon: walletIdenticon,
             walletType: walletType,
             prices: priceState,
-            locks: locksModel,
+            locks: locksModel(prices: priceMapping),
             locale: selectedLocale
         )
 
@@ -209,6 +182,32 @@ final class AssetListPresenter: AssetListBasePresenter {
             view?.didReceiveGroups(state: .empty)
         } else {
             view?.didReceiveGroups(state: .list(groups: viewModels))
+        }
+    }
+
+    private func locksModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice]? {
+        switch locksResult {
+        case .failure, .none:
+            return nil
+        case let .success(locks):
+            let model: [AssetListAssetAccountPrice] = locks.compactMap { lock in
+                guard let price = prices[lock.chainAssetId] else {
+                    return nil
+                }
+                guard let chain = allChains[lock.chainAssetId.chainId] else {
+                    return nil
+                }
+                guard let asset = chain.assets.first(where: { $0.assetId == lock.chainAssetId.assetId }) else {
+                    return nil
+                }
+                return AssetListAssetAccountPrice(
+                    assetInfo: asset.displayInfo,
+                    balance: lock.amount,
+                    price: price
+                )
+            }
+
+            return model.isEmpty ? nil : model
         }
     }
 

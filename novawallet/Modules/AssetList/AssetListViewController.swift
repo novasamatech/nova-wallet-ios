@@ -27,11 +27,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        let assetListViewLayout = AssetListViewLayout()
-        assetListViewLayout.totalContainsLocks = {
-            self.headerViewModel?.locksAmount != nil
-        }
-        view = assetListViewLayout
+        view = AssetListViewLayout()
     }
 
     override func viewDidLoad() {
@@ -97,7 +93,8 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-        return CGSize(width: collectionView.frame.width, height: cellType.height(isContainsLocks: headerViewModel?.locksAmount != nil))
+        let cellHeight = rootView.collectionViewLayout.cellHeight(for: cellType)
+        return CGSize(width: collectionView.bounds.width, height: cellHeight)
     }
 
     func collectionView(
@@ -351,13 +348,14 @@ extension AssetListViewController: HiddableBarWhenPushed {}
 
 extension AssetListViewController: AssetListViewProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
-        let needUpdateLayout = viewModel.locksAmount != headerViewModel?.locksAmount
         headerViewModel = viewModel
 
         rootView.collectionView.reloadData()
-        if needUpdateLayout {
-            rootView.collectionView.collectionViewLayout.invalidateLayout()
-        }
+
+        let cellHeight = viewModel.locksAmount == nil ?
+            AssetListMeasurement.totalBalanceHeight : AssetListMeasurement.totalBalanceWithLocksHeight
+
+        rootView.collectionViewLayout.updateTotalBalanceHeight(cellHeight)
     }
 
     func didReceiveGroups(state: AssetListGroupState) {
