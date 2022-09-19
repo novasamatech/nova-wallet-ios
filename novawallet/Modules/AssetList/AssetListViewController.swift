@@ -29,7 +29,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     override func loadView() {
         let assetListViewLayout = AssetListViewLayout()
         assetListViewLayout.totalContainsLocks = {
-            self.headerViewModel?.locksAmount == nil
+            self.headerViewModel?.locksAmount != nil
         }
         view = assetListViewLayout
     }
@@ -351,9 +351,13 @@ extension AssetListViewController: HiddableBarWhenPushed {}
 
 extension AssetListViewController: AssetListViewProtocol {
     func didReceiveHeader(viewModel: AssetListHeaderViewModel) {
+        let needUpdateLayout = viewModel.locksAmount != headerViewModel?.locksAmount
         headerViewModel = viewModel
 
         rootView.collectionView.reloadData()
+        if needUpdateLayout {
+            rootView.collectionView.collectionViewLayout.invalidateLayout()
+        }
     }
 
     func didReceiveGroups(state: AssetListGroupState) {

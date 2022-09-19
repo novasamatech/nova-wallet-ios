@@ -42,8 +42,6 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             return provider
         }
 
-        let onChainSyncService = createOnChainSyncService(chainId: chain.chainId, accountId: accountId)
-
         let offchainSources: [ExternalContributionSourceProtocol] = [
             ParallelContributionSource(),
             AcalaContributionSource(
@@ -52,25 +50,12 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             )
         ]
 
-        let offChainSyncServices: [SyncServiceProtocol] = offchainSources.map { source in
-            let chainFilter = NSPredicate.crowdloanContribution(
-                for: chain.chainId,
-                accountId: accountId,
-                source: source.sourceName
-            )
-            let serviceRepository = storageFacade.createRepository(
-                filter: chainFilter,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(mapper)
-            )
-            return CrowdloanOffChainSyncService(
-                source: source,
-                chain: chain,
-                accountId: accountId,
-                operationManager: operationManager,
-                repository: AnyDataProviderRepository(serviceRepository)
-            )
-        }
+        let onChainSyncService = createOnChainSyncService(chainId: chain.chainId, accountId: accountId)
+        let offChainSyncServices = createOffChainSyncServices(
+            from: offchainSources,
+            chain: chain,
+            accountId: accountId
+        )
 
         let syncServices = [onChainSyncService] + offChainSyncServices
 
@@ -136,6 +121,34 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             operationManager: operationManager,
             logger: logger
         )
+    }
+
+    private func createOffChainSyncServices(
+        from sources: [ExternalContributionSourceProtocol],
+        chain: ChainModel,
+        accountId: AccountId
+    ) -> [SyncServiceProtocol] {
+        let mapper = CrowdloanContributionDataMapper()
+
+        return sources.map { source in
+            let chainFilter = NSPredicate.crowdloanContribution(
+                for: chain.chainId,
+                accountId: accountId,
+                source: source.sourceName
+            )
+            let serviceRepository = storageFacade.createRepository(
+                filter: chainFilter,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(mapper)
+            )
+            return CrowdloanOffChainSyncService(
+                source: source,
+                chain: chain,
+                accountId: accountId,
+                operationManager: operationManager,
+                repository: AnyDataProviderRepository(serviceRepository)
+            )
+        }
     }
 }
 

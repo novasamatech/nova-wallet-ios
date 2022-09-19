@@ -82,6 +82,21 @@ final class CrowdloanOffChainSyncService: BaseSyncService {
         )
         let saveOperation = createSaveOperation(dependingOn: changesWrapper)
 
+        saveOperation.completionBlock = {
+            guard !saveOperation.isCancelled else {
+                return
+            }
+
+            do {
+                try saveOperation.extractNoCancellableResultData()
+                self.syncOperationWrapper = nil
+                self.complete(nil)
+            } catch {
+                self.syncOperationWrapper = nil
+                self.complete(error)
+            }
+        }
+
         let operations = contributionsFetchOperation.allOperations + [changesWrapper]
 
         let syncWrapper = CompoundOperationWrapper(
@@ -95,5 +110,6 @@ final class CrowdloanOffChainSyncService: BaseSyncService {
 
     override func stopSyncUp() {
         syncOperationWrapper?.cancel()
+        syncOperationWrapper = nil
     }
 }
