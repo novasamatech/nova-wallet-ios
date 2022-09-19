@@ -47,11 +47,11 @@ struct CrowdloanListViewFactory {
     private static func createInteractor(
         from state: CrowdloanSharedState
     ) -> CrowdloanListInteractor? {
-        guard let currencyManager = CurrencyManager.shared else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let selectedMetaAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
-
-        let selectedMetaAccount: MetaAccountModel = SelectedWalletSettings.shared.value
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()

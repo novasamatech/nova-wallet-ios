@@ -87,6 +87,10 @@ class NewAmountInputView: BackgroundedContentControl {
         }
     }
 
+    var hasValidNumber: Bool {
+        inputViewModel?.decimalAmount != nil
+    }
+
     override public init(frame: CGRect) {
         super.init(frame: frame)
         configure()

@@ -1,15 +1,20 @@
 import Foundation
 import UIKit
 
-final class AccountDetailsNavigationCell: UITableViewCell, ModalPickerCellProtocol {
+typealias AccountDetailsNavigationCell = AccountDetailsGenericNavigationCell<AccountDetailsBalanceDecorator>
+
+final class AccountDetailsGenericNavigationCell<D: AccountDetailsSelectionDecorator>: UITableViewCell,
+    ModalPickerCellProtocol {
     typealias Model = AccountDetailsSelectionViewModel
 
     var checkmarked: Bool = false
 
-    let detailsView = AccountDetailsSelectionView()
+    let detailsView = AccountDetailsGenericSelectionView<D>()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        backgroundColor = .clear
 
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = R.color.colorAccentSelected()

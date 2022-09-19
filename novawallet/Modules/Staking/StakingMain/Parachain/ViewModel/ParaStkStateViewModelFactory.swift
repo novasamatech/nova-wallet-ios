@@ -157,6 +157,47 @@ final class ParaStkStateViewModelFactory {
             }
         }
     }
+
+    private func createYieldBoostManageOption(
+        from state: ParaStkYieldBoostState?,
+        delegator: ParachainStaking.Delegator,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]
+    ) -> StakingManageOption? {
+        switch state {
+        case let .supported(tasks):
+            let allCollators = Set(delegator.collators())
+            let disabledCollators = scheduledRequests.filter { $0.isRevoke }.map(\.collatorId)
+
+            if allCollators == Set(disabledCollators) {
+                return nil
+            }
+
+            let enabled = !tasks.isEmpty
+            return .yieldBoost(enabled: enabled)
+        case .none, .unsupported:
+            return nil
+        }
+    }
+
+    private func createDelegatorStateManageOptions(
+        for state: ParachainStaking.DelegatorState
+    ) -> [StakingManageOption] {
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .changeValidators(count: state.delegatorState.delegations.count)
+        ]
+
+        if let yieldBoostOption = createYieldBoostManageOption(
+            from: state.commonData.yieldBoostState,
+            delegator: state.delegatorState,
+            scheduledRequests: state.scheduledRequests ?? []
+        ) {
+            return [yieldBoostOption] + actions
+        } else {
+            return actions
+        }
+    }
 }
 
 extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
@@ -228,17 +269,15 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
 
         let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
 
+        let actions = createDelegatorStateManageOptions(for: state)
+
         lastViewModel = .nominator(
             viewModel: delegationViewModel,
             alerts: alerts,
             reward: reward,
             analyticsViewModel: nil,
             unbondings: unbondings,
-            actions: [
-                .stakeMore,
-                .unstake,
-                .changeValidators(count: state.delegatorState.delegations.count)
-            ]
+            actions: actions
         )
     }
 }
