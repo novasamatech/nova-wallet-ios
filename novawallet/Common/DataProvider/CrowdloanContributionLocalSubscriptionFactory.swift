@@ -39,26 +39,7 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             return provider
         }
 
-        let mapper = CrowdloanContributionDataMapper()
-        let onChainFilter = NSPredicate.crowdloanContribution(
-            for: chain.chainId,
-            accountId: accountId,
-            source: nil
-        )
-        let onChainCrowdloansRepository = storageFacade.createRepository(
-            filter: onChainFilter,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
-
-        let onChainSyncService = CrowdloanOnChainSyncService(
-            operationFactory: operationFactory,
-            chainRegistry: chainRegistry,
-            repository: AnyDataProviderRepository(onChainCrowdloansRepository),
-            accountId: accountId,
-            chainId: chain.chainId,
-            operationManager: operationManager
-        )
+        let onChainSyncService = createOnChainSyncService(chainId: chain.chainId, accountId: accountId)
 
         let syncServices = [onChainSyncService]
 
@@ -69,6 +50,7 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             accountId: accountId
         )
 
+        let mapper = CrowdloanContributionDataMapper()
         let repository = storageFacade.createRepository(
             filter: crowdloansFilter,
             sortDescriptors: [],
@@ -100,6 +82,29 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
         saveProvider(provider, for: cacheKey)
 
         return provider
+    }
+
+    private func createOnChainSyncService(chainId: ChainModel.Id, accountId: AccountId) -> SyncServiceProtocol {
+        let mapper = CrowdloanContributionDataMapper()
+        let onChainFilter = NSPredicate.crowdloanContribution(
+            for: chainId,
+            accountId: accountId,
+            source: nil
+        )
+        let onChainCrowdloansRepository = storageFacade.createRepository(
+            filter: onChainFilter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+        return CrowdloanOnChainSyncService(
+            operationFactory: operationFactory,
+            chainRegistry: chainRegistry,
+            repository: AnyDataProviderRepository(onChainCrowdloansRepository),
+            accountId: accountId,
+            chainId: chainId,
+            operationManager: operationManager,
+            logger: logger
+        )
     }
 }
 

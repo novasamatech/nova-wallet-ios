@@ -5,6 +5,9 @@ import SubstrateSdk
 protocol SyncServiceProtocol {
     func performSyncUp()
     func stopSyncUp()
+    func setup()
+
+    var isActive: Bool { get }
 }
 
 class BaseSyncService: SyncServiceProtocol {
