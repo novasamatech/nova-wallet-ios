@@ -117,14 +117,10 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         amountView.spacing = 8.0
         amountView.axis = .vertical
         amountView.alignment = .center
-        locksView.setContentHuggingPriority(.defaultLow, for: .vertical)
-        locksView.setContentHuggingPriority(.required, for: .horizontal)
-        locksView.iconDetailsView.detailsLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        locksView.backgroundView.setContentHuggingPriority(.required, for: .horizontal)
 
         contentView.addSubview(amountView)
         amountView.snp.makeConstraints { make in
-            make.top.equalTo(titleView.snp.bottom).offset(3)
+            make.top.greaterThanOrEqualTo(titleView.snp.bottom).offset(3)
             make.leading.equalTo(backgroundBlurView).offset(8.0)
             make.trailing.equalTo(backgroundBlurView).offset(-8.0)
             make.bottom.equalToSuperview().inset(Constants.bottomInset)

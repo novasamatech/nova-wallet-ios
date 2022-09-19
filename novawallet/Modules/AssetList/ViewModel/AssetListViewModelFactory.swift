@@ -106,7 +106,7 @@ extension AssetListViewModelFactory: AssetListViewModelFactoryProtocol {
             return AssetListHeaderViewModel(
                 title: title,
                 amount: .loading,
-                locksAmount: "",
+                locksAmount: nil,
                 walletSwitch: walletSwitch
             )
         }

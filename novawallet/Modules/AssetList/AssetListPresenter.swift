@@ -191,15 +191,14 @@ final class AssetListPresenter: AssetListBasePresenter {
             return nil
         case let .success(locks):
             let model: [AssetListAssetAccountPrice] = locks.compactMap { lock in
-                guard let price = prices[lock.chainAssetId] else {
-                    return nil
-                }
                 guard let chain = allChains[lock.chainAssetId.chainId] else {
                     return nil
                 }
                 guard let asset = chain.assets.first(where: { $0.assetId == lock.chainAssetId.assetId }) else {
                     return nil
                 }
+
+                let price = prices[lock.chainAssetId] ?? .zero()
                 return AssetListAssetAccountPrice(
                     assetInfo: asset.displayInfo,
                     balance: lock.amount,
