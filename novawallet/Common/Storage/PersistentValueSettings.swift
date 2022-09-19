@@ -29,6 +29,10 @@ class PersistentValueSettings<T> {
         fatalError("Function must be implemented in subclass")
     }
 
+    func performRemove(value _: T, completionClosure _: @escaping (Result<T?, Error>) -> Void) {
+        fatalError("Function must be implemented in subclass")
+    }
+
     func setup(
         runningCompletionIn queue: DispatchQueue?,
         completionClosure: ((Result<T?, Error>) -> Void)?
@@ -78,5 +82,27 @@ class PersistentValueSettings<T> {
 
     func save(value: T) {
         save(value: value, runningCompletionIn: nil, completionClosure: nil)
+    }
+
+    func remove(value: T, runningCompletionIn queue: DispatchQueue?, completionClosure: ((Result<T?, Error>) -> Void)?) {
+        mutex.lock()
+
+        performRemove(value: value) { result in
+            if case let .success(newValue) = result {
+                self.internalValue = newValue
+            }
+
+            self.mutex.unlock()
+
+            if let closure = completionClosure {
+                dispatchInQueueWhenPossible(queue) {
+                    closure(result)
+                }
+            }
+        }
+    }
+
+    func remove(value: T) {
+        remove(value: value, runningCompletionIn: nil, completionClosure: nil)
     }
 }

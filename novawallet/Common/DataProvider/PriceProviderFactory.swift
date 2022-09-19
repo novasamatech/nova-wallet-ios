@@ -60,7 +60,10 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
         return AnySingleValueProvider(provider)
     }
 
-    func getPriceListProvider(for priceIds: [AssetModel.PriceId], currency: Currency) -> AnySingleValueProvider<[PriceData]> {
+    func getPriceListProvider(
+        for priceIds: [AssetModel.PriceId],
+        currency: Currency
+    ) -> AnySingleValueProvider<[PriceData]> {
         clearIfNeeded()
 
         let coingeckoId = currency.coingeckoId

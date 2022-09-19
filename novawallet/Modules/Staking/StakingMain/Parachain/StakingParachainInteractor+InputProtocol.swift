@@ -102,5 +102,7 @@ extension StakingParachainInteractor: EventVisitorProtocol {
 extension StakingParachainInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
         priceProvider?.refresh()
+        yieldBoostTasksProvider?.refresh()
+        totalRewardProvider?.refresh()
     }
 }

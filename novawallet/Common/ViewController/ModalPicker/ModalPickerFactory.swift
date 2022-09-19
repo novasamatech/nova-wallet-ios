@@ -321,12 +321,38 @@ enum ModalPickerFactory {
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
     ) -> UIViewController? {
+        let controller: ModalPickerViewController<
+            AccountDetailsGenericSelectionCell<AccountDetailsBalanceDecorator>,
+            SelectableViewModel<AccountDetailsSelectionViewModel>
+        >?
+
+        controller = createGenericCollatorsPickingList(
+            items,
+            actionViewModel: actionViewModel,
+            selectedIndex: selectedIndex,
+            delegate: delegate,
+            context: context
+        )
+
+        return controller
+    }
+
+    static func createGenericCollatorsPickingList<D: AccountDetailsSelectionDecorator>(
+        _ items: [AccountDetailsPickerViewModel],
+        actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> ModalPickerViewController<
+        AccountDetailsGenericSelectionCell<D>,
+        SelectableViewModel<AccountDetailsSelectionViewModel>
+    >? {
         guard !items.isEmpty else {
             return nil
         }
 
         let viewController: ModalPickerViewController<
-            AccountDetailsSelectionCell,
+            AccountDetailsGenericSelectionCell<D>,
             SelectableViewModel<AccountDetailsSelectionViewModel>
         >
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
@@ -344,6 +370,7 @@ enum ModalPickerFactory {
         viewController.headerHeight = 40.0
         viewController.footerHeight = 0.0
         viewController.headerBorderType = []
+        viewController.isScrollEnabled = true
 
         if let actionViewModel = actionViewModel {
             viewController.actionType = .iconTitle(viewModel: actionViewModel)
