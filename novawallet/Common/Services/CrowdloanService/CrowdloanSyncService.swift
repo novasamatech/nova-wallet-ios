@@ -143,6 +143,21 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
             accountId: accountId
         )
         let saveOperation = createSaveOperation(dependingOn: changesWrapper)
+        
+        saveOperation.completionBlock = {
+            guard !saveOperation.isCancelled else {
+                return
+            }
+
+            do {
+                try saveOperation.extractNoCancellableResultData()
+                self.syncOperationWrapper = nil
+                self.complete(nil)
+            } catch {
+                self.syncOperationWrapper = nil
+                self.complete(error)
+            }
+        }
 
         let operations = fetchCrowdloansOperation.allOperations + [contributionsFetchOperation, changesWrapper]
 
@@ -156,5 +171,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
 
     override func stopSyncUp() {
         syncOperationWrapper?.cancel()
+        syncOperationWrapper = nil
     }
+    
 }
