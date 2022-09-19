@@ -51,7 +51,7 @@ final class WalletNetworkOperationFactory {
                 return createStatemineFetchOperation(
                     accountId,
                     chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
-                    palletAssetId: extras.assetId
+                    extras: extras
                 )
             case .orml:
                 guard
@@ -135,7 +135,7 @@ final class WalletNetworkOperationFactory {
     func createStatemineFetchOperation(
         _ accountId: Data,
         chainAssetId: ChainAssetId,
-        palletAssetId: String
+        extras: StatemineAssetExtras
     ) -> CompoundOperationWrapper<AssetBalance?> {
         guard let connection = chainRegistry.getConnection(for: chainAssetId.chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
@@ -149,10 +149,10 @@ final class WalletNetworkOperationFactory {
 
         let wrapper: CompoundOperationWrapper<[StorageResponse<AssetAccount>]> = requestFactory.queryItems(
             engine: connection,
-            keyParams1: { [palletAssetId] },
+            keyParams1: { [extras.assetId] },
             keyParams2: { [accountId] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: StorageCodingPath.assetsAccount
+            storagePath: StorageCodingPath.assetsAccount(from: extras.palletName)
         )
 
         let mapOperation = ClosureOperation<AssetBalance?> {
@@ -259,7 +259,7 @@ final class WalletNetworkOperationFactory {
                     return builder
                 }
 
-                let call = callFactory.assetsTransfer(to: receiver, assetId: extras.assetId, amount: amount)
+                let call = callFactory.assetsTransfer(to: receiver, extras: extras, amount: amount)
                 return try builder.adding(call: call)
             case .orml:
                 guard
