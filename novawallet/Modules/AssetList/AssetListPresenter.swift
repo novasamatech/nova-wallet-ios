@@ -163,7 +163,7 @@ final class AssetListPresenter: AssetListBasePresenter {
                     priceState = .cached(value: items)
                     continue
                 }
-                
+
                 switch newItem {
                 case let .left(item):
                     priceState = .loaded(value: items + [item])

@@ -1,15 +1,16 @@
-enum Either<A, B> {
-    case left(A)
-    case right(B)
+// https://github.com/apple/swift/blob/main/stdlib/public/core/EitherSequence.swift
+enum Either<Left, Right> {
+    case left(Left)
+    case right(Right)
 }
 
-extension Either where A == B {
-    var value: A {
+extension Either where Left == Right {
+    var value: Left {
         switch self {
-        case let .left(leftItem):
-            return leftItem
-        case let .right(rightItem):
-            return rightItem
+        case let .left(left):
+            return left
+        case let .right(right):
+            return right
         }
     }
 }
