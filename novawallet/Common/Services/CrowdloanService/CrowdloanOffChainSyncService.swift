@@ -13,13 +13,16 @@ final class CrowdloanOffChainSyncService: BaseSyncService {
         chain: ChainModel,
         accountId: AccountId,
         operationManager: OperationManagerProtocol,
-        repository: AnyDataProviderRepository<CrowdloanContributionData>
+        repository: AnyDataProviderRepository<CrowdloanContributionData>,
+        logger: LoggerProtocol?
     ) {
         self.source = source
         self.operationManager = operationManager
         self.repository = repository
         self.chain = chain
         self.accountId = accountId
+
+        super.init(logger: logger)
     }
 
     private func contributionsFetchOperation(

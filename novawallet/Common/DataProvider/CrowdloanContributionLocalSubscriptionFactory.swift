@@ -146,7 +146,8 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
                 chain: chain,
                 accountId: accountId,
                 operationManager: operationManager,
-                repository: AnyDataProviderRepository(serviceRepository)
+                repository: AnyDataProviderRepository(serviceRepository),
+                logger: logger
             )
         }
     }
