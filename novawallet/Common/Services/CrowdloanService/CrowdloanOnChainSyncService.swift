@@ -16,7 +16,8 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         repository: AnyDataProviderRepository<CrowdloanContributionData>,
         accountId: AccountId,
         chainId: ChainModel.Id,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol?
     ) {
         self.operationFactory = operationFactory
         self.chainRegistry = chainRegistry
@@ -24,6 +25,8 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         self.accountId = accountId
         self.chainId = chainId
         self.operationManager = operationManager
+
+        super.init(logger: logger)
     }
 
     private func contributionsFetchOperation(
@@ -143,7 +146,7 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
             accountId: accountId
         )
         let saveOperation = createSaveOperation(dependingOn: changesWrapper)
-        
+
         saveOperation.completionBlock = {
             guard !saveOperation.isCancelled else {
                 return
@@ -173,5 +176,4 @@ final class CrowdloanOnChainSyncService: BaseSyncService {
         syncOperationWrapper?.cancel()
         syncOperationWrapper = nil
     }
-    
 }

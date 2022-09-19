@@ -29,7 +29,9 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: ((Result<Int, Error>?) -> Void)?
     ) {
-        syncServices.forEach { $0.performSyncUp() }
+        syncServices.forEach {
+            $0.isActive ? $0.performSyncUp() : $0.setup()
+        }
 
         guard let closure = commitNotificationBlock else {
             return
