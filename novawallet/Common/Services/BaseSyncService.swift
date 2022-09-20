@@ -2,7 +2,15 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-class BaseSyncService {
+protocol SyncServiceProtocol {
+    func performSyncUp()
+    func stopSyncUp()
+    func setup()
+
+    var isActive: Bool { get }
+}
+
+class BaseSyncService: SyncServiceProtocol {
     let retryStrategy: ReconnectionStrategyProtocol
     let logger: LoggerProtocol?
 
