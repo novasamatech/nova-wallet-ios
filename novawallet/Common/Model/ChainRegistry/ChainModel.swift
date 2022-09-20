@@ -154,4 +154,5 @@ enum ChainOptions: String, Codable {
     case ethereumBased
     case testnet
     case crowdloans
+    case governance
 }
