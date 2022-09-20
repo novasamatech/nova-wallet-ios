@@ -3,6 +3,7 @@ import RobinHood
 
 final class ParallelContributionSource: ExternalContributionSourceProtocol {
     static let baseURL = URL(string: "https://auction-service-prod.parallel.fi/crowdloan/rewards")!
+    var sourceName: String { "Parallel" }
 
     func getContributions(accountId: AccountId, chain: ChainModel) -> CompoundOperationWrapper<[ExternalContribution]> {
         guard let accountAddress = try? accountId.toAddress(using: chain.chainFormat) else {
@@ -19,13 +20,13 @@ final class ParallelContributionSource: ExternalContributionSourceProtocol {
             return request
         }
 
-        let resultFactory = AnyNetworkResultFactory<[ExternalContribution]> { data in
+        let resultFactory = AnyNetworkResultFactory<[ExternalContribution]> { [sourceName] data in
             let resultData = try JSONDecoder().decode(
                 [ParallelContributionResponse].self,
                 from: data
             )
 
-            return resultData.map { ExternalContribution(source: "Parallel", amount: $0.amount, paraId: $0.paraId) }
+            return resultData.map { ExternalContribution(source: sourceName, amount: $0.amount, paraId: $0.paraId) }
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
