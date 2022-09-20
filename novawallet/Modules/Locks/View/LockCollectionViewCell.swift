@@ -28,10 +28,6 @@ final class LockCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: UIView.noIntrinsicMetric)
-    }
-
     private func setupLayout() {
         contentView.addSubview(view)
         view.snp.makeConstraints {
