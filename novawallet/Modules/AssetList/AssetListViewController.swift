@@ -93,7 +93,8 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-        return CGSize(width: collectionView.frame.width, height: cellType.height)
+        let cellHeight = rootView.collectionViewLayout.cellHeight(for: cellType)
+        return CGSize(width: collectionView.bounds.width, height: cellHeight)
     }
 
     func collectionView(
@@ -350,6 +351,11 @@ extension AssetListViewController: AssetListViewProtocol {
         headerViewModel = viewModel
 
         rootView.collectionView.reloadData()
+
+        let cellHeight = viewModel.locksAmount == nil ?
+            AssetListMeasurement.totalBalanceHeight : AssetListMeasurement.totalBalanceWithLocksHeight
+
+        rootView.collectionViewLayout.updateTotalBalanceHeight(cellHeight)
     }
 
     func didReceiveGroups(state: AssetListGroupState) {
