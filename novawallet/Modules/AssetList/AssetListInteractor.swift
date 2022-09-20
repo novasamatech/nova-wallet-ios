@@ -180,8 +180,6 @@ final class AssetListInteractor: AssetListBaseInteractor {
                 return
             }
             crowdloansSubscriptions[chain.identifier] = subscribeToCrowdloansProvider(for: accountId, chain: chain)
-            crowdloansSubscriptions[chain.identifier]?.refresh()
-            logger?.debug("Crowdloans for chain: \(chain.name) will refresh")
         }
     }
 
