@@ -1,6 +1,6 @@
 import Foundation
 
-extension Governance {
+extension Referenda {
     static var referendumInfo: StorageCodingPath {
         StorageCodingPath(moduleName: "Referenda", itemName: "ReferendumInfoFor")
     }
