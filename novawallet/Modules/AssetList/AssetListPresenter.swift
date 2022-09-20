@@ -179,12 +179,13 @@ final class AssetListPresenter: AssetListBasePresenter {
             }
         }
 
-        let totalLocks = locks + crowdloansModel(prices: priceMapping)
+        let crowdloans = crowdloansModel(prices: priceMapping)
+        let totalLocks = locks + crowdloans
         let viewModel = viewModelFactory.createHeaderViewModel(
             from: name,
             walletIdenticon: walletIdenticon,
             walletType: walletType,
-            prices: priceState + crowdloansModel(prices: priceMapping),
+            prices: priceState + crowdloans,
             locks: totalLocks.isEmpty ? nil : totalLocks,
             locale: selectedLocale
         )
