@@ -29,7 +29,7 @@ class ReferendumFetchTests: XCTestCase {
 
         // when
 
-        let request = UnkeyedRemoteStorageRequest(storagePath: Governance.referendumInfo)
+        let request = UnkeyedRemoteStorageRequest(storagePath: Referenda.referendumInfo)
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
