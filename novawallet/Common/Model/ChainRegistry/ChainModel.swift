@@ -95,7 +95,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         addressPrefix = remoteModel.addressPrefix
         types = remoteModel.types
         icon = remoteModel.icon
-        options = remoteModel.options
+        options = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) }
         externalApi = remoteModel.externalApi
         explorers = remoteModel.explorers
         additional = remoteModel.additional
