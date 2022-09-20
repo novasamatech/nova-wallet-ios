@@ -5,7 +5,7 @@ import BigInt
 final class AcalaContributionSource: ExternalContributionSourceProtocol {
     static let baseUrl = URL(string: "https://crowdloan.aca-api.network")!
     static let apiContribution = "/contribution"
-    var sourceName: String { "Liquid" }
+    var sourceName: String { "Acala Liquid" }
 
     let paraIdOperationFactory: ParaIdOperationFactoryProtocol
     let acalaChainId: ChainModel.Id
