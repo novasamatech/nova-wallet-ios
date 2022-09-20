@@ -3,14 +3,11 @@ import RobinHood
 import SubstrateSdk
 
 protocol SyncServiceProtocol {
-    func performSyncUp()
+    func syncUp()
     func stopSyncUp()
-    func setup()
-
-    var isActive: Bool { get }
 }
 
-class BaseSyncService: SyncServiceProtocol {
+class BaseSyncService {
     let retryStrategy: ReconnectionStrategyProtocol
     let logger: LoggerProtocol?
 
@@ -127,6 +124,25 @@ extension BaseSyncService: SchedulerDelegate {
             mutex.unlock()
         }
 
+        isSyncing = true
+
+        performSyncUp()
+    }
+}
+
+extension BaseSyncService: SyncServiceProtocol {
+    func syncUp() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard !isSyncing else {
+            return
+        }
+
+        isActive = true
         isSyncing = true
 
         performSyncUp()
