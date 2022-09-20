@@ -12,6 +12,7 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
     CrowdloanContributionLocalSubscriptionFactoryProtocol {
     let operationFactory: CrowdloanOperationFactoryProtocol
     let paraIdOperationFactory: ParaIdOperationFactoryProtocol
+    let eventCenter: EventCenterProtocol
 
     init(
         operationFactory: CrowdloanOperationFactoryProtocol,
@@ -19,10 +20,12 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
         paraIdOperationFactory: ParaIdOperationFactoryProtocol,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.operationFactory = operationFactory
         self.paraIdOperationFactory = paraIdOperationFactory
+        self.eventCenter = eventCenter
 
         super.init(
             chainRegistry: chainRegistry,
@@ -59,7 +62,14 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
 
         let syncServices = [onChainSyncService] + offChainSyncServices
 
-        let source = CrowdloanContributionStreamableSource(syncServices: syncServices)
+        let source = CrowdloanContributionStreamableSource(
+            syncServices: syncServices,
+            chainId: chain.chainId,
+            accountId: accountId,
+            eventCenter: eventCenter
+        )
+
+        let selfUpdatingSource = CrowdloanContributionStreamableSourceWrapper(source: source)
 
         let crowdloansFilter = NSPredicate.crowdloanContribution(
             for: chain.chainId,
@@ -89,7 +99,7 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
         }
 
         let provider = StreamableProvider(
-            source: AnyStreamableSource(source),
+            source: AnyStreamableSource(selfUpdatingSource),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: operationManager
@@ -168,6 +178,7 @@ extension CrowdloanContributionLocalSubscriptionFactory {
         chainRegistry: ChainRegistryFacade.sharedRegistry,
         storageFacade: SubstrateDataStorageFacade.shared,
         paraIdOperationFactory: ParaIdOperationFactory.shared,
+        eventCenter: EventCenter.shared,
         logger: Logger.shared
     )
 }
