@@ -67,7 +67,7 @@ final class LocksPresenter {
             balanceModel.locksPrice / balanceModel.totalPrice : 0
         let displayPercent = formatter.stringFromDecimal(percent) ?? ""
         let locksCells = createLocksCells().sorted {
-            $0.price > $1.price
+            $0.priceValue > $1.priceValue
         }
 
         return LocksViewSectionModel(
@@ -152,8 +152,9 @@ final class LocksPresenter {
         return LocksViewSectionModel.CellViewModel(
             id: identifier,
             title: title,
-            value: value.amount,
-            price: value.price
+            amount: value.amount,
+            price: value.price,
+            priceValue: value.priceValue
         )
     }
 

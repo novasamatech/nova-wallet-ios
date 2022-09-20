@@ -64,6 +64,7 @@ class GenericCollectionViewLayout<THeaderView: UIView>: UIView {
         .createSectionLayoutWithFullWidthRow(settings:
             .init(
                 estimatedRowHeight: settings.estimatedRowHeight,
+                absoluteHeaderHeight: settings.absoluteHeaderHeight,
                 estimatedHeaderHeight: settings.estimatedSectionHeaderHeight,
                 sectionContentInsets: settings.sectionContentInsets,
                 sectionInterGroupSpacing: settings.interGroupSpacing,
@@ -79,6 +80,7 @@ struct GenericCollectionViewLayoutSettings {
     var pinToVisibleBounds: Bool = true
     var estimatedHeaderHeight: CGFloat = 36
     var estimatedRowHeight: CGFloat = 56
+    var absoluteHeaderHeight: CGFloat?
     var estimatedSectionHeaderHeight: CGFloat = 46
     var sectionContentInsets = NSDirectionalEdgeInsets(
         top: 0,
