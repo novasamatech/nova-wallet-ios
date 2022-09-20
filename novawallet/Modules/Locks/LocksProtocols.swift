@@ -29,7 +29,8 @@ struct LocksViewSectionModel: SectionProtocol, Hashable {
     struct CellViewModel: Hashable {
         let id: String
         let title: String
-        let value: String
-        let price: Decimal
+        let amount: String
+        let price: String?
+        let priceValue: Decimal
     }
 }
