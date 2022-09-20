@@ -29,10 +29,6 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
         self.eventCenter.add(observer: self)
     }
 
-    deinit {
-        self.eventCenter.remove(observer: self)
-    }
-
     func fetchHistory(
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: CommitNotificationBlock?
@@ -62,9 +58,8 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
 
         let result: Result<Int, Error> = Result.success(0)
 
-        dispatchInQueueWhenPossible(queue) { [weak delegate] in
+        dispatchInQueueWhenPossible(queue) {
             closure(result)
-            delegate?.didRefresh(result: result)
         }
     }
 }
@@ -74,7 +69,9 @@ extension CrowdloanContributionStreamableSource: EventVisitorProtocol {
         guard event.accountId == accountId, event.chainAssetId.chainId == chainId else {
             return
         }
-        refresh(runningIn: nil, commitNotificationBlock: nil)
+        refresh(runningIn: nil) { [weak delegate] in
+            delegate?.didRefresh(result: $0)
+        }
     }
 }
 
