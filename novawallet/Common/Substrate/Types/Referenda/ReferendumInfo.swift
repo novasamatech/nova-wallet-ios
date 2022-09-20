@@ -2,8 +2,20 @@ import Foundation
 import SubstrateSdk
 
 enum ReferendumInfo: Decodable {
+    struct DecidingStatus: Decodable {
+        @StringCodable var since: BlockNumber
+        @OptionStringCodable var confirming: BlockNumber?
+    }
+
     struct OngoingStatus: Decodable {
-        @StringCodable var track: Governance.TrackId
+        @StringCodable var track: Referenda.TrackId
+        @BytesCodable var proposalHash: Data
+        let enactment: OnChainScheduler.DispatchTime
+        @StringCodable var submitted: Moment
+        let decisionDeposit: Referenda.Deposit?
+        let desiding: DecidingStatus?
+        let tally: ConvictionVoting.Tally
+        let inQueue: Bool
     }
 
     case ongoing(_ status: OngoingStatus)
@@ -39,7 +51,7 @@ enum ReferendumInfo: Decodable {
 }
 
 struct ReferendumIndexKey: JSONListConvertible, Hashable {
-    let referendumIndex: Governance.ReferendumIndex
+    let referendumIndex: Referenda.ReferendumIndex
 
     init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
         let expectedFieldsCount = 1
@@ -52,7 +64,7 @@ struct ReferendumIndexKey: JSONListConvertible, Hashable {
         }
 
         referendumIndex = try jsonList[0].map(
-            to: StringScaleMapper<Governance.ReferendumIndex>.self,
+            to: StringScaleMapper<Referenda.ReferendumIndex>.self,
             with: context
         ).value
     }
