@@ -231,42 +231,104 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recepient: AccountId,
-        currencyId: JSON,
-        module: String
+        tokenStorageInfo: OrmlTokenStorageInfo
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         switch amount {
         case let .concrete(value):
-            let call = callFactory.ormlTransfer(
-                in: module,
-                currencyId: currencyId,
-                receiverId: recepient,
-                amount: value
+            return try addingOrmlTransferValueCommand(
+                to: builder,
+                recepient: recepient,
+                tokenStorageInfo: tokenStorageInfo,
+                value: value
             )
-
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-        case .all:
-            let call = callFactory.ormlTransferAll(in: module, currencyId: currencyId, receiverId: recepient)
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+        case let .all(value):
+            if tokenStorageInfo.canTransferAll {
+                return try addingOrmlTransferAllCommand(
+                    to: builder,
+                    recepient: recepient,
+                    tokenStorageInfo: tokenStorageInfo
+                )
+            } else {
+                return try addingOrmlTransferValueCommand(
+                    to: builder,
+                    recepient: recepient,
+                    tokenStorageInfo: tokenStorageInfo,
+                    value: value
+                )
+            }
         }
+    }
+
+    func addingOrmlTransferValueCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        recepient: AccountId,
+        tokenStorageInfo: OrmlTokenStorageInfo,
+        value: BigUInt
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.ormlTransfer(
+            in: tokenStorageInfo.module,
+            currencyId: tokenStorageInfo.currencyId,
+            receiverId: recepient,
+            amount: value
+        )
+
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+    }
+
+    func addingOrmlTransferAllCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        recepient: AccountId,
+        tokenStorageInfo: OrmlTokenStorageInfo
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.ormlTransferAll(
+            in: tokenStorageInfo.module,
+            currencyId: tokenStorageInfo.currencyId,
+            receiverId: recepient
+        )
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
     }
 
     func addingNativeTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
-        recepient: AccountId
+        recepient: AccountId,
+        canTransferAll: Bool
     ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         switch amount {
         case let .concrete(value):
-            let call = callFactory.nativeTransfer(to: recepient, amount: value)
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-        case .all:
-            let call = callFactory.nativeTransferAll(to: recepient)
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+            return try addingNativeTransferValueCommand(
+                to: builder,
+                recepient: recepient,
+                value: value
+            )
+        case let .all(value):
+            if canTransferAll {
+                return try addingNativeTransferAllCommand(to: builder, recepient: recepient)
+            } else {
+                return try addingNativeTransferValueCommand(to: builder, recepient: recepient, value: value)
+            }
         }
+    }
+
+    func addingNativeTransferValueCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        recepient: AccountId,
+        value: BigUInt
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.nativeTransfer(to: recepient, amount: value)
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+    }
+
+    func addingNativeTransferAllCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        recepient: AccountId
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.nativeTransferAll(to: recepient)
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
     }
 
     func addingAssetsTransferCommand(
@@ -295,13 +357,12 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         }
 
         switch sendingAssetInfo {
-        case let .orml(currencyId, _, module, _):
+        case let .orml(info):
             return try addingOrmlTransferCommand(
                 to: builder,
                 amount: amount,
                 recepient: recepient,
-                currencyId: currencyId,
-                module: module
+                tokenStorageInfo: info
             )
         case let .statemine(extras):
             return try addingAssetsTransferCommand(
@@ -310,8 +371,13 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
                 recepient: recepient,
                 extras: extras
             )
-        case .native:
-            return try addingNativeTransferCommand(to: builder, amount: amount, recepient: recepient)
+        case let .native(canTransferAll):
+            return try addingNativeTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                canTransferAll: canTransferAll
+            )
         }
     }
 

@@ -150,9 +150,9 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
             )
-        case let .orml(_, currencyData, _, _):
+        case let .orml(info):
             return subscribeOrml(
-                using: currencyData,
+                using: info.currencyData,
                 accountId: accountId,
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
@@ -185,11 +185,11 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
-        case let .orml(_, currencyData, _, _):
+        case let .orml(info):
             remoteSubscriptionService.detachFromOrmlToken(
                 for: subscriptionId,
                 accountId: accountId,
-                currencyId: currencyData,
+                currencyId: info.currencyData,
                 chainId: chainAssetId.chainId,
                 queue: .main,
                 closure: completion

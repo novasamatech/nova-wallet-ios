@@ -37,11 +37,11 @@ extension EventCodingPath {
     }
 
     static var tokensTransfer: EventCodingPath {
-        EventCodingPath(moduleName: "Tokens", eventName: "Transfered")
+        EventCodingPath(moduleName: "Tokens", eventName: "Transfer")
     }
 
-    static var currenciesTransfer: EventCodingPath {
-        EventCodingPath(moduleName: "Currencies", eventName: "Transfered")
+    static var currenciesTransferred: EventCodingPath {
+        EventCodingPath(moduleName: "Currencies", eventName: "Transferred")
     }
 
     static var ethereumExecuted: EventCodingPath {

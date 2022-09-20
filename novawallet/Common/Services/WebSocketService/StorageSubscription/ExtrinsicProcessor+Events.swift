@@ -26,7 +26,7 @@ extension ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol,
         context: RuntimeJsonContext
     ) throws -> BigUInt? {
-        let eventPaths: [EventCodingPath] = [.tokensTransfer, .currenciesTransfer]
+        let eventPaths: [EventCodingPath] = [.tokensTransfer, .currenciesTransferred]
         return try eventRecords.first { record in
             if
                 let eventPath = metadata.createEventCodingPath(from: record.event),
