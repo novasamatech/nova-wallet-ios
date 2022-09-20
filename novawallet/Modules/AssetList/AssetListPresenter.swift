@@ -56,6 +56,7 @@ final class AssetListPresenter: AssetListBasePresenter {
                 walletIdenticon: walletIdenticon,
                 walletType: walletType,
                 prices: nil,
+                locks: nil,
                 locale: selectedLocale
             )
 
@@ -71,75 +72,121 @@ final class AssetListPresenter: AssetListBasePresenter {
         )
     }
 
+    typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
+    typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
+    private func createAssetAccountPrice(
+        chainAssetId: ChainAssetId,
+        priceData: PriceData
+    ) -> Either<SuccessAssetListAssetAccountPrice, FailedAssetListAssetAccountPrice>? {
+        let chainId = chainAssetId.chainId
+        let assetId = chainAssetId.assetId
+
+        guard let chain = allChains[chainId],
+              let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
+            return nil
+        }
+
+        guard case let .success(assetBalance) = balances[chainAssetId] else {
+            return .right(
+                AssetListAssetAccountPrice(
+                    assetInfo: asset.displayInfo,
+                    balance: 0,
+                    price: priceData
+                )
+            )
+        }
+
+        return .left(
+            AssetListAssetAccountPrice(
+                assetInfo: asset.displayInfo,
+                balance: assetBalance.totalInPlank,
+                price: priceData
+            ))
+    }
+
+    private func createAssetAccountPriceLock(
+        chainAssetId: ChainAssetId,
+        priceData: PriceData
+    ) -> AssetListAssetAccountPrice? {
+        let chainId = chainAssetId.chainId
+        let assetId = chainAssetId.assetId
+
+        guard let chain = allChains[chainId],
+              let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
+            return nil
+        }
+
+        guard case let .success(assetBalance) = balances[chainAssetId] else {
+            return nil
+        }
+
+        return AssetListAssetAccountPrice(
+            assetInfo: asset.displayInfo,
+            balance: assetBalance.frozenInPlank,
+            price: priceData
+        )
+    }
+
     private func provideHeaderViewModel(
         with priceMapping: [ChainAssetId: PriceData],
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         name: String
     ) {
-        let priceState: LoadableViewModelState<[AssetListAssetAccountPrice]> = priceMapping.reduce(
-            LoadableViewModelState.loaded(value: [])
-        ) { result, keyValue in
-            let chainAssetId = keyValue.key
-            let chainId = chainAssetId.chainId
-            let assetId = chainAssetId.assetId
-            switch result {
+        var locks: [AssetListAssetAccountPrice] = []
+        var priceState: LoadableViewModelState<[AssetListAssetAccountPrice]> = .loaded(value: [])
+
+        for (chainAssetId, priceData) in priceMapping {
+            switch priceState {
             case .loading:
-                return .loading
+                priceState = .loading
             case let .cached(items):
-                guard
-                    let chain = allChains[chainId],
-                    let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
-                    return .cached(value: items)
+                guard let newItem = createAssetAccountPrice(
+                    chainAssetId: chainAssetId,
+                    priceData: priceData
+                ) else {
+                    priceState = .cached(value: items)
+                    continue
                 }
-
-                let totalBalance: BigUInt
-
-                if case let .success(assetBalance) = balanceResults[chainAssetId] {
-                    totalBalance = assetBalance
-                } else {
-                    totalBalance = 0
+                priceState = .cached(value: items + [newItem.value])
+                createAssetAccountPriceLock(
+                    chainAssetId: chainAssetId,
+                    priceData: priceData
+                ).map {
+                    locks.append($0)
                 }
-
-                let newItem = AssetListAssetAccountPrice(
-                    assetInfo: asset.displayInfo,
-                    balance: totalBalance,
-                    price: keyValue.value
-                )
-
-                return .cached(value: items + [newItem])
             case let .loaded(items):
-                guard
-                    let chain = allChains[chainId],
-                    let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
-                    return .cached(value: items)
+                guard let newItem = createAssetAccountPrice(
+                    chainAssetId: chainAssetId,
+                    priceData: priceData
+                ) else {
+                    priceState = .cached(value: items)
+                    continue
                 }
 
-                if case let .success(assetBalance) = balanceResults[chainAssetId] {
-                    let newItem = AssetListAssetAccountPrice(
-                        assetInfo: asset.displayInfo,
-                        balance: assetBalance,
-                        price: keyValue.value
-                    )
-
-                    return .loaded(value: items + [newItem])
-                } else {
-                    let newItem = AssetListAssetAccountPrice(
-                        assetInfo: asset.displayInfo,
-                        balance: 0,
-                        price: keyValue.value
-                    )
-
-                    return .cached(value: items + [newItem])
+                switch newItem {
+                case let .left(item):
+                    priceState = .loaded(value: items + [item])
+                case let .right(item):
+                    priceState = .cached(value: items + [item])
+                }
+                createAssetAccountPriceLock(
+                    chainAssetId: chainAssetId,
+                    priceData: priceData
+                ).map {
+                    locks.append($0)
                 }
             }
         }
 
+        let crowdloans = crowdloansModel(prices: priceMapping)
+        let totalLocks = locks + crowdloans
         let viewModel = viewModelFactory.createHeaderViewModel(
             from: name,
             walletIdenticon: walletIdenticon,
             walletType: walletType,
-            prices: priceState,
+            prices: priceState + crowdloans,
+            locks: totalLocks.isEmpty ? nil : totalLocks,
             locale: selectedLocale
         )
 
@@ -180,6 +227,30 @@ final class AssetListPresenter: AssetListBasePresenter {
             view?.didReceiveGroups(state: .empty)
         } else {
             view?.didReceiveGroups(state: .list(groups: viewModels))
+        }
+    }
+
+    private func crowdloansModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
+        switch crowdloansResult {
+        case .failure, .none:
+            return []
+        case let .success(crowdloans):
+            return crowdloans.compactMap { chainId, chainCrowdloans in
+                guard let chain = allChains[chainId] else {
+                    return nil
+                }
+                guard let asset = chain.utilityAsset() else {
+                    return nil
+                }
+                let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
+                let price = prices[chainAssetId] ?? .zero()
+
+                return AssetListAssetAccountPrice(
+                    assetInfo: asset.displayInfo,
+                    balance: chainCrowdloans.reduce(0) { $0 + $1.amount },
+                    price: price
+                )
+            }
         }
     }
 

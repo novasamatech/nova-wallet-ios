@@ -3,8 +3,10 @@ import UIKit
 final class AssetListViewLayout: UIView {
     let backgroundView = MultigradientView.background
 
-    let collectionView: UICollectionView = {
-        let flowLayout = AssetListFlowLayout()
+    let collectionViewLayout = AssetListFlowLayout()
+
+    lazy var collectionView: UICollectionView = {
+        let flowLayout = collectionViewLayout
         flowLayout.scrollDirection = .vertical
         flowLayout.minimumLineSpacing = 0
         flowLayout.minimumInteritemSpacing = 0

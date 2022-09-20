@@ -2,7 +2,8 @@ import UIKit
 
 enum AssetListMeasurement {
     static let accountHeight: CGFloat = 56.0
-    static let totalBalanceHeight: CGFloat = 96.0
+    static let totalBalanceHeight: CGFloat = 103.0
+    static let totalBalanceWithLocksHeight: CGFloat = 133.0
     static let settingsHeight: CGFloat = 56.0
     static let nftsHeight = 56.0
     static let assetHeight: CGFloat = 56.0
@@ -13,6 +14,7 @@ enum AssetListMeasurement {
 
 final class AssetListFlowLayout: UICollectionViewFlowLayout {
     static let assetGroupDecoration = "assetGroupDecoration"
+    private var totalBalanceHeight: CGFloat = AssetListMeasurement.totalBalanceHeight
 
     enum SectionType: CaseIterable {
         case summary
@@ -123,23 +125,6 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
                 return IndexPath(item: itemIndex, section: sectionIndex)
             }
         }
-
-        var height: CGFloat {
-            switch self {
-            case .account:
-                return AssetListMeasurement.accountHeight
-            case .totalBalance:
-                return AssetListMeasurement.totalBalanceHeight
-            case .yourNfts:
-                return AssetListMeasurement.nftsHeight
-            case .settings:
-                return AssetListMeasurement.settingsHeight
-            case .emptyState:
-                return AssetListMeasurement.emptyStateCellHeight
-            case .asset:
-                return AssetListMeasurement.assetHeight
-            }
-        }
     }
 
     private var itemsDecorationAttributes: [UICollectionViewLayoutAttributes] = []
@@ -193,7 +178,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
 
         if hasSummarySection {
             groupY = AssetListMeasurement.accountHeight + SectionType.summary.cellSpacing +
-                AssetListMeasurement.totalBalanceHeight
+                totalBalanceHeight
         }
 
         groupY += SectionType.summary.insets.top + SectionType.summary.insets.bottom
@@ -203,7 +188,7 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
 
         if hasNfts {
-            groupY += CellType.yourNfts.height
+            groupY += AssetListMeasurement.nftsHeight
         }
 
         groupY += SectionType.settings.insets.top + AssetListMeasurement.settingsHeight +
@@ -244,5 +229,30 @@ final class AssetListFlowLayout: UICollectionViewFlowLayout {
         }
 
         itemsDecorationAttributes = attributes
+    }
+
+    func updateTotalBalanceHeight(_ height: CGFloat) {
+        guard height != totalBalanceHeight else {
+            return
+        }
+        totalBalanceHeight = height
+        invalidateLayout()
+    }
+
+    func cellHeight(for type: CellType) -> CGFloat {
+        switch type {
+        case .account:
+            return AssetListMeasurement.accountHeight
+        case .totalBalance:
+            return totalBalanceHeight
+        case .yourNfts:
+            return AssetListMeasurement.nftsHeight
+        case .settings:
+            return AssetListMeasurement.settingsHeight
+        case .emptyState:
+            return AssetListMeasurement.emptyStateCellHeight
+        case .asset:
+            return AssetListMeasurement.assetHeight
+        }
     }
 }
