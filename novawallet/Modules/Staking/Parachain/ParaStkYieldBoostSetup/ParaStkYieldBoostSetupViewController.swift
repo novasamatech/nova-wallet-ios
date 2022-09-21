@@ -2,7 +2,7 @@ import UIKit
 import CommonWallet
 import SoraFoundation
 
-final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder {
+final class ParaStkYieldBoostSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = ParaStkYieldBoostSetupViewLayout
 
     let presenter: ParaStkYieldBoostSetupPresenterProtocol
