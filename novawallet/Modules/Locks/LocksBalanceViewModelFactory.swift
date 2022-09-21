@@ -30,7 +30,8 @@ struct FormattedBalance {
 
 struct FormattedPlank {
     let amount: String
-    let price: Decimal
+    let price: String?
+    let priceValue: Decimal
 }
 
 final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
@@ -131,9 +132,11 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> FormattedPlank? {
-        guard let assetPrecision = chains[chainAssetId.chainId]?.asset(for: chainAssetId.assetId)?.precision else {
+        guard let assetPrecision = chains[chainAssetId.chainId]?.asset(for: chainAssetId.assetId)?.precision,
+              let utilityAsset = chains[chainAssetId.chainId]?.utilityAsset() else {
             return nil
         }
+
         let priceData = prices[chainAssetId]
 
         let rate = priceData.map { Decimal(string: $0.price) ?? 0 } ?? 0
@@ -144,21 +147,48 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
             rate: rate
         )
 
+        let amount = calculateAmount(
+            from: plank,
+            precision: utilityAsset.precision,
+            rate: nil
+        )
+        let formattedAmount = formatAmount(
+            amount,
+            assetDisplayInfo: utilityAsset.displayInfo,
+            locale: locale
+        )
+
         let formattedPrice = formatPrice(amount: price, priceData: priceData, locale: locale)
-        return .init(amount: formattedPrice, price: price)
+        return .init(
+            amount: formattedAmount,
+            price: formattedPrice,
+            priceValue: price
+        )
     }
 
-    private func calculateAmount(from plank: BigUInt, precision: UInt16, rate: Decimal) -> Decimal {
+    private func calculateAmount(from plank: BigUInt, precision: UInt16, rate: Decimal?) -> Decimal {
         let amount = Decimal.fromSubstrateAmount(
             plank,
             precision: Int16(precision)
         ) ?? 0.0
-        return amount * rate
+
+        return rate.map {
+            amount * $0
+        } ?? amount
     }
 
     private func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
         let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
         let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+    }
+
+    private func formatAmount(
+        _ amount: Decimal,
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> String {
         let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
         return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }

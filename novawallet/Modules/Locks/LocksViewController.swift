@@ -52,7 +52,12 @@ final class LocksViewController: UIViewController, ViewHolder, ModalSheetCollect
             collectionView: rootView.collectionView,
             cellProvider: { collectionView, indexPath, model -> UICollectionViewCell? in
                 let cell: LockCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
-                cell?.bind(title: model.title, value: model.value)
+                cell?.bind(viewModel: .init(
+                    title: model.title,
+                    amount: model.amount,
+                    price: model.price
+                )
+                )
                 return cell
             }
         )

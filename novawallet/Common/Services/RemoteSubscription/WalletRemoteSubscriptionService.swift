@@ -10,7 +10,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainFormat: ChainFormat,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol
+        subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?
     ) -> UUID?
 
     func detachFromAccountInfo(
@@ -49,7 +49,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol
+        subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?
     ) -> UUID?
 
     // swiftlint:disable:next function_parameter_count
@@ -71,7 +71,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainFormat: ChainFormat,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol
+        subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?
     ) -> UUID? {
         do {
             let storagePath = StorageCodingPath.account
@@ -117,11 +117,13 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 )
             }
 
-            let handlingFactory = AccountInfoSubscriptionHandlingFactory(
-                accountLocalStorageKey: accountLocalKey,
-                locksLocalStorageKey: locksLocalKey,
-                factory: subscriptionHandlingFactory
-            )
+            let handlingFactory = subscriptionHandlingFactory.map {
+                AccountInfoSubscriptionHandlingFactory(
+                    accountLocalStorageKey: accountLocalKey,
+                    locksLocalStorageKey: locksLocalKey,
+                    factory: $0
+                )
+            }
 
             return attachToSubscription(
                 with: [accountRequest, locksRequest],
@@ -264,7 +266,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol
+        subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?
     ) -> UUID? {
         do {
             let storageKeyFactory = LocalStorageKeyFactory()
@@ -295,11 +297,13 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 param2Encoder: { $0 }
             )
 
-            let handlingFactory = OrmlTokenSubscriptionHandlingFactory(
-                accountLocalStorageKey: accountLocalKey,
-                locksLocalStorageKey: locksLocalKey,
-                factory: subscriptionHandlingFactory
-            )
+            let handlingFactory = subscriptionHandlingFactory.map {
+                OrmlTokenSubscriptionHandlingFactory(
+                    accountLocalStorageKey: accountLocalKey,
+                    locksLocalStorageKey: locksLocalKey,
+                    factory: $0
+                )
+            }
 
             return attachToSubscription(
                 with: [accountRequest, locksRequest],
