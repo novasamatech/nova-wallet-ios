@@ -69,8 +69,6 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             eventCenter: eventCenter
         )
 
-        let selfUpdatingSource = CrowdloanContributionStreamableSourceWrapper(source: source)
-
         let crowdloansFilter = NSPredicate.crowdloanContribution(
             for: chain.chainId,
             accountId: accountId
@@ -99,7 +97,7 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
         }
 
         let provider = StreamableProvider(
-            source: AnyStreamableSource(selfUpdatingSource),
+            source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: operationManager

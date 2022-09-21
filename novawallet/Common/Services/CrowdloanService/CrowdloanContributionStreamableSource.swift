@@ -9,7 +9,6 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
     let chainId: ChainModel.Id
     let accountId: AccountId
     let eventCenter: EventCenterProtocol
-    var didRefreshClosure: CommitNotificationBlock?
 
     init(
         syncServices: [SyncServiceProtocol],
@@ -23,6 +22,10 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
         self.accountId = accountId
 
         self.eventCenter.add(observer: self)
+
+        syncServices.forEach {
+            $0.setup()
+        }
     }
 
     func fetchHistory(
@@ -55,6 +58,7 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
             return
         }
 
+        let result: Result<Int, Error> = Result.success(0)
         dispatchInQueueWhenPossible(queue) {
             closure(result)
         }
@@ -67,34 +71,5 @@ extension CrowdloanContributionStreamableSource: EventVisitorProtocol {
             return
         }
         refresh(runningIn: nil, commitNotificationBlock: nil)
-    }
-}
-
-final class CrowdloanContributionStreamableSourceWrapper: StreamableSourceProtocol {
-    typealias Model = CrowdloanContributionData
-    typealias CommitNotificationBlock = CrowdloanContributionStreamableSource.CommitNotificationBlock
-
-    private let source: CrowdloanContributionStreamableSource
-    private var refreshResult: Result<Int, Error>?
-
-    init(source: CrowdloanContributionStreamableSource) {
-        self.source = source
-        self.source.didRefreshClosure = { [weak self] in
-            self?.refreshResult = $0
-        }
-    }
-
-    func refresh(
-        runningIn _: DispatchQueue?,
-        commitNotificationBlock: CommitNotificationBlock?
-    ) {
-        commitNotificationBlock?(refreshResult)
-    }
-
-    func fetchHistory(
-        runningIn queue: DispatchQueue?,
-        commitNotificationBlock: CommitNotificationBlock?
-    ) {
-        source.fetchHistory(runningIn: queue, commitNotificationBlock: commitNotificationBlock)
     }
 }

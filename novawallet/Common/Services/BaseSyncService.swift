@@ -5,6 +5,7 @@ import SubstrateSdk
 protocol SyncServiceProtocol {
     func syncUp()
     func stopSyncUp()
+    func setup()
 }
 
 class BaseSyncService {
@@ -138,11 +139,10 @@ extension BaseSyncService: SyncServiceProtocol {
             mutex.unlock()
         }
 
-        guard !isSyncing else {
+        guard isActive, !isSyncing else {
             return
         }
 
-        isActive = true
         isSyncing = true
 
         performSyncUp()
