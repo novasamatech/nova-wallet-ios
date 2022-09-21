@@ -1,18 +1,20 @@
 import UIKit
 
 final class LockCollectionViewCell: UICollectionViewCell {
-    lazy var view = GenericTitleValueView<UILabel, UILabel>(
+    lazy var view = GenericTitleValueView<UILabel, MultiValueView>(
         titleView: titleLabel,
         valueView: valueLabel
     )
     private let titleLabel: UILabel = .create {
-        $0.font = .regularSubheadline
-        $0.textColor = R.color.colorWhite48()
+        $0.font = .regularFootnote
+        $0.textColor = R.color.colorWhite64()
     }
 
-    private let valueLabel: UILabel = .create {
-        $0.font = .regularSubheadline
-        $0.textColor = R.color.colorWhite48()
+    private let valueLabel: MultiValueView = .create {
+        $0.valueTop.font = .regularFootnote
+        $0.valueBottom.font = .caption1
+        $0.valueTop.textColor = R.color.colorWhite64()
+        $0.valueBottom.textColor = R.color.colorWhite64()
     }
 
     override init(frame: CGRect) {
@@ -32,9 +34,17 @@ final class LockCollectionViewCell: UICollectionViewCell {
             $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 14, left: 24, bottom: 14, right: 0))
         }
     }
+}
 
-    func bind(title: String, value: String) {
-        view.titleView.text = title
-        view.valueView.text = value
+extension LockCollectionViewCell {
+    struct Model {
+        let title: String
+        let amount: String
+        let price: String?
+    }
+
+    func bind(viewModel: Model) {
+        view.titleView.text = viewModel.title
+        view.valueView.bind(topValue: viewModel.amount, bottomValue: viewModel.price)
     }
 }

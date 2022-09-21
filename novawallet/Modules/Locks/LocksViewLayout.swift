@@ -14,8 +14,8 @@ final class LocksViewLayout: GenericCollectionViewLayout<GenericTitleValueView<U
     override init(frame _: CGRect = .zero) {
         let settings = GenericCollectionViewLayoutSettings(
             pinToVisibleBounds: false,
-            estimatedRowHeight: 48,
-            estimatedSectionHeaderHeight: 48
+            estimatedRowHeight: 44,
+            absoluteHeaderHeight: 48
         )
         super.init(header: .init(titleView: titleLabel, valueView: valueLabel), settings: settings)
     }

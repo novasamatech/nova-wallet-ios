@@ -480,10 +480,14 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
     func didReceiveLocks(result: Result<[AssetLock], Error>) {
         locksResult = result
+
+        updateHeaderView()
     }
 
     func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
         crowdloansResult = result
+
+        updateHeaderView()
     }
 }
 
