@@ -34,6 +34,7 @@ final class CurrencyViewLayout: UIView {
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         let settings = NSCollectionLayoutSection.Settings(
             estimatedRowHeight: Constants.estimatedRowHeight,
+            absoluteHeaderHeight: nil,
             estimatedHeaderHeight: Constants.estimatedHeaderHeight,
             sectionContentInsets: Constants.sectionContentInsets,
             sectionInterGroupSpacing: Constants.interGroupSpacing,
