@@ -4,7 +4,7 @@ import SubstrateSdk
 import SoraKeystore
 import BigInt
 
-class AssetListBaseInteractor {
+class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     weak var basePresenter: AssetListBaseInteractorOutputProtocol?
 
     let selectedWalletSettings: SelectedWalletSettings
@@ -113,22 +113,11 @@ class AssetListBaseInteractor {
             }
         }
 
-        assetBalanceSubscriptions = changes.reduce(into: assetBalanceSubscriptions) { result, change in
-            switch change {
-            case let .insert(chain), let .update(chain):
-                guard let accountId = selectedMetaAccount.fetch(
-                    for: chain.accountRequest()
-                )?.accountId else {
-                    return
-                }
-
-                if result[accountId] == nil {
-                    result[accountId] = subscribeToAccountBalanceProvider(for: accountId)
-                }
-            case .delete:
-                // we might have the same account id used in other
-                break
-            }
+        assetBalanceSubscriptions = changes.reduce(
+            intitial: assetBalanceSubscriptions,
+            selectedMetaAccount: selectedMetaAccount
+        ) { [weak self] in
+            self?.subscribeToAccountBalanceProvider(for: $0)
         }
     }
 
@@ -226,14 +215,26 @@ class AssetListBaseInteractor {
     func setup() {
         subscribeChains()
     }
+
+    func handleAccountBalance(
+        result: Result<[DataProviderChange<AssetBalance>], Error>,
+        accountId: AccountId
+    ) {
+        switch result {
+        case let .success(changes):
+            handleAccountBalanceChanges(changes, accountId: accountId)
+        case let .failure(error):
+            handleAccountBalanceError(error, accountId: accountId)
+        }
+    }
+
+    func handleAccountLocks(result _: Result<[DataProviderChange<AssetLock>], Error>, accountId _: AccountId) {}
 }
 
-extension AssetListBaseInteractor: AssetListBaseInteractorInputProtocol {}
-
-extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension AssetListBaseInteractor {
     private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
         let results = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
+            into: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -256,7 +257,7 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
     ) {
         // prepopulate non existing balances with zeros
         let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
+            into: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -286,7 +287,7 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(balance.totalInPlank)
+                accum[chainAssetId] = .success(.init(balance: balance, total: balance.totalInPlank))
             case let .delete(deletedIdentifier):
                 guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
                     return
@@ -297,23 +298,11 @@ extension AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(0)
+                accum[chainAssetId] = .success(.init(total: 0))
             }
         }
 
         basePresenter?.didReceiveBalance(results: results)
-    }
-
-    func handleAccountBalance(
-        result: Result<[DataProviderChange<AssetBalance>], Error>,
-        accountId: AccountId
-    ) {
-        switch result {
-        case let .success(changes):
-            handleAccountBalanceChanges(changes, accountId: accountId)
-        case let .failure(error):
-            handleAccountBalanceError(error, accountId: accountId)
-        }
     }
 }
 
@@ -325,4 +314,34 @@ extension AssetListBaseInteractor: SelectedCurrencyDepending {
 
         updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
     }
+}
+
+extension Array where Element == DataProviderChange<ChainModel> {
+    func reduce<Value>(
+        intitial: [AccountId: StreamableProvider<Value>],
+        selectedMetaAccount: MetaAccountModel,
+        subscription: @escaping (AccountId) -> StreamableProvider<Value>?
+    ) -> [AccountId: StreamableProvider<Value>] {
+        reduce(into: intitial) { result, change in
+            switch change {
+            case let .insert(chain), let .update(chain):
+                guard let accountId = selectedMetaAccount.fetch(
+                    for: chain.accountRequest()
+                )?.accountId else {
+                    return
+                }
+
+                if result[accountId] == nil {
+                    result[accountId] = subscription(accountId)
+                }
+            case .delete:
+                break
+            }
+        }
+    }
+}
+
+struct CalculatedAssetBalance {
+    var balance: AssetBalance?
+    var total: BigUInt
 }
