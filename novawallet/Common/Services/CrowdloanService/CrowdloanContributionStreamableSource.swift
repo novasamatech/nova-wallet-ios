@@ -1,10 +1,6 @@
 import Foundation
 import RobinHood
 
-protocol CrowdloanContributionStreamableSourceDelegate: AnyObject {
-    func didRefresh(result: Result<Int, Error>?)
-}
-
 final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
     typealias Model = CrowdloanContributionData
     typealias CommitNotificationBlock = ((Result<Int, Error>?) -> Void)
@@ -13,7 +9,7 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
     let chainId: ChainModel.Id
     let accountId: AccountId
     let eventCenter: EventCenterProtocol
-    weak var delegate: CrowdloanContributionStreamableSourceDelegate?
+    var didRefreshClosure: CommitNotificationBlock?
 
     init(
         syncServices: [SyncServiceProtocol],
@@ -52,11 +48,12 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
             $0.syncUp()
         }
 
+        let result: Result<Int, Error> = Result.success(0)
+        didRefreshClosure?(result)
+
         guard let closure = commitNotificationBlock else {
             return
         }
-
-        let result: Result<Int, Error> = Result.success(0)
 
         dispatchInQueueWhenPossible(queue) {
             closure(result)
@@ -69,9 +66,7 @@ extension CrowdloanContributionStreamableSource: EventVisitorProtocol {
         guard event.accountId == accountId, event.chainAssetId.chainId == chainId else {
             return
         }
-        refresh(runningIn: nil) { [weak delegate] in
-            delegate?.didRefresh(result: $0)
-        }
+        refresh(runningIn: nil, commitNotificationBlock: nil)
     }
 }
 
@@ -84,7 +79,9 @@ final class CrowdloanContributionStreamableSourceWrapper: StreamableSourceProtoc
 
     init(source: CrowdloanContributionStreamableSource) {
         self.source = source
-        self.source.delegate = self
+        self.source.didRefreshClosure = { [weak self] in
+            self?.refreshResult = $0
+        }
     }
 
     func refresh(
@@ -99,11 +96,5 @@ final class CrowdloanContributionStreamableSourceWrapper: StreamableSourceProtoc
         commitNotificationBlock: CommitNotificationBlock?
     ) {
         source.fetchHistory(runningIn: queue, commitNotificationBlock: commitNotificationBlock)
-    }
-}
-
-extension CrowdloanContributionStreamableSourceWrapper: CrowdloanContributionStreamableSourceDelegate {
-    func didRefresh(result: Result<Int, Error>?) {
-        refreshResult = result
     }
 }
