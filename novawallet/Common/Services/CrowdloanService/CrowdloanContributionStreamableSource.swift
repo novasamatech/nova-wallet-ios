@@ -51,9 +51,6 @@ final class CrowdloanContributionStreamableSource: StreamableSourceProtocol {
             $0.syncUp()
         }
 
-        let result: Result<Int, Error> = Result.success(0)
-        didRefreshClosure?(result)
-
         guard let closure = commitNotificationBlock else {
             return
         }
