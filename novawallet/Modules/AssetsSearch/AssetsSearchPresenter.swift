@@ -152,7 +152,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         filterAndUpdateView()
     }
 
-    override func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         super.didReceiveBalance(results: results)
 
         filterAndUpdateView()

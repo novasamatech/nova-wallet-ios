@@ -144,9 +144,10 @@ final class AssetsUpdatingService {
 
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
         let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
+        let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
 
         let assetBalanceUpdater = AssetsBalanceUpdater(
-            chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
+            chainAssetId: chainAssetId,
             accountId: accountId,
             extras: assetExtras,
             chainRegistry: chainRegistry,
@@ -185,12 +186,15 @@ final class AssetsUpdatingService {
             return nil
         }
 
+        let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
-        let subscriptionHandlingFactory = OrmlAccountSubscriptionHandlingFactory(
-            chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
+        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
+            chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetsRepository,
+            locksRepository: locksRepository,
             eventCenter: eventCenter,
             transactionSubscription: transactionSubscription
         )
