@@ -9,13 +9,7 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) throws -> BigUInt? {
         try eventRecords.first { record in
-            if
-                let eventPath = metadata.createEventCodingPath(from: record.event),
-                eventPath == EventCodingPath.balancesTransfer {
-                return true
-            } else {
-                return false
-            }
+            metadata.createEventCodingPath(from: record.event) == .balancesTransfer
         }.map { eventRecord in
             try eventRecord.event.params.map(to: BalancesTransferEvent.self, with: context.toRawContext())
         }?.amount
@@ -28,13 +22,8 @@ extension ExtrinsicProcessor {
     ) throws -> BigUInt? {
         let eventPaths: [EventCodingPath] = [.tokensTransfer, .currenciesTransferred]
         return try eventRecords.first { record in
-            if
-                let eventPath = metadata.createEventCodingPath(from: record.event),
-                eventPaths.contains(eventPath) {
-                return true
-            } else {
-                return false
-            }
+            let isTransferAll = metadata.createEventCodingPath(from: record.event).map { eventPaths.contains($0) }
+            return isTransferAll == true
         }.map { eventRecord in
             try eventRecord.event.params.map(to: TokenTransferedEvent.self, with: context.toRawContext())
         }?.amount
