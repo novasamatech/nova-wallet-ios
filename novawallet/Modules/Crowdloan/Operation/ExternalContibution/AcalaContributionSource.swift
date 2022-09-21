@@ -5,6 +5,7 @@ import BigInt
 final class AcalaContributionSource: ExternalContributionSourceProtocol {
     static let baseUrl = URL(string: "https://crowdloan.aca-api.network")!
     static let apiContribution = "/contribution"
+    var sourceName: String { "Acala Liquid" }
 
     let paraIdOperationFactory: ParaIdOperationFactoryProtocol
     let acalaChainId: ChainModel.Id
@@ -37,7 +38,7 @@ final class AcalaContributionSource: ExternalContributionSourceProtocol {
 
         let paraIdWrapper = paraIdOperationFactory.createParaIdOperation(for: acalaChainId)
 
-        let mergeOperation = ClosureOperation<[ExternalContribution]> {
+        let mergeOperation = ClosureOperation<[ExternalContribution]> { [sourceName] in
             let response = try networkOperation.extractNoCancellableResultData()
             let paraId = try paraIdWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -45,7 +46,7 @@ final class AcalaContributionSource: ExternalContributionSourceProtocol {
                 throw CrowdloanBonusServiceError.internalError
             }
 
-            return [ExternalContribution(source: "Liquid", amount: amount, paraId: paraId)]
+            return [ExternalContribution(source: sourceName, amount: amount, paraId: paraId)]
         }
 
         let dependencies = [networkOperation] + paraIdWrapper.allOperations
