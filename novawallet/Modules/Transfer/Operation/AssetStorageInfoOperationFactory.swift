@@ -128,8 +128,8 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
                 storage: storage,
                 runtimeService: runtimeService
             )
-        case let .orml(_, _, _, existentialDeposit):
-            let assetExistence = AssetBalanceExistence(minBalance: existentialDeposit, isSelfSufficient: true)
+        case let .orml(info):
+            let assetExistence = AssetBalanceExistence(minBalance: info.existentialDeposit, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
         }
     }

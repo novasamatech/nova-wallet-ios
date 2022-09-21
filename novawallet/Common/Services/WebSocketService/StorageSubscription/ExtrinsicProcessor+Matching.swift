@@ -56,7 +56,14 @@ extension ExtrinsicProcessor {
                 with: context.toRawContext()
             ).accountId
 
-            let result = try parseOrmlExtrinsic(extrinsic, sender: maybeSender, context: context)
+            let eventRecords = eventRecords.filter { $0.extrinsicIndex == extrinsicIndex }
+            let result = try parseOrmlExtrinsic(
+                extrinsic,
+                eventRecords: eventRecords,
+                metadata: metadata,
+                sender: maybeSender,
+                context: context
+            )
 
             guard result.callPath.isTokensTransfer, result.isAccountMatched, let sender = maybeSender else {
                 return nil
@@ -131,19 +138,41 @@ extension ExtrinsicProcessor {
 
     private func parseOrmlExtrinsic(
         _ extrinsic: Extrinsic,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol,
         sender: AccountId?,
         context: RuntimeJsonContext
     ) throws -> OrmlParsingResult {
-        let call = try extrinsic.call.map(
-            to: RuntimeCall<OrmlTokenTransfer>.self,
-            with: context.toRawContext()
-        )
-        let callAccountId = call.args.dest.accountId
-        let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-        let isAccountMatched = accountId == sender || accountId == callAccountId
-        let currencyId = call.args.currencyId
+        if
+            let call = try? extrinsic.call.map(
+                to: RuntimeCall<OrmlTokenTransfer>.self,
+                with: context.toRawContext()
+            ) {
+            let callAccountId = call.args.dest.accountId
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+            let isAccountMatched = accountId == sender || accountId == callAccountId
+            let currencyId = call.args.currencyId
 
-        return (callPath, isAccountMatched, callAccountId, currencyId, call.args.amount)
+            return (callPath, isAccountMatched, callAccountId, currencyId, call.args.amount)
+        } else {
+            let call = try extrinsic.call.map(
+                to: RuntimeCall<OrmlTokenTransferAll>.self,
+                with: context.toRawContext()
+            )
+
+            let callAccountId = call.args.dest.accountId
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+            let isAccountMatched = accountId == sender || accountId == callAccountId
+            let currencyId = call.args.currencyId
+
+            let amount = try? matchOrmlTransferAmount(
+                from: eventRecords,
+                metadata: metadata,
+                context: context
+            )
+
+            return (callPath, isAccountMatched, callAccountId, currencyId, amount ?? 0)
+        }
     }
 
     private func parseEthereumTransact(
@@ -361,7 +390,14 @@ extension ExtrinsicProcessor {
                 with: context.toRawContext()
             ).accountId
 
-            let result = try parseBalancesExtrinsic(extrinsic, sender: maybeSender, context: context)
+            let extrinsicEventRecords = eventRecords.filter { $0.extrinsicIndex == extrinsicIndex }
+            let result = try parseBalancesExtrinsic(
+                extrinsic,
+                eventRecords: extrinsicEventRecords,
+                metadata: metadata,
+                sender: maybeSender,
+                context: context
+            )
 
             guard
                 result.callPath.isBalancesTransfer,
@@ -408,18 +444,35 @@ extension ExtrinsicProcessor {
 
     private func parseBalancesExtrinsic(
         _ extrinsic: Extrinsic,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol,
         sender: AccountId?,
         context: RuntimeJsonContext
     ) throws -> BalancesParsingResult {
-        let call = try extrinsic.call.map(
+        if let call = try? extrinsic.call.map(
             to: RuntimeCall<TransferCall>.self,
             with: context.toRawContext()
-        )
-        let callAccountId = call.args.dest.accountId
-        let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-        let isAccountMatched = accountId == sender || accountId == callAccountId
+        ) {
+            let callAccountId = call.args.dest.accountId
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+            let isAccountMatched = accountId == sender || accountId == callAccountId
 
-        return (callPath, isAccountMatched, callAccountId, call.args.value)
+            return (callPath, isAccountMatched, callAccountId, call.args.value)
+        } else {
+            let call = try extrinsic.call.map(to: RuntimeCall<TransferAllCall>.self, with: context.toRawContext())
+
+            let callAccountId = call.args.dest.accountId
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+            let isAccountMatched = accountId == sender || accountId == callAccountId
+
+            let amount = try? matchBalancesTransferAmount(
+                from: eventRecords,
+                metadata: metadata,
+                context: context
+            )
+
+            return (callPath, isAccountMatched, callAccountId, amount ?? 0)
+        }
     }
 
     func matchExtrinsic(
