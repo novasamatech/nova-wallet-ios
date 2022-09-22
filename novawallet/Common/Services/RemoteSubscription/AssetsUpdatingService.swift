@@ -145,7 +145,6 @@ final class AssetsUpdatingService {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
         let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
         let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
-        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
 
         let assetBalanceUpdater = AssetsBalanceUpdater(
             chainAssetId: chainAssetId,
