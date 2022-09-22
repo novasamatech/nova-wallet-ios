@@ -141,51 +141,18 @@ final class UserStorageMigrator {
     }
 
     private func checkIfMigrationNeeded(to version: UserStorageVersion) -> Bool {
-        let storageExists = fileManager.fileExists(atPath: storeURL.path)
-
-        guard storageExists else {
-            return false
-        }
-
-        guard let metadata = NSPersistentStoreCoordinator.metadata(at: storeURL) else {
-            return false
-        }
-
-        let compatibleVersion = compatibleVersionForStoreMetadata(metadata)
-
-        return compatibleVersion != version
+        checkIfMigrationNeeded(to: version,
+                               storeURL: storeURL,
+                               fileManager: fileManager,
+                               modelDirectory: modelDirectory)
     }
 
     private func compatibleVersionForStoreMetadata(_ metadata: [String: Any]) -> UserStorageVersion? {
-        let compatibleVersion = UserStorageVersion.allCases.first {
-            let model = createManagedObjectModel(forResource: $0.rawValue)
-            return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
-        }
-
-        return compatibleVersion
+        compatibleVersionForStoreMetadata(metadata, modelDirectory: modelDirectory)
     }
 
     private func createManagedObjectModel(forResource resource: String) -> NSManagedObjectModel {
-        let bundle = Bundle.main
-        let omoURL = bundle.url(
-            forResource: resource,
-            withExtension: "omo",
-            subdirectory: modelDirectory
-        )
-
-        let momURL = bundle.url(
-            forResource: resource,
-            withExtension: "mom",
-            subdirectory: modelDirectory
-        )
-
-        guard
-            let modelURL = omoURL ?? momURL,
-            let model = NSManagedObjectModel(contentsOf: modelURL) else {
-            fatalError("Unable to load model in bundle for resource \(resource)")
-        }
-
-        return model
+        createManagedObjectModel(forResource: resource, modelDirectory: modelDirectory)
     }
 
     private func createMapping(
@@ -249,157 +216,5 @@ extension UserStorageMigrator: StorageMigrating {
                 completion()
             }
         }
-    }
-}
-
-final class SubstrateStorageMigrator {
-    let modelDirectory: String
-    let model: SubstrateStorageVersion
-    let storeURL: URL
-    let fileManager: FileManager
-
-    init(
-        storeURL: URL,
-        modelDirectory: String,
-        model: SubstrateStorageVersion,
-        fileManager: FileManager
-    ) {
-        self.storeURL = storeURL
-        self.model = model
-        self.modelDirectory = modelDirectory
-        self.fileManager = fileManager
-    }
-}
-
-extension SubstrateStorageMigrator: Migrating {
-    func migrate() throws {
-        guard requiresMigration() else {
-            return
-        }
-        migrate {
-            Logger.shared.info("Substrate storage migration was completed")
-        }
-    }
-}
-
-extension SubstrateStorageMigrator: StorageMigrating {
-    func requiresMigration() -> Bool {
-        checkIfMigrationNeeded(
-            to: SubstrateStorageVersion.current,
-            storeURL: storeURL,
-            fileManager: fileManager,
-            modelDirectory: modelDirectory
-        )
-    }
-
-    private func performMigration() {
-        let destinationVersion = SubstrateStorageVersion.current
-
-        let mom = createManagedObjectModel(
-            forResource: destinationVersion.rawValue,
-            modelDirectory: modelDirectory
-        )
-
-        let psc = NSPersistentStoreCoordinator(managedObjectModel: mom)
-        let options = [
-            NSMigratePersistentStoresAutomaticallyOption: true,
-            NSInferMappingModelAutomaticallyOption: true
-        ]
-        do {
-            try psc.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL, options: options)
-        } catch {
-            fatalError("Failed to add persistent store: \(error)")
-        }
-    }
-
-    func migrate(_ completion: @escaping () -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.performMigration()
-
-            DispatchQueue.main.async {
-                completion()
-            }
-        }
-    }
-}
-
-enum SubstrateStorageVersion: String, CaseIterable {
-    case version1 = "SubstrateDataModel"
-    case version2 = "SubstrateDataModel2"
-
-    static var current: SubstrateStorageVersion {
-        allCases.last!
-    }
-
-    var nextVersion: SubstrateStorageVersion? {
-        switch self {
-        case .version1:
-            return .version2
-        case .version2:
-            return nil
-        }
-    }
-}
-
-private extension StorageMigrating {
-    typealias Version = CaseIterable & RawRepresentable & Equatable
-
-    func checkIfMigrationNeeded<T>(
-        to version: T,
-        storeURL: URL,
-        fileManager: FileManager,
-        modelDirectory: String
-    ) -> Bool where T: Version, T.RawValue == String {
-        let storageExists = fileManager.fileExists(atPath: storeURL.path)
-
-        guard storageExists else {
-            return false
-        }
-
-        guard let metadata = NSPersistentStoreCoordinator.metadata(at: storeURL) else {
-            return false
-        }
-
-        let compatibleVersion = T.allCases.first {
-            let model = createManagedObjectModel(forResource: $0.rawValue, modelDirectory: modelDirectory)
-            return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
-        }
-
-        return compatibleVersion != version
-    }
-
-    func compatibleVersionForStoreMetadata<T>(
-        _ metadata: [String: Any],
-        modelDirectory: String
-    ) -> T? where T: Version, T.RawValue == String {
-        let compatibleVersion = T.allCases.first {
-            let model = createManagedObjectModel(forResource: $0.rawValue, modelDirectory: modelDirectory)
-            return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
-        }
-
-        return compatibleVersion
-    }
-
-    func createManagedObjectModel(forResource resource: String, modelDirectory: String) -> NSManagedObjectModel {
-        let bundle = Bundle.main
-        let omoURL = bundle.url(
-            forResource: resource,
-            withExtension: "omo",
-            subdirectory: modelDirectory
-        )
-
-        let momURL = bundle.url(
-            forResource: resource,
-            withExtension: "mom",
-            subdirectory: modelDirectory
-        )
-
-        guard
-            let modelURL = omoURL ?? momURL,
-            let model = NSManagedObjectModel(contentsOf: modelURL) else {
-            fatalError("Unable to load model in bundle for resource \(resource)")
-        }
-
-        return model
     }
 }
