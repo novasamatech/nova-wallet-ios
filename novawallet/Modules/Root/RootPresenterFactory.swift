@@ -9,12 +9,19 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         let keychain = Keychain()
         let settings = SettingsManager.shared
 
-        let dbMigrator = UserStorageMigrator(
+        let userStorageMigrator = UserStorageMigrator(
             targetVersion: UserStorageParams.modelVersion,
             storeURL: UserStorageParams.storageURL,
             modelDirectory: UserStorageParams.modelDirectory,
             keystore: keychain,
             settings: settings,
+            fileManager: FileManager.default
+        )
+
+        let substrateSorageMigrator = SubstrateStorageMigrator(
+            storeURL: SubstrateStorageParams.storageURL,
+            modelDirectory: SubstrateStorageParams.modelDirectory,
+            model: SubstrateStorageParams.modelVersion,
             fileManager: FileManager.default
         )
 
@@ -24,7 +31,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             applicationConfig: ApplicationConfig.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             eventCenter: EventCenter.shared,
-            migrators: [dbMigrator],
+            migrators: [userStorageMigrator, substrateSorageMigrator],
             logger: Logger.shared
         )
 
