@@ -26,6 +26,7 @@ final class WalletManageInteractor: WalletsListInteractor {
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
+        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.repository = repository
@@ -38,7 +39,8 @@ final class WalletManageInteractor: WalletsListInteractor {
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            currencyManager: currencyManager
+            currencyManager: currencyManager,
+            crowdloansLocalSubscriptionFactory: crowdloansLocalSubscriptionFactory
         )
     }
 
