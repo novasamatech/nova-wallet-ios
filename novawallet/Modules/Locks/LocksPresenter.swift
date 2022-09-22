@@ -72,7 +72,7 @@ final class LocksPresenter {
 
         return LocksViewSectionModel(
             header: .init(
-                icon: R.image.iconBrowserSecurity(),
+                icon: R.image.iconLock(),
                 title: R.string.localizable.walletBalanceLocked(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
