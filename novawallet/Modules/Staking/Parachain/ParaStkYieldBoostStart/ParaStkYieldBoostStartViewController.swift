@@ -1,7 +1,7 @@
 import UIKit
 import SoraFoundation
 
-final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder {
+final class ParaStkYieldBoostStartViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = ParaStkYieldBoostStartViewLayout
 
     let presenter: ParaStkYieldBoostStartPresenterProtocol

@@ -1,8 +1,9 @@
 import BigInt
+import Foundation
 
 protocol OnChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(for amount: BigUInt, recepient: AccountId?)
+    func estimateFee(for amount: OnChainTransferAmount<BigUInt>, recepient: AccountId?)
     func change(recepient: AccountId?)
 }
 
@@ -25,7 +26,7 @@ protocol OnChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentab
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,
-        sendingAmount: Decimal,
+        sendingAmount: OnChainTransferAmount<Decimal>,
         recepient: AccountAddress
     )
 }
