@@ -141,10 +141,12 @@ final class UserStorageMigrator {
     }
 
     private func checkIfMigrationNeeded(to version: UserStorageVersion) -> Bool {
-        checkIfMigrationNeeded(to: version,
-                               storeURL: storeURL,
-                               fileManager: fileManager,
-                               modelDirectory: modelDirectory)
+        checkIfMigrationNeeded(
+            to: version,
+            storeURL: storeURL,
+            fileManager: fileManager,
+            modelDirectory: modelDirectory
+        )
     }
 
     private func compatibleVersionForStoreMetadata(_ metadata: [String: Any]) -> UserStorageVersion? {
