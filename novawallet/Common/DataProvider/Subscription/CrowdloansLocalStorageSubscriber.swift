@@ -7,6 +7,8 @@ protocol CrowdloanContributionLocalSubscriptionHandler: AnyObject {
         accountId: AccountId,
         chain: ChainModel
     )
+
+    func handleAllCrowdloans(result: Result<[DataProviderChange<CrowdloanContributionData>], Error>)
 }
 
 protocol CrowdloansLocalStorageSubscriber: AnyObject {
@@ -17,6 +19,8 @@ protocol CrowdloansLocalStorageSubscriber: AnyObject {
         for account: AccountId,
         chain: ChainModel
     ) -> StreamableProvider<CrowdloanContributionData>?
+
+    func subscribeToAllCrowdloansProvider() -> StreamableProvider<CrowdloanContributionData>?
 }
 
 extension CrowdloansLocalStorageSubscriber {
@@ -66,8 +70,51 @@ extension CrowdloansLocalStorageSubscriber {
 
         return provider
     }
+
+    func subscribeToAllCrowdloansProvider() -> StreamableProvider<CrowdloanContributionData>? {
+        guard let provider = crowdloansLocalSubscriptionFactory.getAllLocalCrowdloanContributionDataProvider() else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<CrowdloanContributionData>]) in
+            self?.crowdloansLocalSubscriptionHandler.handleAllCrowdloans(result: .success(changes))
+            return
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.crowdloansLocalSubscriptionHandler.handleAllCrowdloans(result: .failure(error))
+            return
+        }
+
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: true,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
+        )
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return provider
+    }
 }
 
 extension CrowdloansLocalStorageSubscriber where Self: CrowdloanContributionLocalSubscriptionHandler {
     var crowdloansLocalSubscriptionHandler: CrowdloanContributionLocalSubscriptionHandler { self }
+}
+
+extension CrowdloanContributionLocalSubscriptionHandler {
+    func handleCrowdloans(
+        result _: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
+        accountId _: AccountId,
+        chain _: ChainModel
+    ) {}
+
+    func handleAllCrowdloans(result _: Result<[DataProviderChange<CrowdloanContributionData>], Error>) {}
 }

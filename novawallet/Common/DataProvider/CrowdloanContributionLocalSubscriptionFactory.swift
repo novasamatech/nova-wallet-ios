@@ -6,6 +6,8 @@ protocol CrowdloanContributionLocalSubscriptionFactoryProtocol {
         for accountId: AccountId,
         chain: ChainModel
     ) -> StreamableProvider<CrowdloanContributionData>?
+
+    func getAllLocalCrowdloanContributionDataProvider() -> StreamableProvider<CrowdloanContributionData>?
 }
 
 final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -158,6 +160,47 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
                 logger: logger
             )
         }
+    }
+
+    func getAllLocalCrowdloanContributionDataProvider() -> StreamableProvider<CrowdloanContributionData>? {
+        let cacheKey = "all-crowdloanContributions"
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<CrowdloanContributionData> {
+            return provider
+        }
+
+        let source = EmptyStreamableSource<CrowdloanContributionData>()
+        let mapper = CrowdloanContributionDataMapper()
+        let repository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        let observable = CoreDataContextObservable(
+            service: storageFacade.databaseService,
+            mapper: AnyCoreDataMapper(mapper),
+            predicate: { _ in
+                true
+            }
+        )
+
+        observable.start { [weak self] error in
+            if let error = error {
+                self?.logger.error("Did receive error: \(error)")
+            }
+        }
+
+        let provider = StreamableProvider(
+            source: AnyStreamableSource(source),
+            repository: AnyDataProviderRepository(repository),
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: operationManager
+        )
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
     }
 }
 
