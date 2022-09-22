@@ -1,25 +1,53 @@
 import RobinHood
 import CoreData
 
+enum SubstrateStorageParams {
+    static let databaseName = "SubstrateDataModel.sqlite"
+    static let modelDirectory: String = "SubstrateDataModel.momd"
+    static let modelVersion: SubstrateStorageVersion = .version2
+
+    static let storageDirectoryURL: URL = {
+        let baseURL = FileManager.default.urls(
+            for: .documentDirectory,
+            in: .userDomainMask
+        ).first?.appendingPathComponent("CoreData")
+
+        return baseURL!
+    }()
+
+    static var storageURL: URL {
+        storageDirectoryURL
+    }
+}
+
 class SubstrateDataStorageFacade: StorageFacadeProtocol {
     static let shared = SubstrateDataStorageFacade()
 
     let databaseService: CoreDataServiceProtocol
 
     private init() {
-        let modelName = "SubstrateDataModel"
-        let modelURL = Bundle.main.url(forResource: modelName, withExtension: "momd")
-        let databaseName = "\(modelName).sqlite"
+        let databaseName = SubstrateStorageParams.databaseName
+        let modelName = SubstrateStorageParams.modelVersion.rawValue
+        let bundle = Bundle.main
 
-        let baseURL = FileManager.default.urls(
-            for: .documentDirectory,
-            in: .userDomainMask
-        ).first?.appendingPathComponent("CoreData")
+        let omoURL = bundle.url(
+            forResource: modelName,
+            withExtension: "omo",
+            subdirectory: SubstrateStorageParams.modelDirectory
+        )
+
+        let momURL = bundle.url(
+            forResource: modelName,
+            withExtension: "mom",
+            subdirectory: SubstrateStorageParams.modelDirectory
+        )
+
+        let modelURL = omoURL ?? momURL
 
         let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: baseURL!,
+            databaseDirectory: SubstrateStorageParams.storageDirectoryURL,
             databaseName: databaseName,
-            incompatibleModelStrategy: .removeStore
+            incompatibleModelStrategy: .ignore
         )
 
         let configuration = CoreDataServiceConfiguration(
