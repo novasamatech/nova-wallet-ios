@@ -18,7 +18,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             fileManager: FileManager.default
         )
 
-        let substrateSorageMigrator = SubstrateStorageMigrator(
+        let substrateStorageMigrator = SubstrateStorageMigrator(
             storeURL: SubstrateStorageParams.storageURL,
             modelDirectory: SubstrateStorageParams.modelDirectory,
             model: SubstrateStorageParams.modelVersion,
@@ -31,7 +31,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             applicationConfig: ApplicationConfig.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             eventCenter: EventCenter.shared,
-            migrators: [userStorageMigrator, substrateSorageMigrator],
+            migrators: [userStorageMigrator, substrateStorageMigrator],
             logger: Logger.shared
         )
 

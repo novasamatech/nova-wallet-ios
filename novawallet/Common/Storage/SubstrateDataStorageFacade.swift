@@ -16,7 +16,7 @@ enum SubstrateStorageParams {
     }()
 
     static var storageURL: URL {
-        storageDirectoryURL
+        storageDirectoryURL.appendingPathComponent(databaseName)
     }
 }
 
