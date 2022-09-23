@@ -22,14 +22,6 @@
         <attribute name="identifier" optional="YES" attributeType="String"/>
         <attribute name="reservedInPlank" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="CDAssetLock" representedClassName="CDAssetLock" syncable="YES" codeGenerationType="class">
-        <attribute name="amount" optional="YES" attributeType="String"/>
-        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="chainAccountId" optional="YES" attributeType="String"/>
-        <attribute name="chainId" optional="YES" attributeType="String"/>
-        <attribute name="identifier" optional="YES" attributeType="String"/>
-        <attribute name="type" optional="YES" attributeType="String"/>
-    </entity>
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
         <attribute name="additional" optional="YES" attributeType="Binary"/>
         <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -139,7 +131,6 @@
     <elements>
         <element name="CDAsset" positionX="-36" positionY="90" width="128" height="194"/>
         <element name="CDAssetBalance" positionX="-36" positionY="153" width="128" height="134"/>
-        <element name="CDAssetLock" positionX="-36" positionY="153" width="128" height="119"/>
         <element name="CDChain" positionX="-45" positionY="81" width="128" height="359"/>
         <element name="CDChainNode" positionX="-27" positionY="99" width="128" height="119"/>
         <element name="CDChainStorageItem" positionX="-54" positionY="-9" width="128" height="73"/>
