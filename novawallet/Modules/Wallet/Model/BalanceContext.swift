@@ -8,10 +8,12 @@ struct BalanceContext {
     static let priceChangeKey = "account.balance.price.change.key"
     static let priceIdKey = "account.balance.price.id.key"
     static let balanceLocksKey = "account.balance.locks.key"
+    static let crowdloans = "account.balance.crowdloan.key"
 
     let free: Decimal
     let reserved: Decimal
     let frozen: Decimal
+    let crowdloans: Decimal
     let price: Decimal
     let priceChange: Decimal
     let priceId: Int?
