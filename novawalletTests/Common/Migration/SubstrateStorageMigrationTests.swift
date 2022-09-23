@@ -109,8 +109,12 @@ final class SubstrateStorageMigrationTests: XCTestCase {
             
             do {
                 try chains.forEach {
-                    let newChain = NSEntityDescription.insertNewObject(forEntityName: "CDChain",
-                                                                       into: context) as! CDChain
+                    let insertedObject = NSEntityDescription.insertNewObject(forEntityName: "CDChain",
+                                                                             into: context)
+                    guard let newChain = insertedObject as? CDChain else {
+                        throw TestError.unexpectedEntity
+                    }
+                    
                     try mapper.populate(entity: newChain,
                                         from: $0,
                                         using: context)
