@@ -238,7 +238,6 @@ struct ModalInfoFactory {
         priceFormatter: LocalizableResource<TokenFormatter>,
         precision: Int16
     ) -> [LocalizableResource<StakingAmountViewModel>] {
-        print(balanceContext.toContext())
         let staticModels: [LocalizableResource<StakingAmountViewModel>] = [
             LocalizableResource { locale in
                 let title = R.string.localizable
@@ -260,6 +259,12 @@ struct ModalInfoFactory {
             }
         ]
 
+        let crowdloans = createCrowdloansViewModel(
+            balanceContext: balanceContext,
+            amountFormatter: amountFormatter,
+            priceFormatter: priceFormatter
+        )
+
         let balanceLockKnownModels: [LocalizableResource<StakingAmountViewModel>] =
             createLockViewModel(
                 from: balanceContext.balanceLocks.mainLocks(),
@@ -278,11 +283,11 @@ struct ModalInfoFactory {
                 precision: precision
             )
 
-        return balanceLockKnownModels + balanceLockUnknownModels + staticModels
+        return crowdloans + balanceLockKnownModels + balanceLockUnknownModels + staticModels
     }
 
     private static func createLockViewModel(
-        from locks: BalanceLocks,
+        from locks: AssetLocks,
         balanceContext: BalanceContext,
         amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>,
@@ -294,9 +299,7 @@ struct ModalInfoFactory {
                 let amountFormatter = amountFormatter.value(for: locale)
 
                 let title: String = {
-                    guard let mainTitle = LockType(rawValue: lock.displayId ?? "")?
-                        .displayType
-                        .value(for: locale) else {
+                    guard let mainTitle = lock.lockType?.displayType.value(for: locale) else {
                         return lock.displayId?.capitalized ?? ""
                     }
                     return mainTitle
@@ -321,5 +324,33 @@ struct ModalInfoFactory {
                 )
             }
         }
+    }
+
+    private static func createCrowdloansViewModel(
+        balanceContext: BalanceContext,
+        amountFormatter: LocalizableResource<TokenFormatter>,
+        priceFormatter: LocalizableResource<TokenFormatter>
+    ) -> [LocalizableResource<StakingAmountViewModel>] {
+        guard balanceContext.crowdloans > 0 else {
+            return []
+        }
+
+        let viewModel = LocalizableResource<StakingAmountViewModel> { locale in
+            let formatter = priceFormatter.value(for: locale)
+            let amountFormatter = amountFormatter.value(for: locale)
+
+            let title = R.string.localizable.walletAccountLocksCrowdloans(preferredLanguages: locale.rLanguages)
+
+            let price = balanceContext.crowdloans * balanceContext.price
+
+            let priceString = balanceContext.price == 0.0 ? nil : formatter.stringFromDecimal(price)
+            let amountString = amountFormatter.stringFromDecimal(balanceContext.crowdloans) ?? ""
+
+            let balance = BalanceViewModel(amount: amountString, price: priceString)
+
+            return StakingAmountViewModel(title: title, balance: balance)
+        }
+
+        return [viewModel]
     }
 }
