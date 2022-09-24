@@ -3,10 +3,6 @@ import Foundation
 import RobinHood
 import Cuckoo
 
-enum ChainRegistryFacadeStub: ChainRegistryFacadeProtocol {
-    static var sharedRegistry: ChainRegistryProtocol = MockChainRegistryProtocol().applyDefault(for: Set())
-}
-
 extension MockChainRegistryProtocol {
     func applyDefault(for chains: Set<ChainModel>) -> MockChainRegistryProtocol {
         stub(self) { stub in
