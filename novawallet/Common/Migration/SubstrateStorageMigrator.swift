@@ -20,19 +20,6 @@ final class SubstrateStorageMigrator {
     }
 }
 
-// MARK: - Migrating
-
-extension SubstrateStorageMigrator: Migrating {
-    func migrate() throws {
-        guard requiresMigration() else {
-            return
-        }
-        migrate {
-            Logger.shared.info("Substrate storage migration was completed")
-        }
-    }
-}
-
 // MARK: - StorageMigrating
 
 extension SubstrateStorageMigrator: StorageMigrating {
@@ -45,7 +32,7 @@ extension SubstrateStorageMigrator: StorageMigrating {
         )
     }
 
-    private func performMigration() {
+    func performMigration() {
         let destinationVersion = SubstrateStorageVersion.current
 
         let mom = createManagedObjectModel(
@@ -59,7 +46,12 @@ extension SubstrateStorageMigrator: StorageMigrating {
             NSInferMappingModelAutomaticallyOption: true
         ]
         do {
-            try psc.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL, options: options)
+            try psc.addPersistentStore(
+                ofType: NSSQLiteStoreType,
+                configurationName: nil,
+                at: storeURL,
+                options: options
+            )
         } catch {
             fatalError("Failed to add persistent store: \(error)")
         }
