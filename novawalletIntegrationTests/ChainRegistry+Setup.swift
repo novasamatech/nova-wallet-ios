@@ -8,9 +8,11 @@ extension ChainRegistryFacade {
         let chainRegistry = ChainRegistryFactory.createDefaultRegistry(from: storageFacade)
         chainRegistry.syncUp()
 
+        let target = NSObject()
+
         let semaphore = DispatchSemaphore(value: 0)
         chainRegistry.chainsSubscribe(
-            self, runningInQueue: .global()
+            target, runningInQueue: .global()
         ) { changes in
             if !changes.isEmpty {
                 semaphore.signal()
@@ -18,6 +20,8 @@ extension ChainRegistryFacade {
         }
 
         semaphore.wait()
+
+        chainRegistry.chainsUnsubscribe(target)
 
         return chainRegistry
     }

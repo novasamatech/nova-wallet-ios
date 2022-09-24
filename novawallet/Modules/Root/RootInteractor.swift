@@ -9,7 +9,7 @@ final class RootInteractor {
     let settings: SelectedWalletSettings
     let keystore: KeystoreProtocol
     let applicationConfig: ApplicationConfigProtocol
-    let chainRegistry: ChainRegistryProtocol
+    let chainRegistryClosure: ChainRegistryLazyClosure
     let eventCenter: EventCenterProtocol
     let migrators: [Migrating]
     let logger: LoggerProtocol?
@@ -18,7 +18,7 @@ final class RootInteractor {
         settings: SelectedWalletSettings,
         keystore: KeystoreProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        chainRegistry: ChainRegistryProtocol,
+        chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         eventCenter: EventCenterProtocol,
         migrators: [Migrating],
         logger: LoggerProtocol? = nil
@@ -26,7 +26,7 @@ final class RootInteractor {
         self.settings = settings
         self.keystore = keystore
         self.applicationConfig = applicationConfig
-        self.chainRegistry = chainRegistry
+        self.chainRegistryClosure = chainRegistryClosure
         self.eventCenter = eventCenter
         self.migrators = migrators
         self.logger = logger
@@ -103,6 +103,6 @@ extension RootInteractor: RootInteractorInputProtocol {
             }
         }
 
-        chainRegistry.syncUp()
+        chainRegistryClosure().syncUp()
     }
 }
