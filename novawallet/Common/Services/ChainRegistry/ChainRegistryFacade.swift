@@ -1,5 +1,7 @@
 import Foundation
 
-final class ChainRegistryFacade {
+typealias ChainRegistryLazyClosure = () -> ChainRegistryProtocol
+
+enum ChainRegistryFacade {
     static let sharedRegistry: ChainRegistryProtocol = ChainRegistryFactory.createDefaultRegistry()
 }
