@@ -124,10 +124,11 @@ class RootTests: XCTestCase {
                                  keystore: KeystoreProtocol,
                                  migrators: [Migrating] = []
     ) -> RootPresenter {
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set())
         let interactor = RootInteractor(settings: settings,
                                         keystore: keystore,
                                         applicationConfig: ApplicationConfig.shared,
-                                        chainRegistryFacade: ChainRegistryFacadeStub.self,
+                                        chainRegistryClosure: { chainRegistry },
                                         eventCenter: MockEventCenterProtocol(),
                                         migrators: migrators)
         let presenter = RootPresenter()
