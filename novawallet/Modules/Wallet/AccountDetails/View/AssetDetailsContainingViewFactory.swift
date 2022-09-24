@@ -9,7 +9,7 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
     let selectedAccountId: AccountId
     let selectedAccountType: MetaAccountModelType
 
-    var commandFactory: WalletCommandFactoryProtocol?
+    weak var commandFactory: WalletCommandFactoryProtocol?
 
     init(
         chainAsset: ChainAsset,
