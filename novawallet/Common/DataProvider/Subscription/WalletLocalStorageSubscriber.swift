@@ -26,6 +26,12 @@ protocol WalletLocalStorageSubscriber where Self: AnyObject {
     func subscribeToAllLocksProvider(
         for accountId: AccountId
     ) -> StreamableProvider<AssetLock>?
+
+    func subscribeToLocksProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> StreamableProvider<AssetLock>?
 }
 
 extension WalletLocalStorageSubscriber {
@@ -222,6 +228,58 @@ extension WalletLocalStorageSubscriber {
             self?.walletLocalSubscriptionHandler.handleAccountLocks(
                 result: .failure(error),
                 accountId: accountId
+            )
+            return
+        }
+
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
+        )
+
+        locksProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return locksProvider
+    }
+
+    func subscribeToLocksProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> StreamableProvider<AssetLock>? {
+        guard
+            let locksProvider = try? walletLocalSubscriptionFactory.getLocksProvider(
+                for: accountId,
+                chainId: chainId,
+                assetId: assetId
+            ) else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<AssetLock>]) in
+            self?.walletLocalSubscriptionHandler.handleAccountLocks(
+                result: .success(changes),
+                accountId: accountId,
+                chainId: chainId,
+                assetId: assetId
+            )
+            return
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.walletLocalSubscriptionHandler.handleAccountLocks(
+                result: .failure(error),
+                accountId: accountId,
+                chainId: chainId,
+                assetId: assetId
             )
             return
         }
