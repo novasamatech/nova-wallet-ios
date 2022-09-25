@@ -1604,7 +1604,6 @@
 		84B7C741289BFA79001A3566 /* AccountConfirmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6F8289BFA79001A3566 /* AccountConfirmTests.swift */; };
 		84B7C742289BFA79001A3566 /* AssetSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6FA289BFA79001A3566 /* AssetSelectionTests.swift */; };
 		84B7C743289BFA79001A3566 /* AnalyticsRewardDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C6FC289BFA79001A3566 /* AnalyticsRewardDetailsTests.swift */; };
-		84B7C744289BFA79001A3566 /* BalanceLocksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C700289BFA79001A3566 /* BalanceLocksTests.swift */; };
 		84B7C745289BFA79001A3566 /* AssetsManageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C702289BFA79001A3566 /* AssetsManageTests.swift */; };
 		84B7C746289BFA79001A3566 /* WalletHistoryFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C704289BFA79001A3566 /* WalletHistoryFilterTests.swift */; };
 		84B7C747289BFA79001A3566 /* AccountManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B7C706289BFA79001A3566 /* AccountManagementTests.swift */; };
@@ -4360,7 +4359,6 @@
 		84B7C6F8289BFA79001A3566 /* AccountConfirmTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountConfirmTests.swift; sourceTree = "<group>"; };
 		84B7C6FA289BFA79001A3566 /* AssetSelectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetSelectionTests.swift; sourceTree = "<group>"; };
 		84B7C6FC289BFA79001A3566 /* AnalyticsRewardDetailsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsRewardDetailsTests.swift; sourceTree = "<group>"; };
-		84B7C700289BFA79001A3566 /* BalanceLocksTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BalanceLocksTests.swift; sourceTree = "<group>"; };
 		84B7C702289BFA79001A3566 /* AssetsManageTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetsManageTests.swift; sourceTree = "<group>"; };
 		84B7C704289BFA79001A3566 /* WalletHistoryFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterTests.swift; sourceTree = "<group>"; };
 		84B7C706289BFA79001A3566 /* AccountManagementTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManagementTests.swift; sourceTree = "<group>"; };
@@ -9738,7 +9736,6 @@
 				84B7C6FB289BFA79001A3566 /* AnalyticsRewardDetails */,
 				84B7C6FD289BFA79001A3566 /* ParaStkStakeConfirm */,
 				84B7C6FE289BFA79001A3566 /* ChainAddressDetails */,
-				84B7C6FF289BFA79001A3566 /* BalanceLocks */,
 				84B7C701289BFA79001A3566 /* AssetsManage */,
 				84B7C703289BFA79001A3566 /* WalletHistoryFilter */,
 				84B7C705289BFA79001A3566 /* AccountManagement */,
@@ -10328,14 +10325,6 @@
 			children = (
 			);
 			path = ChainAddressDetails;
-			sourceTree = "<group>";
-		};
-		84B7C6FF289BFA79001A3566 /* BalanceLocks */ = {
-			isa = PBXGroup;
-			children = (
-				84B7C700289BFA79001A3566 /* BalanceLocksTests.swift */,
-			);
-			path = BalanceLocks;
 			sourceTree = "<group>";
 		};
 		84B7C701289BFA79001A3566 /* AssetsManage */ = {
@@ -16085,7 +16074,6 @@
 				84B7C745289BFA79001A3566 /* AssetsManageTests.swift in Sources */,
 				84B7C728289BFA79001A3566 /* YourValidatorListTests.swift in Sources */,
 				84B7C743289BFA79001A3566 /* AnalyticsRewardDetailsTests.swift in Sources */,
-				84B7C744289BFA79001A3566 /* BalanceLocksTests.swift in Sources */,
 				84B7C72F289BFA79001A3566 /* CustomValidatorListComposerTests.swift in Sources */,
 				84B7C717289BFA79001A3566 /* DAppAuthConfirmTests.swift in Sources */,
 				84F4387F25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift in Sources */,

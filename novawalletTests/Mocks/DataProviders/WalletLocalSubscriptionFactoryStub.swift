@@ -64,4 +64,12 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
     func getLocksProvider(for accountId: AccountId) throws -> StreamableProvider<AssetLock> {
         throw CommonError.undefined
     }
+
+    func getLocksProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) throws -> StreamableProvider<AssetLock> {
+        throw CommonError.undefined
+    }
 }
