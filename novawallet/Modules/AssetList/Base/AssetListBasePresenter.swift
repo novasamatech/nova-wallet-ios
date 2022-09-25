@@ -10,6 +10,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var balances: [ChainAssetId: Result<AssetBalance, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
 
     init() {
         groups = Self.createGroupsDiffCalculator(from: [])
@@ -53,7 +54,8 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
     func createAssetAccountInfo(
         from asset: AssetListAssetModel,
         chain: ChainModel,
-        maybePrices: [ChainAssetId: PriceData]?
+        maybePrices: [ChainAssetId: PriceData]?,
+        maybeCrowdloans: [ChainModel.Id: [CrowdloanContributionData]]?
     ) -> AssetListAssetAccountInfo {
         let assetModel = asset.assetModel
         let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
@@ -68,12 +70,24 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
             priceData = nil
         }
 
-        let balance = try? asset.balanceResult?.get()
+        let maybeBalance = try? asset.balanceResult?.get()
+
+        let maybeContributions = maybeCrowdloans?[chain.chainId]?.reduce(BigUInt(0)) { result, contribution in
+            result + contribution.amount
+        }
+
+        let totalBalance: BigUInt?
+
+        if let balance = maybeBalance, let contribution = maybeContributions {
+            totalBalance = balance + contribution
+        } else {
+            totalBalance = maybeBalance ?? maybeContributions
+        }
 
         return AssetListAssetAccountInfo(
             assetId: asset.assetModel.assetId,
             assetInfo: assetInfo,
-            balance: balance,
+            balance: totalBalance,
             priceData: priceData
         )
     }
@@ -184,5 +198,9 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         }
 
         groups.apply(changes: groupChanges)
+    }
+
+    func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
+        crowdloansResult = result
     }
 }

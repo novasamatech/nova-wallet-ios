@@ -16,17 +16,14 @@ final class AssetListInteractor: AssetListBaseInteractor {
     }
 
     let nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
-    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
 
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
-    private var crowdloanChainIds = Set<ChainModel.Id>()
+
     private var assetLocksSubscriptions: [AccountId: StreamableProvider<AssetLock>] = [:]
     private var locks: [ChainAssetId: [AssetLock]] = [:]
-    private var crowdloansSubscriptions: [ChainModel.Id: StreamableProvider<CrowdloanContributionData>] = [:]
-    private var crowdloans: [ChainModel.Id: [CrowdloanContributionData]] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -43,12 +40,12 @@ final class AssetListInteractor: AssetListBaseInteractor {
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
-        self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            crowdloansLocalSubscriptionFactory: crowdloansLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
             logger: logger
@@ -60,6 +57,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         clearNftSubscription()
         clearLocksSubscription()
         clearCrowdloansSubscription()
+
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
@@ -77,7 +75,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
         updateAccountInfoSubscription(from: changes)
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: changes)
-        setupCrowdloansSubscription(from: Array(availableChains.values))
+        updateCrowdloansSubscription(from: Array(availableChains.values))
     }
 
     private func clearLocksSubscription() {
@@ -110,13 +108,6 @@ final class AssetListInteractor: AssetListBaseInteractor {
         nftChainIds = nil
     }
 
-    private func clearCrowdloansSubscription() {
-        crowdloansSubscriptions.values.forEach { $0.removeObserver(self) }
-        crowdloansSubscriptions = [:]
-        crowdloans = [:]
-        crowdloanChainIds = .init()
-    }
-
     override func applyChanges(
         allChanges: [DataProviderChange<ChainModel>],
         accountDependentChanges: [DataProviderChange<ChainModel>]
@@ -126,7 +117,6 @@ final class AssetListInteractor: AssetListBaseInteractor {
         updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: allChanges)
-        setupCrowdloansSubscription(from: Array(availableChains.values))
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
@@ -159,30 +149,6 @@ final class AssetListInteractor: AssetListBaseInteractor {
         nftSubscription?.refresh()
     }
 
-    private func setupCrowdloansSubscription(from allChains: [ChainModel]) {
-        guard let selectedMetaAccount = selectedWalletSettings.value else {
-            return
-        }
-        let crowdloanChains = allChains.filter { $0.hasCrowdloans }
-        let newCrowdloanChainIds = Set(crowdloanChains.map(\.chainId))
-
-        guard !crowdloanChains.isEmpty, crowdloanChainIds != newCrowdloanChainIds else {
-            return
-        }
-
-        clearCrowdloansSubscription()
-        crowdloanChainIds = newCrowdloanChainIds
-
-        for chain in crowdloanChains {
-            guard let accountId = selectedMetaAccount.fetch(
-                for: chain.accountRequest()
-            )?.accountId else {
-                return
-            }
-            crowdloansSubscriptions[chain.identifier] = subscribeToCrowdloansProvider(for: accountId, chain: chain)
-        }
-    }
-
     override func setup() {
         provideHidesZeroBalances()
         providerWalletInfo()
@@ -202,32 +168,6 @@ final class AssetListInteractor: AssetListBaseInteractor {
             selectedMetaAccount: selectedMetaAccount
         ) { [weak self] in
             self?.subscribeToAllLocksProvider(for: $0)
-        }
-    }
-
-    override func handleAccountBalance(
-        result: Result<[DataProviderChange<AssetBalance>], Error>,
-        accountId: AccountId
-    ) {
-        super.handleAccountBalance(result: result, accountId: accountId)
-
-        switch result {
-        case let .failure(error):
-            logger?.error(error.localizedDescription)
-        case let .success(changes):
-            var updatingChains = Set<ChainModel.Id>()
-            updatingChains = changes.reduce(into: updatingChains) { accum, change in
-                if let assetBalanceId = assetBalanceIdMapping[change.identifier],
-                   crowdloanChainIds.contains(assetBalanceId.chainId),
-                   assetBalanceId.accountId == accountId {
-                    accum.insert(assetBalanceId.chainId)
-                }
-            }
-
-            updatingChains.forEach { chainId in
-                crowdloansSubscriptions[chainId]?.refresh()
-                logger?.debug("Crowdloans for chain: \(chainId) will refresh")
-            }
         }
     }
 
@@ -349,43 +289,5 @@ extension AssetListInteractor: EventVisitorProtocol {
 
     func processHideZeroBalances(event _: HideZeroBalancesChanged) {
         provideHidesZeroBalances()
-    }
-}
-
-extension AssetListInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
-    func handleCrowdloans(
-        result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
-        accountId: AccountId,
-        chain: ChainModel
-    ) {
-        guard let selectedMetaAccount = selectedWalletSettings.value else {
-            return
-        }
-        guard let chainAccountId = selectedMetaAccount.fetch(
-            for: chain.accountRequest()
-        )?.accountId, chainAccountId == accountId else {
-            logger?.warning("Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different")
-            return
-        }
-
-        switch result {
-        case let .failure(error):
-            presenter?.didReceiveCrowdloans(result: .failure(error))
-        case let .success(changes):
-            crowdloans = changes.reduce(
-                into: crowdloans
-            ) { result, change in
-                switch change {
-                case let .insert(crowdloan), let .update(crowdloan):
-                    var items = result[chain.chainId] ?? []
-                    items.addOrReplaceSingle(crowdloan)
-                    result[chain.chainId] = items
-                case let .delete(deletedIdentifier):
-                    result[chain.chainId]?.removeAll(where: { $0.identifier == deletedIdentifier })
-                }
-            }
-
-            presenter?.didReceiveCrowdloans(result: .success(crowdloans))
-        }
     }
 }

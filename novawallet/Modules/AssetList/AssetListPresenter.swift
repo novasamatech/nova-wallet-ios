@@ -21,7 +21,6 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var locksResult: Result<[AssetLock], Error>?
-    private(set) var crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
 
     private var scheduler: SchedulerProtocol?
 
@@ -215,10 +214,12 @@ final class AssetListPresenter: AssetListBasePresenter {
         }
 
         let maybePrices = try? priceResult?.get()
+        let maybeCrowdloans = try? crowdloansResult?.get()
         let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
             createGroupViewModel(
                 from: groupModel,
                 maybePrices: maybePrices,
+                maybeCrowdloans: maybeCrowdloans,
                 hidesZeroBalances: hidesZeroBalances
             )
         }
@@ -257,6 +258,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
+        maybeCrowdloans: [ChainModel.Id: [CrowdloanContributionData]]?,
         hidesZeroBalances: Bool
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
@@ -290,7 +292,12 @@ final class AssetListPresenter: AssetListBasePresenter {
         }
 
         let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
-            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+            createAssetAccountInfo(
+                from: asset,
+                chain: chain,
+                maybePrices: maybePrices,
+                maybeCrowdloans: maybeCrowdloans
+            )
         }
 
         return viewModelFactory.createGroupViewModel(
@@ -376,6 +383,12 @@ final class AssetListPresenter: AssetListBasePresenter {
 
     override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         super.didReceiveBalance(results: results)
+
+        updateAssetsView()
+    }
+
+    override func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
+        super.didReceiveCrowdloans(result: result)
 
         updateAssetsView()
     }
@@ -480,12 +493,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
 
     func didReceiveLocks(result: Result<[AssetLock], Error>) {
         locksResult = result
-
-        updateHeaderView()
-    }
-
-    func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
-        crowdloansResult = result
 
         updateHeaderView()
     }
