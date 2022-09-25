@@ -8,12 +8,17 @@ protocol WalletDetailsUpdating: AnyObject {
     func setup(context: CommonWalletContextProtocol, chainAsset: ChainAsset)
 }
 
+/**
+ *  Class is responsible for monitoring balance or transaction changes
+ *  and ask CommonWallet to update itself.
+ *
+ *  Note: Currently there is no way to know whether CommonWallet was closed.
+ *  So, before processing the event we should manually check whether context
+ *  exists and clear observers otherwise.
+ */
+
 final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
-    weak var context: CommonWalletContextProtocol? {
-        didSet {
-            clearProvidersIfNeeded()
-        }
-    }
+    weak var context: CommonWalletContextProtocol?
 
     let eventCenter: EventCenterProtocol
     let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
@@ -63,7 +68,11 @@ final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
             assetId: chainAsset.asset.assetId
         )
 
-        assetsLockDataProvider = subscribeToAllLocksProvider(for: accountId)
+        assetsLockDataProvider = subscribeToLocksProvider(
+            for: accountId,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
+        )
 
         crowdloanContributionsDataProvider = subscribeToCrowdloansProvider(for: accountId, chain: chainAsset.chain)
     }
@@ -92,10 +101,17 @@ extension WalletDetailsUpdater: WalletLocalStorageSubscriber, WalletLocalSubscri
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
     ) {
+        clearProvidersIfNeeded()
         updateAccount()
     }
 
-    func handleAccountLocks(result _: Result<[DataProviderChange<AssetLock>], Error>, accountId _: AccountId) {
+    func handleAccountLocks(
+        result _: Result<[DataProviderChange<AssetLock>], Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        clearProvidersIfNeeded()
         updateAccount()
     }
 }
@@ -106,6 +122,7 @@ extension WalletDetailsUpdater: CrowdloanContributionLocalSubscriptionHandler, C
         accountId _: AccountId,
         chain _: ChainModel
     ) {
+        clearProvidersIfNeeded()
         updateAccount()
     }
 }
