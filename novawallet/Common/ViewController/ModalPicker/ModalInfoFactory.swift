@@ -8,6 +8,9 @@ struct ModalInfoFactory {
     static let headerHeight: CGFloat = 40.0
     static let footerHeight: CGFloat = 0.0
 
+    typealias LockSortingViewModel = (value: Decimal, viewModel: LocalizableResource<StakingAmountViewModel>)
+    typealias LocksSortingViewModel = [LockSortingViewModel]
+
     static func createParaStkRewardDetails(
         for maxReward: Decimal,
         avgReward: Decimal,
@@ -238,26 +241,11 @@ struct ModalInfoFactory {
         priceFormatter: LocalizableResource<TokenFormatter>,
         precision: Int16
     ) -> [LocalizableResource<StakingAmountViewModel>] {
-        let staticModels: [LocalizableResource<StakingAmountViewModel>] = [
-            LocalizableResource { locale in
-                let title = R.string.localizable
-                    .walletBalanceReserved(preferredLanguages: locale.rLanguages)
-
-                let amountString = amountFormatter.value(for: locale).stringFromDecimal(balanceContext.reserved) ?? ""
-
-                let formatter = priceFormatter.value(for: locale)
-
-                let price = balanceContext.reserved * balanceContext.price
-                let priceString = balanceContext.price == 0.0 ? nil : formatter.stringFromDecimal(price)
-
-                let balance = BalanceViewModel(
-                    amount: amountString,
-                    price: priceString
-                )
-
-                return StakingAmountViewModel(title: title, balance: balance)
-            }
-        ]
+        let reserved: LocksSortingViewModel = createReservedViewModel(
+            balanceContext: balanceContext,
+            amountFormatter: amountFormatter,
+            priceFormatter: priceFormatter
+        )
 
         let crowdloans = createCrowdloansViewModel(
             balanceContext: balanceContext,
@@ -265,25 +253,26 @@ struct ModalInfoFactory {
             priceFormatter: priceFormatter
         )
 
-        let balanceLockKnownModels: [LocalizableResource<StakingAmountViewModel>] =
-            createLockViewModel(
-                from: balanceContext.balanceLocks.mainLocks(),
-                balanceContext: balanceContext,
-                amountFormatter: amountFormatter,
-                priceFormatter: priceFormatter,
-                precision: precision
-            )
+        let balanceLockKnownModels: LocksSortingViewModel = createLockViewModel(
+            from: balanceContext.balanceLocks.mainLocks(),
+            balanceContext: balanceContext,
+            amountFormatter: amountFormatter,
+            priceFormatter: priceFormatter,
+            precision: precision
+        )
 
-        let balanceLockUnknownModels: [LocalizableResource<StakingAmountViewModel>] =
-            createLockViewModel(
-                from: balanceContext.balanceLocks.auxLocks(),
-                balanceContext: balanceContext,
-                amountFormatter: amountFormatter,
-                priceFormatter: priceFormatter,
-                precision: precision
-            )
+        let balanceLockUnknownModels: LocksSortingViewModel = createLockViewModel(
+            from: balanceContext.balanceLocks.auxLocks(),
+            balanceContext: balanceContext,
+            amountFormatter: amountFormatter,
+            priceFormatter: priceFormatter,
+            precision: precision
+        )
 
-        return crowdloans + balanceLockKnownModels + balanceLockUnknownModels + staticModels
+        return (balanceLockKnownModels + balanceLockUnknownModels + crowdloans + reserved)
+            .sorted { viewModel1, viewModel2 in
+                viewModel1.value >= viewModel2.value
+            }.map(\.viewModel)
     }
 
     private static func createLockViewModel(
@@ -292,9 +281,16 @@ struct ModalInfoFactory {
         amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>,
         precision: Int16
-    ) -> [LocalizableResource<StakingAmountViewModel>] {
+    ) -> LocksSortingViewModel {
         locks.map { lock in
-            LocalizableResource<StakingAmountViewModel> { locale in
+            let lockAmount = Decimal.fromSubstrateAmount(
+                lock.amount,
+                precision: precision
+            ) ?? 0.0
+
+            let price = lockAmount * balanceContext.price
+
+            let viewModel = LocalizableResource<StakingAmountViewModel> { locale in
                 let formatter = priceFormatter.value(for: locale)
                 let amountFormatter = amountFormatter.value(for: locale)
 
@@ -305,12 +301,6 @@ struct ModalInfoFactory {
                     return mainTitle
                 }()
 
-                let lockAmount = Decimal.fromSubstrateAmount(
-                    lock.amount,
-                    precision: precision
-                ) ?? 0.0
-                let price = lockAmount * balanceContext.price
-
                 let priceString = balanceContext.price == 0.0 ? nil : formatter.stringFromDecimal(price)
                 let amountString = amountFormatter.stringFromDecimal(lockAmount) ?? ""
 
@@ -319,10 +309,10 @@ struct ModalInfoFactory {
                     price: priceString
                 )
 
-                return StakingAmountViewModel(
-                    title: title, balance: balance
-                )
+                return StakingAmountViewModel(title: title, balance: balance)
             }
+
+            return (price, viewModel)
         }
     }
 
@@ -330,27 +320,65 @@ struct ModalInfoFactory {
         balanceContext: BalanceContext,
         amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>
-    ) -> [LocalizableResource<StakingAmountViewModel>] {
+    ) -> LocksSortingViewModel {
         guard balanceContext.crowdloans > 0 else {
             return []
         }
+
+        let title = LocalizableResource { locale in
+            R.string.localizable.walletAccountLocksCrowdloans(preferredLanguages: locale.rLanguages)
+        }
+
+        return createLockFieldViewModel(
+            amount: balanceContext.crowdloans,
+            price: balanceContext.price,
+            localizedTitle: title,
+            amountFormatter: amountFormatter,
+            priceFormatter: priceFormatter
+        )
+    }
+
+    private static func createReservedViewModel(
+        balanceContext: BalanceContext,
+        amountFormatter: LocalizableResource<TokenFormatter>,
+        priceFormatter: LocalizableResource<TokenFormatter>
+    ) -> LocksSortingViewModel {
+        let title = LocalizableResource { locale in
+            R.string.localizable.walletBalanceReserved(preferredLanguages: locale.rLanguages)
+        }
+
+        return createLockFieldViewModel(
+            amount: balanceContext.reserved,
+            price: balanceContext.price,
+            localizedTitle: title,
+            amountFormatter: amountFormatter,
+            priceFormatter: priceFormatter
+        )
+    }
+
+    private static func createLockFieldViewModel(
+        amount: Decimal,
+        price: Decimal,
+        localizedTitle: LocalizableResource<String>,
+        amountFormatter: LocalizableResource<TokenFormatter>,
+        priceFormatter: LocalizableResource<TokenFormatter>
+    ) -> LocksSortingViewModel {
+        let totalPrice = amount * price
 
         let viewModel = LocalizableResource<StakingAmountViewModel> { locale in
             let formatter = priceFormatter.value(for: locale)
             let amountFormatter = amountFormatter.value(for: locale)
 
-            let title = R.string.localizable.walletAccountLocksCrowdloans(preferredLanguages: locale.rLanguages)
+            let title = localizedTitle.value(for: locale)
 
-            let price = balanceContext.crowdloans * balanceContext.price
-
-            let priceString = balanceContext.price == 0.0 ? nil : formatter.stringFromDecimal(price)
-            let amountString = amountFormatter.stringFromDecimal(balanceContext.crowdloans) ?? ""
+            let priceString = totalPrice == 0.0 ? nil : formatter.stringFromDecimal(totalPrice)
+            let amountString = amountFormatter.stringFromDecimal(amount) ?? ""
 
             let balance = BalanceViewModel(amount: amountString, price: priceString)
 
             return StakingAmountViewModel(title: title, balance: balance)
         }
 
-        return [viewModel]
+        return [LockSortingViewModel(value: totalPrice, viewModel: viewModel)]
     }
 }
