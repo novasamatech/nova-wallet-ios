@@ -141,51 +141,20 @@ final class UserStorageMigrator {
     }
 
     private func checkIfMigrationNeeded(to version: UserStorageVersion) -> Bool {
-        let storageExists = fileManager.fileExists(atPath: storeURL.path)
-
-        guard storageExists else {
-            return false
-        }
-
-        guard let metadata = NSPersistentStoreCoordinator.metadata(at: storeURL) else {
-            return false
-        }
-
-        let compatibleVersion = compatibleVersionForStoreMetadata(metadata)
-
-        return compatibleVersion != version
+        checkIfMigrationNeeded(
+            to: version,
+            storeURL: storeURL,
+            fileManager: fileManager,
+            modelDirectory: modelDirectory
+        )
     }
 
     private func compatibleVersionForStoreMetadata(_ metadata: [String: Any]) -> UserStorageVersion? {
-        let compatibleVersion = UserStorageVersion.allCases.first {
-            let model = createManagedObjectModel(forResource: $0.rawValue)
-            return model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata)
-        }
-
-        return compatibleVersion
+        compatibleVersionForStoreMetadata(metadata, modelDirectory: modelDirectory)
     }
 
     private func createManagedObjectModel(forResource resource: String) -> NSManagedObjectModel {
-        let bundle = Bundle.main
-        let omoURL = bundle.url(
-            forResource: resource,
-            withExtension: "omo",
-            subdirectory: modelDirectory
-        )
-
-        let momURL = bundle.url(
-            forResource: resource,
-            withExtension: "mom",
-            subdirectory: modelDirectory
-        )
-
-        guard
-            let modelURL = omoURL ?? momURL,
-            let model = NSManagedObjectModel(contentsOf: modelURL) else {
-            fatalError("Unable to load model in bundle for resource \(resource)")
-        }
-
-        return model
+        createManagedObjectModel(forResource: resource, modelDirectory: modelDirectory)
     }
 
     private func createMapping(
