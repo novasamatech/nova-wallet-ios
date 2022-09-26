@@ -25,7 +25,7 @@ class WalletsListPresenter {
     private var identifierMapping: [String: AssetBalanceId] = [:]
     private var balances: [AccountId: [ChainAssetId: BigUInt]] = [:]
     private var crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]] = [:]
-    private var crowdloanContributionsMapping: [String: CrowdloanContributionData] = [:]
+    private var crowdloanContributionsMapping: [String: CrowdloanContributionId] = [:]
     private var prices: [ChainAssetId: PriceData] = [:]
     private var chains: [ChainModel.Id: ChainModel] = [:]
 
@@ -138,16 +138,22 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
                 let value: BigUInt = accountCrowdloan[item.chainId] ?? 0
                 accountCrowdloan[item.chainId] = value + item.amount
                 crowdloanContributions[item.accountId] = accountCrowdloan
-                crowdloanContributionsMapping[item.identifier] = item
+                crowdloanContributionsMapping[item.identifier] = CrowdloanContributionId(
+                    chainId: item.chainId,
+                    accountId: item.accountId,
+                    amount: item.amount
+                )
             case let .delete(deletedIdentifier):
-                if let accountCrowdloanId = crowdloanContributionsMapping[deletedIdentifier] {
-                    var accountCrowdloan = crowdloanContributions[accountCrowdloanId.accountId]
-                    if let contribution = accountCrowdloan?[accountCrowdloanId.chainId], contribution > accountCrowdloanId.amount {
-                        accountCrowdloan?[accountCrowdloanId.chainId] = min(0, contribution - accountCrowdloanId.amount)
+                if let accountContributionId = crowdloanContributionsMapping[deletedIdentifier] {
+                    var accountContributions = crowdloanContributions[accountContributionId.accountId]
+                    if let contribution = accountContributions?[accountContributionId.chainId],
+                       contribution > accountContributionId.amount {
+                        let newAmount = contribution - accountContributionId.amount
+                        accountContributions?[accountContributionId.chainId] = newAmount
                     } else {
-                        accountCrowdloan?[accountCrowdloanId.chainId] = nil
+                        accountContributions?[accountContributionId.chainId] = nil
                     }
-                    crowdloanContributions[accountCrowdloanId.accountId] = accountCrowdloan
+                    crowdloanContributions[accountContributionId.accountId] = accountContributions
                 }
 
                 crowdloanContributionsMapping[deletedIdentifier] = nil
