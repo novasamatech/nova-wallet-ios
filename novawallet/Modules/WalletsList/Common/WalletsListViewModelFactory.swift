@@ -87,23 +87,12 @@ final class WalletsListViewModelFactory {
                 excludingChainIds: Set(chainAccountIds)
             )
 
-            totalValue += crowdloanContributions[substrateAccountId]?
-                .filter { !chainAccountIds.contains($0.key) }
-                .reduce(Decimal(0)) { result, contribution in
-                    guard let asset = chains[contribution.key]?.utilityAsset(),
-                          let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
-                          let price = Decimal(string: priceData.price) else {
-                        return result
-                    }
-                    guard let decimalAmount = Decimal.fromSubstrateAmount(
-                        contribution.value,
-                        precision: Int16(bitPattern: asset.precision)
-                    ) else {
-                        return result
-                    }
-
-                    return result + decimalAmount * price
-                } ?? 0
+            let contributions = crowdloanContributions[substrateAccountId]?.filter { !chainAccountIds.contains($0.key) } ?? [:]
+            totalValue += calculateCrowdloanContribution(
+                contributions,
+                chains: chains,
+                prices: prices
+            )
         }
 
         if let ethereumAddress = wallet.info.ethereumAddress {
@@ -115,23 +104,12 @@ final class WalletsListViewModelFactory {
                 excludingChainIds: Set(chainAccountIds)
             )
 
-            totalValue += crowdloanContributions[ethereumAddress]?
-                .filter { !chainAccountIds.contains($0.key) }
-                .reduce(Decimal(0)) { result, contribution in
-                    guard let asset = chains[contribution.key]?.utilityAsset(),
-                          let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
-                          let price = Decimal(string: priceData.price) else {
-                        return result
-                    }
-                    guard let decimalAmount = Decimal.fromSubstrateAmount(
-                        contribution.value,
-                        precision: Int16(bitPattern: asset.precision)
-                    ) else {
-                        return result
-                    }
-
-                    return result + decimalAmount * price
-                } ?? 0
+            let contributions = crowdloanContributions[ethereumAddress]?.filter { !chainAccountIds.contains($0.key) } ?? [:]
+            totalValue += calculateCrowdloanContribution(
+                contributions,
+                chains: chains,
+                prices: prices
+            )
         }
 
         wallet.info.chainAccounts.forEach { chainAccount in
@@ -142,22 +120,12 @@ final class WalletsListViewModelFactory {
                 includingChainIds: [chainAccount.chainId],
                 excludingChainIds: Set()
             )
-            totalValue += crowdloanContributions[chainAccount.accountId]?
-                .reduce(Decimal(0)) { result, contribution in
-                    guard let asset = chains[contribution.key]?.utilityAsset(),
-                          let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
-                          let price = Decimal(string: priceData.price) else {
-                        return result
-                    }
-                    guard let decimalAmount = Decimal.fromSubstrateAmount(
-                        contribution.value,
-                        precision: Int16(bitPattern: asset.precision)
-                    ) else {
-                        return result
-                    }
-
-                    return result + decimalAmount * price
-                } ?? 0
+            let contributions = crowdloanContributions[chainAccount.accountId] ?? [:]
+            totalValue += calculateCrowdloanContribution(
+                contributions,
+                chains: chains,
+                prices: prices
+            )
         }
 
         return totalValue
@@ -191,6 +159,28 @@ final class WalletsListViewModelFactory {
             return WalletsListSectionViewModel(type: type, items: viewModels)
         } else {
             return nil
+        }
+    }
+
+    private func calculateCrowdloanContribution(
+        _ contributions: [ChainModel.Id: BigUInt],
+        chains: [ChainModel.Id: ChainModel],
+        prices: [ChainAssetId: PriceData]
+    ) -> Decimal {
+        contributions.reduce(0) { result, contribution in
+            guard let asset = chains[contribution.key]?.utilityAsset(),
+                  let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
+                  let price = Decimal(string: priceData.price) else {
+                return result
+            }
+            guard let decimalAmount = Decimal.fromSubstrateAmount(
+                contribution.value,
+                precision: Int16(bitPattern: asset.precision)
+            ) else {
+                return result
+            }
+
+            return result + decimalAmount * price
         }
     }
 }
