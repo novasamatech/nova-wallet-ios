@@ -22,7 +22,8 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
         try? context.createAssetDetails(for: assetId, in: navigationController)
 
-        walletUpdater.context = context
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+        walletUpdater.setup(context: context, chainAsset: chainAsset)
     }
 
     func showAssetsManage(from view: AssetListViewProtocol?) {
