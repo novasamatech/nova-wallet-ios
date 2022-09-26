@@ -8,6 +8,7 @@ protocol WalletsListViewModelFactoryProtocol {
         for wallets: [ManagedMetaAccountModel],
         chains: [ChainModel.Id: ChainModel],
         balances: [AccountId: [ChainAssetId: BigUInt]],
+        crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]],
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> [WalletsListSectionViewModel]
@@ -16,6 +17,7 @@ protocol WalletsListViewModelFactoryProtocol {
         for wallet: ManagedMetaAccountModel,
         chains: [ChainModel.Id: ChainModel],
         balances: [AccountId: [ChainAssetId: BigUInt]],
+        crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]],
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> WalletsListViewModel
@@ -69,6 +71,7 @@ final class WalletsListViewModelFactory {
         for wallet: ManagedMetaAccountModel,
         chains: [ChainModel.Id: ChainModel],
         balances: [AccountId: [ChainAssetId: BigUInt]],
+        crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]],
         prices: [ChainAssetId: PriceData]
     ) -> Decimal {
         let chainAccountIds = wallet.info.chainAccounts.map(\.chainId)
@@ -83,6 +86,24 @@ final class WalletsListViewModelFactory {
                 includingChainIds: Set(),
                 excludingChainIds: Set(chainAccountIds)
             )
+
+            totalValue += crowdloanContributions[substrateAccountId]?
+                .filter { !chainAccountIds.contains($0.key) }
+                .reduce(Decimal(0)) { result, contribution in
+                    guard let asset = chains[contribution.key]?.utilityAsset(),
+                          let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
+                          let price = Decimal(string: priceData.price) else {
+                        return result
+                    }
+                    guard let decimalAmount = Decimal.fromSubstrateAmount(
+                        contribution.value,
+                        precision: Int16(bitPattern: asset.precision)
+                    ) else {
+                        return result
+                    }
+
+                    return result + decimalAmount * price
+                } ?? 0
         }
 
         if let ethereumAddress = wallet.info.ethereumAddress {
@@ -93,6 +114,24 @@ final class WalletsListViewModelFactory {
                 includingChainIds: Set(),
                 excludingChainIds: Set(chainAccountIds)
             )
+
+            totalValue += crowdloanContributions[ethereumAddress]?
+                .filter { !chainAccountIds.contains($0.key) }
+                .reduce(Decimal(0)) { result, contribution in
+                    guard let asset = chains[contribution.key]?.utilityAsset(),
+                          let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
+                          let price = Decimal(string: priceData.price) else {
+                        return result
+                    }
+                    guard let decimalAmount = Decimal.fromSubstrateAmount(
+                        contribution.value,
+                        precision: Int16(bitPattern: asset.precision)
+                    ) else {
+                        return result
+                    }
+
+                    return result + decimalAmount * price
+                } ?? 0
         }
 
         wallet.info.chainAccounts.forEach { chainAccount in
@@ -103,6 +142,22 @@ final class WalletsListViewModelFactory {
                 includingChainIds: [chainAccount.chainId],
                 excludingChainIds: Set()
             )
+            totalValue += crowdloanContributions[chainAccount.accountId]?
+                .reduce(Decimal(0)) { result, contribution in
+                    guard let asset = chains[contribution.key]?.utilityAsset(),
+                          let priceData = prices[ChainAssetId(chainId: contribution.key, assetId: asset.assetId)],
+                          let price = Decimal(string: priceData.price) else {
+                        return result
+                    }
+                    guard let decimalAmount = Decimal.fromSubstrateAmount(
+                        contribution.value,
+                        precision: Int16(bitPattern: asset.precision)
+                    ) else {
+                        return result
+                    }
+
+                    return result + decimalAmount * price
+                } ?? 0
         }
 
         return totalValue
@@ -113,6 +168,7 @@ final class WalletsListViewModelFactory {
         wallets: [ManagedMetaAccountModel],
         chains: [ChainModel.Id: ChainModel],
         balances: [AccountId: [ChainAssetId: BigUInt]],
+        crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]],
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> WalletsListSectionViewModel? {
@@ -125,6 +181,7 @@ final class WalletsListViewModelFactory {
                     for: $0,
                     chains: chains,
                     balances: balances,
+                    crowdloanContributions: crowdloanContributions,
                     prices: prices,
                     locale: locale
                 )
@@ -143,6 +200,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         for wallet: ManagedMetaAccountModel,
         chains: [ChainModel.Id: ChainModel],
         balances: [AccountId: [ChainAssetId: BigUInt]],
+        crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]],
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> WalletsListViewModel {
@@ -150,6 +208,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
             for: wallet,
             chains: chains,
             balances: balances,
+            crowdloanContributions: crowdloanContributions,
             prices: prices
         )
 
@@ -176,6 +235,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
         for wallets: [ManagedMetaAccountModel],
         chains: [ChainModel.Id: ChainModel],
         balances: [AccountId: [ChainAssetId: BigUInt]],
+        crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]],
         prices: [ChainAssetId: PriceData],
         locale: Locale
     ) -> [WalletsListSectionViewModel] {
@@ -187,6 +247,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 wallets: wallets,
                 chains: chains,
                 balances: balances,
+                crowdloanContributions: crowdloanContributions,
                 prices: prices,
                 locale: locale
             ) {
@@ -199,6 +260,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 wallets: wallets,
                 chains: chains,
                 balances: balances,
+                crowdloanContributions: crowdloanContributions,
                 prices: prices,
                 locale: locale
             ) {
@@ -211,6 +273,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 wallets: wallets,
                 chains: chains,
                 balances: balances,
+                crowdloanContributions: crowdloanContributions,
                 prices: prices,
                 locale: locale
             ) {
@@ -223,6 +286,7 @@ extension WalletsListViewModelFactory: WalletsListViewModelFactoryProtocol {
                 wallets: wallets,
                 chains: chains,
                 balances: balances,
+                crowdloanContributions: crowdloanContributions,
                 prices: prices,
                 locale: locale
             ) {
