@@ -8,11 +8,14 @@ struct AssetLock: Equatable {
     let amount: BigUInt
 
     var lockType: LockType? {
-        guard let typeString =
-            String(data: type, encoding: .utf8)?.trimmingCharacters(in: .whitespaces) else {
+        guard let typeString = displayId else {
             return nil
         }
         return LockType(rawValue: typeString.lowercased())
+    }
+
+    var displayId: String? {
+        String(data: type, encoding: .utf8)?.trimmingCharacters(in: .whitespaces)
     }
 }
 
@@ -45,3 +48,5 @@ extension AssetLock: CustomDebugStringConvertible {
         ].joined(separator: "\n")
     }
 }
+
+extension AssetLock: Codable {}

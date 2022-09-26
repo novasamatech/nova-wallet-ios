@@ -13,6 +13,7 @@ struct AssetsSearchViewFactory {
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             logger: Logger.shared
