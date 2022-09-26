@@ -134,9 +134,10 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
         for change in changes {
             switch change {
             case let .insert(item), let .update(item):
+                let previousAmount = crowdloanContributionsMapping[item.identifier]?.amount ?? 0
                 var accountCrowdloan = crowdloanContributions[item.accountId] ?? [:]
                 let value: BigUInt = accountCrowdloan[item.chainId] ?? 0
-                accountCrowdloan[item.chainId] = value + item.amount
+                accountCrowdloan[item.chainId] = value - previousAmount + item.amount
                 crowdloanContributions[item.accountId] = accountCrowdloan
                 crowdloanContributionsMapping[item.identifier] = CrowdloanContributionId(
                     chainId: item.chainId,
