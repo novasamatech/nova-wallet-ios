@@ -140,6 +140,7 @@ extension WalletsListInteractor: WalletsListInteractorInputProtocol {
         subscribeChains()
         subscribeAssets()
         subscribeWallets()
+        subscribeToCrowdloans()
     }
 }
 
@@ -176,5 +177,12 @@ extension WalletsListInteractor: SelectedCurrencyDepending {
 }
 
 extension WalletsListInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
-    func handleAllCrowdloans(result _: Result<[DataProviderChange<CrowdloanContributionData>], Error>) {}
+    func handleAllCrowdloans(result: Result<[DataProviderChange<CrowdloanContributionData>], Error>) {
+        switch result {
+        case let .success(changes):
+            basePresenter?.didReceiveCrowdloanContributionChanges(changes)
+        case let .failure(error):
+            basePresenter?.didReceiveError(error)
+        }
+    }
 }
