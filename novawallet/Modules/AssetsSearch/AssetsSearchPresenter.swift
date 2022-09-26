@@ -114,8 +114,10 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     private func provideAssetsViewModel() {
         let maybePrices = try? priceResult?.get()
+        let maybeCrowdloans = try? crowdloansResult?.get()
+
         let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
-            createGroupViewModel(from: groupModel, maybePrices: maybePrices)
+            createGroupViewModel(from: groupModel, maybePrices: maybePrices, maybeCrowdloans: maybeCrowdloans)
         }
 
         if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
@@ -127,14 +129,20 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?
+        maybePrices: [ChainAssetId: PriceData]?,
+        maybeCrowdloans: [ChainModel.Id: [CrowdloanContributionData]]?
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
 
         let assets = groupLists[chain.chainId]?.allItems ?? []
 
         let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
-            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+            createAssetAccountInfo(
+                from: asset,
+                chain: chain,
+                maybePrices: maybePrices,
+                maybeCrowdloans: maybeCrowdloans
+            )
         }
 
         return viewModelFactory.createGroupViewModel(
@@ -160,6 +168,12 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
         super.didReceivePrices(result: result)
+
+        filterAndUpdateView()
+    }
+
+    override func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
+        super.didReceiveCrowdloans(result: result)
 
         filterAndUpdateView()
     }

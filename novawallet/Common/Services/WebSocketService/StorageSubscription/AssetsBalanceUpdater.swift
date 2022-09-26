@@ -128,8 +128,6 @@ final class AssetsBalanceUpdater {
                     let maybeItem = try? changesWrapper.targetOperation.extractNoCancellableResultData()
 
                     if maybeItem != nil {
-                        self?.eventCenter.notify(with: WalletBalanceChanged())
-
                         let assetBalanceChangeEvent = AssetBalanceChanged(
                             chainAssetId: chainAssetId,
                             accountId: accountId,

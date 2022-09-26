@@ -88,8 +88,7 @@ final class LocksPresenter {
             createCell(
                 amountInPlank: $0.amount,
                 chainAssetId: $0.chainAssetId,
-                title: $0.lockType.map { $0.displayType.value(for: selectedLocale) } ??
-                    String(data: $0.type, encoding: .utf8)?.capitalized ?? "",
+                title: $0.lockType.map { $0.displayType.value(for: selectedLocale) } ?? $0.displayId?.capitalized ?? "",
                 identifier: $0.identifier
             )
         }
