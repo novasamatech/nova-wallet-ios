@@ -18,6 +18,12 @@ protocol WalletLocalSubscriptionFactoryProtocol {
     func getAllBalancesProvider() throws -> StreamableProvider<AssetBalance>
 
     func getLocksProvider(for accountId: AccountId) throws -> StreamableProvider<AssetLock>
+
+    func getLocksProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) throws -> StreamableProvider<AssetLock>
 }
 
 final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -182,13 +188,54 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             return provider
         }
 
+        let filter = NSPredicate.assetLock(for: accountId)
+
+        let provider = createAssetLocksProvider(for: filter) { entity in
+            accountId.toHex() == entity.chainAccountId
+        }
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
+    }
+
+    func getLocksProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) throws -> StreamableProvider<AssetLock> {
+        let cacheKey = "locks-\(accountId.toHex())-\(chainId)-\(assetId)"
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<AssetLock> {
+            return provider
+        }
+
+        let filter = NSPredicate.assetLock(
+            for: accountId,
+            chainAssetId: ChainAssetId(chainId: chainId, assetId: assetId)
+        )
+
+        let provider = createAssetLocksProvider(for: filter) { entity in
+            accountId.toHex() == entity.chainAccountId &&
+                chainId == entity.chainId &&
+                assetId == entity.assetId
+        }
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
+    }
+
+    private func createAssetLocksProvider(
+        for repositoryFilter: NSPredicate,
+        observingFilter: @escaping (CDAssetLock) -> Bool
+    ) -> StreamableProvider<AssetLock> {
         let source = EmptyStreamableSource<AssetLock>()
 
         let mapper = AssetLockMapper()
-        let filter = NSPredicate.assetLock(for: accountId)
 
         let repository = storageFacade.createRepository(
-            filter: filter,
+            filter: repositoryFilter,
             sortDescriptors: [],
             mapper: AnyCoreDataMapper(mapper)
         )
@@ -197,7 +244,7 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
-                accountId.toHex() == entity.chainAccountId
+                observingFilter(entity)
             }
         )
 
@@ -207,15 +254,11 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             }
         }
 
-        let provider = StreamableProvider(
+        return StreamableProvider(
             source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: operationManager
         )
-
-        saveProvider(provider, for: cacheKey)
-
-        return provider
     }
 }

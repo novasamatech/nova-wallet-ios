@@ -46,6 +46,11 @@ protocol SubstrateRepositoryFactoryProtocol {
         chainId: ChainModel.Id,
         source: String?
     ) -> AnyDataProviderRepository<CrowdloanContributionData>
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<CrowdloanContributionData>
 }
 
 final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
@@ -220,6 +225,25 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             accountId: accountId,
             source: source
         )
+
+        return createCrowdloanContributionRepository(for: filter)
+    }
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+        let filter = NSPredicate.crowdloanContribution(
+            for: chainId,
+            accountId: accountId
+        )
+
+        return createCrowdloanContributionRepository(for: filter)
+    }
+
+    private func createCrowdloanContributionRepository(
+        for filter: NSPredicate
+    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
         let mapper = CrowdloanContributionDataMapper()
         let repository = storageFacade.createRepository(
             filter: filter,
