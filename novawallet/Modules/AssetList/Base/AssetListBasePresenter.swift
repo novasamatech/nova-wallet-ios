@@ -16,6 +16,23 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         groups = Self.createGroupsDiffCalculator(from: [])
     }
 
+    private func updateAssetModels() {
+        for chain in allChains.values {
+            let models = chain.assets.map { asset in
+                createAssetModel(for: chain, assetModel: asset)
+            }
+
+            let changes: [DataProviderChange<AssetListAssetModel>] = models.map { model in
+                .update(newItem: model)
+            }
+
+            groupLists[chain.chainId]?.apply(changes: changes)
+
+            let groupModel = createGroupModel(from: chain, assets: models)
+            groups.apply(changes: [.update(newItem: groupModel)])
+        }
+    }
+
     func resetStorages() {
         allChains = [:]
         balanceResults = [:]
@@ -54,8 +71,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
     func createAssetAccountInfo(
         from asset: AssetListAssetModel,
         chain: ChainModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        maybeCrowdloans: [ChainModel.Id: [CrowdloanContributionData]]?
+        maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListAssetAccountInfo {
         let assetModel = asset.assetModel
         let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
@@ -70,24 +86,10 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
             priceData = nil
         }
 
-        let maybeBalance = try? asset.balanceResult?.get()
-
-        let maybeContributions = maybeCrowdloans?[chain.chainId]?.reduce(BigUInt(0)) { result, contribution in
-            result + contribution.amount
-        }
-
-        let totalBalance: BigUInt?
-
-        if let balance = maybeBalance, let contribution = maybeContributions {
-            totalBalance = balance + contribution
-        } else {
-            totalBalance = maybeBalance ?? maybeContributions
-        }
-
         return AssetListAssetAccountInfo(
             assetId: asset.assetModel.assetId,
             assetInfo: assetInfo,
-            balance: totalBalance,
+            balance: asset.totalAmount,
             priceData: priceData
         )
     }
@@ -99,20 +101,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
 
         priceResult = result
 
-        for chain in allChains.values {
-            let models = chain.assets.map { asset in
-                createAssetModel(for: chain, assetModel: asset)
-            }
-
-            let changes: [DataProviderChange<AssetListAssetModel>] = models.map { model in
-                .update(newItem: model)
-            }
-
-            groupLists[chain.chainId]?.apply(changes: changes)
-
-            let groupModel = createGroupModel(from: chain, assets: models)
-            groups.apply(changes: [.update(newItem: groupModel)])
-        }
+        updateAssetModels()
     }
 
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -202,5 +191,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
 
     func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
         crowdloansResult = result
+
+        updateAssetModels()
     }
 }
