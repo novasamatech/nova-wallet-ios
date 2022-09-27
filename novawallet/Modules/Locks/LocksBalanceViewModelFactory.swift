@@ -104,14 +104,16 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
             )
         }
 
+        let total = totalPrice + crowdloansTotalPrice
         let formattedTotal = formatPrice(
-            amount: totalPrice + crowdloansTotalPrice,
+            amount: total,
             priceData: lastPriceData,
             locale: locale
         )
         let formattedTransferrable = formatPrice(amount: transferrablePrice, priceData: lastPriceData, locale: locale)
+        let totalLocks = locksPrice + crowdloansTotalPrice
         let formattedLocks = formatPrice(
-            amount: locksPrice + crowdloansTotalPrice,
+            amount: totalLocks,
             priceData: lastPriceData,
             locale: locale
         )
@@ -119,9 +121,9 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
             total: formattedTotal,
             transferrable: formattedTransferrable,
             locks: formattedLocks,
-            totalPrice: totalPrice,
+            totalPrice: total,
             transferrablePrice: transferrablePrice,
-            locksPrice: locksPrice
+            locksPrice: totalLocks
         )
     }
 
