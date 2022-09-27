@@ -31,7 +31,8 @@ final class WalletSelectionInteractor: WalletsListInteractor {
             walletListLocalSubscriptionFactory: walletListLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            currencyManager: currencyManager
+            currencyManager: currencyManager,
+            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared
         )
     }
 }
