@@ -114,10 +114,9 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     private func provideAssetsViewModel() {
         let maybePrices = try? priceResult?.get()
-        let maybeCrowdloans = try? crowdloansResult?.get()
 
         let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
-            createGroupViewModel(from: groupModel, maybePrices: maybePrices, maybeCrowdloans: maybeCrowdloans)
+            createGroupViewModel(from: groupModel, maybePrices: maybePrices)
         }
 
         if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
@@ -129,20 +128,14 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        maybeCrowdloans: [ChainModel.Id: [CrowdloanContributionData]]?
+        maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
 
         let assets = groupLists[chain.chainId]?.allItems ?? []
 
         let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
-            createAssetAccountInfo(
-                from: asset,
-                chain: chain,
-                maybePrices: maybePrices,
-                maybeCrowdloans: maybeCrowdloans
-            )
+            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
 
         return viewModelFactory.createGroupViewModel(

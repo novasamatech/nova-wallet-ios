@@ -21,6 +21,16 @@ class IconDetailsView: UIView {
         return label
     }()
 
+    var hidesIcon: Bool {
+        get {
+            imageView.isHidden
+        }
+
+        set {
+            imageView.isHidden = newValue
+        }
+    }
+
     var mode: Mode = .iconDetails {
         didSet {
             applyLayout()
