@@ -53,8 +53,8 @@ final class CrowdloanListViewLayout: UIView {
 
         addSubview(statusView)
         statusView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.lessThanOrEqualTo(safeAreaLayoutGuide)
             make.top.equalTo(safeAreaLayoutGuide).inset(253)
         }
 

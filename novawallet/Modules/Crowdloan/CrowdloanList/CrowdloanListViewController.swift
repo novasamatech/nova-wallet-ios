@@ -277,18 +277,21 @@ extension CrowdloanListViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         switch state {
         case let .error(message):
-            let errorView = ErrorStateView()
-            errorView.errorDescriptionLabel.text = message
-            errorView.delegate = self
-            errorView.locale = selectedLocale
+            let errorView = BackgroundedView<ErrorStateView>()
+            errorView.contentView.errorDescriptionLabel.text = message
+            errorView.contentView.delegate = self
+            errorView.contentView.locale = selectedLocale
+            errorView.contentInsets = .init(top: 4, left: 0, bottom: 16, right: 0)
             return errorView
         case .empty:
-            let emptyView = EmptyStateView()
-            emptyView.image = R.image.iconEmptyHistory()
-            emptyView.title = R.string.localizable
+            let emptyView = BackgroundedView<CrowdloanEmptyView>()
+            let text = R.string.localizable
                 .crowdloanEmptyMessage_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
-            emptyView.titleColor = R.color.colorLightGray()!
-            emptyView.titleFont = .p2Paragraph
+            emptyView.contentView.bind(
+                image: R.image.iconEmptyHistory(),
+                text: text
+            )
+            emptyView.contentInsets = .init(top: 4, left: 0, bottom: 16, right: 0)
             return emptyView
         case .loading, .loaded:
             return nil

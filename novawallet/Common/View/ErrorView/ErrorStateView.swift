@@ -53,7 +53,11 @@ class ErrorStateView: UIView {
         stackView.alignment = .center
 
         addSubview(stackView)
-        stackView.snp.makeConstraints { $0.center.equalToSuperview() }
+        stackView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.leading.top.greaterThanOrEqualToSuperview()
+            $0.trailing.bottom.greaterThanOrEqualToSuperview()
+        }
     }
 
     private func applyLocalization() {
