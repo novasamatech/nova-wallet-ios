@@ -1,7 +1,6 @@
 import UIKit
 
 final class CrowdloanEmptyView: UIView {
-    
     var verticalSpacing: CGFloat = 8.0 {
         didSet {
             stackView.spacing = verticalSpacing
@@ -38,6 +37,7 @@ final class CrowdloanEmptyView: UIView {
     private func setupLayout() {
         stackView.axis = .vertical
         stackView.alignment = .center
+        stackView.spacing = verticalSpacing
 
         addSubview(stackView)
         stackView.snp.makeConstraints {
@@ -50,4 +50,3 @@ final class CrowdloanEmptyView: UIView {
         titleLabel.text = text
     }
 }
-
