@@ -20,9 +20,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         view.detailsLabel.textColor = R.color.colorTransparentText()
         view.detailsLabel.font = .regularSubheadline
 
-        view.imageView.image = R.image.iconInfoFilled()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorWhite48()!)
+        view.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+
         view.iconWidth = 16.0
         view.spacing = 4.0
 
@@ -81,14 +80,32 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         switch viewModel.amount {
         case let .loaded(value), let .cached(value):
             amountLabel.text = value
-            locksView.iconDetailsView.detailsLabel.text = viewModel.locksAmount
-            locksView.isHidden = viewModel.locksAmount == nil
+
+            if let lockedAmount = viewModel.locksAmount {
+                setupStateWithLocks(amount: lockedAmount)
+            } else {
+                setupStateWithoutLocks()
+            }
+
             stopLoadingIfNeeded()
         case .loading:
             amountLabel.text = ""
-            locksView.isHidden = true
+            setupStateWithoutLocks()
             startLoadingIfNeeded()
         }
+    }
+
+    private func setupStateWithLocks(amount: String) {
+        locksView.isHidden = false
+        titleView.hidesIcon = false
+
+        locksView.iconDetailsView.detailsLabel.text = amount
+    }
+
+    private func setupStateWithoutLocks() {
+        locksView.iconDetailsView.detailsLabel.text = nil
+        locksView.isHidden = true
+        titleView.hidesIcon = true
     }
 
     private func setupLocalization() {
