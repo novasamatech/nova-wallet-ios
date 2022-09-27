@@ -215,23 +215,8 @@ extension AssetListInteractor {
         _ changes: [DataProviderChange<AssetLock>],
         accountId: AccountId
     ) {
-        let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: [AssetLock]]()
-        ) { accum, assetBalanceId in
-            guard assetBalanceId.accountId == accountId else {
-                return
-            }
-
-            let chainAssetId = ChainAssetId(
-                chainId: assetBalanceId.chainId,
-                assetId: assetBalanceId.assetId
-            )
-
-            accum[chainAssetId] = locks[chainAssetId]
-        }
-
         locks = changes.reduce(
-            into: initialItems
+            into: locks
         ) { accum, change in
             switch change {
             case let .insert(lock), let .update(lock):
