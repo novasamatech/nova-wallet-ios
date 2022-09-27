@@ -291,6 +291,7 @@ extension CrowdloanListViewController: EmptyStateDataSource {
                 image: R.image.iconEmptyHistory(),
                 text: text
             )
+            emptyView.contentView.verticalSpacing = 0
             emptyView.contentInsets = .init(top: 4, left: 0, bottom: 16, right: 0)
             return emptyView
         case .loading, .loaded:
