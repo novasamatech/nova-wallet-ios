@@ -62,14 +62,14 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
         var lastPriceData: PriceData?
 
         for balance in balances {
-            guard let priceData = prices[balance.chainAssetId] else {
-                continue
-            }
+            let priceData = prices[balance.chainAssetId] ?? .zero()
+
             guard let assetPrecision = chains[balance.chainAssetId.chainId]?
                 .asset(for: balance.chainAssetId.assetId)?
                 .precision else {
                 continue
             }
+
             let rate = Decimal(string: priceData.price) ?? 0.0
 
             totalPrice += calculateAmount(
@@ -83,7 +83,7 @@ final class LocksBalanceViewModelFactory: LocksBalanceViewModelFactoryProtocol {
                 rate: rate
             )
             locksPrice += calculateAmount(
-                from: balance.frozenInPlank + balance.reservedInPlank,
+                from: balance.locked,
                 precision: assetPrecision,
                 rate: rate
             )
