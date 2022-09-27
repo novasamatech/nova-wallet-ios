@@ -121,7 +121,7 @@ final class AssetListPresenter: AssetListBasePresenter {
 
         return AssetListAssetAccountPrice(
             assetInfo: asset.displayInfo,
-            balance: assetBalance.frozenInPlank,
+            balance: assetBalance.locked,
             price: priceData
         )
     }
