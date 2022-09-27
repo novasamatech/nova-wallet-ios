@@ -11,6 +11,7 @@ struct AssetBalance: Equatable {
 
     var totalInPlank: BigUInt { freeInPlank + reservedInPlank }
     var transferable: BigUInt { freeInPlank > frozenInPlank ? freeInPlank - frozenInPlank : 0 }
+    var locked: BigUInt { frozenInPlank + reservedInPlank }
 }
 
 extension AssetBalance: Identifiable {
