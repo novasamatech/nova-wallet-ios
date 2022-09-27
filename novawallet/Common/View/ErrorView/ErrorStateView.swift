@@ -56,7 +56,7 @@ class ErrorStateView: UIView {
         stackView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.leading.top.greaterThanOrEqualToSuperview()
-            $0.trailing.bottom.greaterThanOrEqualToSuperview()
+            $0.trailing.bottom.lessThanOrEqualToSuperview()
         }
     }
 
