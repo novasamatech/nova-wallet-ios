@@ -258,7 +258,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
-        maybeCrowdloans: [ChainModel.Id: [CrowdloanContributionData]]?,
+        maybeCrowdloans _: [ChainModel.Id: [CrowdloanContributionData]]?,
         hidesZeroBalances: Bool
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
@@ -292,12 +292,7 @@ final class AssetListPresenter: AssetListBasePresenter {
         }
 
         let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
-            createAssetAccountInfo(
-                from: asset,
-                chain: chain,
-                maybePrices: maybePrices,
-                maybeCrowdloans: maybeCrowdloans
-            )
+            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
 
         return viewModelFactory.createGroupViewModel(
