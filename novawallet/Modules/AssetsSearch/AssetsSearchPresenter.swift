@@ -130,19 +130,14 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
-        maybeCrowdloans: [ChainModel.Id: [CrowdloanContributionData]]?
+        maybeCrowdloans _: [ChainModel.Id: [CrowdloanContributionData]]?
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
 
         let assets = groupLists[chain.chainId]?.allItems ?? []
 
         let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
-            createAssetAccountInfo(
-                from: asset,
-                chain: chain,
-                maybePrices: maybePrices,
-                maybeCrowdloans: maybeCrowdloans
-            )
+            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
 
         return viewModelFactory.createGroupViewModel(

@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import BigInt
 
 extension AssetListBasePresenter {
     func createGroupModel(
@@ -7,7 +8,7 @@ extension AssetListBasePresenter {
         assets: [AssetListAssetModel]
     ) -> AssetListGroupModel {
         let value: Decimal = assets.reduce(0) { result, asset in
-            result + (asset.assetValue ?? 0)
+            result + (asset.totalValue ?? 0)
         }
 
         return AssetListGroupModel(chain: chain, chainValue: value)
@@ -40,8 +41,8 @@ extension AssetListBasePresenter {
             let balance1 = (try? model1.balanceResult?.get()) ?? 0
             let balance2 = (try? model2.balanceResult?.get()) ?? 0
 
-            let assetValue1 = model1.assetValue ?? 0
-            let assetValue2 = model2.assetValue ?? 0
+            let assetValue1 = model1.totalValue ?? 0
+            let assetValue2 = model2.totalValue ?? 0
 
             if assetValue1 > 0, assetValue2 > 0 {
                 return assetValue1 > assetValue2
@@ -89,6 +90,31 @@ extension AssetListBasePresenter {
             }
         }()
 
+        let crowdloanContributionsResult: Result<BigUInt, Error>? = {
+            do {
+                let allContributions = try crowdloansResult?.get()
+
+                let contribution = allContributions?[chainModel.chainId]?.reduce(BigUInt(0)) { accum, contribution in
+                    accum + contribution.amount
+                }
+
+                return contribution.map { .success($0) }
+            } catch {
+                return .failure(error)
+            }
+        }()
+
+        let maybeCrowdloanContributions: Decimal? = {
+            if let contributions = try? crowdloanContributionsResult?.get() {
+                return Decimal.fromSubstrateAmount(
+                    contributions,
+                    precision: Int16(bitPattern: assetModel.precision)
+                )
+            } else {
+                return nil
+            }
+        }()
+
         let maybePrice: Decimal? = {
             if let mapping = try? priceResult?.get(), let priceData = mapping[chainAssetId] {
                 return Decimal(string: priceData.price)
@@ -97,19 +123,28 @@ extension AssetListBasePresenter {
             }
         }()
 
-        if let balance = maybeBalance, let price = maybePrice {
-            let assetValue = balance * price
-            return AssetListAssetModel(
-                assetModel: assetModel,
-                balanceResult: balanceResult,
-                assetValue: assetValue
-            )
-        } else {
-            return AssetListAssetModel(
-                assetModel: assetModel,
-                balanceResult: balanceResult,
-                assetValue: nil
-            )
-        }
+        let balanceValue: Decimal? = {
+            if let balance = maybeBalance, let price = maybePrice {
+                return balance * price
+            } else {
+                return nil
+            }
+        }()
+
+        let crowdloanContributionsValue: Decimal? = {
+            if let crowdloanContributions = maybeCrowdloanContributions, let price = maybePrice {
+                return crowdloanContributions * price
+            } else {
+                return nil
+            }
+        }()
+
+        return AssetListAssetModel(
+            assetModel: assetModel,
+            balanceResult: balanceResult,
+            balanceValue: balanceValue,
+            crowdloanResult: crowdloanContributionsResult,
+            crowdloanValue: crowdloanContributionsValue
+        )
     }
 }
