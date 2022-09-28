@@ -789,6 +789,7 @@
 		8446F5F6281916D300B7A86C /* StakingRewardsHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5F5281916D300B7A86C /* StakingRewardsHeaderCell.swift */; };
 		8446F5F82819235B00B7A86C /* AssetIconView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5F72819235B00B7A86C /* AssetIconView+Style.swift */; };
 		8446F5FA28192FF500B7A86C /* ListLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5F928192FF500B7A86C /* ListLoadingView.swift */; };
+		8448148128E46881007F64FF /* ConvictionVotingLocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448148028E46881007F64FF /* ConvictionVotingLocks.swift */; };
 		8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */; };
 		8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221B26B1850D007F4492 /* TitleIconViewModel.swift */; };
 		8448336727FAAF780077FB55 /* TransakProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448336627FAAF780077FB55 /* TransakProvider.swift */; };
@@ -3548,6 +3549,7 @@
 		8446F5F5281916D300B7A86C /* StakingRewardsHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsHeaderCell.swift; sourceTree = "<group>"; };
 		8446F5F72819235B00B7A86C /* AssetIconView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetIconView+Style.swift"; sourceTree = "<group>"; };
 		8446F5F928192FF500B7A86C /* ListLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListLoadingView.swift; sourceTree = "<group>"; };
+		8448148028E46881007F64FF /* ConvictionVotingLocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConvictionVotingLocks.swift; sourceTree = "<group>"; };
 		8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmViewLayout.swift; sourceTree = "<group>"; };
 		8448221B26B1850D007F4492 /* TitleIconViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleIconViewModel.swift; sourceTree = "<group>"; };
 		8448336627FAAF780077FB55 /* TransakProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakProvider.swift; sourceTree = "<group>"; };
@@ -8341,6 +8343,7 @@
 				848CC94528D9FC46009EB4B0 /* ConvictionVotingTally.swift */,
 				84532D5C28E41D8500EF4ADC /* ConvictionVoting+StoragePath.swift */,
 				84532D6028E4234700EF4ADC /* ConvictionVotingForKey.swift */,
+				8448148028E46881007F64FF /* ConvictionVotingLocks.swift */,
 			);
 			path = ConvictionVoting;
 			sourceTree = "<group>";
@@ -15452,6 +15455,7 @@
 				8487583327F06AF300495306 /* QRScannerViewLayout.swift in Sources */,
 				8448336727FAAF780077FB55 /* TransakProvider.swift in Sources */,
 				84CFF1E326526FBC00DB7CF7 /* StakingBondMoreProtocols.swift in Sources */,
+				8448148128E46881007F64FF /* ConvictionVotingLocks.swift in Sources */,
 				5FE687B860FC10AB08518A6E /* WalletHistoryFilterPresenter.swift in Sources */,
 				640A79BD1335394818E70366 /* WalletHistoryFilterViewController.swift in Sources */,
 				DD090C2ED91726FF7779F6C7 /* WalletHistoryFilterViewFactory.swift in Sources */,
