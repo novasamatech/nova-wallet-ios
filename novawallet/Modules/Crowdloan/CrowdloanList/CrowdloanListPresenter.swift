@@ -153,8 +153,7 @@ final class CrowdloanListPresenter {
             provideViewError(chainAsset: nil)
             return
         }
-        provideViewError(chainAsset: ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat))
-        return
+
         guard
             let crowdloansResult = crowdloansResult,
             let viewInfoResult = createViewInfoResult() else {
