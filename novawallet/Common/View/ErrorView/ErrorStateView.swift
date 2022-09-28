@@ -25,6 +25,8 @@ class ErrorStateView: UIView {
         return button
     }()
 
+    lazy var stackView = UIStackView(arrangedSubviews: [iconImageView, errorDescriptionLabel, retryButton])
+
     var locale = Locale.current {
         didSet {
             if locale != oldValue {
@@ -47,7 +49,6 @@ class ErrorStateView: UIView {
     }
 
     private func setupLayout() {
-        let stackView = UIStackView(arrangedSubviews: [iconImageView, errorDescriptionLabel, retryButton])
         stackView.axis = .vertical
         stackView.spacing = 16
         stackView.alignment = .center

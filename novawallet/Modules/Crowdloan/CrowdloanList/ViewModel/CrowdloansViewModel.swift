@@ -5,8 +5,6 @@ import CommonWallet
 enum CrowdloanListState {
     case loading
     case loaded(viewModel: CrowdloansViewModel)
-    case error(message: String)
-    case empty
 }
 
 struct CrowdloansViewModel {
@@ -18,6 +16,8 @@ enum CrowdloansSection {
     case about(AboutCrowdloansView.Model)
     case active(String, [CrowdloanCellViewModel])
     case completed(String, [CrowdloanCellViewModel])
+    case error(message: String)
+    case empty(title: String)
 }
 
 enum CrowdloanDescViewModel {

@@ -1,14 +1,16 @@
 import UIKit
 
 final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .h3Title
-        return label
-    }()
+    let titleLabel: UILabel = .create {
+        $0.textColor = R.color.colorWhite()
+        $0.font = .h3Title
+    }
 
-    private let countView = CountView()
+    let countView: BorderedLabelView = .create {
+        $0.titleLabel.textColor = R.color.colorWhite80()
+        $0.titleLabel.font = .p2Paragraph
+        $0.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
+    }
 
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
@@ -27,7 +29,7 @@ final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(24)
             make.leading.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview().inset(8)
+            make.bottom.equalToSuperview().inset(16)
         }
 
         contentView.addSubview(countView)
@@ -40,38 +42,6 @@ final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
 
     func bind(title: String, count: Int) {
         titleLabel.text = title
-        countView.countLabel.text = count.description
-    }
-}
-
-private final class CountView: UIView {
-    let countLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .p3Paragraph
-        return label
-    }()
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        layer.cornerRadius = bounds.height / 2.0
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        backgroundColor = R.color.colorWhite()?.withAlphaComponent(0.24)
-
-        addSubview(countLabel)
-        countLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(8)
-            make.bottom.top.equalToSuperview().inset(2)
-        }
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        countView.titleLabel.text = count.description
     }
 }

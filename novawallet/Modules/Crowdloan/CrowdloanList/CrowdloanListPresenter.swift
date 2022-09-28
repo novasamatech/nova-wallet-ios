@@ -46,12 +46,6 @@ final class CrowdloanListPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func provideViewErrorState() {
-        let message = R.string.localizable
-            .commonErrorNoDataRetrieved(preferredLanguages: selectedLocale.rLanguages)
-        view?.didReceive(listState: .error(message: message))
-    }
-
     private func updateWalletSwitchView() {
         guard let wallet = wallet else {
             return
@@ -73,7 +67,7 @@ final class CrowdloanListPresenter {
         guard
             case let .success(chain) = chainResult,
             let asset = chain.utilityAssets().first else {
-            provideViewErrorState()
+            provideViewError(chainAsset: nil)
             return
         }
 
@@ -156,27 +150,22 @@ final class CrowdloanListPresenter {
         }
 
         guard case let .success(chain) = chainResult, let asset = chain.utilityAssets().first else {
-            provideViewErrorState()
+            provideViewError(chainAsset: nil)
             return
         }
-
+        provideViewError(chainAsset: ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat))
+        return
         guard
             let crowdloansResult = crowdloansResult,
             let viewInfoResult = createViewInfoResult() else {
             return
         }
 
+        let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
         do {
             let crowdloans = try crowdloansResult.get()
             let priceData = try? priceDataResult?.get() ?? nil
-
-            guard !crowdloans.isEmpty else {
-                view?.didReceive(listState: .empty)
-                return
-            }
-
             let viewInfo = try viewInfoResult.get()
-            let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
             let externalContributionsCount = externalContributions?.count ?? 0
 
             let amount: Decimal?
@@ -202,7 +191,7 @@ final class CrowdloanListPresenter {
 
             view?.didReceive(listState: .loaded(viewModel: viewModel))
         } catch {
-            provideViewErrorState()
+            provideViewError(chainAsset: chainAsset)
         }
     }
 
@@ -220,6 +209,14 @@ final class CrowdloanListPresenter {
             crowdloan: selectedCrowdloan,
             displayInfo: displayInfo
         )
+    }
+
+    private func provideViewError(chainAsset: ChainAssetDisplayInfo?) {
+        let viewModel = viewModelFactory.createErrorViewModel(
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
+        view?.didReceive(listState: .loaded(viewModel: viewModel))
     }
 }
 
