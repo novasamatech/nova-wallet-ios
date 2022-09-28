@@ -13,6 +13,11 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem>
     func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem>
 
+    func createAssetLocksRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock>
+
     func createChainAddressTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id
@@ -35,6 +40,17 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createPhishingSitesRepositoryWithPredicate(
         _ filter: NSPredicate
     ) -> AnyDataProviderRepository<PhishingSite>
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        source: String?
+    ) -> AnyDataProviderRepository<CrowdloanContributionData>
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<CrowdloanContributionData>
 }
 
 final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
@@ -179,6 +195,61 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createAssetLocksRepository(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) -> AnyDataProviderRepository<AssetLock> {
+        createAssetLocksRepository(.assetLock(for: accountId, chainAssetId: chainAssetId))
+    }
+
+    private func createAssetLocksRepository(_ filter: NSPredicate) -> AnyDataProviderRepository<AssetLock> {
+        let mapper = AssetLockMapper()
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        source: String?
+    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+        let filter = NSPredicate.crowdloanContribution(
+            for: chainId,
+            accountId: accountId,
+            source: source
+        )
+
+        return createCrowdloanContributionRepository(for: filter)
+    }
+
+    func createCrowdloanContributionRepository(
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+        let filter = NSPredicate.crowdloanContribution(
+            for: chainId,
+            accountId: accountId
+        )
+
+        return createCrowdloanContributionRepository(for: filter)
+    }
+
+    private func createCrowdloanContributionRepository(
+        for filter: NSPredicate
+    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+        let mapper = CrowdloanContributionDataMapper()
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
         return AnyDataProviderRepository(repository)
     }
 }

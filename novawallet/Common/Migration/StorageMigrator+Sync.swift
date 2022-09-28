@@ -8,6 +8,18 @@ extension UserStorageMigrator: Migrating {
 
         performMigration()
 
-        Logger.shared.info("Db migration completed")
+        Logger.shared.info("User storage migration was completed")
+    }
+}
+
+extension SubstrateStorageMigrator: Migrating {
+    func migrate() throws {
+        guard requiresMigration() else {
+            return
+        }
+
+        performMigration()
+
+        Logger.shared.info("Substrate storage migration was completed")
     }
 }

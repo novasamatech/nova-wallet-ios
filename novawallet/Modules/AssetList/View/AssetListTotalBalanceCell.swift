@@ -3,7 +3,7 @@ import SoraUI
 
 final class AssetListTotalBalanceCell: UICollectionViewCell {
     private enum Constants {
-        static let bottomInset: CGFloat = 16.0
+        static let bottomInset: CGFloat = 20.0
     }
 
     let backgroundBlurView: TriangularedBlurView = {
@@ -20,9 +20,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         view.detailsLabel.textColor = R.color.colorTransparentText()
         view.detailsLabel.font = .regularSubheadline
 
-        view.imageView.image = R.image.iconInfoFilled()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorWhite48()!)
+        view.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+
         view.iconWidth = 16.0
         view.spacing = 4.0
 
@@ -36,6 +35,16 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         view.textAlignment = .center
         return view
     }()
+
+    let locksView: BorderedIconLabelView = .create {
+        let color = R.color.colorWhite64()!
+        $0.iconDetailsView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
+        $0.iconDetailsView.detailsLabel.font = .regularFootnote
+        $0.iconDetailsView.detailsLabel.textColor = color
+        $0.iconDetailsView.spacing = 4.0
+        $0.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        $0.isHidden = true
+    }
 
     private var skeletonView: SkrullableView?
 
@@ -72,12 +81,31 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         case let .loaded(value), let .cached(value):
             amountLabel.text = value
 
+            if let lockedAmount = viewModel.locksAmount {
+                setupStateWithLocks(amount: lockedAmount)
+            } else {
+                setupStateWithoutLocks()
+            }
+
             stopLoadingIfNeeded()
         case .loading:
             amountLabel.text = ""
-
+            setupStateWithoutLocks()
             startLoadingIfNeeded()
         }
+    }
+
+    private func setupStateWithLocks(amount: String) {
+        locksView.isHidden = false
+        titleView.hidesIcon = false
+
+        locksView.iconDetailsView.detailsLabel.text = amount
+    }
+
+    private func setupStateWithoutLocks() {
+        locksView.iconDetailsView.detailsLabel.text = nil
+        locksView.isHidden = true
+        titleView.hidesIcon = true
     }
 
     private func setupLocalization() {
@@ -96,11 +124,20 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         contentView.addSubview(titleView)
         titleView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(backgroundBlurView.snp.top).offset(16.0)
+            make.top.equalTo(backgroundBlurView.snp.top).offset(20.0)
         }
 
-        contentView.addSubview(amountLabel)
-        amountLabel.snp.makeConstraints { make in
+        let amountView = UIStackView(arrangedSubviews: [
+            amountLabel,
+            locksView
+        ])
+        amountView.spacing = 8.0
+        amountView.axis = .vertical
+        amountView.alignment = .center
+
+        contentView.addSubview(amountView)
+        amountView.snp.makeConstraints { make in
+            make.top.greaterThanOrEqualTo(titleView.snp.bottom).offset(3)
             make.leading.equalTo(backgroundBlurView).offset(8.0)
             make.trailing.equalTo(backgroundBlurView).offset(-8.0)
             make.bottom.equalToSuperview().inset(Constants.bottomInset)

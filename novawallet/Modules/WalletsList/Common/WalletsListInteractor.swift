@@ -8,10 +8,12 @@ class WalletsListInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
 
     private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private(set) var assetsSubscription: StreamableProvider<AssetBalance>?
     private(set) var walletsSubscription: StreamableProvider<ManagedMetaAccountModel>?
+    private(set) var crowdloansSubscription: StreamableProvider<CrowdloanContributionData>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
 
     init(
@@ -19,12 +21,14 @@ class WalletsListInteractor {
         walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        currencyManager: CurrencyManagerProtocol
+        currencyManager: CurrencyManagerProtocol,
+        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
         self.currencyManager = currencyManager
     }
 
@@ -34,6 +38,10 @@ class WalletsListInteractor {
 
     private func subscribeAssets() {
         assetsSubscription = subscribeAllBalancesProvider()
+    }
+
+    private func subscribeToCrowdloans() {
+        crowdloansSubscription = subscribeToAllCrowdloansProvider()
     }
 
     private func subscribeChains() {
@@ -132,6 +140,7 @@ extension WalletsListInteractor: WalletsListInteractorInputProtocol {
         subscribeChains()
         subscribeAssets()
         subscribeWallets()
+        subscribeToCrowdloans()
     }
 }
 
@@ -164,5 +173,16 @@ extension WalletsListInteractor: SelectedCurrencyDepending {
         }
 
         updatePriceProvider(for: Set(availableTokenPrice.values), currency: selectedCurrency)
+    }
+}
+
+extension WalletsListInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
+    func handleAllCrowdloans(result: Result<[DataProviderChange<CrowdloanContributionData>], Error>) {
+        switch result {
+        case let .success(changes):
+            basePresenter?.didReceiveCrowdloanContributionChanges(changes)
+        case let .failure(error):
+            basePresenter?.didReceiveError(error)
+        }
     }
 }

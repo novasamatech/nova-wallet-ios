@@ -8,6 +8,7 @@ protocol AssetListBaseInteractorInputProtocol: AnyObject {
 
 protocol AssetListBaseInteractorOutputProtocol: AnyObject {
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>])
-    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])
+    func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>])
+    func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>)
     func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)
 }
