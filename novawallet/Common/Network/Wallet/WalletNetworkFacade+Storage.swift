@@ -2,6 +2,7 @@ import Foundation
 import CommonWallet
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 extension WalletNetworkFacade {
     func fetchBalanceInfoForAsset(
@@ -36,21 +37,30 @@ extension WalletNetworkFacade {
                 options: RepositoryFetchOptions()
             )
 
-            let balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?> =
-                createBalanceLocksFetchOperation(
-                    for: selectedAccount.accountId,
-                    asset: remoteAsset,
-                    chainId: chain.chainId,
-                    chainFormat: chain.chainFormat
-                )
+            let locksRepository = repositoryFactory.createAssetLocksRepository(
+                for: selectedAccount.accountId,
+                chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: remoteAsset.assetId)
+            )
+
+            let contributionsRepository = repositoryFactory.createCrowdloanContributionRepository(
+                accountId: selectedAccount.accountId,
+                chainId: chain.chainId
+            )
+
+            let balanceLocksOperation = locksRepository.fetchAllOperation(with: RepositoryFetchOptions())
+
+            let crowdloanContributionsOperation = contributionsRepository.fetchAllOperation(
+                with: RepositoryFetchOptions()
+            )
 
             let mappingOperation = createBalanceMappingOperation(
                 asset: asset,
                 dependingOn: balanceOperation,
-                balanceLocksWrapper: balanceLocksWrapper
+                balanceLocksOperation: balanceLocksOperation,
+                crowdloanContributionsOperation: crowdloanContributionsOperation
             )
 
-            let storageOperations = [balanceOperation] + balanceLocksWrapper.allOperations
+            let storageOperations = [balanceOperation, balanceLocksOperation, crowdloanContributionsOperation]
 
             storageOperations.forEach { storageOperation in
                 storageOperation.addDependency(codingFactoryOperation)
@@ -82,7 +92,8 @@ extension WalletNetworkFacade {
     private func createBalanceMappingOperation(
         asset: WalletAsset,
         dependingOn balanceOperation: BaseOperation<AssetBalance?>,
-        balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?>
+        balanceLocksOperation: BaseOperation<[AssetLock]>,
+        crowdloanContributionsOperation: BaseOperation<[CrowdloanContributionData]>
     ) -> BaseOperation<BalanceData> {
         ClosureOperation<BalanceData> {
             let maybeAssetBalance = try balanceOperation.extractNoCancellableResultData()
@@ -90,10 +101,17 @@ extension WalletNetworkFacade {
 
             if let assetBalance = maybeAssetBalance {
                 context = context.byChangingAssetBalance(assetBalance, precision: asset.precision)
+            }
 
-                if let balanceLocks = try? balanceLocksWrapper.targetOperation.extractNoCancellableResultData() {
-                    context = context.byChangingBalanceLocks(balanceLocks)
-                }
+            let balanceLocks = try balanceLocksOperation.extractNoCancellableResultData()
+            context = context.byChangingBalanceLocks(balanceLocks)
+
+            let contributions = try crowdloanContributionsOperation.extractNoCancellableResultData()
+
+            let contributionsInPlank = contributions.reduce(BigUInt(0)) { $0 + $1.amount }
+
+            if let contributionsDecimal = Decimal.fromSubstrateAmount(contributionsInPlank, precision: asset.precision) {
+                context = context.byChangingCrowdloans(contributionsDecimal)
             }
 
             let balance = BalanceData(

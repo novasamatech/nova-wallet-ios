@@ -15,6 +15,7 @@ enum ValueDirection<T> {
 struct AssetListHeaderViewModel {
     let title: String
     let amount: LoadableViewModelState<String>
+    let locksAmount: String?
     let walletSwitch: WalletSwitchViewModel
 }
 

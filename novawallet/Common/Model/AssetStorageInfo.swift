@@ -6,10 +6,18 @@ enum AssetStorageInfoError: Error {
     case unexpectedTypeExtras
 }
 
+struct OrmlTokenStorageInfo {
+    let currencyId: JSON
+    let currencyData: Data
+    let module: String
+    let existentialDeposit: BigUInt
+    let canTransferAll: Bool
+}
+
 enum AssetStorageInfo {
-    case native
+    case native(canTransferAll: Bool)
     case statemine(extras: StatemineAssetExtras)
-    case orml(currencyId: JSON, currencyData: Data, module: String, existentialDeposit: BigUInt)
+    case orml(info: OrmlTokenStorageInfo)
 }
 
 extension AssetStorageInfo {
@@ -25,31 +33,9 @@ extension AssetStorageInfo {
                 throw AssetStorageInfoError.unexpectedTypeExtras
             }
 
-            let rawCurrencyId = try Data(hexString: extras.currencyIdScale)
+            let info = try createOrmlStorageInfo(from: extras, codingFactory: codingFactory)
 
-            let decoder = try codingFactory.createDecoder(from: rawCurrencyId)
-            let currencyId = try decoder.read(type: extras.currencyIdType)
-
-            let moduleName: String
-
-            let tokensTransfer = CallCodingPath.tokensTransfer
-            if codingFactory.metadata.getCall(
-                from: tokensTransfer.moduleName,
-                with: tokensTransfer.callName
-            ) != nil {
-                moduleName = tokensTransfer.moduleName
-            } else {
-                moduleName = CallCodingPath.currenciesTransfer.moduleName
-            }
-
-            let existentialDeposit = BigUInt(extras.existentialDeposit) ?? 0
-
-            return .orml(
-                currencyId: currencyId,
-                currencyData: rawCurrencyId,
-                module: moduleName,
-                existentialDeposit: existentialDeposit
-            )
+            return .orml(info: info)
         case .statemine:
             guard let extras = try asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
                 throw AssetStorageInfoError.unexpectedTypeExtras
@@ -57,7 +43,53 @@ extension AssetStorageInfo {
 
             return .statemine(extras: extras)
         case .none:
-            return .native
+            let call = CallCodingPath.transferAll
+            let canTransferAll = codingFactory.metadata.getCall(
+                from: call.moduleName,
+                with: call.callName
+            ) != nil
+            return .native(canTransferAll: canTransferAll)
         }
+    }
+
+    private static func createOrmlStorageInfo(
+        from extras: OrmlTokenExtras,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> OrmlTokenStorageInfo {
+        let rawCurrencyId = try Data(hexString: extras.currencyIdScale)
+
+        let decoder = try codingFactory.createDecoder(from: rawCurrencyId)
+        let currencyId = try decoder.read(type: extras.currencyIdType)
+
+        let moduleName: String
+
+        let tokensTransfer = CallCodingPath.tokensTransfer
+        let transferAllPath: CallCodingPath
+
+        if codingFactory.metadata.getCall(
+            from: tokensTransfer.moduleName,
+            with: tokensTransfer.callName
+        ) != nil {
+            moduleName = tokensTransfer.moduleName
+            transferAllPath = CallCodingPath.tokensTransferAll
+        } else {
+            moduleName = CallCodingPath.currenciesTransfer.moduleName
+            transferAllPath = CallCodingPath.currenciesTransferAll
+        }
+
+        let existentialDeposit = BigUInt(extras.existentialDeposit) ?? 0
+
+        let canTransferAll = codingFactory.metadata.getCall(
+            from: transferAllPath.moduleName,
+            with: transferAllPath.callName
+        ) != nil
+
+        return OrmlTokenStorageInfo(
+            currencyId: currencyId,
+            currencyData: rawCurrencyId,
+            module: moduleName,
+            existentialDeposit: existentialDeposit,
+            canTransferAll: canTransferAll
+        )
     }
 }

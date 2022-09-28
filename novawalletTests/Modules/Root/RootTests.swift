@@ -128,7 +128,7 @@ class RootTests: XCTestCase {
         let interactor = RootInteractor(settings: settings,
                                         keystore: keystore,
                                         applicationConfig: ApplicationConfig.shared,
-                                        chainRegistry: chainRegistry,
+                                        chainRegistryClosure: { chainRegistry },
                                         eventCenter: MockEventCenterProtocol(),
                                         migrators: migrators)
         let presenter = RootPresenter()

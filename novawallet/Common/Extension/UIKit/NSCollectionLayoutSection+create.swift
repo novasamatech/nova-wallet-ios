@@ -3,6 +3,7 @@ import UIKit
 extension NSCollectionLayoutSection {
     struct Settings {
         let estimatedRowHeight: CGFloat
+        let absoluteHeaderHeight: CGFloat?
         let estimatedHeaderHeight: CGFloat
         let sectionContentInsets: NSDirectionalEdgeInsets
         let sectionInterGroupSpacing: CGFloat
@@ -28,7 +29,10 @@ extension NSCollectionLayoutSection {
 
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(settings.estimatedHeaderHeight)
+            heightDimension:
+            settings.absoluteHeaderHeight.map {
+                .absolute($0)
+            } ?? .estimated(settings.estimatedHeaderHeight)
         )
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = settings.sectionContentInsets

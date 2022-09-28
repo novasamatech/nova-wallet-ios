@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SoraUI
 
 final class AssetListWireframe: AssetListWireframeProtocol {
     let walletUpdater: WalletDetailsUpdating
@@ -21,7 +22,8 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
         try? context.createAssetDetails(for: assetId, in: navigationController)
 
-        walletUpdater.context = context
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+        walletUpdater.setup(context: context, chainAsset: chainAsset)
     }
 
     func showAssetsManage(from view: AssetListViewProtocol?) {
@@ -58,5 +60,31 @@ final class AssetListWireframe: AssetListWireframeProtocol {
 
         nftListView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
+    }
+
+    func showBalanceBreakdown(
+        from view: AssetListViewProtocol?,
+        prices: [ChainAssetId: PriceData],
+        balances: [AssetBalance],
+        chains: [ChainModel.Id: ChainModel],
+        locks: [AssetLock],
+        crowdloans: [ChainModel.Id: [CrowdloanContributionData]]
+    ) {
+        guard let viewController = LocksViewFactory.createView(input:
+            .init(
+                prices: prices,
+                balances: balances,
+                chains: chains,
+                locks: locks,
+                crowdloans: crowdloans
+            )) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        viewController.controller.modalTransitioningFactory = factory
+        viewController.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(viewController.controller, animated: true)
     }
 }

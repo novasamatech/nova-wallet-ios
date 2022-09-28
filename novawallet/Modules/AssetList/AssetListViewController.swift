@@ -93,7 +93,8 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
-        return CGSize(width: collectionView.frame.width, height: cellType.height)
+        let cellHeight = rootView.collectionViewLayout.cellHeight(for: cellType)
+        return CGSize(width: collectionView.bounds.width, height: cellHeight)
     }
 
     func collectionView(
@@ -119,7 +120,7 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(indexPath: indexPath)
 
         switch cellType {
-        case .account, .totalBalance, .settings, .emptyState:
+        case .account, .settings, .emptyState:
             break
         case .asset:
             if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
@@ -130,6 +131,8 @@ extension AssetListViewController: UICollectionViewDelegateFlowLayout {
             }
         case .yourNfts:
             presenter.selectNfts()
+        case .totalBalance:
+            presenter.didTapTotalBalance()
         }
     }
 
@@ -348,6 +351,11 @@ extension AssetListViewController: AssetListViewProtocol {
         headerViewModel = viewModel
 
         rootView.collectionView.reloadData()
+
+        let cellHeight = viewModel.locksAmount == nil ?
+            AssetListMeasurement.totalBalanceHeight : AssetListMeasurement.totalBalanceWithLocksHeight
+
+        rootView.collectionViewLayout.updateTotalBalanceHeight(cellHeight)
     }
 
     func didReceiveGroups(state: AssetListGroupState) {
