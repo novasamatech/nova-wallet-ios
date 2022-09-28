@@ -20,6 +20,7 @@ final class AssetListPresenter: AssetListBasePresenter {
     private var name: String?
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
+    private(set) var locksResult: Result<[AssetLock], Error>?
 
     private var scheduler: SchedulerProtocol?
 
@@ -54,6 +55,7 @@ final class AssetListPresenter: AssetListBasePresenter {
                 walletIdenticon: walletIdenticon,
                 walletType: walletType,
                 prices: nil,
+                locks: nil,
                 locale: selectedLocale
             )
 
@@ -69,79 +71,154 @@ final class AssetListPresenter: AssetListBasePresenter {
         )
     }
 
+    typealias SuccessAssetListAssetAccountPrice = AssetListAssetAccountPrice
+    typealias FailedAssetListAssetAccountPrice = AssetListAssetAccountPrice
+    private func createAssetAccountPrice(
+        chainAssetId: ChainAssetId,
+        priceData: PriceData
+    ) -> Either<SuccessAssetListAssetAccountPrice, FailedAssetListAssetAccountPrice>? {
+        let chainId = chainAssetId.chainId
+        let assetId = chainAssetId.assetId
+
+        guard let chain = allChains[chainId],
+              let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
+            return nil
+        }
+
+        guard case let .success(assetBalance) = balances[chainAssetId] else {
+            return .right(
+                AssetListAssetAccountPrice(
+                    assetInfo: asset.displayInfo,
+                    balance: 0,
+                    price: priceData
+                )
+            )
+        }
+
+        return .left(
+            AssetListAssetAccountPrice(
+                assetInfo: asset.displayInfo,
+                balance: assetBalance.totalInPlank,
+                price: priceData
+            ))
+    }
+
+    private func createAssetAccountPriceLock(
+        chainAssetId: ChainAssetId,
+        priceData: PriceData
+    ) -> AssetListAssetAccountPrice? {
+        let chainId = chainAssetId.chainId
+        let assetId = chainAssetId.assetId
+
+        guard let chain = allChains[chainId],
+              let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
+            return nil
+        }
+
+        guard case let .success(assetBalance) = balances[chainAssetId], assetBalance.locked > 0 else {
+            return nil
+        }
+
+        return AssetListAssetAccountPrice(
+            assetInfo: asset.displayInfo,
+            balance: assetBalance.locked,
+            price: priceData
+        )
+    }
+
     private func provideHeaderViewModel(
         with priceMapping: [ChainAssetId: PriceData],
         walletIdenticon: Data?,
         walletType: MetaAccountModelType,
         name: String
     ) {
-        let priceState: LoadableViewModelState<[AssetListAssetAccountPrice]> = priceMapping.reduce(
-            LoadableViewModelState.loaded(value: [])
-        ) { result, keyValue in
-            let chainAssetId = keyValue.key
-            let chainId = chainAssetId.chainId
-            let assetId = chainAssetId.assetId
-            switch result {
-            case .loading:
-                return .loading
-            case let .cached(items):
-                guard
-                    let chain = allChains[chainId],
-                    let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
-                    return .cached(value: items)
-                }
-
-                let totalBalance: BigUInt
-
-                if case let .success(assetBalance) = balanceResults[chainAssetId] {
-                    totalBalance = assetBalance
-                } else {
-                    totalBalance = 0
-                }
-
-                let newItem = AssetListAssetAccountPrice(
-                    assetInfo: asset.displayInfo,
-                    balance: totalBalance,
-                    price: keyValue.value
-                )
-
-                return .cached(value: items + [newItem])
-            case let .loaded(items):
-                guard
-                    let chain = allChains[chainId],
-                    let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
-                    return .cached(value: items)
-                }
-
-                if case let .success(assetBalance) = balanceResults[chainAssetId] {
-                    let newItem = AssetListAssetAccountPrice(
-                        assetInfo: asset.displayInfo,
-                        balance: assetBalance,
-                        price: keyValue.value
-                    )
-
-                    return .loaded(value: items + [newItem])
-                } else {
-                    let newItem = AssetListAssetAccountPrice(
-                        assetInfo: asset.displayInfo,
-                        balance: 0,
-                        price: keyValue.value
-                    )
-
-                    return .cached(value: items + [newItem])
-                }
-            }
-        }
+        let crowdloans = crowdloansModel(prices: priceMapping)
+        let totalValue = createHeaderPriceState(from: priceMapping, crowdloans: crowdloans)
+        let totalLocks = createHeaderLockState(from: priceMapping, crowdloans: crowdloans)
 
         let viewModel = viewModelFactory.createHeaderViewModel(
             from: name,
             walletIdenticon: walletIdenticon,
             walletType: walletType,
-            prices: priceState,
+            prices: totalValue,
+            locks: totalLocks,
             locale: selectedLocale
         )
 
         view?.didReceiveHeader(viewModel: viewModel)
+    }
+
+    private func createHeaderPriceState(
+        from priceMapping: [ChainAssetId: PriceData],
+        crowdloans: [AssetListAssetAccountPrice]
+    ) -> LoadableViewModelState<[AssetListAssetAccountPrice]> {
+        var priceState: LoadableViewModelState<[AssetListAssetAccountPrice]> = .loaded(value: [])
+
+        for (chainAssetId, priceData) in priceMapping {
+            switch priceState {
+            case .loading:
+                priceState = .loading
+            case let .cached(items):
+                guard let newItem = createAssetAccountPrice(
+                    chainAssetId: chainAssetId,
+                    priceData: priceData
+                ) else {
+                    priceState = .cached(value: items)
+                    continue
+                }
+                priceState = .cached(value: items + [newItem.value])
+            case let .loaded(items):
+                guard let newItem = createAssetAccountPrice(
+                    chainAssetId: chainAssetId,
+                    priceData: priceData
+                ) else {
+                    priceState = .cached(value: items)
+                    continue
+                }
+
+                switch newItem {
+                case let .left(item):
+                    priceState = .loaded(value: items + [item])
+                case let .right(item):
+                    priceState = .cached(value: items + [item])
+                }
+            }
+        }
+
+        return priceState + crowdloans
+    }
+
+    private func createHeaderLockState(
+        from priceMapping: [ChainAssetId: PriceData],
+        crowdloans: [AssetListAssetAccountPrice]
+    ) -> [AssetListAssetAccountPrice]? {
+        guard checkNonZeroLocks() else {
+            return nil
+        }
+
+        let locks: [AssetListAssetAccountPrice] = priceMapping.reduce(into: []) { accum, keyValue in
+            if let lock = createAssetAccountPriceLock(chainAssetId: keyValue.key, priceData: keyValue.value) {
+                accum.append(lock)
+            }
+        }
+
+        return locks + crowdloans
+    }
+
+    private func checkNonZeroLocks() -> Bool {
+        let locks = balances.map { (try? $0.value.get())?.locked ?? 0 }
+
+        if locks.contains(where: { $0 > 0 }) {
+            return true
+        }
+
+        let crowdloanContributions = (try? crowdloansResult?.get()) ?? [:]
+
+        if crowdloanContributions.contains(where: { $0.value.contains(where: { $0.amount > 0 }) }) {
+            return true
+        }
+
+        return false
     }
 
     private func calculateNftBalance(for chainAsset: ChainAsset) -> BigUInt {
@@ -166,10 +243,12 @@ final class AssetListPresenter: AssetListBasePresenter {
         }
 
         let maybePrices = try? priceResult?.get()
+        let maybeCrowdloans = try? crowdloansResult?.get()
         let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
             createGroupViewModel(
                 from: groupModel,
                 maybePrices: maybePrices,
+                maybeCrowdloans: maybeCrowdloans,
                 hidesZeroBalances: hidesZeroBalances
             )
         }
@@ -181,9 +260,40 @@ final class AssetListPresenter: AssetListBasePresenter {
         }
     }
 
+    private func crowdloansModel(prices: [ChainAssetId: PriceData]) -> [AssetListAssetAccountPrice] {
+        switch crowdloansResult {
+        case .failure, .none:
+            return []
+        case let .success(crowdloans):
+            return crowdloans.compactMap { chainId, chainCrowdloans in
+                guard let chain = allChains[chainId] else {
+                    return nil
+                }
+                guard let asset = chain.utilityAsset() else {
+                    return nil
+                }
+                let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
+                let price = prices[chainAssetId] ?? .zero()
+
+                let contributedAmount = chainCrowdloans.reduce(0) { $0 + $1.amount }
+
+                guard contributedAmount > 0 else {
+                    return nil
+                }
+
+                return AssetListAssetAccountPrice(
+                    assetInfo: asset.displayInfo,
+                    balance: contributedAmount,
+                    price: price
+                )
+            }
+        }
+    }
+
     private func createGroupViewModel(
         from groupModel: AssetListGroupModel,
         maybePrices: [ChainAssetId: PriceData]?,
+        maybeCrowdloans _: [ChainModel.Id: [CrowdloanContributionData]]?,
         hidesZeroBalances: Bool
     ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
@@ -280,6 +390,11 @@ final class AssetListPresenter: AssetListBasePresenter {
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 
+    override func resetStorages() {
+        super.resetStorages()
+        locksResult = nil
+    }
+
     // MARK: Interactor Output overridings
 
     override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
@@ -296,8 +411,14 @@ final class AssetListPresenter: AssetListBasePresenter {
         updateAssetsView()
     }
 
-    override func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         super.didReceiveBalance(results: results)
+
+        updateAssetsView()
+    }
+
+    override func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
+        super.didReceiveCrowdloans(result: result)
 
         updateAssetsView()
     }
@@ -336,6 +457,26 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         )
 
         wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
+    }
+
+    func didTapTotalBalance() {
+        guard
+            checkNonZeroLocks(),
+            let priceResult = priceResult,
+            let prices = try? priceResult.get(),
+            let locks = try? locksResult?.get(),
+            let crowdloans = try? crowdloansResult?.get() else {
+            return
+        }
+
+        wireframe.showBalanceBreakdown(
+            from: view,
+            prices: prices,
+            balances: balances.values.compactMap { try? $0.get() },
+            chains: allChains,
+            locks: locks,
+            crowdloans: crowdloans
+        )
     }
 }
 
@@ -381,6 +522,12 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         self.hidesZeroBalances = hidesZeroBalances
 
         updateAssetsView()
+    }
+
+    func didReceiveLocks(result: Result<[AssetLock], Error>) {
+        locksResult = result
+
+        updateHeaderView()
     }
 }
 

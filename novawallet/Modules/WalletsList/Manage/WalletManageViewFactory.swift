@@ -61,6 +61,7 @@ final class WalletManageViewFactory {
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
+            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
