@@ -208,10 +208,10 @@ extension YourContributionsView {
         let secondRowSize = CGSize(width: 120, height: 22)
         let thirdRowSize = CGSize(width: 70, height: 12)
 
-        let firstOffsetY = Constants.topInset + titleLabel.font.lineHeight / 2 - firstRowSize.height / 2
-        let space = (spaceSize.height - firstRowSize.height - secondRowSize.height - thirdRowSize.height - Constants.topInset - Constants.bottomInset) / 2
-        let secondOffsetY = firstOffsetY + firstRowSize.height / 2 + space + 1
-        let thirdOffsetY = secondOffsetY + secondRowSize.height / 2 + space - 1
+        let firstOffsetY = Constants.topInset
+        let space = (spaceSize.height - firstRowSize.height - secondRowSize.height - thirdRowSize.height - Constants.topInset - Constants.bottomInset - thirdRowSize.height / 2) / 2
+        let secondOffsetY = firstOffsetY + firstRowSize.height + space - 2
+        let thirdOffsetY = secondOffsetY + secondRowSize.height + space + 2
 
         let firstOffset = CGPoint(
             x: spaceSize.width / 2.0 - firstRowSize.width / 2.0,
