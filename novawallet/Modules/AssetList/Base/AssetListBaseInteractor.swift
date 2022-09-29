@@ -237,7 +237,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         clearCrowdloansSubscription()
         crowdloanChainIds = newCrowdloanChainIds
 
-        for chain in crowdloanChains {
+        crowdloanChains.forEach { chain in
             let request = chain.accountRequest()
 
             guard let accountId = selectedMetaAccount.fetch(for: request)?.accountId else {

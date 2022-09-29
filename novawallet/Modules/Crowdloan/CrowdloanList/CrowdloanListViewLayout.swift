@@ -17,8 +17,6 @@ final class CrowdloanListViewLayout: UIView {
         return view
     }()
 
-    let statusView = UIView()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -50,13 +48,6 @@ final class CrowdloanListViewLayout: UIView {
     private func setup() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
-        addSubview(statusView)
-        statusView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide)
-            make.top.equalTo(safeAreaLayoutGuide).inset(253)
-        }
 
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
