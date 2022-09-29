@@ -972,6 +972,7 @@
 		8467FD5824EFD5C2005D486C /* CDAccountItem+CoreDataDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5724EFD5C2005D486C /* CDAccountItem+CoreDataDecodable.swift */; };
 		8467FD5C24EFDCC9005D486C /* UserDataStorageTestFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5B24EFDCC9005D486C /* UserDataStorageTestFacade.swift */; };
 		846802A3265DA5530034F9B5 /* CrowdloanContributionSetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846802A2265DA5530034F9B5 /* CrowdloanContributionSetupViewModel.swift */; };
+		8468119428E6234B00BF54F1 /* RoundedSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8468119328E6234B00BF54F1 /* RoundedSegmentedControl.swift */; };
 		8468B86524F59D1D00B76BC6 /* IconTitleHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8468B86424F59D1D00B76BC6 /* IconTitleHeaderView.swift */; };
 		8468B86A24F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8468B86924F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift */; };
 		8468B86C24F63CEF00B76BC6 /* AddAccount+AccountConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8468B86B24F63CEF00B76BC6 /* AddAccount+AccountConfirmInteractor.swift */; };
@@ -3734,6 +3735,7 @@
 		8467FD5724EFD5C2005D486C /* CDAccountItem+CoreDataDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDAccountItem+CoreDataDecodable.swift"; sourceTree = "<group>"; };
 		8467FD5B24EFDCC9005D486C /* UserDataStorageTestFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataStorageTestFacade.swift; sourceTree = "<group>"; };
 		846802A2265DA5530034F9B5 /* CrowdloanContributionSetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupViewModel.swift; sourceTree = "<group>"; };
+		8468119328E6234B00BF54F1 /* RoundedSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedSegmentedControl.swift; sourceTree = "<group>"; };
 		8468B86424F59D1D00B76BC6 /* IconTitleHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconTitleHeaderView.swift; sourceTree = "<group>"; };
 		8468B86924F63CBA00B76BC6 /* AddAccount+AccountImportInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddAccount+AccountImportInteractor.swift"; sourceTree = "<group>"; };
 		8468B86B24F63CEF00B76BC6 /* AddAccount+AccountConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddAccount+AccountConfirmInteractor.swift"; sourceTree = "<group>"; };
@@ -9112,6 +9114,7 @@
 				8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */,
 				8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */,
 				84E90BA028D0B51000529633 /* CheckboxControlView.swift */,
+				8468119328E6234B00BF54F1 /* RoundedSegmentedControl.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -15479,6 +15482,7 @@
 				8473F4B8282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift in Sources */,
 				841E2E5027381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift in Sources */,
 				88AC186128CA3EE100892A9B /* LocksViewLayout.swift in Sources */,
+				8468119428E6234B00BF54F1 /* RoundedSegmentedControl.swift in Sources */,
 				A32E1373E3671D518FFC3BC2 /* YourValidatorListViewController.swift in Sources */,
 				84D2F1A927744C280040C680 /* PolkadotExtensionError.swift in Sources */,
 				37E1E9782B9752BC50AF2476 /* YourValidatorListViewFactory.swift in Sources */,
