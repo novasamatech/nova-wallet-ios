@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class CrowdloanTableHeaderView: UIView {
     let titleLabel: UILabel = {
@@ -9,6 +10,15 @@ final class CrowdloanTableHeaderView: UIView {
     }()
 
     let walletSwitch = WalletSwitchControl()
+
+    let votingTypeSwitch: RoundedSegmentedControl = .create { view in
+        view.titles = ["Governance", "Crowdloans"]
+        view.backgroundView.fillColor = R.color.colorBlack48()!
+        view.selectionColor = R.color.colorWhite16()!
+        view.titleFont = .regularFootnote
+        view.selectedTitleColor = R.color.colorWhite()!
+        view.titleColor = R.color.colorTransparentText()!
+    }
 
     let chainSelectionView: DetailsTriangularedView = {
         let view = UIFactory.default.createChainAssetSelectionView()
@@ -61,10 +71,17 @@ final class CrowdloanTableHeaderView: UIView {
             make.centerY.equalTo(walletSwitch)
         }
 
+        addSubview(votingTypeSwitch)
+        votingTypeSwitch.snp.makeConstraints { make in
+            make.top.equalTo(walletSwitch.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(40.0)
+        }
+
         let chainBlur = TriangularedBlurView()
         addSubview(chainBlur)
         chainBlur.snp.makeConstraints { make in
-            make.top.equalTo(walletSwitch.snp.bottom).offset(16)
+            make.top.equalTo(votingTypeSwitch.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().inset(8)
         }
