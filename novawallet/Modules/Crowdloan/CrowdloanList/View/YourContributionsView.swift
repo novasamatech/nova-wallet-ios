@@ -2,6 +2,11 @@ import UIKit
 import SoraUI
 
 final class YourContributionsView: UIView {
+    private var skeletonView: SkrullableView?
+    private lazy var hidingViews = [
+        titleLabel, counterLabel, amountLabel, amountDetailsLabel, navigationImageView
+    ]
+
     let titleLabel: UILabel = .create {
         $0.textColor = R.color.colorWhite64()
         $0.font = .p1Paragraph
@@ -91,12 +96,18 @@ extension YourContributionsView {
         let amountDetails: String
     }
 
-    func bind(model: Model) {
-        titleLabel.text = model.title
-        counterLabel.titleLabel.text = model.count
-        counterLabel.isHidden = model.count == nil
-        amountLabel.text = model.amount
-        amountDetailsLabel.text = model.amountDetails
+    func bind(model: LoadableViewModelState<Model>) {
+        switch model {
+        case .loading:
+            startLoadingIfNeeded()
+        case let .cached(value), let .loaded(value):
+            titleLabel.text = value.title
+            counterLabel.titleLabel.text = value.count
+            counterLabel.isHidden = value.count == nil
+            amountLabel.text = value.amount
+            amountDetailsLabel.text = value.amountDetails
+            stopLoadingIfNeeded()
+        }
     }
 }
 
@@ -112,8 +123,12 @@ extension YourContributionsView {
         switch style {
         case .navigation:
             navigationImageView.isHidden = false
+            if !hidingViews.contains(navigationImageView) {
+                hidingViews.append(navigationImageView)
+            }
         case .readonly:
             navigationImageView.isHidden = true
+            hidingViews = hidingViews.filter { $0 != navigationImageView }
         }
     }
 }
@@ -130,5 +145,111 @@ extension YourContributionsView {
         static let bottomInset: CGFloat = 20
         static let navigationImageViewSize = CGSize(width: 24, height: 24)
         static let navigationImageViewRightOffset: CGFloat = 16
+    }
+}
+
+extension YourContributionsView {
+    func startLoadingIfNeeded() {
+        guard skeletonView == nil else {
+            return
+        }
+
+        hidingViews.forEach { $0.alpha = 0 }
+        setupSkeleton()
+    }
+
+    func stopLoadingIfNeeded() {
+        guard skeletonView != nil else {
+            return
+        }
+
+        skeletonView?.stopSkrulling()
+        skeletonView?.removeFromSuperview()
+        skeletonView = nil
+
+        hidingViews.forEach { $0.alpha = 1 }
+    }
+
+    private func setupSkeleton() {
+        let spaceSize = bounds.size
+
+        guard spaceSize.width > 0, spaceSize.height > 0 else {
+            return
+        }
+
+        let builder = Skrull(
+            size: spaceSize,
+            decorations: [],
+            skeletons: createSkeletons(for: spaceSize)
+        )
+
+        let currentSkeletonView: SkrullableView?
+
+        if let skeletonView = skeletonView {
+            currentSkeletonView = skeletonView
+            builder.updateSkeletons(in: skeletonView)
+        } else {
+            let newSkeletonView = builder
+                .fillSkeletonStart(R.color.colorSkeletonStart()!)
+                .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
+                .build()
+            newSkeletonView.autoresizingMask = []
+            insertSubview(newSkeletonView, at: 0)
+            skeletonView = newSkeletonView
+            newSkeletonView.startSkrulling()
+            currentSkeletonView = newSkeletonView
+        }
+
+        currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
+    }
+
+    private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let firstRowSize = CGSize(width: 88, height: 12)
+        let secondRowSize = CGSize(width: 120, height: 22)
+        let thirdRowSize = CGSize(width: 70, height: 12)
+
+        let firstOffsetY = Constants.topInset + titleLabel.font.lineHeight / 2 - firstRowSize.height / 2
+        let space = (spaceSize.height - firstRowSize.height - secondRowSize.height - thirdRowSize.height - Constants.topInset - Constants.bottomInset) / 2
+        let secondOffsetY = firstOffsetY + firstRowSize.height / 2 + space + 1
+        let thirdOffsetY = secondOffsetY + secondRowSize.height / 2 + space - 1
+
+        let firstOffset = CGPoint(
+            x: spaceSize.width / 2.0 - firstRowSize.width / 2.0,
+            y: firstOffsetY
+        )
+
+        let secondOffset = CGPoint(
+            x: spaceSize.width / 2.0 - secondRowSize.width / 2.0,
+            y: secondOffsetY
+        )
+
+        let thirdOffset = CGPoint(
+            x: spaceSize.width / 2.0 - thirdRowSize.width / 2.0,
+            y: thirdOffsetY
+        )
+
+        return [
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: firstOffset,
+                size: firstRowSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: secondOffset,
+                size: secondRowSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: thirdOffset,
+                size: thirdRowSize
+            )
+        ]
     }
 }

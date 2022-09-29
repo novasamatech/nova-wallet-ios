@@ -6,7 +6,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
     let paraId: ParaId
     let metaAccount: MetaAccountModel
     let operationManager: OperationManagerProtocol
-    let previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?
+    let previousView: (ControllerBackedProtocol & AlertPresentable)?
     let state: CrowdloanSharedState
     let localizationManager: LocalizationManagerProtocol
     let crowdloanDisplayName: String
@@ -19,7 +19,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         metaAccount: MetaAccountModel,
         service: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
-        previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
+        previousView: (ControllerBackedProtocol & AlertPresentable)?,
         accountManagementWireframe: AccountManagementWireframeProtocol,
         crowdloanDisplayName: String,
         crowdloanChainId: String,
@@ -47,11 +47,9 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
     func checkHealth() {
         let healthOperation = service.createCheckHealthOperation()
-        previousView?.didStartLoading()
 
         healthOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                self?.previousView?.didStopLoading()
                 do {
                     _ = try healthOperation.extractNoCancellableResultData()
                     self?.checkAgreement()
@@ -166,10 +164,8 @@ final class MoonbeamFlowCoordinator: Coordinator {
         let termsOperation = service.createCheckTermsOperation()
         let locale = localizationManager.selectedLocale
 
-        previousView?.didStartLoading()
         termsOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                self?.previousView?.didStopLoading()
                 do {
                     let alreadyAgreed = try termsOperation.extractNoCancellableResultData()
                     if alreadyAgreed {

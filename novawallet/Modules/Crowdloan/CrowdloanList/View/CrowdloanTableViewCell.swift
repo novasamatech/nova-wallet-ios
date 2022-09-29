@@ -172,7 +172,10 @@ final class CrowdloanTableViewCell: UITableViewCell {
         }
     }
 
-    func bind(viewModel: CrowdloanCellViewModel) {
+    func bind(viewModel: LoadableViewModelState<CrowdloanCellViewModel>) {
+        guard let viewModel = viewModel.value else {
+            return
+        }
         self.viewModel = viewModel
 
         viewModel.iconViewModel.loadImage(
