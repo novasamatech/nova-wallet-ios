@@ -21,6 +21,11 @@ protocol CrowdloansViewModelFactoryProtocol {
         priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel
+
+    func createErrorViewModel(
+        chainAsset: ChainAssetDisplayInfo?,
+        locale: Locale
+    ) -> CrowdloansViewModel
 }
 
 final class CrowdloansViewModelFactory {
@@ -338,6 +343,20 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         )
     }
 
+    func createErrorViewModel(
+        chainAsset: ChainAssetDisplayInfo?,
+        locale: Locale
+    ) -> CrowdloansViewModel {
+        let message = R.string.localizable
+            .commonErrorNoDataRetrieved_v3_9_1(preferredLanguages: locale.rLanguages)
+        let errorSection = CrowdloansSection.error(message: message)
+        let aboutSection = createAboutSection(chainAsset: chainAsset, locale: locale)
+        return .init(sections: [
+            aboutSection,
+            errorSection
+        ])
+    }
+
     func createViewModel(
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
@@ -347,6 +366,18 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         priceData: PriceData?,
         locale: Locale
     ) -> CrowdloansViewModel {
+        guard !crowdloans.isEmpty else {
+            let aboutSection = createAboutSection(chainAsset: chainAsset, locale: locale)
+            let activeTitle = R.string.localizable
+                .crowdloanActiveSection(preferredLanguages: locale.rLanguages)
+            let emptySection = CrowdloansSection.empty(title: activeTitle)
+
+            return .init(sections: [
+                aboutSection,
+                emptySection
+            ])
+        }
+
         let timeFormatter = TotalTimeFormatter()
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
         let tokenFormatter = amountFormatterFactory.createTokenFormatter(
@@ -392,9 +423,10 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         return .init(sections: [contributionSection] + crowdloansSections)
     }
 
-    private func createAboutSection(chainAsset: ChainAssetDisplayInfo, locale: Locale) -> CrowdloansSection {
+    private func createAboutSection(chainAsset: ChainAssetDisplayInfo?, locale: Locale) -> CrowdloansSection {
+        let symbol = chainAsset?.asset.symbol ?? ""
         let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
-            chainAsset.asset.symbol,
+            symbol,
             preferredLanguages: locale.rLanguages
         )
 
