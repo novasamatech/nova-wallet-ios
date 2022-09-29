@@ -9,7 +9,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         let keychain = Keychain()
         let settings = SettingsManager.shared
 
-        let dbMigrator = UserStorageMigrator(
+        let userStorageMigrator = UserStorageMigrator(
             targetVersion: UserStorageParams.modelVersion,
             storeURL: UserStorageParams.storageURL,
             modelDirectory: UserStorageParams.modelDirectory,
@@ -18,13 +18,20 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             fileManager: FileManager.default
         )
 
+        let substrateStorageMigrator = SubstrateStorageMigrator(
+            storeURL: SubstrateStorageParams.storageURL,
+            modelDirectory: SubstrateStorageParams.modelDirectory,
+            model: SubstrateStorageParams.modelVersion,
+            fileManager: FileManager.default
+        )
+
         let interactor = RootInteractor(
             settings: SelectedWalletSettings.shared,
             keystore: keychain,
             applicationConfig: ApplicationConfig.shared,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            chainRegistryClosure: { ChainRegistryFacade.sharedRegistry },
             eventCenter: EventCenter.shared,
-            migrators: [dbMigrator],
+            migrators: [userStorageMigrator, substrateStorageMigrator],
             logger: Logger.shared
         )
 

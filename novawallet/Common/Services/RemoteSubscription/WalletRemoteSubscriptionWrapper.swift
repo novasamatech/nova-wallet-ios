@@ -81,11 +81,13 @@ final class WalletRemoteSubscriptionWrapper {
         completion: RemoteSubscriptionClosure?
     ) -> UUID? {
         let assetsRepository = repositoryFactory.createAssetBalanceRepository()
-        let subscriptionHandlingFactory = OrmlAccountSubscriptionHandlingFactory(
+        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetsRepository,
+            locksRepository: locksRepository,
             eventCenter: eventCenter,
             transactionSubscription: nil
         )
@@ -107,14 +109,16 @@ final class WalletRemoteSubscriptionWrapper {
         completion: RemoteSubscriptionClosure?
     ) -> UUID? {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
+        let locksRepository = repositoryFactory.createAssetLocksRepository(for: accountId, chainAssetId: chainAssetId)
 
-        let subscriptionHandlingFactory = AccountInfoSubscriptionHandlingFactory(
+        let subscriptionHandlingFactory = TokenSubscriptionFactory(
             chainAssetId: chainAssetId,
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
-            transactionSubscription: nil,
-            eventCenter: eventCenter
+            locksRepository: locksRepository,
+            eventCenter: eventCenter,
+            transactionSubscription: nil
         )
 
         return remoteSubscriptionService.attachToAccountInfo(
@@ -150,9 +154,9 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
             )
-        case let .orml(_, currencyData, _, _):
+        case let .orml(info):
             return subscribeOrml(
-                using: currencyData,
+                using: info.currencyData,
                 accountId: accountId,
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
@@ -185,11 +189,11 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
-        case let .orml(_, currencyData, _, _):
+        case let .orml(info):
             remoteSubscriptionService.detachFromOrmlToken(
                 for: subscriptionId,
                 accountId: accountId,
-                currencyId: currencyData,
+                currencyId: info.currencyData,
                 chainId: chainAssetId.chainId,
                 queue: .main,
                 closure: completion

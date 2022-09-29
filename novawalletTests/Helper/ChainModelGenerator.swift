@@ -130,6 +130,8 @@ enum ChainModelGenerator {
                 )
             ]
 
+            let rawOptions = options.compactMap { $0.rawValue }
+
             return RemoteChainModel(
                 chainId: chainId,
                 parentId: nil,
@@ -139,7 +141,7 @@ enum ChainModelGenerator {
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
-                options: options.isEmpty ? nil : options,
+                options: rawOptions.isEmpty ? nil : rawOptions,
                 externalApi: externalApi,
                 explorers: explorers,
                 additional: nil

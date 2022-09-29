@@ -7,7 +7,7 @@ struct TransferConfirmOnChainViewFactory {
     static func createView(
         chainAsset: ChainAsset,
         recepient: AccountAddress,
-        amount: Decimal
+        amount: OnChainTransferAmount<Decimal>
     ) -> TransferConfirmOnChainViewProtocol? {
         let walletSettings = SelectedWalletSettings.shared
 

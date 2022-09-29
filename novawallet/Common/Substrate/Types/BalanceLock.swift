@@ -19,3 +19,5 @@ struct BalanceLock: Codable, Equatable {
         )?.trimmingCharacters(in: .whitespaces)
     }
 }
+
+typealias BalanceLocks = [BalanceLock]

@@ -8,16 +8,35 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
 
     private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
+    private(set) var balances: [ChainAssetId: Result<AssetBalance, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var crowdloansResult: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>?
 
     init() {
         groups = Self.createGroupsDiffCalculator(from: [])
     }
 
+    private func updateAssetModels() {
+        for chain in allChains.values {
+            let models = chain.assets.map { asset in
+                createAssetModel(for: chain, assetModel: asset)
+            }
+
+            let changes: [DataProviderChange<AssetListAssetModel>] = models.map { model in
+                .update(newItem: model)
+            }
+
+            groupLists[chain.chainId]?.apply(changes: changes)
+
+            let groupModel = createGroupModel(from: chain, assets: models)
+            groups.apply(changes: [.update(newItem: groupModel)])
+        }
+    }
+
     func resetStorages() {
         allChains = [:]
         balanceResults = [:]
-
+        balances = [:]
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
     }
@@ -67,12 +86,10 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
             priceData = nil
         }
 
-        let balance = try? asset.balanceResult?.get()
-
         return AssetListAssetAccountInfo(
             assetId: asset.assetModel.assetId,
             assetInfo: assetInfo,
-            balance: balance,
+            balance: asset.totalAmount,
             priceData: priceData
         )
     }
@@ -84,20 +101,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
 
         priceResult = result
 
-        for chain in allChains.values {
-            let models = chain.assets.map { asset in
-                createAssetModel(for: chain, assetModel: asset)
-            }
-
-            let changes: [DataProviderChange<AssetListAssetModel>] = models.map { model in
-                .update(newItem: model)
-            }
-
-            groupLists[chain.chainId]?.apply(changes: changes)
-
-            let groupModel = createGroupModel(from: chain, assets: models)
-            groups.apply(changes: [.update(newItem: groupModel)])
-        }
+        updateAssetModels()
     }
 
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -130,7 +134,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         groups.apply(changes: groupChanges)
     }
 
-    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+    func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         var assetsChanges: [ChainModel.Id: [DataProviderChange<AssetListAssetModel>]] = [:]
         var changedGroups: [ChainModel.Id: ChainModel] = [:]
 
@@ -138,12 +142,16 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
             switch result {
             case let .success(maybeAmount):
                 if let amount = maybeAmount {
-                    balanceResults[chainAssetId] = .success(amount)
+                    balanceResults[chainAssetId] = .success(amount.total)
+                    amount.balance.map {
+                        balances[chainAssetId] = .success($0)
+                    }
                 } else if balanceResults[chainAssetId] == nil {
                     balanceResults[chainAssetId] = .success(0)
                 }
             case let .failure(error):
                 balanceResults[chainAssetId] = .failure(error)
+                balances[chainAssetId] = .failure(error)
             }
         }
 
@@ -179,5 +187,11 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         }
 
         groups.apply(changes: groupChanges)
+    }
+
+    func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
+        crowdloansResult = result
+
+        updateAssetModels()
     }
 }

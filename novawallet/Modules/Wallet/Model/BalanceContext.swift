@@ -8,19 +8,21 @@ struct BalanceContext {
     static let priceChangeKey = "account.balance.price.change.key"
     static let priceIdKey = "account.balance.price.id.key"
     static let balanceLocksKey = "account.balance.locks.key"
+    static let crowdloans = "account.balance.crowdloan.key"
 
     let free: Decimal
     let reserved: Decimal
     let frozen: Decimal
+    let crowdloans: Decimal
     let price: Decimal
     let priceChange: Decimal
     let priceId: Int?
-    let balanceLocks: BalanceLocks
+    let balanceLocks: [AssetLock]
 }
 
 extension BalanceContext {
-    var total: Decimal { free + reserved }
-    var locked: Decimal { reserved + frozen }
+    var total: Decimal { free + reserved + crowdloans }
+    var locked: Decimal { reserved + frozen + crowdloans }
     var available: Decimal { free >= frozen ? free - frozen : 0.0 }
 }
 
@@ -34,6 +36,7 @@ extension BalanceContext {
         priceChange = Self.parseContext(key: BalanceContext.priceChangeKey, context: context)
         priceId = context[BalanceContext.priceIdKey].flatMap { Int($0) }
 
+        crowdloans = Self.parseContext(key: BalanceContext.crowdloans, context: context)
         balanceLocks = Self.parseJSONContext(key: BalanceContext.balanceLocksKey, context: context)
     }
 
@@ -50,6 +53,7 @@ extension BalanceContext {
             BalanceContext.freeKey: free.stringWithPointSeparator,
             BalanceContext.reservedKey: reserved.stringWithPointSeparator,
             BalanceContext.frozen: frozen.stringWithPointSeparator,
+            BalanceContext.crowdloans: crowdloans.stringWithPointSeparator,
             BalanceContext.priceKey: price.stringWithPointSeparator,
             BalanceContext.priceChangeKey: priceChange.stringWithPointSeparator,
             BalanceContext.balanceLocksKey: locksStringRepresentation
@@ -70,7 +74,7 @@ extension BalanceContext {
         }
     }
 
-    private static func parseJSONContext(key: String, context: [String: String]) -> [BalanceLock] {
+    private static func parseJSONContext(key: String, context: [String: String]) -> [AssetLock] {
         guard let locksStringRepresentation = context[key] else { return [] }
 
         guard let JSONData = locksStringRepresentation.data(using: .utf8) else {
@@ -78,7 +82,7 @@ extension BalanceContext {
         }
 
         let balanceLocks = try? JSONDecoder().decode(
-            BalanceLocks.self,
+            [AssetLock].self,
             from: JSONData
         )
 
@@ -101,6 +105,7 @@ extension BalanceContext {
             free: free,
             reserved: reserved,
             frozen: max(miscFrozen, feeFrozen),
+            crowdloans: crowdloans,
             price: price,
             priceChange: priceChange,
             priceId: priceId,
@@ -120,6 +125,7 @@ extension BalanceContext {
             free: free,
             reserved: reserved,
             frozen: frozen,
+            crowdloans: crowdloans,
             price: price,
             priceChange: priceChange,
             priceId: priceId,
@@ -128,12 +134,13 @@ extension BalanceContext {
     }
 
     func byChangingBalanceLocks(
-        _ updatedLocks: BalanceLocks
+        _ updatedLocks: [AssetLock]
     ) -> BalanceContext {
         BalanceContext(
             free: free,
             reserved: reserved,
             frozen: frozen,
+            crowdloans: crowdloans,
             price: price,
             priceChange: priceChange,
             priceId: priceId,
@@ -146,9 +153,23 @@ extension BalanceContext {
             free: free,
             reserved: reserved,
             frozen: frozen,
+            crowdloans: crowdloans,
             price: newPrice,
             priceChange: newPriceChange,
             priceId: newPriceId,
+            balanceLocks: balanceLocks
+        )
+    }
+
+    func byChangingCrowdloans(_ newCrowdloans: Decimal) -> BalanceContext {
+        BalanceContext(
+            free: free,
+            reserved: reserved,
+            frozen: frozen,
+            crowdloans: newCrowdloans,
+            price: price,
+            priceChange: priceChange,
+            priceId: priceId,
             balanceLocks: balanceLocks
         )
     }

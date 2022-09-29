@@ -24,6 +24,8 @@ class WalletsListPresenter {
 
     private var identifierMapping: [String: AssetBalanceId] = [:]
     private var balances: [AccountId: [ChainAssetId: BigUInt]] = [:]
+    private var crowdloanContributions: [AccountId: [ChainModel.Id: BigUInt]] = [:]
+    private var crowdloanContributionsMapping: [String: CrowdloanContributionId] = [:]
     private var prices: [ChainAssetId: PriceData] = [:]
     private var chains: [ChainModel.Id: ChainModel] = [:]
 
@@ -51,6 +53,7 @@ class WalletsListPresenter {
             for: walletsList.allItems,
             chains: chains,
             balances: balances,
+            crowdloanContributions: crowdloanContributions,
             prices: prices,
             locale: selectedLocale
         )
@@ -123,6 +126,40 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
 
     func didReceivePrices(_ prices: [ChainAssetId: PriceData]) {
         self.prices = prices
+
+        updateViewModels()
+    }
+
+    func didReceiveCrowdloanContributionChanges(_ changes: [DataProviderChange<CrowdloanContributionData>]) {
+        for change in changes {
+            switch change {
+            case let .insert(item), let .update(item):
+                let previousAmount = crowdloanContributionsMapping[item.identifier]?.amount ?? 0
+                var accountCrowdloan = crowdloanContributions[item.accountId] ?? [:]
+                let value: BigUInt = accountCrowdloan[item.chainId] ?? 0
+                accountCrowdloan[item.chainId] = value - previousAmount + item.amount
+                crowdloanContributions[item.accountId] = accountCrowdloan
+                crowdloanContributionsMapping[item.identifier] = CrowdloanContributionId(
+                    chainId: item.chainId,
+                    accountId: item.accountId,
+                    amount: item.amount
+                )
+            case let .delete(deletedIdentifier):
+                if let accountContributionId = crowdloanContributionsMapping[deletedIdentifier] {
+                    var accountContributions = crowdloanContributions[accountContributionId.accountId]
+                    if let contribution = accountContributions?[accountContributionId.chainId],
+                       contribution > accountContributionId.amount {
+                        let newAmount = contribution - accountContributionId.amount
+                        accountContributions?[accountContributionId.chainId] = newAmount
+                    } else {
+                        accountContributions?[accountContributionId.chainId] = nil
+                    }
+                    crowdloanContributions[accountContributionId.accountId] = accountContributions
+                }
+
+                crowdloanContributionsMapping[deletedIdentifier] = nil
+            }
+        }
 
         updateViewModels()
     }
