@@ -47,13 +47,10 @@ final class CrowdloanContributionLocalSubscriptionFactory: SubstrateLocalSubscri
             return provider
         }
 
-        let offchainSources: [ExternalContributionSourceProtocol] = [
-            ParallelContributionSource(),
-            AcalaContributionSource(
-                paraIdOperationFactory: paraIdOperationFactory,
-                acalaChainId: KnowChainId.acala
-            )
-        ]
+        let offchainSources = ExternalContributionSourcesFactory.createExternalSources(
+            for: chain.chainId,
+            paraIdOperationFactory: paraIdOperationFactory
+        )
 
         let onChainSyncService = createOnChainSyncService(chainId: chain.chainId, accountId: accountId)
         let offChainSyncServices = createOffChainSyncServices(
