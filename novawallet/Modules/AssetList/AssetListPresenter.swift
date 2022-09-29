@@ -453,7 +453,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         let initState = AssetListInitState(
             priceResult: priceResult,
             balanceResults: balanceResults,
-            allChains: allChains
+            allChains: allChains,
+            crowdloansResult: crowdloansResult
         )
 
         wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
