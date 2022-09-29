@@ -8,7 +8,7 @@ final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
 
     let countView: BorderedLabelView = .create {
         $0.titleLabel.textColor = R.color.colorWhite80()
-        $0.titleLabel.font = .p2Paragraph
+        $0.titleLabel.font = .semiBoldFootnote
         $0.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
     }
 
