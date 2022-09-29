@@ -13,7 +13,7 @@ enum ReferendumInfo: Decodable {
         let enactment: OnChainScheduler.DispatchTime
         @StringCodable var submitted: Moment
         let decisionDeposit: Referenda.Deposit?
-        let desiding: DecidingStatus?
+        let deciding: DecidingStatus?
         let tally: ConvictionVoting.Tally
         let inQueue: Bool
     }
