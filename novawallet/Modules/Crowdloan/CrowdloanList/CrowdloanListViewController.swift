@@ -76,6 +76,8 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         rootView.tableView.registerClassForCell(YourContributionsTableViewCell.self)
         rootView.tableView.registerClassForCell(AboutCrowdloansTableViewCell.self)
         rootView.tableView.registerClassForCell(CrowdloanTableViewCell.self)
+        rootView.tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        rootView.tableView.registerClassForCell(BlurredTableViewCell<ErrorStateView>.self)
         rootView.tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
@@ -107,19 +109,12 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         switch state {
         case .loading:
             didStartLoading()
-            rootView.bringSubviewToFront(rootView.tableView)
         case .loaded:
             rootView.tableView.refreshControl?.endRefreshing()
             didStopLoading()
-            rootView.bringSubviewToFront(rootView.tableView)
-        case .empty, .error:
-            rootView.tableView.refreshControl?.endRefreshing()
-            didStopLoading()
-            rootView.bringSubviewToFront(rootView.statusView)
         }
 
         rootView.tableView.reloadData()
-        reloadEmptyState(animated: false)
     }
 
     @objc func actionRefresh() {
@@ -140,7 +135,7 @@ extension CrowdloanListViewController: UITableViewDataSource {
         switch state {
         case let .loaded(viewModel):
             return viewModel.sections.count
-        case .loading, .empty, .error:
+        case .loading:
             return 0
         }
     }
@@ -154,10 +149,10 @@ extension CrowdloanListViewController: UITableViewDataSource {
                 return cellViewModels.count
             case let .completed(_, cellViewModels):
                 return cellViewModels.count
-            case .yourContributions, .about:
+            case .yourContributions, .about, .error, .empty:
                 return 1
             }
-        case .loading, .empty, .error:
+        case .loading:
             return 0
         }
     }
@@ -180,8 +175,25 @@ extension CrowdloanListViewController: UITableViewDataSource {
                 let cell = tableView.dequeueReusableCellWithType(AboutCrowdloansTableViewCell.self)!
                 cell.view.bind(model: model)
                 return cell
+            case let .error(message):
+                let cell: BlurredTableViewCell<ErrorStateView> = tableView.dequeueReusableCell(for: indexPath)
+                cell.view.errorDescriptionLabel.text = message
+                cell.view.delegate = self
+                cell.view.locale = selectedLocale
+                cell.applyStyle()
+                return cell
+            case .empty:
+                let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
+                let text = R.string.localizable
+                    .crowdloanEmptyMessage_v3_9_1(preferredLanguages: selectedLocale.rLanguages)
+                cell.view.bind(
+                    image: R.image.iconEmptyHistory(),
+                    text: text
+                )
+                cell.applyStyle()
+                return cell
             }
-        case .loading, .empty, .error:
+        case .loading:
             return UITableViewCell()
         }
     }
@@ -218,6 +230,10 @@ extension CrowdloanListViewController: UITableViewDelegate {
             let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
             headerView.bind(title: title, count: cells.count)
             return headerView
+        case let .empty(title):
+            let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
+            headerView.bind(title: title, count: 0)
+            return headerView
         default:
             return nil
         }
@@ -230,7 +246,7 @@ extension CrowdloanListViewController: UITableViewDelegate {
 
         let sectionModel = viewModel.sections[section]
         switch sectionModel {
-        case .active, .completed:
+        case .active, .completed, .empty:
             return UITableView.automaticDimension
         default:
             return 0.0
@@ -265,52 +281,11 @@ extension CrowdloanListViewController: Localizable {
     }
 }
 
-extension CrowdloanListViewController: LoadableViewProtocol {}
-
-extension CrowdloanListViewController: EmptyStateViewOwnerProtocol {
-    var emptyStateDelegate: EmptyStateDelegate { self }
-    var emptyStateDataSource: EmptyStateDataSource { self }
-    var contentViewForEmptyState: UIView { rootView.statusView }
-}
-
-extension CrowdloanListViewController: EmptyStateDataSource {
-    var viewForEmptyState: UIView? {
-        switch state {
-        case let .error(message):
-            let errorView = ErrorStateView()
-            errorView.errorDescriptionLabel.text = message
-            errorView.delegate = self
-            errorView.locale = selectedLocale
-            return errorView
-        case .empty:
-            let emptyView = EmptyStateView()
-            emptyView.image = R.image.iconEmptyHistory()
-            emptyView.title = R.string.localizable
-                .crowdloanEmptyMessage_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
-            emptyView.titleColor = R.color.colorLightGray()!
-            emptyView.titleFont = .p2Paragraph
-            return emptyView
-        case .loading, .loaded:
-            return nil
-        }
-    }
-}
-
-extension CrowdloanListViewController: EmptyStateDelegate {
-    var shouldDisplayEmptyState: Bool {
-        switch state {
-        case .error, .empty:
-            return true
-        case .loading, .loaded:
-            return false
-        }
-    }
-}
-
 extension CrowdloanListViewController: ErrorStateViewDelegate {
     func didRetry(errorView _: ErrorStateView) {
         presenter.refresh(shouldReset: true)
     }
 }
 
+extension CrowdloanListViewController: LoadableViewProtocol {}
 extension CrowdloanListViewController: HiddableBarWhenPushed {}
