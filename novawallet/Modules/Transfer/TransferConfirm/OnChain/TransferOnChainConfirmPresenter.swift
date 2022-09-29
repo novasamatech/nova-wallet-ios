@@ -12,7 +12,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
 
     let recepientAccountAddress: AccountAddress
     let wallet: MetaAccountModel
-    let amount: Decimal
+    let amount: OnChainTransferAmount<Decimal>
 
     private lazy var walletIconGenerator = NovaIconGenerator()
 
@@ -21,7 +21,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         wireframe: TransferConfirmWireframeProtocol,
         wallet: MetaAccountModel,
         recepient: AccountAddress,
-        amount: Decimal,
+        amount: OnChainTransferAmount<Decimal>,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         chainAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
@@ -104,7 +104,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
 
     private func provideAmountViewModel() {
         let viewModel = sendingBalanceViewModelFactory.spendingAmountFromPrice(
-            amount,
+            amount.value,
             priceData: sendingAssetPrice
         ).value(for: selectedLocale)
 
@@ -129,11 +129,11 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     override func refreshFee() {
         let assetInfo = chainAsset.assetDisplayInfo
 
-        guard let amountValue = amount.toSubstrateAmount(precision: assetInfo.assetPrecision) else {
+        guard let amountInPlank = amount.flatMap({ $0.toSubstrateAmount(precision: assetInfo.assetPrecision) }) else {
             return
         }
 
-        interactor.estimateFee(for: amountValue, recepient: getRecepientAccountId())
+        interactor.estimateFee(for: amountInPlank, recepient: getRecepientAccountId())
     }
 
     override func askFeeRetry() {
@@ -202,7 +202,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
     func submit() {
         let assetPrecision = chainAsset.assetDisplayInfo.assetPrecision
         guard
-            let amountValue = amount.toSubstrateAmount(precision: assetPrecision),
+            let amountInPlank = amount.flatMap({ $0.toSubstrateAmount(precision: assetPrecision) }),
             let utilityAsset = chainAsset.chain.utilityAsset() else {
             return
         }
@@ -210,7 +210,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
         let utilityAssetInfo = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
         let validators: [DataValidating] = baseValidators(
-            for: amount,
+            for: amount.value,
             recepientAddress: recepientAccountAddress,
             utilityAssetInfo: utilityAssetInfo,
             selectedLocale: selectedLocale
@@ -224,7 +224,7 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
             strongSelf.view?.didStartLoading()
 
             strongSelf.interactor.submit(
-                amount: amountValue,
+                amount: amountInPlank,
                 recepient: strongSelf.recepientAccountAddress,
                 lastFee: strongSelf.fee
             )

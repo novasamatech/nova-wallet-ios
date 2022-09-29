@@ -114,6 +114,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     private func provideAssetsViewModel() {
         let maybePrices = try? priceResult?.get()
+
         let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
             createGroupViewModel(from: groupModel, maybePrices: maybePrices)
         }
@@ -152,7 +153,7 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         filterAndUpdateView()
     }
 
-    override func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+    override func didReceiveBalance(results: [ChainAssetId: Result<CalculatedAssetBalance?, Error>]) {
         super.didReceiveBalance(results: results)
 
         filterAndUpdateView()
@@ -160,6 +161,12 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
 
     override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
         super.didReceivePrices(result: result)
+
+        filterAndUpdateView()
+    }
+
+    override func didReceiveCrowdloans(result: Result<[ChainModel.Id: [CrowdloanContributionData]], Error>) {
+        super.didReceiveCrowdloans(result: result)
 
         filterAndUpdateView()
     }

@@ -5732,6 +5732,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
+import RobinHood
 import SubstrateSdk
 
 
@@ -5760,9 +5761,9 @@ import SubstrateSdk
     
     
     
-     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID? {
+     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID? {
         
-    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?",
+    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?",
             parameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
             escapingParameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
             superclassCall:
@@ -5820,9 +5821,9 @@ import SubstrateSdk
     
     
     
-     func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID? {
+     func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID? {
         
-    return cuckoo_manager.call("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?",
+    return cuckoo_manager.call("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?",
             parameters: (accountId, currencyId, chainId, queue, closure, subscriptionHandlingFactory),
             escapingParameters: (accountId, currencyId, chainId, queue, closure, subscriptionHandlingFactory),
             superclassCall:
@@ -5857,9 +5858,9 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ProtocolStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ProtocolStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == NativeTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
 	    }
 	    
 	    func detachFromAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
@@ -5877,9 +5878,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "detachFromAsset(for: UUID, accountId: AccountId, extras: StatemineAssetExtras, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", parameterMatchers: matchers))
 	    }
 	    
-	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ProtocolStubFunction<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
+	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ProtocolStubFunction<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == OrmlTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
 	    }
 	    
 	    func detachFromOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, currencyId: M3, chainId: M4, queue: M5, closure: M6) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID, AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == Data, M4.MatchedType == ChainModel.Id, M5.OptionalMatchedType == DispatchQueue, M6.OptionalMatchedType == RemoteSubscriptionClosure {
@@ -5904,9 +5905,9 @@ import SubstrateSdk
 	
 	    
 	    @discardableResult
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == NativeTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5928,9 +5929,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return cuckoo_manager.verify("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == OrmlTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return cuckoo_manager.verify("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5950,7 +5951,7 @@ import SubstrateSdk
     
     
     
-     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
+     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
     
@@ -5974,7 +5975,7 @@ import SubstrateSdk
     
     
     
-     func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
+     func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
     
@@ -6013,9 +6014,9 @@ import SubstrateSdk
     
     
     
-     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID? {
+     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID? {
         
-    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?",
+    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?",
             parameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
             escapingParameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
             superclassCall:
@@ -6073,9 +6074,9 @@ import SubstrateSdk
     
     
     
-     override func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID? {
+     override func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID? {
         
-    return cuckoo_manager.call("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?",
+    return cuckoo_manager.call("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?",
             parameters: (accountId, currencyId, chainId, queue, closure, subscriptionHandlingFactory),
             escapingParameters: (accountId, currencyId, chainId, queue, closure, subscriptionHandlingFactory),
             superclassCall:
@@ -6110,9 +6111,9 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ClassStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ClassStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == NativeTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
 	    }
 	    
 	    func detachFromAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.ClassStubNoReturnFunction<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
@@ -6130,9 +6131,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "detachFromAsset(for: UUID, accountId: AccountId, extras: StatemineAssetExtras, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", parameterMatchers: matchers))
 	    }
 	    
-	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ClassStubFunction<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
+	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ClassStubFunction<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == OrmlTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
 	    }
 	    
 	    func detachFromOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, currencyId: M3, chainId: M4, queue: M5, closure: M6) -> Cuckoo.ClassStubNoReturnFunction<(UUID, AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == Data, M4.MatchedType == ChainModel.Id, M5.OptionalMatchedType == DispatchQueue, M6.OptionalMatchedType == RemoteSubscriptionClosure {
@@ -6157,9 +6158,9 @@ import SubstrateSdk
 	
 	    
 	    @discardableResult
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == NativeTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, NativeTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6181,9 +6182,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
-	        return cuckoo_manager.verify("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func attachToOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, currencyId: M2, chainId: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == Data, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == OrmlTokenSubscriptionFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?, OrmlTokenSubscriptionFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: currencyId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return cuckoo_manager.verify("attachToOrmlToken(of: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6203,7 +6204,7 @@ import SubstrateSdk
     
     
     
-     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
+     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: NativeTokenSubscriptionFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
     
@@ -6227,7 +6228,7 @@ import SubstrateSdk
     
     
     
-     override func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
+     override func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: OrmlTokenSubscriptionFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
     

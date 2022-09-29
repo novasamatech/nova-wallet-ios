@@ -1,19 +1,19 @@
 import Foundation
 
-typealias BalanceLocks = [BalanceLock]
+typealias AssetLocks = [AssetLock]
 
-extension BalanceLocks {
-    func mainLocks() -> BalanceLocks {
+extension AssetLocks {
+    func mainLocks() -> AssetLocks {
         LockType.locksOrder.compactMap { lockType in
             self.first(where: { lock in
-                lock.displayId == lockType.rawValue
+                lock.lockType == lockType
             })
         }
     }
 
-    func auxLocks() -> BalanceLocks {
+    func auxLocks() -> AssetLocks {
         compactMap { lock in
-            guard LockType(rawValue: lock.displayId ?? "") != nil else {
+            guard lock.lockType != nil else {
                 return lock
             }
 

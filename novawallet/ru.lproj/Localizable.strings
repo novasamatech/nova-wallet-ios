@@ -288,6 +288,7 @@
 "common.available.format" = "Доступно: %@";
 "staking.rewards.learn.more" = "Подробнее о вознаграждениях";
 "common.error.no.data.retrieved" = "Данные не получены.";
+"common.error.no.data.retrieved_v3_9_1" = "Данные не получены";
 "staking.reward.payouts.empty.rewards" = "Прекрасно! Все вознаграждения выплачены.";
 "staking.reward.details.validator" = "Валидатор";
 "common.insufficient.balance" = "Недостаточный баланс";
@@ -575,6 +576,7 @@
 "account.create.details_v2_2_0" = "Не используйте буфер обмена или скриншоты на вашем мобильном устройстве, постарайтесь найти безопасные способы резервного копирования (например на бумагу)";
 "crowdloan.list.section.format_v2_2_0" = "Выберите парачейны для внесения своих %@. Вы получите внесенные токены обратно, и если парачейн выиграет слот вы получите награду после окончания аукциона";
 "crowdloan.empty.message_v2_2_0" = "Краудлоуны появятся здесь";
+"crowdloan.empty.message_v3_9_1" = "Информация о краудлоунах\nпоявится здесь, когда они начнутся";
 "common.existential.warning.message_v2_2_0" = "Ваша учетная запись будет удалена из сети после операции, так как ваш баланс опустится ниже минимального";
 "wallet.send.existential.warning_v2_2_0" = "Ваша учетная запись будет удалена из сети после перевода, так как опустит общий баланс ниже минимального";
 "account.backup.mnemonic.title" = "Запишите фразу и храните её в надежном месте";
@@ -974,3 +976,4 @@
 "yield.boost.task.not.found.title" = "Yield boost уже отключен";
 "yield.boost.task.not.found.message" = "Yield boost уже отключен для выбранного коллатора";
 "common.not.available" = "N/A";
+"wallet.account.locks.crowdloans" = "Краудлоуны";
