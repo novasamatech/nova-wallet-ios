@@ -67,6 +67,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         allChains = initState.allChains
         balanceResults = initState.balanceResults
         priceResult = initState.priceResult
+        crowdloansResult = initState.crowdloansResult
     }
 
     func createAssetAccountInfo(
