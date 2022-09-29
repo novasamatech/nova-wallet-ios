@@ -39,6 +39,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         balances = [:]
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
+        crowdloansResult = nil
     }
 
     func storeChainChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -66,6 +67,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         allChains = initState.allChains
         balanceResults = initState.balanceResults
         priceResult = initState.priceResult
+        crowdloansResult = initState.crowdloansResult
     }
 
     func createAssetAccountInfo(
