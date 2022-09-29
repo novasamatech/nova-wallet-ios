@@ -10,6 +10,12 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
         }
     }
 
+    var innerInsets: UIEdgeInsets = .zero {
+        didSet {
+            updateLayout()
+        }
+    }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -35,13 +41,16 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
 
         backgroundBlurView.addSubview(view)
         view.snp.makeConstraints {
-            $0.leading.top.trailing.bottom.equalToSuperview()
+            $0.edges.equalToSuperview().inset(innerInsets)
         }
     }
 
     private func updateLayout() {
         backgroundBlurView.snp.updateConstraints {
             $0.edges.equalToSuperview().inset(contentInsets)
+        }
+        view.snp.updateConstraints {
+            $0.edges.equalToSuperview().inset(innerInsets)
         }
     }
 }
@@ -63,3 +72,21 @@ final class YourContributionsTableViewCell: BlurredTableViewCell<YourContributio
 }
 
 typealias AboutCrowdloansTableViewCell = BlurredTableViewCell<AboutCrowdloansView>
+
+extension BlurredTableViewCell where TContentView == ErrorStateView {
+    func applyStyle() {
+        view.errorDescriptionLabel.textColor = R.color.colorWhite64()
+        view.retryButton.titleLabel?.font = .semiBoldSubheadline
+        view.stackView.setCustomSpacing(0, after: view.iconImageView)
+        view.stackView.setCustomSpacing(8, after: view.errorDescriptionLabel)
+        contentInsets = .init(top: 8, left: 16, bottom: 0, right: 16)
+        innerInsets = .init(top: 4, left: 0, bottom: 16, right: 0)
+    }
+}
+
+extension BlurredTableViewCell where TContentView == CrowdloanEmptyView {
+    func applyStyle() {
+        view.verticalSpacing = 0
+        innerInsets = .init(top: 4, left: 0, bottom: 16, right: 0)
+    }
+}
