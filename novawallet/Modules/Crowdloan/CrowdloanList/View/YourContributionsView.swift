@@ -159,7 +159,8 @@ extension YourContributionsView {
 // MARK: - Skeletons
 
 protocol SkeletonableView: UIView {
-    var skeletonView: SkrullableView? { set get }
+    var skeletonView: SkrullableView? { get set }
+    var skeletonSuperview: UIView { get }
     var hidingViews: [UIView] { get }
     func startLoadingIfNeeded()
     func stopLoadingIfNeeded()
@@ -167,6 +168,10 @@ protocol SkeletonableView: UIView {
 }
 
 extension YourContributionsView: SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let titleSkeletonSize = CGSize(width: 88, height: 12)
         let amountSkeletonSize = CGSize(width: 120, height: 22)
@@ -264,7 +269,7 @@ extension SkeletonableView {
                 .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
                 .build()
             newSkeletonView.autoresizingMask = []
-            insertSubview(newSkeletonView, at: 0)
+            skeletonSuperview.addSubview(newSkeletonView)
             skeletonView = newSkeletonView
             newSkeletonView.startSkrulling()
             currentSkeletonView = newSkeletonView

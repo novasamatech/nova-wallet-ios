@@ -209,6 +209,8 @@ extension CrowdloanListViewController: UITableViewDelegate {
         switch sectionModel {
         case .yourContributions:
             return 123
+        case .active, .completed:
+            return 145
         default:
             return UITableView.automaticDimension
         }
