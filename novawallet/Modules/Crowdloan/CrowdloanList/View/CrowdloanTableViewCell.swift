@@ -2,6 +2,8 @@ import UIKit
 import SoraUI
 
 final class CrowdloanTableViewCell: UITableViewCell {
+    var skeletonView: SkrullableView?
+
     private let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.isUserInteractionEnabled = false
@@ -132,7 +134,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
             [
                 .hStack(
                     alignment: .top,
-                    spacing: 12,
+                    spacing: Constants.imageTextHorizontalOffset,
                     [
                         iconImageView,
                         .vStack(
@@ -151,24 +153,21 @@ final class CrowdloanTableViewCell: UITableViewCell {
             ]
         )
 
-        iconImageView.snp.makeConstraints { $0.size.equalTo(32) }
+        iconImageView.snp.makeConstraints { $0.size.equalTo(Constants.imageSize) }
         navigationImageView.snp.makeConstraints { make in
-            make.size.equalTo(16)
+            make.size.equalTo(Constants.navigationImageSize)
         }
         progressBackgroundView.addSubview(progressView)
-        progressBackgroundView.snp.makeConstraints { $0.height.equalTo(5) }
+        progressBackgroundView.snp.makeConstraints { $0.height.equalTo(Constants.progressHeight) }
 
         contentView.addSubview(backgroundBlurView)
         backgroundBlurView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(8)
-            make.bottom.equalToSuperview()
+            make.edges.equalTo(Constants.backgroundBlurViewOffsets)
         }
 
         backgroundBlurView.addSubview(content)
         content.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.top.equalToSuperview().inset(12)
+            make.edges.equalTo(Constants.contentOffsets)
         }
     }
 
@@ -180,7 +179,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
 
         viewModel.iconViewModel.loadImage(
             on: iconImageView,
-            targetSize: CGSize(width: 32, height: 32),
+            targetSize: Constants.imageSize,
             animated: true
         )
 
@@ -215,5 +214,45 @@ final class CrowdloanTableViewCell: UITableViewCell {
             titleLabel.textColor = R.color.colorWhite()
             iconImageView.tintColor = R.color.colorWhite()!
         }
+    }
+}
+
+extension CrowdloanTableViewCell {
+    enum Constants {
+        static let imageSize = CGSize(width: 40, height: 40)
+        static let navigationImageSize = CGSize(width: 24, height: 24)
+        static let progressHeight: CGFloat = 5
+        static let backgroundBlurViewOffsets = UIEdgeInsets(top: 8, left: 16, bottom: 0, right: 16)
+        static let contentOffsets = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        static let imageTextHorizontalOffset: CGFloat = 12
+    }
+}
+
+extension CrowdloanTableViewCell: SkeletonableView {
+    var hidingViews: [UIView] {
+        let views = [
+            titleLabel,
+            iconImageView,
+            detailsLabel,
+            progressLabel,
+            progressView,
+            percentsLabel,
+            timeLabel
+        ]
+        return viewModel.map {
+            $0.isCompleted ? views : views + [navigationImageView]
+        } ?? views
+    }
+
+    func createSkeletons(for _: CGSize) -> [Skeletonable] {
+        let titleLabelSkeletonSize = CGSize(width: 77, height: 12)
+        let iconImageViewSkeletonSize = CGSize(width: 40, height: 40)
+        let detailsLabelSkeletonSize = CGSize(width: 127, height: 12)
+        let progressLabelSkeletonSize = CGSize(width: 138, height: 12)
+        let progressViewSkeletonSize = CGSize(width: 311, height: 5)
+        let percentsLabelSkeletonSize = CGSize(width: 40, height: 12)
+        let timeLabelSkeletonSize = CGSize(width: 67, height: 12)
+
+        return []
     }
 }
