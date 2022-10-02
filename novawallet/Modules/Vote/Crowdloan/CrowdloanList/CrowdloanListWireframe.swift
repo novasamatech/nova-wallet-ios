@@ -18,7 +18,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     }
 
     func presentContributionSetup(
-        from view: CrowdloanListViewProtocol?,
+        from view: ControllerBackedProtocol?,
         crowdloan: Crowdloan,
         displayInfo: CrowdloanDisplayInfo?
     ) {
@@ -65,7 +65,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         view?.controller.navigationController?.pushViewController(contributionsModule.controller, animated: true)
     }
 
-    private func showContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
+    private func showContributionSetup(from view: ControllerBackedProtocol?, paraId: ParaId) {
         guard let setupView = CrowdloanContributionSetupViewFactory.createView(
             for: paraId,
             state: state
