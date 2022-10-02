@@ -39,23 +39,6 @@ final class CrowdloanTableHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: CrowdloansChainViewModel) {
-        self.viewModel?.imageViewModel?.cancel(on: chainSelectionView.iconView)
-        chainSelectionView.iconView.image = nil
-
-        self.viewModel = viewModel
-
-        chainSelectionView.title = viewModel.networkName
-        chainSelectionView.subtitle = viewModel.balance
-
-        let iconSize = 2 * chainSelectionView.iconRadius
-        viewModel.imageViewModel?.loadImage(
-            on: chainSelectionView.iconView,
-            targetSize: CGSize(width: iconSize, height: iconSize),
-            animated: true
-        )
-    }
-
     private func setupLayout() {
         addSubview(walletSwitch)
         walletSwitch.snp.makeConstraints { make in
@@ -91,5 +74,26 @@ final class CrowdloanTableHeaderView: UIView {
             make.edges.equalToSuperview()
             make.height.equalTo(52.0)
         }
+    }
+}
+
+extension CrowdloanTableHeaderView: VoteChainViewProtocol {
+    func bind(viewModel: CrowdloansChainViewModel) {
+        self.viewModel?.imageViewModel?.cancel(on: chainSelectionView.iconView)
+        chainSelectionView.iconView.image = nil
+
+        self.viewModel = viewModel
+
+        chainSelectionView.title = viewModel.networkName
+        chainSelectionView.subtitle = viewModel.balance
+
+        let iconSize = 2 * chainSelectionView.iconRadius
+        viewModel.imageViewModel?.loadImage(
+            on: chainSelectionView.iconView,
+            targetSize: CGSize(width: iconSize, height: iconSize),
+            animated: true
+        )
+
+        setNeedsLayout()
     }
 }

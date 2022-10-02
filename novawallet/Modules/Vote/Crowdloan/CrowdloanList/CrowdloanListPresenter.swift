@@ -4,12 +4,13 @@ import BigInt
 import SubstrateSdk
 
 final class CrowdloanListPresenter {
-    weak var view: CrowdloanListViewProtocol?
+    weak var view: CrowdloansViewProtocol?
     let wireframe: CrowdloanListWireframeProtocol
     let interactor: CrowdloanListInteractorInputProtocol
     let viewModelFactory: CrowdloansViewModelFactoryProtocol
     let logger: LoggerProtocol?
     let accountManagementFilter: AccountManagementFilterProtocol
+    let wallet: MetaAccountModel
 
     private var selectedChainResult: Result<ChainModel, Error>?
     private var accountInfoResult: Result<AccountInfo?, Error>?
@@ -23,14 +24,13 @@ final class CrowdloanListPresenter {
     private var contributionsResult: Result<CrowdloanContributionDict, Error>?
     private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
-    private var wallet: MetaAccountModel?
 
-    private lazy var walletSwitchViewModelFactory = WalletSwitchViewModelFactory()
     private let crowdloansCalculator: CrowdloansCalculatorProtocol
 
     init(
         interactor: CrowdloanListInteractorInputProtocol,
         wireframe: CrowdloanListWireframeProtocol,
+        wallet: MetaAccountModel,
         viewModelFactory: CrowdloansViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         crowdloansCalculator: CrowdloansCalculatorProtocol,
@@ -39,24 +39,12 @@ final class CrowdloanListPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.wallet = wallet
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.crowdloansCalculator = crowdloansCalculator
         self.accountManagementFilter = accountManagementFilter
         self.localizationManager = localizationManager
-    }
-
-    private func updateWalletSwitchView() {
-        guard let wallet = wallet else {
-            return
-        }
-
-        let viewModel = walletSwitchViewModelFactory.createViewModel(
-            from: wallet.walletIdenticonData(),
-            walletType: wallet.type
-        )
-
-        view?.didReceive(walletSwitchViewModel: viewModel)
     }
 
     private func updateChainView() {
@@ -219,62 +207,9 @@ final class CrowdloanListPresenter {
     }
 }
 
-extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
+extension CrowdloanListPresenter: VoteChildPresenterProtocol {
     func setup() {
         interactor.setup()
-    }
-
-    func refresh(shouldReset: Bool) {
-        crowdloansResult = nil
-
-        if shouldReset {
-            view?.didReceive(listState: .loading)
-        }
-
-        if case .success = selectedChainResult {
-            interactor.refresh()
-        } else {
-            interactor.setup()
-        }
-    }
-
-    func selectCrowdloan(_ paraId: ParaId) {
-        guard let wallet = wallet, let chain = try? selectedChainResult?.get() else {
-            return
-        }
-
-        if wallet.fetch(for: chain.accountRequest()) != nil {
-            openCrowdloan(for: paraId)
-        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
-            guard let view = view else {
-                return
-            }
-
-            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
-                chain.name,
-                preferredLanguages: selectedLocale.rLanguages
-            )
-
-            wireframe.presentAddAccount(
-                from: view,
-                chainName: chain.name,
-                message: message,
-                locale: selectedLocale
-            ) { [weak self] in
-                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
-            }
-        } else {
-            guard let view = view else {
-                return
-            }
-
-            wireframe.presentNoAccountSupport(
-                from: view,
-                walletType: wallet.type,
-                chainName: chain.name,
-                locale: selectedLocale
-            )
-        }
     }
 
     func becomeOnline() {
@@ -300,9 +235,64 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
             selectedChainAssetId: chainAssetId
         )
     }
+}
 
-    func handleWalletSwitch() {
-        wireframe.showWalletSwitch(from: view)
+extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
+    func refresh(shouldReset: Bool) {
+        crowdloansResult = nil
+
+        if shouldReset {
+            view?.didReceive(listState: .loading)
+        }
+
+        if case .success = selectedChainResult {
+            interactor.refresh()
+        } else {
+            interactor.setup()
+        }
+    }
+
+    func selectCrowdloan(_ paraId: ParaId) {
+        guard let chain = try? selectedChainResult?.get() else {
+            return
+        }
+
+        if wallet.fetch(for: chain.accountRequest()) != nil {
+            openCrowdloan(for: paraId)
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
+            guard let view = view else {
+                return
+            }
+
+            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
+                chain.name,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: selectedLocale
+            ) { [weak self] in
+                guard let wallet = self?.wallet else {
+                    return
+                }
+
+                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
+            }
+        } else {
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chain.name,
+                locale: selectedLocale
+            )
+        }
     }
 
     func handleYourContributions() {
@@ -412,12 +402,6 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
         accountInfoResult = result
         updateChainView()
-    }
-
-    func didReceive(wallet: MetaAccountModel) {
-        self.wallet = wallet
-
-        updateWalletSwitchView()
     }
 
     func didReceivePriceData(result: Result<PriceData?, Error>?) {

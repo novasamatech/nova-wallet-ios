@@ -33,7 +33,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
-        guard let crowdloanController = createCrowdloanController(
+        guard let crowdloanController = createVoteController(
             for: localizationManager,
             state: CrowdloanSharedState()
         ) else {
@@ -73,7 +73,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func reloadCrowdloanView(on view: MainTabBarViewProtocol) {
         let localizationManager = LocalizationManager.shared
 
-        guard let crowdloanController = createCrowdloanController(
+        guard let crowdloanController = createVoteController(
             for: localizationManager,
             state: CrowdloanSharedState()
         ) else {
@@ -189,7 +189,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         return navigationController
     }
 
-    static func createCrowdloanController(
+    static func createVoteController(
         for localizationManager: LocalizationManagerProtocol,
         state: CrowdloanSharedState
     ) -> UIViewController? {
@@ -200,12 +200,12 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let navigationController = FearlessNavigationController(rootViewController: crowloanView.controller)
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarCrowdloanTitle_v190(preferredLanguages: locale.rLanguages)
+            R.string.localizable.tabbarVoteTitle(preferredLanguages: locale.rLanguages)
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let commonIconImage = R.image.iconTabCrowloan()
-        let selectedIconImage = R.image.iconTabCrowloanFilled()
+        let commonIconImage = R.image.iconTabVote()
+        let selectedIconImage = R.image.iconTabVoteFilled()
 
         let commonIcon = commonIconImage?.tinted(with: R.color.colorWhite()!)?
             .withRenderingMode(.alwaysOriginal)

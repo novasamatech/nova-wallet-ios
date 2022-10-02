@@ -1,20 +1,14 @@
 import SoraFoundation
 
-protocol CrowdloanListViewProtocol: ControllerBackedProtocol, AlertPresentable, LoadableViewProtocol {
-    func didReceive(walletSwitchViewModel: WalletSwitchViewModel)
+protocol CrowdloansViewProtocol: AlertPresentable, ControllerBackedProtocol, LoadableViewProtocol {
     func didReceive(chainInfo: CrowdloansChainViewModel)
     func didReceive(listState: CrowdloanListState)
 }
 
 protocol CrowdloanListPresenterProtocol: AnyObject {
-    func setup()
     func refresh(shouldReset: Bool)
     func selectCrowdloan(_ paraId: ParaId)
-    func becomeOnline()
-    func putOffline()
-    func selectChain()
     func handleYourContributions()
-    func handleWalletSwitch()
 }
 
 protocol CrowdloanListInteractorInputProtocol: AnyObject {
@@ -37,13 +31,12 @@ protocol CrowdloanListInteractorOutputProtocol: AnyObject {
     func didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>)
     func didReceiveSelectedChain(result: Result<ChainModel, Error>)
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
-    func didReceive(wallet: MetaAccountModel)
     func didReceivePriceData(result: Result<PriceData?, Error>?)
 }
 
-protocol CrowdloanListWireframeProtocol: WalletSwitchPresentable, AlertPresentable, NoAccountSupportPresentable {
+protocol CrowdloanListWireframeProtocol: AlertPresentable, NoAccountSupportPresentable {
     func presentContributionSetup(
-        from view: CrowdloanListViewProtocol?,
+        from view: ControllerBackedProtocol?,
         crowdloan: Crowdloan,
         displayInfo: CrowdloanDisplayInfo?
     )
