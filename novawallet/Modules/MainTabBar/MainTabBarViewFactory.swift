@@ -33,10 +33,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
-        guard let crowdloanController = createVoteController(
-            for: localizationManager,
-            state: CrowdloanSharedState()
-        ) else {
+        guard let voteController = createVoteController(for: localizationManager) else {
             return nil
         }
 
@@ -51,7 +48,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let view = MainTabBarViewController()
         view.viewControllers = [
             walletController,
-            crowdloanController,
+            voteController,
             dappsController,
             stakingController,
             settingsController
@@ -68,19 +65,6 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         interactor.presenter = presenter
 
         return view
-    }
-
-    static func reloadCrowdloanView(on view: MainTabBarViewProtocol) {
-        let localizationManager = LocalizationManager.shared
-
-        guard let crowdloanController = createVoteController(
-            for: localizationManager,
-            state: CrowdloanSharedState()
-        ) else {
-            return
-        }
-
-        view.didReplaceView(for: crowdloanController, for: Self.crowdloanIndex)
     }
 
     static func createWalletController(
@@ -189,15 +173,12 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         return navigationController
     }
 
-    static func createVoteController(
-        for localizationManager: LocalizationManagerProtocol,
-        state: CrowdloanSharedState
-    ) -> UIViewController? {
-        guard let crowloanView = CrowdloanListViewFactory.createView(with: state) else {
+    static func createVoteController(for localizationManager: LocalizationManagerProtocol) -> UIViewController? {
+        guard let view = VoteViewFactory.createView() else {
             return nil
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: crowloanView.controller)
+        let navigationController = FearlessNavigationController(rootViewController: view.controller)
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarVoteTitle(preferredLanguages: locale.rLanguages)

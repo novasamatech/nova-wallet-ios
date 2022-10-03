@@ -10,7 +10,6 @@ final class VoteViewLayout: UIView, TableHeaderLayoutUpdatable {
         let view = UITableView()
         view.backgroundColor = .clear
         view.separatorColor = R.color.colorDarkGray()
-        view.refreshControl = UIRefreshControl()
         view.tableFooterView = UIView()
         view.separatorStyle = .none
         view.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
@@ -43,6 +42,7 @@ final class VoteViewLayout: UIView, TableHeaderLayoutUpdatable {
             make.top.equalToSuperview()
             make.leading.bottom.trailing.equalToSuperview()
         }
+
         tableView.tableHeaderView = headerView
     }
 }
