@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class CrowdloanListViewController: UIViewController, ViewHolder {
+final class CrowdloanListViewController: UIViewController, ViewHolder, LoadableViewProtocol {
     typealias RootViewType = CrowdloanListViewLayout
 
     let presenter: CrowdloanListPresenterProtocol
@@ -102,6 +102,14 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
     @objc func actionWalletSwitch() {
         presenter.handleWalletSwitch()
     }
+
+    func didStartLoading() {
+        presenter.startLoading()
+    }
+
+    func didStopLoading() {
+        presenter.stopLoading()
+    }
 }
 
 extension CrowdloanListViewController: UITableViewDataSource {
@@ -165,14 +173,15 @@ extension CrowdloanListViewController: UITableViewDelegate {
         let sectionModel = viewModel.sections[indexPath.section]
         switch sectionModel {
         case let .active(_, cellViewModels):
-            let viewModel = cellViewModels[indexPath.row]
-            viewModel.value.map {
-                presenter.selectCrowdloan($0.paraId)
+            guard let crowdloan = cellViewModels[indexPath.row].value else {
+                return
             }
+            presenter.selectCrowdloan(crowdloan.paraId)
         case let .yourContributions(viewModel):
-            viewModel.value.map { _ in
-                presenter.handleYourContributions()
+            guard viewModel.value != nil else {
+                return
             }
+            presenter.handleYourContributions()
         default:
             return
         }
@@ -213,7 +222,6 @@ extension CrowdloanListViewController: UITableViewDelegate {
             }
         case .empty:
             return UITableView.automaticDimension
-
         default:
             return 0.0
         }

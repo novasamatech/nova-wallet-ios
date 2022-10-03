@@ -4,7 +4,7 @@ import SubstrateSdk
 
 struct MoonbeamFlowCoordinatorFactory {
     static func createCoordinator(
-        previousView: (ControllerBackedProtocol & AlertPresentable)?,
+        previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         state: CrowdloanSharedState,
         crowdloan: Crowdloan,
         displayInfo: CrowdloanDisplayInfo

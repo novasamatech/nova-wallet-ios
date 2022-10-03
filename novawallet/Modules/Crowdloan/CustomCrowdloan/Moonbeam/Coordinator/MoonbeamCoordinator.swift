@@ -6,7 +6,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
     let paraId: ParaId
     let metaAccount: MetaAccountModel
     let operationManager: OperationManagerProtocol
-    let previousView: (ControllerBackedProtocol & AlertPresentable)?
+    let previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?
     let state: CrowdloanSharedState
     let localizationManager: LocalizationManagerProtocol
     let crowdloanDisplayName: String
@@ -19,7 +19,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         metaAccount: MetaAccountModel,
         service: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
-        previousView: (ControllerBackedProtocol & AlertPresentable)?,
+        previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         accountManagementWireframe: AccountManagementWireframeProtocol,
         crowdloanDisplayName: String,
         crowdloanChainId: String,
@@ -47,9 +47,11 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
     func checkHealth() {
         let healthOperation = service.createCheckHealthOperation()
+        previousView?.didStartLoading()
 
         healthOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
+                self?.previousView?.didStopLoading()
                 do {
                     _ = try healthOperation.extractNoCancellableResultData()
                     self?.checkAgreement()

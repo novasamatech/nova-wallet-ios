@@ -1,6 +1,6 @@
 import SoraFoundation
 
-protocol CrowdloanListViewProtocol: ControllerBackedProtocol, AlertPresentable {
+protocol CrowdloanListViewProtocol: ControllerBackedProtocol, AlertPresentable, LoadableViewProtocol {
     func didReceive(walletSwitchViewModel: WalletSwitchViewModel)
     func didReceive(chainInfo: CrowdloansChainViewModel)
     func didReceive(listState: CrowdloansViewModel)
@@ -15,6 +15,8 @@ protocol CrowdloanListPresenterProtocol: AnyObject {
     func selectChain()
     func handleYourContributions()
     func handleWalletSwitch()
+    func startLoading()
+    func stopLoading()
 }
 
 protocol CrowdloanListInteractorInputProtocol: AnyObject {

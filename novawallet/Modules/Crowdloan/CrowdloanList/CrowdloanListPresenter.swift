@@ -239,6 +239,15 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
         }
     }
 
+    func startLoading() {
+        view?.didReceive(listState: viewModelFactory.createLoadableViewModel())
+    }
+
+    func stopLoading() {
+        updateChainView()
+        updateListView()
+    }
+
     func selectCrowdloan(_ paraId: ParaId) {
         guard let wallet = wallet, let chain = try? selectedChainResult?.get() else {
             return

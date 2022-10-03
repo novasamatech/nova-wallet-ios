@@ -106,14 +106,7 @@ extension YourContributionsView {
 
     func bind(model: LoadableViewModelState<Model>) {
         viewModel = model
-
-        switch model {
-        case .loading:
-            startLoadingIfNeeded()
-        case let .cached(value), let .loaded(value):
-            bind(model: value)
-            stopLoadingIfNeeded()
-        }
+        model.value.map(bind)
     }
 
     func bind(model: Model) {
