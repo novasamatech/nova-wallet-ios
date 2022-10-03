@@ -152,7 +152,7 @@ extension CrowdloanListViewManager: ErrorStateViewDelegate {
 }
 
 extension CrowdloanListViewManager: CrowdloansViewProtocol {
-    func didReceive(chainInfo: CrowdloansChainViewModel) {
+    func didReceive(chainInfo: ChainBalanceViewModel) {
         chainSelectionView.bind(viewModel: chainInfo)
     }
 

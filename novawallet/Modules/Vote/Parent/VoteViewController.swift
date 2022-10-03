@@ -101,6 +101,7 @@ final class VoteViewController: UIViewController, ViewHolder {
         case .governance:
             let governanceChildView = ReferendumsViewManager(
                 tableView: rootView.tableView,
+                chainSelectionView: rootView.headerView,
                 parent: self
             )
 

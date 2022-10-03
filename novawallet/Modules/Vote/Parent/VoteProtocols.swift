@@ -10,7 +10,7 @@ protocol VoteViewProtocol: ControllerBackedProtocol {
 }
 
 protocol VoteChainViewProtocol {
-    func bind(viewModel: CrowdloansChainViewModel)
+    func bind(viewModel: ChainBalanceViewModel)
 }
 
 protocol VotePresenterProtocol: AnyObject {
