@@ -291,7 +291,6 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
         )
 
         let percentsLabelSkeletonOffsetY = spaceSize.height - bottomOffset - percentsLabelSkeletonSize.height
-
         let percentsLabelSkeletonOffset = CGPoint(
             x: leftOffset,
             y: percentsLabelSkeletonOffsetY
@@ -312,7 +311,7 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
             y: timeLabelSkeletonOffsetY
         )
 
-        let progressLabelSkeletonOffsetY = progressViewSkeletonOffsetY - Constants.verticalOffset - progressLabel.font.lineHeight + progressLabelSkeletonSize.height / 2
+        let progressLabelSkeletonOffsetY = progressViewSkeletonOffsetY - Constants.verticalOffset - progressLabel.font.lineHeight / 2 - progressLabelSkeletonSize.height / 2
         let progressLabelSkeletonOffset = CGPoint(
             x: leftOffset,
             y: progressLabelSkeletonOffsetY
