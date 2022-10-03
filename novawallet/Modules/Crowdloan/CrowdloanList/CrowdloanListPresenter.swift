@@ -157,6 +157,7 @@ final class CrowdloanListPresenter {
         guard
             let crowdloansResult = crowdloansResult,
             let viewInfoResult = createViewInfoResult() else {
+            view?.didReceive(listState: viewModelFactory.createLoadableViewModel())
             return
         }
 

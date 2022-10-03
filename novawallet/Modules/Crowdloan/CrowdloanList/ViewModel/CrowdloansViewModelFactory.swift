@@ -296,13 +296,16 @@ final class CrowdloansViewModelFactory {
 
         if !active.isEmpty {
             if !completed.isEmpty {
-                return [.active(activeTitle, active), .completed(completedTitle, completed)]
+                return [
+                    .active(.loaded(value: activeTitle), active),
+                    .completed(.loaded(value: completedTitle), completed)
+                ]
             } else {
-                return [.active(activeTitle, active)]
+                return [.active(.loaded(value: activeTitle), active)]
             }
         } else {
             if !completed.isEmpty {
-                return [.completed(completedTitle, completed)]
+                return [.completed(.loaded(value: completedTitle), completed)]
             } else {
                 return []
             }
@@ -428,7 +431,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
     func createLoadableViewModel() -> CrowdloansViewModel {
         CrowdloansViewModel(sections: [
             CrowdloansSection.yourContributions(.loading),
-            CrowdloansSection.active("", Array(repeating: .loading, count: 10))
+            CrowdloansSection.active(.loading, Array(repeating: .loading, count: 10))
         ])
     }
 

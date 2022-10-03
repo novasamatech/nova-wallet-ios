@@ -9,8 +9,8 @@ struct CrowdloansViewModel {
 enum CrowdloansSection {
     case yourContributions(LoadableViewModelState<YourContributionsView.Model>)
     case about(AboutCrowdloansView.Model)
-    case active(String, [LoadableViewModelState<CrowdloanCellViewModel>])
-    case completed(String, [LoadableViewModelState<CrowdloanCellViewModel>])
+    case active(LoadableViewModelState<String>, [LoadableViewModelState<CrowdloanCellViewModel>])
+    case completed(LoadableViewModelState<String>, [LoadableViewModelState<CrowdloanCellViewModel>])
     case error(message: String)
     case empty(title: String)
 }

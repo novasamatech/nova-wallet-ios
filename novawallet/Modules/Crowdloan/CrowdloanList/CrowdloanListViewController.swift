@@ -183,11 +183,18 @@ extension CrowdloanListViewController: UITableViewDelegate {
         switch sectionModel {
         case let .active(title, cells), let .completed(title, cells):
             let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            headerView.bind(title: title, count: cells.count)
+            switch title {
+            case let .loaded(value):
+                headerView.bind(viewModel: .loaded(value: .init(title: value, count: cells.count)))
+            case let .cached(value):
+                headerView.bind(viewModel: .cached(value: .init(title: value, count: cells.count)))
+            case .loading:
+                headerView.bind(viewModel: .loading)
+            }
             return headerView
         case let .empty(title):
             let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            headerView.bind(title: title, count: 0)
+            headerView.bind(viewModel: .loaded(value: .init(title: title, count: 0)))
             return headerView
         default:
             return nil
@@ -197,8 +204,16 @@ extension CrowdloanListViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let sectionModel = viewModel.sections[section]
         switch sectionModel {
-        case .active, .completed, .empty:
+        case let .active(state, _), let .completed(state, _):
+            switch state {
+            case .loading:
+                return 56
+            case .loaded, .cached:
+                return UITableView.automaticDimension
+            }
+        case .empty:
             return UITableView.automaticDimension
+
         default:
             return 0.0
         }
@@ -206,6 +221,10 @@ extension CrowdloanListViewController: UITableViewDelegate {
 
     func tableView(_: UITableView, willDisplay cell: UITableViewCell, forRowAt _: IndexPath) {
         (cell as? SkeletonableViewCell)?.updateLoadingState()
+    }
+
+    func tableView(_: UITableView, willDisplayHeaderView view: UIView, forSection _: Int) {
+        (view as? SkeletonableView)?.updateLoadingState()
     }
 
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

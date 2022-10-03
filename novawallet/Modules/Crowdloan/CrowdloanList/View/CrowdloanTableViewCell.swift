@@ -264,7 +264,6 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
         let progressLabelSkeletonSize = CGSize(width: 138, height: 12)
         let percentsLabelSkeletonSize = CGSize(width: 40, height: 12)
         let timeLabelSkeletonSize = CGSize(width: 67, height: 12)
-        let availableHeight = spaceSize.height - Constants.backgroundBlurViewOffsets.top - Constants.backgroundBlurViewOffsets.bottom
         let topOffset = Constants.contentOffsets.top + Constants.backgroundBlurViewOffsets.top
         let bottomOffset = Constants.contentOffsets.bottom + Constants.backgroundBlurViewOffsets.bottom
         let rightOffset = Constants.contentOffsets.right + Constants.backgroundBlurViewOffsets.right
