@@ -3,14 +3,16 @@ import UIKit
 
 final class ReferendumsViewManager: NSObject {
     let tableView: UITableView
+    let chainSelectionView: VoteChainViewProtocol
 
     var locale = Locale.current
 
     weak var presenter: ReferendumsPresenterProtocol?
     private weak var parent: ControllerBackedProtocol?
 
-    init(tableView: UITableView, parent: ControllerBackedProtocol) {
+    init(tableView: UITableView, chainSelectionView: VoteChainViewProtocol, parent: ControllerBackedProtocol) {
         self.tableView = tableView
+        self.chainSelectionView = chainSelectionView
         self.parent = parent
 
         super.init()
@@ -46,7 +48,11 @@ extension ReferendumsViewManager: UITableViewDelegate {
     }
 }
 
-extension ReferendumsViewManager: ReferendumsViewProtocol {}
+extension ReferendumsViewManager: ReferendumsViewProtocol {
+    func didReceiveChainBalance(viewModel: ChainBalanceViewModel) {
+        chainSelectionView.bind(viewModel: viewModel)
+    }
+}
 
 extension ReferendumsViewManager: VoteChildViewProtocol {
     var isSetup: Bool {

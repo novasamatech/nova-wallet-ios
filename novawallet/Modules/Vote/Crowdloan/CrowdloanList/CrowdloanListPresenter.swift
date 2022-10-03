@@ -27,6 +27,8 @@ final class CrowdloanListPresenter {
 
     private let crowdloansCalculator: CrowdloansCalculatorProtocol
 
+    private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
+
     init(
         interactor: CrowdloanListInteractorInputProtocol,
         wireframe: CrowdloanListWireframeProtocol,
@@ -67,10 +69,9 @@ final class CrowdloanListPresenter {
             balance = nil
         }
 
-        let viewModel = viewModelFactory.createChainViewModel(
-            from: chain,
-            asset: asset,
-            balance: balance,
+        let viewModel = chainBalanceFactory.createViewModel(
+            from: ChainAsset(chain: chain, asset: asset),
+            balanceInPlank: balance,
             locale: selectedLocale
         )
 
