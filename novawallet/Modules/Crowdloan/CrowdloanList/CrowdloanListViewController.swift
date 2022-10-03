@@ -204,13 +204,22 @@ extension CrowdloanListViewController: UITableViewDelegate {
         }
     }
 
+    func tableView(_: UITableView, willDisplay cell: UITableViewCell, forRowAt _: IndexPath) {
+        (cell as? SkeletonableViewCell)?.updateLoadingState()
+    }
+
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let sectionModel = viewModel.sections[indexPath.section]
         switch sectionModel {
         case .yourContributions:
             return 123
-        case .active, .completed:
-            return 145
+        case let .active(_, model), let .completed(_, model):
+            switch model[indexPath.row] {
+            case .loading:
+                return 145
+            case .cached, .loaded:
+                return UITableView.automaticDimension
+            }
         default:
             return UITableView.automaticDimension
         }

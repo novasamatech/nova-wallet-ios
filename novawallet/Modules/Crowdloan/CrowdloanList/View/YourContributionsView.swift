@@ -44,6 +44,7 @@ final class YourContributionsView: UIView {
     }
 
     private var style: Style = .navigation
+    private var viewModel: LoadableViewModelState<Model>?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -104,6 +105,8 @@ extension YourContributionsView {
     }
 
     func bind(model: LoadableViewModelState<Model>) {
+        viewModel = model
+
         switch model {
         case .loading:
             startLoadingIfNeeded()
@@ -158,18 +161,18 @@ extension YourContributionsView {
 
 // MARK: - Skeletons
 
-protocol SkeletonableView: UIView {
-    var skeletonView: SkrullableView? { get set }
-    var skeletonSuperview: UIView { get }
-    var hidingViews: [UIView] { get }
-    func startLoadingIfNeeded()
-    func stopLoadingIfNeeded()
-    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable]
-}
-
 extension YourContributionsView: SkeletonableView {
     var skeletonSuperview: UIView {
         self
+    }
+
+    func updateLoadingState() {
+        guard let viewModel = viewModel, let _ = viewModel.value else {
+            startLoadingIfNeeded()
+            return
+        }
+
+        stopLoadingIfNeeded()
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
@@ -220,61 +223,5 @@ extension YourContributionsView: SkeletonableView {
                 size: priceSkeletonSize
             )
         ]
-    }
-}
-
-extension SkeletonableView {
-    func startLoadingIfNeeded() {
-        guard skeletonView == nil else {
-            return
-        }
-
-        hidingViews.forEach { $0.alpha = 0 }
-        setupSkeleton()
-    }
-
-    func stopLoadingIfNeeded() {
-        guard skeletonView != nil else {
-            return
-        }
-
-        skeletonView?.stopSkrulling()
-        skeletonView?.removeFromSuperview()
-        skeletonView = nil
-
-        hidingViews.forEach { $0.alpha = 1 }
-    }
-
-    private func setupSkeleton() {
-        let spaceSize = bounds.size
-
-        guard spaceSize.width > 0, spaceSize.height > 0 else {
-            return
-        }
-
-        let builder = Skrull(
-            size: spaceSize,
-            decorations: [],
-            skeletons: createSkeletons(for: spaceSize)
-        )
-
-        let currentSkeletonView: SkrullableView?
-
-        if let skeletonView = skeletonView {
-            currentSkeletonView = skeletonView
-            builder.updateSkeletons(in: skeletonView)
-        } else {
-            let newSkeletonView = builder
-                .fillSkeletonStart(R.color.colorSkeletonStart()!)
-                .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
-                .build()
-            newSkeletonView.autoresizingMask = []
-            skeletonSuperview.addSubview(newSkeletonView)
-            skeletonView = newSkeletonView
-            newSkeletonView.startSkrulling()
-            currentSkeletonView = newSkeletonView
-        }
-
-        currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
     }
 }
