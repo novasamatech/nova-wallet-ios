@@ -30,7 +30,7 @@ final class VoteViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = CrowdloanListViewLayout()
+        view = VoteViewLayout()
     }
 
     override func viewDidLoad() {
@@ -94,6 +94,9 @@ final class VoteViewController: UIViewController, ViewHolder {
     }
 
     private func setupChildView() {
+        childView?.unbind()
+        childView = nil
+
         switch selectedType {
         case .governance:
             let governanceChildView = ReferendumsViewManager(
@@ -102,6 +105,8 @@ final class VoteViewController: UIViewController, ViewHolder {
             )
 
             childView = governanceChildView
+            childView?.bind()
+            childView?.locale = selectedLocale
 
             presenter.switchToGovernance(governanceChildView)
         case .crowdloan:
@@ -110,12 +115,13 @@ final class VoteViewController: UIViewController, ViewHolder {
                 chainSelectionView: rootView.headerView,
                 parent: self
             )
+
             childView = crowdloanChildView
+            childView?.bind()
+            childView?.locale = selectedLocale
 
             presenter.switchToCrowdloans(crowdloanChildView)
         }
-
-        childView?.locale = selectedLocale
     }
 }
 
@@ -134,3 +140,5 @@ extension VoteViewController: Localizable {
         }
     }
 }
+
+extension VoteViewController: HiddableBarWhenPushed {}

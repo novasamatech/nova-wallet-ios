@@ -8,7 +8,7 @@ final class CrowdloanListViewManager: NSObject {
 
     var locale = Locale.current
 
-    private weak var presenter: CrowdloanListPresenterProtocol?
+    weak var presenter: CrowdloanListPresenterProtocol?
     private weak var parent: ControllerBackedProtocol?
 
     private var state: CrowdloanListState = .loading
@@ -19,9 +19,6 @@ final class CrowdloanListViewManager: NSObject {
         self.parent = parent
 
         super.init()
-
-        tableView.delegate = self
-        tableView.dataSource = self
     }
 }
 
@@ -188,5 +185,33 @@ extension CrowdloanListViewManager: VoteChildViewProtocol {
 
     var controller: UIViewController {
         parent?.controller ?? UIViewController()
+    }
+
+    func bind() {
+        tableView.registerClassForCell(YourContributionsTableViewCell.self)
+        tableView.registerClassForCell(AboutCrowdloansTableViewCell.self)
+        tableView.registerClassForCell(CrowdloanTableViewCell.self)
+        tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        tableView.registerClassForCell(BlurredTableViewCell<ErrorStateView>.self)
+        tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
+
+        tableView.dataSource = self
+        tableView.delegate = self
+
+        tableView.reloadData()
+    }
+
+    func unbind() {
+        tableView.unregisterClassForCell(YourContributionsTableViewCell.self)
+        tableView.unregisterClassForCell(AboutCrowdloansTableViewCell.self)
+        tableView.unregisterClassForCell(CrowdloanTableViewCell.self)
+        tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        tableView.unregisterClassForCell(BlurredTableViewCell<ErrorStateView>.self)
+        tableView.unregisterHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
+
+        tableView.dataSource = nil
+        tableView.delegate = nil
+
+        tableView.reloadData()
     }
 }

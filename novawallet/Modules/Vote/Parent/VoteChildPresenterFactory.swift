@@ -95,7 +95,7 @@ final class VoteChildPresenterFactory {
 
 extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
     func createCrowdloanPresenter(
-        from _: CrowdloansViewProtocol,
+        from view: CrowdloansViewProtocol,
         wallet: MetaAccountModel
     ) -> VoteChildPresenterProtocol? {
         let state = CrowdloanSharedState()
@@ -121,11 +121,26 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             logger: Logger.shared
         )
 
+        presenter.view = view
+        view.presenter = presenter
+        interactor.presenter = presenter
+
         return presenter
     }
 
     func createGovernancePresenter(
-        from _: ReferendumsViewProtocol,
+        from view: ReferendumsViewProtocol,
         wallet _: MetaAccountModel
-    ) -> VoteChildPresenterProtocol? {}
+    ) -> VoteChildPresenterProtocol? {
+        let interactor = ReferendumsInteractor()
+        let wireframe = ReferendumsWireframe()
+
+        let presenter = ReferendumsPresenter(interactor: interactor, wireframe: wireframe)
+
+        presenter.view = view
+        view.presenter = presenter
+        interactor.presenter = presenter
+
+        return presenter
+    }
 }

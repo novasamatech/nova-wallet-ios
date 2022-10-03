@@ -58,6 +58,7 @@ extension VotePresenter: VotePresenterProtocol {
             return
         }
 
+        childPresenter?.putOffline()
         childPresenter = childPresenterFactory.createGovernancePresenter(from: view, wallet: wallet)
         childPresenter?.setup()
     }
@@ -67,6 +68,7 @@ extension VotePresenter: VotePresenterProtocol {
             return
         }
 
+        childPresenter?.putOffline()
         childPresenter = childPresenterFactory.createCrowdloanPresenter(from: view, wallet: wallet)
         childPresenter?.setup()
     }

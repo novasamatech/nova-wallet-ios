@@ -18,7 +18,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     }
 
     func presentContributionSetup(
-        from view: ControllerBackedProtocol?,
+        from view: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         crowdloan: Crowdloan,
         displayInfo: CrowdloanDisplayInfo?
     ) {
