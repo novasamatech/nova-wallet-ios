@@ -35,6 +35,9 @@ protocol VoteWireframeProtocol: AlertPresentable, ErrorPresentable, WalletSwitch
 
 protocol VoteChildViewProtocol: ControllerBackedProtocol {
     var locale: Locale { get set }
+
+    func bind()
+    func unbind()
 }
 
 protocol VoteChildPresenterProtocol: AnyObject {

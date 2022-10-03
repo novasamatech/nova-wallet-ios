@@ -27,7 +27,7 @@ extension VoteInteractor: VoteInteractorInputProtocol {
     func setup() {
         provideSelectedWallet()
 
-        eventCenter.add(observer: self)
+        eventCenter.add(observer: self, dispatchIn: .main)
     }
 }
 
