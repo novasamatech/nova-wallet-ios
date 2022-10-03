@@ -10,6 +10,7 @@ enum SettingsKey: String {
     case stakingNetworkExpansion
     case hidesZeroBalances
     case selectedCurrency
+    case governanceChainId
 }
 
 extension SettingsManagerProtocol {
@@ -37,6 +38,20 @@ extension SettingsManagerProtocol {
                 set(value: existingValue, for: SettingsKey.crowdloadChainId.rawValue)
             } else {
                 removeValue(for: SettingsKey.crowdloadChainId.rawValue)
+            }
+        }
+    }
+
+    var governanceChainId: String? {
+        get {
+            string(for: SettingsKey.governanceChainId.rawValue)
+        }
+
+        set {
+            if let existingValue = newValue {
+                set(value: existingValue, for: SettingsKey.governanceChainId.rawValue)
+            } else {
+                removeValue(for: SettingsKey.governanceChainId.rawValue)
             }
         }
     }

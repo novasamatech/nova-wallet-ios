@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class CrowdloanTableHeaderView: UIView {
+final class VoteTableHeaderView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
@@ -25,7 +25,7 @@ final class CrowdloanTableHeaderView: UIView {
         return view
     }()
 
-    private var viewModel: CrowdloansChainViewModel?
+    private var viewModel: ChainBalanceViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -77,18 +77,18 @@ final class CrowdloanTableHeaderView: UIView {
     }
 }
 
-extension CrowdloanTableHeaderView: VoteChainViewProtocol {
-    func bind(viewModel: CrowdloansChainViewModel) {
-        self.viewModel?.imageViewModel?.cancel(on: chainSelectionView.iconView)
+extension VoteTableHeaderView: VoteChainViewProtocol {
+    func bind(viewModel: ChainBalanceViewModel) {
+        self.viewModel?.icon.cancel(on: chainSelectionView.iconView)
         chainSelectionView.iconView.image = nil
 
         self.viewModel = viewModel
 
-        chainSelectionView.title = viewModel.networkName
+        chainSelectionView.title = viewModel.name
         chainSelectionView.subtitle = viewModel.balance
 
         let iconSize = 2 * chainSelectionView.iconRadius
-        viewModel.imageViewModel?.loadImage(
+        viewModel.icon.loadImage(
             on: chainSelectionView.iconView,
             targetSize: CGSize(width: iconSize, height: iconSize),
             animated: true

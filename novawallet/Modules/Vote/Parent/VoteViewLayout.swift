@@ -4,7 +4,7 @@ import UIKit
 final class VoteViewLayout: UIView, TableHeaderLayoutUpdatable {
     private let backgroundView = MultigradientView.background
 
-    let headerView = CrowdloanTableHeaderView()
+    let headerView = VoteTableHeaderView()
 
     let tableView: UITableView = {
         let view = UITableView()

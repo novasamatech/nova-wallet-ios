@@ -3,7 +3,7 @@ import SoraFoundation
 protocol CrowdloansViewProtocol: AlertPresentable, ControllerBackedProtocol, LoadableViewProtocol {
     var presenter: CrowdloanListPresenterProtocol? { get set }
 
-    func didReceive(chainInfo: CrowdloansChainViewModel)
+    func didReceive(chainInfo: ChainBalanceViewModel)
     func didReceive(listState: CrowdloanListState)
 }
 

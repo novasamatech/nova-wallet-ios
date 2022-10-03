@@ -91,6 +91,20 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
     }
+
+    private func createGovernanceInteractor(
+        for state: GovernanceSharedState,
+        wallet: MetaAccountModel
+    ) -> ReferendumsInteractor {
+        ReferendumsInteractor(
+            selectedMetaAccount: wallet,
+            governanceState: state,
+            chainRegistry: chainRegistry,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceProviderFactory,
+            currencyManager: currencyManager
+        )
+    }
 }
 
 extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
@@ -130,12 +144,17 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
     func createGovernancePresenter(
         from view: ReferendumsViewProtocol,
-        wallet _: MetaAccountModel
+        wallet: MetaAccountModel
     ) -> VoteChildPresenterProtocol? {
-        let interactor = ReferendumsInteractor()
+        let state = GovernanceSharedState()
+        let interactor = createGovernanceInteractor(for: state, wallet: wallet)
         let wireframe = ReferendumsWireframe()
 
-        let presenter = ReferendumsPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = ReferendumsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         view.presenter = presenter
