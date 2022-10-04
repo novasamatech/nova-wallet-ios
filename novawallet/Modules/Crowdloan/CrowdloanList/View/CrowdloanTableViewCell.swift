@@ -282,7 +282,7 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
             y: titleSkeletonOffsetY
         )
 
-        let detailsLabelSkeletonOffsetY = imageSkeletonOffset.y + Constants.imageSize.height - detailsLabel.font.lineHeight / 2 - detailsLabelSkeletonSize.height / 2
+        let detailsLabelSkeletonOffsetY = topOffset + titleLabel.font.lineHeight + detailsLabel.font.lineHeight / 2 - detailsLabelSkeletonSize.height / 2
 
         let detailsLabelSkeletonOffset = CGPoint(
             x: titleSkeletonOffsetX,
