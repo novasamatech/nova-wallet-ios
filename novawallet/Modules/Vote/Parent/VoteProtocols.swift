@@ -5,7 +5,7 @@ enum VoteType: UInt8 {
     case crowdloan
 }
 
-protocol VoteViewProtocol: ControllerBackedProtocol {
+protocol VoteViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didSwitchWallet(with viewModel: WalletSwitchViewModel)
 }
 
