@@ -15,11 +15,15 @@ final class CrowdloanListViewManager: NSObject {
     }
 
     weak var presenter: CrowdloanListPresenterProtocol?
-    private weak var parent: ControllerBackedProtocol?
+    private weak var parent: (ControllerBackedProtocol & LoadableViewProtocol)?
 
     private var state: CrowdloanListState = .loading
 
-    init(tableView: UITableView, chainSelectionView: VoteChainViewProtocol, parent: ControllerBackedProtocol) {
+    init(
+        tableView: UITableView,
+        chainSelectionView: VoteChainViewProtocol,
+        parent: ControllerBackedProtocol & LoadableViewProtocol
+    ) {
         self.tableView = tableView
         self.chainSelectionView = chainSelectionView
         self.parent = parent
@@ -169,19 +173,22 @@ extension CrowdloanListViewManager: CrowdloansViewProtocol {
     }
 }
 
-// TODO: Implement for Moonbeam coordinator
 extension CrowdloanListViewManager: LoadableViewProtocol {
     var loadableContentView: UIView! {
-        UIView()
+        parent?.loadableContentView ?? UIView()
     }
 
     var shouldDisableInteractionWhenLoading: Bool {
-        false
+        parent?.shouldDisableInteractionWhenLoading ?? false
     }
 
-    func didStartLoading() {}
+    func didStartLoading() {
+        parent?.didStartLoading()
+    }
 
-    func didStopLoading() {}
+    func didStopLoading() {
+        parent?.didStopLoading()
+    }
 }
 
 extension CrowdloanListViewManager: VoteChildViewProtocol {
