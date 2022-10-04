@@ -12,7 +12,6 @@ final class VoteTableHeaderView: UIView {
     let walletSwitch = WalletSwitchControl()
 
     let votingTypeSwitch: RoundedSegmentedControl = .create { view in
-        view.titles = ["Governance", "Crowdloans"]
         view.backgroundView.fillColor = R.color.colorBlack48()!
         view.selectionColor = R.color.colorWhite16()!
         view.titleFont = .regularFootnote
@@ -22,8 +21,19 @@ final class VoteTableHeaderView: UIView {
 
     let chainSelectionView: DetailsTriangularedView = {
         let view = UIFactory.default.createChainAssetSelectionView()
+        view.borderWidth = 0.0
+        view.actionImage = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
+        view.actionView.tintColor = R.color.colorWhite48()
         return view
     }()
+
+    var locale = Locale.current {
+        didSet {
+            if locale != oldValue {
+                setupLocalization()
+            }
+        }
+    }
 
     private var viewModel: ChainBalanceViewModel?
 
@@ -31,7 +41,9 @@ final class VoteTableHeaderView: UIView {
         super.init(frame: frame)
 
         backgroundColor = .clear
+
         setupLayout()
+        setupLocalization()
     }
 
     @available(*, unavailable)
@@ -74,6 +86,17 @@ final class VoteTableHeaderView: UIView {
             make.edges.equalToSuperview()
             make.height.equalTo(52.0)
         }
+    }
+
+    private func setupLocalization() {
+        let languages = locale.rLanguages
+
+        titleLabel.text = R.string.localizable.tabbarVoteTitle(preferredLanguages: languages)
+
+        votingTypeSwitch.titles = [
+            R.string.localizable.tabbarGovernanceTitle(preferredLanguages: languages),
+            R.string.localizable.tabbarCrowdloanTitle_v190(preferredLanguages: languages)
+        ]
     }
 }
 
