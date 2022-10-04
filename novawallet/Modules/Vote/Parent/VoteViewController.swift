@@ -75,9 +75,7 @@ final class VoteViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
-        rootView.headerView.titleLabel.text = R.string.localizable.tabbarVoteTitle(preferredLanguages: languages)
-
+        rootView.headerView.locale = selectedLocale
         childView?.locale = selectedLocale
     }
 

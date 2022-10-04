@@ -5,7 +5,13 @@ final class ReferendumsViewManager: NSObject {
     let tableView: UITableView
     let chainSelectionView: VoteChainViewProtocol
 
-    var locale = Locale.current
+    var locale = Locale.current {
+        didSet {
+            if locale != oldValue {
+                tableView.reloadData()
+            }
+        }
+    }
 
     weak var presenter: ReferendumsPresenterProtocol?
     private weak var parent: ControllerBackedProtocol?

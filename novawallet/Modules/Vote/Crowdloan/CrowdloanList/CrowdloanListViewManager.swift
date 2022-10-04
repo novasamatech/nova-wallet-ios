@@ -6,7 +6,13 @@ final class CrowdloanListViewManager: NSObject {
     let tableView: UITableView
     let chainSelectionView: VoteChainViewProtocol
 
-    var locale = Locale.current
+    var locale = Locale.current {
+        didSet {
+            if locale != oldValue {
+                tableView.reloadData()
+            }
+        }
+    }
 
     weak var presenter: CrowdloanListPresenterProtocol?
     private weak var parent: ControllerBackedProtocol?
