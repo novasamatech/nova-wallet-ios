@@ -2,6 +2,16 @@ import UIKit
 import SoraUI
 
 final class YourContributionsView: UIView {
+    var skeletonView: SkrullableView?
+    var hidingViews: [UIView] {
+        switch style {
+        case .navigation:
+            return [titleLabel, counterLabel, amountLabel, amountDetailsLabel, navigationImageView]
+        case .readonly:
+            return [titleLabel, counterLabel, amountLabel, amountDetailsLabel]
+        }
+    }
+
     let titleLabel: UILabel = .create {
         $0.textColor = R.color.colorWhite64()
         $0.font = .p1Paragraph
@@ -32,6 +42,9 @@ final class YourContributionsView: UIView {
         $0.contentMode = .center
         $0.tintColor = R.color.colorWhite48()
     }
+
+    private var style: Style = .navigation
+    private var viewModel: LoadableViewModelState<Model>?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -91,6 +104,11 @@ extension YourContributionsView {
         let amountDetails: String
     }
 
+    func bind(model: LoadableViewModelState<Model>) {
+        viewModel = model
+        model.value.map(bind)
+    }
+
     func bind(model: Model) {
         titleLabel.text = model.title
         counterLabel.titleLabel.text = model.count
@@ -115,6 +133,7 @@ extension YourContributionsView {
         case .readonly:
             navigationImageView.isHidden = true
         }
+        self.style = style
     }
 }
 
@@ -130,5 +149,74 @@ extension YourContributionsView {
         static let bottomInset: CGFloat = 20
         static let navigationImageViewSize = CGSize(width: 24, height: 24)
         static let navigationImageViewRightOffset: CGFloat = 16
+    }
+}
+
+// MARK: - Skeletons
+
+extension YourContributionsView: SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    func updateLoadingState() {
+        guard let viewModel = viewModel, viewModel.value != nil else {
+            startLoadingIfNeeded()
+            return
+        }
+
+        stopLoadingIfNeeded()
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let titleSkeletonSize = CGSize(width: 88, height: 12)
+        let amountSkeletonSize = CGSize(width: 120, height: 22)
+        let priceSkeletonSize = CGSize(width: 70, height: 12)
+
+        let titleSkeletonOffsetY = Constants.topInset + titleLabel.font.lineHeight / 2 - titleSkeletonSize.height / 2
+        let bottomInset = spaceSize.height - Constants.bottomInset
+        let priceSkeletonOffsetY = bottomInset - amountDetailsLabel.font.lineHeight / 2 - priceSkeletonSize.height / 2
+        let filledSpace = titleSkeletonSize.height + amountSkeletonSize.height
+        let emptySpace = priceSkeletonOffsetY - titleSkeletonOffsetY - filledSpace
+        let amountSkeletonOffsetY = titleSkeletonOffsetY + titleSkeletonSize.height + emptySpace / 2
+
+        let titleSkeletonOffset = CGPoint(
+            x: spaceSize.width / 2 - titleSkeletonSize.width / 2,
+            y: titleSkeletonOffsetY
+        )
+
+        let amountSkeletonOffset = CGPoint(
+            x: spaceSize.width / 2 - amountSkeletonSize.width / 2,
+            y: amountSkeletonOffsetY
+        )
+
+        let priceSkeletonOffset = CGPoint(
+            x: spaceSize.width / 2 - priceSkeletonSize.width / 2,
+            y: priceSkeletonOffsetY
+        )
+
+        return [
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: titleSkeletonOffset,
+                size: titleSkeletonSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: amountSkeletonOffset,
+                size: amountSkeletonSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: priceSkeletonOffset,
+                size: priceSkeletonSize
+            )
+        ]
     }
 }

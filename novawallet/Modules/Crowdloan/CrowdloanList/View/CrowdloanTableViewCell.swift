@@ -2,6 +2,8 @@ import UIKit
 import SoraUI
 
 final class CrowdloanTableViewCell: UITableViewCell {
+    var skeletonView: SkrullableView?
+
     private let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.isUserInteractionEnabled = false
@@ -89,12 +91,12 @@ final class CrowdloanTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private var viewModel: CrowdloanCellViewModel?
+    private var viewModel: LoadableViewModelState<CrowdloanCellViewModel>?
 
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        viewModel?.iconViewModel.cancel(on: iconImageView)
+        viewModel?.value?.iconViewModel.cancel(on: iconImageView)
         viewModel = nil
         progressValue = nil
 
@@ -128,11 +130,11 @@ final class CrowdloanTableViewCell: UITableViewCell {
 
     private func setupLayout() {
         let content = UIView.vStack(
-            spacing: 8,
+            spacing: Constants.verticalOffset,
             [
                 .hStack(
                     alignment: .top,
-                    spacing: 12,
+                    spacing: Constants.imageTextHorizontalOffset,
                     [
                         iconImageView,
                         .vStack(
@@ -151,51 +153,52 @@ final class CrowdloanTableViewCell: UITableViewCell {
             ]
         )
 
-        iconImageView.snp.makeConstraints { $0.size.equalTo(32) }
+        iconImageView.snp.makeConstraints { $0.size.equalTo(Constants.imageSize) }
         navigationImageView.snp.makeConstraints { make in
-            make.size.equalTo(16)
+            make.size.equalTo(Constants.navigationImageSize)
         }
         progressBackgroundView.addSubview(progressView)
-        progressBackgroundView.snp.makeConstraints { $0.height.equalTo(5) }
+        progressBackgroundView.snp.makeConstraints { $0.height.equalTo(Constants.progressHeight) }
 
         contentView.addSubview(backgroundBlurView)
         backgroundBlurView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(8)
-            make.bottom.equalToSuperview()
+            make.edges.equalTo(Constants.backgroundBlurViewOffsets)
         }
 
         backgroundBlurView.addSubview(content)
         content.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.top.equalToSuperview().inset(12)
+            make.edges.equalTo(Constants.contentOffsets)
         }
     }
 
-    func bind(viewModel: CrowdloanCellViewModel) {
+    func bind(viewModel: LoadableViewModelState<CrowdloanCellViewModel>) {
         self.viewModel = viewModel
 
-        viewModel.iconViewModel.loadImage(
+        guard let model = viewModel.value else {
+            return
+        }
+
+        model.iconViewModel.loadImage(
             on: iconImageView,
-            targetSize: CGSize(width: 32, height: 32),
+            targetSize: Constants.imageSize,
             animated: true
         )
 
-        titleLabel.text = viewModel.title
+        titleLabel.text = model.title
 
-        switch viewModel.description {
+        switch model.description {
         case let .address(address):
             detailsLabel.text = address
         case let .text(text):
             detailsLabel.text = text
         }
 
-        progressLabel.text = viewModel.progress
-        percentsLabel.text = viewModel.progressPercentsText
-        progressValue = viewModel.progressValue
+        progressLabel.text = model.progress
+        percentsLabel.text = model.progressPercentsText
+        progressValue = model.progressValue
         setNeedsLayout()
 
-        if viewModel.isCompleted {
+        if model.isCompleted {
             timeLabel.text = nil
             percentsLabel.textColor = R.color.colorTransparentText()
             navigationImageView.isHidden = true
@@ -204,7 +207,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
             titleLabel.textColor = R.color.colorTransparentText()
             iconImageView.tintColor = R.color.colorTransparentText()!
         } else {
-            timeLabel.text = viewModel.timeleft
+            timeLabel.text = model.timeleft
             percentsLabel.textColor = R.color.colorCoral()
             navigationImageView.isHidden = false
             progressView.backgroundColor = R.color.colorCoral()
@@ -213,4 +216,163 @@ final class CrowdloanTableViewCell: UITableViewCell {
             iconImageView.tintColor = R.color.colorWhite()!
         }
     }
+}
+
+extension CrowdloanTableViewCell {
+    enum Constants {
+        static let imageSize = CGSize(width: 40, height: 40)
+        static let navigationImageSize = CGSize(width: 24, height: 24)
+        static let progressHeight: CGFloat = 5
+        static let backgroundBlurViewOffsets = UIEdgeInsets(top: 8, left: 16, bottom: 0, right: 16)
+        static let contentOffsets = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        static let imageTextHorizontalOffset: CGFloat = 12
+        static let verticalOffset: CGFloat = 8
+    }
+}
+
+extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
+    var skeletonSuperview: UIView {
+        self
+    }
+
+    var hidingViews: [UIView] {
+        [
+            titleLabel,
+            iconImageView,
+            detailsLabel,
+            progressLabel,
+            progressView,
+            progressBackgroundView,
+            percentsLabel,
+            timeLabel,
+            navigationImageView
+        ]
+    }
+
+    func updateLoadingState() {
+        guard let viewModel = viewModel, viewModel.value != nil else {
+            startLoadingIfNeeded()
+            return
+        }
+
+        stopLoadingIfNeeded()
+    }
+
+    // swiftlint:disable function_body_length
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let titleLabelSkeletonSize = CGSize(width: 77, height: 12)
+        let detailsLabelSkeletonSize = CGSize(width: 127, height: 12)
+        let progressLabelSkeletonSize = CGSize(width: 138, height: 12)
+        let percentsLabelSkeletonSize = CGSize(width: 40, height: 12)
+        let timeLabelSkeletonSize = CGSize(width: 67, height: 12)
+        let topOffset = Constants.contentOffsets.top + Constants.backgroundBlurViewOffsets.top
+        let bottomOffset = Constants.contentOffsets.bottom + Constants.backgroundBlurViewOffsets.bottom
+        let rightOffset = Constants.contentOffsets.right + Constants.backgroundBlurViewOffsets.right
+        let leftOffset = Constants.contentOffsets.left + Constants.backgroundBlurViewOffsets.left
+
+        let imageSkeletonOffset = CGPoint(
+            x: leftOffset,
+            y: topOffset
+        )
+
+        let titleSkeletonOffsetY = topOffset + titleLabel.font.lineHeight / 2 - titleLabelSkeletonSize.height / 2
+        let imageTrailing = imageSkeletonOffset.x + Constants.imageSize.width
+        let titleSkeletonOffsetX = imageTrailing + Constants.imageTextHorizontalOffset
+        let titleSkeletonOffset = CGPoint(
+            x: titleSkeletonOffsetX,
+            y: titleSkeletonOffsetY
+        )
+
+        let detailsLabelCenterY = topOffset + titleLabel.font.lineHeight + detailsLabel.font.lineHeight / 2
+        let detailsLabelSkeletonOffsetY = detailsLabelCenterY - detailsLabelSkeletonSize.height / 2
+
+        let detailsLabelSkeletonOffset = CGPoint(
+            x: titleSkeletonOffsetX,
+            y: detailsLabelSkeletonOffsetY
+        )
+
+        let percentsLabelSkeletonOffsetY = spaceSize.height - bottomOffset - percentsLabelSkeletonSize.height
+        let percentsLabelSkeletonOffset = CGPoint(
+            x: leftOffset,
+            y: percentsLabelSkeletonOffsetY
+        )
+
+        let percentsLabelTopY = spaceSize.height - bottomOffset - percentsLabel.font.lineHeight
+        let progressViewSkeletonOffsetY = percentsLabelTopY - Constants.verticalOffset - Constants.progressHeight
+        let progressViewSkeletonWidth = spaceSize.width - rightOffset - leftOffset
+        let progressViewSkeletonSize = CGSize(width: progressViewSkeletonWidth, height: Constants.progressHeight)
+        let progressViewSkeletonOffset = CGPoint(
+            x: leftOffset,
+            y: progressViewSkeletonOffsetY
+        )
+
+        let timeLabelSkeletonOffsetY = spaceSize.height - bottomOffset - timeLabelSkeletonSize.height
+        let timeLabelSkeletonOffsetX = spaceSize.width - rightOffset - timeLabelSkeletonSize.width
+        let timeLabelSkeletonOffset = CGPoint(
+            x: timeLabelSkeletonOffsetX,
+            y: timeLabelSkeletonOffsetY
+        )
+
+        let verticalOffset = Constants.verticalOffset
+        let progressLabelCenterY = progressViewSkeletonOffsetY - verticalOffset - progressLabel.font.lineHeight / 2
+        let progressLabelSkeletonOffsetY = progressLabelCenterY - progressLabelSkeletonSize.height / 2
+        let progressLabelSkeletonOffset = CGPoint(
+            x: leftOffset,
+            y: progressLabelSkeletonOffsetY
+        )
+
+        return [
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: imageSkeletonOffset,
+                size: Constants.imageSize,
+                cornerRadii: .init(width: 0.25, height: 0.25)
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: titleSkeletonOffset,
+                size: titleLabelSkeletonSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: detailsLabelSkeletonOffset,
+                size: detailsLabelSkeletonSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: progressLabelSkeletonOffset,
+                size: progressLabelSkeletonSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: progressViewSkeletonOffset,
+                size: progressViewSkeletonSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: percentsLabelSkeletonOffset,
+                size: percentsLabelSkeletonSize
+            ),
+            SingleSkeleton.createRow(
+                on: self,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: timeLabelSkeletonOffset,
+                size: timeLabelSkeletonSize
+            )
+        ]
+    }
+    // swiftlint:enable function_body_length
 }
