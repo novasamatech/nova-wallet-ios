@@ -19,6 +19,8 @@ protocol CrowdloansViewModelFactoryProtocol {
         chainAsset: ChainAssetDisplayInfo?,
         locale: Locale
     ) -> CrowdloansViewModel
+
+    func createLoadingViewModel() -> CrowdloansViewModel
 }
 
 final class CrowdloansViewModelFactory {
@@ -244,8 +246,8 @@ final class CrowdloansViewModelFactory {
         locale: Locale
     ) -> [CrowdloansSection] {
         let initial = (
-            [CrowdloanCellViewModel](),
-            [CrowdloanCellViewModel]()
+            [LoadableViewModelState<CrowdloanCellViewModel>](),
+            [LoadableViewModelState<CrowdloanCellViewModel>]()
         )
 
         let cellsViewModel = crowdloans.sorted { crowdloan1, crowdloan2 in
@@ -264,7 +266,7 @@ final class CrowdloansViewModelFactory {
                     formatters: formatters,
                     locale: locale
                 ) {
-                    result.1.append(viewModel)
+                    result.1.append(.loaded(value: viewModel))
                 }
             } else {
                 if let viewModel = createActiveCrowdloanViewModel(
@@ -274,7 +276,7 @@ final class CrowdloansViewModelFactory {
                     formatters: formatters,
                     locale: locale
                 ) {
-                    result.0.append(viewModel)
+                    result.0.append(.loaded(value: viewModel))
                 }
             }
         }
@@ -287,13 +289,16 @@ final class CrowdloansViewModelFactory {
 
         if !active.isEmpty {
             if !completed.isEmpty {
-                return [.active(activeTitle, active), .completed(completedTitle, completed)]
+                return [
+                    .active(.loaded(value: activeTitle), active),
+                    .completed(.loaded(value: completedTitle), completed)
+                ]
             } else {
-                return [.active(activeTitle, active)]
+                return [.active(.loaded(value: activeTitle), active)]
             }
         } else {
             if !completed.isEmpty {
-                return [.completed(completedTitle, completed)]
+                return [.completed(.loaded(value: completedTitle), completed)]
             } else {
                 return []
             }
@@ -382,6 +387,13 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         return .init(sections: [contributionSection] + crowdloansSections)
     }
 
+    func createLoadingViewModel() -> CrowdloansViewModel {
+        CrowdloansViewModel(sections: [
+            CrowdloansSection.yourContributions(.loading),
+            CrowdloansSection.active(.loading, Array(repeating: .loading, count: 10))
+        ])
+    }
+
     private func createAboutSection(chainAsset: ChainAssetDisplayInfo?, locale: Locale) -> CrowdloansSection {
         let symbol = chainAsset?.asset.symbol ?? ""
         let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
@@ -418,6 +430,6 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             amount: balance.amount,
             amountDetails: balance.price ?? ""
         )
-        return .yourContributions(model)
+        return .yourContributions(.loaded(value: model))
     }
 }
