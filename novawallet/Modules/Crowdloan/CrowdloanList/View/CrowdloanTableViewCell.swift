@@ -258,6 +258,7 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
         stopLoadingIfNeeded()
     }
 
+    // swiftlint:disable function_body_length
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let titleLabelSkeletonSize = CGSize(width: 77, height: 12)
         let detailsLabelSkeletonSize = CGSize(width: 127, height: 12)
@@ -277,13 +278,13 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
         let titleSkeletonOffsetY = topOffset + titleLabel.font.lineHeight / 2 - titleLabelSkeletonSize.height / 2
         let imageTrailing = imageSkeletonOffset.x + Constants.imageSize.width
         let titleSkeletonOffsetX = imageTrailing + Constants.imageTextHorizontalOffset
-
         let titleSkeletonOffset = CGPoint(
             x: titleSkeletonOffsetX,
             y: titleSkeletonOffsetY
         )
 
-        let detailsLabelSkeletonOffsetY = topOffset + titleLabel.font.lineHeight + detailsLabel.font.lineHeight / 2 - detailsLabelSkeletonSize.height / 2
+        let detailsLabelCenterY = topOffset + titleLabel.font.lineHeight + detailsLabel.font.lineHeight / 2
+        let detailsLabelSkeletonOffsetY = detailsLabelCenterY - detailsLabelSkeletonSize.height / 2
 
         let detailsLabelSkeletonOffset = CGPoint(
             x: titleSkeletonOffsetX,
@@ -296,7 +297,8 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
             y: percentsLabelSkeletonOffsetY
         )
 
-        let progressViewSkeletonOffsetY = spaceSize.height - bottomOffset - percentsLabel.font.lineHeight - Constants.verticalOffset - Constants.progressHeight
+        let percentsLabelTopY = spaceSize.height - bottomOffset - percentsLabel.font.lineHeight
+        let progressViewSkeletonOffsetY = percentsLabelTopY - Constants.verticalOffset - Constants.progressHeight
         let progressViewSkeletonWidth = spaceSize.width - rightOffset - leftOffset
         let progressViewSkeletonSize = CGSize(width: progressViewSkeletonWidth, height: Constants.progressHeight)
         let progressViewSkeletonOffset = CGPoint(
@@ -311,7 +313,9 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
             y: timeLabelSkeletonOffsetY
         )
 
-        let progressLabelSkeletonOffsetY = progressViewSkeletonOffsetY - Constants.verticalOffset - progressLabel.font.lineHeight / 2 - progressLabelSkeletonSize.height / 2
+        let verticalOffset = Constants.verticalOffset
+        let progressLabelCenterY = progressViewSkeletonOffsetY - verticalOffset - progressLabel.font.lineHeight / 2
+        let progressLabelSkeletonOffsetY = progressLabelCenterY - progressLabelSkeletonSize.height / 2
         let progressLabelSkeletonOffset = CGPoint(
             x: leftOffset,
             y: progressLabelSkeletonOffsetY
@@ -370,4 +374,5 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
             )
         ]
     }
+    // swiftlint:enable function_body_length
 }
