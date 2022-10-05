@@ -1,37 +1,110 @@
-import Foundation
 import UIKit
 import SoraFoundation
+import SoraUI
 
-final class CrowdloanListViewManager: NSObject {
-    let tableView: UITableView
-    let chainSelectionView: VoteChainViewProtocol
+final class CrowdloanListViewController: UIViewController, ViewHolder, LoadableViewProtocol {
+    typealias RootViewType = CrowdloanListViewLayout
 
-    var locale = Locale.current {
-        didSet {
-            if locale != oldValue {
-                tableView.reloadData()
-            }
-        }
-    }
+    let presenter: CrowdloanListPresenterProtocol
 
-    weak var presenter: CrowdloanListPresenterProtocol?
-    private weak var parent: (ControllerBackedProtocol & LoadableViewProtocol)?
+    private var chainInfo: CrowdloansChainViewModel?
     private var viewModel: CrowdloansViewModel = .init(sections: [])
 
-    init(
-        tableView: UITableView,
-        chainSelectionView: VoteChainViewProtocol,
-        parent: ControllerBackedProtocol & LoadableViewProtocol
-    ) {
-        self.tableView = tableView
-        self.chainSelectionView = chainSelectionView
-        self.parent = parent
+    private var shouldUpdateOnAppearance: Bool = false
 
-        super.init()
+    init(
+        presenter: CrowdloanListPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = CrowdloanListViewLayout()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        configure()
+        setupLocalization()
+        presenter.setup()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if shouldUpdateOnAppearance {
+            presenter.refresh(shouldReset: false)
+        } else {
+            shouldUpdateOnAppearance = true
+        }
+
+        presenter.becomeOnline()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        presenter.putOffline()
+    }
+
+    func configure() {
+        rootView.tableView.registerClassForCell(YourContributionsTableViewCell.self)
+        rootView.tableView.registerClassForCell(AboutCrowdloansTableViewCell.self)
+        rootView.tableView.registerClassForCell(CrowdloanTableViewCell.self)
+        rootView.tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
+        rootView.tableView.registerClassForCell(BlurredTableViewCell<ErrorStateView>.self)
+        rootView.tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
+        rootView.tableView.dataSource = self
+        rootView.tableView.delegate = self
+
+        if let refreshControl = rootView.tableView.refreshControl {
+            refreshControl.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
+        }
+
+        rootView.headerView.chainSelectionView.addTarget(
+            self,
+            action: #selector(actionSelectChain),
+            for: .touchUpInside
+        )
+
+        rootView.headerView.walletSwitch.addTarget(
+            self,
+            action: #selector(actionWalletSwitch),
+            for: .touchUpInside
+        )
+    }
+
+    private func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+        rootView.headerView.titleLabel.text = R.string.localizable
+            .tabbarCrowdloanTitle_v190(preferredLanguages: languages)
+    }
+
+    @objc func actionRefresh() {
+        presenter.refresh(shouldReset: false)
+    }
+
+    @objc func actionSelectChain() {
+        presenter.selectChain()
+    }
+
+    @objc func actionWalletSwitch() {
+        presenter.handleWalletSwitch()
     }
 }
 
-extension CrowdloanListViewManager: UITableViewDataSource {
+extension CrowdloanListViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         viewModel.sections.count
     }
@@ -68,13 +141,13 @@ extension CrowdloanListViewManager: UITableViewDataSource {
             let cell: BlurredTableViewCell<ErrorStateView> = tableView.dequeueReusableCell(for: indexPath)
             cell.view.errorDescriptionLabel.text = message
             cell.view.delegate = self
-            cell.view.locale = locale
+            cell.view.locale = selectedLocale
             cell.applyStyle()
             return cell
         case .empty:
             let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
             let text = R.string.localizable
-                .crowdloanEmptyMessage_v3_9_1(preferredLanguages: locale.rLanguages)
+                .crowdloanEmptyMessage_v3_9_1(preferredLanguages: selectedLocale.rLanguages)
             cell.view.bind(
                 image: R.image.iconEmptyHistory(),
                 text: text
@@ -85,7 +158,7 @@ extension CrowdloanListViewManager: UITableViewDataSource {
     }
 }
 
-extension CrowdloanListViewManager: UITableViewDelegate {
+extension CrowdloanListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -95,12 +168,12 @@ extension CrowdloanListViewManager: UITableViewDelegate {
             guard let crowdloan = cellViewModels[indexPath.row].value else {
                 return
             }
-            presenter?.selectCrowdloan(crowdloan.paraId)
+            presenter.selectCrowdloan(crowdloan.paraId)
         case let .yourContributions(viewModel):
             guard viewModel.value != nil else {
                 return
             }
-            presenter?.handleYourContributions()
+            presenter.handleYourContributions()
         default:
             return
         }
@@ -172,81 +245,42 @@ extension CrowdloanListViewManager: UITableViewDelegate {
     }
 }
 
-extension CrowdloanListViewManager: ErrorStateViewDelegate {
-    func didRetry(errorView _: ErrorStateView) {
-        presenter?.refresh(shouldReset: true)
+extension CrowdloanListViewController: CrowdloanListViewProtocol {
+    func didReceive(walletSwitchViewModel: WalletSwitchViewModel) {
+        rootView.headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
-}
 
-extension CrowdloanListViewManager: CrowdloansViewProtocol {
-    func didReceive(chainInfo: ChainBalanceViewModel) {
-        chainSelectionView.bind(viewModel: chainInfo)
+    func didReceive(chainInfo: CrowdloansChainViewModel) {
+        self.chainInfo = chainInfo
+
+        rootView.headerView.bind(viewModel: chainInfo)
+        rootView.headerView.setNeedsLayout()
     }
 
     func didReceive(listState: CrowdloansViewModel) {
         viewModel = listState
 
-        tableView.reloadData()
+        rootView.tableView.reloadData()
     }
 }
 
-extension CrowdloanListViewManager: LoadableViewProtocol {
-    var loadableContentView: UIView! {
-        parent?.loadableContentView ?? UIView()
-    }
-
-    var shouldDisableInteractionWhenLoading: Bool {
-        parent?.shouldDisableInteractionWhenLoading ?? false
-    }
-
-    func didStartLoading() {
-        parent?.didStartLoading()
-    }
-
-    func didStopLoading() {
-        parent?.didStopLoading()
+extension CrowdloanListViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }
 
-extension CrowdloanListViewManager: VoteChildViewProtocol {
-    var isSetup: Bool {
-        parent?.isSetup ?? false
-    }
-
-    var controller: UIViewController {
-        parent?.controller ?? UIViewController()
-    }
-
-    func bind() {
-        tableView.registerClassForCell(YourContributionsTableViewCell.self)
-        tableView.registerClassForCell(AboutCrowdloansTableViewCell.self)
-        tableView.registerClassForCell(CrowdloanTableViewCell.self)
-        tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
-        tableView.registerClassForCell(BlurredTableViewCell<ErrorStateView>.self)
-        tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
-
-        tableView.dataSource = self
-        tableView.delegate = self
-
-        tableView.reloadData()
-    }
-
-    func unbind() {
-        tableView.unregisterClassForCell(YourContributionsTableViewCell.self)
-        tableView.unregisterClassForCell(AboutCrowdloansTableViewCell.self)
-        tableView.unregisterClassForCell(CrowdloanTableViewCell.self)
-        tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
-        tableView.unregisterClassForCell(BlurredTableViewCell<ErrorStateView>.self)
-        tableView.unregisterHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
-
-        tableView.dataSource = nil
-        tableView.delegate = nil
-
-        tableView.reloadData()
+extension CrowdloanListViewController: ErrorStateViewDelegate {
+    func didRetry(errorView _: ErrorStateView) {
+        presenter.refresh(shouldReset: true)
     }
 }
 
-extension CrowdloanListViewManager {
+extension CrowdloanListViewController: HiddableBarWhenPushed {}
+
+extension CrowdloanListViewController {
     enum Constants {
         static let yourContributionsRowHeight: CGFloat = 123
         static let crowdloanRowMinimumHeight: CGFloat = 145

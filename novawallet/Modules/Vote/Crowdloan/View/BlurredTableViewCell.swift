@@ -88,5 +88,6 @@ extension BlurredTableViewCell where TContentView == CrowdloanEmptyView {
     func applyStyle() {
         view.verticalSpacing = 0
         innerInsets = .init(top: 4, left: 0, bottom: 16, right: 0)
+        contentInsets = .init(top: 8, left: 16, bottom: 0, right: 16)
     }
 }
