@@ -2,13 +2,13 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class CrowdloanListViewController: UIViewController, ViewHolder {
+final class CrowdloanListViewController: UIViewController, ViewHolder, LoadableViewProtocol {
     typealias RootViewType = CrowdloanListViewLayout
 
     let presenter: CrowdloanListPresenterProtocol
 
     private var chainInfo: CrowdloansChainViewModel?
-    private var state: CrowdloanListState = .loading
+    private var viewModel: CrowdloansViewModel = .init(sections: [])
 
     private var shouldUpdateOnAppearance: Bool = false
 
@@ -37,17 +37,7 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
 
         configure()
         setupLocalization()
-        applyState()
-
         presenter.setup()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if case .loading = state {
-            didStartLoading()
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -66,10 +56,6 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         super.viewDidDisappear(animated)
 
         presenter.putOffline()
-
-        if case .loading = state {
-            didStopLoading()
-        }
     }
 
     func configure() {
@@ -105,18 +91,6 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
             .tabbarCrowdloanTitle_v190(preferredLanguages: languages)
     }
 
-    private func applyState() {
-        switch state {
-        case .loading:
-            didStartLoading()
-        case .loaded:
-            rootView.tableView.refreshControl?.endRefreshing()
-            didStopLoading()
-        }
-
-        rootView.tableView.reloadData()
-    }
-
     @objc func actionRefresh() {
         presenter.refresh(shouldReset: false)
     }
@@ -132,69 +106,54 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
 
 extension CrowdloanListViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        switch state {
-        case let .loaded(viewModel):
-            return viewModel.sections.count
-        case .loading:
-            return 0
-        }
+        viewModel.sections.count
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch state {
-        case let .loaded(viewModel):
-            let sectionModel = viewModel.sections[section]
-            switch sectionModel {
-            case let .active(_, cellViewModels):
-                return cellViewModels.count
-            case let .completed(_, cellViewModels):
-                return cellViewModels.count
-            case .yourContributions, .about, .error, .empty:
-                return 1
-            }
-        case .loading:
-            return 0
+        let sectionModel = viewModel.sections[section]
+        switch sectionModel {
+        case let .active(_, cellViewModels):
+            return cellViewModels.count
+        case let .completed(_, cellViewModels):
+            return cellViewModels.count
+        case .yourContributions, .about, .error, .empty:
+            return 1
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch state {
-        case let .loaded(viewModel):
-            let sectionModel = viewModel.sections[indexPath.section]
-            switch sectionModel {
-            case let .active(_, cellViewModels), let .completed(_, cellViewModels):
-                let cell = tableView.dequeueReusableCellWithType(CrowdloanTableViewCell.self)!
-                let cellViewModel = cellViewModels[indexPath.row]
-                cell.bind(viewModel: cellViewModel)
-                return cell
-            case let .yourContributions(model):
-                let cell = tableView.dequeueReusableCellWithType(YourContributionsTableViewCell.self)!
-                cell.view.bind(model: model)
-                return cell
-            case let .about(model):
-                let cell = tableView.dequeueReusableCellWithType(AboutCrowdloansTableViewCell.self)!
-                cell.view.bind(model: model)
-                return cell
-            case let .error(message):
-                let cell: BlurredTableViewCell<ErrorStateView> = tableView.dequeueReusableCell(for: indexPath)
-                cell.view.errorDescriptionLabel.text = message
-                cell.view.delegate = self
-                cell.view.locale = selectedLocale
-                cell.applyStyle()
-                return cell
-            case .empty:
-                let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
-                let text = R.string.localizable
-                    .crowdloanEmptyMessage_v3_9_1(preferredLanguages: selectedLocale.rLanguages)
-                cell.view.bind(
-                    image: R.image.iconEmptyHistory(),
-                    text: text
-                )
-                cell.applyStyle()
-                return cell
-            }
-        case .loading:
-            return UITableViewCell()
+        let sectionModel = viewModel.sections[indexPath.section]
+        switch sectionModel {
+        case let .active(_, cellViewModels), let .completed(_, cellViewModels):
+            let cell = tableView.dequeueReusableCellWithType(CrowdloanTableViewCell.self)!
+            let cellViewModel = cellViewModels[indexPath.row]
+            cell.bind(viewModel: cellViewModel)
+            return cell
+        case let .yourContributions(model):
+            let cell = tableView.dequeueReusableCellWithType(YourContributionsTableViewCell.self)!
+            cell.view.bind(model: model)
+            return cell
+        case let .about(model):
+            let cell = tableView.dequeueReusableCellWithType(AboutCrowdloansTableViewCell.self)!
+            cell.view.bind(model: model)
+            return cell
+        case let .error(message):
+            let cell: BlurredTableViewCell<ErrorStateView> = tableView.dequeueReusableCell(for: indexPath)
+            cell.view.errorDescriptionLabel.text = message
+            cell.view.delegate = self
+            cell.view.locale = selectedLocale
+            cell.applyStyle()
+            return cell
+        case .empty:
+            let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
+            let text = R.string.localizable
+                .crowdloanEmptyMessage_v3_9_1(preferredLanguages: selectedLocale.rLanguages)
+            cell.view.bind(
+                image: R.image.iconEmptyHistory(),
+                text: text
+            )
+            cell.applyStyle()
+            return cell
         }
     }
 }
@@ -203,16 +162,17 @@ extension CrowdloanListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard case let .loaded(viewModel) = state else {
-            return
-        }
-
         let sectionModel = viewModel.sections[indexPath.section]
         switch sectionModel {
         case let .active(_, cellViewModels):
-            let viewModel = cellViewModels[indexPath.row]
-            presenter.selectCrowdloan(viewModel.paraId)
-        case .yourContributions:
+            guard let crowdloan = cellViewModels[indexPath.row].value else {
+                return
+            }
+            presenter.selectCrowdloan(crowdloan.paraId)
+        case let .yourContributions(viewModel):
+            guard viewModel.value != nil else {
+                return
+            }
             presenter.handleYourContributions()
         default:
             return
@@ -220,19 +180,22 @@ extension CrowdloanListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard case let .loaded(viewModel) = state else {
-            return nil
-        }
-
         let sectionModel = viewModel.sections[section]
         switch sectionModel {
         case let .active(title, cells), let .completed(title, cells):
             let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            headerView.bind(title: title, count: cells.count)
+            switch title {
+            case let .loaded(value):
+                headerView.bind(viewModel: .loaded(value: .init(title: value, count: cells.count)))
+            case let .cached(value):
+                headerView.bind(viewModel: .cached(value: .init(title: value, count: cells.count)))
+            case .loading:
+                headerView.bind(viewModel: .loading)
+            }
             return headerView
         case let .empty(title):
             let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            headerView.bind(title: title, count: 0)
+            headerView.bind(viewModel: .loaded(value: .init(title: title, count: 0)))
             return headerView
         default:
             return nil
@@ -240,16 +203,44 @@ extension CrowdloanListViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard case let .loaded(viewModel) = state else {
-            return 0.0
-        }
-
         let sectionModel = viewModel.sections[section]
         switch sectionModel {
-        case .active, .completed, .empty:
+        case let .active(state, _), let .completed(state, _):
+            switch state {
+            case .loading:
+                return Constants.headerMinimumHeight
+            case .loaded, .cached:
+                return UITableView.automaticDimension
+            }
+        case .empty:
             return UITableView.automaticDimension
         default:
             return 0.0
+        }
+    }
+
+    func tableView(_: UITableView, willDisplay cell: UITableViewCell, forRowAt _: IndexPath) {
+        (cell as? SkeletonableViewCell)?.updateLoadingState()
+    }
+
+    func tableView(_: UITableView, willDisplayHeaderView view: UIView, forSection _: Int) {
+        (view as? SkeletonableView)?.updateLoadingState()
+    }
+
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let sectionModel = viewModel.sections[indexPath.section]
+        switch sectionModel {
+        case .yourContributions:
+            return Constants.yourContributionsRowHeight
+        case let .active(_, model), let .completed(_, model):
+            switch model[indexPath.row] {
+            case .loading:
+                return Constants.crowdloanRowMinimumHeight
+            case .cached, .loaded:
+                return UITableView.automaticDimension
+            }
+        default:
+            return UITableView.automaticDimension
         }
     }
 }
@@ -266,10 +257,10 @@ extension CrowdloanListViewController: CrowdloanListViewProtocol {
         rootView.headerView.setNeedsLayout()
     }
 
-    func didReceive(listState: CrowdloanListState) {
-        state = listState
+    func didReceive(listState: CrowdloansViewModel) {
+        viewModel = listState
 
-        applyState()
+        rootView.tableView.reloadData()
     }
 }
 
@@ -287,5 +278,12 @@ extension CrowdloanListViewController: ErrorStateViewDelegate {
     }
 }
 
-extension CrowdloanListViewController: LoadableViewProtocol {}
 extension CrowdloanListViewController: HiddableBarWhenPushed {}
+
+extension CrowdloanListViewController {
+    enum Constants {
+        static let yourContributionsRowHeight: CGFloat = 123
+        static let crowdloanRowMinimumHeight: CGFloat = 145
+        static let headerMinimumHeight: CGFloat = 56
+    }
+}

@@ -157,6 +157,7 @@ final class CrowdloanListPresenter {
         guard
             let crowdloansResult = crowdloansResult,
             let viewInfoResult = createViewInfoResult() else {
+            view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
             return
         }
 
@@ -188,7 +189,7 @@ final class CrowdloanListPresenter {
                 locale: selectedLocale
             )
 
-            view?.didReceive(listState: .loaded(viewModel: viewModel))
+            view?.didReceive(listState: viewModel)
         } catch {
             provideViewError(chainAsset: chainAsset)
         }
@@ -215,7 +216,7 @@ final class CrowdloanListPresenter {
             chainAsset: chainAsset,
             locale: selectedLocale
         )
-        view?.didReceive(listState: .loaded(viewModel: viewModel))
+        view?.didReceive(listState: viewModel)
     }
 }
 
@@ -228,7 +229,7 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
         crowdloansResult = nil
 
         if shouldReset {
-            view?.didReceive(listState: .loading)
+            view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
         }
 
         if case .success = selectedChainResult {
@@ -444,7 +445,7 @@ extension CrowdloanListPresenter: AssetSelectionDelegate {
 
         updateChainView()
 
-        view?.didReceive(listState: .loading)
+        view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
 
         interactor.saveSelected(chainModel: chainAsset.chain)
     }

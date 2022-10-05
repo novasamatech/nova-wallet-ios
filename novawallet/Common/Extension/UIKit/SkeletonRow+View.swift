@@ -29,7 +29,8 @@ extension SingleSkeleton {
         containerView: UIView,
         spaceSize: CGSize,
         offset: CGPoint,
-        size: CGSize
+        size: CGSize,
+        cornerRadii: CGSize = CGSize(width: 0.5, height: 0.5)
     ) -> SingleSkeleton {
         let targetFrame = targetView.convert(targetView.bounds, to: containerView)
 
@@ -43,7 +44,7 @@ extension SingleSkeleton {
             height: spaceSize.skrullMapY(size.height)
         )
 
-        return SingleSkeleton(position: spaceSize.skrullMap(point: position), size: mappedSize).round()
+        return SingleSkeleton(position: spaceSize.skrullMap(point: position), size: mappedSize).round(cornerRadii)
     }
 
     static func createRow(

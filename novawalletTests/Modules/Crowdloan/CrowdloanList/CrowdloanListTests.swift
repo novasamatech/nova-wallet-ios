@@ -116,9 +116,25 @@ class CrowdloanListTests: XCTestCase {
             }
 
             stub.didReceive(listState: any()).then { state in
-                if case let .loaded(viewModel) = state {
-                    actualViewModel = viewModel
+                let allLoaded: Bool = state.sections.reduce(true) { result, state in
+                    guard result else {
+                        return false
+                    }
 
+                    switch state {
+                    case let .yourContributions(model):
+                        return model.value != nil
+                    case let .active(section, cells):
+                        return section.value != nil && cells.allSatisfy({ $0.value != nil })
+                    case let .completed(section, cells):
+                        return section.value != nil && cells.allSatisfy({ $0.value != nil })
+                    case .about, .empty, .error:
+                        return true
+                    }
+                }
+
+                if allLoaded, !state.sections.isEmpty {
+                    actualViewModel = state
                     listCompletionExpectation.fulfill()
                 }
             }
@@ -145,7 +161,7 @@ class CrowdloanListTests: XCTestCase {
         let yourContributionsCount: Int = {
             let yourContribution = actualViewModel!.sections[0]
             if case let .yourContributions(model) = yourContribution {
-                return Int(model.count!)!
+                return Int(model.value!.count!)!
             } else {
                 return 0
             }
@@ -155,7 +171,7 @@ class CrowdloanListTests: XCTestCase {
             let activeSection = actualViewModel!.sections[1]
             if case let .active(_, cellViewModels) = activeSection {
                 return cellViewModels.reduce(into: Set<ParaId>()) { result, viewModel in
-                    result.insert(viewModel.paraId)
+                    result.insert(viewModel.value!.paraId)
                 }
             } else {
                 return Set()
@@ -166,7 +182,7 @@ class CrowdloanListTests: XCTestCase {
             let completed = actualViewModel!.sections[2]
             if case let .completed(_, cellViewModels) = completed {
                 return cellViewModels.reduce(into: Set<ParaId>()) { result, viewModel in
-                    result.insert(viewModel.paraId)
+                    result.insert(viewModel.value!.paraId)
                 }
             } else {
                 return Set()
