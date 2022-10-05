@@ -2,12 +2,6 @@ import Foundation
 import CommonWallet
 
 final class MainTabBarWireframe: MainTabBarWireframeProtocol {
-    func showNewCrowdloan(on view: MainTabBarViewProtocol?) {
-        if let view = view {
-            MainTabBarViewFactory.reloadCrowdloanView(on: view)
-        }
-    }
-
     func presentAccountImport(on view: MainTabBarViewProtocol?) {
         guard let tabBarController = view?.controller else {
             return

@@ -16,6 +16,7 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
         let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
 
         setup(with: accountId, chain: chain)
+        becomeOnline(with: chain)
     }
 
     func setup() {

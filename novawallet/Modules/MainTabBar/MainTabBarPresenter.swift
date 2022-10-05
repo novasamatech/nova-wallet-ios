@@ -15,10 +15,6 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
 }
 
 extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
-    func didReloadSelectedAccount() {
-        wireframe.showNewCrowdloan(on: view)
-    }
-
     func didRequestImportAccount() {
         wireframe.presentAccountImport(on: view)
     }

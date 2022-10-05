@@ -5,13 +5,6 @@ import SubstrateSdk
 import BigInt
 
 protocol CrowdloansViewModelFactoryProtocol {
-    func createChainViewModel(
-        from chain: ChainModel,
-        asset: AssetModel,
-        balance: BigUInt?,
-        locale: Locale
-    ) -> CrowdloansChainViewModel
-
     func createViewModel(
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
@@ -309,40 +302,6 @@ final class CrowdloansViewModelFactory {
 }
 
 extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
-    func createChainViewModel(
-        from chain: ChainModel,
-        asset: AssetModel,
-        balance: BigUInt?,
-        locale: Locale
-    ) -> CrowdloansChainViewModel {
-        let displayInfo = asset.displayInfo
-
-        let amountFormatter = amountFormatterFactory.createTokenFormatter(
-            for: asset.displayInfo
-        ).value(for: locale)
-
-        let amount: String
-
-        if
-            let balance = balance,
-            let decimalAmount = Decimal.fromSubstrateAmount(
-                balance,
-                precision: displayInfo.assetPrecision
-            ) {
-            amount = amountFormatter.stringFromDecimal(decimalAmount) ?? ""
-        } else {
-            amount = ""
-        }
-
-        let imageViewModel = RemoteImageViewModel(url: asset.icon ?? chain.icon)
-
-        return CrowdloansChainViewModel(
-            networkName: chain.name,
-            balance: amount,
-            imageViewModel: imageViewModel
-        )
-    }
-
     func createErrorViewModel(
         chainAsset: ChainAssetDisplayInfo?,
         locale: Locale

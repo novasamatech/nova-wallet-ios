@@ -1,16 +1,15 @@
+import Foundation
 import UIKit
-import SnapKit
 
-final class CrowdloanListViewLayout: UIView {
+final class VoteViewLayout: UIView, TableHeaderLayoutUpdatable {
     private let backgroundView = MultigradientView.background
 
-    let headerView = CrowdloanTableHeaderView()
+    let headerView = VoteTableHeaderView()
 
     let tableView: UITableView = {
         let view = UITableView()
         view.backgroundColor = .clear
         view.separatorColor = R.color.colorDarkGray()
-        view.refreshControl = UIRefreshControl()
         view.tableFooterView = UIView()
         view.separatorStyle = .none
         view.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
@@ -31,18 +30,7 @@ final class CrowdloanListViewLayout: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let height = headerView.systemLayoutSizeFitting(
-            CGSize(width: bounds.size.width, height: UIView.layoutFittingExpandedSize.height)
-        ).height
-
-        var headerFrame = headerView.frame
-
-        // Comparison necessary to avoid infinite loop
-        if height != headerFrame.size.height {
-            headerFrame.size.height = height
-            headerView.frame = headerFrame
-            tableView.tableHeaderView = headerView
-        }
+        updateTableHeaderLayout(headerView)
     }
 
     private func setup() {
@@ -54,6 +42,7 @@ final class CrowdloanListViewLayout: UIView {
             make.top.equalToSuperview()
             make.leading.bottom.trailing.equalToSuperview()
         }
+
         tableView.tableHeaderView = headerView
     }
 }

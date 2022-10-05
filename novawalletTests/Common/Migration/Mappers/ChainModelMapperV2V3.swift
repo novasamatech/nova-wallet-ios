@@ -1,9 +1,10 @@
 import Foundation
+@testable import novawallet
 import CoreData
 import RobinHood
 import SubstrateSdk
 
-final class ChainModelMapper {
+final class ChainModelMapperV2V3 {
     var entityIdentifierFieldName: String { #keyPath(CDChain.chainId) }
 
     typealias DataProviderModel = ChainModel
@@ -214,7 +215,7 @@ final class ChainModelMapper {
     }
 }
 
-extension ChainModelMapper: CoreDataMapperProtocol {
+extension ChainModelMapperV2V3: CoreDataMapperProtocol {
     func transform(entity: CDChain) throws -> ChainModel {
         let assets: [AssetModel] = try entity.assets?.compactMap { anyAsset in
             guard let asset = anyAsset as? CDAsset else {
@@ -252,10 +253,6 @@ extension ChainModelMapper: CoreDataMapperProtocol {
 
         if entity.hasCrowdloans {
             options.append(.crowdloans)
-        }
-
-        if entity.hasGovernance {
-            options.append(.governance)
         }
 
         let externalApiSet = createExternalApi(from: entity)
@@ -298,7 +295,6 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.isEthereumBased = model.isEthereumBased
         entity.isTestnet = model.isTestnet
         entity.hasCrowdloans = model.hasCrowdloans
-        entity.hasGovernance = model.hasGovernance
         entity.order = model.order
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
