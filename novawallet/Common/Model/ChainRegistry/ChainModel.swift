@@ -119,6 +119,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(.crowdloans) ?? false
     }
 
+    var hasGovernance: Bool {
+        options?.contains(.governance) ?? false
+    }
+
     var isRelaychain: Bool { parentId == nil }
 
     func utilityAssets() -> Set<AssetModel> {

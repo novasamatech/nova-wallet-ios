@@ -977,3 +977,5 @@
 "yield.boost.task.not.found.message" = "Yield boost already disabled for the selected collator";
 "common.not.available" = "N/A";
 "wallet.account.locks.crowdloans" = "Crowdloans";
+"tabbar.vote.title" = "Vote";
+"tabbar.governance.title" = "Governance";
