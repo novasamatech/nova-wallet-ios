@@ -977,3 +977,5 @@
 "yield.boost.task.not.found.message" = "Yield boost уже отключен для выбранного коллатора";
 "common.not.available" = "N/A";
 "wallet.account.locks.crowdloans" = "Краудлоуны";
+"tabbar.vote.title" = "Голосование";
+"tabbar.governance.title" = "Референдумы";
