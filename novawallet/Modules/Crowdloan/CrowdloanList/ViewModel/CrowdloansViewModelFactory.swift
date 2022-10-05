@@ -27,7 +27,7 @@ protocol CrowdloansViewModelFactoryProtocol {
         locale: Locale
     ) -> CrowdloansViewModel
 
-    func createLoadableViewModel() -> CrowdloansViewModel
+    func createLoadingViewModel() -> CrowdloansViewModel
 }
 
 final class CrowdloansViewModelFactory {
@@ -428,7 +428,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         return .init(sections: [contributionSection] + crowdloansSections)
     }
 
-    func createLoadableViewModel() -> CrowdloansViewModel {
+    func createLoadingViewModel() -> CrowdloansViewModel {
         CrowdloansViewModel(sections: [
             CrowdloansSection.yourContributions(.loading),
             CrowdloansSection.active(.loading, Array(repeating: .loading, count: 10))

@@ -250,7 +250,7 @@ extension CrowdloanTableViewCell: SkeletonableViewCell, SkeletonableView {
     }
 
     func updateLoadingState() {
-        guard let viewModel = viewModel, let _ = viewModel.value else {
+        guard let viewModel = viewModel, viewModel.value != nil else {
             startLoadingIfNeeded()
             return
         }

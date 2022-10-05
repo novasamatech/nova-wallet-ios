@@ -102,14 +102,6 @@ final class CrowdloanListViewController: UIViewController, ViewHolder, LoadableV
     @objc func actionWalletSwitch() {
         presenter.handleWalletSwitch()
     }
-
-    func didStartLoading() {
-        presenter.startLoading()
-    }
-
-    func didStopLoading() {
-        presenter.stopLoading()
-    }
 }
 
 extension CrowdloanListViewController: UITableViewDataSource {
@@ -216,7 +208,7 @@ extension CrowdloanListViewController: UITableViewDelegate {
         case let .active(state, _), let .completed(state, _):
             switch state {
             case .loading:
-                return 56
+                return Constants.headerMinimumHeight
             case .loaded, .cached:
                 return UITableView.automaticDimension
             }
@@ -239,11 +231,11 @@ extension CrowdloanListViewController: UITableViewDelegate {
         let sectionModel = viewModel.sections[indexPath.section]
         switch sectionModel {
         case .yourContributions:
-            return 123
+            return Constants.yourContributionsRowHeight
         case let .active(_, model), let .completed(_, model):
             switch model[indexPath.row] {
             case .loading:
-                return 145
+                return Constants.crowdloanRowMinimumHeight
             case .cached, .loaded:
                 return UITableView.automaticDimension
             }
@@ -287,3 +279,11 @@ extension CrowdloanListViewController: ErrorStateViewDelegate {
 }
 
 extension CrowdloanListViewController: HiddableBarWhenPushed {}
+
+extension CrowdloanListViewController {
+    enum Constants {
+        static let yourContributionsRowHeight: CGFloat = 123
+        static let crowdloanRowMinimumHeight: CGFloat = 145
+        static let headerMinimumHeight: CGFloat = 56
+    }
+}

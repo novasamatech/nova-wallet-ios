@@ -160,7 +160,7 @@ extension YourContributionsView: SkeletonableView {
     }
 
     func updateLoadingState() {
-        guard let viewModel = viewModel, let _ = viewModel.value else {
+        guard let viewModel = viewModel, viewModel.value != nil else {
             startLoadingIfNeeded()
             return
         }
@@ -174,8 +174,10 @@ extension YourContributionsView: SkeletonableView {
         let priceSkeletonSize = CGSize(width: 70, height: 12)
 
         let titleSkeletonOffsetY = Constants.topInset + titleLabel.font.lineHeight / 2 - titleSkeletonSize.height / 2
-        let priceSkeletonOffsetY = spaceSize.height - Constants.bottomInset - amountDetailsLabel.font.lineHeight / 2 - priceSkeletonSize.height / 2
-        let emptySpace = priceSkeletonOffsetY - titleSkeletonOffsetY - titleSkeletonSize.height - amountSkeletonSize.height
+        let bottomInset = spaceSize.height - Constants.bottomInset
+        let priceSkeletonOffsetY = bottomInset - amountDetailsLabel.font.lineHeight / 2 - priceSkeletonSize.height / 2
+        let filledSpace = titleSkeletonSize.height + amountSkeletonSize.height
+        let emptySpace = priceSkeletonOffsetY - titleSkeletonOffsetY - filledSpace
         let amountSkeletonOffsetY = titleSkeletonOffsetY + titleSkeletonSize.height + emptySpace / 2
 
         let titleSkeletonOffset = CGPoint(

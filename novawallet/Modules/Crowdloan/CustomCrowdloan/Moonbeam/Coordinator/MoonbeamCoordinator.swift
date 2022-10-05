@@ -166,6 +166,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         let termsOperation = service.createCheckTermsOperation()
         let locale = localizationManager.selectedLocale
 
+        previousView?.didStartLoading()
         termsOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {

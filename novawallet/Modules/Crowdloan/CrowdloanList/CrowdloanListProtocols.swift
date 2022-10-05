@@ -15,8 +15,6 @@ protocol CrowdloanListPresenterProtocol: AnyObject {
     func selectChain()
     func handleYourContributions()
     func handleWalletSwitch()
-    func startLoading()
-    func stopLoading()
 }
 
 protocol CrowdloanListInteractorInputProtocol: AnyObject {
