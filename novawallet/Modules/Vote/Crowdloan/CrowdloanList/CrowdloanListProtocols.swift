@@ -4,7 +4,7 @@ protocol CrowdloansViewProtocol: AlertPresentable, ControllerBackedProtocol, Loa
     var presenter: CrowdloanListPresenterProtocol? { get set }
 
     func didReceive(chainInfo: ChainBalanceViewModel)
-    func didReceive(listState: CrowdloanListState)
+    func didReceive(listState: CrowdloansViewModel)
 }
 
 protocol CrowdloanListPresenterProtocol: AnyObject {

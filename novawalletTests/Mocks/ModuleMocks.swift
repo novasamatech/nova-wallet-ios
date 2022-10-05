@@ -52564,9 +52564,9 @@ import SoraFoundation
     
     
     
-     func didReceive(listState: CrowdloanListState)  {
+     func didReceive(listState: CrowdloansViewModel)  {
         
-    return cuckoo_manager.call("didReceive(listState: CrowdloanListState)",
+    return cuckoo_manager.call("didReceive(listState: CrowdloansViewModel)",
             parameters: (listState),
             escapingParameters: (listState),
             superclassCall:
@@ -52676,9 +52676,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloansViewProtocol.self, method: "didReceive(chainInfo: ChainBalanceViewModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(listState: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanListState)> where M1.MatchedType == CrowdloanListState {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListState)>] = [wrap(matchable: listState) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloansViewProtocol.self, method: "didReceive(listState: CrowdloanListState)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(listState: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloansViewModel)> where M1.MatchedType == CrowdloansViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloansViewModel)>] = [wrap(matchable: listState) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloansViewProtocol.self, method: "didReceive(listState: CrowdloansViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -52749,9 +52749,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(listState: M1) -> Cuckoo.__DoNotUse<(CrowdloanListState), Void> where M1.MatchedType == CrowdloanListState {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListState)>] = [wrap(matchable: listState) { $0 }]
-	        return cuckoo_manager.verify("didReceive(listState: CrowdloanListState)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(listState: M1) -> Cuckoo.__DoNotUse<(CrowdloansViewModel), Void> where M1.MatchedType == CrowdloansViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloansViewModel)>] = [wrap(matchable: listState) { $0 }]
+	        return cuckoo_manager.verify("didReceive(listState: CrowdloansViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -52842,7 +52842,7 @@ import SoraFoundation
     
     
     
-     func didReceive(listState: CrowdloanListState)   {
+     func didReceive(listState: CrowdloansViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
