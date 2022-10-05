@@ -169,6 +169,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         previousView?.didStartLoading()
         termsOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
+                self?.previousView?.didStopLoading()
                 do {
                     let alreadyAgreed = try termsOperation.extractNoCancellableResultData()
                     if alreadyAgreed {
