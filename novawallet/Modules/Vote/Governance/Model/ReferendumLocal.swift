@@ -18,7 +18,7 @@ enum ReferendumStateLocal {
     }
 
     struct Deciding {
-        let trackId: UInt16
+        let track: GovernanceTrackLocal
         let voting: Voting
         let since: BlockNumber
         let period: Moment
@@ -26,7 +26,7 @@ enum ReferendumStateLocal {
     }
 
     struct Preparing {
-        let trackId: UInt16
+        let track: GovernanceTrackLocal
         let voting: Voting
         let deposit: BigUInt?
         let since: BlockNumber
@@ -51,4 +51,9 @@ enum ReferendumStateLocal {
             return true
         }
     }
+}
+
+struct GovernanceTrackLocal {
+    let trackId: UInt16
+    let name: String
 }
