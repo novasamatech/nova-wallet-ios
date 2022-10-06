@@ -8,4 +8,8 @@ extension Referenda {
     static var tracks: ConstantCodingPath {
         ConstantCodingPath(moduleName: "Referenda", constantName: "Tracks")
     }
+
+    static var undecidingTimeout: ConstantCodingPath {
+        ConstantCodingPath(moduleName: "Referenda", constantName: "UndecidingTimeout")
+    }
 }
