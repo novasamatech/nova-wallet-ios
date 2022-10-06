@@ -12,18 +12,31 @@ enum ReferendumInfo: Decodable {
         @BytesCodable var proposalHash: Data
         let enactment: OnChainScheduler.DispatchTime
         @StringCodable var submitted: Moment
+        let submissionDeposit: Referenda.Deposit
         let decisionDeposit: Referenda.Deposit?
         let deciding: DecidingStatus?
         let tally: ConvictionVoting.Tally
         let inQueue: Bool
     }
 
+    struct CompletedStatus {
+        let since: Moment
+        let submissionDeposit: Referenda.Deposit
+        let decisionDeposit: Referenda.Deposit?
+
+        init(container: inout UnkeyedDecodingContainer) throws {
+            since = try container.decode(StringScaleMapper<Moment>.self).value
+            submissionDeposit = try container.decode(Referenda.Deposit.self)
+            decisionDeposit = try container.decodeIfPresent(Referenda.Deposit.self)
+        }
+    }
+
     case ongoing(_ status: OngoingStatus)
-    case approved
-    case rejected
-    case cancelled
-    case timedOut
-    case killed
+    case approved(_ status: CompletedStatus)
+    case rejected(_ status: CompletedStatus)
+    case cancelled(_ status: CompletedStatus)
+    case timedOut(_ status: CompletedStatus)
+    case killed(_ atBlock: Moment)
     case unknown
 
     public init(from decoder: Decoder) throws {
@@ -35,15 +48,20 @@ enum ReferendumInfo: Decodable {
             let status = try container.decode(OngoingStatus.self)
             self = .ongoing(status)
         case "Approved":
-            self = .approved
+            let status = try CompletedStatus(container: &container)
+            self = .approved(status)
         case "Rejected":
-            self = .rejected
+            let status = try CompletedStatus(container: &container)
+            self = .rejected(status)
         case "Cancelled":
-            self = .cancelled
+            let status = try CompletedStatus(container: &container)
+            self = .cancelled(status)
         case "TimedOut":
-            self = .timedOut
+            let status = try CompletedStatus(container: &container)
+            self = .timedOut(status)
         case "Killed":
-            self = .killed
+            let since = try container.decode(StringScaleMapper<Moment>.self).value
+            self = .killed(since)
         default:
             self = .unknown
         }
