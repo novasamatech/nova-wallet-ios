@@ -1880,6 +1880,8 @@
 		84DC3CE52796768A0038E2ED /* SubqueryHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */; };
 		84DC3CE7279679230038E2ED /* SubqueryHistory+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC3CE6279679230038E2ED /* SubqueryHistory+Wallet.swift */; };
 		84DC5A1328BAA8020014E081 /* LedgerInvaliDataPolkadotReason.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC5A1228BAA8020014E081 /* LedgerInvaliDataPolkadotReason.swift */; };
+		84DD49F428EE91ED00B804F3 /* Gov2LocalMappingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */; };
+		84DD49F628EE974B00B804F3 /* ReferendumLocalDecidingFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD49F528EE974B00B804F3 /* ReferendumLocalDecidingFunction.swift */; };
 		84DD5F21263CB6BE00425ACF /* UnbondCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5F20263CB6BE00425ACF /* UnbondCall.swift */; };
 		84DD5F26263D72C400425ACF /* ExtrinsicFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5F25263D72C400425ACF /* ExtrinsicFeeProxy.swift */; };
 		84DD5F30263D84F300425ACF /* RuntimeConstantFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DD5F2F263D84F300425ACF /* RuntimeConstantFetching.swift */; };
@@ -4676,6 +4678,8 @@
 		84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryHistoryContext.swift; sourceTree = "<group>"; };
 		84DC3CE6279679230038E2ED /* SubqueryHistory+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubqueryHistory+Wallet.swift"; sourceTree = "<group>"; };
 		84DC5A1228BAA8020014E081 /* LedgerInvaliDataPolkadotReason.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerInvaliDataPolkadotReason.swift; sourceTree = "<group>"; };
+		84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov2LocalMappingFactory.swift; sourceTree = "<group>"; };
+		84DD49F528EE974B00B804F3 /* ReferendumLocalDecidingFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumLocalDecidingFunction.swift; sourceTree = "<group>"; };
 		84DD5F20263CB6BE00425ACF /* UnbondCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnbondCall.swift; sourceTree = "<group>"; };
 		84DD5F25263D72C400425ACF /* ExtrinsicFeeProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicFeeProxy.swift; sourceTree = "<group>"; };
 		84DD5F2F263D84F300425ACF /* RuntimeConstantFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeConstantFetching.swift; sourceTree = "<group>"; };
@@ -9753,6 +9757,7 @@
 			children = (
 				84A1742628ED607B0096F943 /* GovernanceOperationProtocols.swift */,
 				84A1742828ED625D0096F943 /* Gov2OperationFactory.swift */,
+				84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -10982,6 +10987,7 @@
 			children = (
 				84D8753C28EB17B2004065BD /* GovernanceSharedState.swift */,
 				84A1742328ED3CF70096F943 /* ReferendumLocal.swift */,
+				84DD49F528EE974B00B804F3 /* ReferendumLocalDecidingFunction.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -15280,6 +15286,7 @@
 				8436E94426C853E4003D4EA7 /* RuntimeSnapshotOperationFactory.swift in Sources */,
 				F40966C726B297D6008CD244 /* AnalyticsRewardsViewFactory.swift in Sources */,
 				846AF83E2525B85100868F37 /* WalletNetworkFacade.swift in Sources */,
+				84DD49F428EE91ED00B804F3 /* Gov2LocalMappingFactory.swift in Sources */,
 				8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */,
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,
 				8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */,
@@ -16149,6 +16156,7 @@
 				3AD7635AFA1F7E66A3C00F56 /* ParitySignerAddressesInteractor.swift in Sources */,
 				940DA38E4586A27D7F3E0C67 /* ParitySignerAddressesViewController.swift in Sources */,
 				E8F04B9E557AD6BD0279EA6F /* ParitySignerAddressesViewLayout.swift in Sources */,
+				84DD49F628EE974B00B804F3 /* ReferendumLocalDecidingFunction.swift in Sources */,
 				01F973625B78736D5EEA86F6 /* ParitySignerAddressesViewFactory.swift in Sources */,
 				ECD4EB7314609007CE35461E /* ParitySignerAddConfirmProtocols.swift in Sources */,
 				6D622CD4A83EEC1F135B66A8 /* ParitySignerAddConfirmWireframe.swift in Sources */,
