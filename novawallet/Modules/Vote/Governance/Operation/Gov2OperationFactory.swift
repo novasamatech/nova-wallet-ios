@@ -16,10 +16,10 @@ final class Gov2OperationFactory {
         func encode(to encoder: Encoder) throws {
             let scaleEncoder = ScaleEncoder()
             "assembly".data(using: .utf8).map { scaleEncoder.appendRaw(data: $0) }
-            "enactment".data(using: .utf8).map { scaleEncoder.appendRaw(data: $0) }
+            try "enactment".encode(scaleEncoder: scaleEncoder)
             try index.encode(scaleEncoder: scaleEncoder)
 
-            let data = try scaleEncoder.encode().blake2b32()
+            let data = scaleEncoder.encode()
 
             var container = encoder.singleValueContainer()
             try container.encode(BytesCodable(wrappedValue: data))
