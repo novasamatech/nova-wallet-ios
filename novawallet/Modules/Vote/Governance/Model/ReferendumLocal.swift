@@ -72,9 +72,14 @@ enum ReferendumStateLocal {
         let inQueue: Bool
     }
 
+    struct Approved {
+        let since: BlockNumber
+        let whenEnactment: BlockNumber?
+    }
+
     case preparing(model: Preparing)
     case deciding(model: Deciding)
-    case approved(atBlock: Moment)
+    case approved(model: Approved)
     case rejected(atBlock: Moment)
     case cancelled(atBlock: Moment)
     case timedOut(atBlock: Moment)
