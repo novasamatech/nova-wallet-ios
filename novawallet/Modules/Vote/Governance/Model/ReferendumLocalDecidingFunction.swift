@@ -35,7 +35,10 @@ struct Gov2LocalDecidingFunction: ReferendumLocalDecidingFunction {
         return factor / xAdd + yOffset
     }
 
-    private func calculateSteppedDecreasing(from xPoint: Decimal, params: Referenda.SteppedDecreasingCurve) -> Decimal? {
+    private func calculateSteppedDecreasing(
+        from xPoint: Decimal,
+        params: Referenda.SteppedDecreasingCurve
+    ) -> Decimal? {
         guard
             let begin = Decimal.fromSubstratePerbill(value: params.begin),
             let end = Decimal.fromSubstratePerbill(value: params.end),

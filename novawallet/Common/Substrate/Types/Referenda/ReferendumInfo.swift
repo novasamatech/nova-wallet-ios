@@ -19,16 +19,16 @@ enum ReferendumInfo: Decodable {
         let inQueue: Bool
     }
 
-    struct CompletedStatus {
-        let since: Moment
+    struct CompletedStatus: Decodable {
+        enum CodingKeys: String, CodingKey {
+            case since = "0"
+            case submissionDeposit = "1"
+            case decisionDeposit = "2"
+        }
+
+        @StringCodable var since: Moment
         let submissionDeposit: Referenda.Deposit
         let decisionDeposit: Referenda.Deposit?
-
-        init(container: inout UnkeyedDecodingContainer) throws {
-            since = try container.decode(StringScaleMapper<Moment>.self).value
-            submissionDeposit = try container.decode(Referenda.Deposit.self)
-            decisionDeposit = try container.decodeIfPresent(Referenda.Deposit.self)
-        }
     }
 
     case ongoing(_ status: OngoingStatus)
@@ -48,16 +48,16 @@ enum ReferendumInfo: Decodable {
             let status = try container.decode(OngoingStatus.self)
             self = .ongoing(status)
         case "Approved":
-            let status = try CompletedStatus(container: &container)
+            let status = try container.decode(CompletedStatus.self)
             self = .approved(status)
         case "Rejected":
-            let status = try CompletedStatus(container: &container)
+            let status = try container.decode(CompletedStatus.self)
             self = .rejected(status)
         case "Cancelled":
-            let status = try CompletedStatus(container: &container)
+            let status = try container.decode(CompletedStatus.self)
             self = .cancelled(status)
         case "TimedOut":
-            let status = try CompletedStatus(container: &container)
+            let status = try container.decode(CompletedStatus.self)
             self = .timedOut(status)
         case "Killed":
             let since = try container.decode(StringScaleMapper<Moment>.self).value

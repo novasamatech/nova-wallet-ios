@@ -1,8 +1,15 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import BigInt
 
 final class Gov2OperationFactory {
+    struct AdditionalInfo {
+        let tracks: [Referenda.TrackId: Referenda.TrackInfo]
+        let totalIssuance: BigUInt
+        let undecidingTimeout: Moment
+    }
+
     let requestFactory: StorageRequestFactoryProtocol
 
     init(requestFactory: StorageRequestFactoryProtocol) {
@@ -10,82 +17,85 @@ final class Gov2OperationFactory {
     }
 
     private func createReferendumMapOperation(
-        dependingOn remoteOperation: BaseOperation<[ReferendumIndexKey: ReferendumInfo]>
+        dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: ReferendumInfo]>,
+        additionalInfoOperation: BaseOperation<AdditionalInfo>
     ) -> BaseOperation<[ReferendumLocal]> {
         ClosureOperation<[ReferendumLocal]> {
-            let remoteReferendums = try remoteOperation.extractNoCancellableResultData()
+            let remoteReferendums = try referendumOperation.extractNoCancellableResultData()
+            let additionalInfo = try additionalInfoOperation.extractNoCancellableResultData()
+
+            let mappingFactory = Gov2LocalMappingFactory()
 
             return remoteReferendums.compactMap { keyedReferendum in
                 let referendumIndex = keyedReferendum.key.referendumIndex
                 let remoteReferendum = keyedReferendum.value
 
-                switch remoteReferendum {
-                case let .ongoing(status):
-                    let state: ReferendumStateLocal
-
-                    let votes = SupportAndVotesLocal(
-                        ayes: status.tally.ayes,
-                        nays: status.tally.nays,
-                        support: status.tally.support
-                    )
-
-                    if let deciding = status.deciding {
-                        let model = ReferendumStateLocal.Deciding(
-                            trackId: status.track,
-                            voting: .supportAndVotes(model: votes),
-                            since: deciding.since,
-                            period: 0,
-                            confirmationUntil: deciding.confirming
-                        )
-
-                        state = .deciding(model: model)
-                    } else {
-                        let preparing = ReferendumStateLocal.Preparing(
-                            trackId: status.track,
-                            voting: .supportAndVotes(model: votes),
-                            deposit: status.decisionDeposit?.amount,
-                            since: status.submitted,
-                            period: 0,
-                            inQueue: status.inQueue
-                        )
-
-                        state = .preparing(model: preparing)
-                    }
-
-                    return ReferendumLocal(
-                        index: UInt(referendumIndex),
-                        state: state
-                    )
-                case let .approved(status):
-                    return ReferendumLocal(
-                        index: UInt(referendumIndex),
-                        state: .approved(atBlock: status.since)
-                    )
-                case let .rejected(status):
-                    return ReferendumLocal(
-                        index: UInt(referendumIndex),
-                        state: .rejected(atBlock: status.since)
-                    )
-                case let .timedOut(status):
-                    return ReferendumLocal(
-                        index: UInt(referendumIndex),
-                        state: .timedOut(atBlock: status.since)
-                    )
-                case let .cancelled(status):
-                    return ReferendumLocal(
-                        index: UInt(referendumIndex),
-                        state: .cancelled(atBlock: status.since)
-                    )
-                case let .killed(atBlock):
-                    return ReferendumLocal(
-                        index: UInt(referendumIndex),
-                        state: .killed(atBlock: atBlock)
-                    )
-                case .unknown:
-                    return nil
-                }
+                return mappingFactory.mapRemote(
+                    referendum: remoteReferendum,
+                    index: referendumIndex,
+                    additionalInfo: additionalInfo
+                )
             }
         }
+    }
+
+    private func createAdditionalInfoWrapper(
+        from connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<AdditionalInfo> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let tracksOperation = StorageConstantOperation<[Referenda.Track]>(path: Referenda.tracks)
+
+        tracksOperation.configurationBlock = {
+            do {
+                tracksOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                tracksOperation.result = .failure(error)
+            }
+        }
+
+        let undecidingTimeoutOperation = PrimitiveConstantOperation<UInt32>(path: Referenda.undecidingTimeout)
+
+        undecidingTimeoutOperation.configurationBlock = {
+            do {
+                undecidingTimeoutOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                undecidingTimeoutOperation.result = .failure(error)
+            }
+        }
+
+        let totalIssuanceWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
+            requestFactory.queryItem(
+                engine: connection,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: .totalIssuance
+            )
+
+        let fetchOperations = [tracksOperation, undecidingTimeoutOperation] + totalIssuanceWrapper.allOperations
+        fetchOperations.forEach { $0.addDependency(codingFactoryOperation) }
+
+        let mappingOperation = ClosureOperation<AdditionalInfo> {
+            let tracks = try tracksOperation.extractNoCancellableResultData().reduce(
+                into: [Referenda.TrackId: Referenda.TrackInfo]()
+            ) { $0[$1.trackId] = $1.info }
+
+            let undecidingTimeout = try undecidingTimeoutOperation.extractNoCancellableResultData()
+
+            let totalIssuance = try totalIssuanceWrapper.targetOperation.extractNoCancellableResultData().value
+
+            return AdditionalInfo(
+                tracks: tracks,
+                totalIssuance: totalIssuance?.value ?? 0,
+                undecidingTimeout: undecidingTimeout
+            )
+        }
+
+        let dependencies = [codingFactoryOperation] + fetchOperations
+
+        fetchOperations.forEach { mappingOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 }
 
@@ -98,23 +108,28 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[ReferendumIndexKey: ReferendumInfo]> = requestFactory.queryByPrefix(
-            engine: connection,
-            request: request,
-            storagePath: request.storagePath,
-            factory: {
-                try codingFactoryOperation.extractNoCancellableResultData()
-            },
-            at: nil
+        let referendumWrapper: CompoundOperationWrapper<[ReferendumIndexKey: ReferendumInfo]> =
+            requestFactory.queryByPrefix(
+                engine: connection,
+                request: request,
+                storagePath: request.storagePath,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() }
+            )
+
+        referendumWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let additionalInfoWrapper = createAdditionalInfoWrapper(from: connection, runtimeProvider: runtimeProvider)
+
+        let mapOperation = createReferendumMapOperation(
+            dependingOn: referendumWrapper.targetOperation,
+            additionalInfoOperation: additionalInfoWrapper.targetOperation
         )
 
-        wrapper.addDependency(operations: [codingFactoryOperation])
+        mapOperation.addDependency(referendumWrapper.targetOperation)
+        mapOperation.addDependency(additionalInfoWrapper.targetOperation)
 
-        let mapOperation = createReferendumMapOperation(dependingOn: wrapper.targetOperation)
-
-        mapOperation.addDependency(wrapper.targetOperation)
-
-        let dependencies = [codingFactoryOperation] + wrapper.allOperations
+        let dependencies = [codingFactoryOperation] + referendumWrapper.allOperations +
+            additionalInfoWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }

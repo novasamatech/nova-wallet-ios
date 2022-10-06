@@ -10,6 +10,43 @@ struct SupportAndVotesLocal {
     let ayes: BigUInt
     let nays: BigUInt
     let support: BigUInt
+    let totalIssuance: BigUInt
+
+    /// fraction of ayes
+    var approvalFraction: Decimal {
+        guard
+            let total = Decimal(ayes + nays), total > 0,
+            let ayesDecimal = Decimal(ayes) else {
+            return 0.0
+        }
+
+        return ayesDecimal / total
+    }
+
+    /// fraction of voted tokens
+    var supportFraction: Decimal {
+        guard
+            let totalDecimal = Decimal(totalIssuance), totalDecimal > 0,
+            let supportDecimal = Decimal(support) else {
+            return 0.0
+        }
+
+        return supportDecimal / totalDecimal
+    }
+
+    /// nil if not deciding yet
+    let approvalFunction: ReferendumLocalDecidingFunction?
+    let supportFunction: ReferendumLocalDecidingFunction?
+
+    func isPassing(at block: BlockNumber) -> Bool {
+        guard
+            let approvalThreshold = approvalFunction?.calculateThreshold(for: block),
+            let supportThreshold = supportFunction?.calculateThreshold(for: block) else {
+            return false
+        }
+
+        return approvalFraction >= approvalThreshold && supportFraction >= supportThreshold
+    }
 }
 
 enum ReferendumStateLocal {
@@ -30,7 +67,8 @@ enum ReferendumStateLocal {
         let voting: Voting
         let deposit: BigUInt?
         let since: BlockNumber
-        let period: Moment
+        let preparingPeriod: Moment
+        let timeoutPeriod: Moment
         let inQueue: Bool
     }
 

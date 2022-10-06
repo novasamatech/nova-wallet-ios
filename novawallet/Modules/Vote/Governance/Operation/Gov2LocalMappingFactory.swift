@@ -1,62 +1,112 @@
 import Foundation
 
 final class Gov2LocalMappingFactory {
-    private func createOngoingReferendumState(
+    private func createDecidingState(
         from status: ReferendumInfo.OngoingStatus,
-        index: Referenda.ReferendumIndex,
-        track: Referenda.TrackInfo
-    ) -> ReferendumLocal {
-        let state: ReferendumStateLocal
+        deciding: ReferendumInfo.DecidingStatus,
+        track: Referenda.TrackInfo,
+        additionalInfo: Gov2OperationFactory.AdditionalInfo
+    ) -> ReferendumStateLocal {
+        let approvalFunction = Gov2LocalDecidingFunction(
+            curve: track.minApproval,
+            startBlock: deciding.since,
+            period: track.decisionPeriod
+        )
+
+        let supportFunction = Gov2LocalDecidingFunction(
+            curve: track.minSupport,
+            startBlock: deciding.since,
+            period: track.decisionPeriod
+        )
 
         let votes = SupportAndVotesLocal(
             ayes: status.tally.ayes,
             nays: status.tally.nays,
-            support: status.tally.support
+            support: status.tally.support,
+            totalIssuance: additionalInfo.totalIssuance,
+            approvalFunction: approvalFunction,
+            supportFunction: supportFunction
         )
 
         let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
 
-        if let deciding = status.deciding {
-            let model = ReferendumStateLocal.Deciding(
-                track: localTrack,
-                voting: .supportAndVotes(model: votes),
-                since: deciding.since,
-                period: track.decisionPeriod,
-                confirmationUntil: deciding.confirming
-            )
+        let model = ReferendumStateLocal.Deciding(
+            track: localTrack,
+            voting: .supportAndVotes(model: votes),
+            since: deciding.since,
+            period: track.decisionPeriod,
+            confirmationUntil: deciding.confirming
+        )
 
-            state = .deciding(model: model)
-        } else {
-            let preparing = ReferendumStateLocal.Preparing(
-                track: localTrack,
-                voting: .supportAndVotes(model: votes),
-                deposit: status.decisionDeposit?.amount,
-                since: status.submitted,
-                period: track.preparePeriod,
-                inQueue: status.inQueue
-            )
+        return .deciding(model: model)
+    }
 
-            state = .preparing(model: preparing)
+    private func createPreparingState(
+        from status: ReferendumInfo.OngoingStatus,
+        track: Referenda.TrackInfo,
+        additionalInfo: Gov2OperationFactory.AdditionalInfo
+    ) -> ReferendumStateLocal {
+        let votes = SupportAndVotesLocal(
+            ayes: status.tally.ayes,
+            nays: status.tally.nays,
+            support: status.tally.support,
+            totalIssuance: additionalInfo.totalIssuance,
+            approvalFunction: nil,
+            supportFunction: nil
+        )
+
+        let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
+
+        let preparing = ReferendumStateLocal.Preparing(
+            track: localTrack,
+            voting: .supportAndVotes(model: votes),
+            deposit: status.decisionDeposit?.amount,
+            since: status.submitted,
+            preparingPeriod: track.preparePeriod,
+            timeoutPeriod: additionalInfo.undecidingTimeout,
+            inQueue: status.inQueue
+        )
+
+        return .preparing(model: preparing)
+    }
+
+    private func createOngoingReferendumState(
+        from status: ReferendumInfo.OngoingStatus,
+        index: Referenda.ReferendumIndex,
+        additionalInfo: Gov2OperationFactory.AdditionalInfo
+    ) -> ReferendumLocal? {
+        guard let track = additionalInfo.tracks[status.track] else {
+            return nil
         }
 
-        return ReferendumLocal(
-            index: UInt(index),
-            state: state
-        )
+        let state: ReferendumStateLocal
+
+        if let deciding = status.deciding {
+            state = createDecidingState(
+                from: status,
+                deciding: deciding,
+                track: track,
+                additionalInfo: additionalInfo
+            )
+        } else {
+            state = createPreparingState(
+                from: status,
+                track: track,
+                additionalInfo: additionalInfo
+            )
+        }
+
+        return ReferendumLocal(index: UInt(index), state: state)
     }
 
     func mapRemote(
         referendum: ReferendumInfo,
         index: Referenda.ReferendumIndex,
-        tracks: [Referenda.TrackId: Referenda.TrackInfo]
+        additionalInfo: Gov2OperationFactory.AdditionalInfo
     ) -> ReferendumLocal? {
         switch referendum {
         case let .ongoing(status):
-            guard let track = tracks[status.track] else {
-                return nil
-            }
-
-            return createOngoingReferendumState(from: status, index: index, track: track)
+            return createOngoingReferendumState(from: status, index: index, additionalInfo: additionalInfo)
         case let .approved(status):
             return ReferendumLocal(index: UInt(index), state: .approved(atBlock: status.since))
         case let .rejected(status):
