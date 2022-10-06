@@ -102,13 +102,15 @@ final class Gov2LocalMappingFactory {
     func mapRemote(
         referendum: ReferendumInfo,
         index: Referenda.ReferendumIndex,
-        additionalInfo: Gov2OperationFactory.AdditionalInfo
+        additionalInfo: Gov2OperationFactory.AdditionalInfo,
+        enactmentBlock: BlockNumber?
     ) -> ReferendumLocal? {
         switch referendum {
         case let .ongoing(status):
             return createOngoingReferendumState(from: status, index: index, additionalInfo: additionalInfo)
         case let .approved(status):
-            return ReferendumLocal(index: UInt(index), state: .approved(atBlock: status.since))
+            let model = ReferendumStateLocal.Approved(since: status.since, whenEnactment: enactmentBlock)
+            return ReferendumLocal(index: UInt(index), state: .approved(model: model))
         case let .rejected(status):
             return ReferendumLocal(index: UInt(index), state: .rejected(atBlock: status.since))
         case let .timedOut(status):
