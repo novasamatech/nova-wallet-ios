@@ -162,7 +162,8 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: logger
         )
 
         presenter.view = view
