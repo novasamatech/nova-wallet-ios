@@ -11,12 +11,17 @@ protocol ReferendumsPresenterProtocol: AnyObject {}
 protocol ReferendumsInteractorInputProtocol: AnyObject {
     func setup()
     func saveSelected(chainModel: ChainModel)
+    func becomeOnline()
+    func putOffline()
+    func refresh()
 }
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
+    func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveError(_ error: ReferendumsInteractorError)
 }
 

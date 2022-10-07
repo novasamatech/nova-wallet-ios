@@ -1,7 +1,8 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
-final class ReferendumsInteractor: AnyProviderAutoCleaning {
+final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: ReferendumsInteractorOutputProtocol?
 
     let selectedMetaAccount: MetaAccountModel
@@ -9,10 +10,17 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning {
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
+    let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
+    private var blockNumberSubscription: CallbackStorageSubscription<StringScaleMapper<BlockNumber>>?
+
+    private lazy var localKeyFactory = LocalStorageKeyFactory()
+
+    private var referendumsCancellable: CancellableCall?
 
     init(
         selectedMetaAccount: MetaAccountModel,
@@ -20,6 +28,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning {
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.selectedMetaAccount = selectedMetaAccount
@@ -27,12 +37,22 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning {
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.referendumsOperationFactory = referendumsOperationFactory
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
     private func clear() {
         clear(streamableProvider: &assetBalanceProvider)
         clear(singleValueProvider: &priceProvider)
+
+        blockNumberSubscription = nil
+
+        clearCancellable()
+    }
+
+    private func clearCancellable() {
+        clear(cancellable: &referendumsCancellable)
     }
 
     private func continueSetup() {
@@ -56,6 +76,46 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning {
         }
 
         subscribeToAssetPrice(for: chain)
+
+        subscribeToBlockNumber(for: chain)
+    }
+
+    private func subscribeToBlockNumber(for chain: ChainModel) {
+        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            presenter?.didReceiveError(.blockNumberSubscriptionFailed(ChainRegistryError.connectionUnavailable))
+            return
+        }
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            presenter?.didReceiveError(.blockNumberSubscriptionFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        do {
+            let localKey = try localKeyFactory.createFromStoragePath(.blockNumber, chainId: chain.chainId)
+            let request = UnkeyedSubscriptionRequest(storagePath: .blockNumber, localKey: localKey)
+            blockNumberSubscription = CallbackStorageSubscription(
+                request: request,
+                connection: connection,
+                runtimeService: runtimeProvider,
+                repository: nil,
+                operationQueue: operationQueue,
+                callbackQueue: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(resultData):
+                    if let blockNumber = resultData?.value {
+                        self?.presenter?.didReceiveBlockNumber(blockNumber)
+
+                        self?.provideReferendumsIfNeeded()
+                    }
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(.blockNumberSubscriptionFailed(error))
+                }
+            }
+        } catch {
+            presenter?.didReceiveError(.blockNumberSubscriptionFailed(error))
+        }
     }
 
     private func subscribeToAssetBalance(for accountId: AccountId, chain: ChainModel) {
@@ -79,9 +139,58 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning {
     }
 
     private func handleChainChange(for newChain: ChainModel) {
+        clear()
+
         let accountResponse = selectedMetaAccount.fetch(for: newChain.accountRequest())
 
         setup(with: accountResponse?.accountId, chain: newChain)
+    }
+
+    private func provideReferendumsIfNeeded() {
+        guard referendumsCancellable == nil else {
+            return
+        }
+
+        guard let chain = governanceState.settings.value else {
+            presenter?.didReceiveError(.referendumsFetchFailed(PersistentValueSettingsError.missingValue))
+            return
+        }
+
+        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.connectionUnavailable))
+            return
+        }
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        let wrapper = referendumsOperationFactory.fetchAllReferendumsWrapper(
+            from: connection,
+            runtimeProvider: runtimeProvider
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard wrapper === self?.referendumsCancellable else {
+                    return
+                }
+
+                self?.referendumsCancellable = nil
+
+                do {
+                    let referendums = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveReferendums(referendums)
+                } catch {
+                    self?.presenter?.didReceiveError(.referendumsFetchFailed(error))
+                }
+            }
+        }
+
+        referendumsCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
@@ -111,6 +220,22 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
                     self?.presenter?.didReceiveError(.chainSaveFailed(error))
                 }
             }
+        }
+    }
+
+    func becomeOnline() {
+        if let chain = governanceState.settings.value {
+            subscribeToBlockNumber(for: chain)
+        }
+    }
+
+    func putOffline() {
+        blockNumberSubscription = nil
+    }
+
+    func refresh() {
+        if governanceState.settings.value != nil {
+            provideReferendumsIfNeeded()
         }
     }
 }
