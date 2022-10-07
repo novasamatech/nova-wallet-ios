@@ -12,18 +12,31 @@ enum ReferendumInfo: Decodable {
         @BytesCodable var proposalHash: Data
         let enactment: OnChainScheduler.DispatchTime
         @StringCodable var submitted: Moment
+        let submissionDeposit: Referenda.Deposit
         let decisionDeposit: Referenda.Deposit?
         let deciding: DecidingStatus?
         let tally: ConvictionVoting.Tally
         let inQueue: Bool
     }
 
-    case ongoing(_ status: OngoingStatus)
-    case approved
-    case rejected
-    case cancelled
-    case timedOut
-    case killed
+    struct CompletedStatus: Decodable {
+        enum CodingKeys: String, CodingKey {
+            case since = "0"
+            case submissionDeposit = "1"
+            case decisionDeposit = "2"
+        }
+
+        @StringCodable var since: Moment
+        let submissionDeposit: Referenda.Deposit
+        let decisionDeposit: Referenda.Deposit?
+    }
+
+    case ongoing(OngoingStatus)
+    case approved(CompletedStatus)
+    case rejected(CompletedStatus)
+    case cancelled(CompletedStatus)
+    case timedOut(CompletedStatus)
+    case killed(atBlock: Moment)
     case unknown
 
     public init(from decoder: Decoder) throws {
@@ -35,15 +48,20 @@ enum ReferendumInfo: Decodable {
             let status = try container.decode(OngoingStatus.self)
             self = .ongoing(status)
         case "Approved":
-            self = .approved
+            let status = try container.decode(CompletedStatus.self)
+            self = .approved(status)
         case "Rejected":
-            self = .rejected
+            let status = try container.decode(CompletedStatus.self)
+            self = .rejected(status)
         case "Cancelled":
-            self = .cancelled
+            let status = try container.decode(CompletedStatus.self)
+            self = .cancelled(status)
         case "TimedOut":
-            self = .timedOut
+            let status = try container.decode(CompletedStatus.self)
+            self = .timedOut(status)
         case "Killed":
-            self = .killed
+            let since = try container.decode(StringScaleMapper<Moment>.self).value
+            self = .killed(atBlock: since)
         default:
             self = .unknown
         }
