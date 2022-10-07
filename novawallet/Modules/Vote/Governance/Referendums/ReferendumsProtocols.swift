@@ -14,10 +14,12 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func becomeOnline()
     func putOffline()
     func refresh()
+    func remakeSubscriptions()
 }
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
+    func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?)
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
@@ -25,7 +27,7 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumsInteractorError)
 }
 
-protocol ReferendumsWireframeProtocol: AnyObject {
+protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func selectChain(
         from view: ControllerBackedProtocol?,
         delegate: AssetSelectionDelegate,
