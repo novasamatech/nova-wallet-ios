@@ -3,7 +3,7 @@ import UIKit
 final class ReferendumView: UIView {
     let referendumInfoView = ReferendumInfoView()
     let progressView = VotingProgressView()
-    let yourVoteView = YourVoteView()
+    let yourVoteView = YourVotesView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,5 +39,30 @@ extension ReferendumTableViewCell {
     func applyStyle() {
         contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
         innerInsets = .init(top: 16, left: 16, bottom: 16, right: 16)
+    }
+}
+
+extension ReferendumView {
+    struct Model {
+        let referendumInfo: ReferendumInfoView.Model
+        let progress: VotingProgressView.Model?
+        let yourVotes: YourVotesView.Model?
+    }
+
+    func bind(viewModel: Model) {
+        referendumInfoView.bind(viewModel: viewModel.referendumInfo)
+        if let progressModel = viewModel.progress {
+            progressView.bind(viewModel: progressModel)
+            progressView.isHidden = false
+        } else {
+            progressView.isHidden = true
+        }
+
+        if let yourVotesModel = viewModel.yourVotes {
+            yourVoteView.bind(viewModel: yourVotesModel)
+            yourVoteView.isHidden = false
+        } else {
+            yourVoteView.isHidden = true
+        }
     }
 }

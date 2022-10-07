@@ -25,24 +25,58 @@ final class VotingProgressView: UIView {
     }
 
     private func setupLayout() {
-        let progressStack = UIStackView(arrangedSubviews: [
-            ayeProgressLabel,
-            passProgressLabel,
-            nayProgressLabel
-        ])
-        progressStack.distribution = .fillEqually
+        let content = UIView.vStack(
+            spacing: 12,
+            [
+                UIView.spacer(length: 4),
+                thresholdView,
+                slider,
+                UIView.hStack(
+                    distribution: .fillEqually,
+                    [
+                        ayeProgressLabel,
+                        passProgressLabel,
+                        nayProgressLabel
+                    ]
+                )
+            ]
+        )
 
-        let mainStack = UIStackView(arrangedSubviews: [
-            thresholdView,
-            slider,
-            progressStack
-        ])
-        mainStack.axis = .vertical
-        mainStack.spacing = 6
-
-        addSubview(mainStack)
-        mainStack.snp.makeConstraints {
+        addSubview(content)
+        content.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+    }
+}
+
+extension VotingProgressView {
+    struct Model {
+        let ayeProgress: String
+        let passProgress: String
+        let nayProgress: String
+        let thresholdModel: ThresholdModel?
+        let progress: Double
+    }
+
+    struct ThresholdModel {
+        let image: UIImage?
+        let text: String
+        let value: Double
+    }
+
+    func bind(viewModel: Model) {
+        slider.bind(viewModel: .init(
+            thumbValue: viewModel.thresholdModel?.value,
+            value: viewModel.progress
+        ))
+
+        ayeProgressLabel.text = viewModel.ayeProgress
+        passProgressLabel.text = viewModel.passProgress
+        nayProgressLabel.text = viewModel.nayProgress
+
+        viewModel.thresholdModel.map {
+            thresholdView.imageView.image = $0.image
+            thresholdView.detailsLabel.text = $0.text
         }
     }
 }

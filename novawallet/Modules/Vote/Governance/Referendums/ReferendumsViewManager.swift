@@ -28,15 +28,48 @@ final class ReferendumsViewManager: NSObject {
 // TODO: Implement protocols when data source defined
 extension ReferendumsViewManager: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        0
+        1
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        0
+        1
     }
 
-    func tableView(_: UITableView, cellForRowAt _: IndexPath) -> UITableViewCell {
-        UITableViewCell()
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+        cell.applyStyle()
+        cell.view.bind(viewModel: createSample1())
+        cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
+        cell.view.referendumInfoView.timeView.detailsLabel.apply(style: .activeTimeViewLabel)
+        return cell
+    }
+
+    private func createSample1() -> ReferendumView.Model {
+        let referendumInfo = ReferendumInfoView.Model(
+            status: "passing".uppercased(),
+            time: "Approve in 3:59:59",
+            timeImage: R.image.iconFire(),
+            title: "Runtime upgrade to 9280",
+            trackName: "main agenda".uppercased(),
+            trackImage: nil,
+            number: "#228"
+        )
+        let progress = VotingProgressView.Model(
+            ayeProgress: "Aye: 80%",
+            passProgress: "To pass: 90%",
+            nayProgress: "Nay: 1.1%",
+            thresholdModel: .init(
+                image: R.image.iconCheckmark(),
+                text: "Threshold: 16,492 of 15,392.5 KSM",
+                value: 0.5
+            ),
+            progress: 0.8
+        )
+        return ReferendumView.Model(
+            referendumInfo: referendumInfo,
+            progress: progress,
+            yourVotes: nil
+        )
     }
 }
 
@@ -72,6 +105,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
     func bind() {
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.registerClassForCell(ReferendumTableViewCell.self)
 
         tableView.reloadData()
     }
@@ -79,6 +113,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
     func unbind() {
         tableView.dataSource = nil
         tableView.delegate = nil
+        tableView.unregisterClassForCell(ReferendumTableViewCell.self)
 
         tableView.reloadData()
     }
