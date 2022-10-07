@@ -26,6 +26,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
     private var referendumsCancellable: CancellableCall?
+    private var votesCancellable: CancellableCall?
 
     init(
         selectedMetaAccount: MetaAccountModel,
@@ -205,6 +206,59 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
+
+    private func provideVotesIfNeeded() {
+        guard votesCancellable == nil else {
+            return
+        }
+
+        guard let chain = governanceState.settings.value else {
+            presenter?.didReceiveError(.votesFetchFailed(PersistentValueSettingsError.missingValue))
+            return
+        }
+
+        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            presenter?.didReceiveError(.votesFetchFailed(ChainRegistryError.connectionUnavailable))
+            return
+        }
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            presenter?.didReceiveError(.votesFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
+            presenter?.didReceiveVotes([:])
+            return
+        }
+
+        let wrapper = referendumsOperationFactory.fetchAccountVotes(
+            for: accountId,
+            from: connection,
+            runtimeProvider: runtimeProvider
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard wrapper === self?.votesCancellable else {
+                    return
+                }
+
+                self?.votesCancellable = nil
+
+                do {
+                    let votes = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveVotes(votes)
+                } catch {
+                    self?.presenter?.didReceiveError(.votesFetchFailed(error))
+                }
+            }
+        }
+
+        votesCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
 }
 
 extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
@@ -259,6 +313,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     func refresh() {
         if governanceState.settings.value != nil {
             provideReferendumsIfNeeded()
+            provideVotesIfNeeded()
 
             metadataProvider?.refresh()
         }
