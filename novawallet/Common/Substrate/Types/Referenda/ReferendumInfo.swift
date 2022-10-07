@@ -31,12 +31,12 @@ enum ReferendumInfo: Decodable {
         let decisionDeposit: Referenda.Deposit?
     }
 
-    case ongoing(_ status: OngoingStatus)
-    case approved(_ status: CompletedStatus)
-    case rejected(_ status: CompletedStatus)
-    case cancelled(_ status: CompletedStatus)
-    case timedOut(_ status: CompletedStatus)
-    case killed(_ atBlock: Moment)
+    case ongoing(OngoingStatus)
+    case approved(CompletedStatus)
+    case rejected(CompletedStatus)
+    case cancelled(CompletedStatus)
+    case timedOut(CompletedStatus)
+    case killed(atBlock: Moment)
     case unknown
 
     public init(from decoder: Decoder) throws {
@@ -61,7 +61,7 @@ enum ReferendumInfo: Decodable {
             self = .timedOut(status)
         case "Killed":
             let since = try container.decode(StringScaleMapper<Moment>.self).value
-            self = .killed(since)
+            self = .killed(atBlock: since)
         default:
             self = .unknown
         }
