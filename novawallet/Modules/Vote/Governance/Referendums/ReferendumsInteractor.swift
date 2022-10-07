@@ -14,9 +14,14 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
 
+    var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
+        governanceState.govMetadataLocalSubscriptionFactory
+    }
+
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var blockNumberSubscription: CallbackStorageSubscription<StringScaleMapper<BlockNumber>>?
+    private var metadataProvider: AnySingleValueProvider<ReferendumMetadataMapping>?
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
@@ -45,6 +50,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private func clear() {
         clear(streamableProvider: &assetBalanceProvider)
         clear(singleValueProvider: &priceProvider)
+        clear(singleValueProvider: &metadataProvider)
 
         blockNumberSubscription = nil
 
@@ -78,9 +84,14 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         subscribeToAssetPrice(for: chain)
 
         subscribeToBlockNumber(for: chain)
+        subscribeToMetadata(for: chain)
     }
 
     private func subscribeToBlockNumber(for chain: ChainModel) {
+        guard blockNumberSubscription == nil else {
+            return
+        }
+
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             presenter?.didReceiveError(.blockNumberSubscriptionFailed(ChainRegistryError.connectionUnavailable))
             return
@@ -106,8 +117,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
                 case let .success(resultData):
                     if let blockNumber = resultData?.value {
                         self?.presenter?.didReceiveBlockNumber(blockNumber)
-
-                        self?.provideReferendumsIfNeeded()
                     }
                 case let .failure(error):
                     self?.presenter?.didReceiveError(.blockNumberSubscriptionFailed(error))
@@ -136,6 +145,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         }
 
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+    }
+
+    private func subscribeToMetadata(for chain: ChainModel) {
+        metadataProvider = subscribeGovMetadata(for: chain)
     }
 
     private func handleChainChange(for newChain: ChainModel) {
@@ -208,6 +221,16 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
         }
     }
 
+    func remakeSubscriptions() {
+        clear()
+
+        if let chain = governanceState.settings.value {
+            let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
+
+            setup(with: accountResponse?.accountId, chain: chain)
+        }
+    }
+
     func saveSelected(chainModel: ChainModel) {
         if chainModel.chainId != governanceState.settings.value?.chainId {
             clear()
@@ -236,6 +259,23 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     func refresh() {
         if governanceState.settings.value != nil {
             provideReferendumsIfNeeded()
+
+            metadataProvider?.refresh()
+        }
+    }
+}
+
+extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
+    func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain: ChainModel) {
+        guard let currentChain = governanceState.settings.value, currentChain.chainId == chain.chainId else {
+            return
+        }
+
+        switch result {
+        case let .success(mapping):
+            presenter?.didReceiveReferendumsMetadata(mapping)
+        case let .failure(error):
+            presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
     }
 }

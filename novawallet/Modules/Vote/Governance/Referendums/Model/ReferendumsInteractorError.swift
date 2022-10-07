@@ -7,4 +7,5 @@ enum ReferendumsInteractorError: Error {
     case chainSaveFailed(_ internalError: Error)
     case referendumsFetchFailed(_ internalError: Error)
     case blockNumberSubscriptionFailed(_ internalError: Error)
+    case metadataSubscriptionFailed(_ internalError: Error)
 }
