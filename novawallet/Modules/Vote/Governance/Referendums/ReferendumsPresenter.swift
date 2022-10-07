@@ -11,6 +11,9 @@ final class ReferendumsPresenter {
     private var freeBalance: BigUInt?
     private var chain: ChainModel?
     private var price: PriceData?
+    private var referendums: [ReferendumLocal]?
+    private var referendumsMetadata: [Referenda.ReferendumIndex: ReferendumMetadataLocal]?
+    private var blockNumber: BlockNumber?
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
@@ -46,9 +49,13 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
         interactor.setup()
     }
 
-    func becomeOnline() {}
+    func becomeOnline() {
+        interactor.becomeOnline()
+    }
 
-    func putOffline() {}
+    func putOffline() {
+        interactor.putOffline()
+    }
 
     func selectChain() {
         guard let chain = chain, let asset = chain.utilityAsset() else {
@@ -66,6 +73,14 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
+        self.blockNumber = blockNumber
+    }
+
+    func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
+        self.referendums = referendums
+    }
+
     func didReceiveSelectedChain(_ chain: ChainModel) {
         self.chain = chain
 
