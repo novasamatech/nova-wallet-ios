@@ -1,10 +1,10 @@
 import Foundation
 
-protocol ReferendumLocalDecidingFunction {
+protocol ReferendumDecidingFunctionProtocol {
     func calculateThreshold(for block: BlockNumber) -> Decimal?
 }
 
-struct Gov2LocalDecidingFunction: ReferendumLocalDecidingFunction {
+struct Gov2LocalDecidingFunction: ReferendumDecidingFunctionProtocol {
     let curve: Referenda.Curve
     let startBlock: BlockNumber
     let period: Moment
