@@ -57,4 +57,45 @@ class ReferendumFetchTests: XCTestCase {
             XCTFail("Unexpected error \(error)")
         }
     }
+
+    func testFetchAllTracks() {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = "ea5af80801ea4579cedd029eaaa74938f0ea8dcaf507c8af96f2813d27d071ca"
+        let operationQueue = OperationQueue()
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
+            XCTFail("Can't get runtime provider for chain id \(chainId)")
+            return
+        }
+
+        // when
+
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let constantOperation = StorageConstantOperation<[Referenda.Track]>(path: Referenda.tracks)
+
+        constantOperation.configurationBlock = {
+            do {
+                constantOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                constantOperation.result = .failure(error)
+            }
+        }
+
+        constantOperation.addDependency(codingFactoryOperation)
+
+        operationQueue.addOperations([codingFactoryOperation, constantOperation], waitUntilFinished: true)
+
+        // then
+
+        do {
+            let tracks = try constantOperation.extractNoCancellableResultData()
+            Logger.shared.info("Tracks: \(tracks)")
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 }

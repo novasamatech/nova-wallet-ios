@@ -7,20 +7,26 @@ final class ReferendumsPresenter {
 
     let interactor: ReferendumsInteractorInputProtocol
     let wireframe: ReferendumsWireframeProtocol
+    let logger: LoggerProtocol
 
     private var freeBalance: BigUInt?
     private var chain: ChainModel?
     private var price: PriceData?
+    private var referendums: [ReferendumLocal]?
+    private var referendumsMetadata: ReferendumMetadataMapping?
+    private var blockNumber: BlockNumber?
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
     init(
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
@@ -46,9 +52,13 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
         interactor.setup()
     }
 
-    func becomeOnline() {}
+    func becomeOnline() {
+        interactor.becomeOnline()
+    }
 
-    func putOffline() {}
+    func putOffline() {
+        interactor.putOffline()
+    }
 
     func selectChain() {
         guard let chain = chain, let asset = chain.utilityAsset() else {
@@ -66,6 +76,20 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
+    func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?) {
+        referendumsMetadata = metadata
+    }
+
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
+        self.blockNumber = blockNumber
+
+        interactor.refresh()
+    }
+
+    func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
+        self.referendums = referendums
+    }
+
     func didReceiveSelectedChain(_ chain: ChainModel) {
         self.chain = chain
 
@@ -82,7 +106,31 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         self.price = price
     }
 
-    func didReceiveError(_: ReferendumsInteractorError) {}
+    func didReceiveError(_ error: ReferendumsInteractorError) {
+        logger.error("Did receive error: \(error)")
+
+        switch error {
+        case .settingsLoadFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.setup()
+            }
+        case .chainSaveFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                if let chain = self?.chain {
+                    self?.interactor.saveSelected(chainModel: chain)
+                }
+            }
+        case .referendumsFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refresh()
+            }
+        case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
+             .metadataSubscriptionFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeSubscriptions()
+            }
+        }
+    }
 }
 
 extension ReferendumsPresenter: AssetSelectionDelegate {

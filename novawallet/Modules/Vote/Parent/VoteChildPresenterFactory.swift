@@ -96,12 +96,21 @@ final class VoteChildPresenterFactory {
         for state: GovernanceSharedState,
         wallet: MetaAccountModel
     ) -> ReferendumsInteractor {
-        ReferendumsInteractor(
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        let referendumOperationFactory = Gov2OperationFactory(requestFactory: requestFactory)
+
+        return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
+            referendumsOperationFactory: referendumOperationFactory,
+            operationQueue: operationQueue,
             currencyManager: currencyManager
         )
     }
@@ -153,7 +162,8 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: logger
         )
 
         presenter.view = view
