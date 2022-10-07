@@ -8,4 +8,5 @@ enum ReferendumsInteractorError: Error {
     case referendumsFetchFailed(_ internalError: Error)
     case blockNumberSubscriptionFailed(_ internalError: Error)
     case metadataSubscriptionFailed(_ internalError: Error)
+    case votesFetchFailed(_ internalError: Error)
 }

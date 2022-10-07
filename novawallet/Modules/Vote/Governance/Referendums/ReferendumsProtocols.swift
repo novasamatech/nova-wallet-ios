@@ -20,6 +20,7 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?)
+    func didReceiveVotes(_ votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal])
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
