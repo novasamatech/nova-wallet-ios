@@ -35,8 +35,8 @@ struct SupportAndVotesLocal {
     }
 
     /// nil if not deciding yet
-    let approvalFunction: ReferendumLocalDecidingFunction?
-    let supportFunction: ReferendumLocalDecidingFunction?
+    let approvalFunction: ReferendumDecidingFunctionProtocol?
+    let supportFunction: ReferendumDecidingFunctionProtocol?
 
     func isPassing(at block: BlockNumber) -> Bool {
         guard
