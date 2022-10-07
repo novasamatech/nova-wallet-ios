@@ -28,7 +28,6 @@ final class SegmentedSliderView: UIView {
 
         let sliderFrame = bounds.inset(by: style.lineInsets)
         slider.frame = sliderFrame
-        slider.gap = model.value
 
         guard let thumbValue = model.thumbValue,
               let thumbStyle = style.thumbStyle else {
@@ -122,6 +121,8 @@ extension SegmentedSliderView {
 
     func bind(viewModel: Model) {
         model = viewModel
+        slider.gap = model.value
+
         setNeedsDisplay()
     }
 }

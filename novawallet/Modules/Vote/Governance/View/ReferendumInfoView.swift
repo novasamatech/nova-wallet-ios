@@ -17,7 +17,7 @@ final class ReferendumInfoView: UIView {
         $0.iconDetailsView.detailsLabel.apply(style: .track)
     }
 
-    let numberView: BorderedLabelView = .create {
+    let numberLabel: BorderedLabelView = .create {
         $0.titleLabel.apply(style: .track)
         $0.contentInsets = .init(top: 4, left: 6, bottom: 4, right: 8)
     }
@@ -45,7 +45,7 @@ final class ReferendumInfoView: UIView {
                 titleLabel,
                 UIView.hStack([
                     trackNameView,
-                    numberView
+                    numberLabel
                 ])
             ]
         )
@@ -88,39 +88,4 @@ extension UILabel.Style {
         textColor: R.color.colorWhite64(),
         font: .semiBoldCaps1
     )
-}
-
-import SwiftUI
-
-struct ReferendumInfoViewSwiftUI: UIViewControllerRepresentable {
-    let closure: (UIView) -> Void
-
-    func makeUIViewController(context _: Context) -> some UIViewController {
-        let vc = UIViewController()
-        closure(vc.view)
-        return vc
-    }
-
-    func updateUIViewController(_: UIViewControllerType, context _: Context) {}
-}
-
-struct ReferendumInfoViewSwiftUI_Preview: PreviewProvider {
-    static var previews: some View {
-        Group {
-            ReferendumInfoViewSwiftUI { container in
-                let refView: ReferendumInfoView = .create {
-                    $0.statusLabel.text = "preparing".uppercased()
-                    $0.timeView.detailsLabel.text = "Deciding in 02:02:11"
-                    $0.titleLabel.text = "Reduce validationUpgradeCooldown to 6 hours"
-                    $0.trackNameView.iconDetailsView.detailsLabel.text = "fellowship: whitelist"
-                    $0.numberView.titleLabel.text = "#234"
-                }
-
-                container.addSubview(refView)
-                refView.snp.makeConstraints {
-                    $0.edges.equalToSuperview()
-                }
-            }
-        }
-    }
 }

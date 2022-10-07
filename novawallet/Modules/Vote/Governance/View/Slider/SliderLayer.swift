@@ -4,6 +4,7 @@ final class SliderLayer: CALayer {
     private let firstSegment: CAShapeLayer
     private let lastSegment: CAShapeLayer
     private var sliderStyle: Style = .defaultStyle
+
     var gap: CGFloat = 0 {
         didSet {
             setNeedsLayout()
