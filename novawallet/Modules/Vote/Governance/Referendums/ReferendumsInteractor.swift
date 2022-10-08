@@ -60,7 +60,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     deinit {
-        clear()
+        clearBlockTimeService()
+        clearCancellable()
     }
 
     private func clear() {
