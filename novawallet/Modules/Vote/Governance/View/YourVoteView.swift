@@ -2,8 +2,13 @@ import UIKit
 
 final class YourVotesView: UIView {
     let topLine = createSeparator(color: R.color.colorWhite8())
-    let ayeView = YourVoteView()
-    let nayView = YourVoteView()
+    let ayeView: YourVoteView = .create {
+        $0.typeView.titleLabel.apply(style: .ayeType)
+    }
+
+    let nayView: YourVoteView = .create {
+        $0.typeView.titleLabel.apply(style: .nayType)
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,7 +54,6 @@ extension YourVotesView {
 
 final class YourVoteView: UIView {
     let typeView: BorderedLabelView = .create {
-        $0.titleLabel.apply(style: .type)
         $0.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
     }
 
@@ -68,6 +72,7 @@ final class YourVoteView: UIView {
 
     private func setupLayout() {
         let content = UIView.hStack(
+            distribution: .fillProportionally,
             spacing: 6,
             [
                 typeView,
@@ -75,6 +80,7 @@ final class YourVoteView: UIView {
             ]
         )
 
+        voteLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -95,8 +101,12 @@ extension YourVoteView {
 }
 
 extension UILabel.Style {
-    static let type = UILabel.Style(
+    static let ayeType = UILabel.Style(
         textColor: R.color.colorDarkGreen(),
+        font: .semiBoldCaps1
+    )
+    static let nayType = UILabel.Style(
+        textColor: R.color.colorRedFF3A69(),
         font: .semiBoldCaps1
     )
     static let votes = UILabel.Style(

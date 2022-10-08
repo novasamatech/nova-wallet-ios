@@ -26,9 +26,8 @@ final class VotingProgressView: UIView {
 
     private func setupLayout() {
         let content = UIView.vStack(
-            spacing: 12,
+            spacing: 6,
             [
-                UIView.spacer(length: 4),
                 thresholdView,
                 slider,
                 UIView.hStack(
@@ -44,7 +43,7 @@ final class VotingProgressView: UIView {
 
         addSubview(content)
         content.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0))
         }
     }
 }

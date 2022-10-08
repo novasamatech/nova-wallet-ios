@@ -32,15 +32,24 @@ extension ReferendumsViewManager: UITableViewDataSource {
     }
 
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        1
+        2
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
         cell.applyStyle()
-        cell.view.bind(viewModel: createSample1())
-        cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
-        cell.view.referendumInfoView.timeView.detailsLabel.apply(style: .activeTimeViewLabel)
+        switch indexPath.row {
+        case 0:
+            cell.view.bind(viewModel: createSample1())
+            cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
+            cell.view.referendumInfoView.timeView.detailsLabel.apply(style: .activeTimeViewLabel)
+        case 1:
+            cell.view.bind(viewModel: createSample2())
+            cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
+        default:
+            break
+        }
+
         return cell
     }
 
@@ -69,6 +78,31 @@ extension ReferendumsViewManager: UITableViewDataSource {
             referendumInfo: referendumInfo,
             progress: progress,
             yourVotes: nil
+        )
+    }
+
+    private func createSample2() -> ReferendumView.Model {
+        let referendumInfo = ReferendumInfoView.Model(
+            status: "executing".uppercased(),
+            time: nil,
+            timeImage: nil,
+            title: "Update crowdloan configuration to set intended last period to 30 for Snow (paraID 2127)",
+            trackName: "crowdloans".uppercased(),
+            trackImage: nil,
+            number: "#224"
+        )
+        let yourVotes = YourVotesView.Model(
+            aye:
+            .init(
+                title: "AYE",
+                description: "Your vote: 10 votes"
+            ),
+            nay: nil
+        )
+        return ReferendumView.Model(
+            referendumInfo: referendumInfo,
+            progress: nil,
+            yourVotes: yourVotes
         )
     }
 }

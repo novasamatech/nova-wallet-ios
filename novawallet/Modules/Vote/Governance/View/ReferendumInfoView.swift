@@ -59,7 +59,7 @@ final class ReferendumInfoView: UIView {
                 )
             ]
         )
-
+        content.setCustomSpacing(12, after: titleLabel)
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
