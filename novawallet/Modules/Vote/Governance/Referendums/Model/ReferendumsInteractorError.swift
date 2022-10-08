@@ -9,4 +9,6 @@ enum ReferendumsInteractorError: Error {
     case blockNumberSubscriptionFailed(_ internalError: Error)
     case metadataSubscriptionFailed(_ internalError: Error)
     case votesFetchFailed(_ internalError: Error)
+    case blockTimeFetchFailed(_ internalError: Error)
+    case blockTimeServiceFailed(_ internalError: Error)
 }

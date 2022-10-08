@@ -15,6 +15,7 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func putOffline()
     func refresh()
     func remakeSubscriptions()
+    func retryBlockTime()
 }
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
@@ -25,6 +26,7 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
+    func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveError(_ error: ReferendumsInteractorError)
 }
 
