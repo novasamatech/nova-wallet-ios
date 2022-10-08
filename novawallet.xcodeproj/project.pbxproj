@@ -400,6 +400,7 @@
 		841221A028F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412219F28F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift */; };
 		841221A228F0520300715C82 /* GovMetadataLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841221A128F0520300715C82 /* GovMetadataLocalStorageHandler.swift */; };
 		841221A428F0A3F200715C82 /* ReferendumAccountVoteLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841221A328F0A3F200715C82 /* ReferendumAccountVoteLocal.swift */; };
+		841221A628F13BA100715C82 /* GovernanceServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841221A528F13BA100715C82 /* GovernanceServiceFactory.swift */; };
 		8412AF992789AB76008A6C22 /* PolkadotExtensionMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412AF982789AB76008A6C22 /* PolkadotExtensionMetadata.swift */; };
 		8412AF9B2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412AF9A2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift */; };
 		841493DC2604C144000D8D1A /* SubscanRewardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841493DB2604C144000D8D1A /* SubscanRewardData.swift */; };
@@ -3190,6 +3191,7 @@
 		8412219F28F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovMetadataLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		841221A128F0520300715C82 /* GovMetadataLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovMetadataLocalStorageHandler.swift; sourceTree = "<group>"; };
 		841221A328F0A3F200715C82 /* ReferendumAccountVoteLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumAccountVoteLocal.swift; sourceTree = "<group>"; };
+		841221A528F13BA100715C82 /* GovernanceServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceServiceFactory.swift; sourceTree = "<group>"; };
 		8412AF982789AB76008A6C22 /* PolkadotExtensionMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionMetadata.swift; sourceTree = "<group>"; };
 		8412AF9A2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionMetadataResponse.swift; sourceTree = "<group>"; };
 		841493DB2604C144000D8D1A /* SubscanRewardData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanRewardData.swift; sourceTree = "<group>"; };
@@ -11022,6 +11024,7 @@
 				84DD49F528EE974B00B804F3 /* ReferendumDecidingFunctionProtocol.swift */,
 				84E9A04F28F000AB00551DC4 /* ReferendumMetadataLocal.swift */,
 				841221A328F0A3F200715C82 /* ReferendumAccountVoteLocal.swift */,
+				841221A528F13BA100715C82 /* GovernanceServiceFactory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -14003,6 +14006,7 @@
 				84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */,
 				8456C08227CF9DC9001282DE /* RemoteNftModel.swift in Sources */,
 				8401AEC42642A71D000B03E3 /* StakingRebondConfirmationWireframe.swift in Sources */,
+				841221A628F13BA100715C82 /* GovernanceServiceFactory.swift in Sources */,
 				F4F3C3CB265BB12200C58400 /* CustomValidatorListViewModelFactory.swift in Sources */,
 				84E9A05028F000AB00551DC4 /* ReferendumMetadataLocal.swift in Sources */,
 				84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */,

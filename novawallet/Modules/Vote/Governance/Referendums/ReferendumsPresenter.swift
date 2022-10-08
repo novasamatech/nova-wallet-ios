@@ -16,6 +16,7 @@ final class ReferendumsPresenter {
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]?
     private var blockNumber: BlockNumber?
+    private var blockTime: BlockTime?
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
@@ -91,6 +92,10 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         interactor.refresh()
     }
 
+    func didReceiveBlockTime(_ blockTime: BlockTime) {
+        self.blockTime = blockTime
+    }
+
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
         self.referendums = referendums
     }
@@ -130,9 +135,13 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                 self?.interactor.refresh()
             }
         case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
-             .metadataSubscriptionFailed:
+             .metadataSubscriptionFailed, .blockTimeServiceFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
+            }
+        case .blockTimeFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryBlockTime()
             }
         }
     }
