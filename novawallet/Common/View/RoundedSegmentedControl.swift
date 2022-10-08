@@ -114,7 +114,7 @@ class RoundedSegmentedControl: UIControl {
         configure()
     }
 
-    func configure() {
+    private func configure() {
         backgroundColor = UIColor.clear
 
         addSubview(backgroundView)
