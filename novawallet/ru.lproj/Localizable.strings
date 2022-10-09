@@ -979,3 +979,22 @@
 "wallet.account.locks.crowdloans" = "Краудлоуны";
 "tabbar.vote.title" = "Голосование";
 "tabbar.governance.title" = "Референдумы";
+"governance.referendums.status.preparing" = "подготовка";
+"governance.referendums.status.preparing.inqueue" = "в очереди";
+"governance.referendums.status.passing" = "прошел";
+"governance.referendums.status.not.passing" = "не прошел";
+"governance.referendums.status.approved" = "одобрен";
+"governance.referendums.status.rejected" = "отклонен";
+"governance.referendums.status.cancelled" = "отменен";
+"governance.referendums.status.timedOut" = "просрочен";
+"governance.referendums.status.killed" = "отменен";
+"governance.referendums.status.executed" = "выполнен";
+
+"governance.referendums.time.deciding" = "Решение через %@";
+"governance.referendums.time.timeout" = "Истечет через %@";
+"governance.referendums.time.execute" = "Исполнение через %@";
+"governance.referendums.time.waiting.deposit" = "Ожидание депозита";
+"governance.referendums.time.approve" = "Одобрение через %@";
+"governance.referendums.time.reject" = "Отмена через %@";
+
+"governance.referendums.threshold" = "Порог: %@ из %@";

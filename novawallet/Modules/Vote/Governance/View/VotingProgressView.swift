@@ -54,13 +54,13 @@ extension VotingProgressView {
         let passProgress: String
         let nayProgress: String
         let thresholdModel: ThresholdModel?
-        let progress: Double
+        let progress: Decimal
     }
 
     struct ThresholdModel {
         let image: UIImage?
         let text: String
-        let value: Double
+        let value: Decimal
     }
 
     func bind(viewModel: Model) {

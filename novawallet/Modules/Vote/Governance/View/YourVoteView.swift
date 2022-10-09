@@ -33,7 +33,10 @@ final class YourVotesView: UIView {
 
         addSubview(content)
         content.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 13, left: 0, bottom: 0, right: 0))
+        }
+        topLine.snp.makeConstraints {
+            $0.height.equalTo(1)
         }
     }
 }
@@ -72,7 +75,6 @@ final class YourVoteView: UIView {
 
     private func setupLayout() {
         let content = UIView.hStack(
-            distribution: .fillProportionally,
             spacing: 6,
             [
                 typeView,

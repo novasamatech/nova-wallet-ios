@@ -979,3 +979,22 @@
 "wallet.account.locks.crowdloans" = "Crowdloans";
 "tabbar.vote.title" = "Vote";
 "tabbar.governance.title" = "Governance";
+"governance.referendums.status.preparing" = "preparing";
+"governance.referendums.status.preparing.inqueue" = "in queue";
+"governance.referendums.status.passing" = "passing";
+"governance.referendums.status.not.passing" = "not passing";
+"governance.referendums.status.approved" = "approved";
+"governance.referendums.status.rejected" = "rejected";
+"governance.referendums.status.cancelled" = "cancelled";
+"governance.referendums.status.timedOut" = "timed out";
+"governance.referendums.status.killed" = "killed";
+"governance.referendums.status.executed" = "executed";
+
+"governance.referendums.time.deciding" = "Deciding in %@";
+"governance.referendums.time.timeout" = "Time out in %@";
+"governance.referendums.time.execute" = "Execute in %@";
+"governance.referendums.time.waiting.deposit" = "Waiting for deposit";
+"governance.referendums.time.approve" = "Approve in %@";
+"governance.referendums.time.reject" = "Reject in %@";
+
+"governance.referendums.threshold" = "Threshold: %@ of %@";

@@ -42,7 +42,6 @@ extension ReferendumsViewManager: UITableViewDataSource {
         case 0:
             cell.view.bind(viewModel: createSample1())
             cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
-            cell.view.referendumInfoView.timeView.detailsLabel.apply(style: .activeTimeViewLabel)
         case 1:
             cell.view.bind(viewModel: createSample2())
             cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
@@ -56,8 +55,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
     private func createSample1() -> ReferendumView.Model {
         let referendumInfo = ReferendumInfoView.Model(
             status: "passing".uppercased(),
-            time: "Approve in 3:59:59",
-            timeImage: R.image.iconFire(),
+            time: .init(title: "Approve in 3:59:59", image: R.image.iconFire(), isUrgent: true),
             title: "Runtime upgrade to 9280",
             trackName: "main agenda".uppercased(),
             trackImage: nil,
@@ -85,7 +83,6 @@ extension ReferendumsViewManager: UITableViewDataSource {
         let referendumInfo = ReferendumInfoView.Model(
             status: "executing".uppercased(),
             time: nil,
-            timeImage: nil,
             title: "Update crowdloan configuration to set intended last period to 30 for Snow (paraID 2127)",
             trackName: "crowdloans".uppercased(),
             trackImage: nil,

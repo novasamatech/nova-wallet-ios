@@ -6,9 +6,9 @@ final class ReferendumInfoView: UIView {
 
     let timeView: IconDetailsView = .create {
         $0.mode = .detailsIcon
-        $0.detailsLabel.apply(style: .timeViewLabel)
         $0.detailsLabel.numberOfLines = 1
         $0.spacing = 5
+        $0.apply(style: .timeView)
     }
 
     let titleLabel: UILabel = .init(style: .title)
@@ -70,23 +70,46 @@ final class ReferendumInfoView: UIView {
 extension ReferendumInfoView {
     struct Model {
         let status: String
-        let time: String?
-        let timeImage: UIImage?
+        let time: Time?
         let title: String
         let trackName: String
         let trackImage: UIImage?
         let number: String
+
+        struct Time {
+            let title: String
+            let image: UIImage?
+            let isUrgent: Bool
+        }
     }
 
     func bind(viewModel: Model) {
-        timeView.detailsLabel.text = viewModel.time
-        timeView.imageView.image = viewModel.timeImage
         titleLabel.text = viewModel.title
         trackNameView.iconDetailsView.imageView.image = viewModel.trackImage
         trackNameView.iconDetailsView.detailsLabel.text = viewModel.trackName
         numberLabel.titleLabel.text = viewModel.number
         statusLabel.text = viewModel.status
+
+        if let time = viewModel.time {
+            timeView.detailsLabel.text = time.title
+            timeView.imageView.image = time.image
+            timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)
+        } else {
+            timeView.detailsLabel.text = nil
+            timeView.imageView.image = nil
+        }
     }
+}
+
+extension IconDetailsView.Style {
+    static let timeView = IconDetailsView.Style(
+        tintColor: R.color.colorWhite64()!,
+        font: .caption1
+    )
+    static let activeTimeView = IconDetailsView.Style(
+        tintColor: R.color.colorDarkYellow()!,
+        font: .caption1
+    )
 }
 
 extension UILabel.Style {
@@ -102,15 +125,6 @@ extension UILabel.Style {
         textColor: R.color.colorRedFF3A69(),
         font: .semiBoldCaps1
     )
-    static let timeViewLabel = UILabel.Style(
-        textColor: R.color.colorWhite64(),
-        font: .caption1
-    )
-    static let activeTimeViewLabel = UILabel.Style(
-        textColor: R.color.colorDarkYellow(),
-        font: .caption1
-    )
-
     static let title = UILabel.Style(
         textColor: .white,
         font: .regularSubheadline

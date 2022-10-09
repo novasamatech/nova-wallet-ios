@@ -35,7 +35,8 @@ final class SegmentedSliderView: UIView {
             return
         }
 
-        let originX = sliderFrame.size.width * thumbValue - thumbStyle.width / 2
+        let thumbValueDouble = NSDecimalNumber(decimal: model.value).doubleValue
+        let originX = sliderFrame.size.width * thumbValueDouble - thumbStyle.width / 2
         let thumbHeight = thumbStyle.height ?? bounds.size.height
         let originY = sliderFrame.midY - thumbHeight / 2
         let origin = CGPoint(x: originX, y: originY)
@@ -110,10 +111,10 @@ extension SegmentedSliderView {
 
 extension SegmentedSliderView {
     struct Model {
-        let thumbValue: Double?
-        let value: Double
+        let thumbValue: Decimal?
+        let value: Decimal
 
-        init(thumbValue: Double? = nil, value: Double = 0) {
+        init(thumbValue: Decimal? = nil, value: Decimal = 0) {
             self.thumbValue = thumbValue
             self.value = value
         }
@@ -121,7 +122,7 @@ extension SegmentedSliderView {
 
     func bind(viewModel: Model) {
         model = viewModel
-        slider.gap = model.value
+        slider.gap = NSDecimalNumber(decimal: model.value).doubleValue
 
         setNeedsDisplay()
     }
