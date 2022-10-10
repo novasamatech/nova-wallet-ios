@@ -12,17 +12,16 @@ protocol ReferendumsModelFactoryProtocol {
     ) -> [ReferendumsSection]
 }
 
-final class ReferendumsModelFactory {
-    lazy var formatter: NumberFormatter = {
-        let formatter = NumberFormatter.percent
-        formatter.roundingMode = .halfEven
-        return formatter
-    }()
+final class ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
+    let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let formatter: NumberFormatter
 
-    let tokenFormatter: LocalizableResource<TokenFormatter>
-
-    init(tokenFormatter: LocalizableResource<TokenFormatter>) {
-        self.tokenFormatter = tokenFormatter
+    init(
+        assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        percentFormatter: NumberFormatter
+    ) {
+        self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
+        formatter = percentFormatter
     }
 
     func createSections(
@@ -70,57 +69,45 @@ final class ReferendumsModelFactory {
 
         switch referendum.state {
         case let .preparing(model):
-            let timeModel: ReferendumInfoView.Model.Time?
-            if model.deposit == nil {
-                let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
-                timeModel = ReferendumInfoView.Model.Time(
-                    title: title,
-                    image: R.image.iconLightPending(),
-                    isUrgent: false
-                )
-            } else {
-                timeModel = createTimeModel(
-                    state: referendum.state,
-                    atBlock: model.since,
-                    currentBlock: currentBlock,
-                    blockDuration: blockDurartion,
-                    timeStringProvider: strings.governanceReferendumsTimeDeciding,
-                    locale: locale
-                )
-            }
+            return provideModel(
+                preparing: model,
+                chain: chain,
+                referendum: referendum,
+                metadata: metadata,
+                currentBlock: currentBlock,
+                blockDurartion: blockDurartion,
+                locale: locale
+            )
+        case let .deciding(model):
             switch model.voting {
             case let .supportAndVotes(supportAndVotes):
-                let ayeProgress = formatter.stringFromDecimal(supportAndVotes.approvalFraction) ?? ""
-                let nayProgress = formatter.stringFromDecimal(1 - supportAndVotes.approvalFraction) ?? ""
-                let passProgress = formatter.stringFromDecimal(supportAndVotes.supportFraction) ?? ""
-                let thresholdModel: VotingProgressView.ThresholdModel?
-                if let chainAsset = chain.utilityAsset(),
-                   let supportThreshold = supportAndVotes.supportFunction?.calculateThreshold(for: currentBlock) {
-                    let targetThreshold = Decimal.fromSubstrateAmount(
-                        supportAndVotes.totalIssuance,
-                        precision: Int16(chainAsset.precision)
-                    )
-                    let threshold = Decimal.fromSubstrateAmount(
-                        supportAndVotes.support,
-                        precision: Int16(chainAsset.precision)
-                    )
-                    let isCompleted = supportAndVotes.supportFraction >= supportThreshold
-
-                    let image = isCompleted ? R.image.iconCheckmark() : R.image.iconClose()
-                    let targetThresholdString = targetThreshold.map {
-                        tokenFormatter.value(for: locale).stringFromDecimal($0) ?? ""
-                    } ?? ""
-                    let thresholdString = threshold.map(String.init) ?? ""
-                    let text = strings.governanceReferendumsThreshold(thresholdString, targetThresholdString)
-                    thresholdModel = .init(
-                        image: image,
-                        text: text,
-                        value: supportAndVotes.supportFraction
+                let timeModel: ReferendumInfoView.Model.Time?
+                if supportAndVotes.isPassing(at: currentBlock), let confirmationUntil = model.confirmationUntil {
+                    timeModel = createTimeModel(
+                        state: referendum.state,
+                        atBlock: confirmationUntil,
+                        currentBlock: currentBlock,
+                        blockDuration: blockDurartion,
+                        timeStringProvider: strings.governanceReferendumsTimeApprove,
+                        locale: locale
                     )
                 } else {
-                    thresholdModel = nil
+                    timeModel = createTimeModel(
+                        state: referendum.state,
+                        atBlock: model.period,
+                        currentBlock: currentBlock,
+                        blockDuration: blockDurartion,
+                        timeStringProvider: strings.governanceReferendumsTimeReject,
+                        locale: locale
+                    )
                 }
 
+                let progressViewModel = createVotingProgressViewModel(
+                    supportAndVotes: supportAndVotes,
+                    chain: chain,
+                    currentBlock: currentBlock,
+                    locale: locale
+                )
                 return .init(
                     referendumInfo: .init(
                         status: status,
@@ -130,23 +117,36 @@ final class ReferendumsModelFactory {
                         trackImage: nil,
                         number: "#\(referendum.index)"
                     ),
-                    progress: .init(
-                        ayeProgress: ayeProgress,
-                        passProgress: passProgress,
-                        nayProgress: nayProgress,
-                        thresholdModel: thresholdModel,
-                        progress: supportAndVotes.approvalFraction
-                    ),
+                    progress: progressViewModel,
                     yourVotes: nil
                 )
             }
-
-        case let .deciding(model):
-            // TODO:
-            fatalError()
         case let .approved(model):
-            // TODO:
-            fatalError()
+            let timeModel: ReferendumInfoView.Model.Time?
+            if let whenEnactment = model.whenEnactment {
+                timeModel = createTimeModel(
+                    state: referendum.state,
+                    atBlock: whenEnactment,
+                    currentBlock: currentBlock,
+                    blockDuration: blockDurartion,
+                    timeStringProvider: strings.governanceReferendumsTimeExecute,
+                    locale: locale
+                )
+            } else {
+                timeModel = nil
+            }
+            return .init(
+                referendumInfo: .init(
+                    status: status,
+                    time: timeModel,
+                    title: metadata.details,
+                    trackName: metadata.name,
+                    trackImage: nil,
+                    number: "#\(referendum.index)"
+                ),
+                progress: nil,
+                yourVotes: nil
+            )
         case .rejected,
              .cancelled,
              .timedOut,
@@ -165,6 +165,109 @@ final class ReferendumsModelFactory {
                 yourVotes: nil
             )
         }
+    }
+
+    private func provideModel(
+        preparing model: ReferendumStateLocal.Preparing,
+        chain: ChainModel,
+        referendum: ReferendumLocal,
+        metadata: ReferendumMetadataLocal,
+        currentBlock: BlockNumber,
+        blockDurartion: UInt64,
+        locale: Locale
+    ) -> ReferendumsCellViewModel {
+        let strings = R.string.localizable.self
+        let timeModel: ReferendumInfoView.Model.Time?
+        let title = model.inQueue ?
+            strings.governanceReferendumsStatusPreparingInqueue(preferredLanguages: locale.rLanguages) :
+            strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
+        if model.deposit == nil {
+            let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
+            timeModel = ReferendumInfoView.Model.Time(
+                title: title,
+                image: R.image.iconLightPending(),
+                isUrgent: false
+            )
+        } else {
+            timeModel = createTimeModel(
+                state: referendum.state,
+                atBlock: model.since,
+                currentBlock: currentBlock,
+                blockDuration: blockDurartion,
+                timeStringProvider: strings.governanceReferendumsTimeDeciding,
+                locale: locale
+            )
+        }
+
+        switch model.voting {
+        case let .supportAndVotes(supportAndVotes):
+            let progressViewModel = createVotingProgressViewModel(
+                supportAndVotes: supportAndVotes,
+                chain: chain,
+                currentBlock: currentBlock,
+                locale: locale
+            )
+            return .init(
+                referendumInfo: .init(
+                    status: title,
+                    time: timeModel,
+                    title: metadata.details,
+                    trackName: metadata.name,
+                    trackImage: nil,
+                    number: "#\(referendum.index)"
+                ),
+                progress: progressViewModel,
+                yourVotes: nil
+            )
+        }
+    }
+
+    private func createVotingProgressViewModel(
+        supportAndVotes: SupportAndVotesLocal,
+        chain: ChainModel,
+        currentBlock: BlockNumber,
+        locale: Locale
+    ) -> VotingProgressView.Model {
+        let ayeProgress = formatter.stringFromDecimal(supportAndVotes.approvalFraction) ?? ""
+        let nayProgress = formatter.stringFromDecimal(1 - supportAndVotes.approvalFraction) ?? ""
+        let passProgress = formatter.stringFromDecimal(supportAndVotes.supportFraction) ?? ""
+        let thresholdModel: VotingProgressView.ThresholdModel?
+        if let chainAsset = chain.utilityAsset(),
+           let supportThreshold = supportAndVotes.supportFunction?.calculateThreshold(for: currentBlock) {
+            let targetThreshold = Decimal.fromSubstrateAmount(
+                supportAndVotes.totalIssuance,
+                precision: Int16(chainAsset.precision)
+            )
+            let threshold = Decimal.fromSubstrateAmount(
+                supportAndVotes.support,
+                precision: Int16(chainAsset.precision)
+            )
+            let isCompleted = supportAndVotes.supportFraction >= supportThreshold
+
+            let image = isCompleted ? R.image.iconCheckmark() : R.image.iconClose()
+            let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: chainAsset.displayInfo)
+
+            let targetThresholdString = targetThreshold.map {
+                tokenFormatter.value(for: locale).stringFromDecimal($0) ?? ""
+            } ?? ""
+            let thresholdString = threshold.map(String.init) ?? ""
+            let text = R.string.localizable.governanceReferendumsThreshold(thresholdString, targetThresholdString)
+            thresholdModel = .init(
+                image: image,
+                text: text,
+                value: supportAndVotes.supportFraction
+            )
+        } else {
+            thresholdModel = nil
+        }
+
+        return .init(
+            ayeProgress: ayeProgress,
+            passProgress: passProgress,
+            nayProgress: nayProgress,
+            thresholdModel: thresholdModel,
+            progress: supportAndVotes.approvalFraction
+        )
     }
 
     private func createTimeModel(

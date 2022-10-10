@@ -15,17 +15,20 @@ final class ReferendumsPresenter {
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var blockNumber: BlockNumber?
+    private let viewModelFactory: ReferendumsModelFactoryProtocol
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
     init(
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
+        viewModelFactory: ReferendumsModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -42,6 +45,27 @@ final class ReferendumsPresenter {
         )
 
         view?.didReceiveChainBalance(viewModel: viewModel)
+    }
+
+    private func updateView() {
+        guard let view = view else {
+            return
+        }
+        guard let currentBlock = blockNumber,
+              let metadataMapping = referendumsMetadata,
+              let referendums = self.referendums,
+              let chainModel = chain else {
+            return
+        }
+        let sections = viewModelFactory.createSections(
+            chain: chainModel,
+            referendums: referendums,
+            metaDataMapping: metadataMapping,
+            currentBlock: currentBlock,
+            blockDurartion: 6000,
+            locale: selectedLocale
+        )
+        view.update(model: .init(sections: sections))
     }
 }
 
@@ -88,12 +112,14 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
         self.referendums = referendums
+        updateView()
     }
 
     func didReceiveSelectedChain(_ chain: ChainModel) {
         self.chain = chain
 
         provideChainBalance()
+        updateView()
     }
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {

@@ -49,16 +49,20 @@ extension ReferendumView {
         let yourVotes: YourVotesView.Model?
     }
 
-    func bind(viewModel: Model) {
-        referendumInfoView.bind(viewModel: viewModel.referendumInfo)
-        if let progressModel = viewModel.progress {
+    func bind(viewModel: LoadableViewModelState<Model>) {
+        // TODO: Skeleton
+        guard let model = viewModel.value else {
+            return
+        }
+        referendumInfoView.bind(viewModel: model.referendumInfo)
+        if let progressModel = model.progress {
             progressView.bind(viewModel: progressModel)
             progressView.isHidden = false
         } else {
             progressView.isHidden = true
         }
 
-        if let yourVotesModel = viewModel.yourVotes {
+        if let yourVotesModel = model.yourVotes {
             yourVoteView.bind(viewModel: yourVotesModel)
             yourVoteView.isHidden = false
         } else {

@@ -4,6 +4,7 @@ import UIKit
 final class ReferendumsViewManager: NSObject {
     let tableView: UITableView
     let chainSelectionView: VoteChainViewProtocol
+    private var model: ReferendumsViewModel = .init(sections: [])
 
     var locale = Locale.current {
         didSet {
@@ -25,31 +26,21 @@ final class ReferendumsViewManager: NSObject {
     }
 }
 
-// TODO: Implement protocols when data source defined
 extension ReferendumsViewManager: UITableViewDataSource {
-    func numberOfSections(in _: UITableView) -> Int {
-        1
-    }
-
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        2
+        model.sections.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
         cell.applyStyle()
-        switch indexPath.row {
-        case 0:
-            cell.view.bind(viewModel: createSample1())
-            cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
-        case 1:
-            cell.view.bind(viewModel: createSample2())
-            cell.view.referendumInfoView.statusLabel.apply(style: .positiveStatusLabel)
-        default:
-            break
+        let section = model.sections[indexPath.section]
+        switch section {
+        case let .active(_, cellModels), let .completed(_, cellModels):
+            let cellModel = cellModels[indexPath.row]
+            cell.view.bind(viewModel: cellModel)
+            return cell
         }
-
-        return cell
     }
 
     private func createSample1() -> ReferendumView.Model {
@@ -121,6 +112,11 @@ extension ReferendumsViewManager: UITableViewDelegate {
 extension ReferendumsViewManager: ReferendumsViewProtocol {
     func didReceiveChainBalance(viewModel: ChainBalanceViewModel) {
         chainSelectionView.bind(viewModel: viewModel)
+    }
+
+    func update(model: ReferendumsViewModel) {
+        self.model = model
+        tableView.reloadData()
     }
 }
 

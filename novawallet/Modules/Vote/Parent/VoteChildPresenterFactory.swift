@@ -159,9 +159,17 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         let interactor = createGovernanceInteractor(for: state, wallet: wallet)
         let wireframe = ReferendumsWireframe()
 
+        let percentFormatter = NumberFormatter.percent
+        percentFormatter.roundingMode = .halfEven
+        let viewModelFactory = ReferendumsModelFactory(
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            percentFormatter: percentFormatter
+        )
+
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
             logger: logger
         )
