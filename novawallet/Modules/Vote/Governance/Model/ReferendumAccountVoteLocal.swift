@@ -1,38 +1,80 @@
 import Foundation
 import BigInt
 
-struct ReferendumAccountVoteLocal {
+enum ReferendumAccountVoteLocal {
+    case split(ConvictionVoting.AccountVoteSplit)
+    case standard(ConvictionVoting.AccountVoteStandard)
+
     /// post conviction votes for referendum
-    let ayes: BigUInt
-    let nays: BigUInt
+    var ayes: BigUInt {
+        switch self {
+        case let .split(value):
+            return value.aye
+        case let .standard(value):
+            if value.vote.aye {
+                return value.vote.conviction.votes(for: value.balance) ?? 0
+            } else {
+                return 0
+            }
+        }
+    }
+
+    var nays: BigUInt {
+        switch self {
+        case let .split(value):
+            return value.nay
+        case let .standard(value):
+            if !value.vote.aye {
+                return value.vote.conviction.votes(for: value.balance) ?? 0
+            } else {
+                return 0
+            }
+        }
+    }
+
+    var ayeBalance: BigUInt {
+        switch self {
+        case let .split(value):
+            return value.aye
+        case let .standard(value):
+            if value.vote.aye {
+                return value.balance
+            } else {
+                return 0
+            }
+        }
+    }
+
+    var nayBalance: BigUInt {
+        switch self {
+        case let .split(value):
+            return value.nay
+        case let .standard(value):
+            if !value.vote.aye {
+                return value.balance
+            } else {
+                return 0
+            }
+        }
+    }
+
+    var conviction: Decimal? {
+        switch self {
+        case .split:
+            return 1
+        case let .standard(value):
+            return value.vote.conviction.decimalValue
+        }
+    }
 
     init?(accountVote: ConvictionVoting.AccountVote) {
         switch accountVote {
         case let .split(split):
-            self.init(accountVoteSplit: split)
+            self = .split(split)
         case let .standard(standard):
-            self.init(accountVoteStandard: standard)
+            self = .standard(standard)
         case .unknown:
             return nil
-        }
-    }
-
-    init(accountVoteSplit: ConvictionVoting.AccountVoteSplit) {
-        ayes = accountVoteSplit.aye
-        nays = accountVoteSplit.nay
-    }
-
-    init?(accountVoteStandard: ConvictionVoting.AccountVoteStandard) {
-        guard let votes = accountVoteStandard.vote.conviction.votes(for: accountVoteStandard.balance) else {
-            return nil
-        }
-
-        if accountVoteStandard.vote.aye {
-            ayes = votes
-            nays = 0
-        } else {
-            ayes = 0
-            nays = votes
         }
     }
 }

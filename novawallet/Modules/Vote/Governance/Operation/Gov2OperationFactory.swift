@@ -213,7 +213,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    func fetchAccountVotes(
+    func fetchAccountVotesWrapper(
         for accountId: AccountId,
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol
@@ -245,6 +245,54 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
                     }
                 case .delegating, .unknown:
                     break
+                }
+            }
+        }
+
+        mappingOperation.addDependency(votesWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + votesWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+
+    func fetchVotersWrapper(
+        for referendumIndex: Referenda.ReferendumIndex,
+        from connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let request = UnkeyedRemoteStorageRequest(storagePath: ConvictionVoting.votingFor)
+
+        let votesWrapper: CompoundOperationWrapper<[ConvictionVoting.VotingForKey: ConvictionVoting.Voting]> =
+            requestFactory.queryByPrefix(
+                engine: connection,
+                request: request,
+                storagePath: ConvictionVoting.votingFor,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() }
+            )
+
+        votesWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mappingOperation = ClosureOperation<[ReferendumVoterLocal]> {
+            let votesResult = try votesWrapper.targetOperation.extractNoCancellableResultData()
+
+            return votesResult.compactMap { keyValue in
+                let accountId = keyValue.key.accountId
+                let voting = keyValue.value
+
+                switch voting {
+                case let .casting(castingVoting):
+                    guard
+                        let vote = castingVoting.votes.first(where: { $0.pollIndex == referendumIndex }),
+                        let accountVote = ReferendumAccountVoteLocal(accountVote: vote.accountVote) else {
+                        return nil
+                    }
+
+                    return ReferendumVoterLocal(accountId: accountId, vote: accountVote)
+                case .delegating, .unknown:
+                    return nil
                 }
             }
         }
