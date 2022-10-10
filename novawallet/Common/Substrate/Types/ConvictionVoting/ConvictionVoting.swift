@@ -3,7 +3,7 @@ import SubstrateSdk
 import BigInt
 
 enum ConvictionVoting {
-    typealias PollIndex = UInt16
+    typealias PollIndex = UInt32
 
     enum Conviction: UInt8, Decodable {
         /// 0.1x votes, unlocked.
@@ -22,6 +22,27 @@ enum ConvictionVoting {
         case locked6x
 
         case unknown
+
+        func votes(for balance: BigUInt) -> BigUInt? {
+            switch self {
+            case .none:
+                return balance / 10
+            case .locked1x:
+                return balance
+            case .locked2x:
+                return 2 * balance
+            case .locked3x:
+                return 4 * balance
+            case .locked4x:
+                return 8 * balance
+            case .locked5x:
+                return 16 * balance
+            case .locked6x:
+                return 32 * balance
+            case .unknown:
+                return nil
+            }
+        }
     }
 
     struct Vote: Decodable {

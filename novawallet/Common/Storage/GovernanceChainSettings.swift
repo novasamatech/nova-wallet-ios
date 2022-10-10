@@ -30,6 +30,10 @@ final class GovernanceChainSettings: PersistentValueSettings<ChainModel> {
                 mutex.unlock()
             }
 
+            guard let strongSelf = self else {
+                return
+            }
+
             let chains: [ChainModel] = changes.allChangedItems()
 
             guard !chains.isEmpty, !completed else {
@@ -38,7 +42,7 @@ final class GovernanceChainSettings: PersistentValueSettings<ChainModel> {
 
             completed = true
 
-            self?.completeSetup(for: chains, currentChainId: maybeChainId, completionClosure: completionClosure)
+            strongSelf.completeSetup(for: chains, currentChainId: maybeChainId, completionClosure: completionClosure)
         }
     }
 

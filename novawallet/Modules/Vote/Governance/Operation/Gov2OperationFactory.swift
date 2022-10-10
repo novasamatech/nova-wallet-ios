@@ -212,4 +212,47 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
+
+    func fetchAccountVotes(
+        for accountId: AccountId,
+        from connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[Referenda.ReferendumIndex: ReferendumAccountVoteLocal]> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let request = MapRemoteStorageRequest(storagePath: ConvictionVoting.votingFor) {
+            BytesCodable(wrappedValue: accountId)
+        }
+
+        let votesWrapper: CompoundOperationWrapper<[ConvictionVoting.VotingForKey: ConvictionVoting.Voting]> =
+            requestFactory.queryByPrefix(
+                engine: connection,
+                request: request,
+                storagePath: ConvictionVoting.votingFor,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() }
+            )
+
+        votesWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mappingOperation = ClosureOperation<[Referenda.ReferendumIndex: ReferendumAccountVoteLocal]> {
+            let votes = try votesWrapper.targetOperation.extractNoCancellableResultData().values
+
+            return votes.reduce(into: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]()) { result, voting in
+                switch voting {
+                case let .casting(castingVoting):
+                    castingVoting.votes.forEach { vote in
+                        result[vote.pollIndex] = ReferendumAccountVoteLocal(accountVote: vote.accountVote)
+                    }
+                case .delegating, .unknown:
+                    break
+                }
+            }
+        }
+
+        mappingOperation.addDependency(votesWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + votesWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
 }

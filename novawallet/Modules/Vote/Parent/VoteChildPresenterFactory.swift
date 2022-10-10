@@ -24,6 +24,8 @@ final class VoteChildPresenterFactory {
     let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
     let priceProviderFactory: PriceProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
+    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -35,6 +37,8 @@ final class VoteChildPresenterFactory {
         priceProviderFactory: PriceProviderFactoryProtocol = PriceProviderFactory.shared,
         repositoryFactory: SubstrateRepositoryFactoryProtocol = SubstrateRepositoryFactory(),
         applicationHandler: ApplicationHandlerProtocol = ApplicationHandler(),
+        substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
+        eventCenter: EventCenterProtocol = EventCenter.shared,
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         localizationManager: LocalizationManagerProtocol = LocalizationManager.shared,
         logger: LoggerProtocol = Logger.shared
@@ -46,6 +50,8 @@ final class VoteChildPresenterFactory {
         self.priceProviderFactory = priceProviderFactory
         self.repositoryFactory = repositoryFactory
         self.applicationHandler = applicationHandler
+        self.substrateStorageFacade = substrateStorageFacade
+        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.localizationManager = localizationManager
         self.logger = logger
@@ -103,6 +109,21 @@ final class VoteChildPresenterFactory {
 
         let referendumOperationFactory = Gov2OperationFactory(requestFactory: requestFactory)
 
+        let serviceFactory = GovernanceServiceFactory(
+            chainRegisty: chainRegistry,
+            storageFacade: substrateStorageFacade,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: substrateStorageFacade,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            logger: logger
+        )
+
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
@@ -110,6 +131,9 @@ final class VoteChildPresenterFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             referendumsOperationFactory: referendumOperationFactory,
+            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
+            serviceFactory: serviceFactory,
+            applicationHandler: applicationHandler,
             operationQueue: operationQueue,
             currencyManager: currencyManager
         )
