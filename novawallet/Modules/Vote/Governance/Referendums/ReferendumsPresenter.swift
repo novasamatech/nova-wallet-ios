@@ -14,7 +14,9 @@ final class ReferendumsPresenter {
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
+    private var votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]?
     private var blockNumber: BlockNumber?
+    private var blockTime: BlockTime?
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
@@ -76,6 +78,10 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
+    func didReceiveVotes(_ votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]) {
+        self.votes = votes
+    }
+
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?) {
         referendumsMetadata = metadata
     }
@@ -84,6 +90,10 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         self.blockNumber = blockNumber
 
         interactor.refresh()
+    }
+
+    func didReceiveBlockTime(_ blockTime: BlockTime) {
+        self.blockTime = blockTime
     }
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
@@ -120,14 +130,18 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                     self?.interactor.saveSelected(chainModel: chain)
                 }
             }
-        case .referendumsFetchFailed:
+        case .referendumsFetchFailed, .votesFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refresh()
             }
         case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
-             .metadataSubscriptionFailed:
+             .metadataSubscriptionFailed, .blockTimeServiceFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
+            }
+        case .blockTimeFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryBlockTime()
             }
         }
     }
