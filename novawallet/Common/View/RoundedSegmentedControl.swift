@@ -84,6 +84,7 @@ class RoundedSegmentedControl: UIControl {
         view.shadowOpacity = 0
         view.fillColor = .gray
         view.cornerRadius = 12.0
+        view.isUserInteractionEnabled = false
         return view
     }()
 
@@ -114,7 +115,7 @@ class RoundedSegmentedControl: UIControl {
         configure()
     }
 
-    func configure() {
+    private func configure() {
         backgroundColor = UIColor.clear
 
         addSubview(backgroundView)
@@ -163,15 +164,11 @@ class RoundedSegmentedControl: UIControl {
             segmentLabel.backgroundColor = .clear
             segmentLabel.textAlignment = .center
             segmentLabel.text = title
-            segmentLabel.isUserInteractionEnabled = true
             addSubview(segmentLabel)
 
             applyStyle(for: segmentLabel, at: index)
 
             segments.append(segmentLabel)
-
-            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapSegment(_:)))
-            segmentLabel.addGestureRecognizer(tapRecognizer)
         }
     }
 
@@ -257,15 +254,29 @@ class RoundedSegmentedControl: UIControl {
 
     // MARK: Action Handlers
 
-    @objc private func didTapSegment(_ tapRecognizer: UITapGestureRecognizer) {
-        if let newIndex = segments.firstIndex(where: { $0 === tapRecognizer.view }), _selectedSegmentIndex != newIndex {
-            let oldIndex = _selectedSegmentIndex
-            _selectedSegmentIndex = newIndex
+    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        let shouldBeginTracking = super.beginTracking(touch, with: event)
 
-            animateSelectionIndexChange(oldIndex)
-            updateSegmentsSelection()
-
-            sendActions(for: .valueChanged)
+        guard case .began = touch.phase else {
+            return shouldBeginTracking
         }
+
+        let location = touch.location(in: self)
+
+        guard
+            let newIndex = segments.firstIndex(where: { $0.frame.contains(location) }),
+            selectedSegmentIndex != newIndex else {
+            return shouldBeginTracking
+        }
+
+        let oldIndex = _selectedSegmentIndex
+        _selectedSegmentIndex = newIndex
+
+        animateSelectionIndexChange(oldIndex)
+        updateSegmentsSelection()
+
+        sendActions(for: .valueChanged)
+
+        return shouldBeginTracking
     }
 }
