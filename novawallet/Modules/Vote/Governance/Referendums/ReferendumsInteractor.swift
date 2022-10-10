@@ -272,7 +272,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
             return
         }
 
-        let wrapper = referendumsOperationFactory.fetchAccountVotes(
+        let wrapper = referendumsOperationFactory.fetchAccountVotesWrapper(
             for: accountId,
             from: connection,
             runtimeProvider: runtimeProvider
