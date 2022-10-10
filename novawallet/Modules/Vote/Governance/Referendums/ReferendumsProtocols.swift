@@ -15,15 +15,18 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func putOffline()
     func refresh()
     func remakeSubscriptions()
+    func retryBlockTime()
 }
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?)
+    func didReceiveVotes(_ votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal])
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
+    func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveError(_ error: ReferendumsInteractorError)
 }
 
