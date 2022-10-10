@@ -1,51 +1,74 @@
 import Foundation
 import SoraFoundation
 
+struct ReferendumsModelFactoryInput {
+    let referendums: [ReferendumLocal]
+    let metadataMapping: [Referenda.ReferendumIndex: ReferendumMetadataLocal]
+    let chainInfo: ChainInformation
+    let locale: Locale
+
+    struct ChainInformation {
+        let chain: ChainModel
+        let currentBlock: BlockNumber
+        let blockDurartion: UInt64
+    }
+}
+
 protocol ReferendumsModelFactoryProtocol {
-    func createSections(
-        chain: ChainModel,
+    func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection]
+
+    func createTimeModels(
         referendums: [ReferendumLocal],
-        metaDataMapping: [Referenda.ReferendumIndex: ReferendumMetadataLocal],
         currentBlock: BlockNumber,
         blockDurartion: UInt64,
         locale: Locale
-    ) -> [ReferendumsSection]
+    ) -> [UInt: ReferendumInfoView.Model.Time?]
 }
 
 final class ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
+    private typealias Input = ReferendumsModelFactoryInput
+    private typealias Strings = R.string.localizable
+
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
-    let formatter: NumberFormatter
+    let percentFormatter: NumberFormatter
 
     init(
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: NumberFormatter
     ) {
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
-        formatter = percentFormatter
+        self.percentFormatter = percentFormatter
     }
 
-    func createSections(
-        chain: ChainModel,
+    func createTimeModels(
         referendums: [ReferendumLocal],
-        metaDataMapping: [Referenda.ReferendumIndex: ReferendumMetadataLocal],
         currentBlock: BlockNumber,
         blockDurartion: UInt64,
         locale: Locale
-    ) -> [ReferendumsSection] {
-        var active: [LoadableViewModelState<ReferendumsCellViewModel>] = []
-        var completed: [LoadableViewModelState<ReferendumsCellViewModel>] = []
-
-        referendums.forEach { referendum in
-            guard let metadata = metaDataMapping[Referenda.ReferendumIndex(referendum.index)] else {
-                return
-            }
-            let model = createReferendumsCellViewModel(
-                chain: chain,
-                referendum: referendum,
-                metadata: metadata,
+    ) -> [UInt: ReferendumInfoView.Model.Time?] {
+        referendums.reduce(into: [UInt: ReferendumInfoView.Model.Time?]()) { result, referendum in
+            result[referendum.index] = createTimeModel(
+                for: referendum,
                 currentBlock: currentBlock,
                 blockDurartion: blockDurartion,
                 locale: locale
+            )
+        }
+    }
+
+    func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection] {
+        var active: [LoadableViewModelState<ReferendumsCellViewModel>] = []
+        var completed: [LoadableViewModelState<ReferendumsCellViewModel>] = []
+
+        input.referendums.forEach { referendum in
+            guard let metadata = input.metadataMapping[Referenda.ReferendumIndex(referendum.index)] else {
+                return
+            }
+            let model = createReferendumsCellViewModel(
+                referendum: referendum,
+                metadata: metadata,
+                chainInformation: input.chainInfo,
+                locale: input.locale
             )
             referendum.state.completed ? completed.append(.loaded(value: model)) : active.append(.loaded(value: model))
         }
@@ -56,155 +79,98 @@ final class ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         ]
     }
 
-    func createReferendumsCellViewModel(
-        chain: ChainModel,
+    private func createReferendumsCellViewModel(
         referendum: ReferendumLocal,
         metadata: ReferendumMetadataLocal,
-        currentBlock: BlockNumber,
-        blockDurartion: UInt64,
+        chainInformation: Input.ChainInformation,
         locale: Locale
     ) -> ReferendumsCellViewModel {
-        let status = title(state: referendum.state, currentBlock: currentBlock).value(for: locale)
-        let strings = R.string.localizable.self
-
         switch referendum.state {
         case let .preparing(model):
-            return provideModel(
-                preparing: model,
-                chain: chain,
+            return providePreparingReferendumCellViewModel(
+                model,
                 referendum: referendum,
                 metadata: metadata,
-                currentBlock: currentBlock,
-                blockDurartion: blockDurartion,
+                chainInfo: chainInformation,
                 locale: locale
             )
         case let .deciding(model):
-            switch model.voting {
-            case let .supportAndVotes(supportAndVotes):
-                let timeModel: ReferendumInfoView.Model.Time?
-                if supportAndVotes.isPassing(at: currentBlock), let confirmationUntil = model.confirmationUntil {
-                    timeModel = createTimeModel(
-                        state: referendum.state,
-                        atBlock: confirmationUntil,
-                        currentBlock: currentBlock,
-                        blockDuration: blockDurartion,
-                        timeStringProvider: strings.governanceReferendumsTimeApprove,
-                        locale: locale
-                    )
-                } else {
-                    timeModel = createTimeModel(
-                        state: referendum.state,
-                        atBlock: model.period,
-                        currentBlock: currentBlock,
-                        blockDuration: blockDurartion,
-                        timeStringProvider: strings.governanceReferendumsTimeReject,
-                        locale: locale
-                    )
-                }
-
-                let progressViewModel = createVotingProgressViewModel(
-                    supportAndVotes: supportAndVotes,
-                    chain: chain,
-                    currentBlock: currentBlock,
-                    locale: locale
-                )
-                return .init(
-                    referendumInfo: .init(
-                        status: status,
-                        time: timeModel,
-                        title: metadata.details,
-                        trackName: metadata.name,
-                        trackImage: nil,
-                        number: "#\(referendum.index)"
-                    ),
-                    progress: progressViewModel,
-                    yourVotes: nil
-                )
-            }
+            return provideDecidingReferendumCellViewModel(
+                model,
+                referendum: referendum,
+                metadata: metadata,
+                chainInfo: chainInformation,
+                locale: locale
+            )
         case let .approved(model):
-            let timeModel: ReferendumInfoView.Model.Time?
-            if let whenEnactment = model.whenEnactment {
-                timeModel = createTimeModel(
-                    state: referendum.state,
-                    atBlock: whenEnactment,
-                    currentBlock: currentBlock,
-                    blockDuration: blockDurartion,
-                    timeStringProvider: strings.governanceReferendumsTimeExecute,
-                    locale: locale
-                )
-            } else {
-                timeModel = nil
-            }
-            return .init(
-                referendumInfo: .init(
-                    status: status,
-                    time: timeModel,
-                    title: metadata.details,
-                    trackName: metadata.name,
-                    trackImage: nil,
-                    number: "#\(referendum.index)"
-                ),
-                progress: nil,
-                yourVotes: nil
+            return provideApprovedReferendumCellViewModel(
+                model,
+                referendum: referendum,
+                metadata: metadata,
+                chainInfo: chainInformation,
+                locale: locale
             )
-        case .rejected,
-             .cancelled,
-             .timedOut,
-             .killed,
-             .executed:
-            return .init(
-                referendumInfo: .init(
-                    status: status,
-                    time: nil,
-                    title: metadata.details,
-                    trackName: metadata.name,
-                    trackImage: nil,
-                    number: "#\(referendum.index)"
-                ),
-                progress: nil,
-                yourVotes: nil
-            )
+        case .rejected:
+            let title = Strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
+            return provideCommonReferendumCellViewModel(title: title, referendum: referendum, metadata: metadata)
+        case .cancelled:
+            let title = Strings.governanceReferendumsStatusCancelled(preferredLanguages: locale.rLanguages)
+            return provideCommonReferendumCellViewModel(title: title, referendum: referendum, metadata: metadata)
+        case .timedOut:
+            let title = Strings.governanceReferendumsStatusTimedOut(preferredLanguages: locale.rLanguages)
+            return provideCommonReferendumCellViewModel(title: title, referendum: referendum, metadata: metadata)
+        case .killed:
+            let title = Strings.governanceReferendumsStatusKilled(preferredLanguages: locale.rLanguages)
+            return provideCommonReferendumCellViewModel(title: title, referendum: referendum, metadata: metadata)
+        case .executed:
+            let title = Strings.governanceReferendumsStatusExecuted(preferredLanguages: locale.rLanguages)
+            return provideCommonReferendumCellViewModel(title: title, referendum: referendum, metadata: metadata)
         }
     }
 
-    private func provideModel(
-        preparing model: ReferendumStateLocal.Preparing,
-        chain: ChainModel,
+    private func provideCommonReferendumCellViewModel(
+        title: String,
+        referendum: ReferendumLocal,
+        metadata: ReferendumMetadataLocal
+    ) -> ReferendumsCellViewModel {
+        .init(
+            referendumInfo: .init(
+                status: title,
+                time: nil,
+                title: metadata.details,
+                trackName: metadata.name,
+                trackImage: nil,
+                number: "#\(referendum.index)"
+            ),
+            progress: nil,
+            yourVotes: nil
+        )
+    }
+
+    private func providePreparingReferendumCellViewModel(
+        _ model: ReferendumStateLocal.Preparing,
         referendum: ReferendumLocal,
         metadata: ReferendumMetadataLocal,
-        currentBlock: BlockNumber,
-        blockDurartion: UInt64,
+        chainInfo: Input.ChainInformation,
         locale: Locale
     ) -> ReferendumsCellViewModel {
-        let strings = R.string.localizable.self
-        let timeModel: ReferendumInfoView.Model.Time?
+        let timeModel = createTimeModel(
+            for: referendum,
+            currentBlock: chainInfo.currentBlock,
+            blockDurartion: chainInfo.blockDurartion,
+            locale: locale
+        )
+
         let title = model.inQueue ?
-            strings.governanceReferendumsStatusPreparingInqueue(preferredLanguages: locale.rLanguages) :
-            strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
-        if model.deposit == nil {
-            let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
-            timeModel = ReferendumInfoView.Model.Time(
-                title: title,
-                image: R.image.iconLightPending(),
-                isUrgent: false
-            )
-        } else {
-            timeModel = createTimeModel(
-                state: referendum.state,
-                atBlock: model.since,
-                currentBlock: currentBlock,
-                blockDuration: blockDurartion,
-                timeStringProvider: strings.governanceReferendumsTimeDeciding,
-                locale: locale
-            )
-        }
+            Strings.governanceReferendumsStatusPreparingInqueue(preferredLanguages: locale.rLanguages) :
+            Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
 
         switch model.voting {
         case let .supportAndVotes(supportAndVotes):
             let progressViewModel = createVotingProgressViewModel(
                 supportAndVotes: supportAndVotes,
-                chain: chain,
-                currentBlock: currentBlock,
+                chain: chainInfo.chain,
+                currentBlock: chainInfo.currentBlock,
                 locale: locale
             )
             return .init(
@@ -222,15 +188,106 @@ final class ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         }
     }
 
+    private func provideDecidingReferendumCellViewModel(
+        _ model: ReferendumStateLocal.Deciding,
+        referendum: ReferendumLocal,
+        metadata: ReferendumMetadataLocal,
+        chainInfo: Input.ChainInformation,
+        locale: Locale
+    ) -> ReferendumsCellViewModel {
+        switch model.voting {
+        case let .supportAndVotes(supportAndVotes):
+            let timeModel: ReferendumInfoView.Model.Time?
+            if supportAndVotes.isPassing(at: chainInfo.currentBlock),
+               let confirmationUntil = model.confirmationUntil {
+                timeModel = createTimeModel(
+                    state: referendum.state,
+                    atBlock: confirmationUntil,
+                    currentBlock: chainInfo.currentBlock,
+                    blockDuration: chainInfo.blockDurartion,
+                    timeStringProvider: Strings.governanceReferendumsTimeApprove,
+                    locale: locale
+                )
+            } else {
+                timeModel = createTimeModel(
+                    state: referendum.state,
+                    atBlock: model.period,
+                    currentBlock: chainInfo.currentBlock,
+                    blockDuration: chainInfo.blockDurartion,
+                    timeStringProvider: Strings.governanceReferendumsTimeReject,
+                    locale: locale
+                )
+            }
+
+            let progressViewModel = createVotingProgressViewModel(
+                supportAndVotes: supportAndVotes,
+                chain: chainInfo.chain,
+                currentBlock: chainInfo.currentBlock,
+                locale: locale
+            )
+            let title = supportAndVotes.isPassing(at: chainInfo.currentBlock) ?
+                Strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
+                Strings.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
+            return .init(
+                referendumInfo: .init(
+                    status: title,
+                    time: timeModel,
+                    title: metadata.details,
+                    trackName: metadata.name,
+                    trackImage: nil,
+                    number: "#\(referendum.index)"
+                ),
+                progress: progressViewModel,
+                yourVotes: nil
+            )
+        }
+    }
+
+    private func provideApprovedReferendumCellViewModel(
+        _ model: ReferendumStateLocal.Approved,
+        referendum: ReferendumLocal,
+        metadata: ReferendumMetadataLocal,
+        chainInfo: Input.ChainInformation,
+        locale: Locale
+    ) -> ReferendumsCellViewModel {
+        let timeModel: ReferendumInfoView.Model.Time?
+        if let whenEnactment = model.whenEnactment {
+            timeModel = createTimeModel(
+                state: referendum.state,
+                atBlock: whenEnactment,
+                currentBlock: chainInfo.currentBlock,
+                blockDuration: chainInfo.blockDurartion,
+                timeStringProvider: Strings.governanceReferendumsTimeExecute,
+                locale: locale
+            )
+        } else {
+            timeModel = nil
+        }
+
+        let title = Strings.governanceReferendumsStatusApproved(preferredLanguages: locale.rLanguages)
+        return .init(
+            referendumInfo: .init(
+                status: title,
+                time: timeModel,
+                title: metadata.details,
+                trackName: metadata.name,
+                trackImage: nil,
+                number: "#\(referendum.index)"
+            ),
+            progress: nil,
+            yourVotes: nil
+        )
+    }
+
     private func createVotingProgressViewModel(
         supportAndVotes: SupportAndVotesLocal,
         chain: ChainModel,
         currentBlock: BlockNumber,
         locale: Locale
     ) -> VotingProgressView.Model {
-        let ayeProgress = formatter.stringFromDecimal(supportAndVotes.approvalFraction) ?? ""
-        let nayProgress = formatter.stringFromDecimal(1 - supportAndVotes.approvalFraction) ?? ""
-        let passProgress = formatter.stringFromDecimal(supportAndVotes.supportFraction) ?? ""
+        let ayeProgress = percentFormatter.stringFromDecimal(supportAndVotes.approvalFraction) ?? ""
+        let nayProgress = percentFormatter.stringFromDecimal(1 - supportAndVotes.approvalFraction) ?? ""
+        let passProgress = percentFormatter.stringFromDecimal(supportAndVotes.supportFraction) ?? ""
         let thresholdModel: VotingProgressView.ThresholdModel?
         if let chainAsset = chain.utilityAsset(),
            let supportThreshold = supportAndVotes.supportFunction?.calculateThreshold(for: currentBlock) {
@@ -268,6 +325,73 @@ final class ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             thresholdModel: thresholdModel,
             progress: supportAndVotes.approvalFraction
         )
+    }
+
+    private func createTimeModel(
+        for referendum: ReferendumLocal,
+        currentBlock: BlockNumber,
+        blockDurartion: UInt64,
+        locale: Locale
+    ) -> ReferendumInfoView.Model.Time? {
+        let strings = R.string.localizable.self
+        switch referendum.state {
+        case let .preparing(model):
+            if model.deposit == nil {
+                let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
+                return ReferendumInfoView.Model.Time(
+                    title: title,
+                    image: R.image.iconLightPending(),
+                    isUrgent: false
+                )
+            } else {
+                return createTimeModel(
+                    state: referendum.state,
+                    atBlock: model.since,
+                    currentBlock: currentBlock,
+                    blockDuration: blockDurartion,
+                    timeStringProvider: strings.governanceReferendumsTimeDeciding,
+                    locale: locale
+                )
+            }
+        case let .deciding(model):
+            switch model.voting {
+            case let .supportAndVotes(supportAndVotes):
+                if supportAndVotes.isPassing(at: currentBlock),
+                   let confirmationUntil = model.confirmationUntil {
+                    return createTimeModel(
+                        state: referendum.state,
+                        atBlock: confirmationUntil,
+                        currentBlock: currentBlock,
+                        blockDuration: blockDurartion,
+                        timeStringProvider: strings.governanceReferendumsTimeApprove,
+                        locale: locale
+                    )
+                } else {
+                    return createTimeModel(
+                        state: referendum.state,
+                        atBlock: model.period,
+                        currentBlock: currentBlock,
+                        blockDuration: blockDurartion,
+                        timeStringProvider: strings.governanceReferendumsTimeReject,
+                        locale: locale
+                    )
+                }
+            }
+        case let .approved(model):
+            guard let whenEnactment = model.whenEnactment else {
+                return nil
+            }
+            return createTimeModel(
+                state: referendum.state,
+                atBlock: whenEnactment,
+                currentBlock: currentBlock,
+                blockDuration: blockDurartion,
+                timeStringProvider: strings.governanceReferendumsTimeExecute,
+                locale: locale
+            )
+        case .rejected, .cancelled, .timedOut, .killed, .executed:
+            return nil
+        }
     }
 
     private func createTimeModel(
@@ -310,37 +434,6 @@ final class ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         case .rejected:
             return time.daysFromSeconds < 1
         case .cancelled, .timedOut, .killed, .executed: return nil
-        }
-    }
-
-    private func title(state: ReferendumStateLocal, currentBlock: BlockNumber) -> LocalizableResource<String> {
-        LocalizableResource { locale in
-            let strings = R.string.localizable.self
-            switch state {
-            case let .preparing(model):
-                return model.inQueue ?
-                    strings.governanceReferendumsStatusPreparingInqueue(preferredLanguages: locale.rLanguages) :
-                    strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
-            case let .deciding(model):
-                switch model.voting {
-                case let .supportAndVotes(supportAndVotes):
-                    return supportAndVotes.isPassing(at: currentBlock) ?
-                        strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
-                        strings.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
-                }
-            case .approved:
-                return strings.governanceReferendumsStatusApproved(preferredLanguages: locale.rLanguages)
-            case .rejected:
-                return strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
-            case .cancelled:
-                return strings.governanceReferendumsStatusCancelled(preferredLanguages: locale.rLanguages)
-            case .timedOut:
-                return strings.governanceReferendumsStatusTimedOut(preferredLanguages: locale.rLanguages)
-            case .killed:
-                return strings.governanceReferendumsStatusKilled(preferredLanguages: locale.rLanguages)
-            case .executed:
-                return strings.governanceReferendumsStatusExecuted(preferredLanguages: locale.rLanguages)
-            }
         }
     }
 }

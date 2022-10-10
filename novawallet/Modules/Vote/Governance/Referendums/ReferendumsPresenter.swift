@@ -54,19 +54,19 @@ final class ReferendumsPresenter {
             return
         }
         guard let currentBlock = blockNumber,
+              let blockTime = blockTime,
               let metadataMapping = referendumsMetadata,
               let referendums = self.referendums,
               let chainModel = chain else {
             return
         }
-        let sections = viewModelFactory.createSections(
-            chain: chainModel,
+        let sections = viewModelFactory.createSections(input: .init(
             referendums: referendums,
-            metaDataMapping: metadataMapping,
-            currentBlock: currentBlock,
-            blockDurartion: 6000,
+            metadataMapping: metadataMapping,
+            chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDurartion: blockTime),
             locale: selectedLocale
-        )
+        ))
+
         view.update(model: .init(sections: sections))
     }
 }
@@ -193,6 +193,8 @@ extension ReferendumsPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideChainBalance()
+            
+            updateView()
         }
     }
 }
