@@ -4,6 +4,7 @@ import BigInt
 struct ReferendumLocal {
     let index: UInt
     let state: ReferendumStateLocal
+    let proposer: AccountId?
 }
 
 struct SupportAndVotesLocal {

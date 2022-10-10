@@ -8,9 +8,15 @@ protocol ReferendumsOperationFactoryProtocol {
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[ReferendumLocal]>
 
-    func fetchAccountVotes(
+    func fetchAccountVotesWrapper(
         for accountId: AccountId,
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[Referenda.ReferendumIndex: ReferendumAccountVoteLocal]>
+
+    func fetchVotersWrapper(
+        for referendumIndex: Referenda.ReferendumIndex,
+        from connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]>
 }

@@ -1414,6 +1414,7 @@
 		8496ADDA276AFF4600306B24 /* DAppBrowserScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496ADD9276AFF4600306B24 /* DAppBrowserScript.swift */; };
 		8496ADDE276B123200306B24 /* PolkadotExtentionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */; };
 		8496ADE0276B152500306B24 /* NSDictionary+Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496ADDF276B152500306B24 /* NSDictionary+Map.swift */; };
+		849707A128F3E0AC00DD0A02 /* ReferendumVoterLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849707A028F3E0AC00DD0A02 /* ReferendumVoterLocal.swift */; };
 		8497FC6026317783002FEAA7 /* AccountInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8497FC5F26317783002FEAA7 /* AccountInfoViewModel.swift */; };
 		84981CC32666D95F00C4C691 /* GradientButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84981CC22666D95F00C4C691 /* GradientButton+Style.swift */; };
 		849842E626587573006BBB9F /* MultilineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849842E526587573006BBB9F /* MultilineTableViewCell.swift */; };
@@ -4220,6 +4221,7 @@
 		8496ADD9276AFF4600306B24 /* DAppBrowserScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserScript.swift; sourceTree = "<group>"; };
 		8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtentionMessage.swift; sourceTree = "<group>"; };
 		8496ADDF276B152500306B24 /* NSDictionary+Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSDictionary+Map.swift"; sourceTree = "<group>"; };
+		849707A028F3E0AC00DD0A02 /* ReferendumVoterLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVoterLocal.swift; sourceTree = "<group>"; };
 		8497FC5F26317783002FEAA7 /* AccountInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewModel.swift; sourceTree = "<group>"; };
 		84981CC22666D95F00C4C691 /* GradientButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GradientButton+Style.swift"; sourceTree = "<group>"; };
 		849842E526587573006BBB9F /* MultilineTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTableViewCell.swift; sourceTree = "<group>"; };
@@ -11025,6 +11027,7 @@
 				84E9A04F28F000AB00551DC4 /* ReferendumMetadataLocal.swift */,
 				841221A328F0A3F200715C82 /* ReferendumAccountVoteLocal.swift */,
 				841221A528F13BA100715C82 /* GovernanceServiceFactory.swift */,
+				849707A028F3E0AC00DD0A02 /* ReferendumVoterLocal.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -14719,6 +14722,7 @@
 				842A738427DDF55A006EE1EA /* OperationIdOptionsPresentable.swift in Sources */,
 				849013E224A9288B008F705E /* Language.swift in Sources */,
 				840D92A1278D8D6F0007B979 /* DAppBrowserStateError.swift in Sources */,
+				849707A128F3E0AC00DD0A02 /* ReferendumVoterLocal.swift in Sources */,
 				84754C882510BAFE00854599 /* ModalAlertFactory.swift in Sources */,
 				8430AACC2602249B005B1066 /* InitialStakingState.swift in Sources */,
 				84EE2FA52891205500A98816 /* WalletManageViewController.swift in Sources */,
