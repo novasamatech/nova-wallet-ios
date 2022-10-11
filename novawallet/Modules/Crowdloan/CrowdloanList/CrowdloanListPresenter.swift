@@ -157,7 +157,6 @@ final class CrowdloanListPresenter {
         guard
             let crowdloansResult = crowdloansResult,
             let viewInfoResult = createViewInfoResult() else {
-            view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
             return
         }
 
@@ -222,12 +221,15 @@ final class CrowdloanListPresenter {
 
 extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     func setup() {
+        view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
+
         interactor.setup()
     }
 
     func refresh(shouldReset: Bool) {
+        crowdloansResult = nil
+
         if shouldReset {
-            crowdloansResult = nil
             view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
         }
 
