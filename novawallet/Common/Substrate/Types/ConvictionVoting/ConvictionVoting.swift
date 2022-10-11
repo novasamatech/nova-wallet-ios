@@ -43,6 +43,27 @@ enum ConvictionVoting {
                 return nil
             }
         }
+
+        var decimalValue: Decimal? {
+            switch self {
+            case .none:
+                return 0.1
+            case .locked1x:
+                return 1
+            case .locked2x:
+                return 2
+            case .locked3x:
+                return 4
+            case .locked4x:
+                return 8
+            case .locked5x:
+                return 16
+            case .locked6x:
+                return 32
+            case .unknown:
+                return nil
+            }
+        }
     }
 
     struct Vote: Decodable {
