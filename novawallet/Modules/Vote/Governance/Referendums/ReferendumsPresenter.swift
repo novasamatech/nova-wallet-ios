@@ -63,7 +63,7 @@ final class ReferendumsPresenter {
         let sections = viewModelFactory.createSections(input: .init(
             referendums: referendums,
             metadataMapping: metadataMapping,
-            votes: votes,
+            votes: votes ?? [:],
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDurartion: blockTime),
             locale: selectedLocale
         ))
