@@ -984,6 +984,7 @@
 		846952A42852A1640083E0B4 /* StakingDuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846952A32852A1640083E0B4 /* StakingDuration.swift */; };
 		846952A62852A1E60083E0B4 /* AuraStakingDurationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846952A52852A1E60083E0B4 /* AuraStakingDurationFactory.swift */; };
 		8469936B26CD1BBE002CC786 /* RuntimePoolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8469936A26CD1BBE002CC786 /* RuntimePoolTests.swift */; };
+		8469D5A628F5E8F20074FEE3 /* Staking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8469D5A528F5E8F20074FEE3 /* Staking.swift */; };
 		846A2601267C768500429A7F /* CrowdloanContributionMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A2600267C768500429A7F /* CrowdloanContributionMapper.swift */; };
 		846A2606267C792000429A7F /* CrowdloanContributionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A2605267C792000429A7F /* CrowdloanContributionResponse.swift */; };
 		846A2C4325271CDE00731018 /* TransactionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A2C4225271CDE00731018 /* TransactionType.swift */; };
@@ -3734,6 +3735,7 @@
 		846952A32852A1640083E0B4 /* StakingDuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDuration.swift; sourceTree = "<group>"; };
 		846952A52852A1E60083E0B4 /* AuraStakingDurationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuraStakingDurationFactory.swift; sourceTree = "<group>"; };
 		8469936A26CD1BBE002CC786 /* RuntimePoolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimePoolTests.swift; sourceTree = "<group>"; };
+		8469D5A528F5E8F20074FEE3 /* Staking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Staking.swift; sourceTree = "<group>"; };
 		846A2600267C768500429A7F /* CrowdloanContributionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionMapper.swift; sourceTree = "<group>"; };
 		846A2605267C792000429A7F /* CrowdloanContributionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionResponse.swift; sourceTree = "<group>"; };
 		846A2C4225271CDE00731018 /* TransactionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionType.swift; sourceTree = "<group>"; };
@@ -7075,6 +7077,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				8469D5A428F5E8D40074FEE3 /* Staking */,
 				84BFE89A28C23A0900140F1F /* AutomationTime */,
 				84FB9E18285C57C000B42FC0 /* Xcm */,
 				848DAEFC282293BD00D56F55 /* ParachainStaking */,
@@ -7874,6 +7877,14 @@
 				846952A52852A1E60083E0B4 /* AuraStakingDurationFactory.swift */,
 			);
 			path = StakingDuration;
+			sourceTree = "<group>";
+		};
+		8469D5A428F5E8D40074FEE3 /* Staking */ = {
+			isa = PBXGroup;
+			children = (
+				8469D5A528F5E8F20074FEE3 /* Staking.swift */,
+			);
+			path = Staking;
 			sourceTree = "<group>";
 		};
 		846A682A274693D400D1A47A /* Crowdloan */ = {
@@ -14728,6 +14739,7 @@
 				84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */,
 				84C5ADE628141D21006D7388 /* LinkView.swift in Sources */,
 				84C2064028D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift in Sources */,
+				8469D5A628F5E8F20074FEE3 /* Staking.swift in Sources */,
 				848FFE8325E686C200652AA5 /* StorageDecodingOperation.swift in Sources */,
 				8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */,
 				84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */,
