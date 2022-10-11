@@ -5,6 +5,15 @@ enum LoadableViewModelState<T> {
     case loading
     case cached(value: T)
     case loaded(value: T)
+
+    var isLoading: Bool {
+        switch self {
+        case .loading:
+            return true
+        case .cached, .loaded:
+            return false
+        }
+    }
 }
 
 enum ValueDirection<T> {
