@@ -226,9 +226,8 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func refresh(shouldReset: Bool) {
-        crowdloansResult = nil
-
         if shouldReset {
+            crowdloansResult = nil
             view?.didReceive(listState: viewModelFactory.createLoadingViewModel())
         }
 
