@@ -70,6 +70,25 @@ final class ReferendumsPresenter {
 
         view.update(model: .init(sections: sections))
     }
+
+    private func updateTimes() {
+        guard let view = view else {
+            return
+        }
+        guard let currentBlock = blockNumber,
+              let blockTime = blockTime,
+              let referendums = self.referendums else {
+            return
+        }
+
+        let timeModels = viewModelFactory.createTimeModels(
+            referendums: referendums,
+            currentBlock: currentBlock,
+            blockDurartion: blockTime,
+            locale: selectedLocale
+        )
+        view.updateReferendums(time: timeModels)
+    }
 }
 
 extension ReferendumsPresenter: ReferendumsPresenterProtocol {}

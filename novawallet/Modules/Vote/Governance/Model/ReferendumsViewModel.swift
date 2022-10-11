@@ -3,8 +3,11 @@ struct ReferendumsViewModel {
 }
 
 enum ReferendumsSection {
-    case active(LoadableViewModelState<String>, [LoadableViewModelState<ReferendumsCellViewModel>])
-    case completed(LoadableViewModelState<String>, [LoadableViewModelState<ReferendumsCellViewModel>])
+    case active(LoadableViewModelState<String>, [ReferendumsCellViewModel])
+    case completed(LoadableViewModelState<String>, [ReferendumsCellViewModel])
 }
 
-typealias ReferendumsCellViewModel = ReferendumView.Model
+struct ReferendumsCellViewModel {
+    var referendumIndex: UInt
+    var viewModel: LoadableViewModelState<ReferendumView.Model>
+}

@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
+final class VoteStatusSectionView: UITableViewHeaderFooterView {
     var skeletonView: SkrullableView?
     private var viewModel: LoadableViewModelState<Model>?
 
@@ -45,7 +45,7 @@ final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
     }
 }
 
-extension CrowdloanStatusSectionView {
+extension VoteStatusSectionView {
     struct Model {
         let title: String
         let count: Int
@@ -64,7 +64,7 @@ extension CrowdloanStatusSectionView {
 }
 
 // swiftlint:disable nesting
-extension CrowdloanStatusSectionView {
+extension VoteStatusSectionView {
     private enum Constants {
         enum TitleLabelInsets {
             static let top: CGFloat = 24
@@ -81,7 +81,7 @@ extension CrowdloanStatusSectionView {
 
 // swiftlint:enable nesting
 
-extension CrowdloanStatusSectionView: SkeletonableView {
+extension VoteStatusSectionView: SkeletonableView {
     var skeletonSuperview: UIView {
         self
     }

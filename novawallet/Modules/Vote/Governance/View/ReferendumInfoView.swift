@@ -28,6 +28,8 @@ final class ReferendumInfoView: UIView {
         $0.titleLabel.numberOfLines = 1
     }
 
+    private var timeModel: Model.Time?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -76,7 +78,7 @@ extension ReferendumInfoView {
         let trackImage: UIImage?
         let number: String
 
-        struct Time {
+        struct Time: Equatable {
             let title: String
             let image: UIImage?
             let isUrgent: Bool
@@ -90,7 +92,15 @@ extension ReferendumInfoView {
         numberLabel.titleLabel.text = viewModel.number
         statusLabel.text = viewModel.status
 
-        if let time = viewModel.time {
+        bind(timeModel: viewModel.time)
+    }
+
+    func bind(timeModel: Model.Time?) {
+        guard timeModel != self.timeModel else {
+            return
+        }
+        self.timeModel = timeModel
+        if let time = timeModel {
             timeView.detailsLabel.text = time.title
             timeView.imageView.image = time.image
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)

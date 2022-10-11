@@ -49,7 +49,7 @@ final class ReferendumsModelFactory {
         votes: ReferendumAccountVoteLocal?,
         chain: ChainModel,
         locale: Locale
-    ) -> ReferendumsCellViewModel {
+    ) -> ReferendumView.Model {
         let yourVotesModel = createVotesViewModel(
             votes: votes,
             chainAsset: chain.utilityAsset(),
@@ -76,7 +76,7 @@ final class ReferendumsModelFactory {
         votes: ReferendumAccountVoteLocal?,
         chainInfo: Input.ChainInformation,
         locale: Locale
-    ) -> ReferendumsCellViewModel {
+    ) -> ReferendumView.Model {
         let timeModel = createTimeModel(
             for: referendum,
             currentBlock: chainInfo.currentBlock,
@@ -163,7 +163,7 @@ final class ReferendumsModelFactory {
         chainInfo: Input.ChainInformation,
         votes: ReferendumAccountVoteLocal?,
         locale: Locale
-    ) -> ReferendumsCellViewModel {
+    ) -> ReferendumView.Model {
         switch model.voting {
         case let .supportAndVotes(supportAndVotes):
             let timeModel: ReferendumInfoView.Model.Time?
@@ -224,7 +224,7 @@ final class ReferendumsModelFactory {
         chainInfo: Input.ChainInformation,
         votes: ReferendumAccountVoteLocal?,
         locale: Locale
-    ) -> ReferendumsCellViewModel {
+    ) -> ReferendumView.Model {
         let timeModel: ReferendumInfoView.Model.Time?
         if let whenEnactment = model.whenEnactment {
             timeModel = createTimeModel(
@@ -436,8 +436,8 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
     }
 
     func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection] {
-        var active: [LoadableViewModelState<ReferendumsCellViewModel>] = []
-        var completed: [LoadableViewModelState<ReferendumsCellViewModel>] = []
+        var active: [ReferendumsCellViewModel] = []
+        var completed: [ReferendumsCellViewModel] = []
 
         input.referendums.forEach { referendum in
             let index = Referenda.ReferendumIndex(referendum.index)
@@ -451,7 +451,11 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
                 votes: input.votes[index],
                 locale: input.locale
             )
-            referendum.state.completed ? completed.append(.loaded(value: model)) : active.append(.loaded(value: model))
+            let viewModel = ReferendumsCellViewModel(
+                referendumIndex: referendum.index,
+                viewModel: .loaded(value: model)
+            )
+            referendum.state.completed ? completed.append(viewModel) : active.append(viewModel)
         }
 
         return [
@@ -466,7 +470,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         chainInformation: Input.ChainInformation,
         votes: ReferendumAccountVoteLocal?,
         locale: Locale
-    ) -> ReferendumsCellViewModel {
+    ) -> ReferendumView.Model {
         let title: String
         switch referendum.state {
         case let .preparing(model):
