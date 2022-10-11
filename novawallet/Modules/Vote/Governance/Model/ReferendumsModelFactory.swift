@@ -457,11 +457,14 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             )
             referendum.state.completed ? completed.append(viewModel) : active.append(viewModel)
         }
-
-        return [
-            .active(.loaded(value: "Ongoing"), active),
-            .completed(.loaded(value: "Completed"), completed)
-        ]
+        var sections: [ReferendumsSection] = []
+        if !active.isEmpty {
+            sections.append(.active(.loaded(value: "Ongoing"), active))
+        }
+        if !completed.isEmpty {
+            sections.append(.completed(.loaded(value: "Completed"), completed))
+        }
+        return sections
     }
 
     private func createReferendumsCellViewModel(

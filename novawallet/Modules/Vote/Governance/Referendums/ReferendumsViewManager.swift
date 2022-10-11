@@ -121,7 +121,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.registerClassForCell(ReferendumTableViewCell.self)
-
+        tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }
 
@@ -129,7 +129,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.dataSource = nil
         tableView.delegate = nil
         tableView.unregisterClassForCell(ReferendumTableViewCell.self)
-
+        tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }
 }
