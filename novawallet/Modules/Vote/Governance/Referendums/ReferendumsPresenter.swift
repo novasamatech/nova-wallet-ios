@@ -63,6 +63,7 @@ final class ReferendumsPresenter {
         let sections = viewModelFactory.createSections(input: .init(
             referendums: referendums,
             metadataMapping: metadataMapping,
+            votes: votes,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDurartion: blockTime),
             locale: selectedLocale
         ))
@@ -193,7 +194,7 @@ extension ReferendumsPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideChainBalance()
-            
+
             updateView()
         }
     }

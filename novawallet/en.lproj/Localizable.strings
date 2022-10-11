@@ -998,3 +998,4 @@
 "governance.referendums.time.reject" = "Reject in %@";
 
 "governance.referendums.threshold" = "Threshold: %@ of %@";
+"governance.referendums.your.vote" = "Your vote: %@ votes";

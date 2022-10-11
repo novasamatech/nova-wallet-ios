@@ -998,3 +998,4 @@
 "governance.referendums.time.reject" = "Отмена через %@";
 
 "governance.referendums.threshold" = "Порог: %@ из %@";
+"governance.referendums.your.vote" = "Ваше голосование: %@ голосов";
