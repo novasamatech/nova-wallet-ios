@@ -32,6 +32,7 @@ final class Gov2LocalMappingFactory {
 
         let model = ReferendumStateLocal.Deciding(
             track: localTrack,
+            proposal: status.proposal,
             voting: .supportAndVotes(model: votes),
             since: deciding.since,
             period: track.decisionPeriod,
@@ -59,6 +60,7 @@ final class Gov2LocalMappingFactory {
 
         let preparing = ReferendumStateLocal.Preparing(
             track: localTrack,
+            proposal: status.proposal,
             voting: .supportAndVotes(model: votes),
             deposit: status.decisionDeposit?.amount,
             since: status.submitted,
@@ -96,7 +98,7 @@ final class Gov2LocalMappingFactory {
             )
         }
 
-        return ReferendumLocal(index: UInt(index), state: state)
+        return ReferendumLocal(index: UInt(index), state: state, proposer: status.submissionDeposit.who)
     }
 
     func mapRemote(
@@ -110,15 +112,31 @@ final class Gov2LocalMappingFactory {
             return createOngoingReferendumState(from: status, index: index, additionalInfo: additionalInfo)
         case let .approved(status):
             let model = ReferendumStateLocal.Approved(since: status.since, whenEnactment: enactmentBlock)
-            return ReferendumLocal(index: UInt(index), state: .approved(model: model))
+            return ReferendumLocal(
+                index: UInt(index),
+                state: .approved(model: model),
+                proposer: status.submissionDeposit.who
+            )
         case let .rejected(status):
-            return ReferendumLocal(index: UInt(index), state: .rejected(atBlock: status.since))
+            return ReferendumLocal(
+                index: UInt(index),
+                state: .rejected(atBlock: status.since),
+                proposer: status.submissionDeposit.who
+            )
         case let .timedOut(status):
-            return ReferendumLocal(index: UInt(index), state: .timedOut(atBlock: status.since))
+            return ReferendumLocal(
+                index: UInt(index),
+                state: .timedOut(atBlock: status.since),
+                proposer: status.submissionDeposit.who
+            )
         case let .cancelled(status):
-            return ReferendumLocal(index: UInt(index), state: .cancelled(atBlock: status.since))
+            return ReferendumLocal(
+                index: UInt(index),
+                state: .cancelled(atBlock: status.since),
+                proposer: status.submissionDeposit.who
+            )
         case let .killed(atBlock):
-            return ReferendumLocal(index: UInt(index), state: .killed(atBlock: atBlock))
+            return ReferendumLocal(index: UInt(index), state: .killed(atBlock: atBlock), proposer: nil)
         case .unknown:
             return nil
         }

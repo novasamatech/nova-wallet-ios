@@ -1,9 +1,11 @@
 import Foundation
 import BigInt
+import SubstrateSdk
 
 struct ReferendumLocal {
     let index: UInt
     let state: ReferendumStateLocal
+    let proposer: AccountId?
 }
 
 struct SupportAndVotesLocal {
@@ -56,6 +58,7 @@ enum ReferendumStateLocal {
 
     struct Deciding {
         let track: GovernanceTrackLocal
+        let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
         let voting: Voting
         let since: BlockNumber
         let period: Moment
@@ -64,6 +67,7 @@ enum ReferendumStateLocal {
 
     struct Preparing {
         let track: GovernanceTrackLocal
+        let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
         let voting: Voting
         let deposit: BigUInt?
         let since: BlockNumber
@@ -92,6 +96,17 @@ enum ReferendumStateLocal {
             return false
         case .approved, .rejected, .cancelled, .timedOut, .killed, .executed:
             return true
+        }
+    }
+
+    var proposal: SupportPallet.Bounded<RuntimeCall<JSON>>? {
+        switch self {
+        case let .preparing(model):
+            return model.proposal
+        case let .deciding(model):
+            return model.proposal
+        case .approved, .rejected, .cancelled, .timedOut, .killed, .executed:
+            return nil
         }
     }
 }
