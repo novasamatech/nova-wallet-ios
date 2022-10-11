@@ -9,7 +9,7 @@ enum ReferendumInfo: Decodable {
 
     struct OngoingStatus: Decodable {
         @StringCodable var track: Referenda.TrackId
-        @BytesCodable var proposalHash: Data
+        let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
         let enactment: OnChainScheduler.DispatchTime
         @StringCodable var submitted: Moment
         let submissionDeposit: Referenda.Deposit
