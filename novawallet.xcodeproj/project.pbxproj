@@ -8081,6 +8081,13 @@
 			path = StakingDuration;
 			sourceTree = "<group>";
 		};
+		8469D5A328F5817C0074FEE3 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		846A682A274693D400D1A47A /* Crowdloan */ = {
 			isa = PBXGroup;
 			children = (
@@ -12537,6 +12544,7 @@
 		B4F0332763AFF64A3793C679 /* ReferendumDetails */ = {
 			isa = PBXGroup;
 			children = (
+				8469D5A328F5817C0074FEE3 /* Model */,
 				C3ABAD23C0039AFA8351C650 /* ReferendumDetailsProtocols.swift */,
 				5E2EB9EE4A87BD4A74040784 /* ReferendumDetailsWireframe.swift */,
 				78536852751EF56F58C5691E /* ReferendumDetailsPresenter.swift */,
