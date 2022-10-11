@@ -45,3 +45,10 @@ extension IconDetailsView {
         imageView.tintColor = style.tintColor
     }
 }
+
+extension IconDetailsView {
+    func bind(viewModel: TitleIconViewModel?) {
+        imageView.image = viewModel?.icon
+        detailsLabel.text = viewModel?.title
+    }
+}

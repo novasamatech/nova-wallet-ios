@@ -134,14 +134,16 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         self.blockNumber = blockNumber
 
         interactor.refresh()
+        updateTimes()
     }
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {
         self.blockTime = blockTime
+        updateTimes()
     }
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums
+        self.referendums = referendums.sorted(by: { $0.index < $1.index })
         updateView()
     }
 

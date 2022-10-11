@@ -33,19 +33,20 @@ final class ReferendumsModelFactory {
 
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: NumberFormatter
-
+    let referendumNumberFormatter: NumberFormatter
     init(
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
-        percentFormatter: NumberFormatter
+        percentFormatter: NumberFormatter,
+        referendumNumberFormatter: NumberFormatter
     ) {
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.percentFormatter = percentFormatter
+        self.referendumNumberFormatter = referendumNumberFormatter
     }
 
     private func provideCommonReferendumCellViewModel(
         title: String,
-        referendum: ReferendumLocal,
-        metadata: ReferendumMetadataLocal,
+        metadata: ReferendumMetadataLocal?,
         votes: ReferendumAccountVoteLocal?,
         chain: ChainModel,
         locale: Locale
@@ -57,12 +58,10 @@ final class ReferendumsModelFactory {
         )
         return .init(
             referendumInfo: .init(
-                status: title,
+                status: title.uppercased(),
                 time: nil,
-                title: metadata.details,
-                trackName: metadata.name,
-                trackImage: nil,
-                number: "#\(referendum.index)"
+                title: metadata?.name ?? "",
+                track: nil
             ),
             progress: nil,
             yourVotes: yourVotesModel
@@ -72,7 +71,7 @@ final class ReferendumsModelFactory {
     private func providePreparingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Preparing,
         referendum: ReferendumLocal,
-        metadata: ReferendumMetadataLocal,
+        metadata: ReferendumMetadataLocal?,
         votes: ReferendumAccountVoteLocal?,
         chainInfo: Input.ChainInformation,
         locale: Locale
@@ -101,14 +100,17 @@ final class ReferendumsModelFactory {
                 chainAsset: chainInfo.chain.utilityAsset(),
                 locale: locale
             )
+            let trackName = model.track.name.replacingSnakeCase().uppercased()
+            let referendumNumber = referendumNumberFormatter.string(from: NSNumber(value: referendum.index))
             return .init(
                 referendumInfo: .init(
-                    status: title,
+                    status: title.uppercased(),
                     time: timeModel,
-                    title: metadata.details,
-                    trackName: metadata.name,
-                    trackImage: nil,
-                    number: "#\(referendum.index)"
+                    title: metadata?.name ?? "",
+                    track: .init(
+                        titleIcon: .init(title: trackName, icon: nil),
+                        referendumNumber: referendumNumber.map { "#" + $0 }
+                    )
                 ),
                 progress: progressViewModel,
                 yourVotes: yourVotesModel
@@ -159,7 +161,7 @@ final class ReferendumsModelFactory {
     private func provideDecidingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Deciding,
         referendum: ReferendumLocal,
-        metadata: ReferendumMetadataLocal,
+        metadata: ReferendumMetadataLocal?,
         chainInfo: Input.ChainInformation,
         votes: ReferendumAccountVoteLocal?,
         locale: Locale
@@ -202,14 +204,18 @@ final class ReferendumsModelFactory {
                 chainAsset: chainInfo.chain.utilityAsset(),
                 locale: locale
             )
+            let trackName = model.track.name.replacingSnakeCase().uppercased()
+            let referendumNumber = referendumNumberFormatter.string(from: NSNumber(value: referendum.index))
+
             return .init(
                 referendumInfo: .init(
-                    status: title,
+                    status: title.uppercased(),
                     time: timeModel,
-                    title: metadata.details,
-                    trackName: metadata.name,
-                    trackImage: nil,
-                    number: "#\(referendum.index)"
+                    title: metadata?.name,
+                    track: .init(
+                        titleIcon: .init(title: trackName, icon: nil),
+                        referendumNumber: referendumNumber.map { "#" + $0 }
+                    )
                 ),
                 progress: progressViewModel,
                 yourVotes: yourVotesModel
@@ -220,7 +226,7 @@ final class ReferendumsModelFactory {
     private func provideApprovedReferendumCellViewModel(
         _ model: ReferendumStateLocal.Approved,
         referendum: ReferendumLocal,
-        metadata: ReferendumMetadataLocal,
+        metadata: ReferendumMetadataLocal?,
         chainInfo: Input.ChainInformation,
         votes: ReferendumAccountVoteLocal?,
         locale: Locale
@@ -247,12 +253,10 @@ final class ReferendumsModelFactory {
         )
         return .init(
             referendumInfo: .init(
-                status: title,
+                status: title.uppercased(),
                 time: timeModel,
-                title: metadata.details,
-                trackName: metadata.name,
-                trackImage: nil,
-                number: "#\(referendum.index)"
+                title: metadata?.name,
+                track: nil
             ),
             progress: nil,
             yourVotes: yourVotesModel
@@ -319,8 +323,7 @@ final class ReferendumsModelFactory {
             if model.deposit == nil {
                 let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
                 return ReferendumInfoView.Model.Time(
-                    title: title,
-                    image: R.image.iconLightPending(),
+                    titleIcon: .init(title: title, icon: R.image.iconLightPending()),
                     isUrgent: false
                 )
             } else {
@@ -389,18 +392,20 @@ final class ReferendumsModelFactory {
         )
         let localizedDaysHours = time.localizedDaysHours(for: locale)
         let timeString = timeStringProvider(localizedDaysHours, locale.rLanguages)
-        let timeModel = isUrgent(state: state, time: time).map {
+        let timeModel = isUrgent(state: state, time: time).map { isUrgent in
             ReferendumInfoView.Model.Time(
-                title: timeString,
-                image: $0 ? R.image.iconFire() : R.image.iconLightPending(),
-                isUrgent: $0
+                titleIcon: .init(
+                    title: timeString,
+                    icon: isUrgent ? R.image.iconFire() : R.image.iconLightPending()
+                ),
+                isUrgent: isUrgent
             )
         }
         return timeModel
     }
 
     private func calculateTime(block: Moment, currentBlock: BlockNumber, blockDuration: UInt64) -> TimeInterval {
-        block.secondsTo(block: currentBlock, blockDuration: blockDuration)
+        currentBlock.secondsTo(block: block, blockDuration: blockDuration)
     }
 
     private func isUrgent(state: ReferendumStateLocal, time: TimeInterval) -> Bool? {
@@ -441,9 +446,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
         input.referendums.forEach { referendum in
             let index = Referenda.ReferendumIndex(referendum.index)
-            guard let metadata = input.metadataMapping[index] else {
-                return
-            }
+            let metadata = input.metadataMapping[index]
             let model = createReferendumsCellViewModel(
                 referendum: referendum,
                 metadata: metadata,
@@ -469,7 +472,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
     private func createReferendumsCellViewModel(
         referendum: ReferendumLocal,
-        metadata: ReferendumMetadataLocal,
+        metadata: ReferendumMetadataLocal?,
         chainInformation: Input.ChainInformation,
         votes: ReferendumAccountVoteLocal?,
         locale: Locale
@@ -517,7 +520,6 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
         return provideCommonReferendumCellViewModel(
             title: title,
-            referendum: referendum,
             metadata: metadata,
             votes: votes,
             chain: chainInformation.chain,

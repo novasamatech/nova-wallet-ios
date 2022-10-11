@@ -28,6 +28,15 @@ final class ReferendumInfoView: UIView {
         $0.titleLabel.numberOfLines = 1
     }
 
+    lazy var trackInformation: UIStackView = UIView.hStack(
+        spacing: 6,
+        [
+            trackNameView,
+            numberLabel,
+            UIView()
+        ]
+    )
+
     private var timeModel: Model.Time?
 
     override init(frame: CGRect) {
@@ -51,14 +60,7 @@ final class ReferendumInfoView: UIView {
                     timeView
                 ]),
                 titleLabel,
-                UIView.hStack(
-                    spacing: 6,
-                    [
-                        trackNameView,
-                        numberLabel,
-                        UIView()
-                    ]
-                )
+                trackInformation
             ]
         )
         content.setCustomSpacing(12, after: titleLabel)
@@ -73,25 +75,28 @@ extension ReferendumInfoView {
     struct Model {
         let status: String
         let time: Time?
-        let title: String
-        let trackName: String
-        let trackImage: UIImage?
-        let number: String
+        let title: String?
+        let track: Track?
 
         struct Time: Equatable {
-            let title: String
-            let image: UIImage?
+            let titleIcon: TitleIconViewModel
             let isUrgent: Bool
+        }
+
+        struct Track {
+            let titleIcon: TitleIconViewModel
+            let referendumNumber: String?
         }
     }
 
     func bind(viewModel: Model) {
-        titleLabel.text = viewModel.title
-        trackNameView.iconDetailsView.imageView.image = viewModel.trackImage
-        trackNameView.iconDetailsView.detailsLabel.text = viewModel.trackName
-        numberLabel.titleLabel.text = viewModel.number
-        statusLabel.text = viewModel.status
+        trackInformation.isHidden = viewModel.track == nil
+        numberLabel.isHidden = viewModel.track?.referendumNumber == nil
 
+        titleLabel.text = viewModel.title
+        trackNameView.iconDetailsView.bind(viewModel: viewModel.track?.titleIcon)
+        numberLabel.titleLabel.text = viewModel.track?.referendumNumber
+        statusLabel.text = viewModel.status
         bind(timeModel: viewModel.time)
     }
 
@@ -100,13 +105,12 @@ extension ReferendumInfoView {
             return
         }
         self.timeModel = timeModel
+
         if let time = timeModel {
-            timeView.detailsLabel.text = time.title
-            timeView.imageView.image = time.image
+            timeView.bind(viewModel: time.titleIcon)
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)
         } else {
-            timeView.detailsLabel.text = nil
-            timeView.imageView.image = nil
+            timeView.bind(viewModel: nil)
         }
     }
 }

@@ -187,7 +187,8 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         percentFormatter.roundingMode = .halfEven
         let viewModelFactory = ReferendumsModelFactory(
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: percentFormatter
+            percentFormatter: percentFormatter,
+            referendumNumberFormatter: .quantity
         )
 
         let presenter = ReferendumsPresenter(
