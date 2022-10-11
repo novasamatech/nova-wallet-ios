@@ -1,4 +1,6 @@
 import Foundation
+import SubstrateSdk
+import RobinHood
 
 struct ReferendumDetailsViewFactory {
     static func createView(
@@ -22,7 +24,7 @@ struct ReferendumDetailsViewFactory {
     }
 
     private static func createInteractor(
-        for _: ReferendumLocal,
+        for referendum: ReferendumLocal,
         state: GovernanceSharedState
     ) -> ReferendumDetailsInteractor? {
         guard let chain = state.settings.value else {
@@ -37,6 +39,29 @@ struct ReferendumDetailsViewFactory {
             return nil
         }
 
-        return ReferendumDetailsInteractor()
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        let actionDetailsOperationFactory = Gov2ActionOperationFactory(
+            requestFactory: requestFactory,
+            operationQueue: operationQueue
+        )
+
+        let identityOperationFactory = IdentityOperationFactory(
+            requestFactory: requestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
+
+        return ReferendumDetailsInteractor(
+            referendum: referendum,
+            chain: chain,
+            actionDetailsOperationFactory: actionDetailsOperationFactory,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            identityOperationFactory: identityOperationFactory
+        )
     }
 }
