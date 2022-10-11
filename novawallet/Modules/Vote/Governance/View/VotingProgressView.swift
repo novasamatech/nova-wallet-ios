@@ -58,8 +58,7 @@ extension VotingProgressView {
     }
 
     struct ThresholdModel {
-        let image: UIImage?
-        let text: String
+        let titleIcon: TitleIconViewModel?
         let value: Decimal
     }
 
@@ -73,10 +72,8 @@ extension VotingProgressView {
         passProgressLabel.text = viewModel.passProgress
         nayProgressLabel.text = viewModel.nayProgress
 
-        viewModel.thresholdModel.map {
-            thresholdView.imageView.image = $0.image
-            thresholdView.detailsLabel.text = $0.text
-        }
+        thresholdView.bind(viewModel: viewModel.thresholdModel?.titleIcon)
+        thresholdView.isHidden = viewModel.thresholdModel?.titleIcon?.title == nil
     }
 }
 

@@ -73,7 +73,7 @@ final class ReferendumInfoView: UIView {
 
 extension ReferendumInfoView {
     struct Model {
-        let status: String
+        let status: Status
         let time: Time?
         let title: String?
         let track: Track?
@@ -87,6 +87,17 @@ extension ReferendumInfoView {
             let titleIcon: TitleIconViewModel
             let referendumNumber: String?
         }
+
+        struct Status {
+            let name: String
+            let kind: StatusKind
+        }
+
+        enum StatusKind {
+            case positive
+            case negative
+            case neutral
+        }
     }
 
     func bind(viewModel: Model) {
@@ -96,8 +107,17 @@ extension ReferendumInfoView {
         titleLabel.text = viewModel.title
         trackNameView.iconDetailsView.bind(viewModel: viewModel.track?.titleIcon)
         numberLabel.titleLabel.text = viewModel.track?.referendumNumber
-        statusLabel.text = viewModel.status
+        statusLabel.text = viewModel.status.name
         bind(timeModel: viewModel.time)
+
+        switch viewModel.status.kind {
+        case .positive:
+            statusLabel.apply(style: .positiveStatusLabel)
+        case .negative:
+            statusLabel.apply(style: .negativeStatusLabel)
+        case .neutral:
+            statusLabel.apply(style: .neutralStatusLabel)
+        }
     }
 
     func bind(timeModel: Model.Time?) {

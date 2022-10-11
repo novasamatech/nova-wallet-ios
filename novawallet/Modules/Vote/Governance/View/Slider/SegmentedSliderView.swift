@@ -35,7 +35,7 @@ final class SegmentedSliderView: UIView {
             return
         }
 
-        let thumbValueDouble = NSDecimalNumber(decimal: model.value).doubleValue
+        let thumbValueDouble = NSDecimalNumber(decimal: thumbValue).doubleValue
         let originX = sliderFrame.size.width * thumbValueDouble - thumbStyle.width / 2
         let thumbHeight = thumbStyle.height ?? bounds.size.height
         let originY = sliderFrame.midY - thumbHeight / 2
@@ -50,8 +50,8 @@ final class SegmentedSliderView: UIView {
 }
 
 extension SegmentedSliderView {
+    typealias SliderStyle = SliderLayer.Style
     struct Style {
-        typealias SliderStyle = SliderLayer.Style
         let lineInsets: UIEdgeInsets
         let sliderStyle: SliderStyle
         let thumbStyle: ThumbStyle?
