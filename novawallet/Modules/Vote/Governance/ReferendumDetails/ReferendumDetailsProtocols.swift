@@ -1,4 +1,4 @@
-protocol ReferendumDetailsViewProtocol: AnyObject {}
+protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {}
 
 protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
@@ -6,6 +6,10 @@ protocol ReferendumDetailsPresenterProtocol: AnyObject {
 
 protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
     func setup()
+    func refreshBlockTime()
+    func refreshActionDetails()
+    func refreshIdentities()
+    func remakeSubscriptions()
 }
 
 protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
@@ -19,4 +23,4 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
-protocol ReferendumDetailsWireframeProtocol: AnyObject {}
+protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
