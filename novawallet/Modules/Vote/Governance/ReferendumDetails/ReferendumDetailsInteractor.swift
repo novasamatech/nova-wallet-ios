@@ -19,11 +19,14 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var metadataProvider: AnySingleValueProvider<ReferendumMetadataMapping>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private var referendumSubscription: CallbackStorageSubscription<ReferendumInfo>?
+
     private var referendumCancellable: CancellableCall?
     private var identitiesCancellable: CancellableCall?
     private var actionDetailsCancellable: CancellableCall?
+    private var blockTimeCancellable: CancellableCall?
 
     init(
         referendum: ReferendumLocal,
@@ -59,6 +62,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         clear(cancellable: &referendumCancellable)
         clear(cancellable: &identitiesCancellable)
         clear(cancellable: &actionDetailsCancellable)
+        clear(cancellable: &blockTimeCancellable)
 
         referendumSubscription = nil
     }
@@ -173,6 +177,35 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    private func provideBlockTime() {
+        guard blockTimeCancellable == nil else {
+            return
+        }
+
+        let operation = blockTimeService.createEstimatedBlockTimeOperation()
+
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard operation === self?.blockTimeCancellable else {
+                    return
+                }
+
+                self?.blockTimeCancellable = nil
+
+                do {
+                    let blockTimeModel = try operation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveBlockTime(blockTimeModel.blockTime)
+                } catch {
+                    self?.presenter?.didReceiveError(.blockTimeFailed(error))
+                }
+            }
+        }
+
+        blockTimeCancellable = operation
+
+        operationQueue.addOperation(operation)
+    }
+
     private func provideActionDetails() {
         guard actionDetailsCancellable == nil else {
             return
@@ -210,21 +243,37 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
 
         subscribeReferendum()
+
+        metadataProvider = subscribeGovMetadata(for: chain)
     }
 }
 
 extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol {
     func setup() {
-        presenter?.didReceiveReferendum(referendum)
-
         makeSubscriptions()
         provideActionDetails()
         provideIdentities()
     }
+
+    func refreshBlockTime() {
+        provideBlockTime()
+    }
+
+    func refreshActionDetails() {
+        provideActionDetails()
+    }
+
+    func refreshIdentities() {
+        provideIdentities()
+    }
+
+    func remakeSubscriptions() {
+        makeSubscriptions()
+    }
 }
 
 extension ReferendumDetailsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId: ChainModel.Id) {
+    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(blockNumber):
             if let blockNumber = blockNumber {
@@ -243,6 +292,18 @@ extension ReferendumDetailsInteractor: PriceLocalSubscriptionHandler, PriceLocal
             presenter?.didReceivePrice(price)
         case let .failure(error):
             presenter?.didReceiveError(.priceFailed(error))
+        }
+    }
+}
+
+extension ReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
+    func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain _: ChainModel) {
+        switch result {
+        case let .success(mapping):
+            let metadata = mapping?[Referenda.ReferendumIndex(referendum.index)]
+            presenter?.didReceiveMetadata(metadata)
+        case let .failure(error):
+            presenter?.didReceiveError(.metadataFailed(error))
         }
     }
 }
