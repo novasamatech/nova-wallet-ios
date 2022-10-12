@@ -50,13 +50,6 @@ extension StorageKeyFactoryProtocol {
         )
     }
 
-    func historyDepth() throws -> Data {
-        try createStorageKey(
-            moduleName: "Staking",
-            storageName: "HistoryDepth"
-        )
-    }
-
     func key(from codingPath: StorageCodingPath) throws -> Data {
         try createStorageKey(moduleName: codingPath.moduleName, storageName: codingPath.itemName)
     }
