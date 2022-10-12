@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import SoraFoundation
 
 struct ReferendumDetailsViewFactory {
     static func createView(
@@ -19,7 +20,16 @@ struct ReferendumDetailsViewFactory {
 
         let wireframe = ReferendumDetailsWireframe()
 
-        let presenter = ReferendumDetailsPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = ReferendumDetailsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            referendum: referendum,
+            chain: state.settings.value,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
         let view = ReferendumDetailsViewController(presenter: presenter)
 
@@ -63,6 +73,8 @@ struct ReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let referendumsOperationFactory = Gov2OperationFactory(requestFactory: requestFactory)
+
         return ReferendumDetailsInteractor(
             referendum: referendum,
             chain: chain,
@@ -74,6 +86,7 @@ struct ReferendumDetailsViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
+            referendumsOperationFactory: referendumsOperationFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
