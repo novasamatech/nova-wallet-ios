@@ -16,18 +16,25 @@ final class ReferendumsPresenter {
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]?
     private var blockNumber: BlockNumber?
+    private let viewModelFactory: ReferendumsModelFactoryProtocol
     private var blockTime: BlockTime?
+
+    private var maxStatusTimeInterval: TimeInterval?
+    private var countdownTimer: CountdownTimer?
+    private var timeModels: [UInt: StatusTimeModel?]?
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
     init(
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
+        viewModelFactory: ReferendumsModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -44,6 +51,107 @@ final class ReferendumsPresenter {
         )
 
         view?.didReceiveChainBalance(viewModel: viewModel)
+    }
+
+    private func updateView() {
+        guard let view = view else {
+            return
+        }
+        guard let currentBlock = blockNumber,
+              let blockTime = blockTime,
+              let referendums = referendums,
+              let chainModel = chain else {
+            return
+        }
+        let sections = viewModelFactory.createSections(input: .init(
+            referendums: referendums,
+            metadataMapping: referendumsMetadata,
+            votes: votes ?? [:],
+            chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDurartion: blockTime),
+            locale: selectedLocale
+        ))
+
+        view.update(model: .init(sections: sections))
+    }
+
+    private func updateTimeModels() {
+        guard let view = view else {
+            return
+        }
+        guard let currentBlock = blockNumber,
+              let blockTime = blockTime,
+              let referendums = referendums else {
+            return
+        }
+
+        let timeModels = viewModelFactory.createTimeModels(
+            referendums: referendums,
+            currentBlock: currentBlock,
+            blockDurartion: blockTime,
+            locale: selectedLocale
+        )
+
+        self.timeModels = timeModels
+        maxStatusTimeInterval = timeModels.compactMap { $0.value?.timeInterval }.max(by: <)
+        invalidateTimer()
+        setupTimer()
+        updateTimerDisplay()
+
+        view.updateReferendums(time: timeModels)
+    }
+
+    private func invalidateTimer() {
+        countdownTimer?.stop()
+        countdownTimer = nil
+    }
+
+    private func setupTimer() {
+        guard let maxStatusTimeInterval = maxStatusTimeInterval else {
+            return
+        }
+
+        countdownTimer = CountdownTimer()
+        countdownTimer?.delegate = self
+        countdownTimer?.start(with: maxStatusTimeInterval)
+    }
+
+    private func updateTimerDisplay() {
+        guard
+            let view = view,
+            let maxStatusTimeInterval = maxStatusTimeInterval,
+            let remainedTimeInterval = countdownTimer?.remainedInterval,
+            let timeModels = timeModels else {
+            return
+        }
+
+        let elapsedTime = maxStatusTimeInterval >= remainedTimeInterval ?
+            maxStatusTimeInterval - remainedTimeInterval : 0
+
+        let updatedTimeModels = timeModels.reduce(into: timeModels) { result, model in
+            guard let timeModel = model.value,
+                  let time = timeModel.timeInterval else {
+                return
+            }
+
+            guard time > elapsedTime else {
+                result[model.key] = nil
+                return
+            }
+            let remainedTime = time - elapsedTime
+            guard let updatedViewModel = timeModel.updateModelClosure(remainedTime) else {
+                result[model.key] = nil
+                return
+            }
+
+            result[model.key] = .init(
+                viewModel: updatedViewModel,
+                timeInterval: remainedTime,
+                updateModelClosure: timeModel.updateModelClosure
+            )
+        }
+
+        self.timeModels = updatedTimeModels
+        view.updateReferendums(time: updatedTimeModels)
     }
 }
 
@@ -84,26 +192,31 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?) {
         referendumsMetadata = metadata
+        updateView()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
         interactor.refresh()
+        updateTimeModels()
     }
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {
         self.blockTime = blockTime
+        updateTimeModels()
     }
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums
+        self.referendums = referendums.sorted(by: { $0.index < $1.index })
+        updateView()
     }
 
     func didReceiveSelectedChain(_ chain: ChainModel) {
         self.chain = chain
 
         provideChainBalance()
+        updateView()
     }
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
@@ -167,6 +280,22 @@ extension ReferendumsPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideChainBalance()
+
+            updateView()
         }
+    }
+}
+
+extension ReferendumsPresenter: CountdownTimerDelegate {
+    func didStart(with _: TimeInterval) {
+        updateTimerDisplay()
+    }
+
+    func didCountdown(remainedInterval _: TimeInterval) {
+        updateTimerDisplay()
+    }
+
+    func didStop(with _: TimeInterval) {
+        updateTimerDisplay()
     }
 }

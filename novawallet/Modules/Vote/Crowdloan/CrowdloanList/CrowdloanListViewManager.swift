@@ -110,7 +110,7 @@ extension CrowdloanListViewManager: UITableViewDelegate {
         let sectionModel = viewModel.sections[section]
         switch sectionModel {
         case let .active(title, cells), let .completed(title, cells):
-            let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
+            let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
             switch title {
             case let .loaded(value):
                 headerView.bind(viewModel: .loaded(value: .init(title: value, count: cells.count)))
@@ -121,7 +121,7 @@ extension CrowdloanListViewManager: UITableViewDelegate {
             }
             return headerView
         case let .empty(title):
-            let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
+            let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
             headerView.bind(viewModel: .loaded(value: .init(title: title, count: 0)))
             return headerView
         default:
@@ -223,7 +223,7 @@ extension CrowdloanListViewManager: VoteChildViewProtocol {
         tableView.registerClassForCell(CrowdloanTableViewCell.self)
         tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
         tableView.registerClassForCell(BlurredTableViewCell<ErrorStateView>.self)
-        tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
+        tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -237,7 +237,7 @@ extension CrowdloanListViewManager: VoteChildViewProtocol {
         tableView.unregisterClassForCell(CrowdloanTableViewCell.self)
         tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
         tableView.unregisterClassForCell(BlurredTableViewCell<ErrorStateView>.self)
-        tableView.unregisterHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
+        tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
 
         tableView.dataSource = nil
         tableView.delegate = nil
