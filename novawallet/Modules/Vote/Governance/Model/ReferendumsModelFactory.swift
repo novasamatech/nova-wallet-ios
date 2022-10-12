@@ -289,8 +289,8 @@ final class ReferendumsModelFactory {
             let isCompleted = supportAndVotes.supportFraction >= supportThreshold
 
             let image = isCompleted ?
-                R.image.iconCheckmark()?.withTintColor(R.color.colorDarkGreen()!, renderingMode: .alwaysTemplate) :
-                R.image.iconClose()?.withTintColor(R.color.colorRedFF3A69()!, renderingMode: .alwaysTemplate)
+                R.image.iconCheckmark()?.withTintColor(R.color.colorDarkGreen()!) :
+                R.image.iconClose()?.withTintColor(R.color.colorRedFF3A69()!)
             let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: chainAsset.displayInfo)
 
             let targetThresholdString = targetThreshold.map {
@@ -307,9 +307,9 @@ final class ReferendumsModelFactory {
         }
 
         return .init(
-            ayeProgress: ayeProgress,
-            passProgress: passProgress,
-            nayProgress: nayProgress,
+            ayeProgress: "Aye: \(ayeProgress)",
+            passProgress: "To pass: \(passProgress)",
+            nayProgress: "Nay: \(nayProgress)",
             thresholdModel: thresholdModel,
             progress: supportAndVotes.approvalFraction
         )

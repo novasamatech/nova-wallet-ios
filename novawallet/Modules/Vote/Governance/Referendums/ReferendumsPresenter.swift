@@ -59,7 +59,7 @@ final class ReferendumsPresenter {
         }
         guard let currentBlock = blockNumber,
               let blockTime = blockTime,
-              let referendums = self.referendums,
+              let referendums = referendums,
               let chainModel = chain else {
             return
         }
@@ -80,7 +80,7 @@ final class ReferendumsPresenter {
         }
         guard let currentBlock = blockNumber,
               let blockTime = blockTime,
-              let referendums = self.referendums else {
+              let referendums = referendums else {
             return
         }
 
@@ -192,6 +192,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?) {
         referendumsMetadata = metadata
+        updateView()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {

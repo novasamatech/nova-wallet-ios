@@ -3,7 +3,9 @@ import UIKit
 final class VotingProgressView: UIView {
     let thresholdView: IconDetailsView = .create {
         $0.detailsLabel.apply(style: .referendaTimeView)
-        $0.contentMode = .scaleAspectFit
+        $0.imageView.contentMode = .scaleAspectFit
+        $0.iconWidth = 14
+        $0.spacing = 5
     }
 
     let slider: SegmentedSliderView = .create {
