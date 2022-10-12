@@ -2215,6 +2215,8 @@
 		8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */; };
 		8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */; };
 		8887814028B7AAB700E7290F /* RoundedIconTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */; };
+		888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */; };
+		888A3B6728F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */; };
 		888B853828ED966600AC9614 /* SkeletonableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B853728ED966600AC9614 /* SkeletonableView.swift */; };
 		8890E51628DDC98C001D3994 /* SubstrateStorageMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8890E51528DDC98C001D3994 /* SubstrateStorageMigrationTests.swift */; };
 		8892284828F353A5003F8B9E /* ReferendumsModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8892284728F353A5003F8B9E /* ReferendumsModelFactory.swift */; };
@@ -5050,6 +5052,8 @@
 		8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleSpaceView.swift; sourceTree = "<group>"; };
 		8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleCollectionHeaderView.swift; sourceTree = "<group>"; };
 		8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleView.swift; sourceTree = "<group>"; };
+		888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingStatusView.swift; sourceTree = "<group>"; };
+		888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingStatusDetailsView.swift; sourceTree = "<group>"; };
 		888B853728ED966600AC9614 /* SkeletonableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkeletonableView.swift; sourceTree = "<group>"; };
 		8890E51528DDC98C001D3994 /* SubstrateStorageMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageMigrationTests.swift; sourceTree = "<group>"; };
 		8892284728F353A5003F8B9E /* ReferendumsModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsModelFactory.swift; sourceTree = "<group>"; };
@@ -11902,6 +11906,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		888A3B6328F73B9200E15BD2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */,
+				888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		88A0E0FB28A284C700A9C940 /* Currency */ = {
 			isa = PBXGroup;
 			children = (
@@ -12589,6 +12602,7 @@
 		B4F0332763AFF64A3793C679 /* ReferendumDetails */ = {
 			isa = PBXGroup;
 			children = (
+				888A3B6328F73B9200E15BD2 /* View */,
 				C3ABAD23C0039AFA8351C650 /* ReferendumDetailsProtocols.swift */,
 				5E2EB9EE4A87BD4A74040784 /* ReferendumDetailsWireframe.swift */,
 				78536852751EF56F58C5691E /* ReferendumDetailsPresenter.swift */,
@@ -13998,6 +14012,7 @@
 				84DD5F77263DFD9C00425ACF /* WarningConditionViolation.swift in Sources */,
 				84D2F45425EF044B008B914D /* RecommendedValidatorListViewModel.swift in Sources */,
 				84FD3DB52540ED0900A234E3 /* Block.swift in Sources */,
+				888A3B6728F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift in Sources */,
 				8494D86B25247F9600614D8F /* Decimal+String.swift in Sources */,
 				849E17F2279191EB002D1744 /* DAppSettingsMapper.swift in Sources */,
 				84873B0926029CBD000A83EE /* StakingStateViewModelFactory.swift in Sources */,
@@ -14210,6 +14225,7 @@
 				F471897626C297AA006487AD /* AnalyticsValidatorsPage.swift in Sources */,
 				F44CD8F426242825005DDF23 /* PayoutRewardsService+Fetch.swift in Sources */,
 				2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */,
+				888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */,
 				843E9B3627C8B915009C143A /* NftFileDownloadService.swift in Sources */,
 				842B17FF28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift in Sources */,
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
