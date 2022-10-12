@@ -142,12 +142,10 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
                 precision: assetPrecision
             ) ?? 0
 
-            let localizedAmountString = LocalizableResource<String> { [weak self] locale in
-                if let formatter = self?.formatter {
-                    return formatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
-                } else {
-                    return ""
-                }
+            let amountFormatter = formatter
+
+            let localizedAmountString = LocalizableResource<String> { locale in
+                amountFormatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
             }
 
             return LocalizableResource { locale in
