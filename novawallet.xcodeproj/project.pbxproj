@@ -2236,6 +2236,7 @@
 		88AC186528CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AC186428CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift */; };
 		88AF35DE28C21D28003730DA /* LocksSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AF35DD28C21D28003730DA /* LocksSubscription.swift */; };
 		88B1862A28EF30A600D49854 /* YourVoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B1862928EF30A600D49854 /* YourVoteView.swift */; };
+		88B438E728F6C629001FC08A /* StatusTimeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B438E628F6C629001FC08A /* StatusTimeModel.swift */; };
 		88BB21A028D34C660019C6B4 /* DataProviderChange+Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB219F28D34C660019C6B4 /* DataProviderChange+Identifier.swift */; };
 		88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C017E528C60A65003B2D28 /* AssetLockMapper.swift */; };
 		88C7165428C894510015D1E9 /* CollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */; };
@@ -5071,6 +5072,7 @@
 		88AC186428CA461F00892A9B /* ModalSheetCollectionViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalSheetCollectionViewProtocol.swift; sourceTree = "<group>"; };
 		88AF35DD28C21D28003730DA /* LocksSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocksSubscription.swift; sourceTree = "<group>"; };
 		88B1862928EF30A600D49854 /* YourVoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourVoteView.swift; sourceTree = "<group>"; };
+		88B438E628F6C629001FC08A /* StatusTimeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTimeModel.swift; sourceTree = "<group>"; };
 		88BB219F28D34C660019C6B4 /* DataProviderChange+Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+Identifier.swift"; sourceTree = "<group>"; };
 		88C017E528C60A65003B2D28 /* AssetLockMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetLockMapper.swift; sourceTree = "<group>"; };
 		88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewDelegate.swift; sourceTree = "<group>"; };
@@ -11106,6 +11108,7 @@
 				841221A528F13BA100715C82 /* GovernanceServiceFactory.swift */,
 				849707A028F3E0AC00DD0A02 /* ReferendumVoterLocal.swift */,
 				845B811C28F44A700040CE84 /* ReferendumActionLocal.swift */,
+				88B438E628F6C629001FC08A /* StatusTimeModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -16318,6 +16321,7 @@
 				28B4C94DBAF461CBF18B1B63 /* WalletsListViewController.swift in Sources */,
 				233CB11F486DE1953D977295 /* WalletsListViewLayout.swift in Sources */,
 				FD43B68CFBD5C3497B446F53 /* ChangeWatchOnlyProtocols.swift in Sources */,
+				88B438E728F6C629001FC08A /* StatusTimeModel.swift in Sources */,
 				E65FDA8BF9DBE7F50AE9D733 /* ChangeWatchOnlyWireframe.swift in Sources */,
 				02838B00DD7C9BC3BD78FF65 /* ChangeWatchOnlyPresenter.swift in Sources */,
 				493A9637BE5A1BF4B0744A4C /* ChangeWatchOnlyInteractor.swift in Sources */,

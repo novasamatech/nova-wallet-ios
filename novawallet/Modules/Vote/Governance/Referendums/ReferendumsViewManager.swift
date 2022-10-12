@@ -88,7 +88,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
         tableView.reloadData()
     }
 
-    func updateReferendums(time: [UInt: ReferendumInfoView.Model.Time?]) {
+    func updateReferendums(time: [UInt: StatusTimeModel?]) {
         tableView.visibleCells.forEach { cell in
             guard let referendumCell = cell as? ReferendumTableViewCell,
                   let indexPath = tableView.indexPath(for: cell) else {
@@ -98,7 +98,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
             switch model.sections[indexPath.section] {
             case let .active(_, cells), let .completed(_, cells):
                 let cellModel = cells[indexPath.row]
-                guard let timeModel = time[cellModel.referendumIndex] else {
+                guard let timeModel = time[cellModel.referendumIndex]??.viewModel else {
                     return
                 }
 

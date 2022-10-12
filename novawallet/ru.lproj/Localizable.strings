@@ -999,3 +999,5 @@
 
 "governance.referendums.threshold" = "Порог: %@ из %@";
 "governance.referendums.your.vote" = "Ваше голосование: %@ голосов";
+"governance.referendums.active" = "Активные";
+"governance.referendums.completed" = "Завершённые";

@@ -999,3 +999,5 @@
 
 "governance.referendums.threshold" = "Threshold: %@ of %@";
 "governance.referendums.your.vote" = "Your vote: %@ votes";
+"governance.referendums.active" = "Ongoing";
+"governance.referendums.completed" = "Completed";

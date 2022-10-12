@@ -37,8 +37,6 @@ final class ReferendumInfoView: UIView {
         ]
     )
 
-    private var timeModel: Model.Time?
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -121,11 +119,6 @@ extension ReferendumInfoView {
     }
 
     func bind(timeModel: Model.Time?) {
-        guard timeModel != self.timeModel else {
-            return
-        }
-        self.timeModel = timeModel
-
         if let time = timeModel {
             timeView.bind(viewModel: time.titleIcon)
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)
