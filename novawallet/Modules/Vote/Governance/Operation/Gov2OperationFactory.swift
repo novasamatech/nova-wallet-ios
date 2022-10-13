@@ -19,7 +19,7 @@ final class Gov2OperationFactory {
             try "enactment".encode(scaleEncoder: scaleEncoder)
             try index.encode(scaleEncoder: scaleEncoder)
 
-            let data = scaleEncoder.encode()
+            let data = try scaleEncoder.encode().blake2b32()
 
             var container = encoder.singleValueContainer()
             try container.encode(BytesCodable(wrappedValue: data))
