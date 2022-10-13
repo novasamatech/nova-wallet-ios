@@ -80,10 +80,6 @@ extension ReferendumTimelineView {
             case interval(TitleIconViewModel)
         }
     }
-
-    func bind(viewModel _: Model) {
-        setupLayout(model: model)
-    }
 }
 
 protocol BaselinedView: UIView {
