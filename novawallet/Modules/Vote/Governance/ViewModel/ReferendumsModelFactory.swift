@@ -297,7 +297,7 @@ final class ReferendumsModelFactory {
 
         if let approvalFraction = supportAndVotes.approvalFraction {
             ayeProgressString = percentFormatter.stringFromDecimal(approvalFraction) ?? ""
-            nayProgressString = percentFormatter.stringFromDecimal(approvalFraction) ?? ""
+            nayProgressString = percentFormatter.stringFromDecimal(1 - approvalFraction) ?? ""
         } else {
             ayeProgressString = percentFormatter.stringFromDecimal(0) ?? ""
             nayProgressString = percentFormatter.stringFromDecimal(0) ?? ""

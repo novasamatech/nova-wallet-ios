@@ -1,8 +1,15 @@
 import UIKit
+import SoraUI
 
-final class SliderLayer: CALayer {
-    private let firstSegment: CAShapeLayer
-    private let lastSegment: CAShapeLayer
+final class SliderView: UIView {
+    private let firstSegment: RoundedView = .create { view in
+        view.shadowOpacity = 0.0
+    }
+
+    private let lastSegment: RoundedView = .create { view in
+        view.shadowOpacity = 0.0
+    }
+
     private var sliderStyle: Style = .defaultStyle
 
     var gap: CGFloat? {
@@ -13,26 +20,11 @@ final class SliderLayer: CALayer {
         }
     }
 
-    override init(layer: Any) {
-        guard let other = layer as? SliderLayer else {
-            fatalError()
-        }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        firstSegment = other.firstSegment
-        lastSegment = other.lastSegment
-        sliderStyle = other.sliderStyle
-
-        super.init(layer: layer)
-    }
-
-    override init() {
-        firstSegment = CAShapeLayer()
-        lastSegment = CAShapeLayer()
-
-        super.init()
-
-        addSublayer(firstSegment)
-        addSublayer(lastSegment)
+        addSubview(firstSegment)
+        addSubview(lastSegment)
 
         apply(style: sliderStyle)
     }
@@ -43,13 +35,16 @@ final class SliderLayer: CALayer {
     }
 
     private func applyStyleAndLayout() {
+        firstSegment.cornerRadius = sliderStyle.cornerRadius
+        lastSegment.cornerRadius = sliderStyle.cornerRadius
+
         if gap != nil {
-            firstSegment.fillColor = sliderStyle.firstColor.cgColor
-            lastSegment.fillColor = sliderStyle.lastColor.cgColor
+            firstSegment.fillColor = sliderStyle.firstColor
+            lastSegment.fillColor = sliderStyle.lastColor
 
             lastSegment.isHidden = false
         } else {
-            firstSegment.fillColor = sliderStyle.zeroColor.cgColor
+            firstSegment.fillColor = sliderStyle.zeroColor
 
             lastSegment.isHidden = true
         }
@@ -57,7 +52,9 @@ final class SliderLayer: CALayer {
         setNeedsLayout()
     }
 
-    override func layoutSublayers() {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
         if let gap = gap {
             let lineCalculationSize = CGSize(
                 width: bounds.width - sliderStyle.dividerSpace,
@@ -73,27 +70,15 @@ final class SliderLayer: CALayer {
                 y: 0
             ))
 
-            let firstPath = UIBezierPath(
-                roundedRect: .init(origin: bounds.origin, size: firstSegmentSize),
-                cornerRadius: sliderStyle.cornerRadius
-            )
-
-            let lastPath = UIBezierPath(
-                roundedRect: .init(origin: lastSegmentOrigin, size: lastSegmentSize),
-                cornerRadius: sliderStyle.cornerRadius
-            )
-
-            firstSegment.path = firstPath.cgPath
-            lastSegment.path = lastPath.cgPath
+            firstSegment.frame = CGRect(origin: bounds.origin, size: firstSegmentSize)
+            lastSegment.frame = CGRect(origin: lastSegmentOrigin, size: lastSegmentSize)
         } else {
-            let path = UIBezierPath(roundedRect: bounds, cornerRadius: sliderStyle.cornerRadius)
-
-            firstSegment.path = path.cgPath
+            firstSegment.frame = bounds
         }
     }
 }
 
-extension SliderLayer {
+extension SliderView {
     struct Style {
         let firstColor: UIColor
         let lastColor: UIColor
