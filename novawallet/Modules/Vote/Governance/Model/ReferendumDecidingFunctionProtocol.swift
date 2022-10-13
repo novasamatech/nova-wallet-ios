@@ -6,7 +6,7 @@ protocol ReferendumDecidingFunctionProtocol {
 
 struct Gov2LocalDecidingFunction: ReferendumDecidingFunctionProtocol {
     let curve: Referenda.Curve
-    let startBlock: BlockNumber
+    let startBlock: BlockNumber?
     let period: Moment
 
     private func calculateLinearDecreasing(from xPoint: Decimal, params: Referenda.LinearDecreasingCurve) -> Decimal? {
@@ -58,6 +58,8 @@ struct Gov2LocalDecidingFunction: ReferendumDecidingFunctionProtocol {
 extension Gov2LocalDecidingFunction {
     func calculateThreshold(for block: BlockNumber) -> Decimal? {
         let xPoint: Decimal
+
+        let startBlock = self.startBlock ?? block
 
         if block < startBlock {
             xPoint = 0

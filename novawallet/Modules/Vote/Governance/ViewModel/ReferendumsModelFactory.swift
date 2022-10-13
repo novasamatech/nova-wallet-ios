@@ -33,19 +33,19 @@ final class ReferendumsModelFactory {
 
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let localizedPercentFormatter: LocalizableResource<NumberFormatter>
-    let localizedQuantityFormatter: LocalizableResource<NumberFormatter>
+    let localizedIndexFormatter: LocalizableResource<NumberFormatter>
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
 
     init(
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
-        quantityNumberFormatter: LocalizableResource<NumberFormatter>
+        indexFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         localizedPercentFormatter = percentFormatter
-        localizedQuantityFormatter = quantityNumberFormatter
+        localizedIndexFormatter = indexFormatter
     }
 
     private func provideCommonReferendumCellViewModel(
@@ -58,12 +58,18 @@ final class ReferendumsModelFactory {
             chainAsset: params.chainInfo.chain.utilityAsset(),
             locale: locale
         )
+
+        let referendumNumber = localizedIndexFormatter.value(for: locale).string(
+            from: NSNumber(value: params.referendum.index)
+        )
+
         return .init(
             referendumInfo: .init(
                 status: status,
                 time: nil,
                 title: params.metadata?.name ?? "",
-                track: nil
+                track: nil,
+                referendumNumber: referendumNumber
             ),
             progress: nil,
             yourVotes: yourVotesModel
@@ -99,9 +105,14 @@ final class ReferendumsModelFactory {
                 chainAsset: params.chainInfo.chain.utilityAsset(),
                 locale: locale
             )
-            let trackName = model.track.name.replacingSnakeCase().uppercased()
 
-            let referendumNumber = localizedQuantityFormatter.value(for: locale).string(
+            let track = ReferendumTrackType.createViewModel(
+                from: model.track.name,
+                chain: params.chainInfo.chain,
+                locale: locale
+            )
+
+            let referendumNumber = localizedIndexFormatter.value(for: locale).string(
                 from: NSNumber(value: params.referendum.index)
             )
 
@@ -110,10 +121,8 @@ final class ReferendumsModelFactory {
                     status: .init(name: title.uppercased(), kind: .neutral),
                     time: timeModel?.viewModel,
                     title: params.metadata?.name ?? "",
-                    track: .init(
-                        titleIcon: .init(title: trackName, icon: nil),
-                        referendumNumber: referendumNumber.map { "#" + $0 }
-                    )
+                    track: track,
+                    referendumNumber: referendumNumber
                 ),
                 progress: progressViewModel,
                 yourVotes: yourVotesModel
@@ -191,20 +200,23 @@ final class ReferendumsModelFactory {
                 chainAsset: params.chainInfo.chain.utilityAsset(),
                 locale: locale
             )
-            let trackName = model.track.name.replacingSnakeCase().uppercased()
 
-            let quantityFormatter = localizedQuantityFormatter.value(for: locale)
-            let referendumNumber = quantityFormatter.string(from: NSNumber(value: params.referendum.index))
+            let track = ReferendumTrackType.createViewModel(
+                from: model.track.name,
+                chain: params.chainInfo.chain,
+                locale: locale
+            )
+
+            let indexFormatter = localizedIndexFormatter.value(for: locale)
+            let referendumNumber = indexFormatter.string(from: NSNumber(value: params.referendum.index))
 
             return .init(
                 referendumInfo: .init(
                     status: .init(name: statusName.uppercased(), kind: statusKind),
                     time: timeModel?.viewModel,
                     title: params.metadata?.name,
-                    track: .init(
-                        titleIcon: .init(title: trackName, icon: nil),
-                        referendumNumber: referendumNumber.map { "#" + $0 }
-                    )
+                    track: track,
+                    referendumNumber: referendumNumber
                 ),
                 progress: progressViewModel,
                 yourVotes: yourVotesModel
@@ -213,7 +225,6 @@ final class ReferendumsModelFactory {
     }
 
     private func provideApprovedReferendumCellViewModel(
-        _: ReferendumStateLocal.Approved,
         params: StatusParams,
         locale: Locale
     ) -> ReferendumView.Model {
@@ -232,12 +243,17 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
+        let referendumNumber = localizedIndexFormatter.value(for: locale).string(
+            from: NSNumber(value: params.referendum.index)
+        )
+
         return .init(
             referendumInfo: .init(
                 status: .init(name: title.uppercased(), kind: .positive),
                 time: timeModel?.viewModel,
                 title: params.metadata?.name,
-                track: nil
+                track: nil,
+                referendumNumber: referendumNumber
             ),
             progress: nil,
             yourVotes: yourVotesModel
@@ -256,10 +272,13 @@ final class ReferendumsModelFactory {
             return nil
         }
 
-        let targetThreshold = Decimal.fromSubstrateAmount(
+        let totalIssuanceDecimal = Decimal.fromSubstrateAmount(
             supportAndVotes.totalIssuance,
             precision: Int16(chainAsset.precision)
-        )
+        ) ?? 0
+
+        let targetThreshold = totalIssuanceDecimal * supportThreshold
+
         let threshold = Decimal.fromSubstrateAmount(
             supportAndVotes.support,
             precision: Int16(chainAsset.precision)
@@ -267,15 +286,13 @@ final class ReferendumsModelFactory {
         let isCompleted = supportAndVotes.supportFraction >= supportThreshold
 
         let image = isCompleted ?
-            R.image.iconCheckmark()?.withTintColor(R.color.colorGreen15CF37()!) :
-            R.image.iconClose()?.withTintColor(R.color.colorRedFF3A69()!)
+            R.image.iconCheckmark()?.tinted(with: R.color.colorGreen15CF37()!) :
+            R.image.iconClose()?.tinted(with: R.color.colorRedFF3A69()!)
 
         let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: chainAsset.displayInfo)
         let amountFormatter = assetBalanceFormatterFactory.createDisplayFormatter(for: chainAsset.displayInfo)
 
-        let targetThresholdString = targetThreshold.map {
-            tokenFormatter.value(for: locale).stringFromDecimal($0) ?? ""
-        } ?? ""
+        let targetThresholdString = tokenFormatter.value(for: locale).stringFromDecimal(targetThreshold) ?? ""
 
         let thresholdString = threshold.map {
             amountFormatter.value(for: locale).stringFromDecimal($0) ?? ""
@@ -390,8 +407,8 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             return providePreparingReferendumCellViewModel(model, params: params, locale: locale)
         case let .deciding(model):
             return provideDecidingReferendumCellViewModel(model, params: params, locale: locale)
-        case let .approved(model):
-            return provideApprovedReferendumCellViewModel(model, params: params, locale: locale)
+        case .approved:
+            return provideApprovedReferendumCellViewModel(params: params, locale: locale)
         case .rejected:
             let statusName = Strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
             status = .init(name: statusName, kind: .negative)
