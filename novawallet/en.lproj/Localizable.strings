@@ -1006,7 +1006,7 @@
 "governance.to.pass.format" = "To pass: %@";
 "governance.aye" = "Aye";
 "governance.nay" = "Nay";
-"gov.track.root" = "Root";
+"gov.track.root" = "Main agenda";
 "gov.track.auction.admin" = "Crowdloans";
 "gov.track.staking.admin" = "Staking";
 "gov.track.lease.admin" = "Governance: Lease";
