@@ -213,6 +213,53 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
+    func fetchReferendumWrapper(
+        for remoteReferendum: ReferendumInfo,
+        index: Referenda.ReferendumIndex,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<ReferendumLocal> {
+        let additionalInfoWrapper = createAdditionalInfoWrapper(from: connection, runtimeProvider: runtimeProvider)
+
+        let referendumOperation = ClosureOperation<[ReferendumIndexKey: ReferendumInfo]> {
+            let referendumIndexKey = ReferendumIndexKey(referendumIndex: index)
+            return [referendumIndexKey: remoteReferendum]
+        }
+
+        let enactmentsWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: referendumOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
+
+        enactmentsWrapper.addDependency(operations: [referendumOperation])
+
+        let mergeOperation = createReferendumMapOperation(
+            dependingOn: referendumOperation,
+            additionalInfoOperation: additionalInfoWrapper.targetOperation,
+            enactmentsOperation: enactmentsWrapper.targetOperation
+        )
+
+        mergeOperation.addDependency(referendumOperation)
+        mergeOperation.addDependency(additionalInfoWrapper.targetOperation)
+        mergeOperation.addDependency(enactmentsWrapper.targetOperation)
+
+        let mapOperation = ClosureOperation<ReferendumLocal> {
+            guard let referendum = try mergeOperation.extractNoCancellableResultData().first else {
+                throw BaseOperationError.unexpectedDependentResult
+            }
+
+            return referendum
+        }
+
+        mapOperation.addDependency(mergeOperation)
+
+        let dependencies = [referendumOperation] + additionalInfoWrapper.allOperations +
+            enactmentsWrapper.allOperations + [mergeOperation]
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
     func fetchAccountVotesWrapper(
         for accountId: AccountId,
         from connection: JSONRPCEngine,

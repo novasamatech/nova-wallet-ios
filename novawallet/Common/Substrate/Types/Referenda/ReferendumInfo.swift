@@ -71,6 +71,10 @@ enum ReferendumInfo: Decodable {
 struct ReferendumIndexKey: JSONListConvertible, Hashable {
     let referendumIndex: Referenda.ReferendumIndex
 
+    init(referendumIndex: Referenda.ReferendumIndex) {
+        self.referendumIndex = referendumIndex
+    }
+
     init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
         let expectedFieldsCount = 1
         let actualFieldsCount = jsonList.count
