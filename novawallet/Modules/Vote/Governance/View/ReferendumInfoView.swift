@@ -106,7 +106,7 @@ extension ReferendumInfoView {
         trackImageViewModel = viewModel.track?.icon
 
         if let track = viewModel.track {
-            trackInformation.isHidden = false
+            trackNameView.isHidden = false
 
             trackNameView.iconDetailsView.detailsLabel.text = track.title
 
@@ -123,7 +123,7 @@ extension ReferendumInfoView {
                 animated: true
             )
         } else {
-            trackInformation.isHidden = true
+            trackNameView.isHidden = true
         }
 
         numberLabel.isHidden = viewModel.referendumNumber == nil

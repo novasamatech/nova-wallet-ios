@@ -411,19 +411,19 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             return provideApprovedReferendumCellViewModel(params: params, locale: locale)
         case .rejected:
             let statusName = Strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
-            status = .init(name: statusName, kind: .negative)
+            status = .init(name: statusName.uppercased(), kind: .negative)
         case .cancelled:
             let statusName = Strings.governanceReferendumsStatusCancelled(preferredLanguages: locale.rLanguages)
-            status = .init(name: statusName, kind: .neutral)
+            status = .init(name: statusName.uppercased(), kind: .neutral)
         case .timedOut:
             let statusName = Strings.governanceReferendumsStatusTimedOut(preferredLanguages: locale.rLanguages)
-            status = .init(name: statusName, kind: .neutral)
+            status = .init(name: statusName.uppercased(), kind: .neutral)
         case .killed:
             let statusName = Strings.governanceReferendumsStatusKilled(preferredLanguages: locale.rLanguages)
-            status = .init(name: statusName, kind: .negative)
+            status = .init(name: statusName.uppercased(), kind: .negative)
         case .executed:
             let statusName = Strings.governanceReferendumsStatusExecuted(preferredLanguages: locale.rLanguages)
-            status = .init(name: statusName, kind: .positive)
+            status = .init(name: statusName.uppercased(), kind: .positive)
         }
 
         return provideCommonReferendumCellViewModel(status: status, params: params, locale: locale)
