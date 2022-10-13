@@ -7,6 +7,8 @@ final class ReferendumsPresenter {
 
     let interactor: ReferendumsInteractorInputProtocol
     let wireframe: ReferendumsWireframeProtocol
+    let viewModelFactory: ReferendumsModelFactoryProtocol
+    let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     private var freeBalance: BigUInt?
@@ -16,12 +18,11 @@ final class ReferendumsPresenter {
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]?
     private var blockNumber: BlockNumber?
-    private let viewModelFactory: ReferendumsModelFactoryProtocol
     private var blockTime: BlockTime?
 
     private var maxStatusTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
-    private var timeModels: [UInt: StatusTimeModel?]?
+    private var timeModels: [UInt: StatusTimeViewModel?]?
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
@@ -29,12 +30,14 @@ final class ReferendumsPresenter {
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
         viewModelFactory: ReferendumsModelFactoryProtocol,
+        statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.statusViewModelFactory = statusViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -67,7 +70,7 @@ final class ReferendumsPresenter {
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: votes ?? [:],
-            chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDurartion: blockTime),
+            chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
             locale: selectedLocale
         ))
 
@@ -78,16 +81,14 @@ final class ReferendumsPresenter {
         guard let view = view else {
             return
         }
-        guard let currentBlock = blockNumber,
-              let blockTime = blockTime,
-              let referendums = referendums else {
+        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = referendums else {
             return
         }
 
-        let timeModels = viewModelFactory.createTimeModels(
+        let timeModels = statusViewModelFactory.createTimeViewModels(
             referendums: referendums,
             currentBlock: currentBlock,
-            blockDurartion: blockTime,
+            blockDuration: blockTime,
             locale: selectedLocale
         )
 
