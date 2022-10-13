@@ -1001,3 +1001,9 @@
 "governance.referendums.your.vote" = "Ваше голосование: %@ голосов";
 "governance.referendums.active" = "Активные";
 "governance.referendums.completed" = "Завершённые";
+
+"governance.ayes.format" = "За: %@";
+"governance.nays.format" = "Против: %@";
+"governance.to.pass.format" = "Для одобрения: %@";
+"governance.aye" = "За";
+"governance.nay" = "Против";

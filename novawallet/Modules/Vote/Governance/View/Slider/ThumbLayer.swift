@@ -34,6 +34,7 @@ final class ThumbLayer: CALayer {
             roundedRect: bounds,
             cornerRadius: thumbStyle.cornerRadius
         )
+
         shapeLayer.path = thumbPath.cgPath
     }
 }
@@ -48,7 +49,9 @@ extension ThumbLayer {
 
     func apply(style: Style) {
         thumbStyle = style
+
         shapeLayer.fillColor = thumbStyle.color.cgColor
+
         setNeedsLayout()
     }
 }

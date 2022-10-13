@@ -185,16 +185,21 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
         let percentFormatter = NumberFormatter.percent
         percentFormatter.roundingMode = .halfEven
+
+        let statusViewModelFactory = ReferendumStatusViewModelFactory()
+
         let viewModelFactory = ReferendumsModelFactory(
+            statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: percentFormatter,
-            referendumNumberFormatter: .quantity
+            percentFormatter: percentFormatter.localizableResource(),
+            quantityNumberFormatter: NumberFormatter.quantity.localizableResource()
         )
 
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            statusViewModelFactory: statusViewModelFactory,
             localizationManager: localizationManager,
             logger: logger
         )
