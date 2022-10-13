@@ -1007,7 +1007,7 @@
 "governance.to.pass.format" = "Для одобрения: %@";
 "governance.aye" = "За";
 "governance.nay" = "Против";
-"gov.track.root" = "Root";
+"gov.track.root" = "Main agenda";
 "gov.track.auction.admin" = "Crowdloans";
 "gov.track.staking.admin" = "Staking";
 "gov.track.lease.admin" = "Governance: Lease";
