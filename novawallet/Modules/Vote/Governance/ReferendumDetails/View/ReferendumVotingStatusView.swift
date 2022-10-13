@@ -10,7 +10,7 @@ final class ReferendumVotingStatusView: UIView {
         $0.spacing = 5
         $0.apply(style: .timeView)
     }
-  
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -27,11 +27,11 @@ final class ReferendumVotingStatusView: UIView {
             spacing: 8,
             [
                 UIView.hStack([
-                    statusLabel,
+                    titleLabel,
                     UIView(),
                     timeView
                 ]),
-                titleLabel
+                statusLabel
             ]
         )
         addSubview(content)
@@ -47,7 +47,7 @@ extension ReferendumVotingStatusView {
         let time: Time?
         let title: String?
     }
-    
+
     struct Time: Equatable {
         let titleIcon: TitleIconViewModel
         let isUrgent: Bool
@@ -60,9 +60,9 @@ extension ReferendumVotingStatusView {
 
     enum StatusKind {
         case positive
-        case neutral
+        case negative
     }
-    
+
     func bind(viewModel: Model) {
         titleLabel.text = viewModel.title
         statusLabel.text = viewModel.status.name
@@ -71,12 +71,12 @@ extension ReferendumVotingStatusView {
         switch viewModel.status.kind {
         case .positive:
             statusLabel.apply(style: .positiveStatusLabel)
-        case .neutral:
-            statusLabel.apply(style: .neutralStatusLabel)
+        case .negative:
+            statusLabel.apply(style: .negativeStatusLabel)
         }
     }
 
-    func bind(timeModel: Model.Time?) {
+    func bind(timeModel: Time?) {
         if let time = timeModel {
             timeView.bind(viewModel: time.titleIcon)
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)
@@ -84,8 +84,8 @@ extension ReferendumVotingStatusView {
             timeView.bind(viewModel: nil)
         }
     }
-    
 }
+
 private extension UILabel.Style {
     static let positiveStatusLabel = UILabel.Style(
         textColor: R.color.colorDarkGreen(),
