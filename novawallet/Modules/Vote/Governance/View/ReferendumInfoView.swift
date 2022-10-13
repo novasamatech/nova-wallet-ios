@@ -28,6 +28,8 @@ final class ReferendumInfoView: UIView {
         $0.titleLabel.numberOfLines = 1
     }
 
+    private var trackImageViewModel: ImageViewModelProtocol?
+
     lazy var trackInformation: UIStackView = UIView.hStack(
         spacing: 6,
         [
@@ -75,6 +77,7 @@ extension ReferendumInfoView {
         let time: Time?
         let title: String?
         let track: Track?
+        let referendumNumber: String?
 
         struct Time: Equatable {
             let titleIcon: TitleIconViewModel
@@ -82,8 +85,8 @@ extension ReferendumInfoView {
         }
 
         struct Track {
-            let titleIcon: TitleIconViewModel
-            let referendumNumber: String?
+            let title: String
+            let icon: ImageViewModelProtocol?
         }
 
         struct Status {
@@ -99,12 +102,35 @@ extension ReferendumInfoView {
     }
 
     func bind(viewModel: Model) {
-        trackInformation.isHidden = viewModel.track == nil
-        numberLabel.isHidden = viewModel.track?.referendumNumber == nil
+        trackImageViewModel?.cancel(on: trackNameView.iconDetailsView.imageView)
+        trackImageViewModel = viewModel.track?.icon
+
+        if let track = viewModel.track {
+            trackInformation.isHidden = false
+
+            trackNameView.iconDetailsView.detailsLabel.text = track.title
+
+            let iconSize = trackNameView.iconDetailsView.iconWidth
+            let imageSettings = ImageViewModelSettings(
+                targetSize: CGSize(width: iconSize, height: iconSize),
+                cornerRadius: nil,
+                tintColor: UILabel.Style.track.textColor
+            )
+
+            track.icon?.loadImage(
+                on: trackNameView.iconDetailsView.imageView,
+                settings: imageSettings,
+                animated: true
+            )
+        } else {
+            trackInformation.isHidden = true
+        }
+
+        numberLabel.isHidden = viewModel.referendumNumber == nil
 
         titleLabel.text = viewModel.title
-        trackNameView.iconDetailsView.bind(viewModel: viewModel.track?.titleIcon)
-        numberLabel.titleLabel.text = viewModel.track?.referendumNumber
+
+        numberLabel.titleLabel.text = viewModel.referendumNumber
         statusLabel.text = viewModel.status.name
         bind(timeModel: viewModel.time)
 
@@ -166,7 +192,7 @@ extension UILabel.Style {
 extension RoundedView.Style {
     static let referendum = RoundedView.Style(
         fillColor: R.color.colorWhite8()!,
-        highlightedFillColor: R.color.colorWhite8()!,
+        highlightedFillColor: R.color.colorAccentSelected()!,
         cornerRadius: 8
     )
 }

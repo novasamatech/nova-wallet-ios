@@ -102,6 +102,7 @@ final class ReferendumsPresenter {
     }
 
     private func invalidateTimer() {
+        countdownTimer?.delegate = nil
         countdownTimer?.stop()
         countdownTimer = nil
     }
