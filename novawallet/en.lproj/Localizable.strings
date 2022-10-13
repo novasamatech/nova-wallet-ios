@@ -1001,3 +1001,8 @@
 "governance.referendums.your.vote" = "Your vote: %@ votes";
 "governance.referendums.active" = "Ongoing";
 "governance.referendums.completed" = "Completed";
+"governance.ayes.format" = "Aye: %@";
+"governance.nays.format" = "Nay: %@";
+"governance.to.pass.format" = "To pass: %@";
+"governance.aye" = "Aye";
+"governance.nay" = "Nay";

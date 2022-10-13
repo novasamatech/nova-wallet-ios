@@ -141,7 +141,7 @@ extension IconDetailsView.Style {
 
 extension UILabel.Style {
     static let positiveStatusLabel = UILabel.Style(
-        textColor: R.color.colorDarkGreen(),
+        textColor: R.color.colorGreen15CF37(),
         font: .semiBoldCaps1
     )
     static let neutralStatusLabel = UILabel.Style(

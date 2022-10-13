@@ -29,18 +29,18 @@ final class SegmentedSliderView: UIView {
         let sliderFrame = bounds.inset(by: style.lineInsets)
         slider.frame = sliderFrame
 
-        guard let thumbValue = model.thumbValue,
-              let thumbStyle = style.thumbStyle else {
+        guard let thumbStyle = style.thumbStyle else {
             thumb.frame = .zero
             return
         }
 
-        let thumbValueDouble = NSDecimalNumber(decimal: thumbValue).doubleValue
+        let thumbValueDouble = NSDecimalNumber(decimal: model.thumbProgress).doubleValue
         let originX = sliderFrame.size.width * thumbValueDouble - thumbStyle.width / 2
         let thumbHeight = thumbStyle.height ?? bounds.size.height
         let originY = sliderFrame.midY - thumbHeight / 2
-        let origin = CGPoint(x: originX, y: originY)
+        let origin = CGPoint(x: min(bounds.maxX, max(originX, bounds.minX)), y: originY)
         let size = CGSize(width: thumbStyle.width, height: thumbHeight)
+
         thumb.frame = CGRect(origin: origin, size: size)
     }
 
@@ -111,19 +111,19 @@ extension SegmentedSliderView {
 
 extension SegmentedSliderView {
     struct Model {
-        let thumbValue: Decimal?
-        let value: Decimal
+        let thumbProgress: Decimal
+        let value: Decimal?
 
-        init(thumbValue: Decimal? = nil, value: Decimal = 0) {
-            self.thumbValue = thumbValue
+        init(thumbProgress: Decimal = 0.0, value: Decimal? = nil) {
+            self.thumbProgress = thumbProgress
             self.value = value
         }
     }
 
     func bind(viewModel: Model) {
         model = viewModel
-        slider.gap = NSDecimalNumber(decimal: model.value).doubleValue
+        slider.gap = model.value.map { CGFloat(NSDecimalNumber(decimal: $0).floatValue) }
 
-        setNeedsDisplay()
+        setNeedsLayout()
     }
 }
