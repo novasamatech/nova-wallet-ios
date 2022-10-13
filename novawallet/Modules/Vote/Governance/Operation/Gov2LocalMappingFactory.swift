@@ -47,13 +47,25 @@ final class Gov2LocalMappingFactory {
         track: Referenda.TrackInfo,
         additionalInfo: Gov2OperationFactory.AdditionalInfo
     ) -> ReferendumStateLocal {
+        let approvalFunction = Gov2LocalDecidingFunction(
+            curve: track.minApproval,
+            startBlock: nil,
+            period: track.decisionPeriod
+        )
+
+        let supportFunction = Gov2LocalDecidingFunction(
+            curve: track.minSupport,
+            startBlock: nil,
+            period: track.decisionPeriod
+        )
+
         let votes = SupportAndVotesLocal(
             ayes: status.tally.ayes,
             nays: status.tally.nays,
             support: status.tally.support,
             totalIssuance: additionalInfo.totalIssuance,
-            approvalFunction: nil,
-            supportFunction: nil
+            approvalFunction: approvalFunction,
+            supportFunction: supportFunction
         )
 
         let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
