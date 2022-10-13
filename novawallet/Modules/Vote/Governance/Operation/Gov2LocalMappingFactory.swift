@@ -123,10 +123,18 @@ final class Gov2LocalMappingFactory {
         case let .ongoing(status):
             return createOngoingReferendumState(from: status, index: index, additionalInfo: additionalInfo)
         case let .approved(status):
-            let model = ReferendumStateLocal.Approved(since: status.since, whenEnactment: enactmentBlock)
+            let state: ReferendumStateLocal
+
+            if let enactmentBlock = enactmentBlock {
+                let value = ReferendumStateLocal.Approved(since: status.since, whenEnactment: enactmentBlock)
+                state = .approved(model: value)
+            } else {
+                state = .executed
+            }
+
             return ReferendumLocal(
                 index: UInt(index),
-                state: .approved(model: model),
+                state: state,
                 proposer: status.submissionDeposit.who
             )
         case let .rejected(status):
