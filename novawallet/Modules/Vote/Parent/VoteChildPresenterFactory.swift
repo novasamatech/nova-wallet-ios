@@ -117,13 +117,6 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: substrateStorageFacade,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            logger: logger
-        )
-
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
@@ -131,7 +124,6 @@ final class VoteChildPresenterFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             referendumsOperationFactory: referendumOperationFactory,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,
