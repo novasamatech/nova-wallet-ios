@@ -59,7 +59,7 @@ extension ReferendumVotingStatusDetailsView {
         let votingProgress: VotingProgressView.Model
         let aye: VoteRowView.Model?
         let nay: VoteRowView.Model?
-        let buttonText: String?
+        let buttonText: String
     }
 
     func bind(viewModel: Model) {
@@ -71,6 +71,6 @@ extension ReferendumVotingStatusDetailsView {
         viewModel.nay.map {
             nayVotesView.bind(viewModel: $0)
         }
-        voteButton.bind(viewModel.buttonText)
+        voteButton.bind(title: viewModel.buttonText, details: nil)
     }
 }
