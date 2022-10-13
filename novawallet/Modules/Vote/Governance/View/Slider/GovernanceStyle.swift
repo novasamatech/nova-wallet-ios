@@ -1,7 +1,7 @@
 import UIKit
 
-extension SliderLayer.Style {
-    static let governance = SliderLayer.Style(
+extension SliderView.Style {
+    static let governance = SliderView.Style(
         firstColor: R.color.colorGreen15CF37()!,
         lastColor: R.color.colorRedFF3A69()!,
         zeroColor: R.color.colorWhite16()!,
