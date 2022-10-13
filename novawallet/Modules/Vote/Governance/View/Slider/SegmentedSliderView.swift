@@ -4,16 +4,16 @@ final class SegmentedSliderView: UIView {
     private var style: Style = .defaultStyle
     private var model: Model = .init()
 
-    let slider = SliderLayer()
-    let thumb = ThumbLayer()
+    let slider = SliderView()
+    let thumb = ThumbView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = .clear
 
-        layer.addSublayer(slider)
-        layer.addSublayer(thumb)
+        addSubview(slider)
+        addSubview(thumb)
 
         apply(style: style)
     }
@@ -50,7 +50,7 @@ final class SegmentedSliderView: UIView {
 }
 
 extension SegmentedSliderView {
-    typealias SliderStyle = SliderLayer.Style
+    typealias SliderStyle = SliderView.Style
     struct Style {
         let lineInsets: UIEdgeInsets
         let sliderStyle: SliderStyle
@@ -99,7 +99,7 @@ extension SegmentedSliderView {
 
         style.thumbStyle.map {
             thumb.apply(style: .init(color: $0.color, cornerRadius: $0.cornerRadius))
-            thumb.shadowColor = $0.shadow.color.cgColor
+            thumb.shadowColor = $0.shadow.color
             thumb.shadowOpacity = $0.shadow.opacity
             thumb.shadowOffset = $0.shadow.offset
             thumb.shadowRadius = $0.shadow.radius

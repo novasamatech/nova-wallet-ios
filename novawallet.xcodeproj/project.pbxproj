@@ -2158,8 +2158,8 @@
 		85A093F6055DDD2E2E9253F2 /* ControllerAccountProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F829E7F8B39EE7D977001510 /* ControllerAccountProtocols.swift */; };
 		86EB789787B731691B36C827 /* OnChainTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1A2F7E5E278FDCC89FE097 /* OnChainTransferSetupPresenter.swift */; };
 		87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A5DCA28ABF42D342BBDF9A /* ParitySignerTxQrViewLayout.swift */; };
-		880059D828EEBC0200E87B9B /* SliderLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880059D728EEBC0200E87B9B /* SliderLayer.swift */; };
-		880059DA28EF092800E87B9B /* ThumbLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880059D928EF092800E87B9B /* ThumbLayer.swift */; };
+		880059D828EEBC0200E87B9B /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880059D728EEBC0200E87B9B /* SliderView.swift */; };
+		880059DA28EF092800E87B9B /* ThumbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880059D928EF092800E87B9B /* ThumbView.swift */; };
 		880059DC28EF092F00E87B9B /* SegmentedSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880059DB28EF092F00E87B9B /* SegmentedSliderView.swift */; };
 		880059DF28EF09E100E87B9B /* GovernanceStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880059DE28EF09E100E87B9B /* GovernanceStyle.swift */; };
 		880059E128EF0A5C00E87B9B /* VotingProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880059E028EF0A5C00E87B9B /* VotingProgressView.swift */; };
@@ -4994,8 +4994,8 @@
 		86F7A369E31DCB9ABD556EE9 /* CrowdloanListPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanListPresenter.swift; sourceTree = "<group>"; };
 		86F9063B2DF46E7B65B5248E /* Pods_novawalletAll_novawalletIntegrationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_novawalletAll_novawalletIntegrationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87CD8C618D61C78EA8C58532 /* ParitySignerTxScanViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanViewLayout.swift; sourceTree = "<group>"; };
-		880059D728EEBC0200E87B9B /* SliderLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderLayer.swift; sourceTree = "<group>"; };
-		880059D928EF092800E87B9B /* ThumbLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbLayer.swift; sourceTree = "<group>"; };
+		880059D728EEBC0200E87B9B /* SliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderView.swift; sourceTree = "<group>"; };
+		880059D928EF092800E87B9B /* ThumbView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThumbView.swift; sourceTree = "<group>"; };
 		880059DB28EF092F00E87B9B /* SegmentedSliderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegmentedSliderView.swift; sourceTree = "<group>"; };
 		880059DE28EF09E100E87B9B /* GovernanceStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceStyle.swift; sourceTree = "<group>"; };
 		880059E028EF0A5C00E87B9B /* VotingProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VotingProgressView.swift; sourceTree = "<group>"; };
@@ -11860,8 +11860,8 @@
 		880059DD28EF093400E87B9B /* Slider */ = {
 			isa = PBXGroup;
 			children = (
-				880059D728EEBC0200E87B9B /* SliderLayer.swift */,
-				880059D928EF092800E87B9B /* ThumbLayer.swift */,
+				880059D728EEBC0200E87B9B /* SliderView.swift */,
+				880059D928EF092800E87B9B /* ThumbView.swift */,
 				880059DB28EF092F00E87B9B /* SegmentedSliderView.swift */,
 				880059DE28EF09E100E87B9B /* GovernanceStyle.swift */,
 			);
@@ -15173,7 +15173,7 @@
 				84E172CF28BE468D00DC85B6 /* MessageSheetPresentable.swift in Sources */,
 				8487583727F06AF300495306 /* AddressScanDelegate.swift in Sources */,
 				3E480EEAF501AEB5D543506D /* UsernameSetupPresenter.swift in Sources */,
-				880059DA28EF092800E87B9B /* ThumbLayer.swift in Sources */,
+				880059DA28EF092800E87B9B /* ThumbView.swift in Sources */,
 				84F4387525D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift in Sources */,
 				841BFD6D27BA8E70000A16CE /* MetamaskSwitchChain.swift in Sources */,
 				84D2F1AC2774B3A00040C680 /* CustomSearchBar.swift in Sources */,
@@ -15401,7 +15401,7 @@
 				84D8753D28EB17B2004065BD /* GovernanceSharedState.swift in Sources */,
 				8436EDE725895846004D9E97 /* PurchaseProvider.swift in Sources */,
 				AEF50556261A04AD0098574D /* MoonpayProvider.swift in Sources */,
-				880059D828EEBC0200E87B9B /* SliderLayer.swift in Sources */,
+				880059D828EEBC0200E87B9B /* SliderView.swift in Sources */,
 				84FB29942639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift in Sources */,
 				84DB9E8A26409E8200F23DD3 /* StakingRedeemLayout.swift in Sources */,
 				84F3B27627F4175500D64CF5 /* PhishingSite.swift in Sources */,
