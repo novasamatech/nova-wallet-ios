@@ -23,4 +23,11 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
-protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+    func showFullDetails(
+        from view: ReferendumDetailsViewProtocol?,
+        referendum: ReferendumLocal,
+        actionDetails: ReferendumActionLocal,
+        identities: [AccountAddress: AccountIdentity]
+    )
+}
