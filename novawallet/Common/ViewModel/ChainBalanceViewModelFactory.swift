@@ -8,7 +8,11 @@ final class ChainBalanceViewModelFactory {
         self.formatterFactory = formatterFactory
     }
 
-    func createViewModel(from chainAsset: ChainAsset, balanceInPlank: BigUInt?, locale: Locale) -> ChainBalanceViewModel {
+    func createViewModel(
+        from chainAsset: ChainAsset,
+        balanceInPlank: BigUInt?,
+        locale: Locale
+    ) -> ChainBalanceViewModel {
         let name = chainAsset.chain.name
 
         let displayInfo = chainAsset.assetDisplayInfo
