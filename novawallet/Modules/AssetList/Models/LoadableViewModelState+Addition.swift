@@ -10,3 +10,16 @@ extension LoadableViewModelState {
         }
     }
 }
+
+extension LoadableViewModelState {
+    var value: T? {
+        switch self {
+        case .loading:
+            return nil
+        case let .cached(value):
+            return value
+        case let .loaded(value):
+            return value
+        }
+    }
+}

@@ -119,7 +119,7 @@ extension CrowdloanYourContributionsViewController: UITableViewDataSource {
         switch viewModel?.sections[indexPath.section] {
         case let .total(model):
             let cell: CrowdloanYourContributionsTotalCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.view.bind(model: model)
+            cell.view.bind(model: .cached(value: model))
             return cell
         case let .contributions(contributions):
             let contribution = contributions[indexPath.row]
