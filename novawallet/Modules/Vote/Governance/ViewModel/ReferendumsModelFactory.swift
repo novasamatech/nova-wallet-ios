@@ -298,7 +298,12 @@ final class ReferendumsModelFactory {
             amountFormatter.value(for: locale).stringFromDecimal($0) ?? ""
         } ?? ""
 
-        let text = R.string.localizable.governanceReferendumsThreshold(thresholdString, targetThresholdString)
+        let text = R.string.localizable.governanceReferendumsThreshold(
+            thresholdString,
+            targetThresholdString,
+            preferredLanguages: locale.rLanguages
+        )
+
         return .init(title: text, icon: image)
     }
 
