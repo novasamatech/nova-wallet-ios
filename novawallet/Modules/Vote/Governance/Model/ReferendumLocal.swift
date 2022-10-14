@@ -15,11 +15,11 @@ struct SupportAndVotesLocal {
     let totalIssuance: BigUInt
 
     /// fraction of ayes
-    var approvalFraction: Decimal {
+    var approvalFraction: Decimal? {
         guard
             let total = Decimal(ayes + nays), total > 0,
             let ayesDecimal = Decimal(ayes) else {
-            return 0.0
+            return nil
         }
 
         return ayesDecimal / total
@@ -43,7 +43,8 @@ struct SupportAndVotesLocal {
     func isPassing(at block: BlockNumber) -> Bool {
         guard
             let approvalThreshold = approvalFunction?.calculateThreshold(for: block),
-            let supportThreshold = supportFunction?.calculateThreshold(for: block) else {
+            let supportThreshold = supportFunction?.calculateThreshold(for: block),
+            let approvalFraction = approvalFraction else {
             return false
         }
 
@@ -63,6 +64,10 @@ enum ReferendumStateLocal {
         let since: BlockNumber
         let period: Moment
         let confirmationUntil: BlockNumber?
+
+        var rejectedAt: BlockNumber {
+            since + period
+        }
     }
 
     struct Preparing {
@@ -74,6 +79,14 @@ enum ReferendumStateLocal {
         let preparingPeriod: Moment
         let timeoutPeriod: Moment
         let inQueue: Bool
+
+        var preparingEnd: BlockNumber {
+            since + preparingPeriod
+        }
+
+        var timeoutAt: BlockNumber {
+            since + timeoutPeriod
+        }
     }
 
     struct Approved {
