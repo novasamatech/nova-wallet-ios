@@ -2,22 +2,36 @@ import Foundation
 import SoraFoundation
 import CommonWallet
 
-enum CrowdloanListState {
-    case loading
-    case loaded(viewModel: CrowdloansViewModel)
-}
-
 struct CrowdloansViewModel {
     let sections: [CrowdloansSection]
 }
 
 enum CrowdloansSection {
-    case yourContributions(YourContributionsView.Model)
+    case yourContributions(LoadableViewModelState<YourContributionsView.Model>)
     case about(AboutCrowdloansView.Model)
-    case active(String, [CrowdloanCellViewModel])
-    case completed(String, [CrowdloanCellViewModel])
+    case active(LoadableViewModelState<String>, [LoadableViewModelState<CrowdloanCellViewModel>])
+    case completed(LoadableViewModelState<String>, [LoadableViewModelState<CrowdloanCellViewModel>])
     case error(message: String)
     case empty(title: String)
+
+    var isLoading: Bool {
+        switch self {
+        case let .yourContributions(loadableViewModelState):
+            return loadableViewModelState.isLoading
+        case let .active(loadableViewModelState, array), let .completed(loadableViewModelState, array):
+            if loadableViewModelState.isLoading {
+                return true
+            } else {
+                let isLoading = array.contains { loadableState in
+                    loadableState.isLoading
+                }
+
+                return isLoading
+            }
+        case .about, .error, .empty:
+            return false
+        }
+    }
 }
 
 enum CrowdloanDescViewModel {
