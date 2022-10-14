@@ -6,6 +6,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     weak var presenter: ReferendumDetailsInteractorOutputProtocol?
 
     private(set) var referendum: ReferendumLocal
+    private(set) var actionDetails: ReferendumActionLocal?
     let chain: ChainModel
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
@@ -135,21 +136,27 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func provideIdentities() {
-        guard let proposer = referendum.proposer else {
+        clear(cancellable: &identitiesCancellable)
+
+        var accountIds: [AccountId] = []
+
+        if let proposer = referendum.proposer {
+            accountIds.append(proposer)
+        }
+
+        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiaryAccountId {
+            accountIds.append(beneficiary)
+        }
+
+        guard !accountIds.isEmpty else {
             presenter?.didReceiveIdentities([:])
             return
         }
 
-        guard identitiesCancellable == nil else {
-            return
-        }
-
-        let accountIds: () throws -> [AccountId] = {
-            [proposer]
-        }
+        let accountIdsClosure: () throws -> [AccountId] = { accountIds }
 
         let wrapper = identityOperationFactory.createIdentityWrapper(
-            for: accountIds,
+            for: accountIdsClosure,
             engine: connection,
             runtimeService: runtimeProvider,
             chainFormat: chain.chainFormat
@@ -206,7 +213,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         operationQueue.addOperation(operation)
     }
 
-    private func provideActionDetails() {
+    private func updateActionDetails() {
         guard actionDetailsCancellable == nil else {
             return
         }
@@ -227,7 +234,11 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
                 do {
                     let actionDetails = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.actionDetails = actionDetails
+
                     self?.presenter?.didReceiveActionDetails(actionDetails)
+
+                    self?.provideIdentities()
                 } catch {
                     self?.presenter?.didReceiveError(.actionDetailsFailed(error))
                 }
@@ -251,7 +262,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol {
     func setup() {
         makeSubscriptions()
-        provideActionDetails()
+        updateActionDetails()
         provideIdentities()
     }
 
@@ -260,7 +271,7 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
     }
 
     func refreshActionDetails() {
-        provideActionDetails()
+        updateActionDetails()
     }
 
     func refreshIdentities() {
