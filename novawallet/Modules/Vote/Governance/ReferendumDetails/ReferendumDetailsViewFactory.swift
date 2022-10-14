@@ -1,19 +1,35 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import SoraFoundation
 
 struct ReferendumDetailsViewFactory {
     static func createView(
         for referendum: ReferendumLocal,
         state: GovernanceSharedState
     ) -> ReferendumDetailsViewProtocol? {
-        guard let interactor = createInteractor(for: referendum, state: state) else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let interactor = createInteractor(
+                for: referendum,
+                currencyManager: currencyManager,
+                state: state
+            ) else {
             return nil
         }
 
         let wireframe = ReferendumDetailsWireframe()
 
-        let presenter = ReferendumDetailsPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = ReferendumDetailsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            referendum: referendum,
+            chain: state.settings.value,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
         let view = ReferendumDetailsViewController(presenter: presenter)
 
@@ -25,6 +41,7 @@ struct ReferendumDetailsViewFactory {
 
     private static func createInteractor(
         for referendum: ReferendumLocal,
+        currencyManager: CurrencyManagerProtocol,
         state: GovernanceSharedState
     ) -> ReferendumDetailsInteractor? {
         guard let chain = state.settings.value else {
@@ -35,7 +52,8 @@ struct ReferendumDetailsViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let blockTimeService = state.blockTimeService else {
             return nil
         }
 
@@ -55,13 +73,22 @@ struct ReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let referendumsOperationFactory = Gov2OperationFactory(requestFactory: requestFactory)
+
         return ReferendumDetailsInteractor(
             referendum: referendum,
             chain: chain,
             actionDetailsOperationFactory: actionDetailsOperationFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityOperationFactory: identityOperationFactory
+            blockTimeService: blockTimeService,
+            identityOperationFactory: identityOperationFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
+            referendumsOperationFactory: referendumsOperationFactory,
+            currencyManager: currencyManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }
