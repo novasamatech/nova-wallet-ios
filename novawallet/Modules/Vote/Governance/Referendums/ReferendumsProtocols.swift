@@ -5,7 +5,7 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
 
     func didReceiveChainBalance(viewModel: ChainBalanceViewModel)
     func update(model: ReferendumsViewModel)
-    func updateReferendums(time: [UInt: StatusTimeModel?])
+    func updateReferendums(time: [UInt: StatusTimeViewModel?])
 }
 
 protocol ReferendumsPresenterProtocol: AnyObject {}
