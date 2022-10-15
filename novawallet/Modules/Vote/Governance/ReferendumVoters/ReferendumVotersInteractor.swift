@@ -41,7 +41,7 @@ final class ReferendumVotersInteractor {
         let identityWrapper = identityOperationFactory.createIdentityWrapper(
             for: {
                 let voters = try voterWrapper.targetOperation.extractNoCancellableResultData()
-                return voters.map { $0.accountId }
+                return voters.map(\.accountId)
             },
             engine: connection,
             runtimeService: runtimeProvider,
@@ -65,7 +65,7 @@ final class ReferendumVotersInteractor {
                     let model = try mappingOperation.extractNoCancellableResultData()
                     self?.presenter?.didReceiveVoters(model)
                 } catch {
-                    self?.presenter?.didReceiveError(.votesFetchFailed(error))
+                    self?.presenter?.didReceiveError(.votersFetchFailed(error))
                 }
             }
         }
