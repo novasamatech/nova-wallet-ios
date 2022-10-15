@@ -1021,3 +1021,7 @@
 "gov.track.big.spender" = "Treasury: Big Spend";
 "gov.track.whitelisted.caller" = "Fellowship: Whitelist";
 "gov.track.fellowship.admin" = "Fellowship: Admin";
+"gov.voters.aye" = "Aye voters";
+"gov.voters.nay" = "Nay voters";
+"gov.common.votes.format" = "%@ votes";
+"gov.common.amount.conviction.format" = "%@ × %@x";
