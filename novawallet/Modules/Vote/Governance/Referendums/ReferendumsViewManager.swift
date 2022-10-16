@@ -54,6 +54,13 @@ extension ReferendumsViewManager: UITableViewDataSource {
 extension ReferendumsViewManager: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+
+        let section = model.sections[indexPath.section]
+        switch section {
+        case let .active(_, cellModels), let .completed(_, cellModels):
+            let referendumIndex = cellModels[indexPath.row].referendumIndex
+            presenter?.select(referendumIndex: referendumIndex)
+        }
     }
 
     func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
