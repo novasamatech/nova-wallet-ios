@@ -260,6 +260,10 @@ extension CrowdloanListViewController: CrowdloanListViewProtocol {
     func didReceive(listState: CrowdloansViewModel) {
         viewModel = listState
 
+        if listState.sections.allSatisfy({ !$0.isLoading }) {
+            rootView.tableView.refreshControl?.endRefreshing()
+        }
+
         rootView.tableView.reloadData()
     }
 }

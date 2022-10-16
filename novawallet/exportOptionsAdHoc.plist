@@ -5,14 +5,14 @@
 	<key>method</key>
     <string>ad-hoc</string>
     <key>teamID</key>
-    <string>27GUNVKXNM</string>
+    <string>RD2HBGJZLF</string>
     <key>signingCertificate</key>
       <string>iOS Distribution</string>
       <key>signingStyle</key>
       <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>io.nova.novawallet.dev</key>
+        <key>io.novafoundation.novawallet.dev</key>
         <string>nova-wallet-dev</string>
     </dict>
 </dict>

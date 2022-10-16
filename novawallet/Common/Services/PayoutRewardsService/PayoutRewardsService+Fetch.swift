@@ -25,13 +25,11 @@ extension PayoutRewardsService {
                 storagePath: .activeEra
             )
 
-        let historyDepthWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<UInt32>>]> =
-            storageRequestFactory.queryItems(
-                engine: engine,
-                keys: { [try keyFactory.historyDepth()] },
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .historyDepth
-            )
+        let historyDepthWrapper = createHistoryDepthWrapper(
+            dependingOn: codingFactoryOperation,
+            storageRequestFactory: storageRequestFactory,
+            connection: engine
+        )
 
         let dependecies = currentEraWrapper.allOperations + activeEraWrapper.allOperations
             + historyDepthWrapper.allOperations
@@ -44,7 +42,6 @@ extension PayoutRewardsService {
                 let activeEra = try activeEraWrapper.targetOperation.extractNoCancellableResultData()
                 .first?.value?.index,
                 let historyDepth = try historyDepthWrapper.targetOperation.extractNoCancellableResultData()
-                .first?.value?.value
             else {
                 throw PayoutRewardsServiceError.unknown
             }
@@ -59,6 +56,58 @@ extension PayoutRewardsService {
         dependecies.forEach { mergeOperation.addDependency($0) }
 
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependecies)
+    }
+
+    func createHistoryDepthWrapper(
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        storageRequestFactory: StorageRequestFactoryProtocol,
+        connection: JSONRPCEngine
+    ) -> CompoundOperationWrapper<UInt32?> {
+        let combiningService = OperationCombiningService<UInt32?>(operationManager: operationManager) {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let runtimeMetadata = codingFactory.metadata
+
+            if runtimeMetadata.getStorageMetadata(for: Staking.historyDepthStoragePath) != nil {
+                let wrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<UInt32>>> =
+                    storageRequestFactory.queryItem(
+                        engine: connection,
+                        factory: { codingFactory },
+                        storagePath: Staking.historyDepthStoragePath
+                    )
+
+                let mapOperation = ClosureOperation<UInt32?> {
+                    try wrapper.targetOperation.extractNoCancellableResultData().value?.value
+                }
+
+                mapOperation.addDependency(wrapper.targetOperation)
+
+                return [CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)]
+            } else {
+                let constantFetchOperation = PrimitiveConstantOperation<UInt32>(
+                    path: Staking.historyDepthCostantPath
+                )
+
+                constantFetchOperation.codingFactory = codingFactory
+
+                let mapOperation = ClosureOperation<UInt32?> {
+                    try constantFetchOperation.extractNoCancellableResultData()
+                }
+
+                mapOperation.addDependency(constantFetchOperation)
+
+                return [CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [constantFetchOperation])]
+            }
+        }
+
+        let historyDepthFetchOperation = combiningService.longrunOperation()
+
+        let mapOperation = ClosureOperation<UInt32?> {
+            try historyDepthFetchOperation.extractNoCancellableResultData().first ?? nil
+        }
+
+        mapOperation.addDependency(historyDepthFetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [historyDepthFetchOperation])
     }
 
     func createErasRewardDistributionOperationWrapper(
