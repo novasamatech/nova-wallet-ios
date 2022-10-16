@@ -1,17 +1,20 @@
 import UIKit
+import SoraUI
 
-final class ReferendumVotersViewLayout: UIView {
+final class ReferendumVotersViewLayout: UIView, AdaptiveDesignable {
+    var skeletonView: SkrullableView?
+
     let totalVotersLabel: BorderedLabelView = .create { view in
         view.backgroundView.fillColor = R.color.colorWhite16()!
         view.titleLabel.apply(style: .init(textColor: R.color.colorWhite80()!, font: .semiBoldFootnote))
         view.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8)
-        view.backgroundView.cornerRadius = 6.0
+        view.backgroundView.cornerRadius = 6
     }
 
     let tableView: UITableView = .create { view in
         view.separatorStyle = .none
         view.backgroundColor = .clear
-        view.contentInset = UIEdgeInsets(top: 8.0, left: 0, bottom: 0, right: 0)
+        view.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     }
 
     override init(frame: CGRect) {
@@ -34,5 +37,84 @@ final class ReferendumVotersViewLayout: UIView {
             make.top.equalTo(safeAreaLayoutGuide)
             make.leading.trailing.bottom.equalToSuperview()
         }
+    }
+}
+
+extension ReferendumVotersViewLayout: SkeletonableView {
+    var skeletonSpaceSize: CGSize {
+        CGSize(width: frame.width, height: ReferendumVotersTableViewCell.Constants.rowHeight)
+    }
+
+    var skeletonReplica: SkeletonableViewReplica {
+        let count = UInt32(20 * designScaleRatio.height)
+
+        return SkeletonableViewReplica(count: count, spacing: 0.0)
+    }
+
+    var hidingViews: [UIView] { [] }
+
+    var skeletonSuperview: UIView { self }
+
+    // swiftlint:disable:next function_body_length
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        let centerY = tableView.contentInset.top + spaceSize.height / 2.0
+        let insetX = UIConstants.horizontalInset
+
+        let imageSize = CGSize(width: 22.0, height: 22.0)
+
+        let nameSize = CGSize(width: 120.0, height: 14)
+        let nameOffsetX = insetX + imageSize.width + ReferendumVotersTableViewCell.Constants.addressNameSpacing
+
+        let indicatorSize = CGSize(width: 12, height: 12)
+        let indicatorOffsetX = nameOffsetX + nameSize.width +
+            ReferendumVotersTableViewCell.Constants.addressIndicatorSpacing
+
+        let votesSize = CGSize(width: 60, height: 14)
+
+        let votesDetailsSize = CGSize(width: 80, height: 14)
+
+        return [
+            SingleSkeleton.createRow(
+                on: tableView,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: CGPoint(x: insetX, y: centerY - imageSize.height / 2.0),
+                size: imageSize
+            ),
+            SingleSkeleton.createRow(
+                on: tableView,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: CGPoint(x: nameOffsetX, y: centerY - nameSize.height / 2.0),
+                size: nameSize
+            ),
+            SingleSkeleton.createRow(
+                on: tableView,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: CGPoint(x: indicatorOffsetX, y: centerY - indicatorSize.height / 2.0),
+                size: indicatorSize
+            ),
+            SingleSkeleton.createRow(
+                on: tableView,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: CGPoint(
+                    x: spaceSize.width - UIConstants.horizontalInset - votesSize.width,
+                    y: tableView.contentInset.top + spaceSize.height / 3 - votesSize.height / 2.0
+                ),
+                size: votesSize
+            ),
+            SingleSkeleton.createRow(
+                on: tableView,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: CGPoint(
+                    x: spaceSize.width - UIConstants.horizontalInset - votesDetailsSize.width,
+                    y: tableView.contentInset.top + 2 * spaceSize.height / 3 - votesDetailsSize.height / 2.0
+                ),
+                size: votesDetailsSize
+            )
+        ]
     }
 }
