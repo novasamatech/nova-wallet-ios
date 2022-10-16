@@ -1,7 +1,14 @@
 import UIKit
 import SoraUI
 
+struct SkeletonableViewReplica {
+    let count: UInt32
+    let spacing: CGFloat
+}
+
 protocol SkeletonableView: UIView {
+    var skeletonSpaceSize: CGSize { get }
+    var skeletonReplica: SkeletonableViewReplica { get }
     var skeletonView: SkrullableView? { get set }
     var skeletonSuperview: UIView { get }
     var hidingViews: [UIView] { get }
@@ -17,15 +24,18 @@ protocol SkeletonableViewCell {
 
 extension SkeletonableView {
     func startLoadingIfNeeded() {
+        hidingViews.forEach { $0.alpha = 0 }
+
         guard skeletonView == nil else {
             return
         }
 
-        hidingViews.forEach { $0.alpha = 0 }
         setupSkeleton()
     }
 
     func stopLoadingIfNeeded() {
+        hidingViews.forEach { $0.alpha = 1 }
+
         guard skeletonView != nil else {
             return
         }
@@ -33,22 +43,33 @@ extension SkeletonableView {
         skeletonView?.stopSkrulling()
         skeletonView?.removeFromSuperview()
         skeletonView = nil
+    }
 
-        hidingViews.forEach { $0.alpha = 1 }
+    var skeletonSpaceSize: CGSize { frame.size }
+
+    var skeletonReplica: SkeletonableViewReplica { SkeletonableViewReplica(count: 1, spacing: 0) }
+
+    func updateLoadingState() {
+        setupSkeleton()
     }
 
     private func setupSkeleton() {
-        let spaceSize = frame.size
+        let spaceSize = skeletonSpaceSize
 
         guard spaceSize.width > 0, spaceSize.height > 0 else {
             return
         }
 
-        let builder = Skrull(
+        var builder = Skrull(
             size: spaceSize,
             decorations: [],
             skeletons: createSkeletons(for: spaceSize)
         )
+
+        let replica = skeletonReplica
+        if replica.count > 1 {
+            builder = builder.replicateVertically(count: replica.count, spacing: replica.spacing)
+        }
 
         let currentSkeletonView: SkrullableView?
 

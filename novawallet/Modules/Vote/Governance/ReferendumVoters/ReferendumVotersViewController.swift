@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class ReferendumVotersViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumVotersViewLayout
@@ -44,11 +45,22 @@ final class ReferendumVotersViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        switch state {
+        case .loading:
+            rootView.updateLoadingState()
+        case .loaded, .cached, .none:
+            break
+        }
+    }
+
     private func configureTableView() {
         rootView.tableView.registerClassForCell(ReferendumVotersTableViewCell.self)
         rootView.tableView.delegate = self
         rootView.tableView.dataSource = self
-        rootView.tableView.rowHeight = 44.0
+        rootView.tableView.rowHeight = ReferendumVotersTableViewCell.Constants.rowHeight
     }
 
     private func setupLocalization() {
@@ -102,12 +114,49 @@ extension ReferendumVotersViewController: UITableViewDelegate {
     }
 }
 
+extension ReferendumVotersViewController: EmptyStateViewOwnerProtocol {
+    var emptyStateDelegate: EmptyStateDelegate { self }
+    var emptyStateDataSource: EmptyStateDataSource { self }
+    var contentViewForEmptyState: UIView { rootView }
+}
+
+extension ReferendumVotersViewController: EmptyStateDataSource {
+    var viewForEmptyState: UIView? {
+        let emptyView = EmptyStateView()
+        emptyView.image = R.image.iconSearchHappy()?.tinted(with: R.color.colorWhite()!)
+        emptyView.title = R.string.localizable.govVotersEmpty(preferredLanguages: selectedLocale.rLanguages)
+        emptyView.titleColor = R.color.colorWhite()!
+        emptyView.titleFont = .regularFootnote
+        return emptyView
+    }
+}
+
+extension ReferendumVotersViewController: EmptyStateDelegate {
+    var shouldDisplayEmptyState: Bool {
+        switch state {
+        case let .loaded(value), let .cached(value):
+            return value.isEmpty
+        case .loading, .none:
+            return false
+        }
+    }
+}
+
 extension ReferendumVotersViewController: ReferendumVotersViewProtocol {
     func didReceiveViewModels(_ viewModels: LoadableViewModelState<[ReferendumVotersViewModel]>) {
         state = viewModels
         rootView.tableView.reloadData()
 
         setupCounter(value: viewModels.value?.count)
+
+        switch viewModels {
+        case .loading:
+            rootView.startLoadingIfNeeded()
+        case .loaded, .cached:
+            rootView.stopLoadingIfNeeded()
+        }
+
+        reloadEmptyState(animated: false)
     }
 }
 
