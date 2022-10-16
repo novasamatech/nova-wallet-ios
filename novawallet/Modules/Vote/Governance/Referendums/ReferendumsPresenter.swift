@@ -157,7 +157,15 @@ final class ReferendumsPresenter {
     }
 }
 
-extension ReferendumsPresenter: ReferendumsPresenterProtocol {}
+extension ReferendumsPresenter: ReferendumsPresenterProtocol {
+    func select(referendumIndex: UInt) {
+        guard let referendum = referendums?.first(where: { $0.index == referendumIndex }) else {
+            return
+        }
+
+        wireframe.showVoters(from: view, referendum: referendum)
+    }
+}
 
 extension ReferendumsPresenter: VoteChildPresenterProtocol {
     func setup() {

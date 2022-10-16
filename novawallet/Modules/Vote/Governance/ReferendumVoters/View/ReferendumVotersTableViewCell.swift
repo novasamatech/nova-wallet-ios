@@ -52,16 +52,25 @@ final class ReferendumVotersTableViewCell: UITableViewCell {
 
         votesLabel.text = viewModel.votes
         detailsLabel.text = viewModel.preConviction
+
+        setNeedsLayout()
     }
 
     private func applyStyle() {
+        backgroundColor = .clear
+
+        baseView.spacing = 32.0
         baseView.titleView.mode = .iconDetails
         baseView.titleView.iconWidth = 24.0
         baseView.titleView.spacing = 12.0
 
         baseView.titleView.detailsView.spacing = 4.0
         baseView.titleView.detailsView.iconWidth = 16.0
+        baseView.titleView.detailsView.mode = .detailsIcon
 
+        baseView.valueView.stackView.alignment = .fill
+
+        nameLabel.numberOfLines = 1
         nameLabel.apply(style: UILabel.Style(textColor: R.color.colorWhite()!, font: .regularFootnote))
         indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
 
