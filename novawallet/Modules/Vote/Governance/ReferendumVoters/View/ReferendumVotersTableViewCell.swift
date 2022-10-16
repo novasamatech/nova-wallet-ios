@@ -1,6 +1,15 @@
 import UIKit
 
 final class ReferendumVotersTableViewCell: UITableViewCell {
+    enum Constants {
+        static let rowHeight: CGFloat = 44.0
+        static let titleValueSpacing: CGFloat = 32.0
+        static let addressNameSpacing: CGFloat = 12.0
+        static let addressIndicatorSpacing: CGFloat = 4.0
+        static let iconSize = CGSize(width: 24.0, height: 24.0)
+        static let indicatorSize = CGSize(width: 16.0, height: 16.0)
+    }
+
     typealias ContentView = GenericTitleValueView<IconDetailsGenericView<IconDetailsView>, MultiValueView>
 
     let baseView = ContentView()
@@ -59,13 +68,13 @@ final class ReferendumVotersTableViewCell: UITableViewCell {
     private func applyStyle() {
         backgroundColor = .clear
 
-        baseView.spacing = 32.0
+        baseView.spacing = Constants.titleValueSpacing
         baseView.titleView.mode = .iconDetails
-        baseView.titleView.iconWidth = 24.0
-        baseView.titleView.spacing = 12.0
+        baseView.titleView.iconWidth = Constants.iconSize.width
+        baseView.titleView.spacing = Constants.addressNameSpacing
 
-        baseView.titleView.detailsView.spacing = 4.0
-        baseView.titleView.detailsView.iconWidth = 16.0
+        baseView.titleView.detailsView.spacing = Constants.addressIndicatorSpacing
+        baseView.titleView.detailsView.iconWidth = Constants.indicatorSize.width
         baseView.titleView.detailsView.mode = .detailsIcon
 
         baseView.valueView.stackView.alignment = .fill
