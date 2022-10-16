@@ -40,6 +40,4 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         delegate: AssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?
     )
-
-    func showVoters(from view: ControllerBackedProtocol?, referendum: ReferendumLocal)
 }

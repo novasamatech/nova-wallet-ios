@@ -162,8 +162,6 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         guard let referendum = referendums?.first(where: { $0.index == referendumIndex }) else {
             return
         }
-
-        wireframe.showVoters(from: view, referendum: referendum)
     }
 }
 
