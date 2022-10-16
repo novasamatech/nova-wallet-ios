@@ -1,6 +1,12 @@
 import Foundation
 
 final class ReferendumsWireframe: ReferendumsWireframeProtocol {
+    let state: GovernanceSharedState
+
+    init(state: GovernanceSharedState) {
+        self.state = state
+    }
+
     func selectChain(
         from view: ControllerBackedProtocol?,
         delegate: AssetSelectionDelegate,
@@ -23,5 +29,18 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showVoters(from view: ControllerBackedProtocol?, referendum: ReferendumLocal) {
+        guard let votersView = ReferendumVotersViewFactory.createView(
+            state: state,
+            referendum: referendum,
+            type: .ayes
+        ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: votersView.controller)
+        view?.controller.present(navigationController, animated: true)
     }
 }

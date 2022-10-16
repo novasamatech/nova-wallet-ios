@@ -3,11 +3,11 @@ import SoraFoundation
 
 final class ReferendumVotersViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumVotersViewLayout
-    typealias DataSource = UITableViewDiffableDataSource<String, ReferendumVotersViewModel>
 
-    private var dataSource: DataSource?
     private let votersType: ReferendumVotersType
     private let quantityFormatter: LocalizableResource<NumberFormatter>
+
+    private var state: LoadableViewModelState<[ReferendumVotersViewModel]>?
 
     let presenter: ReferendumVotersPresenterProtocol
 
@@ -47,14 +47,8 @@ final class ReferendumVotersViewController: UIViewController, ViewHolder {
     private func configureTableView() {
         rootView.tableView.registerClassForCell(ReferendumVotersTableViewCell.self)
         rootView.tableView.delegate = self
-
-        dataSource = DataSource(
-            tableView: rootView.tableView
-        ) { tableView, _, viewModel in
-            let cell = tableView.dequeueReusableCellWithType(ReferendumVotersTableViewCell.self)
-            cell?.bind(viewModel: viewModel)
-            return cell
-        }
+        rootView.tableView.dataSource = self
+        rootView.tableView.rowHeight = 44.0
     }
 
     private func setupLocalization() {
@@ -84,6 +78,22 @@ final class ReferendumVotersViewController: UIViewController, ViewHolder {
     }
 }
 
+extension ReferendumVotersViewController: UITableViewDataSource {
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        state?.value?.count ?? 0
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithType(ReferendumVotersTableViewCell.self)!
+
+        if let viewModel = state?.value?[indexPath.row] {
+            cell.bind(viewModel: viewModel)
+        }
+
+        return cell
+    }
+}
+
 extension ReferendumVotersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -94,19 +104,10 @@ extension ReferendumVotersViewController: UITableViewDelegate {
 
 extension ReferendumVotersViewController: ReferendumVotersViewProtocol {
     func didReceiveViewModels(_ viewModels: LoadableViewModelState<[ReferendumVotersViewModel]>) {
-        var snapshot = NSDiffableDataSourceSnapshot<String, ReferendumVotersViewModel>()
+        state = viewModels
+        rootView.tableView.reloadData()
 
-        switch viewModels {
-        case let .loaded(value), let .cached(value):
-            snapshot.reloadItems(value)
-
-            setupCounter(value: value.count)
-        case .loading:
-            snapshot.reloadItems([])
-            setupCounter(value: nil)
-        }
-
-        dataSource?.apply(snapshot, animatingDifferences: true)
+        setupCounter(value: viewModels.value?.count)
     }
 }
 
