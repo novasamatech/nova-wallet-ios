@@ -71,6 +71,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         clear(singleValueProvider: &metadataProvider)
 
         clearBlockTimeService()
+        clearSubscriptionFactory()
 
         blockNumberSubscription = nil
 
@@ -86,6 +87,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private func clearBlockTimeService() {
         governanceState.blockTimeService?.throttle()
         governanceState.replaceBlockTimeService(nil)
+    }
+
+    private func clearSubscriptionFactory() {
+        governanceState.replaceSubscriptionFactory(for: nil)
     }
 
     private func continueSetup() {
@@ -115,6 +120,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         setupBlockTimeService(for: chain)
         provideBlockTime()
 
+        setupSubscriptionFactory(for: chain)
+
         subscribeToBlockNumber(for: chain)
         subscribeToMetadata(for: chain)
     }
@@ -129,6 +136,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         } catch {
             presenter?.didReceiveError(.blockTimeServiceFailed(error))
         }
+    }
+
+    private func setupSubscriptionFactory(for chain: ChainModel) {
+        governanceState.replaceSubscriptionFactory(for: chain)
     }
 
     private func subscribeToBlockNumber(for chain: ChainModel) {
@@ -276,7 +287,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         let wrapper = referendumsOperationFactory.fetchAccountVotesWrapper(
             for: accountId,
             from: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in

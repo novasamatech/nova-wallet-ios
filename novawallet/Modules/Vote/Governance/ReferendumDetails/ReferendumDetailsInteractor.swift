@@ -7,6 +7,8 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
     private(set) var referendum: ReferendumLocal
     private(set) var actionDetails: ReferendumActionLocal?
+
+    let selectedAccount: ChainAccountResponse
     let chain: ChainModel
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
@@ -15,22 +17,21 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var metadataProvider: AnySingleValueProvider<ReferendumMetadataMapping>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var referendumSubscription: CallbackStorageSubscription<ReferendumInfo>?
 
-    private var referendumCancellable: CancellableCall?
     private var identitiesCancellable: CancellableCall?
     private var actionDetailsCancellable: CancellableCall?
     private var blockTimeCancellable: CancellableCall?
 
     init(
         referendum: ReferendumLocal,
+        selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
         connection: JSONRPCEngine,
@@ -40,11 +41,12 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
-        referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
+        referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.referendum = referendum
+        self.selectedAccount = selectedAccount
         self.chain = chain
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
         self.connection = connection
@@ -54,84 +56,58 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
-        self.referendumsOperationFactory = referendumsOperationFactory
+        self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
     deinit {
-        clear(cancellable: &referendumCancellable)
         clear(cancellable: &identitiesCancellable)
         clear(cancellable: &actionDetailsCancellable)
         clear(cancellable: &blockTimeCancellable)
 
-        referendumSubscription = nil
-    }
-
-    private func provideReferendum(for referendumInfo: ReferendumInfo) {
-        clear(cancellable: &referendumCancellable)
-
-        let wrapper = referendumsOperationFactory.fetchReferendumWrapper(
-            for: referendumInfo,
-            index: Referenda.ReferendumIndex(referendum.index),
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.referendumCancellable else {
-                    return
-                }
-
-                self?.referendumCancellable = nil
-
-                do {
-                    let referendum = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.referendum = referendum
-
-                    self?.presenter?.didReceiveReferendum(referendum)
-                } catch {
-                    self?.presenter?.didReceiveError(.referendumFailed(error))
-                }
-            }
-        }
-
-        referendumCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-    }
-
-    private func handleReferendumSubscription(result: Result<ReferendumInfo?, Error>) {
-        switch result {
-        case let .success(referendumInfo):
-            if let referendumInfo = referendumInfo {
-                provideReferendum(for: referendumInfo)
-            }
-        case let .failure(error):
-            presenter?.didReceiveError(.referendumFailed(error))
-        }
+        referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
+        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
     }
 
     private func subscribeReferendum() {
-        let referendumIndex = referendum.index
+        referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
 
-        let request = MapSubscriptionRequest(
-            storagePath: Referenda.referendumInfo,
-            localKey: ""
-        ) {
-            StringScaleMapper(value: referendumIndex)
-        }
-
-        referendumSubscription = CallbackStorageSubscription<ReferendumInfo>(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeProvider,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: .main
+        referendumsSubscriptionFactory.subscribeToReferendum(
+            self,
+            referendumIndex: referendum.index
         ) { [weak self] result in
-            self?.handleReferendumSubscription(result: result)
+            switch result {
+            case let .success(referendumResult):
+                if let referendum = referendumResult.value {
+                    self?.referendum = referendum
+                    self?.presenter?.didReceiveReferendum(referendum)
+                }
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.referendumFailed(error))
+            case .none:
+                break
+            }
+        }
+    }
+
+    private func subscribeAccountVotes() {
+        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
+
+        referendumsSubscriptionFactory.subscribeToAccountVotes(
+            self,
+            accountId: selectedAccount.accountId
+        ) { [weak self] result in
+            switch result {
+            case let .success(votesResult):
+                if let votes = votesResult.value, let referendumId = self?.referendum.index {
+                    self?.presenter?.didReceiveAccountVotes(votes[referendumId])
+                }
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.accountVotesFailed(error))
+            case .none:
+                break
+            }
         }
     }
 
@@ -254,6 +230,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
 
         subscribeReferendum()
+        subscribeAccountVotes()
 
         metadataProvider = subscribeGovMetadata(for: chain)
     }
@@ -311,7 +288,7 @@ extension ReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMet
     func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain _: ChainModel) {
         switch result {
         case let .success(mapping):
-            let metadata = mapping?[Referenda.ReferendumIndex(referendum.index)]
+            let metadata = mapping?[referendum.index]
             presenter?.didReceiveMetadata(metadata)
         case let .failure(error):
             presenter?.didReceiveError(.metadataFailed(error))
