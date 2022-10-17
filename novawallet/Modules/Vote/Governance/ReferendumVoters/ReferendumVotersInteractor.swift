@@ -7,14 +7,14 @@ final class ReferendumVotersInteractor {
 
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
     let chain: ChainModel
-    let referendumIndex: Referenda.ReferendumIndex
+    let referendumIndex: ReferendumIdLocal
     let identityOperationFactory: IdentityOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
 
     init(
-        referendumIndex: Referenda.ReferendumIndex,
+        referendumIndex: ReferendumIdLocal,
         chain: ChainModel,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
         identityOperationFactory: IdentityOperationFactoryProtocol,

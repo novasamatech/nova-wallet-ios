@@ -2,8 +2,10 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
+typealias ReferendumIdLocal = UInt
+
 struct ReferendumLocal {
-    let index: UInt
+    let index: ReferendumIdLocal
     let state: ReferendumStateLocal
     let proposer: AccountId?
 }
