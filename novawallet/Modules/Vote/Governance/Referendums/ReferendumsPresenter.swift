@@ -16,7 +16,7 @@ final class ReferendumsPresenter {
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
-    private var votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]?
+    private var votes: [UInt: ReferendumAccountVoteLocal]?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
 
@@ -194,7 +194,7 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
-    func didReceiveVotes(_ votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]) {
+    func didReceiveVotes(_ votes: [UInt: ReferendumAccountVoteLocal]) {
         self.votes = votes
     }
 
