@@ -331,6 +331,9 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     func remakeSubscriptions() {
         clear()
 
+        blockNumberSubscription?.removeObserver(self)
+        blockNumberSubscription = nil
+
         if let chain = governanceState.settings.value {
             let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
 
@@ -360,6 +363,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     }
 
     func putOffline() {
+        blockNumberSubscription?.removeObserver(self)
         blockNumberSubscription = nil
     }
 

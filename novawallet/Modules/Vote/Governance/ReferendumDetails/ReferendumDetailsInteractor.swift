@@ -256,6 +256,15 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
     }
 
     func remakeSubscriptions() {
+        priceProvider?.removeObserver(self)
+        priceProvider = nil
+
+        metadataProvider?.removeObserver(self)
+        metadataProvider = nil
+
+        blockNumberSubscription?.removeObserver(self)
+        blockNumberSubscription = nil
+
         makeSubscriptions()
     }
 }
