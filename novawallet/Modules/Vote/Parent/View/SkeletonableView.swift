@@ -31,6 +31,10 @@ extension SkeletonableView {
         }
 
         setupSkeleton()
+
+        if skeletonView != nil {
+            hidingViews.forEach { $0.alpha = 0 }
+        }
     }
 
     func stopLoadingIfNeeded() {
