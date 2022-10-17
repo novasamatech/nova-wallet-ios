@@ -1,6 +1,12 @@
 import Foundation
 
 final class ReferendumsWireframe: ReferendumsWireframeProtocol {
+    let state: GovernanceSharedState
+
+    init(state: GovernanceSharedState) {
+        self.state = state
+    }
+
     func selectChain(
         from view: ControllerBackedProtocol?,
         delegate: AssetSelectionDelegate,
