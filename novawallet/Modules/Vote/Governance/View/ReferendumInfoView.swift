@@ -157,10 +157,13 @@ private extension UILabel.Style {
         font: .regularSubheadline
     )
 
-    static let track = UILabel.Style(
-        textColor: R.color.colorWhite64(),
-        font: .semiBoldCaps1
-    )
+}
+
+extension UILabel.Style {
+   static let track = UILabel.Style(
+       textColor: R.color.colorWhite64(),
+       font: .semiBoldCaps1
+   )
 }
 
 extension RoundedView.Style {

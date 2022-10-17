@@ -31,11 +31,11 @@ view.frame = .init(
 )
 
 var detailsView = ReferendumVotingStatusDetailsView()
-view.addSubview(detailsView)
-detailsView.snp.makeConstraints {
-    $0.centerY.equalToSuperview()
-    $0.leading.trailing.equalToSuperview()
-}
+// view.addSubview(detailsView)
+// detailsView.snp.makeConstraints {
+//    $0.centerY.equalToSuperview()
+//    $0.leading.trailing.equalToSuperview()
+// }
 
 let status = ReferendumVotingStatusView.Model(
     status: .init(name: "PASSING", kind: .positive),
@@ -65,4 +65,29 @@ detailsView.bind(viewModel: .init(
     buttonText: "Vote"
 ))
 
+// var statusesView = ReferendumTimelineView()
+// view.addSubview(statusesView)
+// statusesView.snp.makeConstraints {
+//    $0.centerY.equalToSuperview()
+//    $0.leading.trailing.equalToSuperview()
+// }
+//
+// statusesView.bind(viewModel: .init(title: "Timeline", statuses: [
+//    .init(title: "Created", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
+//    .init(title: "Created", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
+// ]))
+
+let referendumDAppView = ReferendumDAppView()
+view.addSubview(referendumDAppView)
+referendumDAppView.snp.makeConstraints {
+    $0.centerY.equalToSuperview()
+    $0.leading.trailing.equalToSuperview()
+}
+
+let iconUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!
+referendumDAppView.bind(viewModel: .init(
+    icon: RemoteImageViewModel(url: iconUrl),
+    title: "Polkassembly",
+    subtitle: "Comment and react"
+))
 PlaygroundPage.current.liveView = view
