@@ -44,16 +44,19 @@ struct ReferendumDetailsViewFactory {
         currencyManager: CurrencyManagerProtocol,
         state: GovernanceSharedState
     ) -> ReferendumDetailsInteractor? {
-        guard let chain = state.settings.value else {
+        guard
+            let chain = state.settings.value,
+            let selectedAccount = SelectedWalletSettings.shared.value.fetch(for: chain.accountRequest()) else {
             return nil
         }
 
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let chainRegistry = state.chainRegistry
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let blockTimeService = state.blockTimeService else {
+            let blockTimeService = state.blockTimeService,
+            let subscriptionFactory = state.subscriptionFactory else {
             return nil
         }
 
@@ -73,10 +76,9 @@ struct ReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let referendumsOperationFactory = Gov2OperationFactory(requestFactory: requestFactory)
-
         return ReferendumDetailsInteractor(
             referendum: referendum,
+            selectedAccount: selectedAccount,
             chain: chain,
             actionDetailsOperationFactory: actionDetailsOperationFactory,
             connection: connection,
@@ -86,7 +88,7 @@ struct ReferendumDetailsViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
-            referendumsOperationFactory: referendumsOperationFactory,
+            referendumsSubscriptionFactory: subscriptionFactory,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

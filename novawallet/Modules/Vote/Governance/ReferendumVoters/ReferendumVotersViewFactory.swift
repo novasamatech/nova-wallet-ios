@@ -78,7 +78,7 @@ struct ReferendumVotersViewFactory {
         )
 
         return ReferendumVotersInteractor(
-            referendumIndex: Referenda.ReferendumIndex(referendum.index),
+            referendumIndex: referendum.index,
             chain: chain,
             referendumsOperationFactory: referendumsOperationFactory,
             identityOperationFactory: identityOperationFactory,

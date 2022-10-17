@@ -2,6 +2,11 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
+struct CallbackStorageSubscriptionResult<T> {
+    let value: T?
+    let blockHash: Data?
+}
+
 final class CallbackStorageSubscription<T: Decodable> {
     let request: SubscriptionRequestProtocol
     let runtimeService: RuntimeCodingServiceProtocol
@@ -10,7 +15,8 @@ final class CallbackStorageSubscription<T: Decodable> {
     let repository: AnyDataProviderRepository<ChainStorageItem>?
 
     let callbackQueue: DispatchQueue
-    let callbackClosure: (Result<T?, Error>) -> Void
+    let callbackClosure: ((Result<T?, Error>) -> Void)?
+    let callbackWithBlockClosure: ((Result<CallbackStorageSubscriptionResult<T>, Error>) -> Void)?
 
     private var subscriptionId: UInt16?
 
@@ -35,6 +41,28 @@ final class CallbackStorageSubscription<T: Decodable> {
         self.operationQueue = operationQueue
         self.callbackQueue = callbackQueue
         self.callbackClosure = callbackClosure
+        callbackWithBlockClosure = nil
+
+        encodeKeyAndSubscribe()
+    }
+
+    init(
+        request: SubscriptionRequestProtocol,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol,
+        repository: AnyDataProviderRepository<ChainStorageItem>?,
+        operationQueue: OperationQueue,
+        callbackWithBlockQueue: DispatchQueue,
+        callbackWithBlockClosure: @escaping (Result<CallbackStorageSubscriptionResult<T>, Error>) -> Void
+    ) {
+        self.request = request
+        self.connection = connection
+        self.runtimeService = runtimeService
+        self.repository = repository
+        self.operationQueue = operationQueue
+        callbackQueue = callbackWithBlockQueue
+        self.callbackWithBlockClosure = callbackWithBlockClosure
+        callbackClosure = nil
 
         encodeKeyAndSubscribe()
     }
@@ -131,17 +159,29 @@ final class CallbackStorageSubscription<T: Decodable> {
         connection.cancelForIdentifier(subscriptionId)
     }
 
-    private func notify(result: Result<T?, Error>) {
+    private func notify(result: Result<CallbackStorageSubscriptionResult<T>, Error>) {
         callbackQueue.async { [weak self] in
-            self?.callbackClosure(result)
+            if let withBlockClosure = self?.callbackWithBlockClosure {
+                withBlockClosure(result)
+            }
+
+            if let withoutBlockClosure = self?.callbackClosure {
+                do {
+                    let value = try result.get().value
+                    withoutBlockClosure(.success(value))
+                } catch {
+                    withoutBlockClosure(.failure(error))
+                }
+            }
         }
     }
 
-    func processUpdate(_ data: Data?, blockHash _: Data?) {
+    func processUpdate(_ data: Data?, blockHash: Data?) {
         saveIfNeeded(data: data, localKey: request.localKey)
 
         guard let data = data else {
-            notify(result: .success(nil))
+            let result = CallbackStorageSubscriptionResult<T>(value: nil, blockHash: blockHash)
+            notify(result: .success(result))
             return
         }
 
@@ -166,7 +206,8 @@ final class CallbackStorageSubscription<T: Decodable> {
         decodingOperation.completionBlock = { [weak self] in
             do {
                 let value = try decodingOperation.extractNoCancellableResultData()
-                self?.notify(result: .success(value))
+                let result = CallbackStorageSubscriptionResult<T>(value: value, blockHash: blockHash)
+                self?.notify(result: .success(result))
             } catch {
                 self?.notify(result: .failure(error))
             }
