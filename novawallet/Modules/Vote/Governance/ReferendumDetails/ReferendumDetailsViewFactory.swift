@@ -18,7 +18,7 @@ struct ReferendumDetailsViewFactory {
             return nil
         }
 
-        let wireframe = ReferendumDetailsWireframe()
+        let wireframe = ReferendumDetailsWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
