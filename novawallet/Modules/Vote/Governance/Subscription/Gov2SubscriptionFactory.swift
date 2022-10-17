@@ -6,7 +6,7 @@ final class Gov2SubscriptionFactory: AnyCancellableCleaning {
     typealias ReferendumState = NotEqualWrapper<ReferendumSubscriptionResult>
     typealias VotesState = NotEqualWrapper<ReferendumVotesSubscriptionResult>
     typealias ReferendumWrapper = StorageSubscriptionObserver<ReferendumInfo, ReferendumState>
-    typealias VotesWrapper = StorageSubscriptionObserver<ConvictionVoting.ClassLock, VotesState>
+    typealias VotesWrapper = StorageSubscriptionObserver<[ConvictionVoting.ClassLock], VotesState>
 
     private(set) var referendums: [ReferendumIdLocal: ReferendumWrapper] = [:]
     private(set) var votes: [AccountId: VotesWrapper] = [:]
@@ -104,7 +104,7 @@ final class Gov2SubscriptionFactory: AnyCancellableCleaning {
     }
 
     private func handleVotesResult(
-        _ result: Result<CallbackStorageSubscriptionResult<ConvictionVoting.ClassLock>, Error>,
+        _ result: Result<CallbackStorageSubscriptionResult<[ConvictionVoting.ClassLock]>, Error>,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         accountId: AccountId
@@ -258,7 +258,7 @@ extension Gov2SubscriptionFactory: GovernanceSubscriptionFactoryProtocol {
                 return
             }
 
-            let subscription = CallbackStorageSubscription<ConvictionVoting.ClassLock>(
+            let subscription = CallbackStorageSubscription<[ConvictionVoting.ClassLock]>(
                 request: request,
                 connection: connection,
                 runtimeService: runtimeProvider,

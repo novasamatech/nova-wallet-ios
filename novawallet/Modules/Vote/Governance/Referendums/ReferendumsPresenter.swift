@@ -162,6 +162,8 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         guard let referendum = referendums?.first(where: { $0.index == referendumIndex }) else {
             return
         }
+
+        wireframe.showReferendumDetails(from: view, referendum: referendum)
     }
 }
 
@@ -194,7 +196,7 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
-    func didReceiveVotes(_ votes: [UInt: ReferendumAccountVoteLocal]) {
+    func didReceiveVotes(_ votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]) {
         self.votes = votes
     }
 
