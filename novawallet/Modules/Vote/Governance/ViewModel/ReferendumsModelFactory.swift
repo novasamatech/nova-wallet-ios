@@ -4,8 +4,8 @@ import BigInt
 
 struct ReferendumsModelFactoryInput {
     let referendums: [ReferendumLocal]
-    let metadataMapping: [Referenda.ReferendumIndex: ReferendumMetadataLocal]?
-    let votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]
+    let metadataMapping: [ReferendumIdLocal: ReferendumMetadataLocal]?
+    let votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]
     let chainInfo: ChainInformation
     let locale: Locale
 
@@ -366,14 +366,13 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         var completed: [ReferendumsCellViewModel] = []
 
         input.referendums.forEach { referendum in
-            let index = Referenda.ReferendumIndex(referendum.index)
-            let metadata = input.metadataMapping?[index]
+            let metadata = input.metadataMapping?[referendum.index]
 
             let params = StatusParams(
                 referendum: referendum,
                 metadata: metadata,
                 chainInfo: input.chainInfo,
-                votes: input.votes[index]
+                votes: input.votes[referendum.index]
             )
 
             let model = createReferendumCellViewModel(

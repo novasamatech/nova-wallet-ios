@@ -25,7 +25,7 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?)
-    func didReceiveVotes(_ votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal])
+    func didReceiveVotes(_ votes: [ReferendumIdLocal: ReferendumAccountVoteLocal])
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
@@ -40,4 +40,6 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         delegate: AssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?
     )
+
+    func showReferendumDetails(from view: ControllerBackedProtocol?, referendum: ReferendumLocal)
 }

@@ -11,6 +11,7 @@ final class ReferendumDetailsPresenter {
 
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
+    private var accountVotes: ReferendumAccountVoteLocal?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
     private var price: PriceData?
@@ -53,6 +54,12 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         logger.info("Did receive action details")
     }
 
+    func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?) {
+        accountVotes = votes
+
+        logger.info("Did receive account votes")
+    }
+
     func didReceiveMetadata(_ referendumMetadata: ReferendumMetadataLocal?) {
         self.referendumMetadata = referendumMetadata
 
@@ -87,7 +94,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .referendumFailed, .priceFailed, .blockNumberFailed, .metadataFailed:
+        case .referendumFailed, .accountVotesFailed, .priceFailed, .blockNumberFailed, .metadataFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
