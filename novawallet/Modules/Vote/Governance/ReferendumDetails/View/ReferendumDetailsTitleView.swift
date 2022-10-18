@@ -29,7 +29,7 @@ final class ReferendumDetailsTitleView: UIView {
             R.image.iconChevronRight()?.tinted(with: color),
             for: .normal
         )
-        $0.tintColor = color
+        $0.setTitleColor(color, for: .normal)
         $0.semanticContentAttribute = .forceRightToLeft
     }
 

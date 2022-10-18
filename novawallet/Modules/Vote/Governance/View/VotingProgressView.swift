@@ -51,7 +51,7 @@ final class VotingProgressView: UIView {
     }
 }
 
-extension VotingProgressView {
+extension VotingProgressView: BindableView {
     struct Model {
         let support: TitleIconViewModel?
         let approval: ApprovalModel

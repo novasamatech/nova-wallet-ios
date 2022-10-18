@@ -58,21 +58,22 @@ final class ReferendumVotingStatusDetailsView: UIView {
 extension ReferendumVotingStatusDetailsView {
     struct Model {
         let status: ReferendumVotingStatusView.Model
-        let votingProgress: VotingProgressView.Model
+        let votingProgress: VotingProgressView.Model?
         let aye: VoteRowView.Model?
         let nay: VoteRowView.Model?
-        let buttonText: String
+        let buttonText: String?
     }
 
     func bind(viewModel: Model) {
         statusView.bind(viewModel: viewModel.status)
-        votingProgressView.bind(viewModel: viewModel.votingProgress)
-        viewModel.aye.map {
-            ayeVotesView.bind(viewModel: $0)
+        votingProgressView.bindOrHide(viewModel: viewModel.votingProgress)
+        ayeVotesView.bindOrHide(viewModel: viewModel.aye)
+        nayVotesView.bindOrHide(viewModel: viewModel.nay)
+        if let buttonText = viewModel.buttonText {
+            voteButton.isHidden = false
+            voteButton.bind(title: buttonText, details: nil)
+        } else {
+            voteButton.isHidden = true
         }
-        viewModel.nay.map {
-            nayVotesView.bind(viewModel: $0)
-        }
-        voteButton.bind(title: viewModel.buttonText, details: nil)
     }
 }
