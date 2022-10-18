@@ -47,13 +47,25 @@ final class Gov2LocalMappingFactory {
         track: Referenda.TrackInfo,
         additionalInfo: Gov2OperationFactory.AdditionalInfo
     ) -> ReferendumStateLocal {
+        let approvalFunction = Gov2LocalDecidingFunction(
+            curve: track.minApproval,
+            startBlock: nil,
+            period: track.decisionPeriod
+        )
+
+        let supportFunction = Gov2LocalDecidingFunction(
+            curve: track.minSupport,
+            startBlock: nil,
+            period: track.decisionPeriod
+        )
+
         let votes = SupportAndVotesLocal(
             ayes: status.tally.ayes,
             nays: status.tally.nays,
             support: status.tally.support,
             totalIssuance: additionalInfo.totalIssuance,
-            approvalFunction: nil,
-            supportFunction: nil
+            approvalFunction: approvalFunction,
+            supportFunction: supportFunction
         )
 
         let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
@@ -111,10 +123,18 @@ final class Gov2LocalMappingFactory {
         case let .ongoing(status):
             return createOngoingReferendumState(from: status, index: index, additionalInfo: additionalInfo)
         case let .approved(status):
-            let model = ReferendumStateLocal.Approved(since: status.since, whenEnactment: enactmentBlock)
+            let state: ReferendumStateLocal
+
+            if let enactmentBlock = enactmentBlock {
+                let value = ReferendumStateLocal.Approved(since: status.since, whenEnactment: enactmentBlock)
+                state = .approved(model: value)
+            } else {
+                state = .executed
+            }
+
             return ReferendumLocal(
                 index: UInt(index),
-                state: .approved(model: model),
+                state: state,
                 proposer: status.submissionDeposit.who
             )
         case let .rejected(status):

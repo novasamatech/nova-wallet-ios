@@ -5,11 +5,11 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
 
     func didReceiveChainBalance(viewModel: ChainBalanceViewModel)
     func update(model: ReferendumsViewModel)
-    func updateReferendums(time: [UInt: StatusTimeModel?])
+    func updateReferendums(time: [UInt: StatusTimeViewModel?])
 }
 
 protocol ReferendumsPresenterProtocol: AnyObject {
-    func selectReferendum(referendumIndex: UInt)
+    func select(referendumIndex: UInt)
 }
 
 protocol ReferendumsInteractorInputProtocol: AnyObject {
@@ -20,13 +20,12 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func refresh()
     func remakeSubscriptions()
     func retryBlockTime()
-    var governanceState: GovernanceSharedState { get }
 }
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?)
-    func didReceiveVotes(_ votes: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal])
+    func didReceiveVotes(_ votes: [ReferendumIdLocal: ReferendumAccountVoteLocal])
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
@@ -41,9 +40,6 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         delegate: AssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?
     )
-    func showReferendumDetails(
-        from view: ControllerBackedProtocol?,
-        referendum: ReferendumLocal,
-        state: GovernanceSharedState
-    )
+
+    func showReferendumDetails(from view: ControllerBackedProtocol?, referendum: ReferendumLocal)
 }

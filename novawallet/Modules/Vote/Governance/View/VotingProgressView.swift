@@ -53,30 +53,30 @@ final class VotingProgressView: UIView {
 
 extension VotingProgressView {
     struct Model {
-        let ayeProgress: String
-        let passProgress: String
-        let nayProgress: String
-        let thresholdModel: ThresholdModel?
-        let progress: Decimal
+        let support: TitleIconViewModel?
+        let approval: ApprovalModel
     }
 
-    struct ThresholdModel {
-        let titleIcon: TitleIconViewModel?
-        let value: Decimal
+    struct ApprovalModel {
+        let passThreshold: Decimal
+        let ayeProgress: Decimal?
+        let ayeMessage: String
+        let passMessage: String
+        let nayMessage: String
     }
 
     func bind(viewModel: Model) {
         slider.bind(viewModel: .init(
-            thumbValue: viewModel.thresholdModel?.value,
-            value: viewModel.progress
+            thumbProgress: viewModel.approval.passThreshold,
+            value: viewModel.approval.ayeProgress
         ))
 
-        ayeProgressLabel.text = viewModel.ayeProgress
-        passProgressLabel.text = viewModel.passProgress
-        nayProgressLabel.text = viewModel.nayProgress
+        ayeProgressLabel.text = viewModel.approval.ayeMessage
+        passProgressLabel.text = viewModel.approval.passMessage
+        nayProgressLabel.text = viewModel.approval.nayMessage
 
-        thresholdView.bind(viewModel: viewModel.thresholdModel?.titleIcon)
-        thresholdView.isHidden = viewModel.thresholdModel?.titleIcon?.title == nil
+        thresholdView.bind(viewModel: viewModel.support)
+        thresholdView.isHidden = viewModel.support == nil
     }
 }
 
