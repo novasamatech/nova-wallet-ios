@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-typealias ReferendumMetadataMapping = [Referenda.ReferendumIndex: ReferendumMetadataLocal]
+typealias ReferendumMetadataMapping = [ReferendumIdLocal: ReferendumMetadataLocal]
 
 protocol GovMetadataLocalSubscriptionFactoryProtocol: AnyObject {
     func getMetadataProvider(

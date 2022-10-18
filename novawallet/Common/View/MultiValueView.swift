@@ -15,6 +15,12 @@ class MultiValueView: GenericMultiValueView<UILabel> {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var intrinsicContentSize: CGSize {
+        var size = super.intrinsicContentSize
+        size.width = max(valueTop.intrinsicContentSize.width, valueBottom.intrinsicContentSize.width)
+        return size
+    }
+
     func bind(topValue: String, bottomValue: String?) {
         valueTop.text = topValue
 
