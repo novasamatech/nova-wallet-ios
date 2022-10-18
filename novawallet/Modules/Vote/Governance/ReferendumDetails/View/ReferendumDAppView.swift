@@ -91,6 +91,6 @@ extension ReferendumDAppView {
         static let horizontalSpace: CGFloat = 12
         static let iconWidth: CGFloat = 48
         static let iconInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
-        static let contentInsets = UIEdgeInsets(top: 16, left: 16, bottom: 0, right: 16)
+        static let contentInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
     }
 }
