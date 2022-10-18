@@ -15,12 +15,12 @@ final class ReferendumDetailsTitleView: UIView {
         $0.backgroundView.apply(style: .referendum)
         $0.titleLabel.numberOfLines = 1
     }
-    
+
     let addressView = PolkadotIconDetailsView()
     let infoImageView = UIImageView()
     let textView = UITextView()
     let moreButton = UIButton()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -42,14 +42,16 @@ final class ReferendumDetailsTitleView: UIView {
                         UIView(),
                         trackNameView,
                         numberLabel
-                    ]),
+                    ]
+                ),
                 UIView.hStack(
                     spacing: 6,
                     [
                         addressView,
                         infoImageView,
                         UIView()
-                    ]),
+                    ]
+                ),
                 textView,
                 moreButton
             ]
@@ -69,35 +71,39 @@ extension ReferendumDetailsTitleView {
         let title: String
         let description: String
         let buttonText: String
-        
+
         struct Track {
             let titleIcon: TitleIconViewModel
             let referendumNumber: String?
         }
     }
-    
+
     func bind(viewModel: Model) {
         numberLabel.isHidden = viewModel.track?.referendumNumber == nil
         trackNameView.iconDetailsView.bind(viewModel: viewModel.track?.titleIcon)
         numberLabel.titleLabel.text = viewModel.track?.referendumNumber
-       
+
         viewModel.accountIcon.map {
             addressView.imageView.fillColor = $0.fillColor
             addressView.imageView.bind(icon: $0.icon)
         }
         addressView.titleLabel.text = viewModel.accountName
-        
-        let titleAttributedString = NSAttributedString(string: viewModel.title,
-                                                       attributes: titleAttributes)
-        let descriptionAttributedString = NSAttributedString(string: viewModel.description,
-                                                             attributes: descriptionAttributes)
+
+        let titleAttributedString = NSAttributedString(
+            string: viewModel.title,
+            attributes: titleAttributes
+        )
+        let descriptionAttributedString = NSAttributedString(
+            string: viewModel.description,
+            attributes: descriptionAttributes
+        )
         let referndumInfo = NSMutableAttributedString()
         referndumInfo.append(titleAttributedString)
         referndumInfo.append(descriptionAttributedString)
         textView.attributedText = referndumInfo
         moreButton.setTitle(viewModel.buttonText, for: .normal)
     }
-    
+
     private var titleAttributes: [NSAttributedString.Key: Any] {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byWordWrapping
@@ -107,7 +113,7 @@ extension ReferendumDetailsTitleView {
             .paragraphStyle: paragraphStyle
         ]
     }
-    
+
     private var descriptionAttributes: [NSAttributedString.Key: Any] {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byWordWrapping
@@ -117,5 +123,4 @@ extension ReferendumDetailsTitleView {
             .paragraphStyle: paragraphStyle
         ]
     }
-
 }
