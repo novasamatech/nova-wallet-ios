@@ -1,9 +1,10 @@
 import UIKit
 
-extension SliderLayer.Style {
-    static let governance = SliderLayer.Style(
-        firstColor: UIColor(red: 0.081, green: 0.812, blue: 0.215, alpha: 1),
-        lastColor: UIColor(red: 0.749, green: 0.216, blue: 0.345, alpha: 1),
+extension SliderView.Style {
+    static let governance = SliderView.Style(
+        firstColor: R.color.colorGreen15CF37()!,
+        lastColor: R.color.colorRedFF3A69()!,
+        zeroColor: R.color.colorWhite16()!,
         cornerRadius: 4,
         dividerSpace: 6
     )
@@ -16,7 +17,7 @@ extension SegmentedSliderView.ThumbStyle {
         width: 3,
         height: nil,
         shadow: .init(
-            color: UIColor(red: 0, green: 0, blue: 0, alpha: 0.72),
+            color: R.color.colorBlack72()!,
             opacity: 1,
             offset: .zero,
             radius: 8

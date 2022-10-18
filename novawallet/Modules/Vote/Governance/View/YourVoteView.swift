@@ -104,7 +104,7 @@ extension YourVoteView {
 
 extension UILabel.Style {
     static let ayeType = UILabel.Style(
-        textColor: R.color.colorDarkGreen(),
+        textColor: R.color.colorGreen15CF37()!,
         font: .semiBoldCaps1
     )
     static let nayType = UILabel.Style(

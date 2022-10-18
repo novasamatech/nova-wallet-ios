@@ -1,19 +1,35 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import SoraFoundation
 
 struct ReferendumDetailsViewFactory {
     static func createView(
         for referendum: ReferendumLocal,
         state: GovernanceSharedState
     ) -> ReferendumDetailsViewProtocol? {
-        guard let interactor = createInteractor(for: referendum, state: state) else {
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let interactor = createInteractor(
+                for: referendum,
+                currencyManager: currencyManager,
+                state: state
+            ) else {
             return nil
         }
 
-        let wireframe = ReferendumDetailsWireframe()
+        let wireframe = ReferendumDetailsWireframe(state: state)
 
-        let presenter = ReferendumDetailsPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = ReferendumDetailsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            referendum: referendum,
+            chain: state.settings.value,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
         let view = ReferendumDetailsViewController(presenter: presenter)
 
@@ -25,17 +41,22 @@ struct ReferendumDetailsViewFactory {
 
     private static func createInteractor(
         for referendum: ReferendumLocal,
+        currencyManager: CurrencyManagerProtocol,
         state: GovernanceSharedState
     ) -> ReferendumDetailsInteractor? {
-        guard let chain = state.settings.value else {
+        guard
+            let chain = state.settings.value,
+            let selectedAccount = SelectedWalletSettings.shared.value.fetch(for: chain.accountRequest()) else {
             return nil
         }
 
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let chainRegistry = state.chainRegistry
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let blockTimeService = state.blockTimeService,
+            let subscriptionFactory = state.subscriptionFactory else {
             return nil
         }
 
@@ -57,11 +78,19 @@ struct ReferendumDetailsViewFactory {
 
         return ReferendumDetailsInteractor(
             referendum: referendum,
+            selectedAccount: selectedAccount,
             chain: chain,
             actionDetailsOperationFactory: actionDetailsOperationFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            identityOperationFactory: identityOperationFactory
+            blockTimeService: blockTimeService,
+            identityOperationFactory: identityOperationFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
+            referendumsSubscriptionFactory: subscriptionFactory,
+            currencyManager: currencyManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }

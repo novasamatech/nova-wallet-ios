@@ -54,9 +54,12 @@ extension ReferendumsViewManager: UITableViewDataSource {
 extension ReferendumsViewManager: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        switch model.sections[indexPath.section] {
-        case let .active(_, cells), let .completed(_, cells):
-            presenter?.selectReferendum(referendumIndex: cells[indexPath.row].referendumIndex)
+
+        let section = model.sections[indexPath.section]
+        switch section {
+        case let .active(_, cellModels), let .completed(_, cellModels):
+            let referendumIndex = cellModels[indexPath.row].referendumIndex
+            presenter?.select(referendumIndex: referendumIndex)
         }
     }
 
@@ -92,7 +95,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
         tableView.reloadData()
     }
 
-    func updateReferendums(time: [UInt: StatusTimeModel?]) {
+    func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
         tableView.visibleCells.forEach { cell in
             guard let referendumCell = cell as? ReferendumTableViewCell,
                   let indexPath = tableView.indexPath(for: cell) else {

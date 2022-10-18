@@ -19,7 +19,7 @@ final class Gov2OperationFactory {
             try "enactment".encode(scaleEncoder: scaleEncoder)
             try index.encode(scaleEncoder: scaleEncoder)
 
-            let data = scaleEncoder.encode()
+            let data = try scaleEncoder.encode().blake2b32()
 
             var container = encoder.singleValueContainer()
             try container.encode(BytesCodable(wrappedValue: data))
@@ -35,8 +35,9 @@ final class Gov2OperationFactory {
     private func createEnacmentTimeFetchWrapper(
         dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: ReferendumInfo]>,
         connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<[Referenda.ReferendumIndex: BlockNumber]> {
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<[ReferendumIdLocal: BlockNumber]> {
         let keysClosure: () throws -> [SchedulerTaskName] = {
             let referendums = try referendumOperation.extractNoCancellableResultData()
 
@@ -57,21 +58,22 @@ final class Gov2OperationFactory {
                 engine: connection,
                 keyParams: keysClosure,
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: OnChainScheduler.lookupTaskPath
+                storagePath: OnChainScheduler.lookupTaskPath,
+                at: blockHash
             )
 
         enactmentWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<[Referenda.ReferendumIndex: BlockNumber]> {
+        let mapOperation = ClosureOperation<[ReferendumIdLocal: BlockNumber]> {
             let keys = try keysClosure()
             let results = try enactmentWrapper.targetOperation.extractNoCancellableResultData()
 
-            return zip(keys, results).reduce(into: [Referenda.ReferendumIndex: BlockNumber]()) { accum, keyResult in
+            return zip(keys, results).reduce(into: [ReferendumIdLocal: BlockNumber]()) { accum, keyResult in
                 guard let when = keyResult.1.value?.when else {
                     return
                 }
 
-                accum[keyResult.0.index] = when
+                accum[ReferendumIdLocal(keyResult.0.index)] = when
             }
         }
 
@@ -85,7 +87,7 @@ final class Gov2OperationFactory {
     private func createReferendumMapOperation(
         dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: ReferendumInfo]>,
         additionalInfoOperation: BaseOperation<AdditionalInfo>,
-        enactmentsOperation: BaseOperation<[Referenda.ReferendumIndex: BlockNumber]>
+        enactmentsOperation: BaseOperation<[ReferendumIdLocal: BlockNumber]>
     ) -> BaseOperation<[ReferendumLocal]> {
         ClosureOperation<[ReferendumLocal]> {
             let remoteReferendums = try referendumOperation.extractNoCancellableResultData()
@@ -95,12 +97,12 @@ final class Gov2OperationFactory {
             let mappingFactory = Gov2LocalMappingFactory()
 
             return remoteReferendums.compactMap { keyedReferendum in
-                let referendumIndex = keyedReferendum.key.referendumIndex
+                let referendumIndex = ReferendumIdLocal(keyedReferendum.key.referendumIndex)
                 let remoteReferendum = keyedReferendum.value
 
                 return mappingFactory.mapRemote(
                     referendum: remoteReferendum,
-                    index: referendumIndex,
+                    index: Referenda.ReferendumIndex(referendumIndex),
                     additionalInfo: additionalInfo,
                     enactmentBlock: enactments[referendumIndex]
                 )
@@ -110,7 +112,8 @@ final class Gov2OperationFactory {
 
     private func createAdditionalInfoWrapper(
         from connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
     ) -> CompoundOperationWrapper<AdditionalInfo> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
@@ -138,7 +141,8 @@ final class Gov2OperationFactory {
             requestFactory.queryItem(
                 engine: connection,
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .totalIssuance
+                storagePath: .totalIssuance,
+                at: blockHash
             )
 
         let fetchOperations = [tracksOperation, undecidingTimeoutOperation] + totalIssuanceWrapper.allOperations
@@ -187,12 +191,17 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         referendumWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let additionalInfoWrapper = createAdditionalInfoWrapper(from: connection, runtimeProvider: runtimeProvider)
+        let additionalInfoWrapper = createAdditionalInfoWrapper(
+            from: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
+        )
 
         let enactmentsWrapper = createEnacmentTimeFetchWrapper(
             dependingOn: referendumWrapper.targetOperation,
             connection: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
         )
 
         enactmentsWrapper.addDependency(wrapper: referendumWrapper)
@@ -213,11 +222,65 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
+    func fetchReferendumWrapper(
+        for remoteReferendum: ReferendumInfo,
+        index: ReferendumIdLocal,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<ReferendumLocal> {
+        let additionalInfoWrapper = createAdditionalInfoWrapper(
+            from: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash
+        )
+
+        let referendumOperation = ClosureOperation<[ReferendumIndexKey: ReferendumInfo]> {
+            let referendumIndexKey = ReferendumIndexKey(referendumIndex: Referenda.ReferendumIndex(index))
+            return [referendumIndexKey: remoteReferendum]
+        }
+
+        let enactmentsWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: referendumOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash
+        )
+
+        enactmentsWrapper.addDependency(operations: [referendumOperation])
+
+        let mergeOperation = createReferendumMapOperation(
+            dependingOn: referendumOperation,
+            additionalInfoOperation: additionalInfoWrapper.targetOperation,
+            enactmentsOperation: enactmentsWrapper.targetOperation
+        )
+
+        mergeOperation.addDependency(referendumOperation)
+        mergeOperation.addDependency(additionalInfoWrapper.targetOperation)
+        mergeOperation.addDependency(enactmentsWrapper.targetOperation)
+
+        let mapOperation = ClosureOperation<ReferendumLocal> {
+            guard let referendum = try mergeOperation.extractNoCancellableResultData().first else {
+                throw BaseOperationError.unexpectedDependentResult
+            }
+
+            return referendum
+        }
+
+        mapOperation.addDependency(mergeOperation)
+
+        let dependencies = [referendumOperation] + additionalInfoWrapper.allOperations +
+            enactmentsWrapper.allOperations + [mergeOperation]
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
     func fetchAccountVotesWrapper(
         for accountId: AccountId,
         from connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<[Referenda.ReferendumIndex: ReferendumAccountVoteLocal]> {
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<[UInt: ReferendumAccountVoteLocal]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let request = MapRemoteStorageRequest(storagePath: ConvictionVoting.votingFor) {
@@ -229,19 +292,20 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
                 engine: connection,
                 request: request,
                 storagePath: ConvictionVoting.votingFor,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() }
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                at: blockHash
             )
 
         votesWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mappingOperation = ClosureOperation<[Referenda.ReferendumIndex: ReferendumAccountVoteLocal]> {
+        let mappingOperation = ClosureOperation<[UInt: ReferendumAccountVoteLocal]> {
             let votes = try votesWrapper.targetOperation.extractNoCancellableResultData().values
 
-            return votes.reduce(into: [Referenda.ReferendumIndex: ReferendumAccountVoteLocal]()) { result, voting in
+            return votes.reduce(into: [UInt: ReferendumAccountVoteLocal]()) { result, voting in
                 switch voting {
                 case let .casting(castingVoting):
                     castingVoting.votes.forEach { vote in
-                        result[vote.pollIndex] = ReferendumAccountVoteLocal(accountVote: vote.accountVote)
+                        result[UInt(vote.pollIndex)] = ReferendumAccountVoteLocal(accountVote: vote.accountVote)
                     }
                 case .delegating, .unknown:
                     break
@@ -257,7 +321,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
     }
 
     func fetchVotersWrapper(
-        for referendumIndex: Referenda.ReferendumIndex,
+        for referendumIndex: ReferendumIdLocal,
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {

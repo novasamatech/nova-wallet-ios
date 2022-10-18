@@ -117,13 +117,6 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
-        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: substrateStorageFacade,
-            operationManager: OperationManager(operationQueue: operationQueue),
-            logger: logger
-        )
-
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
@@ -131,7 +124,6 @@ final class VoteChildPresenterFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             referendumsOperationFactory: referendumOperationFactory,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,
@@ -181,20 +173,22 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
     ) -> VoteChildPresenterProtocol? {
         let state = GovernanceSharedState()
         let interactor = createGovernanceInteractor(for: state, wallet: wallet)
-        let wireframe = ReferendumsWireframe()
+        let wireframe = ReferendumsWireframe(state: state)
 
-        let percentFormatter = NumberFormatter.percent
-        percentFormatter.roundingMode = .halfEven
+        let statusViewModelFactory = ReferendumStatusViewModelFactory()
+
         let viewModelFactory = ReferendumsModelFactory(
+            statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: percentFormatter,
-            referendumNumberFormatter: .quantity
+            percentFormatter: NumberFormatter.percentHalfEven.localizableResource(),
+            indexFormatter: NumberFormatter.index.localizableResource()
         )
 
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            statusViewModelFactory: statusViewModelFactory,
             localizationManager: localizationManager,
             logger: logger
         )

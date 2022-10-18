@@ -57,6 +57,15 @@ final class YourContributionsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        // as we have dynamic cell we could fail to create skeleton view on init
+        if skeletonView == nil, viewModel?.isLoading == true {
+            updateLoadingState()
+        }
+    }
+
     private func setupLayout() {
         let titleView = UIStackView(arrangedSubviews: [
             titleLabel,

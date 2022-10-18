@@ -12,11 +12,14 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
     let operationQueue: OperationQueue
+
+    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
+        governanceState.generalLocalSubscriptionFactory
+    }
 
     var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
         governanceState.govMetadataLocalSubscriptionFactory
@@ -40,7 +43,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -52,7 +54,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.referendumsOperationFactory = referendumsOperationFactory
-        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
@@ -70,6 +71,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         clear(singleValueProvider: &metadataProvider)
 
         clearBlockTimeService()
+        clearSubscriptionFactory()
 
         blockNumberSubscription = nil
 
@@ -85,6 +87,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private func clearBlockTimeService() {
         governanceState.blockTimeService?.throttle()
         governanceState.replaceBlockTimeService(nil)
+    }
+
+    private func clearSubscriptionFactory() {
+        governanceState.replaceSubscriptionFactory(for: nil)
     }
 
     private func continueSetup() {
@@ -114,6 +120,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         setupBlockTimeService(for: chain)
         provideBlockTime()
 
+        setupSubscriptionFactory(for: chain)
+
         subscribeToBlockNumber(for: chain)
         subscribeToMetadata(for: chain)
     }
@@ -128,6 +136,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         } catch {
             presenter?.didReceiveError(.blockTimeServiceFailed(error))
         }
+    }
+
+    private func setupSubscriptionFactory(for chain: ChainModel) {
+        governanceState.replaceSubscriptionFactory(for: chain)
     }
 
     private func subscribeToBlockNumber(for chain: ChainModel) {
@@ -275,7 +287,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         let wrapper = referendumsOperationFactory.fetchAccountVotesWrapper(
             for: accountId,
             from: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
@@ -318,6 +331,9 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     func remakeSubscriptions() {
         clear()
 
+        blockNumberSubscription?.removeObserver(self)
+        blockNumberSubscription = nil
+
         if let chain = governanceState.settings.value {
             let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
 
@@ -347,6 +363,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     }
 
     func putOffline() {
+        blockNumberSubscription?.removeObserver(self)
         blockNumberSubscription = nil
     }
 
