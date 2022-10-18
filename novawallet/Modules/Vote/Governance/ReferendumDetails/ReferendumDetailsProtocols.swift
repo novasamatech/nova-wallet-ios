@@ -1,4 +1,9 @@
-protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {}
+protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
+    func set(votingDetails: ReferendumVotingStatusDetailsView.Model)
+    func set(dAppModels: [ReferendumDAppView.Model])
+    func set(timelineModel: ReferendumTimelineView.Model)
+    func set(titleModel: ReferendumDetailsTitleView.Model)
+}
 
 protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
