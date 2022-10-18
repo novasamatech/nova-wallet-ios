@@ -58,12 +58,25 @@ enum ReferendumAccountVoteLocal {
         }
     }
 
+    var totalBalance: BigUInt {
+        ayeBalance + nayBalance
+    }
+
     var conviction: Decimal? {
         switch self {
         case .split:
             return 1
         case let .standard(value):
             return value.vote.conviction.decimalValue
+        }
+    }
+
+    var convictionValue: ConvictionVoting.Conviction {
+        switch self {
+        case .split:
+            return .locked1x
+        case let .standard(voting):
+            return voting.vote.conviction
         }
     }
 
