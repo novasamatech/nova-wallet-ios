@@ -8,7 +8,9 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
     func updateReferendums(time: [UInt: StatusTimeModel?])
 }
 
-protocol ReferendumsPresenterProtocol: AnyObject {}
+protocol ReferendumsPresenterProtocol: AnyObject {
+    func selectReferendum(referendumIndex: UInt)
+}
 
 protocol ReferendumsInteractorInputProtocol: AnyObject {
     func setup()
@@ -18,6 +20,7 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func refresh()
     func remakeSubscriptions()
     func retryBlockTime()
+    var governanceState: GovernanceSharedState { get }
 }
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
@@ -37,5 +40,10 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         from view: ControllerBackedProtocol?,
         delegate: AssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?
+    )
+    func showReferendumDetails(
+        from view: ControllerBackedProtocol?,
+        referendum: ReferendumLocal,
+        state: GovernanceSharedState
     )
 }

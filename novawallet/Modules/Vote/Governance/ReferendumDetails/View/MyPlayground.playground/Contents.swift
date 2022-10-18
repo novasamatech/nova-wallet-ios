@@ -2,6 +2,7 @@
 
 import UIKit
 import SnapKit
+import SubstrateSdk
 import PlaygroundSupport
 
 private func registerFonts() {
@@ -77,17 +78,58 @@ detailsView.bind(viewModel: .init(
 //    .init(title: "Created", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
 // ]))
 
-let referendumDAppView = ReferendumDAppView()
-view.addSubview(referendumDAppView)
-referendumDAppView.snp.makeConstraints {
+// let referendumDAppView = ReferendumDAppView()
+// view.addSubview(referendumDAppView)
+// referendumDAppView.snp.makeConstraints {
+//    $0.centerY.equalToSuperview()
+//    $0.leading.trailing.equalToSuperview()
+// }
+//
+// let iconUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!
+// referendumDAppView.bind(viewModel: .init(
+//    icon: RemoteImageViewModel(url: iconUrl),
+//    title: "Polkassembly",
+//    subtitle: "Comment and react"
+// ))
+
+let referendumDetailsTitleView = ReferendumDetailsTitleView()
+view.addSubview(referendumDetailsTitleView)
+referendumDetailsTitleView.snp.makeConstraints {
     $0.centerY.equalToSuperview()
     $0.leading.trailing.equalToSuperview()
 }
 
-let iconUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!
-referendumDAppView.bind(viewModel: .init(
-    icon: RemoteImageViewModel(url: iconUrl),
-    title: "Polkassembly",
-    subtitle: "Comment and react"
-))
+referendumDetailsTitleView.backgroundColor = .darkGray
+
+func generateMetaAccount(with chainAccounts: Set<ChainAccountModel> = []) -> MetaAccountModel {
+    MetaAccountModel(
+        metaId: UUID().uuidString,
+        name: UUID().uuidString,
+        substrateAccountId: Data.random(of: 32)!,
+        substrateCryptoType: 0,
+        substratePublicKey: Data.random(of: 32)!,
+        ethereumAddress: Data.random(of: 20)!,
+        ethereumPublicKey: Data.random(of: 32)!,
+        chainAccounts: chainAccounts,
+        type: .secrets
+    )
+}
+
+let wallet = generateMetaAccount()
+let optIcon = wallet.walletIdenticonData().flatMap { try? PolkadotIconGenerator().generateFromAccountId($0) }
+let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
+
+referendumDetailsTitleView.bind(viewModel:
+    .init(
+        track: .init(
+            titleIcon: .init(title: "main agenda", icon: nil),
+            referendumNumber: "224"
+        ),
+        accountIcon: iconViewModel,
+        accountName: "RTTI-5220",
+        title: "Polkadot and Kusama participation in the 10th Pais Digital Chile Summit.",
+        description: "The Sovereign Nature Initiative transfers, Governance, Sovereign Nature Initiative (SNI) is a non-profit foundation that has" +
+            "brought together multiple partners and engineers from the лоалыво одыо лоаыдвлоадо",
+        buttonText: "Read more >"
+    ))
 PlaygroundPage.current.liveView = view
