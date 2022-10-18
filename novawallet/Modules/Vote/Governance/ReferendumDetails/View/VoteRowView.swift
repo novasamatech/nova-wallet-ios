@@ -72,7 +72,7 @@ extension VoteRowView {
     }
 }
 
-extension VoteRowView {
+extension VoteRowView: BindableView {
     struct Model {
         let title: String
         let votes: String

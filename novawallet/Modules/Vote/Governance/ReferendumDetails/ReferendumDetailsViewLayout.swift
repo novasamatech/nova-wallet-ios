@@ -13,7 +13,7 @@ final class ReferendumDetailsViewLayout: UIView {
     let votingDetailsView = BlurredView<ReferendumVotingStatusDetailsView>()
     let dAppsTableView = StackTableView()
     let timelineTableView: BlurredView<ReferendumTimelineView> = .create {
-        $0.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 16)
+        $0.innerInsets = .init(top: 16, left: 16, bottom: 20, right: 16)
     }
 
     let fullDetailsView = FullDetailsRow(frame: .zero)
