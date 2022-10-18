@@ -12,12 +12,14 @@ final class ReferendumVotingStatusDetailsView: UIView {
 
     let nayVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorDarkGreen()!,
+            color: R.color.colorGreen15CF37()!,
             accessoryImage: R.image.iconInfo()!
         ))
     }
 
-    let voteButton = ButtonLargeControl()
+    let voteButton: ButtonLargeControl = .create {
+        $0.titleLabel.textAlignment = .center
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)

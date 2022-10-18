@@ -18,12 +18,23 @@ final class ReferendumDetailsTitleView: UIView {
 
     let addressView = PolkadotIconDetailsView()
     let infoImageView = UIImageView()
-    let textView = UITextView()
-    let moreButton = UIButton()
+    let textView: UITextView = .create {
+        $0.isScrollEnabled = false
+    }
+
+    let moreButton: UIButton = .create {
+        let color = R.color.colorAccent()!
+        $0.titleLabel?.apply(style: .rowLink)
+        $0.setImage(
+            R.image.iconChevronRight()?.tinted(with: color),
+            for: .normal
+        )
+        $0.tintColor = color
+        $0.semanticContentAttribute = .forceRightToLeft
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         setupLayout()
     }
 
@@ -53,12 +64,18 @@ final class ReferendumDetailsTitleView: UIView {
                     ]
                 ),
                 textView,
-                moreButton
+                UIView.hStack([
+                    moreButton,
+                    UIView()
+                ])
             ]
         )
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+        textView.snp.makeConstraints {
+            $0.height.lessThanOrEqualTo(220)
         }
     }
 }
@@ -97,10 +114,11 @@ extension ReferendumDetailsTitleView {
             string: viewModel.description,
             attributes: descriptionAttributes
         )
-        let referndumInfo = NSMutableAttributedString()
-        referndumInfo.append(titleAttributedString)
-        referndumInfo.append(descriptionAttributedString)
-        textView.attributedText = referndumInfo
+        let referendumInfo = NSMutableAttributedString()
+        referendumInfo.append(titleAttributedString)
+        referendumInfo.append(NSAttributedString(string: "\n"))
+        referendumInfo.append(descriptionAttributedString)
+        textView.attributedText = referendumInfo
         moreButton.setTitle(viewModel.buttonText, for: .normal)
     }
 
