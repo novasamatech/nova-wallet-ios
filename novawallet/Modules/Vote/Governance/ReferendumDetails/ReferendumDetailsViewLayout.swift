@@ -16,6 +16,9 @@ final class ReferendumDetailsViewLayout: UIView {
         $0.innerInsets = .init(top: 16, left: 16, bottom: 20, right: 16)
     }
 
+    var yourVoteRow: YourVoteRow?
+    var requestedAmountRow: RequestedAmountRow?
+
     let fullDetailsView = FullDetailsRow(frame: .zero)
 
     override init(frame: CGRect) {
@@ -46,42 +49,44 @@ final class ReferendumDetailsViewLayout: UIView {
     }
 
     func setDApps(models: [ReferendumDAppView.Model]) {
+        dAppsTableView.clear()
+
         for model in models {
             let dAppView = ReferendumDAppCellView(frame: .zero)
             dAppView.rowContentView.bind(viewModel: model)
             dAppsTableView.stackView.addArrangedSubview(dAppView)
         }
     }
-}
 
-final class ReferendumDAppCellView: RowView<ReferendumDAppView>, StackTableViewCellProtocol {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        backgroundColor = .clear
-        preferredHeight = 64
-    }
-}
-
-final class FullDetailsRow: RowView<BlurredView<GenericTitleValueView<UILabel, UIImageView>>> {
-    let titleLabel = UILabel(style: .rowLink, textAlignment: .left)
-    let arrowView = UIImageView(image: R.image.iconChevronRight())
-
-    override init(frame _: CGRect) {
-        super.init(
-            contentView: .init(view: .init(titleView: titleLabel, valueView: arrowView)),
-            preferredHeight: 52
-        )
-        backgroundColor = .clear
+    func setYourVote(model: YourVoteRow.Model) {
+        if yourVoteRow == nil {
+            let yourVoteView = YourVoteRow(frame: .zero)
+            containerView.stackView.addArrangedSubview(yourVoteView)
+            yourVoteRow = yourVoteView
+        }
+        yourVoteRow?.bind(viewModel: model)
     }
 
-    func bind(title: String) {
-        titleLabel.text = title
+    func removeYourVote() {
+        guard let yourVoteRow = yourVoteRow else {
+            return
+        }
+        containerView.stackView.removeArrangedSubview(yourVoteRow)
     }
-}
 
-extension UILabel.Style {
-    static let rowLink = UILabel.Style(
-        textColor: R.color.colorAccent(),
-        font: .p2Paragraph
-    )
+    func setRequestedAmount(model: RequestedAmountRow.Model) {
+        if requestedAmountRow == nil {
+            let requestedAmountView = RequestedAmountRow(frame: .zero)
+            containerView.stackView.addArrangedSubview(requestedAmountView)
+            requestedAmountRow = requestedAmountView
+        }
+        requestedAmountRow?.bind(viewModel: model)
+    }
+
+    func removeRequestedAmount() {
+        guard let requestedAmountRow = requestedAmountRow else {
+            return
+        }
+        containerView.stackView.removeArrangedSubview(requestedAmountRow)
+    }
 }
