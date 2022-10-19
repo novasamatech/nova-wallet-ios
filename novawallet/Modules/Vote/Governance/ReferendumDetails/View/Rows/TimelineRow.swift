@@ -8,7 +8,7 @@ final class TimelineRow: RowView<ReferendumTimelineView> {
 
         contentView = referendumTimelineView
         backgroundView = TriangularedBlurView()
-        contentInsets = .init(top: 16, left: 16, bottom: 20, right: 16)
+        contentInsets = .init(top: 16, left: 16, bottom: 0, right: 16)
         backgroundColor = .clear
     }
 }
