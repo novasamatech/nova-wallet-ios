@@ -63,7 +63,7 @@ final class ReferendumTimelineView: UIView {
     }
 }
 
-extension ReferendumTimelineView {
+extension ReferendumTimelineView: BindableView {
     struct Model {
         let title: String
         let statuses: [Status]
