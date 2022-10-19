@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import RobinHood
+import SoraFoundation
 
 struct ReferendumVoteSetupViewFactory {
     static func createView(
@@ -9,7 +10,11 @@ struct ReferendumVoteSetupViewFactory {
     ) -> ReferendumVoteSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(for: state, referendum: referendum, currencyManager: currencyManager) else {
+            let interactor = createInteractor(
+                for: state,
+                referendum: referendum,
+                currencyManager: currencyManager
+            ) else {
             return nil
         }
 
@@ -17,7 +22,10 @@ struct ReferendumVoteSetupViewFactory {
 
         let presenter = ReferendumVoteSetupPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = ReferendumVoteSetupViewController(presenter: presenter)
+        let view = ReferendumVoteSetupViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
@@ -32,7 +40,9 @@ struct ReferendumVoteSetupViewFactory {
     ) -> ReferendumVoteSetupInteractor? {
         guard
             let chain = state.settings.value,
-            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(for: chain.accountRequest()),
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
+                for: chain.accountRequest()
+            ),
             let subscriptionFactory = state.subscriptionFactory,
             let blockTimeService = state.blockTimeService
         else {

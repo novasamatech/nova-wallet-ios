@@ -31,9 +31,7 @@ final class ReferendumVoteSetupViewController: UIViewController {
         presenter.setup()
     }
 
-    private func setupLocalization() {
-
-    }
+    private func setupLocalization() {}
 }
 
 extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {}

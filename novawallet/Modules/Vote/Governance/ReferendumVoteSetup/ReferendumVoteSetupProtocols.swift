@@ -1,5 +1,5 @@
 import BigInt
-protocol ReferendumVoteSetupViewProtocol: AnyObject {}
+protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {}
 
 protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func setup()
