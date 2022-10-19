@@ -1,13 +1,19 @@
 import UIKit
+import SoraFoundation
 
 final class ReferendumVoteSetupViewController: UIViewController {
     typealias RootViewType = ReferendumVoteSetupViewLayout
 
     let presenter: ReferendumVoteSetupPresenterProtocol
 
-    init(presenter: ReferendumVoteSetupPresenterProtocol) {
+    init(
+        presenter: ReferendumVoteSetupPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -24,6 +30,18 @@ final class ReferendumVoteSetupViewController: UIViewController {
 
         presenter.setup()
     }
+
+    private func setupLocalization() {
+
+    }
 }
 
 extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {}
+
+extension ReferendumVoteSetupViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
+    }
+}
