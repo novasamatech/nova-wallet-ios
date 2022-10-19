@@ -98,8 +98,9 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         )
 
         set(timelineModel: .init(title: "Timeline", statuses: [
-            .init(title: "Created", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
-            .init(title: "Created", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
+            .init(title: "One", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
+            .init(title: "Two", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
+            .init(title: "Three", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
         ]))
 
         rootView.fullDetailsView.bind(title: "Full details")

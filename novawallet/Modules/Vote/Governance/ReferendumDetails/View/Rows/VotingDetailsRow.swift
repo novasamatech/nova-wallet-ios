@@ -7,6 +7,7 @@ final class VotingDetailsRow: RowView<ReferendumVotingStatusDetailsView> {
         super.init(frame: frame)
 
         contentView = referendumVotingStatusDetailsView
+        contentInsets = .zero
         backgroundView = TriangularedBlurView()
         backgroundColor = .clear
     }

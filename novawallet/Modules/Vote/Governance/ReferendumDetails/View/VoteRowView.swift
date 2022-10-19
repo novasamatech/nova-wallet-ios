@@ -14,7 +14,7 @@ final class VoteRowView: UIView {
     }
 
     private var leadingRectangleView: UIView = .create {
-        $0.layer.cornerRadius = 10
+        $0.layer.cornerRadius = 4
     }
 
     private var trailingImageView = UIImageView()
