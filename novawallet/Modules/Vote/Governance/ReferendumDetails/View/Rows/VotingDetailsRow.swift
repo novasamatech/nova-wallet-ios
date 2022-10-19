@@ -8,7 +8,6 @@ final class VotingDetailsRow: RowView<ReferendumVotingStatusDetailsView> {
 
         contentView = referendumVotingStatusDetailsView
         backgroundView = TriangularedBlurView()
-        contentInsets = .init(top: 16, left: 16, bottom: 20, right: 16)
         backgroundColor = .clear
     }
 }
