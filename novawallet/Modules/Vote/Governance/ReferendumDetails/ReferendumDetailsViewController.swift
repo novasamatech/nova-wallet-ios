@@ -103,6 +103,16 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         ]))
 
         rootView.fullDetailsView.bind(title: "Full details")
+
+        set(yourVoteModel: .init(
+            vote: .init(title: "AYE", description: "Your vote"),
+            amount: .init(topValue: "30 votes", bottomValue: "10 KSM × 3x")
+        ))
+
+        set(requestedAmount: .init(
+            title: "Requested amount",
+            amount: .init(topValue: "1,000 KSM", bottomValue: "$38,230")
+        ))
     }
 }
 
@@ -121,5 +131,21 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
 
     func set(titleModel: ReferendumDetailsTitleView.Model) {
         rootView.titleView.bind(viewModel: titleModel)
+    }
+
+    func set(yourVoteModel: YourVoteRow.Model?) {
+        if let yourVoteModel = yourVoteModel {
+            rootView.setYourVote(model: yourVoteModel)
+        } else {
+            rootView.removeYourVote()
+        }
+    }
+
+    func set(requestedAmount: RequestedAmountRow.Model?) {
+        if let requestedAmount = requestedAmount {
+            rootView.setRequestedAmount(model: requestedAmount)
+        } else {
+            rootView.removeRequestedAmount()
+        }
     }
 }
