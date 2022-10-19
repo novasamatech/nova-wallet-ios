@@ -10,11 +10,9 @@ final class ReferendumDetailsViewLayout: UIView {
     }()
 
     let titleView = ReferendumDetailsTitleView()
-    let votingDetailsView = BlurredView<ReferendumVotingStatusDetailsView>()
+    let votingDetailsView = VotingDetailsRow()
     let dAppsTableView = StackTableView()
-    let timelineTableView: BlurredView<ReferendumTimelineView> = .create {
-        $0.innerInsets = .init(top: 16, left: 16, bottom: 20, right: 16)
-    }
+    let timelineTableView = TimelineRow()
 
     var yourVoteRow: YourVoteRow?
     var requestedAmountRow: RequestedAmountRow?

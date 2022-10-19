@@ -1,6 +1,6 @@
 import UIKit
 
-final class RequestedAmountRow: RowView<GenericMultiValueView<MultiValueView>>, BindableView {
+final class RequestedAmountRow: RowView<GenericMultiValueView<MultiValueView>> {
     struct Model {
         let title: String
         let amount: MultiValueView.Model

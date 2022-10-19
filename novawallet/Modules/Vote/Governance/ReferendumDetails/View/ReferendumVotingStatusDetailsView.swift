@@ -55,7 +55,7 @@ final class ReferendumVotingStatusDetailsView: UIView {
     }
 }
 
-extension ReferendumVotingStatusDetailsView {
+extension ReferendumVotingStatusDetailsView: BindableView {
     struct Model {
         let status: ReferendumVotingStatusView.Model
         let votingProgress: VotingProgressView.Model?
