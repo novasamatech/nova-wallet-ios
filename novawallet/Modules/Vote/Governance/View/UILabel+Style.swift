@@ -52,3 +52,17 @@ extension IconDetailsView {
         detailsLabel.text = viewModel?.title
     }
 }
+
+extension UILabel.Style {
+    static let footnoteWhite64 = UILabel.Style(
+        textColor: R.color.colorWhite64()!,
+        font: .regularFootnote
+    )
+}
+
+extension UILabel.Style {
+    static let rowLink = UILabel.Style(
+        textColor: R.color.colorAccent(),
+        font: .p2Paragraph
+    )
+}

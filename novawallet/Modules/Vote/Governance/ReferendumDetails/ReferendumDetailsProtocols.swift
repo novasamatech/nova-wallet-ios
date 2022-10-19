@@ -3,6 +3,8 @@ protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
     func set(dAppModels: [ReferendumDAppView.Model])
     func set(timelineModel: ReferendumTimelineView.Model)
     func set(titleModel: ReferendumDetailsTitleView.Model)
+    func set(yourVoteModel: YourVoteRow.Model?)
+    func set(requestedAmount: RequestedAmountRow.Model?)
 }
 
 protocol ReferendumDetailsPresenterProtocol: AnyObject {

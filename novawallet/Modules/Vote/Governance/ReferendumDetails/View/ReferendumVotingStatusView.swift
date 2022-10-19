@@ -95,8 +95,5 @@ private extension UILabel.Style {
         textColor: R.color.colorRedFF3A69(),
         font: .boldTitle2
     )
-    static let title = UILabel.Style(
-        textColor: R.color.colorWhite64()!,
-        font: .regularFootnote
-    )
+    static let title = UILabel.Style.footnoteWhite64
 }
