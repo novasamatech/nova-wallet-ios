@@ -33,6 +33,8 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
+    let convictionView = ReferendumConvictionView()
+
     let lockedAmountView = ReferendumVoteSetupViewLayout.createMultiValueView()
 
     let lockedPeriodView = ReferendumVoteSetupViewLayout.createMultiValueView()
@@ -89,12 +91,15 @@ final class ReferendumVoteSetupViewLayout: UIView {
             make.height.equalTo(34.0)
         }
 
-        containerView.stackView.addArrangedSubview(amountInputView)
         amountInputView.snp.makeConstraints { make in
             make.height.equalTo(64)
         }
 
-        containerView.stackView.setCustomSpacing(16.0, after: amountInputView)
+        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+
+        containerView.stackView.addArrangedSubview(convictionView)
+
+        containerView.stackView.setCustomSpacing(16.0, after: convictionView)
 
         containerView.stackView.addArrangedSubview(lockedAmountView)
         containerView.stackView.addArrangedSubview(lockedPeriodView)

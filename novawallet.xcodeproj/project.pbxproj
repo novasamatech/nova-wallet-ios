@@ -2119,6 +2119,8 @@
 		84F6B6432619A8480038F10D /* SubscanConcreteExtrinsicsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6B6422619A8480038F10D /* SubscanConcreteExtrinsicsData.swift */; };
 		84F6B6482619A87C0038F10D /* ExtrinsicIndexWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6B6472619A87C0038F10D /* ExtrinsicIndexWrapper.swift */; };
 		84F6B6502619E1ED0038F10D /* Int+Operations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F6B64F2619E1ED0038F10D /* Int+Operations.swift */; };
+		84F76ED629006A0900D7206C /* ReferendumConvictionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F76ED529006A0900D7206C /* ReferendumConvictionView.swift */; };
+		84F76ED829006BC400D7206C /* DiscreteGradientSlider+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F76ED729006BC400D7206C /* DiscreteGradientSlider+Style.swift */; };
 		84F77AAA265EE86B00F54885 /* CrowdloanErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F77AA9265EE86B00F54885 /* CrowdloanErrorPresentable.swift */; };
 		84F81318265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F81317265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift */; };
 		84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F98D8925E3DD3F0040418E /* StorageCodingPath.swift */; };
@@ -5001,6 +5003,8 @@
 		84F6B6422619A8480038F10D /* SubscanConcreteExtrinsicsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanConcreteExtrinsicsData.swift; sourceTree = "<group>"; };
 		84F6B6472619A87C0038F10D /* ExtrinsicIndexWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicIndexWrapper.swift; sourceTree = "<group>"; };
 		84F6B64F2619E1ED0038F10D /* Int+Operations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Operations.swift"; sourceTree = "<group>"; };
+		84F76ED529006A0900D7206C /* ReferendumConvictionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumConvictionView.swift; sourceTree = "<group>"; };
+		84F76ED729006BC400D7206C /* DiscreteGradientSlider+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscreteGradientSlider+Style.swift"; sourceTree = "<group>"; };
 		84F77AA9265EE86B00F54885 /* CrowdloanErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanErrorPresentable.swift; sourceTree = "<group>"; };
 		84F81317265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansOperationFactoryStub.swift; sourceTree = "<group>"; };
 		84F98D8925E3DD3F0040418E /* StorageCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageCodingPath.swift; sourceTree = "<group>"; };
@@ -9517,6 +9521,7 @@
 				84E90BA028D0B51000529633 /* CheckboxControlView.swift */,
 				8468119328E6234B00BF54F1 /* RoundedSegmentedControl.swift */,
 				84E63C1628FFC69A0093534A /* DiscreteGradientSlider.swift */,
+				84F76ED729006BC400D7206C /* DiscreteGradientSlider+Style.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11902,6 +11907,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		84F76ED4290069E900D7206C /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84F76ED529006A0900D7206C /* ReferendumConvictionView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		84F77AA8265EE82E00F54885 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
@@ -12947,6 +12960,7 @@
 		CEE6BB9D4D5A0E46E857EED4 /* ReferendumVoteSetup */ = {
 			isa = PBXGroup;
 			children = (
+				84F76ED4290069E900D7206C /* View */,
 				8425D0DE28FE736F003B782A /* Model */,
 				5159EA2661A6CBE123CCF891 /* ReferendumVoteSetupProtocols.swift */,
 				55B2C456A80FA66E6F140814 /* ReferendumVoteSetupWireframe.swift */,
@@ -15868,6 +15882,7 @@
 				845B821F26EF8E8900D25C72 /* ManagedMetaAccountModel.swift in Sources */,
 				8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */,
 				88421059289BBA8D00306F2C /* CurrencyViewFactory.swift in Sources */,
+				84F76ED829006BC400D7206C /* DiscreteGradientSlider+Style.swift in Sources */,
 				841E6AFE25EC12DE0007DDFE /* SelectedValidatorInfo.swift in Sources */,
 				F4E17FC52721814D00FE36D3 /* MoonbeamVerifiedResponse.swift in Sources */,
 				8499FECC27BF8F4A00712589 /* NftModelMapper.swift in Sources */,
@@ -16617,6 +16632,7 @@
 				41FA237A4AA56AC99322A040 /* ParitySignerAddConfirmPresenter.swift in Sources */,
 				663DB041307C59E939BF0BE2 /* ParitySignerAddConfirmInteractor.swift in Sources */,
 				13CF38563E1849EAF1B4E4B6 /* ParitySignerAddConfirmViewFactory.swift in Sources */,
+				84F76ED629006A0900D7206C /* ReferendumConvictionView.swift in Sources */,
 				9979A61C1677B7B1D44E58B4 /* ParitySignerTxQrProtocols.swift in Sources */,
 				535E9CD08FCA2DA52D37A134 /* ParitySignerTxQrWireframe.swift in Sources */,
 				95AF91994555227D52FCDA24 /* ParitySignerTxQrPresenter.swift in Sources */,
