@@ -1,7 +1,6 @@
 import UIKit
 
-final class YourVoteRow: RowView<GenericTitleValueView<YourVoteView, MultiValueView>>, BindableView {
-    
+final class YourVoteRow: RowView<GenericTitleValueView<YourVoteView, MultiValueView>> {
     struct Model {
         let vote: YourVoteView.Model
         let amount: MultiValueView.Model

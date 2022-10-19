@@ -15,3 +15,11 @@ extension BindableView {
         }
     }
 }
+
+extension RowView: BindableView where T: BindableView {
+    typealias TModel = T.TModel
+
+    func bind(viewModel: TModel) {
+        rowContentView.bind(viewModel: viewModel)
+    }
+}
