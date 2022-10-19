@@ -24,13 +24,14 @@ final class ReferendumTimelineView: UIView {
 
         dotsView.snp.makeConstraints {
             $0.top.bottom.leading.equalToSuperview()
-            $0.width.equalTo(12)
+            $0.width.equalTo(14)
         }
 
         statusesContentView.spacing = 12
         statusesContentView.snp.makeConstraints {
-            $0.top.bottom.trailing.equalToSuperview()
-            $0.leading.equalTo(dotsView.snp.trailing).inset(16)
+            $0.top.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(20)
+            $0.leading.equalTo(dotsView.snp.trailing).inset(-16)
         }
     }
 

@@ -48,8 +48,9 @@ final class DotsView: UIView {
                 }
                 let dottedLinePath = UIBezierPath()
                 nextDotY = frame.maxY
+                dottedLinePath.move(to: .init(x: dotX, y: dotY + style.dotRadius + style.space))
                 dottedLinePath.setLineDash(style.pattern, count: style.pattern.count, phase: 0)
-                dottedLinePath.addLine(to: .init(x: dotX, y: nextDotY - style.dotRadius - style.space))
+                dottedLinePath.addLine(to: .init(x: dotX, y: nextDotY))
                 dottedLinePath.stroke()
                 dottedLinePath.fill()
             } else {
