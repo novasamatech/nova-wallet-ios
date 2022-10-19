@@ -2,8 +2,10 @@ import UIKit
 import SoraUI
 
 final class ReferendumTimelineView: UIView {
-    private(set) var statusesView: [BaselinedView] = []
-    var content = UIStackView()
+    let dotsView = DotsView()
+    let statusesContentView: UIStackView = .create {
+        $0.axis = .vertical
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -17,29 +19,36 @@ final class ReferendumTimelineView: UIView {
     }
 
     private func setupLayout() {
-        content = UIView.vStack(statusesView)
-        addSubview(content)
-        content.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 44, bottom: 0, right: 0))
+        addSubview(dotsView)
+        addSubview(statusesContentView)
+
+        dotsView.snp.makeConstraints {
+            $0.top.bottom.leading.equalToSuperview()
+            $0.width.equalTo(12)
+        }
+
+        statusesContentView.spacing = 12
+        statusesContentView.snp.makeConstraints {
+            $0.top.bottom.trailing.equalToSuperview()
+            $0.leading.equalTo(dotsView.snp.trailing).inset(16)
         }
     }
 
     private func updateStatuses(model: Model) {
-        layoutIfNeeded()
-        statusesView = createStatusesView(from: model)
-        content.arrangedSubviews.forEach {
-            content.removeArrangedSubview($0)
+        let statusViews = statusViews(from: model)
+        statusesContentView.arrangedSubviews.forEach {
+            statusesContentView.removeArrangedSubview($0)
         }
-        content.addArrangedSubview(UIView.vStack(statusesView))
-        statusesView.forEach {
-            $0.snp.makeConstraints { make in
-                make.height.equalTo(44)
-            }
+        statusViews.forEach {
+            statusesContentView.addArrangedSubview($0.view)
+        }
+        dotsView.points = statusViews.map {
+            DotsView.Model(view: $0.view, isFinite: $0.status.isLast)
         }
     }
 
-    private func createStatusesView(from model: Model) -> [BaselinedView] {
-        model.statuses.map { status -> BaselinedView in
+    private func statusViews(from model: Model) -> [(view: BaselinedView, status: Model.Status)] {
+        model.statuses.map { status in
             switch status.subtitle {
             case let .date(date):
                 let view = MultiValueView()
@@ -47,17 +56,17 @@ final class ReferendumTimelineView: UIView {
                 view.valueTop.textAlignment = .left
                 view.valueBottom.textAlignment = .left
                 view.valueBottom.text = date
-                return view
+                return (view: view, status: status)
             case let .interval(model):
                 let view = GenericMultiValueView<IconDetailsView>()
                 view.valueTop.text = status.title
                 view.valueTop.textAlignment = .left
                 view.valueBottom.bind(viewModel: model)
-                return view
+                return (view: view, status: status)
             case .none:
                 let label = UILabel()
                 label.text = status.title
-                return label
+                return (view: label, status: status)
             }
         }
     }
@@ -82,5 +91,7 @@ extension ReferendumTimelineView: BindableView {
 
     func bind(viewModel: Model) {
         updateStatuses(model: viewModel)
+        dotsView.setNeedsDisplay()
+        dotsView.setNeedsLayout()
     }
 }
