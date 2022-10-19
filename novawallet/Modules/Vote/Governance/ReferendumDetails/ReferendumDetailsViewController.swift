@@ -118,7 +118,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
 
 extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     func set(votingDetails: ReferendumVotingStatusDetailsView.Model) {
-        rootView.votingDetailsView.view.bind(viewModel: votingDetails)
+        rootView.votingDetailsRow.bind(viewModel: votingDetails)
     }
 
     func set(dAppModels: [ReferendumDAppView.Model]) {
@@ -126,7 +126,7 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     }
 
     func set(timelineModel: ReferendumTimelineView.Model) {
-        rootView.timelineTableView.view.bind(viewModel: timelineModel)
+        rootView.timelineRow.bind(viewModel: timelineModel)
     }
 
     func set(titleModel: ReferendumDetailsTitleView.Model) {

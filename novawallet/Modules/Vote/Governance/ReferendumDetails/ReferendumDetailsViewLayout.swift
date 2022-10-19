@@ -10,9 +10,9 @@ final class ReferendumDetailsViewLayout: UIView {
     }()
 
     let titleView = ReferendumDetailsTitleView()
-    let votingDetailsView = VotingDetailsRow()
+    let votingDetailsRow = VotingDetailsRow(frame: .zero)
     let dAppsTableView = StackTableView()
-    let timelineTableView = TimelineRow()
+    let timelineRow = TimelineRow(frame: .zero)
 
     var yourVoteRow: YourVoteRow?
     var requestedAmountRow: RequestedAmountRow?
@@ -40,9 +40,9 @@ final class ReferendumDetailsViewLayout: UIView {
         containerView.stackView.addArrangedSubview(titleView)
         containerView.stackView.setCustomSpacing(16, after: titleView)
 
-        containerView.stackView.addArrangedSubview(votingDetailsView)
+        containerView.stackView.addArrangedSubview(votingDetailsRow)
         containerView.stackView.addArrangedSubview(dAppsTableView)
-        containerView.stackView.addArrangedSubview(timelineTableView)
+        containerView.stackView.addArrangedSubview(timelineRow)
         containerView.stackView.addArrangedSubview(fullDetailsView)
     }
 
