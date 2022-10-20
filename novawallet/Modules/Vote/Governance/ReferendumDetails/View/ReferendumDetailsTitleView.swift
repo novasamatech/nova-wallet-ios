@@ -1,21 +1,24 @@
 import UIKit
 
+extension TrackTagsView: BindableView {
+    struct Model {
+        let titleIcon: TitleIconViewModel
+        let referendumNumber: String?
+    }
+
+    func bind(viewModel: Model) {
+        if let referendumNumber = viewModel.referendumNumber {
+            numberLabel.isHidden = false
+            numberLabel.titleLabel.text = referendumNumber
+        } else {
+            numberLabel.isHidden = true
+        }
+
+        trackNameView.iconDetailsView.bind(viewModel: viewModel.titleIcon)
+    }
+}
+
 final class ReferendumDetailsTitleView: UIView {
-    let trackNameView: BorderedIconLabelView = .create {
-        $0.iconDetailsView.spacing = 6
-        $0.contentInsets = .init(top: 4, left: 6, bottom: 4, right: 8)
-        $0.iconDetailsView.detailsLabel.apply(style: .track)
-        $0.backgroundView.apply(style: .referendum)
-        $0.iconDetailsView.detailsLabel.numberOfLines = 1
-    }
-
-    let numberLabel: BorderedLabelView = .create {
-        $0.titleLabel.apply(style: .track)
-        $0.contentInsets = .init(top: 4, left: 6, bottom: 4, right: 8)
-        $0.backgroundView.apply(style: .referendum)
-        $0.titleLabel.numberOfLines = 1
-    }
-
     let addressView = PolkadotIconDetailsView()
     let infoImageView = UIImageView()
     let textView: UITextView = .create {
@@ -50,14 +53,6 @@ final class ReferendumDetailsTitleView: UIView {
                 UIView.hStack(
                     spacing: 6,
                     [
-                        UIView(),
-                        trackNameView,
-                        numberLabel
-                    ]
-                ),
-                UIView.hStack(
-                    spacing: 6,
-                    [
                         addressView,
                         infoImageView,
                         UIView()
@@ -82,24 +77,14 @@ final class ReferendumDetailsTitleView: UIView {
 
 extension ReferendumDetailsTitleView {
     struct Model {
-        let track: Track?
         let accountIcon: DrawableIconViewModel?
         let accountName: String
         let title: String
         let description: String
         let buttonText: String
-
-        struct Track {
-            let titleIcon: TitleIconViewModel
-            let referendumNumber: String?
-        }
     }
 
     func bind(viewModel: Model) {
-        numberLabel.isHidden = viewModel.track?.referendumNumber == nil
-        trackNameView.iconDetailsView.bind(viewModel: viewModel.track?.titleIcon)
-        numberLabel.titleLabel.text = viewModel.track?.referendumNumber
-
         viewModel.accountIcon.map {
             addressView.imageView.fillColor = $0.fillColor
             addressView.imageView.bind(icon: $0.icon)

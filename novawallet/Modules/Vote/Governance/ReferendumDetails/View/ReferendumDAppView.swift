@@ -48,7 +48,7 @@ final class ReferendumDAppView: UIView {
 
         addSubview(content)
         content.snp.makeConstraints {
-            $0.edges.equalTo(Constants.contentInsets)
+            $0.edges.equalToSuperview()
         }
     }
 }
@@ -91,6 +91,5 @@ extension ReferendumDAppView {
         static let horizontalSpace: CGFloat = 12
         static let iconWidth: CGFloat = 48
         static let iconInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
-        static let contentInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
     }
 }

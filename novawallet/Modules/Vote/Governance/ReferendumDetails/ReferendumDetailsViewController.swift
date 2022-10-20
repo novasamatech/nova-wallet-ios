@@ -83,11 +83,11 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         let optIcon = metaAccount.walletIdenticonData().flatMap { try? PolkadotIconGenerator().generateFromAccountId($0) }
         let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
 
+        didReceive(trackTagsModel: .init(
+            titleIcon: .init(title: "main agenda", icon: nil),
+            referendumNumber: "224"
+        ))
         didReceive(titleModel: .init(
-            track: .init(
-                titleIcon: .init(title: "main agenda", icon: nil),
-                referendumNumber: "224"
-            ),
             accountIcon: iconViewModel,
             accountName: "RTTI-5220",
             title: "Polkadot and Kusama participation in the 10th Pais Digital Chile Summit.",
@@ -140,5 +140,14 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
 
     func didReceive(requestedAmount: RequestedAmountRow.Model?) {
         rootView.setRequestedAmount(model: requestedAmount)
+    }
+
+    func didReceive(trackTagsModel: TrackTagsView.Model?) {
+        let barButtonItem: UIBarButtonItem? = trackTagsModel.map {
+            let trackTagsView = TrackTagsView()
+            trackTagsView.bind(viewModel: $0)
+            return .init(customView: trackTagsView)
+        }
+        navigationItem.setRightBarButton(barButtonItem, animated: true)
     }
 }
