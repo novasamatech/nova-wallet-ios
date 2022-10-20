@@ -13,6 +13,7 @@ final class ReferendumVoteSetupPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
+    let refendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
@@ -24,7 +25,8 @@ final class ReferendumVoteSetupPresenter {
     private var referendum: ReferendumLocal?
     private var lockDiff: GovernanceLockStateDiff?
 
-    var inputResult: AmountInputResult?
+    private(set) var inputResult: AmountInputResult?
+    private(set) var conviction: ConvictionVoting.Conviction = .none
 
     init(
         chain: ChainModel,
@@ -32,6 +34,7 @@ final class ReferendumVoteSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
+        refendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         interactor: ReferendumVoteSetupInteractorInputProtocol,
         wireframe: ReferendumVoteSetupWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -42,6 +45,7 @@ final class ReferendumVoteSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.referendumFormatter = referendumFormatter
+        self.refendumStringsViewModelFactory = refendumStringsViewModelFactory
         self.interactor = interactor
         self.wireframe = wireframe
         self.logger = logger
@@ -149,12 +153,33 @@ final class ReferendumVoteSetupPresenter {
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
+    private func updateVotesView() {
+        guard let vote = deriveNewVote() else {
+            return
+        }
+
+        let voteValue = vote.voteAction.conviction.votes(for: vote.voteAction.amount) ?? 0
+
+        let voteString = refendumStringsViewModelFactory.createVotes(
+            from: voteValue,
+            chain: chain,
+            locale: selectedLocale
+        )
+
+        view?.didReceiveVotes(viewModel: voteString ?? "")
+    }
+
+    private func provideConviction() {
+        view?.didReceiveConviction(viewModel: UInt(conviction.rawValue))
+    }
+
     private func updateView() {
         provideReferendumIndex()
         updateAvailableBalanceView()
         provideAmountInputViewModel()
         updateChainAssetViewModel()
         updateAmountPriceView()
+        updateVotesView()
         updateFeeView()
     }
 
@@ -169,7 +194,7 @@ final class ReferendumVoteSetupPresenter {
 
         let voteAction = ReferendumVoteAction(
             amount: amountInPlank,
-            conviction: .none,
+            conviction: conviction,
             isAye: true
         )
 
@@ -184,7 +209,7 @@ final class ReferendumVoteSetupPresenter {
         interactor.estimateFee(for: newVote.voteAction)
     }
 
-    private func refereshLockDiff() {
+    private func refreshLockDiff() {
         guard let votesResult = votesResult, let newVote = deriveNewVote() else {
             return
         }
@@ -199,6 +224,45 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 
         interactor.setup()
     }
+
+    func updateAmount(_ newValue: Decimal?) {
+        inputResult = newValue.map { .absolute($0) }
+
+        refreshFee()
+        refreshLockDiff()
+        updateAmountPriceView()
+    }
+
+    func selectAmountPercentage(_ percentage: Float) {
+        inputResult = .rate(Decimal(Double(percentage)))
+
+        provideAmountInputViewModel()
+
+        refreshFee()
+        refreshLockDiff()
+        updateAmountPriceView()
+    }
+
+    func selectConvictionValue(_ value: UInt) {
+        guard let newConviction = ConvictionVoting.Conviction(rawValue: UInt8(value)) else {
+            return
+        }
+
+        conviction = newConviction
+
+        updateVotesView()
+
+        refreshFee()
+        refreshLockDiff()
+    }
+
+    func proceedNay() {
+
+    }
+
+    func proceedAye() {
+
+    }
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProtocol {
@@ -211,7 +275,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
     ) {
         self.votesResult = votesResult
 
-        refereshLockDiff()
+        refreshLockDiff()
     }
 
     func didReceiveBlockNumber(_: BlockNumber) {}
@@ -232,7 +296,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
             }
         case .stateDiffFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refereshLockDiff()
+                self?.refreshLockDiff()
             }
         }
     }

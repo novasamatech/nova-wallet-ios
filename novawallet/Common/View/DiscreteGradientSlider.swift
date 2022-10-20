@@ -299,7 +299,12 @@ class DiscreteGradientSlider: UIControl {
 
         let diff = round((location - stepPositionX(for: 0)) / step)
 
+        let oldValue = value
         value = min(numberOfValues - 1, UInt(max(0, Int(diff))))
+
+        if oldValue != value {
+            sendActions(for: .valueChanged)
+        }
     }
 
     override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
