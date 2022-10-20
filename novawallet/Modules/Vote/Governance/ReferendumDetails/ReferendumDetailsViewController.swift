@@ -43,7 +43,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
                 nayMessage: "Nay: 0.1%"
             )
         )
-        set(votingDetails: .init(
+        didReceive(votingDetails: .init(
             status: status,
             votingProgress: votingProgress,
             aye: .init(
@@ -60,7 +60,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         ))
 
         let iconUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!
-        set(dAppModels: [
+        didReceive(dAppModels: [
             .init(
                 icon: RemoteImageViewModel(url: iconUrl),
                 title: "Polkassembly",
@@ -83,7 +83,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         let optIcon = metaAccount.walletIdenticonData().flatMap { try? PolkadotIconGenerator().generateFromAccountId($0) }
         let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
 
-        set(titleModel: .init(
+        didReceive(titleModel: .init(
             track: .init(
                 titleIcon: .init(title: "main agenda", icon: nil),
                 referendumNumber: "224"
@@ -97,7 +97,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         )
         )
 
-        set(timelineModel: .init(title: "Timeline", statuses: [
+        didReceive(timelineModel: .init(title: "Timeline", statuses: [
             .init(title: "One", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
             .init(title: "Two", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
             .init(title: "Three", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
@@ -105,12 +105,12 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
 
         rootView.fullDetailsView.bind(title: "Full details")
 
-        set(yourVoteModel: .init(
+        didReceive(yourVoteModel: .init(
             vote: .init(title: "AYE", description: "Your vote"),
             amount: .init(topValue: "30 votes", bottomValue: "10 KSM × 3x")
         ))
 
-        set(requestedAmount: .init(
+        didReceive(requestedAmount: .init(
             title: "Requested amount",
             amount: .init(topValue: "1,000 KSM", bottomValue: "$38,230")
         ))
@@ -118,35 +118,27 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
 }
 
 extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
-    func set(votingDetails: ReferendumVotingStatusDetailsView.Model) {
+    func didReceive(votingDetails: ReferendumVotingStatusDetailsView.Model) {
         rootView.votingDetailsRow.bind(viewModel: votingDetails)
     }
 
-    func set(dAppModels: [ReferendumDAppView.Model]) {
+    func didReceive(dAppModels: [ReferendumDAppView.Model]) {
         rootView.setDApps(models: dAppModels)
     }
 
-    func set(timelineModel: ReferendumTimelineView.Model) {
+    func didReceive(timelineModel: ReferendumTimelineView.Model) {
         rootView.timelineRow.bind(viewModel: timelineModel)
     }
 
-    func set(titleModel: ReferendumDetailsTitleView.Model) {
+    func didReceive(titleModel: ReferendumDetailsTitleView.Model) {
         rootView.titleView.bind(viewModel: titleModel)
     }
 
-    func set(yourVoteModel: YourVoteRow.Model?) {
-        if let yourVoteModel = yourVoteModel {
-            rootView.setYourVote(model: yourVoteModel)
-        } else {
-            rootView.removeYourVote()
-        }
+    func didReceive(yourVoteModel: YourVoteRow.Model?) {
+        rootView.setYourVote(model: yourVoteModel)
     }
 
-    func set(requestedAmount: RequestedAmountRow.Model?) {
-        if let requestedAmount = requestedAmount {
-            rootView.setRequestedAmount(model: requestedAmount)
-        } else {
-            rootView.removeRequestedAmount()
-        }
+    func didReceive(requestedAmount: RequestedAmountRow.Model?) {
+        rootView.setRequestedAmount(model: requestedAmount)
     }
 }

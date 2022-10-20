@@ -22,15 +22,33 @@ extension UILabel {
 
 extension RoundedView {
     struct Style {
-        let fillColor: UIColor
-        let highlightedFillColor: UIColor
-        let cornerRadius: CGFloat
+        var shadowOpacity: CFloat?
+        var strokeWidth: CGFloat?
+        var strokeColor: UIColor?
+        var highlightedStrokeColor: UIColor?
+        var fillColor: UIColor
+        var highlightedFillColor: UIColor
+        var rounding: Rounding?
+
+        struct Rounding {
+            let radius: CGFloat
+            let corners: UIRectCorner
+        }
     }
 
     func apply(style: Style) {
+        style.shadowOpacity.map { shadowOpacity = $0 }
+        style.strokeWidth.map { strokeWidth = $0 }
+        style.strokeColor.map { strokeColor = $0 }
+        style.highlightedStrokeColor.map { highlightedStrokeColor = $0 }
+
         fillColor = style.fillColor
         highlightedFillColor = style.highlightedFillColor
-        cornerRadius = style.cornerRadius
+
+        style.rounding.map {
+            roundingCorners = $0.corners
+            cornerRadius = $0.radius
+        }
     }
 }
 

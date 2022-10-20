@@ -195,6 +195,6 @@ extension RoundedView.Style {
     static let referendum = RoundedView.Style(
         fillColor: R.color.colorWhite8()!,
         highlightedFillColor: R.color.colorAccentSelected()!,
-        cornerRadius: 8
+        rounding: .init(radius: 8, corners: .allCorners)
     )
 }

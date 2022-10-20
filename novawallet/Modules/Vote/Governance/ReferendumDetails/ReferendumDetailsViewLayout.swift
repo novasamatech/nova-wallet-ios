@@ -56,35 +56,29 @@ final class ReferendumDetailsViewLayout: UIView {
         }
     }
 
-    func setYourVote(model: YourVoteRow.Model) {
+    func setYourVote(model: YourVoteRow.Model?) {
+        guard let yourVoteViewModel = model else {
+            yourVoteRow.map(containerView.stackView.removeArrangedSubview)
+            return
+        }
         if yourVoteRow == nil {
             let yourVoteView = YourVoteRow(frame: .zero)
             containerView.stackView.addArrangedSubview(yourVoteView)
             yourVoteRow = yourVoteView
         }
-        yourVoteRow?.bind(viewModel: model)
+        yourVoteRow?.bind(viewModel: yourVoteViewModel)
     }
 
-    func removeYourVote() {
-        guard let yourVoteRow = yourVoteRow else {
+    func setRequestedAmount(model: RequestedAmountRow.Model?) {
+        guard let requestedAmountViewModel = model else {
+            requestedAmountRow.map(containerView.stackView.removeArrangedSubview)
             return
         }
-        containerView.stackView.removeArrangedSubview(yourVoteRow)
-    }
-
-    func setRequestedAmount(model: RequestedAmountRow.Model) {
         if requestedAmountRow == nil {
             let requestedAmountView = RequestedAmountRow(frame: .zero)
             containerView.stackView.addArrangedSubview(requestedAmountView)
             requestedAmountRow = requestedAmountView
         }
-        requestedAmountRow?.bind(viewModel: model)
-    }
-
-    func removeRequestedAmount() {
-        guard let requestedAmountRow = requestedAmountRow else {
-            return
-        }
-        containerView.stackView.removeArrangedSubview(requestedAmountRow)
+        requestedAmountRow?.bind(viewModel: requestedAmountViewModel)
     }
 }
