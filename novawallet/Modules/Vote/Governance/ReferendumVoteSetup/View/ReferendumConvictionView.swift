@@ -37,6 +37,12 @@ final class ReferendumConvictionView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func bind(votes: String) {
+        votesView.text = votes
+
+        setNeedsLayout()
+    }
+
     private func setupLayout() {
         addSubview(backgroundView)
 
