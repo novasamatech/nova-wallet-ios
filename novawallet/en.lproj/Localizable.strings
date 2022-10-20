@@ -1032,3 +1032,4 @@
 "gov.vote.setup.hint" = "After locking period don’t forget to unlock your tokens";
 "gov.vote.setup.title.format" = "Vote for Referendum %@";
 "common.available.prefix" = "Available:";
+"common.maximum" = "%@ maximum";

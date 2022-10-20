@@ -1033,3 +1033,4 @@
 "gov.vote.setup.hint" = "После окончания периода блокировки не забудьте забрать токены";
 "gov.vote.setup.title.format" = "Голосование за референдум %@";
 "common.available.prefix" = "Доступно:";
+"common.maximum" = "%@ максимум";

@@ -32,12 +32,17 @@ struct ReferendumVoteSetupViewFactory {
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
 
+        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(assetDisplayInfo: assetDisplayInfo)
+        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+
         let presenter = ReferendumVoteSetupPresenter(
             chain: chain,
             referendumIndex: referendum,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),
             chainAssetViewModelFactory: chainAssetViewModelFactory,
+            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            lockChangeViewModelFactory: lockChangeViewModelFactory,
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager,
