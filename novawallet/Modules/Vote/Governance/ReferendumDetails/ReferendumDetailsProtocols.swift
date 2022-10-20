@@ -1,10 +1,10 @@
 protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
-    func set(votingDetails: ReferendumVotingStatusDetailsView.Model)
-    func set(dAppModels: [ReferendumDAppView.Model])
-    func set(timelineModel: ReferendumTimelineView.Model)
-    func set(titleModel: ReferendumDetailsTitleView.Model)
-    func set(yourVoteModel: YourVoteRow.Model?)
-    func set(requestedAmount: RequestedAmountRow.Model?)
+    func didReceive(votingDetails: ReferendumVotingStatusDetailsView.Model)
+    func didReceive(dAppModels: [ReferendumDAppView.Model])
+    func didReceive(timelineModel: ReferendumTimelineView.Model)
+    func didReceive(titleModel: ReferendumDetailsTitleView.Model)
+    func didReceive(yourVoteModel: YourVoteRow.Model?)
+    func didReceive(requestedAmount: RequestedAmountRow.Model?)
 }
 
 protocol ReferendumDetailsPresenterProtocol: AnyObject {
