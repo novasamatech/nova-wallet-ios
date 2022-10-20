@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 
 class ReferendumVoteInteractor {
-    private weak var basePresenter: ReferendumVoteInteractorOutputProtocol?
+    weak var basePresenter: ReferendumVoteInteractorOutputProtocol?
 
     let referendumIndex: ReferendumIdLocal
     let selectedAccount: MetaChainAccountResponse

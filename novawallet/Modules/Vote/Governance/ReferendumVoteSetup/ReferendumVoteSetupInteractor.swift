@@ -3,7 +3,15 @@ import SubstrateSdk
 import RobinHood
 
 final class ReferendumVoteSetupInteractor: ReferendumVoteInteractor, AnyCancellableCleaning {
-    weak var presenter: ReferendumVoteSetupInteractorOutputProtocol?
+    weak var presenter: ReferendumVoteSetupInteractorOutputProtocol? {
+        get {
+            basePresenter as? ReferendumVoteSetupInteractorOutputProtocol
+        }
+
+        set {
+            basePresenter = newValue
+        }
+    }
 
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol

@@ -1,6 +1,9 @@
 import UIKit
 
 final class ReferendumVoteSetupViewLayout: UIView {
+    typealias MappingView = GenericPairValueView<IconDetailsView, UILabel>
+    typealias ChangesView = GenericPairValueView<MappingView, IconDetailsView>
+
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
@@ -25,7 +28,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let titleLabel: UILabel = .create { view in
         view.textColor = R.color.colorWhite()
-        view.font = .regularSubheadline
+        view.font = .title2
         view.numberOfLines = 0
     }
 
@@ -35,9 +38,25 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let convictionView = ReferendumConvictionView()
 
-    let lockedAmountView = ReferendumVoteSetupViewLayout.createMultiValueView()
+    var lockAmountTitleLabel: UILabel {
+        lockedAmountView.titleView.detailsLabel
+    }
 
-    let lockedPeriodView = ReferendumVoteSetupViewLayout.createMultiValueView()
+    let lockedAmountView: GenericTitleValueView<IconDetailsView, ChangesView> = {
+        let view = ReferendumVoteSetupViewLayout.createMultiValueView()
+        view.titleView.imageView.image = R.image.iconLock()?.tinted(with: R.color.colorWhite48()!)
+        return view
+    }()
+
+    var lockPeriodTitleLabel: UILabel {
+        lockedPeriodView.titleView.detailsLabel
+    }
+
+    let lockedPeriodView: GenericTitleValueView<IconDetailsView, ChangesView> = {
+        let view = ReferendumVoteSetupViewLayout.createMultiValueView()
+        view.titleView.imageView.image = R.image.iconPending()?.tinted(with: R.color.colorWhite48()!)
+        return view
+    }()
 
     let feeView: NetworkFeeView = {
         let view = UIFactory.default.createNetwork26FeeView()
@@ -64,14 +83,14 @@ final class ReferendumVoteSetupViewLayout: UIView {
         addSubview(nayButton)
         nayButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(safeAreaLayoutGuide.snp.centerX).inset(8.0)
+            make.trailing.equalTo(safeAreaLayoutGuide.snp.centerX).offset(-8.0)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(ayeButton)
         ayeButton.snp.makeConstraints { make in
-            make.leading.equalTo(safeAreaLayoutGuide.snp.centerX).inset(8.0)
+            make.leading.equalTo(safeAreaLayoutGuide.snp.centerX).offset(8.0)
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
@@ -84,6 +103,9 @@ final class ReferendumVoteSetupViewLayout: UIView {
         }
 
         containerView.stackView.addArrangedSubview(titleLabel)
+
+        containerView.stackView.setCustomSpacing(16.0, after: titleLabel)
+
         containerView.stackView.addArrangedSubview(amountView)
         containerView.stackView.addArrangedSubview(amountInputView)
 
@@ -102,20 +124,48 @@ final class ReferendumVoteSetupViewLayout: UIView {
         containerView.stackView.setCustomSpacing(16.0, after: convictionView)
 
         containerView.stackView.addArrangedSubview(lockedAmountView)
+
+        lockedAmountView.snp.makeConstraints { make in
+            make.height.equalTo(34.0)
+        }
+
         containerView.stackView.addArrangedSubview(lockedPeriodView)
+
+        lockedPeriodView.snp.makeConstraints { make in
+            make.height.equalTo(34.0)
+        }
+
         containerView.stackView.addArrangedSubview(feeView)
+
+        containerView.stackView.setCustomSpacing(16.0, after: feeView)
+
         containerView.stackView.addArrangedSubview(hintListView)
     }
 
-    static func createMultiValueView(
-    ) -> GenericTitleValueView<UILabel, GenericMultiValueView<IconDetailsView>> {
-        let view = GenericTitleValueView<UILabel, GenericMultiValueView<IconDetailsView>>()
-        view.titleView.textColor = R.color.colorWhite()
-        view.titleView.font = .regularSubheadline
-        view.valueView.valueTop.textColor = R.color.colorTransparentText()
-        view.valueView.valueTop.font = .regularFootnote
-        view.valueView.valueBottom.detailsLabel.textColor = R.color.colorNovaBlue()
-        view.valueView.valueBottom.detailsLabel.font = .regularFootnote
+    static func createMultiValueView() -> GenericTitleValueView<IconDetailsView, ChangesView> {
+        let view = GenericTitleValueView<IconDetailsView, ChangesView>()
+        view.titleView.spacing = 8.0
+        view.titleView.mode = .iconDetails
+        view.titleView.iconWidth = 16.0
+        view.titleView.detailsLabel.textColor = R.color.colorTransparentText()
+        view.titleView.detailsLabel.font = .regularFootnote
+
+        view.valueView.setVerticalAndSpacing(0.0)
+
+        let mappingView = view.valueView.fView
+        mappingView.setHorizontalAndSpacing(4.0)
+        mappingView.fView.iconWidth = 12.0
+        mappingView.fView.spacing = 4.0
+        mappingView.fView.detailsLabel.textColor = R.color.colorTransparentText()
+        mappingView.fView.detailsLabel.font = .regularFootnote
+        mappingView.sView.textColor = R.color.colorWhite()
+        mappingView.sView.font = .regularFootnote
+
+        let changesView = view.valueView.sView
+        changesView.mode = .iconDetails
+        changesView.spacing = 0.0
+        changesView.detailsLabel.textColor = R.color.colorNovaBlue()
+        changesView.detailsLabel.font = .caption1
 
         return view
     }
