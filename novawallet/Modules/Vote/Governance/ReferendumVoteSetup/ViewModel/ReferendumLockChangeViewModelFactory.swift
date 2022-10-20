@@ -87,7 +87,7 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
         let fromBlock = max(diff.before.lockedUntil ?? blockNumber, blockNumber)
 
         let fromPeriod = blockNumber.secondsTo(block: fromBlock, blockDuration: blockTime)
-        let fromPeriodString = fromPeriod.localizedDaysHours(for: locale)
+        let fromPeriodString = fromPeriod.localizedDaysHoursIncludingZero(for: locale)
 
         let toPeriodString: String
         let change: ReferendumLockTransitionViewModel.Change?
@@ -96,13 +96,13 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
             let toBlock = max(toState.lockedUntil ?? blockNumber, blockNumber)
             let toPeriod = blockNumber.secondsTo(block: toBlock, blockDuration: blockTime)
 
-            toPeriodString = toPeriod.localizedDaysHours(for: locale)
+            toPeriodString = toPeriod.localizedDaysHoursIncludingZero(for: locale)
 
             if fromPeriod < toPeriod, (toPeriod - fromPeriod).hoursFromSeconds > 0 {
                 change = .init(
                     isIncrease: true,
                     value: R.string.localizable.commonMaximum(
-                        (toPeriod - fromPeriod).localizedDaysHours(for: locale),
+                        (toPeriod - fromPeriod).localizedDaysHoursIncludingZero(for: locale),
                         preferredLanguages: locale.rLanguages
                     )
                 )
@@ -110,7 +110,7 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
                 change = .init(
                     isIncrease: false,
                     value: R.string.localizable.commonMaximum(
-                        (fromPeriod - toPeriod).localizedDaysHours(for: locale),
+                        (fromPeriod - toPeriod).localizedDaysHoursIncludingZero(for: locale),
                         preferredLanguages: locale.rLanguages
                     )
                 )

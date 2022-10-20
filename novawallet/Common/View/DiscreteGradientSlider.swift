@@ -47,7 +47,7 @@ class DiscreteGradientSlider: UIControl {
         }
     }
 
-    var verticalSpacing: CGFloat = 14 {
+    var verticalSpacing: CGFloat = 5.0 {
         didSet {
             invalidateIntrinsicContentSize()
             setNeedsLayout()
@@ -71,7 +71,7 @@ class DiscreteGradientSlider: UIControl {
         }
     }
 
-    var contentInsets = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 16.0, right: 0.0) {
+    var contentInsets: UIEdgeInsets = .zero {
         didSet {
             invalidateIntrinsicContentSize()
             setNeedsLayout()

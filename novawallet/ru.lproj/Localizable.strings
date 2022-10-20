@@ -1031,6 +1031,6 @@
 "common.gov.lock" = "Блокировка в голосовании";
 "common.locking.period" = "Период блокировки";
 "gov.vote.setup.hint" = "После окончания периода блокировки не забудьте забрать токены";
-"gov.vote.setup.title.format" = "Голосование за референдум %@";
+"gov.vote.setup.title.format" = "Голосование за %@";
 "common.available.prefix" = "Доступно:";
 "common.maximum" = "%@ максимум";
