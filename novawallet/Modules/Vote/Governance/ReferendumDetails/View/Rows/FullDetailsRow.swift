@@ -1,24 +1,20 @@
 import UIKit
+import SoraUI
 
 final class FullDetailsRow: RowView<GenericTitleValueView<UILabel, UIImageView>> {
-    let titleLabel = UILabel(style: .rowLink, textAlignment: .left)
-    let arrowView = UIImageView(image: R.image.iconChevronRight())
-    lazy var contentMultiValueView = GenericTitleValueView<UILabel, UIImageView>(
-        titleView: titleLabel,
-        valueView: arrowView
-    )
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        contentView = contentMultiValueView
-        backgroundView = TriangularedBlurView()
-        contentInsets = .init(top: 14, left: 16, bottom: 14, right: 16)
+        rowContentView.titleView.apply(style: .rowLink)
+        rowContentView.titleView.textAlignment = .left
+        rowContentView.valueView.image = R.image.iconChevronRight()
+        roundedBackgroundView.apply(style: .roundedSelectableCell)
         preferredHeight = 52
+        contentInsets = .init(top: 14, left: 16, bottom: 14, right: 16)
         backgroundColor = .clear
     }
 
     func bind(title: String) {
-        titleLabel.text = title
+        rowContentView.titleView.text = title
     }
 }

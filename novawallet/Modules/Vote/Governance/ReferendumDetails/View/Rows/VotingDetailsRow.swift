@@ -1,14 +1,12 @@
 import UIKit
 
 final class VotingDetailsRow: RowView<ReferendumVotingStatusDetailsView> {
-    let referendumVotingStatusDetailsView = ReferendumVotingStatusDetailsView()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        contentView = referendumVotingStatusDetailsView
+        isUserInteractionEnabled = true
         contentInsets = .zero
-        backgroundView = TriangularedBlurView()
+        roundedBackgroundView.apply(style: .roundedView)
         backgroundColor = .clear
     }
 }
