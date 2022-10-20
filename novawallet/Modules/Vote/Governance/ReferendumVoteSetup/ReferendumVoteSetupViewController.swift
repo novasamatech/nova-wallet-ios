@@ -31,9 +31,36 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.amountInputView.addTarget(
+            self,
+            action: #selector(actionAmountChange),
+            for: .editingChanged
+        )
+
+        rootView.nayButton.addTarget(
+            self,
+            action: #selector(actionVoteNay),
+            for: .touchUpInside
+        )
+
+        rootView.ayeButton.addTarget(
+            self,
+            action: #selector(actionVoteAye),
+            for: .touchUpInside
+        )
+
+        rootView.convictionView.slider.addTarget(
+            self,
+            action: #selector(actionConvictionChanged),
+            for: .valueChanged
+        )
     }
 
     private func setupLocalization() {
@@ -63,6 +90,8 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
 
         rootView.nayButton.imageWithTitleView?.title = R.string.localizable.governanceNay(preferredLanguages: languages)
         rootView.ayeButton.imageWithTitleView?.title = R.string.localizable.governanceAye(preferredLanguages: languages)
+
+        setupAmountInputAccessoryView(for: selectedLocale)
     }
 
     private func applyReferendumNumber() {
@@ -72,6 +101,32 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
             referendumNumber ?? "",
             preferredLanguages: languages
         )
+    }
+
+    private func setupAmountInputAccessoryView(for locale: Locale) {
+        let accessoryView = UIFactory.default.createAmountAccessoryView(
+            for: self,
+            locale: locale
+        )
+
+        rootView.amountInputView.textField.inputAccessoryView = accessoryView
+    }
+
+    @objc private func actionVoteNay() {
+        presenter.proceedNay()
+    }
+
+    @objc private func actionVoteAye() {
+        presenter.proceedAye()
+    }
+
+    @objc private func actionConvictionChanged() {
+        presenter.selectConvictionValue(rootView.convictionView.slider.value)
+    }
+
+    @objc func actionAmountChange() {
+        let amount = rootView.amountInputView.inputViewModel?.decimalAmount
+        presenter.updateAmount(amount)
     }
 }
 
@@ -100,6 +155,28 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
 
     func didReceiveAmountInputPrice(viewModel: String?) {
         rootView.amountInputView.bind(priceViewModel: viewModel)
+    }
+
+    func didReceiveVotes(viewModel: String) {
+        rootView.convictionView.bind(votes: viewModel)
+    }
+
+    func didReceiveConviction(viewModel: UInt) {
+        if viewModel < rootView.convictionView.slider.numberOfValues {
+            rootView.convictionView.slider.value = viewModel
+        }
+    }
+}
+
+extension ReferendumVoteSetupViewController: AmountInputAccessoryViewDelegate {
+    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
+        rootView.amountInputView.textField.resignFirstResponder()
+
+        presenter.selectAmountPercentage(percentage)
+    }
+
+    func didSelectDone(on _: AmountInputAccessoryView) {
+        rootView.amountInputView.textField.resignFirstResponder()
     }
 }
 

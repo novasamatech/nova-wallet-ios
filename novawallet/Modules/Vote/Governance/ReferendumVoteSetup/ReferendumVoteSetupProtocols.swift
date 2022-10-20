@@ -8,10 +8,17 @@ protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmountInputPrice(viewModel: String?)
+    func didReceiveVotes(viewModel: String)
+    func didReceiveConviction(viewModel: UInt)
 }
 
 protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func setup()
+    func updateAmount(_ newValue: Decimal?)
+    func selectAmountPercentage(_ percentage: Float)
+    func selectConvictionValue(_ value: UInt)
+    func proceedNay()
+    func proceedAye()
 }
 
 protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
