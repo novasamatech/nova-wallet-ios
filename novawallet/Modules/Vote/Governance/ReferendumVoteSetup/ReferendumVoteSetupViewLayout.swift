@@ -28,7 +28,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let titleLabel: UILabel = .create { view in
         view.textColor = R.color.colorWhite()
-        view.font = .title2
+        view.font = .boldTitle2
         view.numberOfLines = 0
     }
 
@@ -57,14 +57,6 @@ final class ReferendumVoteSetupViewLayout: UIView {
         view.titleView.imageView.image = R.image.iconGovPeriodLock()
         return view
     }()
-
-    let feeView: NetworkFeeView = {
-        let view = UIFactory.default.createNetwork26FeeView()
-        view.verticalOffset = 13.0
-        return view
-    }()
-
-    let hintListView = HintListView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -138,7 +130,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(titleLabel)
 
-        containerView.stackView.setCustomSpacing(16.0, after: titleLabel)
+        containerView.stackView.setCustomSpacing(12.0, after: titleLabel)
 
         containerView.stackView.addArrangedSubview(amountView)
         containerView.stackView.addArrangedSubview(amountInputView)
@@ -159,6 +151,8 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(lockedAmountView)
 
+        containerView.stackView.setCustomSpacing(10.0, after: lockedAmountView)
+
         lockedAmountView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
@@ -168,12 +162,6 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockedPeriodView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
-
-        containerView.stackView.addArrangedSubview(feeView)
-
-        containerView.stackView.setCustomSpacing(16.0, after: feeView)
-
-        containerView.stackView.addArrangedSubview(hintListView)
     }
 
     static func createMultiValueView() -> GenericTitleValueView<IconDetailsView, ChangesView> {
@@ -183,15 +171,19 @@ final class ReferendumVoteSetupViewLayout: UIView {
         view.titleView.iconWidth = 16.0
         view.titleView.detailsLabel.textColor = R.color.colorTransparentText()
         view.titleView.detailsLabel.font = .regularFootnote
+        view.titleView.detailsLabel.numberOfLines = 1
 
         view.valueView.setVerticalAndSpacing(0.0)
+        view.valueView.stackView.alignment = .trailing
 
         let mappingView = view.valueView.fView
         mappingView.setHorizontalAndSpacing(4.0)
         mappingView.fView.iconWidth = 12.0
         mappingView.fView.spacing = 4.0
+        mappingView.fView.mode = .detailsIcon
         mappingView.fView.detailsLabel.textColor = R.color.colorTransparentText()
         mappingView.fView.detailsLabel.font = .regularFootnote
+        mappingView.fView.detailsLabel.numberOfLines = 1
         mappingView.fView.imageView.image = R.image.iconGovLockTransition()
         mappingView.sView.textColor = R.color.colorWhite()
         mappingView.sView.font = .regularFootnote
@@ -201,6 +193,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
         changesView.spacing = 0.0
         changesView.detailsLabel.textColor = R.color.colorNovaBlue()
         changesView.detailsLabel.font = .caption1
+        changesView.detailsLabel.numberOfLines = 1
 
         return view
     }

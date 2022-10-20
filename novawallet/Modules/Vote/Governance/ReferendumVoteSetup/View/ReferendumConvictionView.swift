@@ -24,6 +24,7 @@ final class ReferendumConvictionView: UIView {
     let votesView: UILabel = .create { view in
         view.textColor = R.color.colorWhite()
         view.font = .boldTitle2
+        view.textAlignment = .center
     }
 
     override init(frame: CGRect) {
@@ -58,7 +59,8 @@ final class ReferendumConvictionView: UIView {
         ])
 
         stackView.spacing = 0
-        stackView.setCustomSpacing(12.0, after: titleLabel)
+        stackView.setCustomSpacing(13.0, after: titleLabel)
+        stackView.setCustomSpacing(14.0, after: slider)
         stackView.setCustomSpacing(12.0, after: separatorView)
 
         backgroundView.addSubview(stackView)

@@ -137,6 +137,8 @@ final class ReferendumVoteSetupInteractor: ReferendumVoteInteractor, AnyCancella
 
     private func makeSubscriptions() {
         clearAndSubscribeBlockNumber()
+
+        subscribeAccountVotes()
     }
 
     override func setup() {
