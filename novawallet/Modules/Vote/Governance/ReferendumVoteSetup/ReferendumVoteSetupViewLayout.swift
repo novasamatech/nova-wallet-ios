@@ -44,7 +44,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let lockedAmountView: GenericTitleValueView<IconDetailsView, ChangesView> = {
         let view = ReferendumVoteSetupViewLayout.createMultiValueView()
-        view.titleView.imageView.image = R.image.iconLock()?.tinted(with: R.color.colorWhite48()!)
+        view.titleView.imageView.image = R.image.iconGovAmountLock()
         return view
     }()
 
@@ -54,7 +54,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let lockedPeriodView: GenericTitleValueView<IconDetailsView, ChangesView> = {
         let view = ReferendumVoteSetupViewLayout.createMultiValueView()
-        view.titleView.imageView.image = R.image.iconPending()?.tinted(with: R.color.colorWhite48()!)
+        view.titleView.imageView.image = R.image.iconGovPeriodLock()
         return view
     }()
 
@@ -77,6 +77,40 @@ final class ReferendumVoteSetupViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bindLockAmount(viewModel: ReferendumLockTransitionViewModel) {
+        bindLockTrasition(for: viewModel, view: lockedAmountView)
+
+        setNeedsLayout()
+    }
+
+    func bindLockPeriod(viewModel: ReferendumLockTransitionViewModel) {
+        bindLockTrasition(for: viewModel, view: lockedPeriodView)
+
+        setNeedsLayout()
+    }
+
+    private func bindLockTrasition(
+        for viewModel: ReferendumLockTransitionViewModel,
+        view: GenericTitleValueView<IconDetailsView, ChangesView>
+    ) {
+        let viewTop = view.valueView.fView
+        viewTop.fView.detailsLabel.text = viewModel.fromValue
+        viewTop.sView.text = viewModel.toValue
+
+        let viewBottom = view.valueView.sView
+
+        if let change = viewModel.change {
+            viewBottom.isHidden = false
+
+            viewBottom.detailsLabel.text = change.value
+
+            let icon = change.isIncrease ? R.image.iconAmountInc() : R.image.iconAmountDec()
+            viewBottom.imageView.image = icon
+        } else {
+            viewBottom.isHidden = true
+        }
     }
 
     private func setupLayout() {
@@ -158,6 +192,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
         mappingView.fView.spacing = 4.0
         mappingView.fView.detailsLabel.textColor = R.color.colorTransparentText()
         mappingView.fView.detailsLabel.font = .regularFootnote
+        mappingView.fView.imageView.image = R.image.iconGovLockTransition()
         mappingView.sView.textColor = R.color.colorWhite()
         mappingView.sView.font = .regularFootnote
 

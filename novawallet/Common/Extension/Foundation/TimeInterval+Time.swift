@@ -18,6 +18,7 @@ extension TimeInterval {
     var daysFromSeconds: Int { Int(self / Self.secondsInDay) }
     var secondsFromDays: TimeInterval { self * Self.secondsInDay }
     var hoursFromSeconds: Int { Int(self / Self.secondsInHour) }
+    var secondsFromHours: TimeInterval { self * Self.secondsInHour }
     var intervalsInDay: Int { self > 0.0 ? Int(Self.secondsInDay / self) : 0 }
 
     func roundingUpToHour() -> TimeInterval {

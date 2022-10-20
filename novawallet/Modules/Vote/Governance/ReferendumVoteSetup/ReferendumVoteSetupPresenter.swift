@@ -13,7 +13,8 @@ final class ReferendumVoteSetupPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
-    let refendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
+    let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
+    let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
@@ -34,7 +35,8 @@ final class ReferendumVoteSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
-        refendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
+        referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
+        lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
         interactor: ReferendumVoteSetupInteractorInputProtocol,
         wireframe: ReferendumVoteSetupWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -45,7 +47,8 @@ final class ReferendumVoteSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.referendumFormatter = referendumFormatter
-        self.refendumStringsViewModelFactory = refendumStringsViewModelFactory
+        self.referendumStringsViewModelFactory = referendumStringsViewModelFactory
+        self.lockChangeViewModelFactory = lockChangeViewModelFactory
         self.interactor = interactor
         self.wireframe = wireframe
         self.logger = logger
@@ -153,6 +156,36 @@ final class ReferendumVoteSetupPresenter {
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
+    private func updateLockedAmountView() {
+        guard
+            let lockDiff = lockDiff,
+            let viewModel = lockChangeViewModelFactory.createAmountViewModel(
+                from: lockDiff,
+                locale: selectedLocale
+            ) else {
+            return
+        }
+
+        view?.didReceiveLockedAmount(viewModel: viewModel)
+    }
+
+    private func updateLockedPeriodView() {
+        guard
+            let lockDiff = lockDiff,
+            let blockNumber = blockNumber,
+            let blockTime = blockTime,
+            let viewModel = lockChangeViewModelFactory.createPeriodViewModel(
+                from: lockDiff,
+                blockNumber: blockNumber,
+                blockTime: blockTime,
+                locale: selectedLocale
+            ) else {
+            return
+        }
+
+        view?.didReceiveLockedPeriod(viewModel: viewModel)
+    }
+
     private func updateVotesView() {
         guard let vote = deriveNewVote() else {
             return
@@ -160,7 +193,7 @@ final class ReferendumVoteSetupPresenter {
 
         let voteValue = vote.voteAction.conviction.votes(for: vote.voteAction.amount) ?? 0
 
-        let voteString = refendumStringsViewModelFactory.createVotes(
+        let voteString = referendumStringsViewModelFactory.createVotes(
             from: voteValue,
             chain: chain,
             locale: selectedLocale
@@ -180,6 +213,8 @@ final class ReferendumVoteSetupPresenter {
         updateChainAssetViewModel()
         updateAmountPriceView()
         updateVotesView()
+        updateLockedAmountView()
+        updateLockedPeriodView()
         updateFeeView()
     }
 
@@ -230,6 +265,8 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 
         refreshFee()
         refreshLockDiff()
+
+        updateVotesView()
         updateAmountPriceView()
     }
 
@@ -240,6 +277,8 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 
         refreshFee()
         refreshLockDiff()
+
+        updateVotesView()
         updateAmountPriceView()
     }
 
@@ -256,18 +295,17 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
         refreshLockDiff()
     }
 
-    func proceedNay() {
+    func proceedNay() {}
 
-    }
-
-    func proceedAye() {
-
-    }
+    func proceedAye() {}
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProtocol {
     func didReceiveLockStateDiff(_ diff: GovernanceLockStateDiff) {
         lockDiff = diff
+
+        updateLockedAmountView()
+        updateLockedPeriodView()
     }
 
     func didReceiveAccountVotes(
@@ -278,9 +316,19 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         refreshLockDiff()
     }
 
-    func didReceiveBlockNumber(_: BlockNumber) {}
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
+        self.blockNumber = blockNumber
 
-    func didReceiveBlockTime(_: BlockTime) {}
+        updateLockedAmountView()
+        updateLockedPeriodView()
+    }
+
+    func didReceiveBlockTime(_ blockTime: BlockTime) {
+        self.blockTime = blockTime
+
+        updateLockedAmountView()
+        updateLockedPeriodView()
+    }
 
     func didReceiveError(_ error: ReferendumVoteSetupInteractorError) {
         logger.error("Did receive setup error: \(error)")

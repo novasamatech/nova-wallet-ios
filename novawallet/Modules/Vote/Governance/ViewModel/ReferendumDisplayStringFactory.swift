@@ -15,7 +15,7 @@ protocol ReferendumDisplayStringFactoryProtocol {
 final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtocol {
     let formatterFactory: AssetBalanceFormatterFactoryProtocol
 
-    init(formatterFactory: AssetBalanceFormatterFactoryProtocol) {
+    init(formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()) {
         self.formatterFactory = formatterFactory
     }
 

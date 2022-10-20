@@ -10,6 +10,8 @@ protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveAmountInputPrice(viewModel: String?)
     func didReceiveVotes(viewModel: String)
     func didReceiveConviction(viewModel: UInt)
+    func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel)
+    func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel)
 }
 
 protocol ReferendumVoteSetupPresenterProtocol: AnyObject {

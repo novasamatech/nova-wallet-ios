@@ -166,6 +166,14 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
             rootView.convictionView.slider.value = viewModel
         }
     }
+
+    func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel) {
+        rootView.bindLockAmount(viewModel: viewModel)
+    }
+
+    func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel) {
+        rootView.bindLockPeriod(viewModel: viewModel)
+    }
 }
 
 extension ReferendumVoteSetupViewController: AmountInputAccessoryViewDelegate {
