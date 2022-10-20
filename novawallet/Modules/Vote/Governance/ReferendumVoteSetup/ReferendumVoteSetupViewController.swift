@@ -83,11 +83,6 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
         rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(preferredLanguages: languages)
         rootView.lockPeriodTitleLabel.text = R.string.localizable.commonLockingPeriod(preferredLanguages: languages)
 
-        rootView.feeView.locale = selectedLocale
-
-        let hint = R.string.localizable.govVoteSetupHint(preferredLanguages: languages)
-        rootView.hintListView.bind(texts: [hint])
-
         rootView.nayButton.imageWithTitleView?.title = R.string.localizable.governanceNay(preferredLanguages: languages)
         rootView.ayeButton.imageWithTitleView?.title = R.string.localizable.governanceAye(preferredLanguages: languages)
 
@@ -147,10 +142,6 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
 
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
-    }
-
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.feeView.bind(viewModel: viewModel)
     }
 
     func didReceiveAmountInputPrice(viewModel: String?) {

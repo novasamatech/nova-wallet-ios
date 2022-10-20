@@ -6,7 +6,6 @@ protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveBalance(viewModel: String)
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmountInputPrice(viewModel: String?)
     func didReceiveVotes(viewModel: String)
     func didReceiveConviction(viewModel: UInt)

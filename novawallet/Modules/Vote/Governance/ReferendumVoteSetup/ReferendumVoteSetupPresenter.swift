@@ -70,25 +70,6 @@ final class ReferendumVoteSetupPresenter {
         return balance - fee
     }
 
-    private func updateFeeView() {
-        let optAssetInfo = chain.utilityAssets().first?.displayInfo
-        if let fee = fee, let assetInfo = optAssetInfo {
-            let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
-                precision: assetInfo.assetPrecision
-            ) ?? 0.0
-
-            let viewModel = balanceViewModelFactory.balanceFromPrice(
-                feeDecimal,
-                priceData: priceData
-            ).value(for: selectedLocale)
-
-            view?.didReceiveFee(viewModel: viewModel)
-        } else {
-            view?.didReceiveFee(viewModel: nil)
-        }
-    }
-
     private func updateAvailableBalanceView() {
         if let assetBalance = assetBalance {
             let precision = chain.utilityAsset()?.displayInfo.assetPrecision ?? 0
@@ -215,7 +196,6 @@ final class ReferendumVoteSetupPresenter {
         updateVotesView()
         updateLockedAmountView()
         updateLockedPeriodView()
-        updateFeeView()
     }
 
     private func deriveNewVote() -> ReferendumNewVote? {
@@ -319,6 +299,8 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
+        interactor.refreshBlockTime()
+
         updateLockedAmountView()
         updateLockedPeriodView()
     }
@@ -363,7 +345,6 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         priceData = price
 
         updateAmountPriceView()
-        updateFeeView()
     }
 
     func didReceiveVotingReferendum(_ referendum: ReferendumLocal) {
@@ -373,7 +354,6 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
     func didReceiveFee(_ fee: BigUInt) {
         self.fee = fee
 
-        updateFeeView()
         updateAmountPriceView()
         provideAmountInputViewModelIfRate()
     }
