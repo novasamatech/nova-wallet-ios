@@ -2198,6 +2198,7 @@
 		880855FA28D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855F928D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift */; };
 		880855FC28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855FB28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift */; };
 		88107D5F290133F8001AB0B0 /* RoundedView+Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88107D5E290133F8001AB0B0 /* RoundedView+Styles.swift */; };
+		88107D6129015FAB001AB0B0 /* TrackTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88107D6029015FAB001AB0B0 /* TrackTagsView.swift */; };
 		882808C829009CA500AE8089 /* DotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882808C729009CA500AE8089 /* DotsView.swift */; };
 		882808CA29009CDC00AE8089 /* UIView+frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882808C929009CDC00AE8089 /* UIView+frame.swift */; };
 		8828C05828B4A67000555CB6 /* Prism.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8828C05728B4A67000555CB6 /* Prism.swift */; };
@@ -5087,6 +5088,7 @@
 		880855F928D0BAA2004255E7 /* CrowdloanContributionLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		880855FB28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		88107D5E290133F8001AB0B0 /* RoundedView+Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedView+Styles.swift"; sourceTree = "<group>"; };
+		88107D6029015FAB001AB0B0 /* TrackTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTagsView.swift; sourceTree = "<group>"; };
 		8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewFactory.swift; sourceTree = "<group>"; };
 		882808C729009CA500AE8089 /* DotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotsView.swift; sourceTree = "<group>"; };
 		882808C929009CDC00AE8089 /* UIView+frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+frame.swift"; sourceTree = "<group>"; };
@@ -12128,6 +12130,7 @@
 				88A95FA728FAA99D00BE26F3 /* ReferendumDAppView.swift */,
 				88FAE78728FCF8E200130B47 /* ReferendumDetailsTitleView.swift */,
 				88F34FD128FF045400712BDE /* BindableView.swift */,
+				88107D6029015FAB001AB0B0 /* TrackTagsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -15906,6 +15909,7 @@
 				8496ADE0276B152500306B24 /* NSDictionary+Map.swift in Sources */,
 				84300B2826C107AD00D64514 /* ConnectionAutobalancing.swift in Sources */,
 				BD571417BD18C711B76E1D62 /* ExportSeedWireframe.swift in Sources */,
+				88107D6129015FAB001AB0B0 /* TrackTagsView.swift in Sources */,
 				841816732824FD0A0007684A /* StorageListSyncService.swift in Sources */,
 				8463A73825E3AA47003B8160 /* AccountInfo.swift in Sources */,
 				ABA3D873BBECB7F4BD670872 /* ExportSeedPresenter.swift in Sources */,
