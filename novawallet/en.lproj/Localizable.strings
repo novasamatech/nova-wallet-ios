@@ -1026,3 +1026,9 @@
 "gov.common.votes.format" = "%@ votes";
 "gov.common.amount.conviction.format" = "%@ × %@x";
 "gov.voters.empty" = "When somebody votes for\nthe referendum they will appear here";
+"gov.vote.conviction.title" = "Multiply votes by increasing locking period";
+"common.gov.lock" = "Governance lock";
+"common.locking.period" = "Locking period";
+"gov.vote.setup.hint" = "After locking period don’t forget to unlock your tokens";
+"gov.vote.setup.title.format" = "Vote for Referendum %@";
+"common.available.prefix" = "Available:";

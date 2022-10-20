@@ -166,6 +166,7 @@ class DiscreteGradientSlider: UIControl {
             let newDots: [RoundedView] = (0 ..< addCount).map { _ in
                 let dotView = RoundedView()
                 dotView.shadowOpacity = 0.0
+                dotView.isUserInteractionEnabled = false
                 return dotView
             }
 
