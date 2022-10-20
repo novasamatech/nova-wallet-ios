@@ -9,6 +9,8 @@ struct ReferendumVoteSetupViewFactory {
         referendum: ReferendumIdLocal
     ) -> ReferendumVoteSetupViewProtocol? {
         guard
+            let chain = state.settings.value,
+            let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
@@ -20,7 +22,27 @@ struct ReferendumVoteSetupViewFactory {
 
         let wireframe = ReferendumVoteSetupWireframe()
 
-        let presenter = ReferendumVoteSetupPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+
+        let presenter = ReferendumVoteSetupPresenter(
+            chain: chain,
+            referendumIndex: referendum,
+            balanceViewModelFactory: balanceViewModelFactory,
+            referendumFormatter: NumberFormatter.index.localizableResource(),
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
         let view = ReferendumVoteSetupViewController(
             presenter: presenter,
@@ -38,29 +60,30 @@ struct ReferendumVoteSetupViewFactory {
         referendum: ReferendumIdLocal,
         currencyManager: CurrencyManagerProtocol
     ) -> ReferendumVoteSetupInteractor? {
+        let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
+
         guard
             let chain = state.settings.value,
-            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
-                for: chain.accountRequest()
-            ),
+            let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
             let subscriptionFactory = state.subscriptionFactory,
             let blockTimeService = state.blockTimeService
         else {
             return nil
         }
 
-        let chainRegistry = state.chainRegistry
-
         guard
-            let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let connection = state.chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return nil
         }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
 
-        let requestFactory = StorageRequestFactory(remoteFactory: StorageKeyFactory(), operationManager: operationManager)
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
 
         let lockStateFactory = Gov2LockStateFactory(requestFactory: requestFactory)
 

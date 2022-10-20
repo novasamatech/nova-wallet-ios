@@ -1,5 +1,14 @@
 import BigInt
-protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {}
+import CommonWallet
+
+protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
+    func didReceive(referendumNumber: String)
+    func didReceiveBalance(viewModel: String)
+    func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
+    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveAmountInputPrice(viewModel: String?)
+}
 
 protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func setup()
@@ -25,4 +34,4 @@ protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOu
     func didReceiveError(_ error: ReferendumVoteSetupInteractorError)
 }
 
-protocol ReferendumVoteSetupWireframeProtocol: AnyObject {}
+protocol ReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable {}
