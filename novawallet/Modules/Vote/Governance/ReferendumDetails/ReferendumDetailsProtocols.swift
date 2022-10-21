@@ -10,6 +10,7 @@ protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
 
 protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
+    func vote()
 }
 
 protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
@@ -39,4 +40,6 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
         actionDetails: ReferendumActionLocal,
         identities: [AccountAddress: AccountIdentity]
     )
+
+    func showVote(from view: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal)
 }

@@ -62,8 +62,7 @@ extension ReferendumVoteConfirmInteractor: ReferendumVoteConfirmInteractorInputP
             )
         }
 
-        extrinsicService.submit(closure, signer: signer, runningIn: .main) { [weak self] result in
-
+        extrinsicService.submit(closure, signer: signer, runningIn: .main) { [weak self] _ in
         }
     }
 }
