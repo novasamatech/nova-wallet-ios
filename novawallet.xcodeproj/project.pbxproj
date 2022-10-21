@@ -2200,6 +2200,9 @@
 		88107D5F290133F8001AB0B0 /* RoundedView+Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88107D5E290133F8001AB0B0 /* RoundedView+Styles.swift */; };
 		88107D6129015FAB001AB0B0 /* TrackTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88107D6029015FAB001AB0B0 /* TrackTagsView.swift */; };
 		8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */; };
+		8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */; };
+		8824D42629032B410022D778 /* BlurredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D42529032B410022D778 /* BlurredView.swift */; };
+		8824D42829032BF60022D778 /* ReferendumStateLocal+Presenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D42729032BF60022D778 /* ReferendumStateLocal+Presenter.swift */; };
 		882808C829009CA500AE8089 /* DotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882808C729009CA500AE8089 /* DotsView.swift */; };
 		882808CA29009CDC00AE8089 /* UIView+frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882808C929009CDC00AE8089 /* UIView+frame.swift */; };
 		8828C05828B4A67000555CB6 /* Prism.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8828C05728B4A67000555CB6 /* Prism.swift */; };
@@ -5092,6 +5095,9 @@
 		88107D6029015FAB001AB0B0 /* TrackTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTagsView.swift; sourceTree = "<group>"; };
 		8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewFactory.swift; sourceTree = "<group>"; };
 		8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsInteractor.swift; sourceTree = "<group>"; };
+		8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrettyPrintedJSONOperationFactory.swift; sourceTree = "<group>"; };
+		8824D42529032B410022D778 /* BlurredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredView.swift; sourceTree = "<group>"; };
+		8824D42729032BF60022D778 /* ReferendumStateLocal+Presenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumStateLocal+Presenter.swift"; sourceTree = "<group>"; };
 		882808C729009CA500AE8089 /* DotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotsView.swift; sourceTree = "<group>"; };
 		882808C929009CDC00AE8089 /* UIView+frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+frame.swift"; sourceTree = "<group>"; };
 		8828C05728B4A67000555CB6 /* Prism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prism.swift; sourceTree = "<group>"; };
@@ -9379,6 +9385,7 @@
 				848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */,
 				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
 				84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */,
+				8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -12037,6 +12044,7 @@
 				57CDCB8CF3D8EBE5DA7A5A30 /* ReferendumFullDetailsViewLayout.swift */,
 				369C65964F4D7E8D02EEC5EC /* ReferendumFullDetailsViewFactory.swift */,
 				8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */,
+				8824D42729032BF60022D778 /* ReferendumStateLocal+Presenter.swift */,
 			);
 			path = ReferendumFullDetails;
 			sourceTree = "<group>";
@@ -12134,6 +12142,7 @@
 				88FAE78728FCF8E200130B47 /* ReferendumDetailsTitleView.swift */,
 				88F34FD128FF045400712BDE /* BindableView.swift */,
 				88107D6029015FAB001AB0B0 /* TrackTagsView.swift */,
+				8824D42529032B410022D778 /* BlurredView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -14848,6 +14857,7 @@
 				8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */,
 				88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */,
 				AEA2C1BA2681E9C50069492E /* ValidatorSearchInteractor.swift in Sources */,
+				8824D42629032B410022D778 /* BlurredView.swift in Sources */,
 				84585A2F251BFC8400390F7A /* TriangularedButton+Style.swift in Sources */,
 				84C6801A24D75E2A00006BF5 /* BorderedSubtitleActionView+Inspectable.swift in Sources */,
 				84FACCD425F8B07B00F32ED4 /* ReceiveAccountViewModel.swift in Sources */,
@@ -15132,6 +15142,7 @@
 				846A835F28B8D94300D92892 /* MessageSheetNoContentView.swift in Sources */,
 				845B811F28F451A40040CE84 /* Gov2ActionOperationFactory.swift in Sources */,
 				84754CA22513DB8800854599 /* EmptyAccountIcon.swift in Sources */,
+				8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */,
 				AEA0C8C6268131C500F9666F /* InitiatedBondingSelectedValidatorsListWireframe.swift in Sources */,
 				880059E328EF128000E87B9B /* ReferendumInfoView.swift in Sources */,
 				84CE69922565244700559427 /* WalletAccountOpenCommand.swift in Sources */,
@@ -16010,6 +16021,7 @@
 				84F3B27827F4179A00D64CF5 /* PhishingSiteMapper.swift in Sources */,
 				0678271BE1BA5BBC084F478A /* RecommendedValidatorListWireframe.swift in Sources */,
 				F441BE0E263984DD0096B67B /* BondExtraCall.swift in Sources */,
+				8824D42829032BF60022D778 /* ReferendumStateLocal+Presenter.swift in Sources */,
 				84FB9E20285C5C9E00B42FC0 /* XcmJunction.swift in Sources */,
 				84EBA4F027AD26A5000AEEAD /* AssetBalanceId.swift in Sources */,
 				8436B6DC2848998200F24360 /* StakingAccountDetailsViewModelFactory.swift in Sources */,

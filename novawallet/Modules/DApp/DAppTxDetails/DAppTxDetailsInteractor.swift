@@ -6,43 +6,23 @@ final class DAppTxDetailsInteractor {
     weak var presenter: DAppTxDetailsInteractorOutputProtocol?
 
     let txDetails: JSON
-    let preprocessor: JSONPrettyPrinting
+    let prettyPrintedJSONOperationFactory: PrettyPrintedJSONOperationFactoryProtocol
     let operationQueue: OperationQueue
 
-    init(txDetails: JSON, preprocessor: JSONPrettyPrinting, operationQueue: OperationQueue) {
+    init(
+        txDetails: JSON,
+        prettyPrintedJSONOperationFactory: PrettyPrintedJSONOperationFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
         self.txDetails = txDetails
-        self.preprocessor = preprocessor
+        self.prettyPrintedJSONOperationFactory = prettyPrintedJSONOperationFactory
         self.operationQueue = operationQueue
-    }
-
-    private func createProcessingOperation(
-        for details: JSON,
-        preprocessor: JSONPrettyPrinting
-    ) -> BaseOperation<String> {
-        ClosureOperation<String> {
-            let prettyPrintedJson = preprocessor.prettyPrinted(from: details)
-
-            if case let .stringValue(value) = prettyPrintedJson {
-                return value
-            } else {
-                let encoder = JSONEncoder()
-                encoder.outputFormatting = .prettyPrinted
-
-                let data = try encoder.encode(prettyPrintedJson)
-
-                if let displayString = String(data: data, encoding: .utf8) {
-                    return displayString
-                } else {
-                    throw CommonError.undefined
-                }
-            }
-        }
     }
 }
 
 extension DAppTxDetailsInteractor: DAppTxDetailsInteractorInputProtocol {
     func setup() {
-        let operation = createProcessingOperation(for: txDetails, preprocessor: preprocessor)
+        let operation = prettyPrintedJSONOperationFactory.createProcessingOperation(for: txDetails)
 
         operation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
