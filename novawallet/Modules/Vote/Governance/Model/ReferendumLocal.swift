@@ -3,6 +3,7 @@ import BigInt
 import SubstrateSdk
 
 typealias ReferendumIdLocal = UInt
+typealias TrackIdLocal = UInt
 
 struct ReferendumLocal {
     let index: ReferendumIdLocal
