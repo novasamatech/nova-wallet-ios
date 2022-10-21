@@ -1027,3 +1027,5 @@
 "gov.common.votes.format" = "%@ голосов";
 "gov.common.amount.conviction.format" = "%@ × %@x";
 "gov.voters.empty" = "Когда кто-нибудь проголосует\nза референдум они будут отображаться здесь";
+"gov.referendum.details.dApps.title" = "Использовать Nova DApp браузер";
+"gov.referendum.details.timeline.title" = "Статусы";

@@ -3,11 +3,11 @@ import UIKit
 final class YourVotesView: UIView {
     let topLine = createSeparator(color: R.color.colorWhite8())
     let ayeView: YourVoteView = .create {
-        $0.typeView.titleLabel.apply(style: .ayeType)
+        $0.apply(style: .aye)
     }
 
     let nayView: YourVoteView = .create {
-        $0.typeView.titleLabel.apply(style: .nayType)
+        $0.apply(style: .nay)
     }
 
     override init(frame: CGRect) {
@@ -61,6 +61,13 @@ final class YourVoteView: UIView {
     }
 
     let voteLabel = UILabel(style: .votes, textAlignment: .left)
+    lazy var content: UIStackView = UIView.hStack(
+        spacing: 6,
+        [
+            typeView,
+            voteLabel
+        ]
+    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -74,14 +81,6 @@ final class YourVoteView: UIView {
     }
 
     private func setupLayout() {
-        let content = UIView.hStack(
-            spacing: 6,
-            [
-                typeView,
-                voteLabel
-            ]
-        )
-
         voteLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         addSubview(content)
         content.snp.makeConstraints {
@@ -100,6 +99,52 @@ extension YourVoteView {
         typeView.titleLabel.text = viewModel?.title
         voteLabel.text = viewModel?.description
     }
+}
+
+extension YourVoteView {
+    struct Style {
+        let voteLabel: UILabel.Style
+        let typeView: UILabel.Style
+        let mode: Mode
+
+        enum Mode {
+            case titleType, typeTitle
+        }
+    }
+
+    func apply(style: Style) {
+        voteLabel.apply(style: style.voteLabel)
+        typeView.titleLabel.apply(style: style.typeView)
+        switch style.mode {
+        case .titleType:
+            content.semanticContentAttribute = .forceRightToLeft
+        case .typeTitle:
+            content.semanticContentAttribute = .unspecified
+        }
+    }
+}
+
+extension YourVoteView.Style {
+    static let aye = YourVoteView.Style(
+        voteLabel: .votes,
+        typeView: .ayeType,
+        mode: .typeTitle
+    )
+    static let nay = YourVoteView.Style(
+        voteLabel: .votes,
+        typeView: .ayeType,
+        mode: .typeTitle
+    )
+    static let ayeInverse = YourVoteView.Style(
+        voteLabel: .votes,
+        typeView: .ayeType,
+        mode: .titleType
+    )
+    static let nayInverse = YourVoteView.Style(
+        voteLabel: .votes,
+        typeView: .ayeType,
+        mode: .titleType
+    )
 }
 
 extension UILabel.Style {

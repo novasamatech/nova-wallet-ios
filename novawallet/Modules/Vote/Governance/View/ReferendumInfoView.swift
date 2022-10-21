@@ -165,7 +165,7 @@ extension IconDetailsView.Style {
     )
 }
 
-extension UILabel.Style {
+private extension UILabel.Style {
     static let positiveStatusLabel = UILabel.Style(
         textColor: R.color.colorGreen15CF37(),
         font: .semiBoldCaps1
@@ -182,7 +182,9 @@ extension UILabel.Style {
         textColor: .white,
         font: .regularSubheadline
     )
+}
 
+extension UILabel.Style {
     static let track = UILabel.Style(
         textColor: R.color.colorWhite64(),
         font: .semiBoldCaps1
@@ -193,6 +195,6 @@ extension RoundedView.Style {
     static let referendum = RoundedView.Style(
         fillColor: R.color.colorWhite8()!,
         highlightedFillColor: R.color.colorAccentSelected()!,
-        cornerRadius: 8
+        rounding: .init(radius: 8, corners: .allCorners)
     )
 }
