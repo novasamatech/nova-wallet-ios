@@ -1033,3 +1033,5 @@
 "gov.vote.setup.title.format" = "Vote for %@";
 "common.available.prefix" = "Available:";
 "common.maximum" = "%@ maximum";
+"gov.referendum.details.dApps.title" = "Use Nova DApp browser";
+"gov.referendum.details.timeline.title" = "Timeline";

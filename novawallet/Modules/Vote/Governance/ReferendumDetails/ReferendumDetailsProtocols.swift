@@ -1,4 +1,12 @@
-protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {}
+protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
+    func didReceive(votingDetails: ReferendumVotingStatusDetailsView.Model)
+    func didReceive(title: String, dAppModels: [ReferendumDAppView.Model])
+    func didReceive(title: String, timelineModel: ReferendumTimelineView.Model?)
+    func didReceive(titleModel: ReferendumDetailsTitleView.Model)
+    func didReceive(yourVoteModel: YourVoteRow.Model?)
+    func didReceive(requestedAmount: RequestedAmountRow.Model?)
+    func didReceive(trackTagsModel: TrackTagsView.Model?)
+}
 
 protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
