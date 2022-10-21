@@ -23,8 +23,22 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
+
         presenter.setup()
         setSamples()
+    }
+
+    private func setupHandlers() {
+        rootView.votingDetailsRow.voteButton.addTarget(
+            self,
+            action: #selector(actionVote),
+            for: .touchUpInside
+        )
+    }
+
+    @objc private func actionVote() {
+        presenter.vote()
     }
 
     private func setSamples() {

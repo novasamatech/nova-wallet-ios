@@ -39,6 +39,10 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func vote() {
+        wireframe.showVote(from: view, referendum: referendum)
+    }
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {

@@ -10,7 +10,7 @@ final class ReferendumDetailsViewLayout: UIView {
     }()
 
     let titleView = ReferendumDetailsTitleView()
-    let votingDetailsRow = VotingDetailsRow(frame: .zero)
+    let votingDetailsRow = ReferendumVotingStatusDetailsView()
     let dAppsTableView = StackTableView()
     var timelineTableView = StackTableView()
 
