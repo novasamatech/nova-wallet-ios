@@ -45,11 +45,17 @@ extension ReferendumFullDetailsViewController: ReferendumFullDetailsViewProtocol
         supportCurve: TitleWithSubtitleViewModel?,
         callHash: TitleWithSubtitleViewModel?
     ) {
-        rootView.approveCurve.titleLabel.text = approveCurve?.title
-        rootView.approveCurve.detailsLabel.text = approveCurve?.subtitle
-        rootView.supportCurve.titleLabel.text = supportCurve?.title
-        rootView.supportCurve.detailsLabel.text = supportCurve?.subtitle
-        rootView.callHash.titleLabel.text = callHash?.title
-        rootView.callHash.detailsLabel.text = callHash?.subtitle
+        rootView.update(approveCurveModel: approveCurve)
+        rootView.update(supportCurveModel: supportCurve)
+        rootView.update(callHashModel: callHash)
+    }
+
+    func didReceive(amountSpendDetails: AmountSpendDetailsTableView.Model?) {
+        rootView.update(amountSpendDetails: amountSpendDetails)
+    }
+
+    func didReceive(deposit: MultiValueView.Model, title: String) {
+        rootView.depositTableCell.titleLabel.text = title
+        rootView.depositTableCell.rowContentView.valueView.bind(viewModel: deposit)
     }
 }

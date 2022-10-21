@@ -11,15 +11,16 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
     let accountDetailsTableView = StackTableView()
     var referendumDetailsTableView = StackTableView()
+    var amountSpendDetailsTableView: AmountSpendDetailsTableView?
+    lazy var beneficiaryTableCell = StackInfoTableCell()
+    lazy var requestedAmountTableCell = StackTitleMultiValueCell()
 
     var proposerTableCell: StackInfoTableCell?
     let depositTableCell = StackTitleMultiValueCell()
 
-    let approveCurve = StackTableCell()
-    let supportCurve = StackTableCell()
-    let callHash: StackInfoTableCell = .create {
-        $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
-    }
+    var approveCurve: StackTableCell?
+    var supportCurve: StackTableCell?
+    var callHash: StackInfoTableCell?
 
     let jsonTitle: UILabel = .init(style: .rowTitle)
     let jsonView: BlurredView<UITextView> = .create {
@@ -44,11 +45,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
         containerView.stackView.spacing = 8
         containerView.stackView.addArrangedSubview(accountDetailsTableView)
         containerView.stackView.addArrangedSubview(referendumDetailsTableView)
-
         accountDetailsTableView.addArrangedSubview(depositTableCell)
-        referendumDetailsTableView.addArrangedSubview(approveCurve)
-        referendumDetailsTableView.addArrangedSubview(supportCurve)
-        referendumDetailsTableView.addArrangedSubview(callHash)
         containerView.stackView.addArrangedSubview(jsonTitle)
         containerView.stackView.addArrangedSubview(jsonView)
     }
@@ -68,6 +65,65 @@ final class ReferendumFullDetailsViewLayout: UIView {
         proposerTableCell?.bind(viewModel: proposerModel.model)
     }
 
+    func update(amountSpendDetails: AmountSpendDetailsTableView.Model?) {
+        guard let amountSpendDetails = amountSpendDetails else {
+            amountSpendDetailsTableView?.removeFromSuperview()
+            amountSpendDetailsTableView = nil
+            return
+        }
+        if amountSpendDetailsTableView == nil {
+            amountSpendDetailsTableView = .init()
+            accountDetailsTableView.addArrangedSubview(beneficiaryTableCell)
+            accountDetailsTableView.addArrangedSubview(requestedAmountTableCell)
+        }
+        beneficiaryTableCell.titleLabel.text = amountSpendDetails.beneficiary.title
+        beneficiaryTableCell.bind(viewModel: amountSpendDetails.beneficiary.model)
+        requestedAmountTableCell.titleLabel.text = amountSpendDetails.requestedAmount.title
+        requestedAmountTableCell.rowContentView.valueView.bind(viewModel: amountSpendDetails.requestedAmount.model)
+    }
+
+    func update(approveCurveModel: TitleWithSubtitleViewModel?) {
+        guard let model = approveCurveModel else {
+            approveCurve?.removeFromSuperview()
+            approveCurve = nil
+            return
+        }
+        if approveCurve == nil {
+            approveCurve = .init()
+            approveCurve.map(referendumDetailsTableView.addArrangedSubview)
+        }
+        approveCurve?.titleLabel.text = model.title
+        approveCurve?.detailsLabel.text = model.subtitle
+    }
+
+    func update(supportCurveModel: TitleWithSubtitleViewModel?) {
+        guard let model = supportCurveModel else {
+            supportCurve?.removeFromSuperview()
+            supportCurve = nil
+            return
+        }
+        if supportCurve == nil {
+            supportCurve = .init()
+            supportCurve.map(referendumDetailsTableView.addArrangedSubview)
+        }
+        supportCurve?.titleLabel.text = model.title
+        supportCurve?.detailsLabel.text = model.subtitle
+    }
+
+    func update(callHashModel: TitleWithSubtitleViewModel?) {
+        guard let model = callHashModel else {
+            callHash?.removeFromSuperview()
+            callHash = nil
+            return
+        }
+        if callHash == nil {
+            callHash = .init()
+            callHash.map(referendumDetailsTableView.addArrangedSubview)
+        }
+        callHash?.titleLabel.text = model.title
+        callHash?.detailsLabel.text = model.subtitle
+    }
+
     private func createStackInfoCell(title: String) -> StackInfoTableCell {
         let proposerCell = StackInfoTableCell()
         proposerCell.rowContentView.valueView.mode = .iconDetails
@@ -85,7 +141,6 @@ extension ProposerTableCell {
 }
 
 typealias AmountSpendDetailsTableView = StackTableView
-
 extension AmountSpendDetailsTableView {
     struct Model {
         let beneficiary: BeneficiaryModel
@@ -99,56 +154,6 @@ extension AmountSpendDetailsTableView {
 
     struct RequestedAmountModel {
         let title: String
-        let model: StackCellViewModel?
-    }
-}
-
-class BlurredView<TContentView>: UIView where TContentView: UIView {
-    let view: TContentView = .init()
-    let backgroundBlurView = TriangularedBlurView()
-
-    var contentInsets: UIEdgeInsets = .init(top: 0, left: 16, bottom: 0, right: 16) {
-        didSet {
-            updateLayout()
-        }
-    }
-
-    var innerInsets: UIEdgeInsets = .zero {
-        didSet {
-            updateLayout()
-        }
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        backgroundColor = .clear
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupLayout() {
-        addSubview(backgroundBlurView)
-        backgroundBlurView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(contentInsets)
-        }
-
-        backgroundBlurView.addSubview(view)
-        view.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(innerInsets)
-        }
-    }
-
-    private func updateLayout() {
-        backgroundBlurView.snp.updateConstraints {
-            $0.edges.equalToSuperview().inset(contentInsets)
-        }
-        view.snp.updateConstraints {
-            $0.edges.equalToSuperview().inset(innerInsets)
-        }
+        let model: MultiValueView.Model
     }
 }
