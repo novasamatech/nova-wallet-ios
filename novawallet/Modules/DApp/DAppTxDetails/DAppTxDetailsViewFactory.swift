@@ -4,9 +4,10 @@ import SoraFoundation
 
 struct DAppTxDetailsViewFactory {
     static func createView(from txDetails: JSON) -> DAppTxDetailsViewProtocol? {
+        let processingOperationFactory = PrettyPrintedJSONOperationFactory(preprocessor: ExtrinsicJSONProcessor())
         let interactor = DAppTxDetailsInteractor(
             txDetails: txDetails,
-            preprocessor: ExtrinsicJSONProcessor(),
+            prettyPrintedJSONOperationFactory: processingOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
