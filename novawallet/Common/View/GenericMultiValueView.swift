@@ -62,7 +62,7 @@ class GenericMultiValueView<BottomView: UIView>: UIView {
         return label
     }()
 
-    let valueBottom = BottomView()
+    let valueBottom: BottomView
 
     var spacing: CGFloat {
         get {
@@ -80,7 +80,15 @@ class GenericMultiValueView<BottomView: UIView>: UIView {
         return view
     }()
 
+    init(valueBottom: BottomView = BottomView()) {
+        self.valueBottom = valueBottom
+        super.init(frame: .zero)
+
+        setupLayout()
+    }
+
     override init(frame: CGRect) {
+        valueBottom = .init()
         super.init(frame: frame)
 
         setupLayout()
