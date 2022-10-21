@@ -12,7 +12,7 @@ final class ReferendumDetailsViewLayout: UIView {
     let titleView = ReferendumDetailsTitleView()
     let votingDetailsRow = VotingDetailsRow(frame: .zero)
     let dAppsTableView = StackTableView()
-    let timelineRow = TimelineRow(frame: .zero)
+    var timelineTableView = StackTableView()
 
     var yourVoteRow: YourVoteRow?
     var requestedAmountRow: RequestedAmountRow?
@@ -42,13 +42,30 @@ final class ReferendumDetailsViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(votingDetailsRow)
         containerView.stackView.addArrangedSubview(dAppsTableView)
-        containerView.stackView.addArrangedSubview(timelineRow)
+        containerView.stackView.addArrangedSubview(timelineTableView)
         containerView.stackView.addArrangedSubview(fullDetailsView)
+
+        timelineTableView.apply(style: .cellWithoutHighlighting)
+        dAppsTableView.apply(style: .cellWithoutHighlighting)
     }
 
-    func setDApps(models: [ReferendumDAppView.Model]) {
+    func setTimeline(title: String, model: ReferendumTimelineView.Model?) {
+        timelineTableView.clear()
+        guard let model = model else {
+            return
+        }
+        let headerView = createHeader(with: title)
+        let timelineRow = TimelineRow(frame: .zero)
+        timelineRow.bind(viewModel: model)
+        timelineTableView.stackView.addArrangedSubview(headerView)
+        timelineTableView.stackView.addArrangedSubview(timelineRow)
+    }
+
+    func setDApps(title: String, models: [ReferendumDAppView.Model]) {
         dAppsTableView.clear()
 
+        let headerView = createHeader(with: title)
+        dAppsTableView.stackView.addArrangedSubview(headerView)
         for model in models {
             let dAppView = ReferendumDAppCellView(frame: .zero)
             dAppView.rowContentView.bind(viewModel: model)
@@ -80,5 +97,13 @@ final class ReferendumDetailsViewLayout: UIView {
             requestedAmountRow = requestedAmountView
         }
         requestedAmountRow?.bind(viewModel: requestedAmountViewModel)
+    }
+
+    private func createHeader(with text: String) -> StackTableHeaderCell {
+        let headerView = StackTableHeaderCell()
+        headerView.titleLabel.apply(style: .footnoteWhite64)
+        headerView.titleLabel.text = text
+        headerView.contentInsets = .init(top: 16, left: 16, bottom: 8, right: 16)
+        return headerView
     }
 }
