@@ -60,13 +60,16 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         ))
 
         let iconUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!
-        didReceive(dAppModels: [
-            .init(
-                icon: RemoteImageViewModel(url: iconUrl),
-                title: "Polkassembly",
-                subtitle: "Comment and react"
-            )
-        ])
+        didReceive(
+            title: "Use Nova DApp browser",
+            dAppModels: [
+                .init(
+                    icon: RemoteImageViewModel(url: iconUrl),
+                    title: "Polkassembly",
+                    subtitle: "Comment and react"
+                )
+            ]
+        )
 
         let metaAccount = MetaAccountModel(
             metaId: UUID().uuidString,
@@ -97,11 +100,14 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         )
         )
 
-        didReceive(timelineModel: .init(title: "Timeline", statuses: [
-            .init(title: "One", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
-            .init(title: "Two", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
-            .init(title: "Three", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
-        ]))
+        didReceive(
+            title: "Timeline",
+            timelineModel: .init(title: "Timeline", statuses: [
+                .init(title: "One", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
+                .init(title: "Two", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
+                .init(title: "Three", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
+            ])
+        )
 
         rootView.fullDetailsView.bind(title: "Full details")
 
@@ -122,12 +128,12 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
         rootView.votingDetailsRow.bind(viewModel: votingDetails)
     }
 
-    func didReceive(dAppModels: [ReferendumDAppView.Model]) {
-        rootView.setDApps(title: "Use Nova DApp browser", models: dAppModels)
+    func didReceive(title: String, dAppModels: [ReferendumDAppView.Model]) {
+        rootView.setDApps(title: title, models: dAppModels)
     }
 
-    func didReceive(timelineModel: ReferendumTimelineView.Model?) {
-        rootView.setTimeline(title: "Timeline", model: timelineModel)
+    func didReceive(title: String, timelineModel: ReferendumTimelineView.Model?) {
+        rootView.setTimeline(title: title, model: timelineModel)
     }
 
     func didReceive(titleModel: ReferendumDetailsTitleView.Model) {
