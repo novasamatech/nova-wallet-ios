@@ -1,9 +1,6 @@
 import UIKit
 
 final class ReferendumVoteSetupViewLayout: UIView {
-    typealias MappingView = GenericPairValueView<IconDetailsView, UILabel>
-    typealias ChangesView = GenericPairValueView<MappingView, IconDetailsView>
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
@@ -42,21 +39,17 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockedAmountView.titleView.detailsLabel
     }
 
-    let lockedAmountView: GenericTitleValueView<IconDetailsView, ChangesView> = {
-        let view = ReferendumVoteSetupViewLayout.createMultiValueView()
+    let lockedAmountView: TitleValueDiffView = .create { view in
         view.titleView.imageView.image = R.image.iconGovAmountLock()
-        return view
-    }()
+    }
 
     var lockPeriodTitleLabel: UILabel {
         lockedPeriodView.titleView.detailsLabel
     }
 
-    let lockedPeriodView: GenericTitleValueView<IconDetailsView, ChangesView> = {
-        let view = ReferendumVoteSetupViewLayout.createMultiValueView()
+    let lockedPeriodView: TitleValueDiffView = .create { view in
         view.titleView.imageView.image = R.image.iconGovPeriodLock()
-        return view
-    }()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -69,40 +62,6 @@ final class ReferendumVoteSetupViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    func bindLockAmount(viewModel: ReferendumLockTransitionViewModel) {
-        bindLockTrasition(for: viewModel, view: lockedAmountView)
-
-        setNeedsLayout()
-    }
-
-    func bindLockPeriod(viewModel: ReferendumLockTransitionViewModel) {
-        bindLockTrasition(for: viewModel, view: lockedPeriodView)
-
-        setNeedsLayout()
-    }
-
-    private func bindLockTrasition(
-        for viewModel: ReferendumLockTransitionViewModel,
-        view: GenericTitleValueView<IconDetailsView, ChangesView>
-    ) {
-        let viewTop = view.valueView.fView
-        viewTop.fView.detailsLabel.text = viewModel.fromValue
-        viewTop.sView.text = viewModel.toValue
-
-        let viewBottom = view.valueView.sView
-
-        if let change = viewModel.change {
-            viewBottom.isHidden = false
-
-            viewBottom.detailsLabel.text = change.value
-
-            let icon = change.isIncrease ? R.image.iconAmountInc() : R.image.iconAmountDec()
-            viewBottom.imageView.image = icon
-        } else {
-            viewBottom.isHidden = true
-        }
     }
 
     private func setupLayout() {
@@ -162,39 +121,5 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockedPeriodView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
-    }
-
-    static func createMultiValueView() -> GenericTitleValueView<IconDetailsView, ChangesView> {
-        let view = GenericTitleValueView<IconDetailsView, ChangesView>()
-        view.titleView.spacing = 8.0
-        view.titleView.mode = .iconDetails
-        view.titleView.iconWidth = 16.0
-        view.titleView.detailsLabel.textColor = R.color.colorTransparentText()
-        view.titleView.detailsLabel.font = .regularFootnote
-        view.titleView.detailsLabel.numberOfLines = 1
-
-        view.valueView.setVerticalAndSpacing(0.0)
-        view.valueView.stackView.alignment = .trailing
-
-        let mappingView = view.valueView.fView
-        mappingView.setHorizontalAndSpacing(4.0)
-        mappingView.fView.iconWidth = 12.0
-        mappingView.fView.spacing = 4.0
-        mappingView.fView.mode = .detailsIcon
-        mappingView.fView.detailsLabel.textColor = R.color.colorTransparentText()
-        mappingView.fView.detailsLabel.font = .regularFootnote
-        mappingView.fView.detailsLabel.numberOfLines = 1
-        mappingView.fView.imageView.image = R.image.iconGovLockTransition()
-        mappingView.sView.textColor = R.color.colorWhite()
-        mappingView.sView.font = .regularFootnote
-
-        let changesView = view.valueView.sView
-        changesView.mode = .iconDetails
-        changesView.spacing = 0.0
-        changesView.detailsLabel.textColor = R.color.colorNovaBlue()
-        changesView.detailsLabel.font = .caption1
-        changesView.detailsLabel.numberOfLines = 1
-
-        return view
     }
 }
