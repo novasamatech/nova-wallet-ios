@@ -1,6 +1,7 @@
 import Foundation
 
 protocol ReferendumDecidingFunctionProtocol {
+    var curve: Referenda.Curve { get }
     func calculateThreshold(for block: BlockNumber) -> Decimal?
 }
 
