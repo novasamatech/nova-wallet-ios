@@ -84,7 +84,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
 
         didReceive(trackTagsModel: .init(
-            titleIcon: .init(title: "main agenda", icon: nil),
+            titleIcon: .init(title: "main agenda".uppercased(), icon: nil),
             referendumNumber: "224"
         ))
         didReceive(titleModel: .init(
@@ -123,11 +123,11 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     }
 
     func didReceive(dAppModels: [ReferendumDAppView.Model]) {
-        rootView.setDApps(models: dAppModels)
+        rootView.setDApps(title: "Use Nova DApp browser", models: dAppModels)
     }
 
-    func didReceive(timelineModel: ReferendumTimelineView.Model) {
-        rootView.timelineRow.bind(viewModel: timelineModel)
+    func didReceive(timelineModel: ReferendumTimelineView.Model?) {
+        rootView.setTimeline(title: "Timeline", model: timelineModel)
     }
 
     func didReceive(titleModel: ReferendumDetailsTitleView.Model) {

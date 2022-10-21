@@ -15,7 +15,7 @@ final class RequestedAmountRow: RowView<GenericMultiValueView<MultiValueView>> {
         rowContentView.valueBottom.apply(style: .accentAmount)
         rowContentView.valueBottom.valueTop.textAlignment = .left
         rowContentView.valueBottom.valueBottom.textAlignment = .left
-        roundedBackgroundView.apply(style: .roundedView)
+        roundedBackgroundView.apply(style: .cellWithoutHighlighting)
         contentInsets = .init(top: 16, left: 16, bottom: 16, right: 16)
         backgroundColor = .clear
         isUserInteractionEnabled = false

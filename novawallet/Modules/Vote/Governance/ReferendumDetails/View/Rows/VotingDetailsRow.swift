@@ -5,7 +5,7 @@ final class VotingDetailsRow: RowView<ReferendumVotingStatusDetailsView> {
         super.init(frame: frame)
 
         contentInsets = .zero
-        roundedBackgroundView.apply(style: .roundedView)
+        roundedBackgroundView.apply(style: .cellWithoutHighlighting)
         backgroundColor = .clear
     }
 }
