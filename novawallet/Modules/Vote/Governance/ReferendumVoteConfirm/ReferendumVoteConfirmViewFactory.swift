@@ -1,7 +1,10 @@
 import Foundation
 
 struct ReferendumVoteConfirmViewFactory {
-    static func createView() -> ReferendumVoteConfirmViewProtocol? {
+    static func createView(
+        for state: GovernanceLockState,
+        newVote: ReferendumNewVote
+    ) -> ReferendumVoteConfirmViewProtocol? {
         let interactor = ReferendumVoteConfirmInteractor()
         let wireframe = ReferendumVoteConfirmWireframe()
 
