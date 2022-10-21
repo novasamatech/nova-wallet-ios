@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 struct ReferendumFullDetailsViewFactory {
     static func createView(
@@ -15,6 +16,7 @@ struct ReferendumFullDetailsViewFactory {
 
         let presenter = ReferendumFullDetailsPresenter(
             wireframe: wireframe,
+            chainIconGenerator: PolkadotIconGenerator(),
             chain: chain,
             referendum: referendum,
             actionDetails: actionDetails,
