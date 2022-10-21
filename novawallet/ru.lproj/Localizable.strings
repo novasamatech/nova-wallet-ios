@@ -1034,3 +1034,5 @@
 "gov.vote.setup.title.format" = "Голосование за %@";
 "common.available.prefix" = "Доступно:";
 "common.maximum" = "%@ максимум";
+"gov.referendum.details.dApps.title" = "Использовать Nova DApp браузер";
+"gov.referendum.details.timeline.title" = "Статусы";
