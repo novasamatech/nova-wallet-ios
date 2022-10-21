@@ -280,7 +280,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data?
-    ) -> CompoundOperationWrapper<[UInt: ReferendumAccountVoteLocal]> {
+    ) -> CompoundOperationWrapper<ReferendumAccountVotingDistribution> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let request = MapRemoteStorageRequest(storagePath: ConvictionVoting.votingFor) {
@@ -298,17 +298,27 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         votesWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mappingOperation = ClosureOperation<[UInt: ReferendumAccountVoteLocal]> {
-            let votes = try votesWrapper.targetOperation.extractNoCancellableResultData().values
+        let mappingOperation = ClosureOperation<ReferendumAccountVotingDistribution> {
+            let voting = try votesWrapper.targetOperation.extractNoCancellableResultData()
 
-            return votes.reduce(into: [UInt: ReferendumAccountVoteLocal]()) { result, voting in
+            let initVotingLocal = ReferendumAccountVotingDistribution(votes: [:], delegatings: [:])
+            return voting.reduce(initVotingLocal) { resultVoting, votingKeyValue in
+                let voting = votingKeyValue.value
+                let track = votingKeyValue.key.trackId
                 switch voting {
                 case let .casting(castingVoting):
-                    castingVoting.votes.forEach { vote in
-                        result[UInt(vote.pollIndex)] = ReferendumAccountVoteLocal(accountVote: vote.accountVote)
+                    return castingVoting.votes.reduce(resultVoting) { result, vote in
+                        guard let localVote = ReferendumAccountVoteLocal(accountVote: vote.accountVote) else {
+                            return result
+                        }
+
+                        return result.addingVote(localVote, referendumId: ReferendumIdLocal(vote.pollIndex))
                     }
-                case .delegating, .unknown:
-                    break
+                case let .delegating(delegatingVoting):
+                    let delegatingLocal = ReferendumDelegatingLocal(remote: delegatingVoting)
+                    return resultVoting.addingDelegating(delegatingLocal, trackId: TrackIdLocal(track))
+                case .unknown:
+                    return resultVoting
                 }
             }
         }

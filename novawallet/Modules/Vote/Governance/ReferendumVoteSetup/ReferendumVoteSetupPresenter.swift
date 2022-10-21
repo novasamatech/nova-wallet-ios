@@ -20,7 +20,7 @@ final class ReferendumVoteSetupPresenter {
     private var assetBalance: AssetBalance?
     private var fee: BigUInt?
     private var priceData: PriceData?
-    private var votesResult: CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>?
+    private var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var referendum: ReferendumLocal?
@@ -229,7 +229,11 @@ final class ReferendumVoteSetupPresenter {
             return
         }
 
-        interactor.refreshLockDiff(for: votesResult.value ?? [:], newVote: newVote, blockHash: votesResult.blockHash)
+        interactor.refreshLockDiff(
+            for: votesResult.value?.votes.votes ?? [:],
+            newVote: newVote,
+            blockHash: votesResult.blockHash
+        )
     }
 }
 
@@ -289,9 +293,9 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
     }
 
     func didReceiveAccountVotes(
-        _ votesResult: CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>
+        _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
     ) {
-        self.votesResult = votesResult
+        votesResult = votes
 
         refreshLockDiff()
     }
@@ -343,7 +347,8 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         logger.error("Did receive base error: \(error)")
 
         switch error {
-        case .assetBalanceFailed, .priceFailed, .votingReferendumFailed, .accountVotesFailed, .blockNumberSubscriptionFailed:
+        case .assetBalanceFailed, .priceFailed, .votingReferendumFailed, .accountVotesFailed,
+             .blockNumberSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }

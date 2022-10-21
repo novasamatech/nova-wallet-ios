@@ -107,7 +107,7 @@ final class Gov2LockStateFactory {
         accountVote: ReferendumAccountVoteLocal,
         additionalInfo: AdditionalInfo
     ) -> BlockNumber? {
-        let conviction = accountVote.convictionValue ?? .none
+        let conviction = accountVote.convictionValue
 
         guard let convictionPeriod = conviction.conviction(for: additionalInfo.voteLockingPeriod) else {
             return nil
