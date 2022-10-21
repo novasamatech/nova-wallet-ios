@@ -22,24 +22,8 @@ protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func proceedAye()
 }
 
-protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
-    func refreshLockDiff(
-        for votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
-        newVote: ReferendumNewVote?,
-        blockHash: Data?
-    )
+protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {}
 
-    func refreshBlockTime()
-}
-
-protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {
-    func didReceiveLockStateDiff(_ stateDiff: GovernanceLockStateDiff)
-    func didReceiveAccountVotes(
-        _ votes: CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>
-    )
-    func didReceiveBlockNumber(_ number: BlockNumber)
-    func didReceiveBlockTime(_ blockTime: BlockTime)
-    func didReceiveError(_ error: ReferendumVoteSetupInteractorError)
-}
+protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {}
 
 protocol ReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable {}

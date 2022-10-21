@@ -312,25 +312,6 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         updateLockedPeriodView()
     }
 
-    func didReceiveError(_ error: ReferendumVoteSetupInteractorError) {
-        logger.error("Did receive setup error: \(error)")
-
-        switch error {
-        case .accountVotesFailed, .blockNumberSubscriptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeSubscriptions()
-            }
-        case .blockTimeFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refreshBlockTime()
-            }
-        case .stateDiffFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshLockDiff()
-            }
-        }
-    }
-
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?) {
         self.assetBalance = assetBalance
 
@@ -362,13 +343,21 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         logger.error("Did receive base error: \(error)")
 
         switch error {
-        case .assetBalanceFailed, .priceFailed, .votingReferendumFailed:
+        case .assetBalanceFailed, .priceFailed, .votingReferendumFailed, .accountVotesFailed, .blockNumberSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
         case .feeFailed:
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
+            }
+        case .blockTimeFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshBlockTime()
+            }
+        case .stateDiffFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshLockDiff()
             }
         }
     }
