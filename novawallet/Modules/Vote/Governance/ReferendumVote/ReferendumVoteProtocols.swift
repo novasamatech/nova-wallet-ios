@@ -20,7 +20,7 @@ protocol ReferendumVoteInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ fee: BigUInt)
     func didReceiveLockStateDiff(_ stateDiff: GovernanceLockStateDiff)
     func didReceiveAccountVotes(
-        _ votes: CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>
+        _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
     )
     func didReceiveBlockNumber(_ number: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)

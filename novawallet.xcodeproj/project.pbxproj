@@ -1269,6 +1269,8 @@
 		8487584B27F1834E00495306 /* ImageGalleryPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487584A27F1834E00495306 /* ImageGalleryPresentable.swift */; };
 		84880C4029016F1500CADB06 /* ReferendumLockChangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84880C3F29016F1500CADB06 /* ReferendumLockChangeViewModel.swift */; };
 		84880C42290172C300CADB06 /* ReferendumLockChangeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84880C41290172C300CADB06 /* ReferendumLockChangeViewModelFactory.swift */; };
+		84880C4429026C3E00CADB06 /* ReferendumDelegatingLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84880C4329026C3E00CADB06 /* ReferendumDelegatingLocal.swift */; };
+		84880C462902781E00CADB06 /* ReferendumVotingLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84880C452902781E00CADB06 /* ReferendumVotingLocal.swift */; };
 		848841C128D1229000D750E9 /* ParaStkYieldBoostStopError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848841C028D1229000D750E9 /* ParaStkYieldBoostStopError.swift */; };
 		84884B5F27A1336500FAC549 /* OrmlAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */; };
 		8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */; };
@@ -4152,6 +4154,8 @@
 		8487584A27F1834E00495306 /* ImageGalleryPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryPresentable.swift; sourceTree = "<group>"; };
 		84880C3F29016F1500CADB06 /* ReferendumLockChangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumLockChangeViewModel.swift; sourceTree = "<group>"; };
 		84880C41290172C300CADB06 /* ReferendumLockChangeViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumLockChangeViewModelFactory.swift; sourceTree = "<group>"; };
+		84880C4329026C3E00CADB06 /* ReferendumDelegatingLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumDelegatingLocal.swift; sourceTree = "<group>"; };
+		84880C452902781E00CADB06 /* ReferendumVotingLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingLocal.swift; sourceTree = "<group>"; };
 		848841C028D1229000D750E9 /* ParaStkYieldBoostStopError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStopError.swift; sourceTree = "<group>"; };
 		84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAssetExtras.swift; sourceTree = "<group>"; };
 		8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompletionHandler.swift; sourceTree = "<group>"; };
@@ -11350,6 +11354,8 @@
 				8425D0ED28FE9BF1003B782A /* ReferendumVoteAction.swift */,
 				8427495028FEB6E500B2B70B /* GovernanceLockState.swift */,
 				8427495228FEB8C800B2B70B /* ReferendumNewVote.swift */,
+				84880C4329026C3E00CADB06 /* ReferendumDelegatingLocal.swift */,
+				84880C452902781E00CADB06 /* ReferendumVotingLocal.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -15648,6 +15654,7 @@
 				849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */,
 				84B018AC26E01A4100C75E28 /* StakingStateView.swift in Sources */,
 				842A737C27DCC489006EE1EA /* OperationDetailsTransferView.swift in Sources */,
+				84880C4429026C3E00CADB06 /* ReferendumDelegatingLocal.swift in Sources */,
 				8472C5B2265CF9C500E2481B /* StakingRewardDestConfirmInteractor.swift in Sources */,
 				882C29AE28DC7CB4009CA4B6 /* StorageMigrating+CheckVersion.swift in Sources */,
 				846CA77A27099B1E0011124C /* StakingAnalyticsLocalSubscriptionFactory.swift in Sources */,
@@ -15841,6 +15848,7 @@
 				84EA0B2A25E579DF00AFB0DC /* AssetBalanceViewModel.swift in Sources */,
 				84FD3DAF2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift in Sources */,
 				84452F9825D6728B00F47EC5 /* RuntimeVersionSubscription.swift in Sources */,
+				84880C462902781E00CADB06 /* ReferendumVotingLocal.swift in Sources */,
 				84CEAAF326D6ED870021B881 /* KeystoreTag.swift in Sources */,
 				840DCBF625E0059D00D45C6A /* AmountInputView+Inspectable.swift in Sources */,
 				8488ECEA258CE456004591CC /* PurchaseViewController.swift in Sources */,
