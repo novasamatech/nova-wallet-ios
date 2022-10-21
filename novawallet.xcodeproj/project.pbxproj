@@ -932,6 +932,8 @@
 		8459A9C827469E4B000D6278 /* AcalaContributionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9C727469E4B000D6278 /* AcalaContributionSource.swift */; };
 		8459A9CA2746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9C92746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift */; };
 		8459A9CC2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */; };
+		845AADA12902D02400B5AE96 /* TitleValueDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845AADA02902D02400B5AE96 /* TitleValueDiffView.swift */; };
+		845AADA32902D1EB00B5AE96 /* StackTitleValueDiffCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */; };
 		845B811228F429BB0040CE84 /* SupportPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811128F429BB0040CE84 /* SupportPallet.swift */; };
 		845B811528F43C350040CE84 /* Treasury.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811428F43C350040CE84 /* Treasury.swift */; };
 		845B811728F43C730040CE84 /* TreasuryProposal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811628F43C730040CE84 /* TreasuryProposal.swift */; };
@@ -3836,6 +3838,8 @@
 		8459A9C727469E4B000D6278 /* AcalaContributionSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSource.swift; sourceTree = "<group>"; };
 		8459A9C92746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainSubscriber.swift; sourceTree = "<group>"; };
 		8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainSubscriptionHandler.swift; sourceTree = "<group>"; };
+		845AADA02902D02400B5AE96 /* TitleValueDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleValueDiffView.swift; sourceTree = "<group>"; };
+		845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackTitleValueDiffCell.swift; sourceTree = "<group>"; };
 		845B811128F429BB0040CE84 /* SupportPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportPallet.swift; sourceTree = "<group>"; };
 		845B811428F43C350040CE84 /* Treasury.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Treasury.swift; sourceTree = "<group>"; };
 		845B811628F43C730040CE84 /* TreasuryProposal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryProposal.swift; sourceTree = "<group>"; };
@@ -9592,6 +9596,8 @@
 				8468119328E6234B00BF54F1 /* RoundedSegmentedControl.swift */,
 				84E63C1628FFC69A0093534A /* DiscreteGradientSlider.swift */,
 				84F76ED729006BC400D7206C /* DiscreteGradientSlider+Style.swift */,
+				845AADA02902D02400B5AE96 /* TitleValueDiffView.swift */,
+				845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -14685,6 +14691,7 @@
 				845BB8D125E45F1300E5FCDC /* NominateCall.swift in Sources */,
 				88421057289BBA8D00306F2C /* CurrencyProtocols.swift in Sources */,
 				842BDB28278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift in Sources */,
+				845AADA32902D1EB00B5AE96 /* StackTitleValueDiffCell.swift in Sources */,
 				848DAF042822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift in Sources */,
 				840689FC26321F2700A017B1 /* StorageQuery.swift in Sources */,
 				8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */,
@@ -16484,6 +16491,7 @@
 				255D7AEBA45EFA5324D92371 /* DAppListPresenter.swift in Sources */,
 				2C9A416905C692DCFA74A0D6 /* DAppListInteractor.swift in Sources */,
 				CE773CEC15A83AA6D0B404B8 /* DAppListViewController.swift in Sources */,
+				845AADA12902D02400B5AE96 /* TitleValueDiffView.swift in Sources */,
 				A07A987DE3047AF1A786D511 /* DAppListViewLayout.swift in Sources */,
 				8DF76D04C127E0048B253343 /* DAppListViewFactory.swift in Sources */,
 				848F8B242864448900204BC4 /* TransferSetupPresenterFactory+OnChain.swift in Sources */,

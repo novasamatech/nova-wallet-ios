@@ -159,11 +159,11 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
     }
 
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel) {
-        rootView.bindLockAmount(viewModel: viewModel)
+        rootView.lockedAmountView.bind(viewModel: viewModel)
     }
 
     func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel) {
-        rootView.bindLockPeriod(viewModel: viewModel)
+        rootView.lockedPeriodView.bind(viewModel: viewModel)
     }
 }
 

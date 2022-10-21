@@ -198,7 +198,7 @@ final class ReferendumVoteSetupPresenter {
         updateLockedPeriodView()
     }
 
-    private func deriveNewVote() -> ReferendumNewVote? {
+    private func deriveNewVote(isAye: Bool = true) -> ReferendumNewVote? {
         let amount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
         guard
@@ -210,7 +210,7 @@ final class ReferendumVoteSetupPresenter {
         let voteAction = ReferendumVoteAction(
             amount: amountInPlank,
             conviction: conviction,
-            isAye: true
+            isAye: isAye
         )
 
         return ReferendumNewVote(index: referendumIndex, voteAction: voteAction)
@@ -279,9 +279,21 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
         refreshLockDiff()
     }
 
-    func proceedNay() {}
+    func proceedNay() {
+        guard let newVote = deriveNewVote(isAye: false) else {
+            return
+        }
 
-    func proceedAye() {}
+        wireframe.showConfirmation(from: view, vote: newVote)
+    }
+
+    func proceedAye() {
+        guard let newVote = deriveNewVote(isAye: true) else {
+            return
+        }
+
+        wireframe.showConfirmation(from: view, vote: newVote)
+    }
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProtocol {
