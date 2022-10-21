@@ -1,0 +1,20 @@
+import UIKit
+
+final class StackTitleValueDiffCell: RowView<TitleValueDiffView>, StackTableViewCellProtocol {
+    convenience init() {
+        self.init(frame: .zero)
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        configureStyle()
+    }
+
+    private func configureStyle() {
+        preferredHeight = 44.0
+        borderView.strokeColor = R.color.colorWhite8()!
+
+        isUserInteractionEnabled = false
+    }
+}
