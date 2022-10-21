@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 extension RoundedView.Style {
-    static let roundedSelectableCell = RoundedView.Style(
+    static let roundedLightCell = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0,
         strokeColor: .clear,
@@ -11,13 +11,13 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorAccentSelected()!,
         rounding: .init(radius: 12, corners: .allCorners)
     )
-    static let roundedView = RoundedView.Style(
+    static let cellWithoutHighlighting = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0,
         strokeColor: .clear,
         highlightedStrokeColor: .clear,
         fillColor: R.color.colorWhite8()!,
-        highlightedFillColor: .clear,
+        highlightedFillColor: R.color.colorWhite8()!,
         rounding: .init(radius: 12, corners: .allCorners)
     )
 }
