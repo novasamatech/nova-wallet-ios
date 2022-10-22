@@ -194,6 +194,13 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     func remakeSubscriptions() {
         makeSubscriptions()
     }
+
+    func handleAccountLocks(
+        result _: Result<[DataProviderChange<AssetLock>], Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {}
 }
 
 extension ReferendumVoteInteractor: ReferendumVoteInteractorInputProtocol {

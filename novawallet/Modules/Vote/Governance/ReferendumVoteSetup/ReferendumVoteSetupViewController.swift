@@ -186,3 +186,5 @@ extension ReferendumVoteSetupViewController: Localizable {
         }
     }
 }
+
+extension ReferendumVoteSetupViewController: ImportantViewProtocol {}
