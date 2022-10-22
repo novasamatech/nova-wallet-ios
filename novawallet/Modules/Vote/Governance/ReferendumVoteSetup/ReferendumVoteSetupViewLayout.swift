@@ -40,6 +40,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
     }
 
     let lockedAmountView: TitleValueDiffView = .create { view in
+        view.applyDefaultStyle()
         view.titleView.imageView.image = R.image.iconGovAmountLock()
     }
 
@@ -48,6 +49,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
     }
 
     let lockedPeriodView: TitleValueDiffView = .create { view in
+        view.applyDefaultStyle()
         view.titleView.imageView.image = R.image.iconGovPeriodLock()
     }
 

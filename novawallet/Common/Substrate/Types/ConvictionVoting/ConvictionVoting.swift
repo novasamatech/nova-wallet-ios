@@ -5,6 +5,8 @@ import BigInt
 enum ConvictionVoting {
     typealias PollIndex = UInt32
 
+    static var lockId: String = "pyconvot"
+
     enum Conviction: UInt8, Decodable {
         /// 0.1x votes, unlocked.
         case none

@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import SoraFoundation
 
 struct ReferendumVoteConfirmViewFactory {
     static func createView(
@@ -13,15 +14,49 @@ struct ReferendumVoteConfirmViewFactory {
                 for: state,
                 referendum: newVote.index,
                 currencyManager: currencyManager
+            ),
+            let chain = state.settings.value,
+            let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
+                for: chain.accountRequest()
             ) else {
             return nil
         }
 
         let wireframe = ReferendumVoteConfirmWireframe()
 
-        let presenter = ReferendumVoteConfirmPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
 
-        let view = ReferendumVoteConfirmViewController(presenter: presenter)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
+            assetDisplayInfo: assetDisplayInfo,
+            votingLockId: ConvictionVoting.lockId
+        )
+
+        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+
+        let presenter = ReferendumVoteConfirmPresenter(
+            vote: newVote,
+            chain: chain,
+            selectedAccount: selectedAccount,
+            balanceViewModelFactory: balanceViewModelFactory,
+            referendumFormatter: NumberFormatter.index.localizableResource(),
+            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            lockChangeViewModelFactory: lockChangeViewModelFactory,
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
+
+        let view = ReferendumVoteConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter
