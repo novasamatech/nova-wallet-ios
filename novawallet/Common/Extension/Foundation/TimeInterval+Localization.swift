@@ -26,6 +26,17 @@ extension TimeInterval {
         return components.joined(separator: " ")
     }
 
+    func localizedDaysHoursIncludingZero(for locale: Locale) -> String {
+        let days = daysFromSeconds
+        let hours = (self - TimeInterval(days).secondsFromDays).hoursFromSeconds
+
+        guard days > 0 || hours > 0 else {
+            return R.string.localizable.commonDaysFormat(format: 0, preferredLanguages: locale.rLanguages)
+        }
+
+        return localizedDaysHours(for: locale)
+    }
+
     func localizedDaysOrTime(for locale: Locale) -> String? {
         let days = daysFromSeconds
 
