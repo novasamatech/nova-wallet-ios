@@ -9,6 +9,26 @@ struct ReferendumLocal {
     let index: ReferendumIdLocal
     let state: ReferendumStateLocal
     let proposer: AccountId?
+
+    var canVote: Bool {
+        switch state {
+        case .preparing, .deciding:
+            return true
+        case .approved, .rejected, .cancelled, .timedOut, .killed, .executed:
+            return false
+        }
+    }
+
+    var trackId: TrackIdLocal? {
+        switch state {
+        case let .preparing(model):
+            return TrackIdLocal(model.track.trackId)
+        case let .deciding(model):
+            return TrackIdLocal(model.track.trackId)
+        case .approved, .rejected, .cancelled, .timedOut, .killed, .executed:
+            return nil
+        }
+    }
 }
 
 struct SupportAndVotesLocal {
