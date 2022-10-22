@@ -29,3 +29,13 @@ protocol ReferendumActionOperationFactoryProtocol {
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<ReferendumActionLocal>
 }
+
+protocol GovernanceLockStateFactoryProtocol {
+    func calculateLockStateDiff(
+        for votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
+        newVote: ReferendumNewVote?,
+        from connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<GovernanceLockStateDiff>
+}
