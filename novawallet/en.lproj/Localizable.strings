@@ -1036,3 +1036,11 @@
 "gov.referendum.details.dApps.title" = "Use Nova DApp browser";
 "gov.referendum.details.timeline.title" = "Timeline";
 "gov.your.vote" = "Your vote";
+"common.amount.too.big" = "Amount is too big";
+"gov.not.enough.vote.tokens" = "Sorry, you don’t have enough available tokens to vote. Available to vote: %@";
+"gov.referendum.completed.title" = "Referendum is completed";
+"gov.referendum.completed.message" = "Referendum is completed and voting has finished";
+"gov.already.delegating.votes.title" = "Already delegating votes";
+"gov.already.delegating.votes.message" = "You are delegating votes for selected referendum’s track. Please, either ask your delegatee to vote or remove delegation to be able to vote directly.";
+"gov.max.votes.reached.title" = "Maximum number of votes reached";
+"gov.max.votes.reached.message" = "You have reached a maximum of %@ votes for track";

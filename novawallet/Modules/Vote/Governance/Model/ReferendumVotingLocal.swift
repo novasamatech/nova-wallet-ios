@@ -2,7 +2,9 @@ import Foundation
 
 struct ReferendumAccountVotingDistribution {
     let votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]
+    let votedTracks: [TrackIdLocal: Set<ReferendumIdLocal>]
     let delegatings: [TrackIdLocal: ReferendumDelegatingLocal]
+    let maxVotesPerTrack: UInt32
 
     func addingVote(
         _ vote: ReferendumAccountVoteLocal,
@@ -13,7 +15,9 @@ struct ReferendumAccountVotingDistribution {
 
         return ReferendumAccountVotingDistribution(
             votes: newVotes,
-            delegatings: delegatings
+            votedTracks: votedTracks,
+            delegatings: delegatings,
+            maxVotesPerTrack: maxVotesPerTrack
         )
     }
 
@@ -26,7 +30,26 @@ struct ReferendumAccountVotingDistribution {
 
         return ReferendumAccountVotingDistribution(
             votes: votes,
-            delegatings: newDelegatings
+            votedTracks: votedTracks,
+            delegatings: newDelegatings,
+            maxVotesPerTrack: maxVotesPerTrack
+        )
+    }
+
+    func addingReferendum(
+        _ referendumIndex: ReferendumIdLocal,
+        track: TrackIdLocal
+    ) -> ReferendumAccountVotingDistribution {
+        var newVotedTracks = votedTracks
+        var referendums = newVotedTracks[track] ?? Set()
+        referendums.insert(referendumIndex)
+        newVotedTracks[track] = referendums
+
+        return ReferendumAccountVotingDistribution(
+            votes: votes,
+            votedTracks: newVotedTracks,
+            delegatings: delegatings,
+            maxVotesPerTrack: maxVotesPerTrack
         )
     }
 }
