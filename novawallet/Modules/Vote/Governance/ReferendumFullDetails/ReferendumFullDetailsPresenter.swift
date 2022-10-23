@@ -1,11 +1,14 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 final class ReferendumFullDetailsPresenter {
     weak var view: ReferendumFullDetailsViewProtocol?
     let wireframe: ReferendumFullDetailsWireframeProtocol
     let interactor: ReferendumFullDetailsInteractorInputProtocol
     let chainIconGenerator: IconGenerating
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
     let chain: ChainModel
     let referendum: ReferendumLocal
@@ -21,7 +24,10 @@ final class ReferendumFullDetailsPresenter {
         chain: ChainModel,
         referendum: ReferendumLocal,
         actionDetails: ReferendumActionLocal,
-        identities: [AccountAddress: AccountIdentity]
+        identities: [AccountAddress: AccountIdentity],
+        localizationManager: LocalizationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol,
+        assetFormatterFactory: AssetBalanceFormatterFactory
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
@@ -30,6 +36,10 @@ final class ReferendumFullDetailsPresenter {
         self.actionDetails = actionDetails
         self.identities = identities
         self.chainIconGenerator = chainIconGenerator
+        priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        self.assetFormatterFactory = assetFormatterFactory
+        self.currencyManager = currencyManager
+        self.localizationManager = localizationManager
     }
 
     private func updateView() {
@@ -98,11 +108,51 @@ final class ReferendumFullDetailsPresenter {
 
         return DrawableIconViewModel(icon: icon)
     }
-    
+
     private func updatePriceDependentViews() {
-        view?.didReceive(deposit: .init(topValue: "3.33333 KSM",
-                                        bottomValue: "$200"),
-                         title: "Deposit")
+        guard let utilityAsset = chain.utilityAsset() else {
+            return
+        }
+        guard let amountInPlank = actionDetails.amountSpendDetails?.amount else {
+            return
+        }
+        let amount = Decimal.fromSubstrateAmount(
+            amountInPlank,
+            precision: Int16(utilityAsset.precision)
+        ) ?? 0.0
+
+        let formattedAmount = formatAmount(
+            amount,
+            assetDisplayInfo: utilityAsset.displayInfo,
+            locale: selectedLocale
+        )
+        let price = formatPrice(amount: amount, priceData: price, locale: selectedLocale)
+        view?.didReceive(
+            deposit: .init(
+                topValue: formattedAmount,
+                bottomValue: price
+            ),
+            title: "Deposit"
+        )
+    }
+
+    private func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
+        guard let currencyManager = currencyManager else {
+            return ""
+        }
+        let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
+        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
+        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+    }
+
+    private func formatAmount(
+        _ amount: Decimal,
+        assetDisplayInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> String {
+        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
+        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
     }
 }
 
@@ -124,5 +174,19 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsInteractorOutputP
 
     func didReceive(error: ReferendumFullDetailsError) {
         print("Received error: \(error.localizedDescription)")
+    }
+}
+
+extension ReferendumFullDetailsPresenter: Localizable {
+    func applyLocalization() {
+        if view?.isSetup == true {
+            updateView()
+        }
+    }
+}
+
+extension ReferendumFullDetailsPresenter: SelectedCurrencyDepending {
+    func applyCurrency() {
+        updatePriceDependentViews()
     }
 }
