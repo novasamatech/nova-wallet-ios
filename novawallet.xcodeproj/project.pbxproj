@@ -2090,6 +2090,8 @@
 		84F1CB3C27CF42B80095D523 /* NftListItemWithPriceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3B27CF42B80095D523 /* NftListItemWithPriceCell.swift */; };
 		84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */; };
 		84F1CB4027CF6BEF0095D523 /* UniquesClassDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */; };
+		84F1D66B29051A730050F4E3 /* ReferendumLockReuseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */; };
+		84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66C29051F240050F4E3 /* ReferendumReuseLockModel.swift */; };
 		84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */; };
 		84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */; };
 		84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */; };
@@ -5011,6 +5013,8 @@
 		84F1CB3B27CF42B80095D523 /* NftListItemWithPriceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListItemWithPriceCell.swift; sourceTree = "<group>"; };
 		84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedLabelView.swift; sourceTree = "<group>"; };
 		84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniquesClassDetails.swift; sourceTree = "<group>"; };
+		84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumLockReuseViewModel.swift; sourceTree = "<group>"; };
+		84F1D66C29051F240050F4E3 /* ReferendumReuseLockModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumReuseLockModel.swift; sourceTree = "<group>"; };
 		84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRequestFactory.swift; sourceTree = "<group>"; };
 		84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPrefs.swift; sourceTree = "<group>"; };
 		84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorInfo.swift; sourceTree = "<group>"; };
@@ -6935,6 +6939,7 @@
 			isa = PBXGroup;
 			children = (
 				8425D0DF28FE738D003B782A /* ReferendumVoteSetupInteractorError.swift */,
+				84F1D66C29051F240050F4E3 /* ReferendumReuseLockModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -8766,6 +8771,7 @@
 			children = (
 				84880C3F29016F1500CADB06 /* ReferendumLockChangeViewModel.swift */,
 				84880C41290172C300CADB06 /* ReferendumLockChangeViewModelFactory.swift */,
+				84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -14842,6 +14848,7 @@
 				845B811928F43D4C0040CE84 /* Treasury+CodingPath.swift in Sources */,
 				842876B224AE059700D91AD8 /* SupportData.swift in Sources */,
 				84D8754228EB5D66004065BD /* ChainBalanceViewModel.swift in Sources */,
+				84F1D66B29051A730050F4E3 /* ReferendumLockReuseViewModel.swift in Sources */,
 				84893C0524DA8663008F6A3F /* AccountCreationError.swift in Sources */,
 				84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */,
 				842EBB3B2890B06500B952D8 /* WalletSelectionPresenter.swift in Sources */,
@@ -16852,6 +16859,7 @@
 				CA8D91616B55AF9A02215FBB /* LedgerPerformOperationViewLayout.swift in Sources */,
 				8CF040889DBCA0E9D40BDC82 /* LedgerDiscoverViewFactory.swift in Sources */,
 				30542C0BD486FD1583F36BA2 /* LedgerNetworkSelectionProtocols.swift in Sources */,
+				84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */,
 				84FBDBE128C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift in Sources */,
 				C102544345E604976BF7AFFC /* LedgerNetworkSelectionWireframe.swift in Sources */,
 				D71B2C6056D803C196DF4CDA /* LedgerNetworkSelectionPresenter.swift in Sources */,

@@ -1044,3 +1044,5 @@
 "gov.already.delegating.votes.message" = "You are delegating votes for selected referendum’s track. Please, either ask your delegatee to vote or remove delegation to be able to vote directly.";
 "gov.max.votes.reached.title" = "Maximum number of votes reached";
 "gov.max.votes.reached.message" = "You have reached a maximum of %@ votes for track";
+"gov.reuse.governance.locks" = "Reuse governance lock: %@";
+"gov.reuse.all.locks" = "Reuse all locks: %@";

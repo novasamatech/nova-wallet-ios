@@ -3,9 +3,9 @@ import UIKit
 final class ReferendumVoteSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 0, bottom: 0, right: 0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.alignment = .fill
+        view.stackView.alignment = .center
         return view
     }()
 
@@ -34,6 +34,19 @@ final class ReferendumVoteSetupViewLayout: UIView {
     let amountView = TitleHorizontalMultiValueView()
 
     let amountInputView = NewAmountInputView()
+
+    private(set) var govLocksReuseButton: TriangularedButton?
+    private(set) var allLocksReuseButton: TriangularedButton?
+
+    let lockReuseContainerView: ScrollableContainerView = {
+        let view = ScrollableContainerView(axis: .horizontal)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
+        view.stackView.spacing = 8.0
+        view.scrollView.showsHorizontalScrollIndicator = false
+        return view
+    }()
 
     let convictionView = ReferendumConvictionView()
 
@@ -66,6 +79,57 @@ final class ReferendumVoteSetupViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bindReuseLocks(viewModel: ReferendumLockReuseViewModel, locale: Locale) {
+        if viewModel.governance != nil, govLocksReuseButton == nil {
+            let button = createReuseLockButton()
+            lockReuseContainerView.stackView.insertArrangedSubview(button, at: 0)
+
+            govLocksReuseButton = button
+        } else if viewModel.governance == nil, govLocksReuseButton != nil {
+            govLocksReuseButton?.removeFromSuperview()
+            govLocksReuseButton = nil
+        }
+
+        if viewModel.all != nil, allLocksReuseButton == nil {
+            let button = createReuseLockButton()
+            lockReuseContainerView.stackView.addArrangedSubview(button)
+
+            allLocksReuseButton = button
+        } else if viewModel.all == nil, allLocksReuseButton != nil {
+            allLocksReuseButton?.removeFromSuperview()
+            allLocksReuseButton = nil
+        }
+
+        if let governance = viewModel.governance {
+            govLocksReuseButton?.imageWithTitleView?.title = R.string.localizable.govReuseGovernanceLocks(
+                governance,
+                preferredLanguages: locale.rLanguages
+            )
+
+            govLocksReuseButton?.invalidateLayout()
+        }
+
+        if let all = viewModel.all {
+            allLocksReuseButton?.imageWithTitleView?.title = R.string.localizable.govReuseAllLocks(
+                all,
+                preferredLanguages: locale.rLanguages
+            )
+
+            allLocksReuseButton?.invalidateLayout()
+        }
+
+        lockReuseContainerView.isHidden = !viewModel.hasLocks
+
+        lockReuseContainerView.setNeedsLayout()
+    }
+
+    private func createReuseLockButton() -> TriangularedButton {
+        let button = TriangularedButton()
+        button.applySecondaryDefaultStyle()
+        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        return button
     }
 
     private func setupLayout() {
@@ -106,6 +170,14 @@ final class ReferendumVoteSetupViewLayout: UIView {
             make.height.equalTo(64)
         }
 
+        containerView.stackView.addArrangedSubview(lockReuseContainerView)
+        lockReuseContainerView.snp.makeConstraints { make in
+            make.height.equalTo(32.0)
+            make.width.equalTo(self)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: lockReuseContainerView)
+
         containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
 
         containerView.stackView.addArrangedSubview(convictionView)
@@ -125,5 +197,17 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockedPeriodView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
+
+        setupContentWidth()
+    }
+
+    private func setupContentWidth() {
+        containerView.stackView.arrangedSubviews
+            .filter { $0 !== lockReuseContainerView }
+            .forEach {
+                $0.snp.makeConstraints { make in
+                    make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+                }
+            }
     }
 }
