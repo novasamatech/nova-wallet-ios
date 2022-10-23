@@ -79,6 +79,8 @@ final class ReferendumFullDetailsPresenter {
             supportCurve: supportCurveModel,
             callHash: callHashModel
         )
+
+        updatePriceDependentViews()
     }
 
     private func getProposer() -> (name: String, icon: ImageViewModelProtocol?)? {
@@ -159,6 +161,7 @@ final class ReferendumFullDetailsPresenter {
 extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol {
     func setup() {
         interactor.setup()
+        updateView()
     }
 }
 

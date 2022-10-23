@@ -22,13 +22,19 @@ final class ReferendumFullDetailsViewLayout: UIView {
     var supportCurve: StackTableCell?
     var callHash: StackInfoTableCell?
 
-    let jsonTitle: UILabel = .init(style: .rowTitle)
+    let jsonTitle: UILabel = .init(style: .caption1White64)
     let jsonView: BlurredView<UITextView> = .create {
         $0.view.allowsEditingTextAttributes = false
+        $0.view.isScrollEnabled = false
+        $0.view.backgroundColor = .clear
+        $0.view.textAlignment = .left
+        $0.contentInsets = .zero
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        setup()
     }
 
     @available(*, unavailable)

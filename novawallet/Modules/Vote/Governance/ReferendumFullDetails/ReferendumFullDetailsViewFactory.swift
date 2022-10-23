@@ -37,7 +37,7 @@ struct ReferendumFullDetailsViewFactory {
             currencyManager: currencyManager,
             assetFormatterFactory: AssetBalanceFormatterFactory()
         )
-
+        interactor.presenter = presenter
         let view = ReferendumFullDetailsViewController(presenter: presenter)
 
         presenter.view = view
