@@ -126,7 +126,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         rootView.fullDetailsView.bind(title: "Full details")
 
         didReceive(yourVoteModel: .init(
-            vote: .init(title: "AYE", description: "Your vote"),
+            vote: .init(title: "AYE", description: "Your vote", style: .ayeInverse),
             amount: .init(topValue: "30 votes", bottomValue: "10 KSM × 3x")
         ))
 

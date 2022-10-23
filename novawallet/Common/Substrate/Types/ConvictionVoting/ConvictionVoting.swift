@@ -87,6 +87,30 @@ enum ConvictionVoting {
                 return nil
             }
         }
+
+        public init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "None":
+                self = .none
+            case "Locked1x":
+                self = .locked1x
+            case "Locked2x":
+                self = .locked2x
+            case "Locked3x":
+                self = .locked3x
+            case "Locked4x":
+                self = .locked4x
+            case "Locked5x":
+                self = .locked5x
+            case "Locked6x":
+                self = .locked6x
+            default:
+                self = .unknown
+            }
+        }
     }
 
     struct Vote: Codable {
