@@ -11,6 +11,7 @@ protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveConviction(viewModel: UInt)
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel)
+    func didReceiveLockReuse(viewModel: ReferendumLockReuseViewModel)
 }
 
 protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
@@ -18,6 +19,8 @@ protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func updateAmount(_ newValue: Decimal?)
     func selectAmountPercentage(_ percentage: Float)
     func selectConvictionValue(_ value: UInt)
+    func reuseGovernanceLock()
+    func reuseAllLock()
     func proceedNay()
     func proceedAye()
 }

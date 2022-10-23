@@ -190,6 +190,31 @@ final class ReferendumVoteSetupPresenter {
         view?.didReceiveConviction(viewModel: UInt(conviction.rawValue))
     }
 
+    private func provideReuseLocksViewModel() {
+        guard let model = deriveReuseLocks() else {
+            return
+        }
+
+        let governance: String?
+
+        if model.governance > 0 {
+            governance = balanceViewModelFactory.amountFromValue(model.governance).value(for: selectedLocale)
+        } else {
+            governance = nil
+        }
+
+        let all: String?
+
+        if model.all > 0, model.all != model.governance {
+            all = balanceViewModelFactory.amountFromValue(model.all).value(for: selectedLocale)
+        } else {
+            all = nil
+        }
+
+        let viewModel = ReferendumLockReuseViewModel(governance: governance, all: all)
+        view?.didReceiveLockReuse(viewModel: viewModel)
+    }
+
     private func updateView() {
         provideReferendumIndex()
         updateAvailableBalanceView()
@@ -199,6 +224,7 @@ final class ReferendumVoteSetupPresenter {
         updateVotesView()
         updateLockedAmountView()
         updateLockedPeriodView()
+        provideReuseLocksViewModel()
     }
 
     private func deriveNewVote(isAye: Bool = true) -> ReferendumNewVote? {
@@ -217,6 +243,20 @@ final class ReferendumVoteSetupPresenter {
         )
 
         return ReferendumNewVote(index: referendumIndex, voteAction: voteAction)
+    }
+
+    private func deriveReuseLocks() -> ReferendumReuseLockModel? {
+        let governanceLocksInPlank = lockDiff?.before.maxLockedAmount ?? 0
+        let allLocksInPlank = assetBalance?.frozenInPlank ?? 0
+
+        guard
+            let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
+            let governanceLockDecimal = Decimal.fromSubstrateAmount(governanceLocksInPlank, precision: precision),
+            let allLockDecimal = Decimal.fromSubstrateAmount(allLocksInPlank, precision: precision) else {
+            return nil
+        }
+
+        return ReferendumReuseLockModel(governance: governanceLockDecimal, all: allLockDecimal)
     }
 
     private func refreshFee() {
@@ -277,6 +317,14 @@ final class ReferendumVoteSetupPresenter {
             self?.wireframe.showConfirmation(from: self?.view, vote: newVote)
         }
     }
+
+    private func updateAfterAmountChanged() {
+        refreshFee()
+        refreshLockDiff()
+
+        updateVotesView()
+        updateAmountPriceView()
+    }
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
@@ -289,11 +337,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
 
-        refreshFee()
-        refreshLockDiff()
-
-        updateVotesView()
-        updateAmountPriceView()
+        updateAfterAmountChanged()
     }
 
     func selectAmountPercentage(_ percentage: Float) {
@@ -301,11 +345,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 
         provideAmountInputViewModel()
 
-        refreshFee()
-        refreshLockDiff()
-
-        updateVotesView()
-        updateAmountPriceView()
+        updateAfterAmountChanged()
     }
 
     func selectConvictionValue(_ value: UInt) {
@@ -319,6 +359,30 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 
         refreshFee()
         refreshLockDiff()
+    }
+
+    func reuseGovernanceLock() {
+        guard let model = deriveReuseLocks() else {
+            return
+        }
+
+        inputResult = .absolute(model.governance)
+
+        provideAmountInputViewModel()
+
+        updateAfterAmountChanged()
+    }
+
+    func reuseAllLock() {
+        guard let model = deriveReuseLocks() else {
+            return
+        }
+
+        inputResult = .absolute(model.all)
+
+        provideAmountInputViewModel()
+
+        updateAfterAmountChanged()
     }
 
     func proceedNay() {
@@ -336,6 +400,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
 
         updateLockedAmountView()
         updateLockedPeriodView()
+        provideReuseLocksViewModel()
     }
 
     func didReceiveAccountVotes(
@@ -368,6 +433,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         updateAvailableBalanceView()
         updateAmountPriceView()
         provideAmountInputViewModelIfRate()
+        provideReuseLocksViewModel()
 
         refreshFee()
     }
