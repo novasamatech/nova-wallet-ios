@@ -60,7 +60,8 @@ class Gov2OperationFactoryTests: XCTestCase {
         let wrapper = operationFactory.fetchAccountVotesWrapper(
             for: accountId,
             from: connection,
-            runtimeProvider: runtimeProvider
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
         )
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -85,7 +86,7 @@ class Gov2OperationFactoryTests: XCTestCase {
         let operationFactory = Gov2OperationFactory(requestFactory: requestFactory)
 
         let wrapper = operationFactory.fetchVotersWrapper(
-            for: referendumIndex,
+            for: ReferendumIdLocal(referendumIndex),
             from: connection,
             runtimeProvider: runtimeProvider
         )

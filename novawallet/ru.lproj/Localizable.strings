@@ -1027,5 +1027,12 @@
 "gov.common.votes.format" = "%@ голосов";
 "gov.common.amount.conviction.format" = "%@ × %@x";
 "gov.voters.empty" = "Когда кто-нибудь проголосует\nза референдум они будут отображаться здесь";
+"gov.vote.conviction.title" = "Умножить голос, увеличивая период блокировки";
+"common.gov.lock" = "Блокировка в голосовании";
+"common.locking.period" = "Период блокировки";
+"gov.vote.setup.hint" = "После окончания периода блокировки не забудьте забрать токены";
+"gov.vote.setup.title.format" = "Голосование за %@";
+"common.available.prefix" = "Доступно:";
+"common.maximum" = "%@ максимум";
 "gov.referendum.details.dApps.title" = "Использовать Nova DApp браузер";
 "gov.referendum.details.timeline.title" = "Статусы";
