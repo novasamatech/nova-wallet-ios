@@ -133,18 +133,21 @@ final class ReferendumVoteConfirmPresenter {
             locale: selectedLocale
         )
 
-        let voteSide: String
+        let voteSideString: String
+        let voteSideStyle: YourVoteView.Style
 
         if vote.voteAction.isAye {
-            voteSide = R.string.localizable.governanceAye(preferredLanguages: selectedLocale.rLanguages)
+            voteSideString = R.string.localizable.governanceAye(preferredLanguages: selectedLocale.rLanguages)
+            voteSideStyle = .ayeInverse
         } else {
-            voteSide = R.string.localizable.governanceNay(preferredLanguages: selectedLocale.rLanguages)
+            voteSideString = R.string.localizable.governanceNay(preferredLanguages: selectedLocale.rLanguages)
+            voteSideStyle = .nayInverse
         }
 
-        let title = R.string.localizable.govYourVote(preferredLanguages: selectedLocale.rLanguages)
+        let voteDescription = R.string.localizable.govYourVote(preferredLanguages: selectedLocale.rLanguages)
 
         let viewModel = YourVoteRow.Model(
-            vote: .init(title: title, description: voteSide),
+            vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
             amount: .init(topValue: votesString ?? "", bottomValue: convictionString)
         )
 
