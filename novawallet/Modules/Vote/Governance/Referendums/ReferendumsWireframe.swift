@@ -32,7 +32,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     }
 
     func showReferendumDetails(from view: ControllerBackedProtocol?, referendum: ReferendumLocal) {
-        guard let detailsView = ReferendumDetailsViewFactory.createView(for: referendum, state: state) else {
+        guard let detailsView = ReferendumVoteSetupViewFactory.createView(for: state, referendum: referendum.index) else {
             return
         }
 

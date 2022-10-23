@@ -12,7 +12,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
-    let currencyManager: CurrencyManagerProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
     let operationQueue: OperationQueue
