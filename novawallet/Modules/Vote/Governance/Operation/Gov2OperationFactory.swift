@@ -170,6 +170,21 @@ final class Gov2OperationFactory {
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
+
+    private func createMaxVotesOperation(
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> BaseOperation<UInt32> {
+        let maxVotesOperation = PrimitiveConstantOperation<UInt32>(path: ConvictionVoting.maxVotes)
+        maxVotesOperation.configurationBlock = {
+            do {
+                maxVotesOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                maxVotesOperation.result = .failure(error)
+            }
+        }
+
+        return maxVotesOperation
+    }
 }
 
 extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
@@ -298,15 +313,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         votesWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let maxVotesOperation = PrimitiveConstantOperation<UInt32>(path: ConvictionVoting.maxVotes)
-        maxVotesOperation.configurationBlock = {
-            do {
-                maxVotesOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                maxVotesOperation.result = .failure(error)
-            }
-        }
-
+        let maxVotesOperation = createMaxVotesOperation(dependingOn: codingFactoryOperation)
         maxVotesOperation.addDependency(codingFactoryOperation)
 
         let mappingOperation = ClosureOperation<ReferendumAccountVotingDistribution> {
@@ -322,14 +329,11 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
             return voting.reduce(initVotingLocal) { resultVoting, votingKeyValue in
                 let voting = votingKeyValue.value
-                let track = votingKeyValue.key.trackId
+                let track = TrackIdLocal(votingKeyValue.key.trackId)
                 switch voting {
                 case let .casting(castingVoting):
                     return castingVoting.votes.reduce(resultVoting) { result, vote in
-                        let newResult = result.addingReferendum(
-                            ReferendumIdLocal(vote.pollIndex),
-                            track: TrackIdLocal(track)
-                        )
+                        let newResult = result.addingReferendum(ReferendumIdLocal(vote.pollIndex), track: track)
 
                         guard let localVote = ReferendumAccountVoteLocal(accountVote: vote.accountVote) else {
                             return newResult
@@ -339,7 +343,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
                     }
                 case let .delegating(delegatingVoting):
                     let delegatingLocal = ReferendumDelegatingLocal(remote: delegatingVoting)
-                    return resultVoting.addingDelegating(delegatingLocal, trackId: TrackIdLocal(track))
+                    return resultVoting.addingDelegating(delegatingLocal, trackId: track)
                 case .unknown:
                     return resultVoting
                 }
@@ -347,8 +351,9 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         }
 
         mappingOperation.addDependency(votesWrapper.targetOperation)
+        mappingOperation.addDependency(maxVotesOperation)
 
-        let dependencies = [codingFactoryOperation] + votesWrapper.allOperations
+        let dependencies = [codingFactoryOperation, maxVotesOperation] + votesWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }

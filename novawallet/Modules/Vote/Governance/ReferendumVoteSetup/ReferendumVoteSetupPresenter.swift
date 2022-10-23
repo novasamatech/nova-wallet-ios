@@ -15,6 +15,7 @@ final class ReferendumVoteSetupPresenter {
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
+    let dataValidatingFactory: GovernanceValidatorFactoryProtocol
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
@@ -32,6 +33,7 @@ final class ReferendumVoteSetupPresenter {
     init(
         chain: ChainModel,
         referendumIndex: ReferendumIdLocal,
+        dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
@@ -44,6 +46,7 @@ final class ReferendumVoteSetupPresenter {
     ) {
         self.chain = chain
         self.referendumIndex = referendumIndex
+        self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.referendumFormatter = referendumFormatter
@@ -235,6 +238,45 @@ final class ReferendumVoteSetupPresenter {
             blockHash: votesResult.blockHash
         )
     }
+
+    private func performValidation(
+        for isAye: Bool,
+        notifying completionBlock: @escaping DataValidationRunnerCompletion
+    ) {
+        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
+            return
+        }
+
+        let newVote = deriveNewVote(isAye: isAye)
+
+        let params = GovernanceVoteValidatingParams(
+            assetBalance: assetBalance,
+            referendum: referendum,
+            newVote: newVote,
+            fee: fee,
+            votes: votesResult?.value?.votes,
+            assetInfo: assetInfo
+        )
+
+        DataValidationRunner.validateVote(
+            factory: dataValidatingFactory,
+            params: params,
+            selectedLocale: selectedLocale,
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }, successClosure: completionBlock
+        )
+    }
+
+    private func proceed(isAye: Bool) {
+        performValidation(for: isAye) { [weak self] in
+            guard let newVote = self?.deriveNewVote(isAye: isAye) else {
+                return
+            }
+
+            self?.wireframe.showConfirmation(from: self?.view, vote: newVote)
+        }
+    }
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
@@ -280,19 +322,11 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
     }
 
     func proceedNay() {
-        guard let newVote = deriveNewVote(isAye: false) else {
-            return
-        }
-
-        wireframe.showConfirmation(from: view, vote: newVote)
+        proceed(isAye: false)
     }
 
     func proceedAye() {
-        guard let newVote = deriveNewVote(isAye: true) else {
-            return
-        }
-
-        wireframe.showConfirmation(from: view, vote: newVote)
+        proceed(isAye: true)
     }
 }
 

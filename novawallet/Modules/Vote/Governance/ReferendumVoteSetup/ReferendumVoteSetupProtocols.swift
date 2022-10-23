@@ -26,6 +26,7 @@ protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInp
 
 protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {}
 
-protocol ReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable {
+protocol ReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+    GovernanceErrorPresentable {
     func showConfirmation(from view: ReferendumVoteSetupViewProtocol?, vote: ReferendumNewVote)
 }

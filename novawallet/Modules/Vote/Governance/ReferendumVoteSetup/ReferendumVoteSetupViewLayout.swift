@@ -13,6 +13,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
         let button = TriangularedButton()
         button.applyDefaultStyle()
         button.triangularedView?.fillColor = R.color.colorGreen()!
+        button.triangularedView?.highlightedFillColor = R.color.colorGreen()!
         return button
     }()
 
@@ -20,6 +21,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
         let button = TriangularedButton()
         button.applyDefaultStyle()
         button.triangularedView?.fillColor = R.color.colorRed()!
+        button.triangularedView?.highlightedFillColor = R.color.colorRed()!
         return button
     }()
 
