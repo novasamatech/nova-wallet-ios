@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 struct ReferendumFullDetailsViewFactory {
     static func createView(
@@ -31,7 +32,10 @@ struct ReferendumFullDetailsViewFactory {
             chain: chain,
             referendum: referendum,
             actionDetails: actionDetails,
-            identities: identities
+            identities: identities,
+            localizationManager: LocalizationManager.shared,
+            currencyManager: currencyManager,
+            assetFormatterFactory: AssetBalanceFormatterFactory()
         )
 
         let view = ReferendumFullDetailsViewController(presenter: presenter)
