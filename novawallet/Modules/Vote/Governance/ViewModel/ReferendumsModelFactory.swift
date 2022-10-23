@@ -158,11 +158,13 @@ final class ReferendumsModelFactory {
         }
         let ayesModel = votes.ayes > 0 ? YourVoteView.Model(
             title: Strings.governanceAye(preferredLanguages: locale.rLanguages).uppercased(),
-            description: formatVotes(votes.ayes)
+            description: formatVotes(votes.ayes),
+            style: .aye
         ) : nil
         let naysModel = votes.nays > 0 ? YourVoteView.Model(
             title: Strings.governanceNay(preferredLanguages: locale.rLanguages).uppercased(),
-            description: formatVotes(votes.nays)
+            description: formatVotes(votes.nays),
+            style: .nay
         ) : nil
         return .init(
             aye: ayesModel,
