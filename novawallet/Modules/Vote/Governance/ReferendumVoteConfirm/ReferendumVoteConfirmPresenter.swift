@@ -15,6 +15,7 @@ final class ReferendumVoteConfirmPresenter {
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
+    let dataValidatingFactory: GovernanceValidatorFactoryProtocol
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
@@ -34,6 +35,7 @@ final class ReferendumVoteConfirmPresenter {
         vote: ReferendumNewVote,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
+        dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
@@ -46,6 +48,7 @@ final class ReferendumVoteConfirmPresenter {
         self.vote = vote
         self.chain = chain
         self.selectedAccount = selectedAccount
+        self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.referendumFormatter = referendumFormatter
         self.referendumStringsViewModelFactory = referendumStringsViewModelFactory
@@ -230,9 +233,35 @@ extension ReferendumVoteConfirmPresenter: ReferendumVoteConfirmPresenterProtocol
     }
 
     func confirm() {
-        view?.didStartLoading()
+        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
+            return
+        }
 
-        interactor.submit(vote: vote.voteAction)
+        let params = GovernanceVoteValidatingParams(
+            assetBalance: assetBalance,
+            referendum: referendum,
+            newVote: vote,
+            fee: fee,
+            votes: votesResult?.value?.votes,
+            assetInfo: assetInfo
+        )
+
+        DataValidationRunner.validateVote(
+            factory: dataValidatingFactory,
+            params: params,
+            selectedLocale: selectedLocale,
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }, successClosure: { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+
+                strongSelf.view?.didStartLoading()
+
+                strongSelf.interactor.submit(vote: strongSelf.vote.voteAction)
+            }
+        )
     }
 
     func presentSenderDetails() {

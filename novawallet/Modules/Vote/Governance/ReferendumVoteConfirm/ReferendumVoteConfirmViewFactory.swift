@@ -39,10 +39,17 @@ struct ReferendumVoteConfirmViewFactory {
 
         let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
 
+        let dataValidatingFactory = GovernanceValidatorFactory(
+            presentable: wireframe,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
+
         let presenter = ReferendumVoteConfirmPresenter(
             vote: newVote,
             chain: chain,
             selectedAccount: selectedAccount,
+            dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),
             referendumStringsViewModelFactory: referendumStringsViewModelFactory,
@@ -59,6 +66,7 @@ struct ReferendumVoteConfirmViewFactory {
         )
 
         presenter.view = view
+        dataValidatingFactory.view = view
         interactor.presenter = presenter
 
         return view

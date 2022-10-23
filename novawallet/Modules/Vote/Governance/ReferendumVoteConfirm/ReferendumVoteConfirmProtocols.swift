@@ -30,4 +30,4 @@ protocol ReferendumVoteConfirmInteractorOutputProtocol: ReferendumVoteInteractor
 
 protocol ReferendumVoteConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
     MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting {}
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {}
