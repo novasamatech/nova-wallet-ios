@@ -26,7 +26,6 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         setupHandlers()
 
         presenter.setup()
-        setSamples()
     }
 
     private func setupHandlers() {

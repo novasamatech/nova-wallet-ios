@@ -1047,3 +1047,7 @@
 "gov.max.votes.reached.message" = "Вы достигли максимального числа голосов %@ в треке";
 "gov.reuse.governance.locks" = "Заблокированные в голосовании: %@";
 "gov.reuse.all.locks" = "Все заблокированные: %@";
+"gov.vote" = "Голосовать";
+"gov.revote" = "Изменить голос";
+"gov.details.voting.status" = "Статус голосования";
+"common.requested.amount" = "Запрашиваемая сумма";
