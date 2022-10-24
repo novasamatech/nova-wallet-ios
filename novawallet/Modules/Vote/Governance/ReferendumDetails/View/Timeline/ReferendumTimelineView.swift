@@ -35,7 +35,7 @@ final class ReferendumTimelineView: UIView {
         }
     }
 
-    private func updateStatuses(model: Model) {
+    private func updateStatuses(model: [Model]) {
         let statusViews = statusViews(from: model)
         statusesContentView.arrangedSubviews.forEach {
             statusesContentView.removeArrangedSubview($0)
@@ -48,8 +48,8 @@ final class ReferendumTimelineView: UIView {
         }
     }
 
-    private func statusViews(from model: Model) -> [(view: BaselinedView, status: Model.Status)] {
-        model.statuses.map { status in
+    private func statusViews(from model: [Model]) -> [(view: BaselinedView, status: Model)] {
+        model.map { status in
             switch status.subtitle {
             case let .date(date):
                 let view = MultiValueView()
@@ -76,21 +76,16 @@ final class ReferendumTimelineView: UIView {
 extension ReferendumTimelineView: BindableView {
     struct Model {
         let title: String
-        let statuses: [Status]
-
-        struct Status {
-            let title: String
-            let subtitle: StatusSubtitle?
-            let isLast: Bool
-        }
-
-        enum StatusSubtitle {
-            case date(String)
-            case interval(TitleIconViewModel)
-        }
+        let subtitle: StatusSubtitle?
+        let isLast: Bool
     }
 
-    func bind(viewModel: Model) {
+    enum StatusSubtitle {
+        case date(String)
+        case interval(TitleIconViewModel)
+    }
+
+    func bind(viewModel: [Model]) {
         updateStatuses(model: viewModel)
         dotsView.setNeedsDisplay()
         dotsView.setNeedsLayout()
