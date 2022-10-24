@@ -1,14 +1,11 @@
 import UIKit
 
 final class ReferendumVoteSetupViewLayout: UIView {
-    typealias MappingView = GenericPairValueView<IconDetailsView, UILabel>
-    typealias ChangesView = GenericPairValueView<MappingView, IconDetailsView>
-
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 0, bottom: 0, right: 0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.alignment = .fill
+        view.stackView.alignment = .center
         return view
     }()
 
@@ -16,6 +13,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
         let button = TriangularedButton()
         button.applyDefaultStyle()
         button.triangularedView?.fillColor = R.color.colorGreen()!
+        button.triangularedView?.highlightedFillColor = R.color.colorGreen()!
         return button
     }()
 
@@ -23,6 +21,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
         let button = TriangularedButton()
         button.applyDefaultStyle()
         button.triangularedView?.fillColor = R.color.colorRed()!
+        button.triangularedView?.highlightedFillColor = R.color.colorRed()!
         return button
     }()
 
@@ -36,27 +35,38 @@ final class ReferendumVoteSetupViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
+    private(set) var govLocksReuseButton: TriangularedButton?
+    private(set) var allLocksReuseButton: TriangularedButton?
+
+    let lockReuseContainerView: ScrollableContainerView = {
+        let view = ScrollableContainerView(axis: .horizontal)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
+        view.stackView.spacing = 8.0
+        view.scrollView.showsHorizontalScrollIndicator = false
+        return view
+    }()
+
     let convictionView = ReferendumConvictionView()
 
     var lockAmountTitleLabel: UILabel {
         lockedAmountView.titleView.detailsLabel
     }
 
-    let lockedAmountView: GenericTitleValueView<IconDetailsView, ChangesView> = {
-        let view = ReferendumVoteSetupViewLayout.createMultiValueView()
+    let lockedAmountView: TitleValueDiffView = .create { view in
+        view.applyDefaultStyle()
         view.titleView.imageView.image = R.image.iconGovAmountLock()
-        return view
-    }()
+    }
 
     var lockPeriodTitleLabel: UILabel {
         lockedPeriodView.titleView.detailsLabel
     }
 
-    let lockedPeriodView: GenericTitleValueView<IconDetailsView, ChangesView> = {
-        let view = ReferendumVoteSetupViewLayout.createMultiValueView()
+    let lockedPeriodView: TitleValueDiffView = .create { view in
+        view.applyDefaultStyle()
         view.titleView.imageView.image = R.image.iconGovPeriodLock()
-        return view
-    }()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -71,38 +81,55 @@ final class ReferendumVoteSetupViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bindLockAmount(viewModel: ReferendumLockTransitionViewModel) {
-        bindLockTrasition(for: viewModel, view: lockedAmountView)
+    func bindReuseLocks(viewModel: ReferendumLockReuseViewModel, locale: Locale) {
+        if viewModel.governance != nil, govLocksReuseButton == nil {
+            let button = createReuseLockButton()
+            lockReuseContainerView.stackView.insertArrangedSubview(button, at: 0)
 
-        setNeedsLayout()
-    }
-
-    func bindLockPeriod(viewModel: ReferendumLockTransitionViewModel) {
-        bindLockTrasition(for: viewModel, view: lockedPeriodView)
-
-        setNeedsLayout()
-    }
-
-    private func bindLockTrasition(
-        for viewModel: ReferendumLockTransitionViewModel,
-        view: GenericTitleValueView<IconDetailsView, ChangesView>
-    ) {
-        let viewTop = view.valueView.fView
-        viewTop.fView.detailsLabel.text = viewModel.fromValue
-        viewTop.sView.text = viewModel.toValue
-
-        let viewBottom = view.valueView.sView
-
-        if let change = viewModel.change {
-            viewBottom.isHidden = false
-
-            viewBottom.detailsLabel.text = change.value
-
-            let icon = change.isIncrease ? R.image.iconAmountInc() : R.image.iconAmountDec()
-            viewBottom.imageView.image = icon
-        } else {
-            viewBottom.isHidden = true
+            govLocksReuseButton = button
+        } else if viewModel.governance == nil, govLocksReuseButton != nil {
+            govLocksReuseButton?.removeFromSuperview()
+            govLocksReuseButton = nil
         }
+
+        if viewModel.all != nil, allLocksReuseButton == nil {
+            let button = createReuseLockButton()
+            lockReuseContainerView.stackView.addArrangedSubview(button)
+
+            allLocksReuseButton = button
+        } else if viewModel.all == nil, allLocksReuseButton != nil {
+            allLocksReuseButton?.removeFromSuperview()
+            allLocksReuseButton = nil
+        }
+
+        if let governance = viewModel.governance {
+            govLocksReuseButton?.imageWithTitleView?.title = R.string.localizable.govReuseGovernanceLocks(
+                governance,
+                preferredLanguages: locale.rLanguages
+            )
+
+            govLocksReuseButton?.invalidateLayout()
+        }
+
+        if let all = viewModel.all {
+            allLocksReuseButton?.imageWithTitleView?.title = R.string.localizable.govReuseAllLocks(
+                all,
+                preferredLanguages: locale.rLanguages
+            )
+
+            allLocksReuseButton?.invalidateLayout()
+        }
+
+        lockReuseContainerView.isHidden = !viewModel.hasLocks
+
+        lockReuseContainerView.setNeedsLayout()
+    }
+
+    private func createReuseLockButton() -> TriangularedButton {
+        let button = TriangularedButton()
+        button.applySecondaryDefaultStyle()
+        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        return button
     }
 
     private func setupLayout() {
@@ -143,6 +170,14 @@ final class ReferendumVoteSetupViewLayout: UIView {
             make.height.equalTo(64)
         }
 
+        containerView.stackView.addArrangedSubview(lockReuseContainerView)
+        lockReuseContainerView.snp.makeConstraints { make in
+            make.height.equalTo(32.0)
+            make.width.equalTo(self)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: lockReuseContainerView)
+
         containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
 
         containerView.stackView.addArrangedSubview(convictionView)
@@ -162,39 +197,17 @@ final class ReferendumVoteSetupViewLayout: UIView {
         lockedPeriodView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
+
+        setupContentWidth()
     }
 
-    static func createMultiValueView() -> GenericTitleValueView<IconDetailsView, ChangesView> {
-        let view = GenericTitleValueView<IconDetailsView, ChangesView>()
-        view.titleView.spacing = 8.0
-        view.titleView.mode = .iconDetails
-        view.titleView.iconWidth = 16.0
-        view.titleView.detailsLabel.textColor = R.color.colorTransparentText()
-        view.titleView.detailsLabel.font = .regularFootnote
-        view.titleView.detailsLabel.numberOfLines = 1
-
-        view.valueView.setVerticalAndSpacing(0.0)
-        view.valueView.stackView.alignment = .trailing
-
-        let mappingView = view.valueView.fView
-        mappingView.setHorizontalAndSpacing(4.0)
-        mappingView.fView.iconWidth = 12.0
-        mappingView.fView.spacing = 4.0
-        mappingView.fView.mode = .detailsIcon
-        mappingView.fView.detailsLabel.textColor = R.color.colorTransparentText()
-        mappingView.fView.detailsLabel.font = .regularFootnote
-        mappingView.fView.detailsLabel.numberOfLines = 1
-        mappingView.fView.imageView.image = R.image.iconGovLockTransition()
-        mappingView.sView.textColor = R.color.colorWhite()
-        mappingView.sView.font = .regularFootnote
-
-        let changesView = view.valueView.sView
-        changesView.mode = .iconDetails
-        changesView.spacing = 0.0
-        changesView.detailsLabel.textColor = R.color.colorNovaBlue()
-        changesView.detailsLabel.font = .caption1
-        changesView.detailsLabel.numberOfLines = 1
-
-        return view
+    private func setupContentWidth() {
+        containerView.stackView.arrangedSubviews
+            .filter { $0 !== lockReuseContainerView }
+            .forEach {
+                $0.snp.makeConstraints { make in
+                    make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+                }
+            }
     }
 }

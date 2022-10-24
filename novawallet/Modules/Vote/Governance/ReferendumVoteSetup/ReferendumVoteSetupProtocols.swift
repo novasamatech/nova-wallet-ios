@@ -11,6 +11,7 @@ protocol ReferendumVoteSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveConviction(viewModel: UInt)
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel)
     func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel)
+    func didReceiveLockReuse(viewModel: ReferendumLockReuseViewModel)
 }
 
 protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
@@ -18,28 +19,17 @@ protocol ReferendumVoteSetupPresenterProtocol: AnyObject {
     func updateAmount(_ newValue: Decimal?)
     func selectAmountPercentage(_ percentage: Float)
     func selectConvictionValue(_ value: UInt)
+    func reuseGovernanceLock()
+    func reuseAllLock()
     func proceedNay()
     func proceedAye()
 }
 
-protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {
-    func refreshLockDiff(
-        for votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
-        newVote: ReferendumNewVote?,
-        blockHash: Data?
-    )
+protocol ReferendumVoteSetupInteractorInputProtocol: ReferendumVoteInteractorInputProtocol {}
 
-    func refreshBlockTime()
+protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {}
+
+protocol ReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+    GovernanceErrorPresentable {
+    func showConfirmation(from view: ReferendumVoteSetupViewProtocol?, vote: ReferendumNewVote)
 }
-
-protocol ReferendumVoteSetupInteractorOutputProtocol: ReferendumVoteInteractorOutputProtocol {
-    func didReceiveLockStateDiff(_ stateDiff: GovernanceLockStateDiff)
-    func didReceiveAccountVotes(
-        _ votes: CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>
-    )
-    func didReceiveBlockNumber(_ number: BlockNumber)
-    func didReceiveBlockTime(_ blockTime: BlockTime)
-    func didReceiveError(_ error: ReferendumVoteSetupInteractorError)
-}
-
-protocol ReferendumVoteSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable {}

@@ -32,9 +32,11 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     }
 
     func showReferendumDetails(from view: ControllerBackedProtocol?, referendum: ReferendumLocal) {
-        guard let detailsView = ReferendumVoteSetupViewFactory.createView(for: state, referendum: referendum.index) else {
+        guard let detailsView = ReferendumDetailsViewFactory.createView(for: referendum, state: state) else {
             return
         }
+
+        detailsView.controller.hidesBottomBarWhenPushed = true
 
         view?.controller.navigationController?.pushViewController(detailsView.controller, animated: true)
     }

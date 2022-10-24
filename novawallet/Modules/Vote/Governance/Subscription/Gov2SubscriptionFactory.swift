@@ -117,6 +117,7 @@ final class Gov2SubscriptionFactory: AnyCancellableCleaning {
         case let .success(result):
             handleVotes(
                 for: accountId,
+                trackLocks: result.value ?? [],
                 connection: connection,
                 runtimeProvider: runtimeProvider,
                 blockHash: result.blockHash
@@ -128,6 +129,7 @@ final class Gov2SubscriptionFactory: AnyCancellableCleaning {
 
     private func handleVotes(
         for accountId: AccountId,
+        trackLocks: [ConvictionVoting.ClassLock],
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data?
@@ -151,9 +153,9 @@ final class Gov2SubscriptionFactory: AnyCancellableCleaning {
                 self?.cancellables[cancellableKey] = nil
 
                 do {
-                    let votes = try wrapper.targetOperation.extractNoCancellableResultData()
-                    let value = CallbackStorageSubscriptionResult<[UInt: ReferendumAccountVoteLocal]>(
-                        value: votes,
+                    let accountVoting = try wrapper.targetOperation.extractNoCancellableResultData()
+                    let value = CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>(
+                        value: .init(votes: accountVoting, trackLocks: trackLocks),
                         blockHash: blockHash
                     )
 
