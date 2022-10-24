@@ -5,6 +5,8 @@ import BigInt
 enum ConvictionVoting {
     typealias PollIndex = UInt32
 
+    static var lockId: String = "pyconvot"
+
     enum Conviction: UInt8, Decodable {
         /// 0.1x votes, unlocked.
         case none
@@ -83,6 +85,30 @@ enum ConvictionVoting {
                 return 32
             case .unknown:
                 return nil
+            }
+        }
+
+        public init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "None":
+                self = .none
+            case "Locked1x":
+                self = .locked1x
+            case "Locked2x":
+                self = .locked2x
+            case "Locked3x":
+                self = .locked3x
+            case "Locked4x":
+                self = .locked4x
+            case "Locked5x":
+                self = .locked5x
+            case "Locked6x":
+                self = .locked6x
+            default:
+                self = .unknown
             }
         }
     }

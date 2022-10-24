@@ -103,7 +103,8 @@ class ChainRegistryTests: XCTestCase {
             runtimeSyncService: runtimeSyncService,
             commonTypesSyncService: commonTypesSyncService,
             chainProvider: chainProvider,
-            specVersionSubscriptionFactory: specVersionSubscriptionFactory
+            specVersionSubscriptionFactory: specVersionSubscriptionFactory,
+            logger: Logger.shared
         )
 
         registry.syncUp()

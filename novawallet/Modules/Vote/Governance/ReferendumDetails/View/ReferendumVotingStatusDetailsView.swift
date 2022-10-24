@@ -1,6 +1,7 @@
 import UIKit
+import SoraUI
 
-final class ReferendumVotingStatusDetailsView: UIView {
+final class ReferendumVotingStatusDetailsView: RoundedView {
     let statusView = ReferendumVotingStatusView()
     let votingProgressView = VotingProgressView()
     let ayeVotesView: VoteRowView = .create {
@@ -17,12 +18,17 @@ final class ReferendumVotingStatusDetailsView: UIView {
         ))
     }
 
-    let voteButton: ButtonLargeControl = .create {
-        $0.titleLabel.textAlignment = .center
+    let voteButton: TriangularedButton = .create {
+        $0.applyDefaultStyle()
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        applyFilledBackgroundStyle()
+
+        fillColor = R.color.colorWhite8()!
+        cornerRadius = 12.0
 
         setupLayout()
     }
@@ -71,7 +77,8 @@ extension ReferendumVotingStatusDetailsView: BindableView {
         nayVotesView.bindOrHide(viewModel: viewModel.nay)
         if let buttonText = viewModel.buttonText {
             voteButton.isHidden = false
-            voteButton.bind(title: buttonText, details: nil)
+            voteButton.imageWithTitleView?.title = buttonText
+            voteButton.invalidateLayout()
         } else {
             voteButton.isHidden = true
         }

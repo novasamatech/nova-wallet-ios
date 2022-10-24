@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 final class Gov2LockStateFactory {
     struct AdditionalInfo {
@@ -103,9 +104,11 @@ final class Gov2LockStateFactory {
 
     private func calculateLocking(
         for referendumInfo: ReferendumInfo,
-        conviction: ConvictionVoting.Conviction,
+        accountVote: ReferendumAccountVoteLocal,
         additionalInfo: AdditionalInfo
     ) -> BlockNumber? {
+        let conviction = accountVote.convictionValue
+
         guard let convictionPeriod = conviction.conviction(for: additionalInfo.voteLockingPeriod) else {
             return nil
         }
@@ -123,8 +126,18 @@ final class Gov2LockStateFactory {
                     track.decisionPeriod + convictionPeriod
             }
         case let .approved(completedStatus):
-            return completedStatus.since + convictionPeriod
-        case .unknown, .killed, .timedOut, .cancelled, .rejected:
+            if accountVote.ayes > 0 {
+                return completedStatus.since + convictionPeriod
+            } else {
+                return nil
+            }
+        case let .rejected(completedStatus):
+            if accountVote.nays > 0 {
+                return completedStatus.since + convictionPeriod
+            } else {
+                return nil
+            }
+        case .unknown, .killed, .timedOut, .cancelled:
             return nil
         }
     }
@@ -149,8 +162,7 @@ final class Gov2LockStateFactory {
                     return nil
                 }
 
-                let conviction = vote.convictionValue
-                return self.calculateLocking(for: referendum, conviction: conviction, additionalInfo: additions)
+                return self.calculateLocking(for: referendum, accountVote: vote, additionalInfo: additions)
             }.max()
 
             let oldState = GovernanceLockState(maxLockedAmount: oldAmount, lockedUntil: oldPeriod)
@@ -165,23 +177,23 @@ final class Gov2LockStateFactory {
                     let referendumIndex = referendumKeyValue.key
                     let referendum = referendumKeyValue.value
 
-                    let conviction: ConvictionVoting.Conviction
+                    let accountVote: ReferendumAccountVoteLocal
 
                     if referendumIndex == newVote.index {
                         guard newVote.voteAction.amount > 0 else {
                             return nil
                         }
 
-                        conviction = newVote.voteAction.conviction
+                        accountVote = newVote.toAccountVote()
                     } else {
                         guard let vote = filteredVotes[referendumIndex], vote.totalBalance > 0 else {
                             return nil
                         }
 
-                        conviction = vote.convictionValue
+                        accountVote = vote
                     }
 
-                    return self.calculateLocking(for: referendum, conviction: conviction, additionalInfo: additions)
+                    return self.calculateLocking(for: referendum, accountVote: accountVote, additionalInfo: additions)
                 }.max()
 
                 newState = GovernanceLockState(maxLockedAmount: newAmount, lockedUntil: newPeriod)

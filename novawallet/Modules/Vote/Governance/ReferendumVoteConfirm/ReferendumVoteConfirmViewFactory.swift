@@ -1,26 +1,29 @@
 import Foundation
-import SubstrateSdk
 import RobinHood
+import SubstrateSdk
 import SoraFoundation
 
-struct ReferendumVoteSetupViewFactory {
+struct ReferendumVoteConfirmViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal
-    ) -> ReferendumVoteSetupViewProtocol? {
+        newVote: ReferendumNewVote
+    ) -> ReferendumVoteConfirmViewProtocol? {
         guard
-            let chain = state.settings.value,
-            let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
-                referendum: referendum,
+                referendum: newVote.index,
                 currencyManager: currencyManager
+            ),
+            let chain = state.settings.value,
+            let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
+                for: chain.accountRequest()
             ) else {
             return nil
         }
 
-        let wireframe = ReferendumVoteSetupWireframe(state: state)
+        let wireframe = ReferendumVoteConfirmWireframe()
 
         let localizationManager = LocalizationManager.shared
 
@@ -28,9 +31,6 @@ struct ReferendumVoteSetupViewFactory {
             targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
-
-        let networkViewModelFactory = NetworkViewModelFactory()
-        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
 
         let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
             assetDisplayInfo: assetDisplayInfo,
@@ -45,13 +45,13 @@ struct ReferendumVoteSetupViewFactory {
             quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
-        let presenter = ReferendumVoteSetupPresenter(
+        let presenter = ReferendumVoteConfirmPresenter(
+            vote: newVote,
             chain: chain,
-            referendumIndex: referendum,
+            selectedAccount: selectedAccount,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),
-            chainAssetViewModelFactory: chainAssetViewModelFactory,
             referendumStringsViewModelFactory: referendumStringsViewModelFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             interactor: interactor,
@@ -60,9 +60,9 @@ struct ReferendumVoteSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = ReferendumVoteSetupViewController(
+        let view = ReferendumVoteConfirmViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
         presenter.view = view
@@ -76,7 +76,7 @@ struct ReferendumVoteSetupViewFactory {
         for state: GovernanceSharedState,
         referendum: ReferendumIdLocal,
         currencyManager: CurrencyManagerProtocol
-    ) -> ReferendumVoteSetupInteractor? {
+    ) -> ReferendumVoteConfirmInteractor? {
         let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
 
         guard
@@ -110,7 +110,12 @@ struct ReferendumVoteSetupViewFactory {
             operationManager: operationManager
         ).createService(account: selectedAccount.chainAccount, chain: chain)
 
-        return ReferendumVoteSetupInteractor(
+        let signer = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
+            accountResponse: selectedAccount.chainAccount
+        )
+
+        return ReferendumVoteConfirmInteractor(
             referendumIndex: referendum,
             selectedAccount: selectedAccount,
             chain: chain,
@@ -124,6 +129,7 @@ struct ReferendumVoteSetupViewFactory {
             currencyManager: currencyManager,
             extrinsicFactory: Gov2ExtrinsicFactory(),
             extrinsicService: extrinsicService,
+            signer: signer,
             feeProxy: ExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
             operationQueue: operationQueue
