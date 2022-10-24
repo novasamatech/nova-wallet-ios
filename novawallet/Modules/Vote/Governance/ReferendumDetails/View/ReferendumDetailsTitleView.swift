@@ -1,23 +1,5 @@
 import UIKit
 
-extension TrackTagsView: BindableView {
-    struct Model {
-        let titleIcon: TitleIconViewModel
-        let referendumNumber: String?
-    }
-
-    func bind(viewModel: Model) {
-        if let referendumNumber = viewModel.referendumNumber {
-            numberLabel.isHidden = false
-            numberLabel.titleLabel.text = referendumNumber
-        } else {
-            numberLabel.isHidden = true
-        }
-
-        trackNameView.iconDetailsView.bind(viewModel: viewModel.titleIcon)
-    }
-}
-
 final class ReferendumDetailsTitleView: UIView {
     let addressView = PolkadotIconDetailsView()
     let infoImageView = UIImageView()
@@ -78,10 +60,10 @@ final class ReferendumDetailsTitleView: UIView {
 extension ReferendumDetailsTitleView {
     struct Model {
         let accountIcon: DrawableIconViewModel?
-        let accountName: String
+        let accountName: String?
         let title: String
         let description: String
-        let buttonText: String
+        let shouldReadMore: Bool
     }
 
     func bind(viewModel: Model) {
@@ -90,6 +72,8 @@ extension ReferendumDetailsTitleView {
             addressView.imageView.bind(icon: $0.icon)
         }
         addressView.titleLabel.text = viewModel.accountName
+
+        addressView.isHidden = viewModel.accountIcon == nil && viewModel.accountName == nil
 
         let titleAttributedString = NSAttributedString(
             string: viewModel.title,
@@ -104,7 +88,8 @@ extension ReferendumDetailsTitleView {
         referendumInfo.append(NSAttributedString(string: "\n"))
         referendumInfo.append(descriptionAttributedString)
         textView.attributedText = referendumInfo
-        moreButton.setTitle(viewModel.buttonText, for: .normal)
+
+        moreButton.isHidden = viewModel.shouldReadMore
     }
 
     private var titleAttributes: [NSAttributedString.Key: Any] {

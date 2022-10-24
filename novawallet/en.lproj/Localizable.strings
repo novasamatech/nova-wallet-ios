@@ -1046,3 +1046,7 @@
 "gov.max.votes.reached.message" = "You have reached a maximum of %@ votes for track";
 "gov.reuse.governance.locks" = "Reuse governance lock: %@";
 "gov.reuse.all.locks" = "Reuse all locks: %@";
+"gov.vote" = "Vote";
+"gov.revote" = "Revote";
+"gov.details.voting.status" = "Voting status";
+"common.requested.amount" = "Requested amount";

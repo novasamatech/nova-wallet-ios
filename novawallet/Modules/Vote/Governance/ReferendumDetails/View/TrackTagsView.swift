@@ -16,6 +16,8 @@ final class TrackTagsView: UIView {
         $0.titleLabel.numberOfLines = 1
     }
 
+    private(set) var trackIconViewModel: ImageViewModelProtocol?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -37,6 +39,40 @@ final class TrackTagsView: UIView {
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+    }
+}
+
+extension TrackTagsView: BindableView {
+    struct Model {
+        let titleIcon: ReferendumInfoView.Model.Track?
+        let referendumNumber: String?
+    }
+
+    func bind(viewModel: Model) {
+        if let referendumNumber = viewModel.referendumNumber {
+            numberLabel.isHidden = false
+            numberLabel.titleLabel.text = referendumNumber
+        } else {
+            numberLabel.isHidden = true
+        }
+
+        trackIconViewModel?.cancel(on: trackNameView.iconDetailsView.imageView)
+        trackIconViewModel = nil
+
+        if let titleIcon = viewModel.titleIcon {
+            trackNameView.isHidden = false
+            trackNameView.iconDetailsView.detailsLabel.text = titleIcon.title
+
+            trackIconViewModel = titleIcon.icon
+            let size = trackNameView.iconDetailsView.iconWidth
+            trackIconViewModel?.loadImage(
+                on: trackNameView.iconDetailsView.imageView,
+                targetSize: CGSize(width: size, height: size),
+                animated: true
+            )
+        } else {
+            trackNameView.isHidden = true
         }
     }
 }

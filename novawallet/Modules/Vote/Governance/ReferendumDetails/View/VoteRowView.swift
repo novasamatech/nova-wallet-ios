@@ -76,13 +76,12 @@ extension VoteRowView: BindableView {
     struct Model {
         let title: String
         let votes: String
-        let tokens: String
+        let tokens: String?
     }
 
     func bind(viewModel: Model) {
         titleLabel.text = viewModel.title
-        valueView.valueTop.text = viewModel.votes
-        valueView.valueBottom.text = viewModel.tokens
+        valueView.bind(topValue: viewModel.votes, bottomValue: viewModel.tokens)
     }
 }
 
