@@ -1034,7 +1034,6 @@
 "gov.vote.setup.title.format" = "Голосование за %@";
 "common.available.prefix" = "Доступно:";
 "common.maximum" = "%@ максимум";
-"gov.referendum.details.dApps.title" = "Использовать Nova DApp браузер";
 "gov.referendum.details.timeline.title" = "Статусы";
 "gov.your.vote" = "Ваш голос";
 "common.amount.too.big" = "Сумма слишком большая";
@@ -1051,3 +1050,8 @@
 "gov.revote" = "Изменить голос";
 "gov.details.voting.status" = "Статус голосования";
 "common.requested.amount" = "Запрашиваемая сумма";
+"common.react.comment" = "Комментарии и реакции";
+"common.use.dapp" = "Использовать популярные вебсайты в Nova";
+"gov.timeline.created" = "Создано";
+"gov.timeline.voting.format" = "В процессе голосования: %@";
+"gov.timeline.voted.format" = "Голосование завершено: %@";

@@ -1,7 +1,7 @@
 protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(votingDetails: ReferendumVotingStatusDetailsView.Model)
-    func didReceive(title: String, dAppModels: [ReferendumDAppView.Model])
-    func didReceive(title: String, timelineModel: ReferendumTimelineView.Model?)
+    func didReceive(dAppModels: [ReferendumDAppView.Model]?)
+    func didReceive(timelineModel: [ReferendumTimelineView.Model]?)
     func didReceive(titleModel: ReferendumDetailsTitleView.Model)
     func didReceive(yourVoteModel: YourVoteRow.Model?)
     func didReceive(requestedAmount: RequestedAmountRow.Model?)
@@ -18,6 +18,7 @@ protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
     func refreshBlockTime()
     func refreshActionDetails()
     func refreshIdentities()
+    func refreshDApps()
     func remakeSubscriptions()
 }
 
@@ -30,6 +31,7 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceivePrice(_ price: PriceData?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
+    func didReceiveDApps(_ dApps: [GovernanceDApp])
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
