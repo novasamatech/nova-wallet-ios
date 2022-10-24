@@ -23,8 +23,22 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
+
         presenter.setup()
         setSamples()
+    }
+
+    private func setupHandlers() {
+        rootView.votingDetailsRow.voteButton.addTarget(
+            self,
+            action: #selector(actionVote),
+            for: .touchUpInside
+        )
+    }
+
+    @objc private func actionVote() {
+        presenter.vote()
     }
 
     private func setSamples() {
@@ -112,7 +126,7 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         rootView.fullDetailsView.bind(title: "Full details")
 
         didReceive(yourVoteModel: .init(
-            vote: .init(title: "AYE", description: "Your vote"),
+            vote: .init(title: "AYE", description: "Your vote", style: .ayeInverse),
             amount: .init(topValue: "30 votes", bottomValue: "10 KSM × 3x")
         ))
 

@@ -100,7 +100,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         ) { [weak self] result in
             switch result {
             case let .success(votesResult):
-                if let votes = votesResult.value, let referendumId = self?.referendum.index {
+                if let votes = votesResult.value?.votes.votes, let referendumId = self?.referendum.index {
                     self?.presenter?.didReceiveAccountVotes(votes[referendumId])
                 }
             case let .failure(error):

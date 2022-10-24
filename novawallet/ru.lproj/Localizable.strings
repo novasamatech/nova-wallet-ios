@@ -1036,3 +1036,14 @@
 "common.maximum" = "%@ максимум";
 "gov.referendum.details.dApps.title" = "Использовать Nova DApp браузер";
 "gov.referendum.details.timeline.title" = "Статусы";
+"gov.your.vote" = "Ваш голос";
+"common.amount.too.big" = "Сумма слишком большая";
+"gov.not.enough.vote.tokens" = "Извините, у Вас недостаточно токенов для голосования. Доступно токенов для голосования: %@";
+"gov.referendum.completed.title" = "Референдум завершен";
+"gov.referendum.completed.message" = "Голосование за референдум завершено";
+"gov.already.delegating.votes.title" = "Голоса делегированы";
+"gov.already.delegating.votes.message" = "Вы делегируете голоса в треке к которому относится выбранный референдум. Пожалуйста, либо попросите делегата проголосовать или отключите делегирование и голосуйте напрямую.";
+"gov.max.votes.reached.title" = "Достигнуто максимальное количество голосов";
+"gov.max.votes.reached.message" = "Вы достигли максимального числа голосов %@ в треке";
+"gov.reuse.governance.locks" = "Заблокированные в голосовании: %@";
+"gov.reuse.all.locks" = "Все заблокированные: %@";

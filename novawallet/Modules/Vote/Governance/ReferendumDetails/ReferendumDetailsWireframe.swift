@@ -27,4 +27,18 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
+
+    func showVote(from view: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal) {
+        guard
+            let voteSetupView = ReferendumVoteSetupViewFactory.createView(
+                for: state,
+                referendum: referendum.index
+            ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: voteSetupView.controller)
+
+        view?.controller.present(navigationController, animated: true)
+    }
 }
