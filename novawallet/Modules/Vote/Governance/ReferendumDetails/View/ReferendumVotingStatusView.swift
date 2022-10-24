@@ -61,6 +61,18 @@ extension ReferendumVotingStatusView {
     enum StatusKind {
         case positive
         case negative
+        case neutral
+
+        init(infoKind: ReferendumInfoView.Model.StatusKind) {
+            switch infoKind {
+            case .positive:
+                self = .positive
+            case .negative:
+                self = .negative
+            case .neutral:
+                self = .neutral
+            }
+        }
     }
 
     func bind(viewModel: Model) {
@@ -73,6 +85,8 @@ extension ReferendumVotingStatusView {
             statusLabel.apply(style: .positiveStatusLabel)
         case .negative:
             statusLabel.apply(style: .negativeStatusLabel)
+        case .neutral:
+            statusLabel.apply(style: .neutralStatusLabel)
         }
     }
 
@@ -93,6 +107,10 @@ private extension UILabel.Style {
     )
     static let negativeStatusLabel = UILabel.Style(
         textColor: R.color.colorRedFF3A69(),
+        font: .boldTitle2
+    )
+    static let neutralStatusLabel = UILabel.Style(
+        textColor: R.color.colorWhite64(),
         font: .boldTitle2
     )
     static let title = UILabel.Style.footnoteWhite64

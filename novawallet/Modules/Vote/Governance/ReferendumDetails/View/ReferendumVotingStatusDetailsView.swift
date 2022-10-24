@@ -58,6 +58,10 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
         content.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(16)
         }
+
+        voteButton.snp.makeConstraints { make in
+            make.height.equalTo(44.0)
+        }
     }
 }
 

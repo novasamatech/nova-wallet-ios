@@ -18,6 +18,14 @@ struct ReferendumsModelFactoryInput {
 
 protocol ReferendumsModelFactoryProtocol {
     func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection]
+
+    func createViewModel(
+        from referendum: ReferendumLocal,
+        metadata: ReferendumMetadataLocal?,
+        vote: ReferendumAccountVoteLocal?,
+        chainInfo: ReferendumsModelFactoryInput.ChainInformation,
+        selectedLocale: Locale
+    ) -> ReferendumView.Model
 }
 
 final class ReferendumsModelFactory {
@@ -400,6 +408,23 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             sections.append(.completed(.loaded(value: title), completed))
         }
         return sections
+    }
+
+    func createViewModel(
+        from referendum: ReferendumLocal,
+        metadata: ReferendumMetadataLocal?,
+        vote: ReferendumAccountVoteLocal?,
+        chainInfo: ReferendumsModelFactoryInput.ChainInformation,
+        selectedLocale: Locale
+    ) -> ReferendumView.Model {
+        let params = StatusParams(
+            referendum: referendum,
+            metadata: metadata,
+            chainInfo: chainInfo,
+            votes: vote
+        )
+
+        return createReferendumCellViewModel(state: referendum.state, params: params, locale: selectedLocale)
     }
 
     private func createReferendumCellViewModel(

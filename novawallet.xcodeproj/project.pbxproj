@@ -2092,6 +2092,7 @@
 		84F1CB4027CF6BEF0095D523 /* UniquesClassDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */; };
 		84F1D66B29051A730050F4E3 /* ReferendumLockReuseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */; };
 		84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66C29051F240050F4E3 /* ReferendumReuseLockModel.swift */; };
+		84F1D66F29066F740050F4E3 /* ReferendumVotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */; };
 		84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */; };
 		84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */; };
 		84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */; };
@@ -5015,6 +5016,7 @@
 		84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniquesClassDetails.swift; sourceTree = "<group>"; };
 		84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumLockReuseViewModel.swift; sourceTree = "<group>"; };
 		84F1D66C29051F240050F4E3 /* ReferendumReuseLockModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumReuseLockModel.swift; sourceTree = "<group>"; };
+		84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotesViewModel.swift; sourceTree = "<group>"; };
 		84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRequestFactory.swift; sourceTree = "<group>"; };
 		84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPrefs.swift; sourceTree = "<group>"; };
 		84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorInfo.swift; sourceTree = "<group>"; };
@@ -7930,6 +7932,7 @@
 				8455AB4428F7F05400974E88 /* ReferendumStatusViewModelFactory.swift */,
 				8455AB4928F80D9300974E88 /* ReferendumTrackType.swift */,
 				8483B15C28FA79620048B295 /* ReferendumDisplayStringFactory.swift */,
+				84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -15409,6 +15412,7 @@
 				84D8F15D24D8178000AF43E9 /* IconWithTitleViewModel.swift in Sources */,
 				844DB61F262D9C070025A8F0 /* ChainHistoryRange.swift in Sources */,
 				842A737127DB7EF1006EE1EA /* OperationSlashViewModel.swift in Sources */,
+				84F1D66F29066F740050F4E3 /* ReferendumVotesViewModel.swift in Sources */,
 				84C5ADE22813E8C1006D7388 /* GradientBannerInfoView.swift in Sources */,
 				8490142C24A935FE008F705E /* ErrorPresentable.swift in Sources */,
 				84DF21A5253473B0005454AE /* ModalInfoFactory.swift in Sources */,
