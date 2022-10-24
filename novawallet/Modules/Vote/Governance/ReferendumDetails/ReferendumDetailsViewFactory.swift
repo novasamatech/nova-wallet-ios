@@ -14,7 +14,9 @@ struct ReferendumDetailsViewFactory {
                 for: referendum,
                 currencyManager: currencyManager,
                 state: state
-            ) else {
+            ),
+            let chain = state.settings.value,
+            let assetInfo = chain.utilityAssetDisplayInfo() else {
             return nil
         }
 
@@ -22,16 +24,45 @@ struct ReferendumDetailsViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let statusViewModelFactory = ReferendumStatusViewModelFactory()
+
+        let indexFormatter = NumberFormatter.index.localizableResource()
+        let referendumViewModelFactory = ReferendumsModelFactory(
+            statusViewModelFactory: statusViewModelFactory,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            percentFormatter: NumberFormatter.percentHalfEven.localizableResource(),
+            indexFormatter: indexFormatter
+        )
+
+        let referendumStringFactory = ReferendumDisplayStringFactory()
+        let timelineViewModelFactory = ReferendumTimelineViewModelFactory(
+            statusViewModelFactory: statusViewModelFactory,
+            timeFormatter: DateFormatter.shortDateAndTime
+        )
+
         let presenter = ReferendumDetailsPresenter(
+            referendum: referendum,
+            chain: chain,
             interactor: interactor,
             wireframe: wireframe,
-            referendum: referendum,
-            chain: state.settings.value,
+            referendumViewModelFactory: referendumViewModelFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            referendumFormatter: indexFormatter,
+            referendumStringsFactory: referendumStringFactory,
+            referendumTimelineViewModelFactory: timelineViewModelFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = ReferendumDetailsViewController(presenter: presenter)
+        let view = ReferendumDetailsViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter
@@ -76,6 +107,8 @@ struct ReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let dAppsRepository = JsonFileRepository<[GovernanceDApp]>()
+
         return ReferendumDetailsInteractor(
             referendum: referendum,
             selectedAccount: selectedAccount,
@@ -89,6 +122,7 @@ struct ReferendumDetailsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
+            dAppsRepository: dAppsRepository,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

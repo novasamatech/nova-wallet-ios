@@ -99,6 +99,7 @@ enum ReferendumStateLocal {
         let track: GovernanceTrackLocal
         let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
         let voting: Voting
+        let submitted: BlockNumber
         let since: BlockNumber
         let period: Moment
         let confirmationUntil: BlockNumber?

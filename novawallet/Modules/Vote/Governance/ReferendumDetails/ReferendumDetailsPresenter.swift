@@ -12,6 +12,7 @@ final class ReferendumDetailsPresenter {
     let referendumFormatter: LocalizableResource<NumberFormatter>
     let referendumViewModelFactory: ReferendumsModelFactoryProtocol
     let referendumStringsFactory: ReferendumDisplayStringFactoryProtocol
+    let referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol
 
     let chain: ChainModel
     let logger: LoggerProtocol
@@ -24,10 +25,12 @@ final class ReferendumDetailsPresenter {
     private var price: PriceData?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
+    private var dApps: [GovernanceDApp]?
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
+        referendum: ReferendumLocal,
         chain: ChainModel,
         interactor: ReferendumDetailsInteractorInputProtocol,
         wireframe: ReferendumDetailsWireframeProtocol,
@@ -35,7 +38,7 @@ final class ReferendumDetailsPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
         referendumStringsFactory: ReferendumDisplayStringFactoryProtocol,
-        referendum: ReferendumLocal,
+        referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -45,6 +48,7 @@ final class ReferendumDetailsPresenter {
         self.referendumStringsFactory = referendumStringsFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.referendumFormatter = referendumFormatter
+        self.referendumTimelineViewModelFactory = referendumTimelineViewModelFactory
         self.referendum = referendum
         self.chain = chain
         self.logger = logger
@@ -195,12 +199,50 @@ final class ReferendumDetailsPresenter {
         view?.didReceive(votingDetails: viewModel)
     }
 
+    private func provideDAppViewModel() {
+        guard let dApps = dApps else {
+            view?.didReceive(dAppModels: nil)
+            return
+        }
+
+        let viewModels = dApps.map {
+            ReferendumDAppView.Model(
+                icon: RemoteImageViewModel(url: $0.icon),
+                title: $0.name,
+                subtitle: $0.subtitle
+            )
+        }
+
+        view?.didReceive(dAppModels: viewModels)
+    }
+
+    private func provideTimelineViewModel() {
+        guard
+            let blockNumber = blockNumber,
+            let blockTime = blockTime else {
+            view?.didReceive(timelineModel: nil)
+            return
+        }
+
+        let timeline = referendumTimelineViewModelFactory.createTimelineViewModel(
+            for: referendum,
+            metadata: referendumMetadata,
+            currentBlock: blockNumber,
+            blockDuration: blockTime,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(timelineModel: timeline)
+    }
+
     private func updateView() {
         provideReferendumInfoViewModel()
         provideTitleViewModel()
         provideRequestedAmount()
         provideYourVote()
         provideVotingDetails()
+        provideDAppViewModel()
+        provideTimelineViewModel()
     }
 }
 
@@ -259,13 +301,23 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
+        interactor.refreshBlockTime()
+
         provideVotingDetails()
+        provideTimelineViewModel()
     }
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {
         self.blockTime = blockTime
 
         provideVotingDetails()
+        provideTimelineViewModel()
+    }
+
+    func didReceiveDApps(_ dApps: [GovernanceDApp]) {
+        self.dApps = dApps
+
+        provideDAppViewModel()
     }
 
     func didReceiveError(_ error: ReferendumDetailsInteractorError) {
@@ -287,6 +339,10 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         case .blockTimeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshBlockTime()
+            }
+        case .dAppsFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshDApps()
             }
         }
     }

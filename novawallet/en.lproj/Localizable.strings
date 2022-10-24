@@ -1033,7 +1033,6 @@
 "gov.vote.setup.title.format" = "Vote for %@";
 "common.available.prefix" = "Available:";
 "common.maximum" = "%@ maximum";
-"gov.referendum.details.dApps.title" = "Use Nova DApp browser";
 "gov.referendum.details.timeline.title" = "Timeline";
 "gov.your.vote" = "Your vote";
 "common.amount.too.big" = "Amount is too big";
@@ -1050,3 +1049,8 @@
 "gov.revote" = "Revote";
 "gov.details.voting.status" = "Voting status";
 "common.requested.amount" = "Requested amount";
+"common.react.comment" = "Comment and react";
+"common.use.dapp" = "Use Nova Featured websites";
+"gov.timeline.created" = "Created";
+"gov.timeline.voting.format" = "Voting: %@";
+"gov.timeline.voted.format" = "Voted: %@";
