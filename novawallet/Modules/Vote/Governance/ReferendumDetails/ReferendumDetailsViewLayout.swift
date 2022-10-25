@@ -70,7 +70,7 @@ final class ReferendumDetailsViewLayout: UIView {
         }
     }
 
-    func setDApps(models: [ReferendumDAppView.Model]?, locale: Locale) {
+    func setDApps(models: [ReferendumDAppView.Model]?, locale: Locale) -> [ReferendumDAppCellView] {
         dAppsTableView.clear()
 
         if let models = models {
@@ -81,15 +81,23 @@ final class ReferendumDetailsViewLayout: UIView {
             )
 
             let headerView = createHeader(with: title)
-            dAppsTableView.stackView.addArrangedSubview(headerView)
+            dAppsTableView.addArrangedSubview(headerView)
 
-            for model in models {
+            let cells: [ReferendumDAppCellView] = models.map { model in
                 let dAppView = ReferendumDAppCellView(frame: .zero)
                 dAppView.rowContentView.bind(viewModel: model)
-                dAppsTableView.stackView.addArrangedSubview(dAppView)
+                return dAppView
             }
+
+            cells.forEach {
+                dAppsTableView.addArrangedSubview($0)
+            }
+
+            return cells
         } else {
             dAppsTableView.isHidden = true
+
+            return []
         }
     }
 

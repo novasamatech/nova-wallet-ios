@@ -8,6 +8,8 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     let presenter: ReferendumDetailsPresenterProtocol
     let localizationManager: LocalizationManagerProtocol
 
+    private var dAppCells: [ReferendumDAppCellView]?
+
     init(
         presenter: ReferendumDetailsPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -86,6 +88,16 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     @objc private func actionNayVotes() {
         presenter.showNayVoters()
     }
+
+    @objc private func actionDApp(_ sender: UIControl) {
+        guard
+            let cell = sender as? ReferendumDAppCellView,
+            let index = dAppCells?.firstIndex(of: cell) else {
+            return
+        }
+
+        presenter.opeDApp(at: index)
+    }
 }
 
 extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
@@ -94,7 +106,10 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     }
 
     func didReceive(dAppModels: [ReferendumDAppView.Model]?) {
-        rootView.setDApps(models: dAppModels, locale: localizationManager.selectedLocale)
+        let cells = rootView.setDApps(models: dAppModels, locale: localizationManager.selectedLocale)
+        dAppCells = cells
+
+        cells.forEach { $0.addTarget(self, action: #selector(actionDApp(_:)), for: .touchUpInside)}
     }
 
     func didReceive(timelineModel: [ReferendumTimelineView.Model]?) {

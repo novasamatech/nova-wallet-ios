@@ -14,6 +14,7 @@ protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func readFullDescription()
     func showAyeVoters()
     func showNayVoters()
+    func opeDApp(at index: Int)
     func vote()
 }
 
