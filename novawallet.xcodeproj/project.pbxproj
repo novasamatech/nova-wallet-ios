@@ -1252,6 +1252,7 @@
 		8483B15D28FA79620048B295 /* ReferendumDisplayStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8483B15C28FA79620048B295 /* ReferendumDisplayStringFactory.swift */; };
 		8485D924277E16C400767243 /* DAppBrowserScriptHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */; };
 		8487010A2907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848701092907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift */; };
+		8487010C2907AA9B00F2C0C3 /* ReferendumMetadataViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487010B2907AA9B00F2C0C3 /* ReferendumMetadataViewModelFactory.swift */; };
 		84873AFF26028E2B000A83EE /* StakingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873AFE26028E2B000A83EE /* StakingStateMachine.swift */; };
 		84873B0426029B75000A83EE /* StakingEstimationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */; };
 		84873B0926029CBD000A83EE /* StakingStateViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873B0826029CBD000A83EE /* StakingStateViewModelFactory.swift */; };
@@ -4169,6 +4170,7 @@
 		8483B15C28FA79620048B295 /* ReferendumDisplayStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumDisplayStringFactory.swift; sourceTree = "<group>"; };
 		8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserScriptHandler.swift; sourceTree = "<group>"; };
 		848701092907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumTimelineViewModelFactory.swift; sourceTree = "<group>"; };
+		8487010B2907AA9B00F2C0C3 /* ReferendumMetadataViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumMetadataViewModelFactory.swift; sourceTree = "<group>"; };
 		84873AFE26028E2B000A83EE /* StakingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateMachine.swift; sourceTree = "<group>"; };
 		84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingEstimationViewModel.swift; sourceTree = "<group>"; };
 		84873B0826029CBD000A83EE /* StakingStateViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateViewModelFactory.swift; sourceTree = "<group>"; };
@@ -7941,6 +7943,7 @@
 				8483B15C28FA79620048B295 /* ReferendumDisplayStringFactory.swift */,
 				84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */,
 				848701092907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift */,
+				8487010B2907AA9B00F2C0C3 /* ReferendumMetadataViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -14743,6 +14746,7 @@
 				88421057289BBA8D00306F2C /* CurrencyProtocols.swift in Sources */,
 				842BDB28278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift in Sources */,
 				845AADA32902D1EB00B5AE96 /* StackTitleValueDiffCell.swift in Sources */,
+				8487010C2907AA9B00F2C0C3 /* ReferendumMetadataViewModelFactory.swift in Sources */,
 				848DAF042822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift in Sources */,
 				840689FC26321F2700A017B1 /* StorageQuery.swift in Sources */,
 				8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */,
