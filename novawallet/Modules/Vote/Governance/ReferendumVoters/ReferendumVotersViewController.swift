@@ -110,7 +110,11 @@ extension ReferendumVotersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        presenter.selectVoter(at: indexPath.row)
+        guard let viewModels = state?.value else {
+            return
+        }
+
+        presenter.selectVoter(for: viewModels[indexPath.row])
     }
 }
 
@@ -123,9 +127,9 @@ extension ReferendumVotersViewController: EmptyStateViewOwnerProtocol {
 extension ReferendumVotersViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
-        emptyView.image = R.image.iconSearchHappy()?.tinted(with: R.color.colorWhite()!)
+        emptyView.image = R.image.iconEmptyHistory()
         emptyView.title = R.string.localizable.govVotersEmpty(preferredLanguages: selectedLocale.rLanguages)
-        emptyView.titleColor = R.color.colorWhite()!
+        emptyView.titleColor = R.color.colorTransparentText()!
         emptyView.titleFont = .regularFootnote
         return emptyView
     }

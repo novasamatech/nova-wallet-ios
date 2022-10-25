@@ -1025,7 +1025,7 @@
 "gov.voters.nay" = "Nay voters";
 "gov.common.votes.format" = "%@ votes";
 "gov.common.amount.conviction.format" = "%@ × %@x";
-"gov.voters.empty" = "When somebody votes for\nthe referendum they will appear here";
+"gov.voters.empty" = "List of voters will appear here";
 "gov.vote.conviction.title" = "Multiply votes by increasing locking period";
 "common.gov.lock" = "Governance lock";
 "common.locking.period" = "Locking period";
