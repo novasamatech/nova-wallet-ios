@@ -41,10 +41,30 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
             action: #selector(actionVote),
             for: .touchUpInside
         )
+
+        rootView.titleView.accountContainerView.addTarget(
+            self,
+            action: #selector(actionProposer),
+            for: .touchUpInside
+        )
+
+        rootView.titleView.moreButton.addTarget(
+            self,
+            action: #selector(actionFullDescription),
+            for: .touchUpInside
+        )
     }
 
     @objc private func actionVote() {
         presenter.vote()
+    }
+
+    @objc private func actionProposer() {
+        presenter.showProposerDetails()
+    }
+
+    @objc private func actionFullDescription() {
+        presenter.readFullDescription()
     }
 }
 
@@ -62,7 +82,7 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     }
 
     func didReceive(titleModel: ReferendumDetailsTitleView.Model) {
-        rootView.titleView.bind(viewModel: titleModel)
+        rootView.titleView.bind(viewModel: titleModel, locale: localizationManager.selectedLocale)
     }
 
     func didReceive(yourVoteModel: YourVoteRow.Model?) {

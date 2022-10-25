@@ -1055,3 +1055,6 @@
 "gov.timeline.created" = "Создано";
 "gov.timeline.voting.format" = "В процессе голосования: %@";
 "gov.timeline.voted.format" = "Голосование завершено: %@";
+"common.read.more" = "Читать дальше";
+"gov.referendum.title.fallback" = "Референдум %@";
+"gov.referendum.description.fallback" = "Только создатель референдума может редактировать заголовок и описание. Если Вы владеете аккаунтом создателя референдума, то заполните информацию о референдуме на Polkassembly";
