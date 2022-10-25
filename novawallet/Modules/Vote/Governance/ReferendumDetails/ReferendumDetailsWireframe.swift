@@ -41,4 +41,23 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
+
+    func showVoters(
+        from view: ReferendumDetailsViewProtocol?,
+        referendum: ReferendumLocal,
+        type: ReferendumVotersType
+    ) {
+        guard
+            let votersView = ReferendumVotersViewFactory.createView(
+                state: state,
+                referendum: referendum,
+                type: type
+            ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: votersView.controller)
+
+        view?.controller.present(navigationController, animated: true)
+    }
 }

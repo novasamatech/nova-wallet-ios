@@ -12,6 +12,8 @@ protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
     func showProposerDetails()
     func readFullDescription()
+    func showAyeVoters()
+    func showNayVoters()
     func vote()
 }
 
@@ -47,4 +49,10 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
     )
 
     func showVote(from view: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal)
+
+    func showVoters(
+        from view: ReferendumDetailsViewProtocol?,
+        referendum: ReferendumLocal,
+        type: ReferendumVotersType
+    )
 }
