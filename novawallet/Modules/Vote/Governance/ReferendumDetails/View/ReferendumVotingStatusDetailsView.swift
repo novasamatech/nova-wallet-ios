@@ -6,14 +6,14 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
     let votingProgressView = VotingProgressView()
     let ayeVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorRedFF3A69()!,
+            color: R.color.colorGreen15CF37()!,
             accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
         ))
     }
 
     let nayVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorGreen15CF37()!,
+            color: R.color.colorRedFF3A69()!,
             accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
         ))
     }
