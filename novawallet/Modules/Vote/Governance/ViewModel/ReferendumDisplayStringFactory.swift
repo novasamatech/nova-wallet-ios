@@ -34,16 +34,14 @@ extension ReferendumDisplayStringFactoryProtocol {
         let aye: VoteRowView.Model? = ayesString.map {
             .init(
                 title: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
-                votes: $0,
-                tokens: nil
+                votes: $0
             )
         }
 
         let nay: VoteRowView.Model? = naysString.map {
             .init(
                 title: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
-                votes: $0,
-                tokens: nil
+                votes: $0
             )
         }
 

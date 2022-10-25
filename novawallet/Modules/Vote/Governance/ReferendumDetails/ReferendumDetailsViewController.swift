@@ -53,6 +53,18 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
             action: #selector(actionFullDescription),
             for: .touchUpInside
         )
+
+        rootView.votingDetailsRow.ayeVotesView.addTarget(
+            self,
+            action: #selector(actionAyeVotes),
+            for: .touchUpInside
+        )
+
+        rootView.votingDetailsRow.nayVotesView.addTarget(
+            self,
+            action: #selector(actionNayVotes),
+            for: .touchUpInside
+        )
     }
 
     @objc private func actionVote() {
@@ -65,6 +77,14 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
 
     @objc private func actionFullDescription() {
         presenter.readFullDescription()
+    }
+
+    @objc private func actionAyeVotes() {
+        presenter.showAyeVoters()
+    }
+
+    @objc private func actionNayVotes() {
+        presenter.showNayVoters()
     }
 }
 

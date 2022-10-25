@@ -265,6 +265,14 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         wireframe.presentAccountOptions(from: view, address: proposerAddress, chain: chain, locale: selectedLocale)
     }
 
+    func showAyeVoters() {
+        wireframe.showVoters(from: view, referendum: referendum, type: .ayes)
+    }
+
+    func showNayVoters() {
+        wireframe.showVoters(from: view, referendum: referendum, type: .nays)
+    }
+
     func readFullDescription() {}
 }
 
