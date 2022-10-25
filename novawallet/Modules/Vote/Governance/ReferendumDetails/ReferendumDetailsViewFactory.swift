@@ -45,6 +45,8 @@ struct ReferendumDetailsViewFactory {
             timeFormatter: DateFormatter.shortDateAndTime
         )
 
+        let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
+
         let presenter = ReferendumDetailsPresenter(
             referendum: referendum,
             chain: chain,
@@ -55,6 +57,8 @@ struct ReferendumDetailsViewFactory {
             referendumFormatter: indexFormatter,
             referendumStringsFactory: referendumStringFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,
+            referendumMetadataViewModelFactory: metadataViewModelFactory,
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )

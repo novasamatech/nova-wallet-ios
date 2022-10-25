@@ -13,6 +13,8 @@ final class ReferendumDetailsPresenter {
     let referendumViewModelFactory: ReferendumsModelFactoryProtocol
     let referendumStringsFactory: ReferendumDisplayStringFactoryProtocol
     let referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol
+    let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
+    let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
 
     let chain: ChainModel
     let logger: LoggerProtocol
@@ -39,6 +41,8 @@ final class ReferendumDetailsPresenter {
         referendumFormatter: LocalizableResource<NumberFormatter>,
         referendumStringsFactory: ReferendumDisplayStringFactoryProtocol,
         referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
+        referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
+        displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -49,6 +53,8 @@ final class ReferendumDetailsPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.referendumFormatter = referendumFormatter
         self.referendumTimelineViewModelFactory = referendumTimelineViewModelFactory
+        self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
+        self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.referendum = referendum
         self.chain = chain
         self.logger = logger
@@ -69,34 +75,26 @@ final class ReferendumDetailsPresenter {
     }
 
     private func provideTitleViewModel() {
-        let accountIcon: DrawableIconViewModel?
-        let accountDisplayName: String?
+        let accountViewModel: DisplayAddressViewModel?
 
         if
             let proposer = referendum.proposer,
             let identities = identities,
             let address = try? proposer.toAddress(using: chain.chainFormat) {
-            accountIcon = (try? iconGenerator.generateFromAccountId(proposer)).map {
-                DrawableIconViewModel(icon: $0)
-            }
-
-            accountDisplayName = identities[address]?.displayName ?? address
+            let displayAddress = DisplayAddress(address: address, username: identities[address]?.displayName ?? "")
+            accountViewModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
         } else {
-            accountIcon = nil
-            accountDisplayName = nil
+            accountViewModel = nil
         }
 
-        let detailsLength = referendumMetadata?.details.count ?? 0
-
-        let shouldReadMore = detailsLength > Self.readMoreThreshold
-
-        let viewModel = ReferendumDetailsTitleView.Model(
-            accountIcon: accountIcon,
-            accountName: accountDisplayName,
-            title: referendumMetadata?.name ?? "",
-            description: referendumMetadata?.details ?? "",
-            shouldReadMore: shouldReadMore
+        let detailsViewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
+            for: referendum,
+            metadata: referendumMetadata,
+            readMoreThreshold: Self.readMoreThreshold,
+            locale: selectedLocale
         )
+
+        let viewModel = ReferendumDetailsTitleView.Model(account: accountViewModel, details: detailsViewModel)
 
         view?.didReceive(titleModel: viewModel)
     }
@@ -256,6 +254,18 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func vote() {
         wireframe.showVote(from: view, referendum: referendum)
     }
+
+    func showProposerDetails() {
+        guard
+            let proposerAddress = try? referendum.proposer?.toAddress(using: chain.chainFormat),
+            let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(from: view, address: proposerAddress, chain: chain, locale: selectedLocale)
+    }
+
+    func readFullDescription() {}
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {

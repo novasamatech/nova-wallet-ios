@@ -10,6 +10,8 @@ protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
 
 protocol ReferendumDetailsPresenterProtocol: AnyObject {
     func setup()
+    func showProposerDetails()
+    func readFullDescription()
     func vote()
 }
 
@@ -35,7 +37,8 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
-protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
+    AddressOptionsPresentable {
     func showFullDetails(
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,

@@ -7,13 +7,15 @@ final class TrackTagsView: UIView {
         $0.iconDetailsView.detailsLabel.apply(style: .track)
         $0.backgroundView.apply(style: .referendum)
         $0.iconDetailsView.detailsLabel.numberOfLines = 1
+        $0.backgroundView.cornerRadius = 8.0
     }
 
     let numberLabel: BorderedLabelView = .create {
         $0.titleLabel.apply(style: .track)
-        $0.contentInsets = .init(top: 4, left: 6, bottom: 4, right: 8)
+        $0.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
         $0.backgroundView.apply(style: .referendum)
         $0.titleLabel.numberOfLines = 1
+        $0.backgroundView.cornerRadius = 8.0
     }
 
     private(set) var trackIconViewModel: ImageViewModelProtocol?

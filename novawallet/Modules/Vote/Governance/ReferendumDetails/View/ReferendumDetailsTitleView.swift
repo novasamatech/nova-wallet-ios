@@ -1,21 +1,64 @@
 import UIKit
+import SoraUI
 
 final class ReferendumDetailsTitleView: UIView {
-    let addressView = PolkadotIconDetailsView()
-    let infoImageView = UIImageView()
-    let textView: UITextView = .create {
-        $0.isScrollEnabled = false
+    var accountIconSize: CGSize {
+        let size = accountContainerView.rowContentView.detailsView.iconWidth
+        return CGSize(width: size, height: size)
     }
 
-    let moreButton: UIButton = .create {
+    var accountLabel: UILabel { accountContainerView.rowContentView.detailsView.detailsLabel }
+    var accountImageView: UIImageView { accountContainerView.rowContentView.detailsView.imageView }
+
+    let accountContainerView: RowView<IconDetailsGenericView<IconDetailsView>> = .create { view in
+        view.roundedBackgroundView.highlightedFillColor = .clear
+        view.changesContentOpacityWhenHighlighted = true
+        view.borderView.borderType = .none
+
+        view.preferredHeight = 36.0
+        view.rowContentView.mode = .detailsIcon
+        view.rowContentView.iconWidth = 16.0
+        view.rowContentView.spacing = 6
+        view.contentInsets = UIEdgeInsets(top: 9, left: 0, bottom: 9, right: 0)
+        view.rowContentView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+
+        let addressView = view.rowContentView.detailsView
+        addressView.spacing = 7
+        addressView.detailsLabel.numberOfLines = 1
+        addressView.detailsLabel.textColor = R.color.colorTransparentText()
+        addressView.detailsLabel.font = .regularFootnote
+        addressView.iconWidth = 18.0
+    }
+
+    private var addressImageViewModel: ImageViewModelProtocol?
+
+    let titleLabel: UILabel = .create {
+        $0.textColor = R.color.colorWhite()
+        $0.font = .boldTitle1
+        $0.numberOfLines = 0
+    }
+
+    let textView: UITextView = .create {
+        $0.textColor = R.color.colorTransparentText()
+        $0.font = .regularSubheadline
+        $0.isScrollEnabled = false
+        $0.isEditable = false
+        $0.textContainerInset = .zero
+        $0.textContainer.lineFragmentPadding = 0
+    }
+
+    let moreButton: RoundedButton = .create { button in
+        button.applyIconStyle()
+
         let color = R.color.colorAccent()!
-        $0.titleLabel?.apply(style: .rowLink)
-        $0.setImage(
-            R.image.iconChevronRight()?.tinted(with: color),
-            for: .normal
-        )
-        $0.setTitleColor(color, for: .normal)
-        $0.semanticContentAttribute = .forceRightToLeft
+        button.imageWithTitleView?.titleColor = color
+        button.imageWithTitleView?.titleFont = .regularFootnote
+
+        button.imageWithTitleView?.iconImage = R.image.iconLinkChevron()?.tinted(with: color)
+        button.imageWithTitleView?.layoutType = .horizontalLabelFirst
+        button.contentInsets = .zero
+
+        button.imageWithTitleView?.spacingBetweenLabelAndIcon = 4.0
     }
 
     override init(frame: CGRect) {
@@ -30,85 +73,85 @@ final class ReferendumDetailsTitleView: UIView {
 
     private func setupLayout() {
         let content = UIView.vStack(
-            spacing: 9,
             [
                 UIView.hStack(
-                    spacing: 6,
                     [
-                        addressView,
-                        infoImageView,
+                        accountContainerView,
                         UIView()
                     ]
                 ),
-                textView,
-                UIView.hStack([
-                    moreButton,
-                    UIView()
-                ])
+                UIView.vStack(
+                    spacing: 6,
+                    [
+                        titleLabel,
+                        textView,
+                        UIView.hStack([
+                            moreButton,
+                            UIView()
+                        ])
+                    ]
+                )
             ]
         )
+
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        textView.snp.makeConstraints {
-            $0.height.lessThanOrEqualTo(220)
+
+        moreButton.snp.makeConstraints { make in
+            make.height.equalTo(32)
         }
     }
 }
 
 extension ReferendumDetailsTitleView {
     struct Model {
-        let accountIcon: DrawableIconViewModel?
-        let accountName: String?
+        let account: DisplayAddressViewModel?
+        let details: Details?
+    }
+
+    struct Details {
         let title: String
         let description: String
         let shouldReadMore: Bool
     }
 
-    func bind(viewModel: Model) {
-        viewModel.accountIcon.map {
-            addressView.imageView.fillColor = $0.fillColor
-            addressView.imageView.bind(icon: $0.icon)
+    func bind(viewModel: Model, locale: Locale) {
+        addressImageViewModel?.cancel(on: accountImageView)
+        addressImageViewModel = viewModel.account?.imageViewModel
+
+        if let account = viewModel.account {
+            accountContainerView.isHidden = false
+
+            accountLabel.text = account.name ?? account.address.truncated
+
+            account.imageViewModel?.loadImage(
+                on: accountImageView,
+                targetSize: accountIconSize,
+                animated: true
+            )
+
+        } else {
+            accountContainerView.isHidden = true
         }
-        addressView.titleLabel.text = viewModel.accountName
 
-        addressView.isHidden = viewModel.accountIcon == nil && viewModel.accountName == nil
+        if let details = viewModel.details {
+            titleLabel.isHidden = false
+            textView.isHidden = false
 
-        let titleAttributedString = NSAttributedString(
-            string: viewModel.title,
-            attributes: titleAttributes
-        )
-        let descriptionAttributedString = NSAttributedString(
-            string: viewModel.description,
-            attributes: descriptionAttributes
-        )
-        let referendumInfo = NSMutableAttributedString()
-        referendumInfo.append(titleAttributedString)
-        referendumInfo.append(NSAttributedString(string: "\n"))
-        referendumInfo.append(descriptionAttributedString)
-        textView.attributedText = referendumInfo
+            titleLabel.text = details.title
+            textView.text = details.description
 
-        moreButton.isHidden = viewModel.shouldReadMore
-    }
+            moreButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
+                preferredLanguages: locale.rLanguages
+            )
 
-    private var titleAttributes: [NSAttributedString.Key: Any] {
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = .byWordWrapping
-        return [
-            .font: UIFont.boldTitle1,
-            .foregroundColor: R.color.colorWhite()!,
-            .paragraphStyle: paragraphStyle
-        ]
-    }
-
-    private var descriptionAttributes: [NSAttributedString.Key: Any] {
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = .byWordWrapping
-        return [
-            .font: UIFont.regularSubheadline,
-            .foregroundColor: R.color.colorWhite64()!,
-            .paragraphStyle: paragraphStyle
-        ]
+            moreButton.isHidden = !details.shouldReadMore
+        } else {
+            titleLabel.isHidden = true
+            textView.isHidden = true
+            moreButton.isHidden = true
+        }
     }
 }
