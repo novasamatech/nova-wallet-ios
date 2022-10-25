@@ -8,6 +8,7 @@ final class ReferendumVotingStatusView: UIView {
         $0.mode = .detailsIcon
         $0.detailsLabel.numberOfLines = 1
         $0.spacing = 5
+        $0.iconWidth = 14.0
         $0.apply(style: .timeView)
     }
 
