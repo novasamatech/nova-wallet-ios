@@ -102,7 +102,18 @@ extension ReferendumVotersPresenter: ReferendumVotersPresenterProtocol {
         interactor.setup()
     }
 
-    func selectVoter(at _: Int) {}
+    func selectVoter(for viewModel: ReferendumVotersViewModel) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: viewModel.displayAddress.address,
+            chain: chain,
+            locale: selectedLocale
+        )
+    }
 }
 
 extension ReferendumVotersPresenter: ReferendumVotersInteractorOutputProtocol {
