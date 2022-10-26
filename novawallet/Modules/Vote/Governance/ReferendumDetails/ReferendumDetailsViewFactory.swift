@@ -58,6 +58,7 @@ struct ReferendumDetailsViewFactory {
             referendumStringsFactory: referendumStringFactory,
             referendumTimelineViewModelFactory: timelineViewModelFactory,
             referendumMetadataViewModelFactory: metadataViewModelFactory,
+            statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared

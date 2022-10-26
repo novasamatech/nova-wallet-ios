@@ -15,6 +15,7 @@ final class ReferendumDetailsPresenter {
     let referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
+    let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
 
     let chain: ChainModel
     let logger: LoggerProtocol
@@ -31,6 +32,10 @@ final class ReferendumDetailsPresenter {
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
+    private var maxStatusTimeInterval: TimeInterval?
+    private var countdownTimer: CountdownTimer?
+    private var statusViewModel: StatusTimeViewModel?
+
     init(
         referendum: ReferendumLocal,
         chain: ChainModel,
@@ -42,6 +47,7 @@ final class ReferendumDetailsPresenter {
         referendumStringsFactory: ReferendumDisplayStringFactoryProtocol,
         referendumTimelineViewModelFactory: ReferendumTimelineViewModelFactoryProtocol,
         referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
+        statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -54,11 +60,16 @@ final class ReferendumDetailsPresenter {
         self.referendumFormatter = referendumFormatter
         self.referendumTimelineViewModelFactory = referendumTimelineViewModelFactory
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
+        self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.referendum = referendum
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    deinit {
+        invalidateTimer()
     }
 
     private func provideReferendumInfoViewModel() {
@@ -248,6 +259,55 @@ final class ReferendumDetailsPresenter {
         provideTimelineViewModel()
         provideFullDetailsViewModel()
     }
+
+    private func invalidateTimer() {
+        countdownTimer?.delegate = nil
+        countdownTimer?.stop()
+        countdownTimer = nil
+    }
+
+    private func updateTimerIfNeeded() {
+        guard
+            let blockTime = blockTime,
+            let blockNumber = blockNumber else {
+            return
+        }
+
+        let activeTimeModel = statusViewModelFactory.createTimeViewModel(
+            for: referendum,
+            currentBlock: blockNumber,
+            blockDuration: blockTime,
+            locale: selectedLocale
+        )
+
+        guard let timeInterval = activeTimeModel?.timeInterval else {
+            invalidateTimer()
+            view?.didReceive(activeTimeViewModel: activeTimeModel?.viewModel)
+            return
+        }
+
+        guard maxStatusTimeInterval != timeInterval else {
+            return
+        }
+
+        maxStatusTimeInterval = timeInterval
+        statusViewModel = activeTimeModel
+
+        countdownTimer = CountdownTimer()
+        countdownTimer?.delegate = self
+        countdownTimer?.start(with: timeInterval)
+    }
+
+    private func updateTimerDisplay() {
+        guard
+            let remainedTimeInterval = countdownTimer?.remainedInterval,
+            let statusViewModel = statusViewModel,
+            let updatedViewModel = statusViewModel.updateModelClosure(remainedTimeInterval) else {
+            return
+        }
+
+        view?.didReceive(activeTimeViewModel: updatedViewModel)
+    }
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
@@ -342,6 +402,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
 
         provideVotingDetails()
         provideTimelineViewModel()
+        updateTimerIfNeeded()
     }
 
     func didReceiveDApps(_ dApps: [GovernanceDApp]) {
@@ -375,6 +436,20 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
                 self?.interactor.refreshDApps()
             }
         }
+    }
+}
+
+extension ReferendumDetailsPresenter: CountdownTimerDelegate {
+    func didStart(with _: TimeInterval) {
+        updateTimerDisplay()
+    }
+
+    func didCountdown(remainedInterval _: TimeInterval) {
+        updateTimerDisplay()
+    }
+
+    func didStop(with _: TimeInterval) {
+        updateTimerDisplay()
     }
 }
 

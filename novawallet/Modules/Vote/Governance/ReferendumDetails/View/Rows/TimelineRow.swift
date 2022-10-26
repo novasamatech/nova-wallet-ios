@@ -30,6 +30,10 @@ final class TimelineRow: RoundedView, BindableView {
         contentView.bind(viewModel: viewModel)
     }
 
+    func bind(activeTimeViewModel: ReferendumInfoView.Model.Time?) {
+        contentView.bind(activeTimeViewModel: activeTimeViewModel)
+    }
+
     private func setupLayout() {
         let content = UIView.vStack(
             spacing: 16,
