@@ -2,10 +2,15 @@ import UIKit
 import SoraUI
 
 final class ReferendumTimelineView: UIView {
-    let dotsView = DotsView()
-    let statusesContentView: UIStackView = .create {
-        $0.axis = .vertical
+    private enum Constants {
+        static let horizontalSpacing: CGFloat = 15
+        static let verticalSpacing: CGFloat = 48
+        static let alignmentOffset: CGFloat = -1
+        static let titleSubtitleSpacing: CGFloat = 2
     }
+
+    let dotsView = DotsView()
+    private var statusViews: [UIView] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -20,54 +25,73 @@ final class ReferendumTimelineView: UIView {
 
     private func setupLayout() {
         addSubview(dotsView)
-        addSubview(statusesContentView)
 
         dotsView.snp.makeConstraints {
             $0.top.bottom.leading.equalToSuperview()
-            $0.width.equalTo(14)
-        }
-
-        statusesContentView.spacing = 12
-        statusesContentView.snp.makeConstraints {
-            $0.top.trailing.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(20)
-            $0.leading.equalTo(dotsView.snp.trailing).inset(-16)
         }
     }
 
     private func updateStatuses(model: [Model]) {
         let statusViews = statusViews(from: model)
-        statusesContentView.arrangedSubviews.forEach {
-            statusesContentView.removeArrangedSubview($0)
+
+        self.statusViews.forEach {
+            $0.removeFromSuperview()
         }
-        statusViews.forEach {
-            statusesContentView.addArrangedSubview($0.view)
+
+        self.statusViews = statusViews
+
+        statusViews.enumerated().forEach { index, view in
+            addSubview(view)
+
+            let topInset = CGFloat(index) * Constants.verticalSpacing + Constants.alignmentOffset
+
+            view.snp.makeConstraints { make in
+                make.leading.equalTo(dotsView.snp.trailing).offset(Constants.horizontalSpacing)
+                make.top.equalToSuperview().inset(topInset)
+            }
         }
-        dotsView.points = statusViews.map {
-            DotsView.Model(view: $0.view, isFinite: $0.status.isLast)
+
+        dotsView.points = model.map {
+            DotsView.Model(isFinite: $0.isLast)
         }
     }
 
-    private func statusViews(from model: [Model]) -> [(view: BaselinedView, status: Model)] {
+    private func statusViews(from model: [Model]) -> [UIView] {
         model.map { status in
             switch status.subtitle {
             case let .date(date):
                 let view = MultiValueView()
+                view.spacing = Constants.titleSubtitleSpacing
                 view.valueTop.text = status.title
                 view.valueTop.textAlignment = .left
+                view.valueTop.apply(style: UILabel.Style.timelineTitle)
+                view.valueBottom.apply(style: UILabel.Style.timelineNeutralSubtitle)
                 view.valueBottom.textAlignment = .left
                 view.valueBottom.text = date
-                return (view: view, status: status)
+                return view
             case let .interval(model):
                 let view = GenericMultiValueView<IconDetailsView>()
+                view.spacing = Constants.titleSubtitleSpacing
                 view.valueTop.text = status.title
                 view.valueTop.textAlignment = .left
-                view.valueBottom.bind(viewModel: model)
-                return (view: view, status: status)
+                view.valueTop.apply(style: UILabel.Style.timelineTitle)
+                view.valueBottom.detailsLabel.numberOfLines = 1
+
+                if model.isUrgent {
+                    view.valueBottom.detailsLabel.apply(style: UILabel.Style.timelineUrgentSubtitle)
+                } else {
+                    view.valueBottom.detailsLabel.apply(style: UILabel.Style.timelineNeutralSubtitle)
+                }
+
+                view.valueBottom.spacing = 5
+                view.valueBottom.iconWidth = 14
+                view.valueBottom.bind(viewModel: model.titleIcon)
+                return view
             case .none:
                 let label = UILabel()
                 label.text = status.title
-                return (view: label, status: status)
+                label.apply(style: UILabel.Style.rowTitle)
+                return label
             }
         }
     }
@@ -82,12 +106,25 @@ extension ReferendumTimelineView: BindableView {
 
     enum StatusSubtitle {
         case date(String)
-        case interval(TitleIconViewModel)
+        case interval(ReferendumInfoView.Model.Time)
     }
 
     func bind(viewModel: [Model]) {
         updateStatuses(model: viewModel)
-        dotsView.setNeedsDisplay()
-        dotsView.setNeedsLayout()
+        setNeedsLayout()
+    }
+}
+
+private extension UILabel.Style {
+    static var timelineTitle: UILabel.Style {
+        .init(textColor: R.color.colorWhite()!, font: .regularFootnote)
+    }
+
+    static var timelineNeutralSubtitle: UILabel.Style {
+        .init(textColor: R.color.colorTransparentText()!, font: .caption1)
+    }
+
+    static var timelineUrgentSubtitle: UILabel.Style {
+        .init(textColor: R.color.colorDarkYellow()!, font: .caption1)
     }
 }

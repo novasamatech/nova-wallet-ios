@@ -93,7 +93,7 @@ final class ReferendumTimelineViewModelFactory {
             preferredLanguages: locale.rLanguages
         )
 
-        let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel.titleIcon) }
+        let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
 
         return .init(
             title: title,
@@ -128,7 +128,7 @@ final class ReferendumTimelineViewModelFactory {
                 preferredLanguages: locale.rLanguages
             )
 
-            let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel.titleIcon) }
+            let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
 
             return .init(
                 title: title,
@@ -139,7 +139,9 @@ final class ReferendumTimelineViewModelFactory {
     }
 
     private func createApprovedTitle(for locale: Locale) -> String {
-        let votingTitle = R.string.localizable.governanceReferendumsStatusApproved(preferredLanguages: locale.rLanguages)
+        let votingTitle = R.string.localizable.governanceReferendumsStatusApproved(
+            preferredLanguages: locale.rLanguages
+        )
 
         return R.string.localizable.govTimelineVotedFormat(
             votingTitle.lowercased().firstLetterCapitalized(),
@@ -162,7 +164,7 @@ final class ReferendumTimelineViewModelFactory {
 
         let title = createApprovedTitle(for: locale)
 
-        let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel.titleIcon) }
+        let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
 
         return .init(
             title: title,
@@ -260,7 +262,9 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             createdAt = nil
 
             let cancelled = createVotedTerminal(
-                status: R.string.localizable.governanceReferendumsStatusCancelled(preferredLanguages: locale.rLanguages),
+                status: R.string.localizable.governanceReferendumsStatusCancelled(
+                    preferredLanguages: locale.rLanguages
+                ),
                 atBlock: atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
@@ -302,7 +306,9 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             )
 
             let executed = ReferendumTimelineView.Model(
-                title: R.string.localizable.governanceReferendumsStatusExecuted(preferredLanguages: locale.rLanguages),
+                title: R.string.localizable.governanceReferendumsStatusExecuted(
+                    preferredLanguages: locale.rLanguages
+                ).firstLetterCapitalized(),
                 subtitle: nil,
                 isLast: true
             )
