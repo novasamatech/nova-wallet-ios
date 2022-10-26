@@ -103,7 +103,13 @@ struct ParaStkStakeConfirmViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         ).createService(account: selectedAccount.chainAccount, chain: chainAsset.chain)
 
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
         let stakingDurationFactory = ParaStkDurationOperationFactory(
+            storageRequestFactory: storageRequestFactory,
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
         )
 
