@@ -2,12 +2,19 @@ import UIKit
 
 final class DotsView: UIView {
     struct Model {
-        let view: BaselinedView
         let isFinite: Bool
     }
 
-    var points: [Model] = []
+    var points: [Model] = [] {
+        didSet {
+            invalidateIntrinsicContentSize()
+            setNeedsDisplay()
+        }
+    }
+
     private var style: Style = .defaultStyle
+
+    var contentInsets = UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,43 +32,50 @@ final class DotsView: UIView {
         drawDots()
     }
 
+    override var intrinsicContentSize: CGSize {
+        let height = CGFloat(points.count) * (2 * style.dotRadius + style.pointSpacing) + style.lastExtraSpace
+
+        return CGSize(
+            width: 2 * style.dotRadius + contentInsets.left + contentInsets.right,
+            height: height + contentInsets.top + contentInsets.bottom
+        )
+    }
+
     private func drawDots() {
-        guard let context = UIGraphicsGetCurrentContext(),
-              let superview = superview else {
+        guard let context = UIGraphicsGetCurrentContext() else {
             return
         }
+
         setup(context: context)
-        let dotX = frame.midX
+        let dotX = bounds.midX
 
         for index in 0 ..< points.count {
-            let dotY = points[index].view.firstBaseline.frame(in: superview).midY
+            let dotY = bounds.minY + contentInsets.top + CGFloat(index) * (2 * style.dotRadius + style.pointSpacing) +
+                style.dotRadius
             let firstDot = createCircle(with: .init(x: dotX, y: dotY))
-            firstDot.move(to: .init(x: dotX, y: dotY + style.dotRadius + style.space))
 
-            let nextDotY: CGFloat
             if index == points.count - 1 {
                 firstDot.stroke()
                 firstDot.fill()
 
-                guard !points[index].isFinite else {
-                    continue
+                if !points[index].isFinite {
+                    let dottedLinePath = UIBezierPath()
+                    let lineStart = dotY + style.dotRadius + style.lineSpacing
+                    let lineEnd = dotY + style.dotRadius + style.pointSpacing + style.lastExtraSpace
+                    dottedLinePath.move(to: .init(x: dotX, y: lineStart))
+                    dottedLinePath.setLineDash(style.pattern, count: style.pattern.count, phase: 0)
+                    dottedLinePath.addLine(to: .init(x: dotX, y: lineEnd))
+
+                    context.setStrokeColor(style.dashedColor.cgColor)
+                    dottedLinePath.stroke()
                 }
-                let dottedLinePath = UIBezierPath()
-                nextDotY = frame.maxY
-                dottedLinePath.move(to: .init(x: dotX, y: dotY + style.dotRadius + style.space))
-                dottedLinePath.setLineDash(style.pattern, count: style.pattern.count, phase: 0)
-                dottedLinePath.addLine(to: .init(x: dotX, y: nextDotY))
-                dottedLinePath.stroke()
-                dottedLinePath.fill()
             } else {
-                nextDotY = points[index + 1].view.firstBaseline.frame(in: superview).midY
-                firstDot.addLine(to: .init(x: dotX, y: nextDotY - style.dotRadius - style.space))
+                let lineStart = dotY + style.dotRadius + style.lineSpacing
+                let lineEnd = dotY + style.dotRadius + style.pointSpacing - style.lineSpacing
+                firstDot.move(to: .init(x: dotX, y: lineStart))
+                firstDot.addLine(to: .init(x: dotX, y: lineEnd))
                 firstDot.stroke()
                 firstDot.fill()
-
-                let secondDot = createCircle(with: .init(x: dotX, y: nextDotY))
-                secondDot.stroke()
-                secondDot.fill()
             }
         }
     }
@@ -77,8 +91,8 @@ final class DotsView: UIView {
     }
 
     private func setup(context: CGContext) {
-        context.setStrokeColor(style.color.cgColor)
-        context.setFillColor(style.color.cgColor)
+        context.setStrokeColor(style.connectingColor.cgColor)
+        context.setFillColor(style.connectingColor.cgColor)
         context.setLineWidth(style.lineWidth)
     }
 }
@@ -86,10 +100,13 @@ final class DotsView: UIView {
 extension DotsView {
     struct Style {
         let lineWidth: CGFloat
-        let color: UIColor
+        let connectingColor: UIColor
+        let dashedColor: UIColor
         let dotRadius: CGFloat
-        let space: CGFloat
+        let pointSpacing: CGFloat
+        let lineSpacing: CGFloat
         let pattern: [CGFloat]
+        let lastExtraSpace: CGFloat
     }
 
     func apply(style: Style) {
@@ -102,9 +119,12 @@ extension DotsView {
 extension DotsView.Style {
     static let defaultStyle = DotsView.Style(
         lineWidth: 1,
-        color: R.color.colorNovaBlue()!,
+        connectingColor: R.color.colorNovaBlue()!,
+        dashedColor: R.color.colorWhite24()!,
         dotRadius: 6,
-        space: 6,
-        pattern: [2, 3]
+        pointSpacing: 36,
+        lineSpacing: 6,
+        pattern: [2, 3],
+        lastExtraSpace: 4
     )
 }
