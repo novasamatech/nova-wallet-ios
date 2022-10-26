@@ -128,6 +128,12 @@ final class ReferendumDetailsViewLayout: UIView {
         requestedAmountRow?.bind(viewModel: requestedAmountViewModel)
     }
 
+    func setFullDetails(hidden: Bool, locale: Locale) {
+        fullDetailsView.isHidden = hidden
+
+        fullDetailsView.bind(title: R.string.localizable.commonFullDetails(preferredLanguages: locale.rLanguages))
+    }
+
     private func createHeader(with text: String) -> StackTableHeaderCell {
         let headerView = StackTableHeaderCell()
         headerView.titleLabel.apply(style: .footnoteWhite64)

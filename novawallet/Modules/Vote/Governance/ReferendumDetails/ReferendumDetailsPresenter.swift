@@ -233,6 +233,11 @@ final class ReferendumDetailsPresenter {
         view?.didReceive(timelineModel: timeline)
     }
 
+    private func provideFullDetailsViewModel() {
+        let shouldHide = actionDetails == nil && referendumMetadata == nil
+        view?.didReceive(shouldHideFullDetails: shouldHide)
+    }
+
     private func updateView() {
         provideReferendumInfoViewModel()
         provideTitleViewModel()
@@ -241,6 +246,7 @@ final class ReferendumDetailsPresenter {
         provideVotingDetails()
         provideDAppViewModel()
         provideTimelineViewModel()
+        provideFullDetailsViewModel()
     }
 }
 
@@ -276,6 +282,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func opeDApp(at _: Int) {}
 
     func readFullDescription() {}
+
+    func openFullDetails() {}
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {
@@ -292,6 +300,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
 
         provideTitleViewModel()
         provideRequestedAmount()
+        provideFullDetailsViewModel()
     }
 
     func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?) {
@@ -304,6 +313,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         self.referendumMetadata = referendumMetadata
 
         provideTitleViewModel()
+        provideFullDetailsViewModel()
     }
 
     func didReceiveIdentities(_ identities: [AccountAddress: AccountIdentity]) {

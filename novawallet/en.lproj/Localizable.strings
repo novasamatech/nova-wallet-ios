@@ -1057,3 +1057,4 @@
 "common.read.more" = "Read more";
 "gov.referendum.title.fallback" = "Referendum %@";
 "gov.referendum.description.fallback" = "Only the proposer can edit this description and the title. If you own proposer's account, visit Polkassembly and fill in information about your proposal";
+"common.full.details" = "Full details";
