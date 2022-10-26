@@ -26,6 +26,10 @@ final class ReferendumsPresenter {
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
+    deinit {
+        invalidateTimer()
+    }
+
     init(
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,

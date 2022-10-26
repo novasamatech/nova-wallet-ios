@@ -9,4 +9,5 @@ enum ReferendumDetailsInteractorError: Error {
     case priceFailed(_ internalError: Error)
     case blockNumberFailed(_ internalError: Error)
     case blockTimeFailed(_ internalError: Error)
+    case dAppsFailed(_ internalError: Error)
 }

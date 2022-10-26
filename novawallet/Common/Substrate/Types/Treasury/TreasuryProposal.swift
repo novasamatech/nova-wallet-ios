@@ -6,6 +6,6 @@ extension Treasury {
     struct Proposal: Decodable {
         let proposer: AccountId
         @StringCodable var value: BigUInt
-        let beneficiary: AccountId
+        @BytesCodable var beneficiary: AccountId
     }
 }
