@@ -5,7 +5,7 @@ protocol ReferendumVotersViewProtocol: ControllerBackedProtocol {
 protocol ReferendumVotersPresenterProtocol: AnyObject {
     func setup()
 
-    func selectVoter(at index: Int)
+    func selectVoter(for viewModel: ReferendumVotersViewModel)
 }
 
 protocol ReferendumVotersInteractorInputProtocol: AnyObject {
@@ -18,4 +18,4 @@ protocol ReferendumVotersInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumVotersInteractorError)
 }
 
-protocol ReferendumVotersWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol ReferendumVotersWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, AddressOptionsPresentable {}

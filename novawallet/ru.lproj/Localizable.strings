@@ -1026,7 +1026,7 @@
 "gov.voters.nay" = "Против голосовали";
 "gov.common.votes.format" = "%@ голосов";
 "gov.common.amount.conviction.format" = "%@ × %@x";
-"gov.voters.empty" = "Когда кто-нибудь проголосует\nза референдум они будут отображаться здесь";
+"gov.voters.empty" = "Список проголосовавших появится здесь";
 "gov.vote.conviction.title" = "Умножить голос, увеличивая период блокировки";
 "common.gov.lock" = "Блокировка в голосовании";
 "common.locking.period" = "Период блокировки";
@@ -1034,7 +1034,6 @@
 "gov.vote.setup.title.format" = "Голосование за %@";
 "common.available.prefix" = "Доступно:";
 "common.maximum" = "%@ максимум";
-"gov.referendum.details.dApps.title" = "Использовать Nova DApp браузер";
 "gov.referendum.details.timeline.title" = "Статусы";
 "gov.your.vote" = "Ваш голос";
 "common.amount.too.big" = "Сумма слишком большая";
@@ -1047,3 +1046,16 @@
 "gov.max.votes.reached.message" = "Вы достигли максимального числа голосов %@ в треке";
 "gov.reuse.governance.locks" = "Заблокированные в голосовании: %@";
 "gov.reuse.all.locks" = "Все заблокированные: %@";
+"gov.vote" = "Голосовать";
+"gov.revote" = "Изменить голос";
+"gov.details.voting.status" = "Статус голосования";
+"common.requested.amount" = "Запрашиваемая сумма";
+"common.react.comment" = "Комментарии и реакции";
+"common.use.dapp" = "Использовать популярные вебсайты в Nova";
+"gov.timeline.created" = "Создано";
+"gov.timeline.voting.format" = "В процессе голосования: %@";
+"gov.timeline.voted.format" = "Голосование завершено: %@";
+"common.read.more" = "Читать дальше";
+"gov.referendum.title.fallback" = "Референдум %@";
+"gov.referendum.description.fallback" = "Только создатель референдума может редактировать заголовок и описание. Если Вы владеете аккаунтом создателя референдума, то заполните информацию о референдуме на Polkassembly";
+"common.full.details" = "Техническая информация";

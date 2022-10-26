@@ -6,15 +6,15 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
     let votingProgressView = VotingProgressView()
     let ayeVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorRedFF3A69()!,
-            accessoryImage: R.image.iconInfo()!
+            color: R.color.colorGreen15CF37()!,
+            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
         ))
     }
 
     let nayVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorGreen15CF37()!,
-            accessoryImage: R.image.iconInfo()!
+            color: R.color.colorRedFF3A69()!,
+            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
         ))
     }
 
@@ -39,25 +39,48 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
     }
 
     private func setupLayout() {
+        let votesContainerView = UIView.vStack(
+            [
+                ayeVotesView,
+                nayVotesView
+            ]
+        )
+
         let content = UIView.vStack(
-            spacing: 16,
             [
                 statusView,
                 votingProgressView,
-                UIView.vStack(
-                    distribution: .fillEqually,
-                    [
-                        ayeVotesView,
-                        nayVotesView
-                    ]
-                ),
+                votesContainerView,
                 voteButton
             ]
         )
+
+        content.setCustomSpacing(16.0, after: votingProgressView)
+        content.setCustomSpacing(16.0, after: votesContainerView)
+
+        content.alignment = .center
+
         addSubview(content)
         content.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(16)
+            $0.top.bottom.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview()
         }
+
+        voteButton.snp.makeConstraints { make in
+            make.height.equalTo(44.0)
+        }
+
+        votesContainerView.snp.makeConstraints { make in
+            make.width.equalTo(self)
+        }
+
+        content.arrangedSubviews
+            .filter { $0 !== votesContainerView }
+            .forEach {
+                $0.snp.makeConstraints { make in
+                    make.width.equalTo(self).offset(-32)
+                }
+            }
     }
 }
 

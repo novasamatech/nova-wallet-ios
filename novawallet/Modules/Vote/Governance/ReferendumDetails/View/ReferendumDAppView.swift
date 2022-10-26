@@ -37,9 +37,11 @@ final class ReferendumDAppView: UIView {
                 arrowView
             ]
         )
+
         arrowView.snp.makeConstraints {
-            $0.size.equalTo(Constants.arrowSize)
+            $0.width.height.equalTo(Constants.arrowSize)
         }
+
         iconImageView.snp.makeConstraints {
             $0.width.height.equalTo(Constants.iconWidth)
         }
