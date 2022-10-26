@@ -82,11 +82,15 @@ extension StakingMainPresenterFactory {
         let networkInfoFactory = ParaStkNetworkInfoOperationFactory()
 
         let blockTimeFactory = BlockTimeOperationFactory(chain: state.settings.value.chain)
-        let durationFactory = ParaStkDurationOperationFactory(blockTimeOperationFactory: blockTimeFactory)
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: operationManager
+        )
+
+        let durationFactory = ParaStkDurationOperationFactory(
+            storageRequestFactory: storageRequestFactory,
+            blockTimeOperationFactory: blockTimeFactory
         )
 
         let collatorsOperationFactory = ParaStkCollatorsOperationFactory(
