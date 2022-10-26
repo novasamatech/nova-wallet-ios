@@ -13,6 +13,7 @@ final class ReferendumDetailsViewLayout: UIView {
     let votingDetailsRow = ReferendumVotingStatusDetailsView()
     let dAppsTableView: StackTableView = .create {
         $0.cellHeight = 64.0
+        $0.hasSeparators = false
         $0.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 8.0, right: 16.0)
     }
 
