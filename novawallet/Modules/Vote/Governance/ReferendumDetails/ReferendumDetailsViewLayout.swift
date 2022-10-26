@@ -16,7 +16,7 @@ final class ReferendumDetailsViewLayout: UIView {
         $0.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 8.0, right: 16.0)
     }
 
-    var timelineTableView = StackTableView()
+    var timelineView = TimelineRow()
 
     var yourVoteRow: YourVoteRow?
     var requestedAmountRow: RequestedAmountRow?
@@ -48,30 +48,20 @@ final class ReferendumDetailsViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(votingDetailsRow)
         containerView.stackView.addArrangedSubview(dAppsTableView)
-        containerView.stackView.addArrangedSubview(timelineTableView)
+        containerView.stackView.addArrangedSubview(timelineView)
         containerView.stackView.addArrangedSubview(fullDetailsView)
 
-        timelineTableView.apply(style: .cellWithoutHighlighting)
         dAppsTableView.apply(style: .cellWithoutHighlighting)
     }
 
     func setTimeline(model: [ReferendumTimelineView.Model]?, locale: Locale) {
-        timelineTableView.clear()
+        let title = R.string.localizable.govReferendumDetailsTimelineTitle(
+            preferredLanguages: locale.rLanguages
+        )
 
-        if let model = model {
-            timelineTableView.isHidden = false
+        timelineView.titleLabel.text = title
 
-            let title = R.string.localizable.govReferendumDetailsTimelineTitle(
-                preferredLanguages: locale.rLanguages
-            )
-            let headerView = createHeader(with: title)
-            let timelineRow = TimelineRow(frame: .zero)
-            timelineRow.bind(viewModel: model)
-            timelineTableView.stackView.addArrangedSubview(headerView)
-            timelineTableView.stackView.addArrangedSubview(timelineRow)
-        } else {
-            timelineTableView.isHidden = true
-        }
+        timelineView.bindOrHide(viewModel: model)
     }
 
     func setDApps(models: [ReferendumDAppView.Model]?, locale: Locale) -> [ReferendumDAppCellView] {
