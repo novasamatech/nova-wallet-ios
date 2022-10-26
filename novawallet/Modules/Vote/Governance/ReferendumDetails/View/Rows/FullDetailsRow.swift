@@ -11,6 +11,7 @@ final class FullDetailsRow: RowView<GenericTitleValueView<UILabel, UIImageView>>
         roundedBackgroundView.apply(style: .roundedLightCell)
         preferredHeight = 52
         contentInsets = .init(top: 14, left: 16, bottom: 14, right: 16)
+        borderView.borderType = .none
     }
 
     func bind(title: String) {
