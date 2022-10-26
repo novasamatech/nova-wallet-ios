@@ -155,7 +155,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             accountIds.append(proposer)
         }
 
-        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiaryAccountId {
+        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiary.accountId {
             accountIds.append(beneficiary)
         }
 
@@ -255,6 +255,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
                 }
             }
         }
+
+        actionDetailsCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func makeSubscriptions() {

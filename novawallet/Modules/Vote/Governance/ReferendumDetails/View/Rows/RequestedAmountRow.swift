@@ -19,6 +19,7 @@ final class RequestedAmountRow: RowView<GenericMultiValueView<MultiValueView>> {
         contentInsets = .init(top: 16, left: 16, bottom: 16, right: 16)
         backgroundColor = .clear
         isUserInteractionEnabled = false
+        borderView.borderType = .none
     }
 
     func bind(viewModel: Model) {

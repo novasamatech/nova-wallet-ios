@@ -273,9 +273,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         wireframe.showVoters(from: view, referendum: referendum, type: .nays)
     }
 
-    func opeDApp(at index: Int) {
-        
-    }
+    func opeDApp(at _: Int) {}
 
     func readFullDescription() {}
 }
