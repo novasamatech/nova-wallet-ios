@@ -113,6 +113,26 @@ extension ReferendumTimelineView: BindableView {
         updateStatuses(model: viewModel)
         setNeedsLayout()
     }
+
+    func bind(activeTimeViewModel: ReferendumInfoView.Model.Time?) {
+        guard let activeView = statusViews.last as? GenericMultiValueView<IconDetailsView> else {
+            return
+        }
+
+        if let activeTimeViewModel = activeTimeViewModel {
+            if activeTimeViewModel.isUrgent {
+                activeView.valueBottom.detailsLabel.apply(style: UILabel.Style.timelineUrgentSubtitle)
+            } else {
+                activeView.valueBottom.detailsLabel.apply(style: UILabel.Style.timelineNeutralSubtitle)
+            }
+
+            activeView.valueBottom.bind(viewModel: activeTimeViewModel.titleIcon)
+        } else {
+            activeView.valueBottom.bind(viewModel: nil)
+        }
+
+        setNeedsLayout()
+    }
 }
 
 private extension UILabel.Style {

@@ -45,13 +45,8 @@ final class ReferendumVotingStatusView: UIView {
 extension ReferendumVotingStatusView {
     struct Model {
         let status: Status
-        let time: Time?
+        let time: ReferendumInfoView.Model.Time?
         let title: String?
-    }
-
-    struct Time: Equatable {
-        let titleIcon: TitleIconViewModel
-        let isUrgent: Bool
     }
 
     struct Status {
@@ -91,7 +86,7 @@ extension ReferendumVotingStatusView {
         }
     }
 
-    func bind(timeModel: Time?) {
+    func bind(timeModel: ReferendumInfoView.Model.Time?) {
         if let time = timeModel {
             timeView.bind(viewModel: time.titleIcon)
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)

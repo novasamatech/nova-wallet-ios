@@ -150,4 +150,9 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     func didReceive(shouldHideFullDetails: Bool) {
         rootView.setFullDetails(hidden: shouldHideFullDetails, locale: localizationManager.selectedLocale)
     }
+
+    func didReceive(activeTimeViewModel: ReferendumInfoView.Model.Time?) {
+        rootView.votingDetailsRow.statusView.bind(timeModel: activeTimeViewModel)
+        rootView.timelineView.bind(activeTimeViewModel: activeTimeViewModel)
+    }
 }
