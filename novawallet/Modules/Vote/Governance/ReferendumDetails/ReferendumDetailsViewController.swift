@@ -109,7 +109,7 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
         let cells = rootView.setDApps(models: dAppModels, locale: localizationManager.selectedLocale)
         dAppCells = cells
 
-        cells.forEach { $0.addTarget(self, action: #selector(actionDApp(_:)), for: .touchUpInside)}
+        cells.forEach { $0.addTarget(self, action: #selector(actionDApp(_:)), for: .touchUpInside) }
     }
 
     func didReceive(timelineModel: [ReferendumTimelineView.Model]?) {

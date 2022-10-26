@@ -11,7 +11,11 @@ final class ReferendumDetailsViewLayout: UIView {
 
     let titleView = ReferendumDetailsTitleView()
     let votingDetailsRow = ReferendumVotingStatusDetailsView()
-    let dAppsTableView = StackTableView()
+    let dAppsTableView: StackTableView = .create {
+        $0.cellHeight = 64.0
+        $0.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 8.0, right: 16.0)
+    }
+
     var timelineTableView = StackTableView()
 
     var yourVoteRow: YourVoteRow?
@@ -81,10 +85,11 @@ final class ReferendumDetailsViewLayout: UIView {
             )
 
             let headerView = createHeader(with: title)
+            dAppsTableView.setCustomHeight(32, at: 0)
             dAppsTableView.addArrangedSubview(headerView)
 
             let cells: [ReferendumDAppCellView] = models.map { model in
-                let dAppView = ReferendumDAppCellView(frame: .zero)
+                let dAppView = ReferendumDAppCellView()
                 dAppView.rowContentView.bind(viewModel: model)
                 return dAppView
             }
@@ -137,7 +142,6 @@ final class ReferendumDetailsViewLayout: UIView {
         let headerView = StackTableHeaderCell()
         headerView.titleLabel.apply(style: .footnoteWhite64)
         headerView.titleLabel.text = text
-        headerView.contentInsets = .init(top: 16, left: 16, bottom: 8, right: 16)
         return headerView
     }
 }

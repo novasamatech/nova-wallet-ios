@@ -135,7 +135,7 @@ final class Gov2ActionOperationFactory {
 
                 let details = ReferendumActionLocal.AmountSpendDetails(
                     amount: spendCall.amount,
-                    beneficiaryAccountId: spendCall.beneficiary
+                    beneficiary: spendCall.beneficiary
                 )
 
                 return [CompoundOperationWrapper.createWithResult(details)]
@@ -163,7 +163,7 @@ final class Gov2ActionOperationFactory {
 
                     return ReferendumActionLocal.AmountSpendDetails(
                         amount: proposal.value,
-                        beneficiaryAccountId: proposal.beneficiary
+                        beneficiary: .accoundId(proposal.beneficiary)
                     )
                 }
 
