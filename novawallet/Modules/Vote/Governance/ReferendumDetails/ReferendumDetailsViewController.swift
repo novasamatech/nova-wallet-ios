@@ -67,6 +67,12 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
             action: #selector(actionNayVotes),
             for: .touchUpInside
         )
+
+        rootView.fullDetailsView.addTarget(
+            self,
+            action: #selector(actionFullDetails),
+            for: .touchUpInside
+        )
     }
 
     @objc private func actionVote() {
@@ -97,6 +103,10 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
         }
 
         presenter.opeDApp(at: index)
+    }
+
+    @objc private func actionFullDetails() {
+        presenter.openFullDetails()
     }
 }
 
@@ -135,5 +145,9 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
             return .init(customView: trackTagsView)
         }
         navigationItem.setRightBarButton(barButtonItem, animated: true)
+    }
+
+    func didReceive(shouldHideFullDetails: Bool) {
+        rootView.setFullDetails(hidden: shouldHideFullDetails, locale: localizationManager.selectedLocale)
     }
 }
