@@ -86,6 +86,7 @@ class ParaStkBaseUnstakeInteractor {
     private func provideStakingDuration() {
         let wrapper = stakingDurationFactory.createDurationOperation(
             from: runtimeProvider,
+            connection: connection,
             blockTimeEstimationService: blocktimeEstimationService
         )
 
