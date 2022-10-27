@@ -40,20 +40,23 @@ final class ReferendumFullDetailsInteractor {
     }
 
     private func formatJSON() {
-        guard let call = referendumAction.call else {
-            presenter?.didReceive(json: nil)
+        guard let wrappedCall = referendumAction.call else {
+            presenter?.didReceive(call: nil)
             return
         }
 
         do {
-            let json = try call.toScaleCompatibleJSON()
+            guard let json = try wrappedCall.value?.toScaleCompatibleJSON() else {
+                presenter?.didReceive(call: .tooLong)
+                return
+            }
 
             let processingOperation = processingOperationFactory.createProcessingOperation(for: json)
             processingOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
                     do {
                         let result = try processingOperation.extractNoCancellableResultData()
-                        self?.presenter?.didReceive(json: result)
+                        self?.presenter?.didReceive(call: .concrete(result))
                     } catch {
                         self?.presenter?.didReceive(error: .processingJSON(error))
                     }

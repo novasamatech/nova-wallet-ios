@@ -3,6 +3,7 @@ protocol ReferendumFullDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(beneficiary: ReferendumFullDetailsViewModel.Beneficiary?)
     func didReceive(params: ReferendumFullDetailsViewModel.CurveAndHash?)
     func didReceive(json: String?)
+    func didReceiveTooLongJson()
 }
 
 protocol ReferendumFullDetailsPresenterProtocol: AnyObject {
@@ -20,7 +21,7 @@ protocol ReferendumFullDetailsInteractorInputProtocol: AnyObject {
 
 protocol ReferendumFullDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
-    func didReceive(json: String?)
+    func didReceive(call: ReferendumActionLocal.Call<String>?)
     func didReceive(error: ReferendumFullDetailsError)
 }
 

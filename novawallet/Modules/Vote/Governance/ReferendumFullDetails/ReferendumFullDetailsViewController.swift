@@ -81,6 +81,10 @@ extension ReferendumFullDetailsViewController: ReferendumFullDetailsViewProtocol
     func didReceive(json: String?) {
         rootView.setJson(viewModel: json, locale: selectedLocale)
     }
+
+    func didReceiveTooLongJson() {
+        rootView.setTooLongJson(for: selectedLocale)
+    }
 }
 
 extension ReferendumFullDetailsViewController: Localizable {
