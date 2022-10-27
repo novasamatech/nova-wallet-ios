@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class StorageItemSyncService<T: Decodable>: BaseSyncService {
+final class StorageItemSyncService<T: Decodable>: BaseSyncService, AnyCancellableCleaning {
     let storagePath: StorageCodingPath
     let repository: AnyDataProviderRepository<ChainStorageItem>
     let runtimeCodingService: RuntimeCodingServiceProtocol
@@ -14,6 +14,8 @@ final class StorageItemSyncService<T: Decodable>: BaseSyncService {
     let completionQueue: DispatchQueue
 
     let request: SubscriptionRequestProtocol
+
+    @Atomic(defaultValue: nil) private var cancellable: CancellableCall?
 
     init(
         chainId: ChainModel.Id,
@@ -45,7 +47,7 @@ final class StorageItemSyncService<T: Decodable>: BaseSyncService {
     }
 
     override func stopSyncUp() {
-        operationQueue.cancelAllOperations()
+        clear(cancellable: &cancellable)
     }
 }
 
@@ -150,7 +152,18 @@ extension StorageItemSyncService {
 
         replaceOperation.addDependency(remoteFetchWrapper.targetOperation)
 
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: replaceOperation,
+            dependencies: remoteFetchWrapper.allOperations
+        )
+
         replaceOperation.completionBlock = { [weak self] in
+            guard self?.cancellable === wrapper else {
+                return
+            }
+
+            self?.cancellable = nil
+
             do {
                 let remoteItem = try remoteFetchWrapper.targetOperation.extractNoCancellableResultData()?.value
 
@@ -161,9 +174,9 @@ extension StorageItemSyncService {
             }
         }
 
-        let operations = remoteFetchWrapper.allOperations + [replaceOperation]
+        cancellable = wrapper
 
-        operationQueue.addOperations(operations, waitUntilFinished: false)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func fetchLocalAndUpdateIfNeeded(
@@ -189,7 +202,21 @@ extension StorageItemSyncService {
 
         localFetchWrapper.addDependency(operations: [codingFactoryOperation])
 
+        let dependencies = [codingFactoryOperation] + encodingWrapper.allOperations +
+            localFetchWrapper.dependencies
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: localFetchWrapper.targetOperation,
+            dependencies: dependencies
+        )
+
         localFetchWrapper.targetOperation.completionBlock = { [weak self] in
+            guard self?.cancellable === wrapper else {
+                return
+            }
+
+            self?.cancellable = nil
+
             do {
                 let localItem = try localFetchWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -213,9 +240,8 @@ extension StorageItemSyncService {
             }
         }
 
-        let operations = [codingFactoryOperation] + encodingWrapper.allOperations +
-            localFetchWrapper.allOperations
+        cancellable = wrapper
 
-        operationQueue.addOperations(operations, waitUntilFinished: false)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
