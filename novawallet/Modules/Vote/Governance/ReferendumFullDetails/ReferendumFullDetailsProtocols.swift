@@ -1,17 +1,21 @@
 protocol ReferendumFullDetailsViewProtocol: ControllerBackedProtocol {
-    func didReceive(proposerModel: ProposerTableCell.Model?)
-    func didReceive(json: String?, jsonTitle: String)
-    func didReceive(amountSpendDetails: AmountSpendDetailsTableView.Model?)
-    func didReceive(deposit: MultiValueView.Model, title: String)
-    func didReceive(
-        approveCurve: TitleWithSubtitleViewModel?,
-        supportCurve: TitleWithSubtitleViewModel?,
-        callHash: TitleWithSubtitleViewModel?
-    )
+    func didReceive(proposer: ReferendumFullDetailsViewModel.Proposer?)
+    func didReceive(beneficiary: ReferendumFullDetailsViewModel.Beneficiary?)
+    func didReceive(params: ReferendumFullDetailsViewModel.CurveAndHash?)
+    func didReceive(json: String?)
 }
 
 protocol ReferendumFullDetailsPresenterProtocol: AnyObject {
     func setup()
+    func presentProposer()
+    func presentBeneficiary()
+    func presentCallHash()
+}
+
+protocol ReferendumFullDetailsInteractorInputProtocol: AnyObject {
+    func setup()
+    func remakeSubscriptions()
+    func refreshCall()
 }
 
 protocol ReferendumFullDetailsInteractorOutputProtocol: AnyObject {
@@ -20,14 +24,10 @@ protocol ReferendumFullDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(error: ReferendumFullDetailsError)
 }
 
-protocol ReferendumFullDetailsWireframeProtocol: AnyObject {}
-
-protocol ReferendumFullDetailsInteractorInputProtocol: AnyObject {
-    func setup()
-}
+protocol ReferendumFullDetailsWireframeProtocol: ErrorPresentable, AlertPresentable, AddressOptionsPresentable,
+    CommonRetryable {}
 
 enum ReferendumFullDetailsError: Error {
     case priceFailed(Error)
-    case emptyJSON
     case processingJSON(Error)
 }

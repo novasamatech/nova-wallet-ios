@@ -245,7 +245,7 @@ final class ReferendumDetailsPresenter {
     }
 
     private func provideFullDetailsViewModel() {
-        let shouldHide = actionDetails == nil && referendumMetadata == nil
+        let shouldHide = actionDetails == nil
         view?.didReceive(shouldHideFullDetails: shouldHide)
     }
 
@@ -343,7 +343,18 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
 
     func readFullDescription() {}
 
-    func openFullDetails() {}
+    func openFullDetails() {
+        guard let actionDetails = actionDetails else {
+            return
+        }
+
+        wireframe.showFullDetails(
+            from: view,
+            referendum: referendum,
+            actionDetails: actionDetails,
+            identities: identities ?? [:]
+        )
+    }
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {

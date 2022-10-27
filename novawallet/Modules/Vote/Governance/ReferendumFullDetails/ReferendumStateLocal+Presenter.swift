@@ -20,9 +20,9 @@ extension ReferendumStateLocal {
     var callHash: String? {
         switch proposal {
         case let .lookup(lookup):
-            return String(data: lookup.hash, encoding: .utf8)
+            return lookup.hash.toHex(includePrefix: true)
         case let .legacy(hash):
-            return String(data: hash, encoding: .utf8)
+            return hash.toHex(includePrefix: true)
         case .inline, .unknown, .none:
             return nil
         }
