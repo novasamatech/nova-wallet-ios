@@ -1,13 +1,16 @@
 import UIKit
+import SoraFoundation
 
 final class ReferendumFullDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumFullDetailsViewLayout
 
     let presenter: ReferendumFullDetailsPresenterProtocol
 
-    init(presenter: ReferendumFullDetailsPresenterProtocol) {
+    init(presenter: ReferendumFullDetailsPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -22,40 +25,68 @@ final class ReferendumFullDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupLocalization()
+
         presenter.setup()
+    }
+
+    private func setupLocalization() {
+        title = R.string.localizable.govFullDetails(preferredLanguages: selectedLocale.rLanguages)
+    }
+
+    @objc private func actionProposer() {
+        presenter.presentProposer()
+    }
+
+    @objc private func actionBeneficiary() {
+        presenter.presentBeneficiary()
+    }
+
+    @objc private func actionCallHash() {
+        presenter.presentCallHash()
     }
 }
 
 extension ReferendumFullDetailsViewController: ReferendumFullDetailsViewProtocol {
-    func didReceive(proposerModel: ProposerTableCell.Model?) {
-        rootView.updateProposerCell(proposerModel: proposerModel)
+    func didReceive(proposer: ReferendumFullDetailsViewModel.Proposer?) {
+        rootView.setProposer(viewModel: proposer, locale: selectedLocale)
+
+        rootView.proposerCell?.addTarget(
+            self,
+            action: #selector(actionProposer),
+            for: .touchUpInside
+        )
     }
 
-    func didReceive(json: String?, jsonTitle: String) {
-        if let json = json {
-            rootView.jsonView.view.text = json
-        } else {
-            // todo
+    func didReceive(beneficiary: ReferendumFullDetailsViewModel.Beneficiary?) {
+        rootView.setBeneficiary(viewModel: beneficiary, locale: selectedLocale)
+
+        rootView.beneficiaryCell?.addTarget(
+            self,
+            action: #selector(actionBeneficiary),
+            for: .touchUpInside
+        )
+    }
+
+    func didReceive(params: ReferendumFullDetailsViewModel.CurveAndHash?) {
+        rootView.setCurveAndHash(viewModel: params, locale: selectedLocale)
+
+        rootView.callHashCell?.addTarget(
+            self,
+            action: #selector(actionCallHash),
+            for: .touchUpInside
+        )
+    }
+
+    func didReceive(json: String?) {
+        rootView.setJson(viewModel: json, locale: selectedLocale)
+    }
+}
+
+extension ReferendumFullDetailsViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
         }
-        rootView.jsonTitle.text = jsonTitle
-    }
-
-    func didReceive(
-        approveCurve: TitleWithSubtitleViewModel?,
-        supportCurve: TitleWithSubtitleViewModel?,
-        callHash: TitleWithSubtitleViewModel?
-    ) {
-        rootView.update(approveCurveModel: approveCurve)
-        rootView.update(supportCurveModel: supportCurve)
-        rootView.update(callHashModel: callHash)
-    }
-
-    func didReceive(amountSpendDetails: AmountSpendDetailsTableView.Model?) {
-        rootView.update(amountSpendDetails: amountSpendDetails)
-    }
-
-    func didReceive(deposit: MultiValueView.Model, title: String) {
-        rootView.depositTableCell.titleLabel.text = title
-        rootView.depositTableCell.rowContentView.valueView.bind(viewModel: deposit)
     }
 }

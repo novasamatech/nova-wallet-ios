@@ -9,8 +9,10 @@ struct ReferendumFullDetailsViewFactory {
         actionDetails: ReferendumActionLocal,
         identities: [AccountAddress: AccountIdentity]
     ) -> ReferendumFullDetailsViewProtocol? {
-        guard let chain = state.settings.value,
-              let currencyManager = CurrencyManager.shared else {
+        guard
+            let chain = state.settings.value,
+            let currencyManager = CurrencyManager.shared,
+            let assetInfo = chain.utilityAssetDisplayInfo() else {
             return nil
         }
 
@@ -25,20 +27,33 @@ struct ReferendumFullDetailsViewFactory {
             referendumAction: actionDetails,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+
+        let localizationManager = LocalizationManager.shared
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
         let presenter = ReferendumFullDetailsPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            chainIconGenerator: PolkadotIconGenerator(),
             chain: chain,
             referendum: referendum,
             actionDetails: actionDetails,
             identities: identities,
-            localizationManager: LocalizationManager.shared,
-            currencyManager: currencyManager,
-            assetFormatterFactory: AssetBalanceFormatterFactory()
+            balanceViewModelFactory: balanceViewModelFactory,
+            addressViewModelFactory: DisplayAddressViewModelFactory(),
+            localizationManager: localizationManager,
+            logger: Logger.shared
         )
+
         interactor.presenter = presenter
-        let view = ReferendumFullDetailsViewController(presenter: presenter)
+
+        let view = ReferendumFullDetailsViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
 
