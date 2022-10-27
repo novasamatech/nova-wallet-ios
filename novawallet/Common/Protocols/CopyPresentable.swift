@@ -47,7 +47,7 @@ extension CopyPresentable where Self: AlertPresentable {
             title: title,
             message: nil,
             actions: [action],
-            closeAction: nil
+            closeAction: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
         )
 
         present(viewModel: viewModel, style: .actionSheet, from: view)

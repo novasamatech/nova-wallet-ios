@@ -187,28 +187,29 @@ final class ReferendumFullDetailsViewLayout: UIView {
     func setTooLongJson(for locale: Locale) {
         jsonView?.removeFromSuperview()
 
-        let jsonView: GenericMultiValueView<EmptyStateView> = .create {
+        let jsonView: GenericMultiValueView<BlurredView<ImageWithTitleView>> = .create {
             $0.valueTop.apply(style: .caption1White64)
             $0.valueTop.textAlignment = .left
             $0.spacing = 12.0
 
-            let emptyStateView = $0.valueBottom
-            emptyStateView.image = R.image.iconEmptySearch()
+            let emptyStateView = $0.valueBottom.view
+            emptyStateView.layoutType = .verticalImageFirst
+            emptyStateView.iconImage = R.image.iconEmptySearch()!
             emptyStateView.titleFont = .regularFootnote
             emptyStateView.titleColor = R.color.colorWhite64()!
-            emptyStateView.verticalSpacing = 0.0
+            emptyStateView.spacingBetweenLabelAndIcon = 0
+
+            $0.valueBottom.contentInsets = .zero
+            $0.valueBottom.innerInsets = UIEdgeInsets(top: 12, left: 12, bottom: 24, right: 12)
         }
 
         jsonView.valueTop.text = R.string.localizable.govParametersJson(preferredLanguages: locale.rLanguages)
 
-        jsonView.valueBottom.title = R.string.localizable.commonTooLongPreview(
+        jsonView.valueBottom.view.title = R.string.localizable.commonTooLongPreview(
             preferredLanguages: locale.rLanguages
         )
 
         containerView.stackView.addArrangedSubview(jsonView)
-        jsonView.snp.makeConstraints {
-            $0.height.equalTo(150)
-        }
 
         self.jsonView = jsonView
     }
