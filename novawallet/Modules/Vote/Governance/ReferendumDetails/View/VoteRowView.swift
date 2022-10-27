@@ -1,28 +1,33 @@
 import UIKit
-import SwiftUI
+import SoraUI
 
-final class VoteRowView: UIView {
-    lazy var centerView = GenericTitleValueView<UILabel, MultiValueView>(
-        titleView: titleLabel,
-        valueView: valueView
-    )
-
-    private let titleLabel = UILabel(style: .rowTitle, textAlignment: .left)
-
-    private let valueView: MultiValueView = .create {
-        $0.apply(style: .rowContrasted)
+final class VoteRowIndicatorView: RoundedView {
+    var preferredSize = CGSize(width: 4.0, height: 16.0) {
+        didSet {
+            invalidateIntrinsicContentSize()
+        }
     }
 
-    private var leadingRectangleView: UIView = .create {
-        $0.layer.cornerRadius = 4
+    override var intrinsicContentSize: CGSize {
+        preferredSize
     }
+}
 
-    private var trailingImageView = UIImageView()
+final class VoteRowView: RowView<
+    GenericTitleValueView<GenericPairValueView<VoteRowIndicatorView, UILabel>, IconDetailsView>
+> {
+    var titleLabel: UILabel { rowContentView.titleView.sView }
+
+    var detailsLabel: UILabel { rowContentView.valueView.detailsLabel }
+
+    var indicatorView: RoundedView { rowContentView.titleView.fView }
+
+    var trailingImageView: UIImageView { rowContentView.valueView.imageView }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        setupLayout()
+        configureStyle()
     }
 
     @available(*, unavailable)
@@ -30,33 +35,21 @@ final class VoteRowView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
-        let contentView = UIView.hStack(
-            alignment: .center,
-            distribution: .fill,
-            spacing: 8,
-            [
-                leadingRectangleView,
-                centerView,
-                trailingImageView
-            ]
-        )
-        contentView.setCustomSpacing(16, after: leadingRectangleView)
-        addSubview(contentView)
-        trailingImageView.snp.makeConstraints {
-            $0.height.width.equalTo(16)
-        }
-        leadingRectangleView.snp.makeConstraints {
-            $0.height.equalTo(16)
-            $0.width.equalTo(4)
-        }
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-    }
+    private func configureStyle() {
+        preferredHeight = 44.0
+        roundedBackgroundView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        borderView.borderType = .none
 
-    override var intrinsicContentSize: CGSize {
-        .init(width: UIView.noIntrinsicMetric, height: 44)
+        rowContentView.titleView.setHorizontalAndSpacing(16.0)
+        rowContentView.valueView.spacing = 8.0
+        rowContentView.valueView.mode = .detailsIcon
+
+        indicatorView.cornerRadius = 2.0
+
+        rowContentView.valueView.iconWidth = 16.0
+
+        titleLabel.apply(style: UILabel.Style.rowTitle)
+        detailsLabel.apply(style: UILabel.Style.rowTitle)
     }
 }
 
@@ -67,58 +60,32 @@ extension VoteRowView {
     }
 
     func apply(style: Style) {
-        leadingRectangleView.backgroundColor = style.color
+        indicatorView.fillColor = style.color
         trailingImageView.image = style.accessoryImage
+
+        setNeedsLayout()
     }
 }
 
-extension VoteRowView: BindableView {
+extension VoteRowView {
     struct Model {
         let title: String
         let votes: String
-        let tokens: String
     }
 
     func bind(viewModel: Model) {
         titleLabel.text = viewModel.title
-        valueView.valueTop.text = viewModel.votes
-        valueView.valueBottom.text = viewModel.tokens
-    }
-}
-
-extension MultiValueView {
-    struct Style {
-        let topLabel: UILabel.Style
-        let bottomLabel: UILabel.Style
+        detailsLabel.text = viewModel.votes
     }
 
-    func apply(style: Style) {
-        valueTop.apply(style: style.topLabel)
-        valueBottom.apply(style: style.bottomLabel)
+    func bindOrHide(viewModel: Model?) {
+        if let viewModel = viewModel {
+            isHidden = false
+            bind(viewModel: viewModel)
+        } else {
+            isHidden = true
+        }
     }
-}
-
-extension MultiValueView.Style {
-    static let rowContrasted = MultiValueView.Style(
-        topLabel: .init(
-            textColor: R.color.colorWhite(),
-            font: .regularFootnote
-        ),
-        bottomLabel: .init(
-            textColor: R.color.colorWhite64(),
-            font: .caption1
-        )
-    )
-    static let accentAmount = MultiValueView.Style(
-        topLabel: .init(
-            textColor: R.color.colorWhite(),
-            font: .boldTitle1
-        ),
-        bottomLabel: .init(
-            textColor: R.color.colorWhite64(),
-            font: .regularBody
-        )
-    )
 }
 
 extension UILabel.Style {

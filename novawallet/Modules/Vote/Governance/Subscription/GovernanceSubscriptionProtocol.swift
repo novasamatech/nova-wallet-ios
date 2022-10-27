@@ -3,7 +3,7 @@ import Foundation
 typealias ReferendumSubscriptionResult = Result<CallbackStorageSubscriptionResult<ReferendumLocal>, Error>
 
 typealias ReferendumVotesSubscriptionResult = Result<
-    CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>,
+    CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
     Error
 >
 

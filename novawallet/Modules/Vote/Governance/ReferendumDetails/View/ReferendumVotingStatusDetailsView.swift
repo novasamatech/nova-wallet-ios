@@ -1,28 +1,34 @@
 import UIKit
+import SoraUI
 
-final class ReferendumVotingStatusDetailsView: UIView {
+final class ReferendumVotingStatusDetailsView: RoundedView {
     let statusView = ReferendumVotingStatusView()
     let votingProgressView = VotingProgressView()
     let ayeVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorRedFF3A69()!,
-            accessoryImage: R.image.iconInfo()!
+            color: R.color.colorGreen15CF37()!,
+            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
         ))
     }
 
     let nayVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorGreen15CF37()!,
-            accessoryImage: R.image.iconInfo()!
+            color: R.color.colorRedFF3A69()!,
+            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
         ))
     }
 
-    let voteButton: ButtonLargeControl = .create {
-        $0.titleLabel.textAlignment = .center
+    let voteButton: TriangularedButton = .create {
+        $0.applyDefaultStyle()
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        applyFilledBackgroundStyle()
+
+        fillColor = R.color.colorWhite8()!
+        cornerRadius = 12.0
 
         setupLayout()
     }
@@ -33,25 +39,48 @@ final class ReferendumVotingStatusDetailsView: UIView {
     }
 
     private func setupLayout() {
+        let votesContainerView = UIView.vStack(
+            [
+                ayeVotesView,
+                nayVotesView
+            ]
+        )
+
         let content = UIView.vStack(
-            spacing: 16,
             [
                 statusView,
                 votingProgressView,
-                UIView.vStack(
-                    distribution: .fillEqually,
-                    [
-                        ayeVotesView,
-                        nayVotesView
-                    ]
-                ),
+                votesContainerView,
                 voteButton
             ]
         )
+
+        content.setCustomSpacing(16.0, after: votingProgressView)
+        content.setCustomSpacing(16.0, after: votesContainerView)
+
+        content.alignment = .center
+
         addSubview(content)
         content.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(16)
+            $0.top.bottom.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview()
         }
+
+        voteButton.snp.makeConstraints { make in
+            make.height.equalTo(44.0)
+        }
+
+        votesContainerView.snp.makeConstraints { make in
+            make.width.equalTo(self)
+        }
+
+        content.arrangedSubviews
+            .filter { $0 !== votesContainerView }
+            .forEach {
+                $0.snp.makeConstraints { make in
+                    make.width.equalTo(self).offset(-32)
+                }
+            }
     }
 }
 
@@ -71,7 +100,8 @@ extension ReferendumVotingStatusDetailsView: BindableView {
         nayVotesView.bindOrHide(viewModel: viewModel.nay)
         if let buttonText = viewModel.buttonText {
             voteButton.isHidden = false
-            voteButton.bind(title: buttonText, details: nil)
+            voteButton.imageWithTitleView?.title = buttonText
+            voteButton.invalidateLayout()
         } else {
             voteButton.isHidden = true
         }

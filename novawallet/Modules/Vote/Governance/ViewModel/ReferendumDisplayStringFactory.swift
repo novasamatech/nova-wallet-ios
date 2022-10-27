@@ -12,6 +12,80 @@ protocol ReferendumDisplayStringFactoryProtocol {
     ) -> String?
 }
 
+extension ReferendumDisplayStringFactoryProtocol {
+    func createReferendumVotes(
+        from referendum: ReferendumLocal,
+        chain: ChainModel,
+        locale: Locale
+    ) -> ReferendumVotesViewModel? {
+        guard let voting = referendum.voting else {
+            return nil
+        }
+
+        let ayesString: String?
+        let naysString: String?
+
+        switch voting {
+        case let .supportAndVotes(model):
+            ayesString = createVotes(from: model.ayes, chain: chain, locale: locale)
+            naysString = createVotes(from: model.nays, chain: chain, locale: locale)
+        }
+
+        let aye: VoteRowView.Model? = ayesString.map {
+            .init(
+                title: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
+                votes: $0
+            )
+        }
+
+        let nay: VoteRowView.Model? = naysString.map {
+            .init(
+                title: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
+                votes: $0
+            )
+        }
+
+        return ReferendumVotesViewModel(ayes: aye, nays: nay)
+    }
+
+    func createYourVotesViewModel(
+        from vote: ReferendumAccountVoteLocal,
+        chain: ChainModel,
+        locale: Locale
+    ) -> YourVoteRow.Model {
+        let votesString = createVotes(
+            from: vote.convictionValue.votes(for: vote.totalBalance) ?? 0,
+            chain: chain,
+            locale: locale
+        )
+
+        let convictionString = createVotesDetails(
+            from: vote.totalBalance,
+            conviction: vote.conviction,
+            chain: chain,
+            locale: locale
+        )
+
+        let voteSideString: String
+        let voteSideStyle: YourVoteView.Style
+
+        if vote.ayes > 0 {
+            voteSideString = R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages)
+            voteSideStyle = .ayeInverse
+        } else {
+            voteSideString = R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages)
+            voteSideStyle = .nayInverse
+        }
+
+        let voteDescription = R.string.localizable.govYourVote(preferredLanguages: locale.rLanguages)
+
+        return YourVoteRow.Model(
+            vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
+            amount: .init(topValue: votesString ?? "", bottomValue: convictionString)
+        )
+    }
+}
+
 final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtocol {
     let formatterFactory: AssetBalanceFormatterFactoryProtocol
 

@@ -15,12 +15,13 @@ final class ReferendumVoteSetupPresenter {
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol
+    let dataValidatingFactory: GovernanceValidatorFactoryProtocol
     let logger: LoggerProtocol
 
     private var assetBalance: AssetBalance?
     private var fee: BigUInt?
     private var priceData: PriceData?
-    private var votesResult: CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>?
+    private var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var referendum: ReferendumLocal?
@@ -32,6 +33,7 @@ final class ReferendumVoteSetupPresenter {
     init(
         chain: ChainModel,
         referendumIndex: ReferendumIdLocal,
+        dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
@@ -44,6 +46,7 @@ final class ReferendumVoteSetupPresenter {
     ) {
         self.chain = chain
         self.referendumIndex = referendumIndex
+        self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.referendumFormatter = referendumFormatter
@@ -187,6 +190,31 @@ final class ReferendumVoteSetupPresenter {
         view?.didReceiveConviction(viewModel: UInt(conviction.rawValue))
     }
 
+    private func provideReuseLocksViewModel() {
+        guard let model = deriveReuseLocks() else {
+            return
+        }
+
+        let governance: String?
+
+        if model.governance > 0 {
+            governance = balanceViewModelFactory.amountFromValue(model.governance).value(for: selectedLocale)
+        } else {
+            governance = nil
+        }
+
+        let all: String?
+
+        if model.all > 0, model.all != model.governance {
+            all = balanceViewModelFactory.amountFromValue(model.all).value(for: selectedLocale)
+        } else {
+            all = nil
+        }
+
+        let viewModel = ReferendumLockReuseViewModel(governance: governance, all: all)
+        view?.didReceiveLockReuse(viewModel: viewModel)
+    }
+
     private func updateView() {
         provideReferendumIndex()
         updateAvailableBalanceView()
@@ -196,9 +224,10 @@ final class ReferendumVoteSetupPresenter {
         updateVotesView()
         updateLockedAmountView()
         updateLockedPeriodView()
+        provideReuseLocksViewModel()
     }
 
-    private func deriveNewVote() -> ReferendumNewVote? {
+    private func deriveNewVote(isAye: Bool = true) -> ReferendumNewVote? {
         let amount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
         guard
@@ -210,10 +239,24 @@ final class ReferendumVoteSetupPresenter {
         let voteAction = ReferendumVoteAction(
             amount: amountInPlank,
             conviction: conviction,
-            isAye: true
+            isAye: isAye
         )
 
         return ReferendumNewVote(index: referendumIndex, voteAction: voteAction)
+    }
+
+    private func deriveReuseLocks() -> ReferendumReuseLockModel? {
+        let governanceLocksInPlank = lockDiff?.before.maxLockedAmount ?? 0
+        let allLocksInPlank = assetBalance?.frozenInPlank ?? 0
+
+        guard
+            let precision = chain.utilityAssetDisplayInfo()?.assetPrecision,
+            let governanceLockDecimal = Decimal.fromSubstrateAmount(governanceLocksInPlank, precision: precision),
+            let allLockDecimal = Decimal.fromSubstrateAmount(allLocksInPlank, precision: precision) else {
+            return nil
+        }
+
+        return ReferendumReuseLockModel(governance: governanceLockDecimal, all: allLockDecimal)
     }
 
     private func refreshFee() {
@@ -229,7 +272,58 @@ final class ReferendumVoteSetupPresenter {
             return
         }
 
-        interactor.refreshLockDiff(for: votesResult.value ?? [:], newVote: newVote, blockHash: votesResult.blockHash)
+        interactor.refreshLockDiff(
+            for: votesResult.value?.votes.votes ?? [:],
+            newVote: newVote,
+            blockHash: votesResult.blockHash
+        )
+    }
+
+    private func performValidation(
+        for isAye: Bool,
+        notifying completionBlock: @escaping DataValidationRunnerCompletion
+    ) {
+        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
+            return
+        }
+
+        let newVote = deriveNewVote(isAye: isAye)
+
+        let params = GovernanceVoteValidatingParams(
+            assetBalance: assetBalance,
+            referendum: referendum,
+            newVote: newVote,
+            fee: fee,
+            votes: votesResult?.value?.votes,
+            assetInfo: assetInfo
+        )
+
+        DataValidationRunner.validateVote(
+            factory: dataValidatingFactory,
+            params: params,
+            selectedLocale: selectedLocale,
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }, successClosure: completionBlock
+        )
+    }
+
+    private func proceed(isAye: Bool) {
+        performValidation(for: isAye) { [weak self] in
+            guard let newVote = self?.deriveNewVote(isAye: isAye) else {
+                return
+            }
+
+            self?.wireframe.showConfirmation(from: self?.view, vote: newVote)
+        }
+    }
+
+    private func updateAfterAmountChanged() {
+        refreshFee()
+        refreshLockDiff()
+
+        updateVotesView()
+        updateAmountPriceView()
     }
 }
 
@@ -243,11 +337,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
 
-        refreshFee()
-        refreshLockDiff()
-
-        updateVotesView()
-        updateAmountPriceView()
+        updateAfterAmountChanged()
     }
 
     func selectAmountPercentage(_ percentage: Float) {
@@ -255,11 +345,7 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
 
         provideAmountInputViewModel()
 
-        refreshFee()
-        refreshLockDiff()
-
-        updateVotesView()
-        updateAmountPriceView()
+        updateAfterAmountChanged()
     }
 
     func selectConvictionValue(_ value: UInt) {
@@ -275,9 +361,37 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupPresenterProtocol {
         refreshLockDiff()
     }
 
-    func proceedNay() {}
+    func reuseGovernanceLock() {
+        guard let model = deriveReuseLocks() else {
+            return
+        }
 
-    func proceedAye() {}
+        inputResult = .absolute(model.governance)
+
+        provideAmountInputViewModel()
+
+        updateAfterAmountChanged()
+    }
+
+    func reuseAllLock() {
+        guard let model = deriveReuseLocks() else {
+            return
+        }
+
+        inputResult = .absolute(model.all)
+
+        provideAmountInputViewModel()
+
+        updateAfterAmountChanged()
+    }
+
+    func proceedNay() {
+        proceed(isAye: false)
+    }
+
+    func proceedAye() {
+        proceed(isAye: true)
+    }
 }
 
 extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProtocol {
@@ -286,12 +400,13 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
 
         updateLockedAmountView()
         updateLockedPeriodView()
+        provideReuseLocksViewModel()
     }
 
     func didReceiveAccountVotes(
-        _ votesResult: CallbackStorageSubscriptionResult<[ReferendumIdLocal: ReferendumAccountVoteLocal]>
+        _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
     ) {
-        self.votesResult = votesResult
+        votesResult = votes
 
         refreshLockDiff()
     }
@@ -312,31 +427,13 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         updateLockedPeriodView()
     }
 
-    func didReceiveError(_ error: ReferendumVoteSetupInteractorError) {
-        logger.error("Did receive setup error: \(error)")
-
-        switch error {
-        case .accountVotesFailed, .blockNumberSubscriptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeSubscriptions()
-            }
-        case .blockTimeFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refreshBlockTime()
-            }
-        case .stateDiffFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshLockDiff()
-            }
-        }
-    }
-
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?) {
         self.assetBalance = assetBalance
 
         updateAvailableBalanceView()
         updateAmountPriceView()
         provideAmountInputViewModelIfRate()
+        provideReuseLocksViewModel()
 
         refreshFee()
     }
@@ -362,13 +459,22 @@ extension ReferendumVoteSetupPresenter: ReferendumVoteSetupInteractorOutputProto
         logger.error("Did receive base error: \(error)")
 
         switch error {
-        case .assetBalanceFailed, .priceFailed, .votingReferendumFailed:
+        case .assetBalanceFailed, .priceFailed, .votingReferendumFailed, .accountVotesFailed,
+             .blockNumberSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
         case .feeFailed:
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshFee()
+            }
+        case .blockTimeFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshBlockTime()
+            }
+        case .stateDiffFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshLockDiff()
             }
         }
     }

@@ -93,11 +93,16 @@ extension YourVoteView {
     struct Model {
         let title: String
         let description: String
+        let style: YourVoteView.Style
     }
 
     func bind(viewModel: Model?) {
         typeView.titleLabel.text = viewModel?.title
         voteLabel.text = viewModel?.description
+
+        if let style = viewModel?.style {
+            apply(style: style)
+        }
     }
 }
 
@@ -132,7 +137,7 @@ extension YourVoteView.Style {
     )
     static let nay = YourVoteView.Style(
         voteLabel: .votes,
-        typeView: .ayeType,
+        typeView: .nayType,
         mode: .typeTitle
     )
     static let ayeInverse = YourVoteView.Style(
@@ -142,7 +147,7 @@ extension YourVoteView.Style {
     )
     static let nayInverse = YourVoteView.Style(
         voteLabel: .votes,
-        typeView: .ayeType,
+        typeView: .nayType,
         mode: .titleType
     )
 }

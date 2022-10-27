@@ -130,8 +130,14 @@ extension StakingParachainInteractor {
             return
         }
 
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            presenter?.didReceiveError(ChainRegistryError.connectionUnavailable)
+            return
+        }
+
         let wrapper = durationOperationFactory.createDurationOperation(
             from: runtimeService,
+            connection: connection,
             blockTimeEstimationService: blockTimeService
         )
 
