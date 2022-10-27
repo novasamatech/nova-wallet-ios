@@ -8,6 +8,7 @@ final class ReferendumVotingStatusView: UIView {
         $0.mode = .detailsIcon
         $0.detailsLabel.numberOfLines = 1
         $0.spacing = 5
+        $0.iconWidth = 14.0
         $0.apply(style: .timeView)
     }
 
@@ -44,13 +45,8 @@ final class ReferendumVotingStatusView: UIView {
 extension ReferendumVotingStatusView {
     struct Model {
         let status: Status
-        let time: Time?
+        let time: ReferendumInfoView.Model.Time?
         let title: String?
-    }
-
-    struct Time: Equatable {
-        let titleIcon: TitleIconViewModel
-        let isUrgent: Bool
     }
 
     struct Status {
@@ -61,6 +57,18 @@ extension ReferendumVotingStatusView {
     enum StatusKind {
         case positive
         case negative
+        case neutral
+
+        init(infoKind: ReferendumInfoView.Model.StatusKind) {
+            switch infoKind {
+            case .positive:
+                self = .positive
+            case .negative:
+                self = .negative
+            case .neutral:
+                self = .neutral
+            }
+        }
     }
 
     func bind(viewModel: Model) {
@@ -73,10 +81,12 @@ extension ReferendumVotingStatusView {
             statusLabel.apply(style: .positiveStatusLabel)
         case .negative:
             statusLabel.apply(style: .negativeStatusLabel)
+        case .neutral:
+            statusLabel.apply(style: .neutralStatusLabel)
         }
     }
 
-    func bind(timeModel: Time?) {
+    func bind(timeModel: ReferendumInfoView.Model.Time?) {
         if let time = timeModel {
             timeView.bind(viewModel: time.titleIcon)
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)
@@ -93,6 +103,10 @@ private extension UILabel.Style {
     )
     static let negativeStatusLabel = UILabel.Style(
         textColor: R.color.colorRedFF3A69(),
+        font: .boldTitle2
+    )
+    static let neutralStatusLabel = UILabel.Style(
+        textColor: R.color.colorWhite64(),
         font: .boldTitle2
     )
     static let title = UILabel.Style.footnoteWhite64

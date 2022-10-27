@@ -299,7 +299,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
                 self?.votesCancellable = nil
 
                 do {
-                    let votes = try wrapper.targetOperation.extractNoCancellableResultData()
+                    let votes = try wrapper.targetOperation.extractNoCancellableResultData().votes
                     self?.presenter?.didReceiveVotes(votes)
                 } catch {
                     self?.presenter?.didReceiveError(.votesFetchFailed(error))

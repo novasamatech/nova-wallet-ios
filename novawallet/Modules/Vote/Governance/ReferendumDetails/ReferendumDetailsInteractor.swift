@@ -19,6 +19,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
+    let dAppsRepository: JsonFileRepository<[GovernanceDApp]>
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -28,6 +29,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private var identitiesCancellable: CancellableCall?
     private var actionDetailsCancellable: CancellableCall?
     private var blockTimeCancellable: CancellableCall?
+    private var dAppsCancellable: CancellableCall?
 
     init(
         referendum: ReferendumLocal,
@@ -42,6 +44,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
+        dAppsRepository: JsonFileRepository<[GovernanceDApp]>,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -57,6 +60,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.blockTimeService = blockTimeService
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
+        self.dAppsRepository = dAppsRepository
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -65,6 +69,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         clear(cancellable: &identitiesCancellable)
         clear(cancellable: &actionDetailsCancellable)
         clear(cancellable: &blockTimeCancellable)
+        clear(cancellable: &dAppsCancellable)
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
         referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
@@ -100,7 +105,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         ) { [weak self] result in
             switch result {
             case let .success(votesResult):
-                if let votes = votesResult.value, let referendumId = self?.referendum.index {
+                if let votes = votesResult.value?.votes.votes, let referendumId = self?.referendum.index {
                     self?.presenter?.didReceiveAccountVotes(votes[referendumId])
                 }
             case let .failure(error):
@@ -109,6 +114,36 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
                 break
             }
         }
+    }
+
+    private func provideDApps() {
+        clear(cancellable: &dAppsCancellable)
+
+        let wrapper = dAppsRepository.fetchOperationWrapper(
+            by: R.file.governanceDAppsJson(),
+            defaultValue: []
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.dAppsCancellable === wrapper else {
+                    return
+                }
+
+                self?.dAppsCancellable = nil
+
+                do {
+                    let dApps = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveDApps(dApps)
+                } catch {
+                    self?.presenter?.didReceiveError(.dAppsFailed(error))
+                }
+            }
+        }
+
+        dAppsCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func provideIdentities() {
@@ -120,7 +155,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             accountIds.append(proposer)
         }
 
-        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiaryAccountId {
+        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiary.accountId {
             accountIds.append(beneficiary)
         }
 
@@ -220,6 +255,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
                 }
             }
         }
+
+        actionDetailsCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func makeSubscriptions() {
@@ -241,6 +280,11 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
         makeSubscriptions()
         updateActionDetails()
         provideIdentities()
+        provideDApps()
+    }
+
+    func refreshDApps() {
+        provideDApps()
     }
 
     func refreshBlockTime() {

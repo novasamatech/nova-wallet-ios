@@ -13,7 +13,7 @@ protocol ReferendumsOperationFactoryProtocol {
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data?
-    ) -> CompoundOperationWrapper<[UInt: ReferendumAccountVoteLocal]>
+    ) -> CompoundOperationWrapper<ReferendumAccountVotingDistribution>
 
     func fetchVotersWrapper(
         for referendumIndex: ReferendumIdLocal,

@@ -20,7 +20,7 @@ struct ReferendumVoteSetupViewFactory {
             return nil
         }
 
-        let wireframe = ReferendumVoteSetupWireframe()
+        let wireframe = ReferendumVoteSetupWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
@@ -32,12 +32,23 @@ struct ReferendumVoteSetupViewFactory {
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
 
-        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(assetDisplayInfo: assetDisplayInfo)
+        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
+            assetDisplayInfo: assetDisplayInfo,
+            votingLockId: ConvictionVoting.lockId
+        )
+
         let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+
+        let dataValidatingFactory = GovernanceValidatorFactory(
+            presentable: wireframe,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
 
         let presenter = ReferendumVoteSetupPresenter(
             chain: chain,
             referendumIndex: referendum,
+            dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),
             chainAssetViewModelFactory: chainAssetViewModelFactory,
@@ -55,6 +66,7 @@ struct ReferendumVoteSetupViewFactory {
         )
 
         presenter.view = view
+        dataValidatingFactory.view = view
         interactor.presenter = presenter
 
         return view

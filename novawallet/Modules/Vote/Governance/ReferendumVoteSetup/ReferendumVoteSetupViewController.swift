@@ -123,6 +123,14 @@ final class ReferendumVoteSetupViewController: UIViewController, ViewHolder {
         let amount = rootView.amountInputView.inputViewModel?.decimalAmount
         presenter.updateAmount(amount)
     }
+
+    @objc func actionReuseGovernanceLock() {
+        presenter.reuseGovernanceLock()
+    }
+
+    @objc func actionReuseAllLock() {
+        presenter.reuseAllLock()
+    }
 }
 
 extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
@@ -159,11 +167,27 @@ extension ReferendumVoteSetupViewController: ReferendumVoteSetupViewProtocol {
     }
 
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel) {
-        rootView.bindLockAmount(viewModel: viewModel)
+        rootView.lockedAmountView.bind(viewModel: viewModel)
     }
 
     func didReceiveLockedPeriod(viewModel: ReferendumLockTransitionViewModel) {
-        rootView.bindLockPeriod(viewModel: viewModel)
+        rootView.lockedPeriodView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveLockReuse(viewModel: ReferendumLockReuseViewModel) {
+        rootView.bindReuseLocks(viewModel: viewModel, locale: selectedLocale)
+
+        rootView.govLocksReuseButton?.addTarget(
+            self,
+            action: #selector(actionReuseGovernanceLock),
+            for: .touchUpInside
+        )
+
+        rootView.allLocksReuseButton?.addTarget(
+            self,
+            action: #selector(actionReuseAllLock),
+            for: .touchUpInside
+        )
     }
 }
 
@@ -186,3 +210,5 @@ extension ReferendumVoteSetupViewController: Localizable {
         }
     }
 }
+
+extension ReferendumVoteSetupViewController: ImportantViewProtocol {}

@@ -26,8 +26,4 @@ extension ParachainStaking {
             constantName: "DelegationBondLessDelay"
         )
     }
-
-    static var blocksPerRound: ConstantCodingPath {
-        ConstantCodingPath(moduleName: "ParachainStaking", constantName: "DefaultBlocksPerRound")
-    }
 }

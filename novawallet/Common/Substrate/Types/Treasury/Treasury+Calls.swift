@@ -21,6 +21,6 @@ extension Treasury {
 
     struct SpendCall: Decodable {
         @StringCodable var amount: BigUInt
-        let beneficiary: AccountId
+        let beneficiary: MultiAddress
     }
 }

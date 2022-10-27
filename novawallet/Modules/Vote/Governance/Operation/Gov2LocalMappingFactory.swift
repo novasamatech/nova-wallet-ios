@@ -34,6 +34,7 @@ final class Gov2LocalMappingFactory {
             track: localTrack,
             proposal: status.proposal,
             voting: .supportAndVotes(model: votes),
+            submitted: status.submitted,
             since: deciding.since,
             period: track.decisionPeriod,
             confirmationUntil: deciding.confirming
