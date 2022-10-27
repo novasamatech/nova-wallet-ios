@@ -5,7 +5,7 @@ import SubstrateSdk
 struct ReferendumActionLocal {
     struct AmountSpendDetails {
         let amount: BigUInt
-        let beneficiaryAccountId: AccountId
+        let beneficiary: MultiAddress
     }
 
     let amountSpendDetails: AmountSpendDetails?

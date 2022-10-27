@@ -3,16 +3,21 @@ import UIKit
 final class ReferendumDetailsViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 24, right: 16)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 6.0, left: 16, bottom: 24, right: 16)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
     }()
 
     let titleView = ReferendumDetailsTitleView()
-    let votingDetailsRow = VotingDetailsRow(frame: .zero)
-    let dAppsTableView = StackTableView()
-    var timelineTableView = StackTableView()
+    let votingDetailsRow = ReferendumVotingStatusDetailsView()
+    let dAppsTableView: StackTableView = .create {
+        $0.cellHeight = 64.0
+        $0.hasSeparators = false
+        $0.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 8.0, right: 16.0)
+    }
+
+    var timelineView = TimelineRow()
 
     var yourVoteRow: YourVoteRow?
     var requestedAmountRow: RequestedAmountRow?
@@ -21,6 +26,8 @@ final class ReferendumDetailsViewLayout: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        backgroundColor = R.color.colorBlack()
 
         setupLayout()
     }
@@ -42,68 +49,96 @@ final class ReferendumDetailsViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(votingDetailsRow)
         containerView.stackView.addArrangedSubview(dAppsTableView)
-        containerView.stackView.addArrangedSubview(timelineTableView)
+        containerView.stackView.addArrangedSubview(timelineView)
         containerView.stackView.addArrangedSubview(fullDetailsView)
 
-        timelineTableView.apply(style: .cellWithoutHighlighting)
         dAppsTableView.apply(style: .cellWithoutHighlighting)
     }
 
-    func setTimeline(title: String, model: ReferendumTimelineView.Model?) {
-        timelineTableView.clear()
-        guard let model = model else {
-            return
-        }
-        let headerView = createHeader(with: title)
-        let timelineRow = TimelineRow(frame: .zero)
-        timelineRow.bind(viewModel: model)
-        timelineTableView.stackView.addArrangedSubview(headerView)
-        timelineTableView.stackView.addArrangedSubview(timelineRow)
+    func setTimeline(model: [ReferendumTimelineView.Model]?, locale: Locale) {
+        let title = R.string.localizable.govReferendumDetailsTimelineTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
+        timelineView.titleLabel.text = title
+
+        timelineView.bindOrHide(viewModel: model)
     }
 
-    func setDApps(title: String, models: [ReferendumDAppView.Model]) {
+    func setDApps(models: [ReferendumDAppView.Model]?, locale: Locale) -> [ReferendumDAppCellView] {
         dAppsTableView.clear()
 
-        let headerView = createHeader(with: title)
-        dAppsTableView.stackView.addArrangedSubview(headerView)
-        for model in models {
-            let dAppView = ReferendumDAppCellView(frame: .zero)
-            dAppView.rowContentView.bind(viewModel: model)
-            dAppsTableView.stackView.addArrangedSubview(dAppView)
+        if let models = models {
+            dAppsTableView.isHidden = false
+
+            let title = R.string.localizable.commonUseDapp(
+                preferredLanguages: locale.rLanguages
+            )
+
+            let headerView = createHeader(with: title)
+            dAppsTableView.setCustomHeight(32, at: 0)
+            dAppsTableView.addArrangedSubview(headerView)
+
+            let cells: [ReferendumDAppCellView] = models.map { model in
+                let dAppView = ReferendumDAppCellView()
+                dAppView.rowContentView.bind(viewModel: model)
+                return dAppView
+            }
+
+            cells.forEach {
+                dAppsTableView.addArrangedSubview($0)
+            }
+
+            return cells
+        } else {
+            dAppsTableView.isHidden = true
+
+            return []
         }
     }
 
     func setYourVote(model: YourVoteRow.Model?) {
         guard let yourVoteViewModel = model else {
-            yourVoteRow.map(containerView.stackView.removeArrangedSubview)
+            yourVoteRow?.removeFromSuperview()
+            yourVoteRow = nil
             return
         }
+
         if yourVoteRow == nil {
             let yourVoteView = YourVoteRow(frame: .zero)
-            containerView.stackView.addArrangedSubview(yourVoteView)
+            containerView.stackView.insertArranged(view: yourVoteView, before: votingDetailsRow)
             yourVoteRow = yourVoteView
         }
+
         yourVoteRow?.bind(viewModel: yourVoteViewModel)
     }
 
     func setRequestedAmount(model: RequestedAmountRow.Model?) {
         guard let requestedAmountViewModel = model else {
-            requestedAmountRow.map(containerView.stackView.removeArrangedSubview)
+            requestedAmountRow?.removeFromSuperview()
+            requestedAmountRow = nil
             return
         }
+
         if requestedAmountRow == nil {
             let requestedAmountView = RequestedAmountRow(frame: .zero)
-            containerView.stackView.addArrangedSubview(requestedAmountView)
+            containerView.stackView.insertArranged(view: requestedAmountView, after: titleView)
             requestedAmountRow = requestedAmountView
         }
+
         requestedAmountRow?.bind(viewModel: requestedAmountViewModel)
+    }
+
+    func setFullDetails(hidden: Bool, locale: Locale) {
+        fullDetailsView.isHidden = hidden
+
+        fullDetailsView.bind(title: R.string.localizable.commonFullDetails(preferredLanguages: locale.rLanguages))
     }
 
     private func createHeader(with text: String) -> StackTableHeaderCell {
         let headerView = StackTableHeaderCell()
         headerView.titleLabel.apply(style: .footnoteWhite64)
         headerView.titleLabel.text = text
-        headerView.contentInsets = .init(top: 16, left: 16, bottom: 8, right: 16)
         return headerView
     }
 }

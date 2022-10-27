@@ -72,10 +72,12 @@ protocol StorageRequestFactoryProtocol {
 final class StorageRequestFactory: StorageRequestFactoryProtocol {
     let remoteFactory: StorageKeyFactoryProtocol
     let operationManager: OperationManagerProtocol
+    let timeout: Int
 
-    init(remoteFactory: StorageKeyFactoryProtocol, operationManager: OperationManagerProtocol) {
+    init(remoteFactory: StorageKeyFactoryProtocol, operationManager: OperationManagerProtocol, timeout: Int = 60) {
         self.remoteFactory = remoteFactory
         self.operationManager = operationManager
+        self.timeout = timeout
     }
 
     private func createMergeOperation<T>(
@@ -123,7 +125,8 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
     private func createQueryOperation(
         for keys: @escaping () throws -> [Data],
         at blockHash: Data?,
-        engine: JSONRPCEngine
+        engine: JSONRPCEngine,
+        timeout: Int
     ) -> BaseOperation<[[StorageUpdate]]> {
         OperationCombiningService<[StorageUpdate]>(
             operationManager: operationManager) {
@@ -145,7 +148,8 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
                 let queryOperation = JSONRPCQueryOperation(
                     engine: engine,
                     method: RPCMethod.queryStorageAt,
-                    parameters: params
+                    parameters: params,
+                    timeout: timeout
                 )
 
                 return CompoundOperationWrapper(targetOperation: queryOperation)
@@ -210,7 +214,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
         storagePath: StorageCodingPath,
         at blockHash: Data?
     ) -> CompoundOperationWrapper<[StorageResponse<T>]> where T: Decodable {
-        let queryOperation = createQueryOperation(for: keys, at: blockHash, engine: engine)
+        let queryOperation = createQueryOperation(for: keys, at: blockHash, engine: engine, timeout: timeout)
 
         let decodingOperation = StorageFallbackDecodingListOperation<T>(path: storagePath)
         decodingOperation.configurationBlock = {

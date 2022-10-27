@@ -3,11 +3,47 @@ import BigInt
 import SubstrateSdk
 
 typealias ReferendumIdLocal = UInt
+typealias TrackIdLocal = UInt
 
 struct ReferendumLocal {
     let index: ReferendumIdLocal
     let state: ReferendumStateLocal
     let proposer: AccountId?
+
+    var canVote: Bool {
+        switch state {
+        case .preparing, .deciding:
+            return true
+        case .approved, .rejected, .cancelled, .timedOut, .killed, .executed:
+            return false
+        }
+    }
+
+    var trackId: TrackIdLocal? {
+        track.map { TrackIdLocal($0.trackId) }
+    }
+
+    var track: GovernanceTrackLocal? {
+        switch state {
+        case let .preparing(model):
+            return model.track
+        case let .deciding(model):
+            return model.track
+        case .approved, .rejected, .cancelled, .timedOut, .killed, .executed:
+            return nil
+        }
+    }
+
+    var voting: ReferendumStateLocal.Voting? {
+        switch state {
+        case let .preparing(model):
+            return model.voting
+        case let .deciding(model):
+            return model.voting
+        case .approved, .rejected, .cancelled, .timedOut, .killed, .executed:
+            return nil
+        }
+    }
 }
 
 struct SupportAndVotesLocal {
@@ -63,6 +99,7 @@ enum ReferendumStateLocal {
         let track: GovernanceTrackLocal
         let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
         let voting: Voting
+        let submitted: BlockNumber
         let since: BlockNumber
         let period: Moment
         let confirmationUntil: BlockNumber?

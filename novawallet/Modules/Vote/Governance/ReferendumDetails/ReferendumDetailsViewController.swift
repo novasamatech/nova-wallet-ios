@@ -1,13 +1,22 @@
 import UIKit
 import SubstrateSdk
+import SoraFoundation
 
 final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumDetailsViewLayout
 
     let presenter: ReferendumDetailsPresenterProtocol
+    let localizationManager: LocalizationManagerProtocol
 
-    init(presenter: ReferendumDetailsPresenterProtocol) {
+    private var dAppCells: [ReferendumDAppCellView]?
+
+    init(
+        presenter: ReferendumDetailsPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.localizationManager = localizationManager
+
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -23,103 +32,81 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
+
         presenter.setup()
-        setSamples()
     }
 
-    private func setSamples() {
-        let status = ReferendumVotingStatusView.Model(
-            status: .init(name: "PASSING", kind: .positive),
-            time: .init(titleIcon: .init(title: "Approve in 03:59:59", icon: R.image.iconFire()), isUrgent: true),
-            title: "Voting status"
-        )
-        let votingProgress = VotingProgressView.Model(
-            support: .init(title: "Threshold reached", icon: R.image.iconCheckmark()?.withTintColor(R.color.colorGreen15CF37()!)),
-            approval: .init(
-                passThreshold: 0.5,
-                ayeProgress: 0.9,
-                ayeMessage: "Aye: 99.9%",
-                passMessage: "To pass: 50%",
-                nayMessage: "Nay: 0.1%"
-            )
-        )
-        didReceive(votingDetails: .init(
-            status: status,
-            votingProgress: votingProgress,
-            aye: .init(
-                title: "Aye",
-                votes: "25,354.16 votes",
-                tokens: "16,492 KSM"
-            ),
-            nay: .init(
-                title: "Nay",
-                votes: "1.5 votes",
-                tokens: "149 KSM"
-            ),
-            buttonText: "Vote"
-        ))
-
-        let iconUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!
-        didReceive(
-            title: "Use Nova DApp browser",
-            dAppModels: [
-                .init(
-                    icon: RemoteImageViewModel(url: iconUrl),
-                    title: "Polkassembly",
-                    subtitle: "Comment and react"
-                )
-            ]
+    private func setupHandlers() {
+        rootView.votingDetailsRow.voteButton.addTarget(
+            self,
+            action: #selector(actionVote),
+            for: .touchUpInside
         )
 
-        let metaAccount = MetaAccountModel(
-            metaId: UUID().uuidString,
-            name: UUID().uuidString,
-            substrateAccountId: Data.random(of: 32)!,
-            substrateCryptoType: 0,
-            substratePublicKey: Data.random(of: 32)!,
-            ethereumAddress: Data.random(of: 20)!,
-            ethereumPublicKey: Data.random(of: 32)!,
-            chainAccounts: [],
-            type: .secrets
+        rootView.titleView.accountContainerView.addTarget(
+            self,
+            action: #selector(actionProposer),
+            for: .touchUpInside
         )
 
-        let optIcon = metaAccount.walletIdenticonData().flatMap { try? PolkadotIconGenerator().generateFromAccountId($0) }
-        let iconViewModel = optIcon.map { DrawableIconViewModel(icon: $0) }
-
-        didReceive(trackTagsModel: .init(
-            titleIcon: .init(title: "main agenda".uppercased(), icon: nil),
-            referendumNumber: "224"
-        ))
-        didReceive(titleModel: .init(
-            accountIcon: iconViewModel,
-            accountName: "RTTI-5220",
-            title: "Polkadot and Kusama participation in the 10th Pais Digital Chile Summit.",
-            description: "The Sovereign Nature Initiative transfers, Governance, Sovereign Nature Initiative (SNI) is a non-profit foundation that has" +
-                "brought together multiple partners and engineers from the лоалыво одыо лоаыдвлоадо",
-            buttonText: "Read more"
-        )
+        rootView.titleView.moreButton.addTarget(
+            self,
+            action: #selector(actionFullDescription),
+            for: .touchUpInside
         )
 
-        didReceive(
-            title: "Timeline",
-            timelineModel: .init(title: "Timeline", statuses: [
-                .init(title: "One", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
-                .init(title: "Two", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false),
-                .init(title: "Three", subtitle: .date("Sept 1, 2022 04:44:31"), isLast: false)
-            ])
+        rootView.votingDetailsRow.ayeVotesView.addTarget(
+            self,
+            action: #selector(actionAyeVotes),
+            for: .touchUpInside
         )
 
-        rootView.fullDetailsView.bind(title: "Full details")
+        rootView.votingDetailsRow.nayVotesView.addTarget(
+            self,
+            action: #selector(actionNayVotes),
+            for: .touchUpInside
+        )
 
-        didReceive(yourVoteModel: .init(
-            vote: .init(title: "AYE", description: "Your vote"),
-            amount: .init(topValue: "30 votes", bottomValue: "10 KSM × 3x")
-        ))
+        rootView.fullDetailsView.addTarget(
+            self,
+            action: #selector(actionFullDetails),
+            for: .touchUpInside
+        )
+    }
 
-        didReceive(requestedAmount: .init(
-            title: "Requested amount",
-            amount: .init(topValue: "1,000 KSM", bottomValue: "$38,230")
-        ))
+    @objc private func actionVote() {
+        presenter.vote()
+    }
+
+    @objc private func actionProposer() {
+        presenter.showProposerDetails()
+    }
+
+    @objc private func actionFullDescription() {
+        presenter.readFullDescription()
+    }
+
+    @objc private func actionAyeVotes() {
+        presenter.showAyeVoters()
+    }
+
+    @objc private func actionNayVotes() {
+        presenter.showNayVoters()
+    }
+
+    @objc private func actionDApp(_ sender: UIControl) {
+        guard
+            let cell = sender as? ReferendumDAppCellView,
+            let index = dAppCells?.firstIndex(of: cell) else {
+            return
+        }
+
+        presenter.opeDApp(at: index)
+    }
+
+    @objc private func actionFullDetails() {
+        presenter.openFullDetails()
     }
 }
 
@@ -128,16 +115,19 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
         rootView.votingDetailsRow.bind(viewModel: votingDetails)
     }
 
-    func didReceive(title: String, dAppModels: [ReferendumDAppView.Model]) {
-        rootView.setDApps(title: title, models: dAppModels)
+    func didReceive(dAppModels: [ReferendumDAppView.Model]?) {
+        let cells = rootView.setDApps(models: dAppModels, locale: localizationManager.selectedLocale)
+        dAppCells = cells
+
+        cells.forEach { $0.addTarget(self, action: #selector(actionDApp(_:)), for: .touchUpInside) }
     }
 
-    func didReceive(title: String, timelineModel: ReferendumTimelineView.Model?) {
-        rootView.setTimeline(title: title, model: timelineModel)
+    func didReceive(timelineModel: [ReferendumTimelineView.Model]?) {
+        rootView.setTimeline(model: timelineModel, locale: localizationManager.selectedLocale)
     }
 
     func didReceive(titleModel: ReferendumDetailsTitleView.Model) {
-        rootView.titleView.bind(viewModel: titleModel)
+        rootView.titleView.bind(viewModel: titleModel, locale: localizationManager.selectedLocale)
     }
 
     func didReceive(yourVoteModel: YourVoteRow.Model?) {
@@ -155,5 +145,14 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
             return .init(customView: trackTagsView)
         }
         navigationItem.setRightBarButton(barButtonItem, animated: true)
+    }
+
+    func didReceive(shouldHideFullDetails: Bool) {
+        rootView.setFullDetails(hidden: shouldHideFullDetails, locale: localizationManager.selectedLocale)
+    }
+
+    func didReceive(activeTimeViewModel: ReferendumInfoView.Model.Time?) {
+        rootView.votingDetailsRow.statusView.bind(timeModel: activeTimeViewModel)
+        rootView.timelineView.bind(activeTimeViewModel: activeTimeViewModel)
     }
 }

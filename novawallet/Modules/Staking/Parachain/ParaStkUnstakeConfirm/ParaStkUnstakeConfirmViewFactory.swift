@@ -90,7 +90,13 @@ struct ParaStkUnstakeConfirmViewFactory {
         let storageFacade = SubstrateDataStorageFacade.shared
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
         let stakingDurationFactory = ParaStkDurationOperationFactory(
+            storageRequestFactory: storageRequestFactory,
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
         )
 
