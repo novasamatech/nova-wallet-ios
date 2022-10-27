@@ -1,33 +1,35 @@
 import Foundation
 import SubstrateSdk
 import SoraFoundation
+import BigInt
 
 final class ReferendumFullDetailsPresenter {
     weak var view: ReferendumFullDetailsViewProtocol?
     let wireframe: ReferendumFullDetailsWireframeProtocol
     let interactor: ReferendumFullDetailsInteractorInputProtocol
-    let chainIconGenerator: IconGenerating
-    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
-    let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let addressViewModelFactory: DisplayAddressViewModelFactoryProtocol
+    let logger: LoggerProtocol
 
     let chain: ChainModel
     let referendum: ReferendumLocal
     let actionDetails: ReferendumActionLocal
     let identities: [AccountAddress: AccountIdentity]
+
     private var price: PriceData?
     private var json: String?
 
     init(
         interactor: ReferendumFullDetailsInteractorInputProtocol,
         wireframe: ReferendumFullDetailsWireframeProtocol,
-        chainIconGenerator: IconGenerating,
         chain: ChainModel,
         referendum: ReferendumLocal,
         actionDetails: ReferendumActionLocal,
         identities: [AccountAddress: AccountIdentity],
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        assetFormatterFactory: AssetBalanceFormatterFactory
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
@@ -35,126 +37,88 @@ final class ReferendumFullDetailsPresenter {
         self.referendum = referendum
         self.actionDetails = actionDetails
         self.identities = identities
-        self.chainIconGenerator = chainIconGenerator
-        priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        self.assetFormatterFactory = assetFormatterFactory
-        self.currencyManager = currencyManager
+        self.logger = logger
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.addressViewModelFactory = addressViewModelFactory
         self.localizationManager = localizationManager
     }
 
-    private func updateView() {
-        guard let view = view else {
-            return
-        }
-        getProposer().map {
-            view.didReceive(proposerModel: .init(
-                title: "Proposer",
-                model: .init(
-                    details: $0.name,
-                    imageViewModel: $0.icon
-                )
-            ))
-        }
-        let approvalCurveModel = referendum.state.approvalCurve.map {
-            TitleWithSubtitleViewModel(
-                title: "Approve Curve",
-                subtitle: $0.displayName
-            )
-        }
-        let supportCurveModel = referendum.state.supportCurve.map {
-            TitleWithSubtitleViewModel(
-                title: "Support Curve",
-                subtitle: $0.displayName
-            )
-        }
-        let callHashModel = referendum.state.callHash.map {
-            TitleWithSubtitleViewModel(
-                title: "Call Hash",
-                subtitle: $0
-            )
-        }
-
-        view.didReceive(
-            approveCurve: approvalCurveModel,
-            supportCurve: supportCurveModel,
-            callHash: callHashModel
-        )
-
-        updatePriceDependentViews()
-    }
-
-    private func getProposer() -> (name: String, icon: ImageViewModelProtocol?)? {
-        guard let proposer = referendum.proposer,
-              let proposerAddress = try? proposer.toAddress(using: chain.chainFormat) else {
+    private func getAccountViewModel(_ accountId: AccountId?) -> DisplayAddressViewModel? {
+        guard let accountId = accountId,
+              let address = try? accountId.toAddress(using: chain.chainFormat) else {
             return nil
         }
 
-        let chainAccountIcon = icon(
-            generator: chainIconGenerator,
-            from: proposer
+        let displayAddress = DisplayAddress(
+            address: address,
+            username: identities[address]?.displayName ?? ""
         )
 
-        let name = identities[proposerAddress]?.displayName ?? proposerAddress
-
-        return (name: name, icon: chainAccountIcon)
+        return addressViewModelFactory.createViewModel(from: displayAddress)
     }
 
-    private func icon(
-        generator: IconGenerating,
-        from imageData: Data?
-    ) -> DrawableIconViewModel? {
-        guard let data = imageData,
-              let icon = try? generator.generateFromAccountId(data) else {
+    private func getBalanceViewModel(_ amount: BigUInt?, locale: Locale) -> BalanceViewModelProtocol? {
+        guard
+            let amount = amount,
+            let assetInfo = chain.utilityAsset()?.displayInfo,
+            let amountDecimal = Decimal.fromSubstrateAmount(amount, precision: assetInfo.assetPrecision) else {
             return nil
         }
 
-        return DrawableIconViewModel(icon: icon)
+        return balanceViewModelFactory.balanceFromPrice(
+            amountDecimal,
+            priceData: price
+        ).value(for: locale)
     }
 
-    private func updatePriceDependentViews() {
-        guard let utilityAsset = chain.utilityAsset() else {
+    private func provideProposerViewModel() {
+        guard let proposer = getAccountViewModel(referendum.proposer) else {
+            view?.didReceive(proposer: nil)
             return
         }
-        guard let amountInPlank = actionDetails.amountSpendDetails?.amount else {
-            return
-        }
-        let amount = Decimal.fromSubstrateAmount(
-            amountInPlank,
-            precision: Int16(utilityAsset.precision)
-        ) ?? 0.0
 
-        let formattedAmount = formatAmount(
-            amount,
-            assetDisplayInfo: utilityAsset.displayInfo,
-            locale: selectedLocale
-        )
-        let price = formatPrice(amount: amount, priceData: price, locale: selectedLocale)
-        view?.didReceive(
-            deposit: .init(
-                topValue: formattedAmount,
-                bottomValue: price
+        let deposit = getBalanceViewModel(referendum.deposit, locale: selectedLocale)
+        view?.didReceive(proposer: .init(proposer: proposer, deposit: deposit))
+    }
+
+    private func provideBeneficiaryViewModel() {
+        guard
+            let beneficiary = getAccountViewModel(
+                actionDetails.amountSpendDetails?.beneficiary.accountId
             ),
-            title: "Deposit"
-        )
-    }
-
-    private func formatPrice(amount: Decimal, priceData: PriceData?, locale: Locale) -> String {
-        guard let currencyManager = currencyManager else {
-            return ""
+            let amount = getBalanceViewModel(
+                actionDetails.amountSpendDetails?.amount,
+                locale: selectedLocale
+            ) else {
+            view?.didReceive(beneficiary: nil)
+            return
         }
-        let currencyId = priceData?.currencyId ?? currencyManager.selectedCurrency.id
-        let assetDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: currencyId)
-        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
-        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+
+        view?.didReceive(beneficiary: .init(account: beneficiary, amount: amount))
     }
 
-    private func formatAmount(
-        _ amount: Decimal,
-        assetDisplayInfo: AssetBalanceDisplayInfo,
-        locale: Locale
-    ) -> String {
-        let priceFormatter = assetFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
-        return priceFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
+    private func provideCurveAndHashViewModel() {
+        guard
+            let approvalCurve = referendum.state.approvalCurve,
+            let supportCurve = referendum.state.supportCurve else {
+            return
+        }
+
+        let callHash = referendum.state.callHash
+
+        let model = ReferendumFullDetailsViewModel.CurveAndHash(
+            approveCurve: approvalCurve.displayName,
+            supportCurve: supportCurve.displayName,
+            callHash: callHash
+        )
+
+        view?.didReceive(params: model)
+    }
+
+    private func updateView() {
+        provideProposerViewModel()
+        provideBeneficiaryViewModel()
+        provideCurveAndHashViewModel()
     }
 }
 
@@ -163,20 +127,39 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol
         interactor.setup()
         updateView()
     }
+
+    func presentProposer() {}
+
+    func presentBeneficiary() {}
+
+    func presentCallHash() {}
 }
 
 extension ReferendumFullDetailsPresenter: ReferendumFullDetailsInteractorOutputProtocol {
     func didReceive(price: PriceData?) {
         self.price = price
-        updatePriceDependentViews()
+
+        provideProposerViewModel()
+        provideBeneficiaryViewModel()
     }
 
     func didReceive(json: String?) {
-        view?.didReceive(json: json, jsonTitle: "Parameters JSON")
+        view?.didReceive(json: json)
     }
 
     func didReceive(error: ReferendumFullDetailsError) {
-        print("Received error: \(error.localizedDescription)")
+        logger.error("Did receiver error: \(error)")
+
+        switch error {
+        case .priceFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeSubscriptions()
+            }
+        case .processingJSON:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshCall()
+            }
+        }
     }
 }
 
@@ -185,11 +168,5 @@ extension ReferendumFullDetailsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
-    }
-}
-
-extension ReferendumFullDetailsPresenter: SelectedCurrencyDepending {
-    func applyCurrency() {
-        updatePriceDependentViews()
     }
 }

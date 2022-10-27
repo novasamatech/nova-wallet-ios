@@ -1058,4 +1058,12 @@
 "common.read.more" = "Читать дальше";
 "gov.referendum.title.fallback" = "Референдум %@";
 "gov.referendum.description.fallback" = "Только создатель референдума может редактировать заголовок и описание. Если Вы владеете аккаунтом создателя референдума, то заполните информацию о референдуме на Polkassembly";
-"common.full.details" = "Техническая информация";
+"gov.full.details" = "Техническая информация";
+"gov.proposer" = "Создатель";
+"gov.deposit" = "Депозит";
+"gov.beneficiary" = "Получатель";
+"gov.requested.amount" = "Запрашиваемая сумма";
+"gov.approve.curve" = "Кривая подтверждения";
+"gov.support.curve" = "Кривая поддержки";
+"gov.call.hash" = "Хэш вызова";
+"gov.parameters.json" = "Параметры вызова";

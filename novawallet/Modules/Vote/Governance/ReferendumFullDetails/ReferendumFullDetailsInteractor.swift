@@ -29,6 +29,9 @@ final class ReferendumFullDetailsInteractor {
     }
 
     private func makeSubscriptions() {
+        priceProvider?.removeObserver(self)
+        priceProvider = nil
+
         guard let priceId = chain.utilityAsset()?.priceId else {
             return
         }
@@ -38,34 +41,43 @@ final class ReferendumFullDetailsInteractor {
 
     private func formatJSON() {
         guard let call = referendumAction.call else {
-            presenter?.didReceive(error: .emptyJSON)
+            presenter?.didReceive(json: nil)
             return
         }
-        let processingOperation = processingOperationFactory.createProcessingOperation(for: call.args)
-        processingOperation.completionBlock = { [weak self] in
-            guard let self = self else {
-                return
-            }
-            do {
-                let result = try processingOperation.extractNoCancellableResultData()
-                DispatchQueue.main.async {
-                    self.presenter?.didReceive(json: result)
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    self.presenter?.didReceive(json: nil)
-                    self.presenter?.didReceive(error: .processingJSON(error))
-                }
-            }
-        }
 
-        operationQueue.addOperation(processingOperation)
+        do {
+            let json = try call.toScaleCompatibleJSON()
+
+            let processingOperation = processingOperationFactory.createProcessingOperation(for: json)
+            processingOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    do {
+                        let result = try processingOperation.extractNoCancellableResultData()
+                        self?.presenter?.didReceive(json: result)
+                    } catch {
+                        self?.presenter?.didReceive(error: .processingJSON(error))
+                    }
+                }
+            }
+
+            operationQueue.addOperation(processingOperation)
+        } catch {
+            presenter?.didReceive(error: .processingJSON(error))
+        }
     }
 }
 
 extension ReferendumFullDetailsInteractor: ReferendumFullDetailsInteractorInputProtocol {
     func setup() {
         makeSubscriptions()
+        formatJSON()
+    }
+
+    func remakeSubscriptions() {
+        makeSubscriptions()
+    }
+
+    func refreshCall() {
         formatJSON()
     }
 }

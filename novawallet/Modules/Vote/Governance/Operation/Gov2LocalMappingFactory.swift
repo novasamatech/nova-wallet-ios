@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 final class Gov2LocalMappingFactory {
     private func createDecidingState(
@@ -30,6 +31,8 @@ final class Gov2LocalMappingFactory {
 
         let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
 
+        let deposit = deposit(from: status.submissionDeposit, decision: status.decisionDeposit)
+
         let model = ReferendumStateLocal.Deciding(
             track: localTrack,
             proposal: status.proposal,
@@ -37,7 +40,8 @@ final class Gov2LocalMappingFactory {
             submitted: status.submitted,
             since: deciding.since,
             period: track.decisionPeriod,
-            confirmationUntil: deciding.confirming
+            confirmationUntil: deciding.confirming,
+            deposit: deposit
         )
 
         return .deciding(model: model)
@@ -114,6 +118,7 @@ final class Gov2LocalMappingFactory {
         return ReferendumLocal(index: UInt(index), state: state, proposer: status.submissionDeposit.who)
     }
 
+    // swiftlint:disable:next function_body_length
     func mapRemote(
         referendum: ReferendumInfo,
         index: Referenda.ReferendumIndex,
@@ -127,7 +132,11 @@ final class Gov2LocalMappingFactory {
             let state: ReferendumStateLocal
 
             if let enactmentBlock = enactmentBlock {
-                let value = ReferendumStateLocal.Approved(since: status.since, whenEnactment: enactmentBlock)
+                let value = ReferendumStateLocal.Approved(
+                    since: status.since,
+                    whenEnactment: enactmentBlock,
+                    deposit: deposit(from: status.submissionDeposit, decision: status.decisionDeposit)
+                )
                 state = .approved(model: value)
             } else {
                 state = .executed
@@ -139,21 +148,39 @@ final class Gov2LocalMappingFactory {
                 proposer: status.submissionDeposit.who
             )
         case let .rejected(status):
+            let value = notApproved(
+                from: status.since,
+                submission: status.submissionDeposit,
+                decision: status.decisionDeposit
+            )
+
             return ReferendumLocal(
                 index: UInt(index),
-                state: .rejected(atBlock: status.since),
+                state: .rejected(model: value),
                 proposer: status.submissionDeposit.who
             )
         case let .timedOut(status):
+            let value = notApproved(
+                from: status.since,
+                submission: status.submissionDeposit,
+                decision: status.decisionDeposit
+            )
+
             return ReferendumLocal(
                 index: UInt(index),
-                state: .timedOut(atBlock: status.since),
+                state: .timedOut(model: value),
                 proposer: status.submissionDeposit.who
             )
         case let .cancelled(status):
+            let value = notApproved(
+                from: status.since,
+                submission: status.submissionDeposit,
+                decision: status.decisionDeposit
+            )
+
             return ReferendumLocal(
                 index: UInt(index),
-                state: .cancelled(atBlock: status.since),
+                state: .cancelled(model: value),
                 proposer: status.submissionDeposit.who
             )
         case let .killed(atBlock):
@@ -161,5 +188,18 @@ final class Gov2LocalMappingFactory {
         case .unknown:
             return nil
         }
+    }
+
+    private func deposit(from submission: Referenda.Deposit, decision: Referenda.Deposit?) -> BigUInt {
+        submission.amount + (decision?.amount ?? 0)
+    }
+
+    private func notApproved(
+        from atBlock: BlockNumber,
+        submission: Referenda.Deposit,
+        decision: Referenda.Deposit?
+    ) -> ReferendumStateLocal.NotApproved {
+        let deposit = deposit(from: submission, decision: decision)
+        return .init(atBlock: atBlock, deposit: deposit)
     }
 }

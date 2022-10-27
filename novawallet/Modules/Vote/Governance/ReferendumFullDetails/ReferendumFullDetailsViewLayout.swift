@@ -3,33 +3,21 @@ import UIKit
 final class ReferendumFullDetailsViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 24, right: 16)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 24, right: 16)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
     }()
 
-    let accountDetailsTableView = StackTableView()
-    var referendumDetailsTableView = StackTableView()
-    var amountSpendDetailsTableView: AmountSpendDetailsTableView?
-    lazy var beneficiaryTableCell = StackInfoTableCell()
-    lazy var requestedAmountTableCell = StackTitleMultiValueCell()
+    private(set) var proposerTableView: StackTableView?
+    private(set) var beneficiaryTableView: StackTableView?
+    private(set) var curveAndHashTableView: StackTableView?
 
-    var proposerTableCell: StackInfoTableCell?
-    let depositTableCell = StackTitleMultiValueCell()
+    private(set) var proposerCell: StackInfoTableCell?
+    private(set) var beneficiaryCell: StackInfoTableCell?
+    private(set) var callHashCell: StackInfoTableCell?
 
-    var approveCurve: StackTableCell?
-    var supportCurve: StackTableCell?
-    var callHash: StackInfoTableCell?
-
-    let jsonTitle: UILabel = .init(style: .caption1White64)
-    let jsonView: BlurredView<UITextView> = .create {
-        $0.view.allowsEditingTextAttributes = false
-        $0.view.isScrollEnabled = false
-        $0.view.backgroundColor = .clear
-        $0.view.textAlignment = .left
-        $0.contentInsets = .zero
-    }
+    private(set) var jsonView: UIView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,119 +35,202 @@ final class ReferendumFullDetailsViewLayout: UIView {
         containerView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-
-        containerView.stackView.spacing = 8
-        containerView.stackView.addArrangedSubview(accountDetailsTableView)
-        containerView.stackView.addArrangedSubview(referendumDetailsTableView)
-        accountDetailsTableView.addArrangedSubview(depositTableCell)
-        containerView.stackView.addArrangedSubview(jsonTitle)
-        containerView.stackView.addArrangedSubview(jsonView)
     }
 
-    func updateProposerCell(proposerModel: ProposerTableCell.Model?) {
-        guard let proposerModel = proposerModel else {
-            proposerTableCell?.removeFromSuperview()
-            proposerTableCell = nil
-            return
-        }
-        if proposerTableCell == nil {
-            let proposerTableCell = createStackInfoCell(title: proposerModel.title)
-            accountDetailsTableView.insertArrangedSubview(proposerTableCell, at: 0)
-            self.proposerTableCell = proposerTableCell
+    func setProposer(viewModel: ReferendumFullDetailsViewModel.Proposer?, locale: Locale) {
+        proposerTableView?.clear()
+        proposerCell = nil
+
+        if let viewModel = viewModel {
+            if proposerTableView == nil {
+                let tableView = StackTableView()
+                containerView.stackView.insertArrangedSubview(tableView, at: 0)
+                proposerTableView = tableView
+            }
+
+            let proposerCell = createAccountCell(
+                with: R.string.localizable.govProposer(preferredLanguages: locale.rLanguages),
+                viewModel: viewModel.proposer
+            )
+
+            proposerTableView?.addArrangedSubview(proposerCell)
+
+            if let deposit = viewModel.deposit {
+                let depositCell = createBalanceCell(
+                    with: R.string.localizable.govDeposit(preferredLanguages: locale.rLanguages),
+                    viewModel: deposit
+                )
+                proposerTableView?.addArrangedSubview(depositCell)
+            }
+        } else {
+            proposerTableView?.removeFromSuperview()
+            proposerTableView = nil
         }
 
-        proposerTableCell?.bind(viewModel: proposerModel.model)
+        updateLayout()
     }
 
-    func update(amountSpendDetails: AmountSpendDetailsTableView.Model?) {
-        guard let amountSpendDetails = amountSpendDetails else {
-            amountSpendDetailsTableView?.removeFromSuperview()
-            amountSpendDetailsTableView = nil
-            return
+    func setBeneficiary(viewModel: ReferendumFullDetailsViewModel.Beneficiary?, locale: Locale) {
+        beneficiaryTableView?.clear()
+        beneficiaryCell = nil
+
+        if let viewModel = viewModel {
+            if beneficiaryTableView == nil {
+                let tableView = StackTableView()
+                insertView(tableView, afterOneOf: [proposerTableView])
+                beneficiaryTableView = tableView
+            }
+
+            let beneficiaryCell = createAccountCell(
+                with: R.string.localizable.govBeneficiary(preferredLanguages: locale.rLanguages),
+                viewModel: viewModel.account
+            )
+
+            beneficiaryTableView?.addArrangedSubview(beneficiaryCell)
+
+            if let amount = viewModel.amount {
+                let amountCell = createBalanceCell(
+                    with: R.string.localizable.govRequestedAmount(preferredLanguages: locale.rLanguages),
+                    viewModel: amount
+                )
+
+                beneficiaryTableView?.addArrangedSubview(amountCell)
+            }
+        } else {
+            beneficiaryTableView?.removeFromSuperview()
+            beneficiaryTableView = nil
         }
-        if amountSpendDetailsTableView == nil {
-            amountSpendDetailsTableView = .init()
-            accountDetailsTableView.addArrangedSubview(beneficiaryTableCell)
-            accountDetailsTableView.addArrangedSubview(requestedAmountTableCell)
-        }
-        beneficiaryTableCell.titleLabel.text = amountSpendDetails.beneficiary.title
-        beneficiaryTableCell.bind(viewModel: amountSpendDetails.beneficiary.model)
-        requestedAmountTableCell.titleLabel.text = amountSpendDetails.requestedAmount.title
-        requestedAmountTableCell.rowContentView.valueView.bind(viewModel: amountSpendDetails.requestedAmount.model)
+
+        updateLayout()
     }
 
-    func update(approveCurveModel: TitleWithSubtitleViewModel?) {
-        guard let model = approveCurveModel else {
-            approveCurve?.removeFromSuperview()
-            approveCurve = nil
-            return
+    func setCurveAndHash(viewModel: ReferendumFullDetailsViewModel.CurveAndHash?, locale: Locale) {
+        curveAndHashTableView?.clear()
+        curveAndHashTableView = nil
+
+        if let viewModel = viewModel {
+            if curveAndHashTableView == nil {
+                let tableView = StackTableView()
+                insertView(tableView, afterOneOf: [beneficiaryTableView, proposerTableView])
+                curveAndHashTableView = tableView
+            }
+
+            let approveCurveCell = createTitleValueCell(
+                with: R.string.localizable.govApproveCurve(preferredLanguages: locale.rLanguages),
+                value: viewModel.approveCurve
+            )
+
+            curveAndHashTableView?.addArrangedSubview(approveCurveCell)
+
+            let supportCurveCell = createTitleValueCell(
+                with: R.string.localizable.govSupportCurve(preferredLanguages: locale.rLanguages),
+                value: viewModel.supportCurve
+            )
+
+            curveAndHashTableView?.addArrangedSubview(supportCurveCell)
+
+            if let callHash = viewModel.callHash {
+                let callHashCell = createInfoCell(
+                    with: R.string.localizable.govCallHash(preferredLanguages: locale.rLanguages),
+                    value: callHash
+                )
+
+                callHashCell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+
+                curveAndHashTableView?.addArrangedSubview(callHashCell)
+                self.callHashCell = callHashCell
+            }
+        } else {
+            curveAndHashTableView?.removeFromSuperview()
+            curveAndHashTableView = nil
         }
-        if approveCurve == nil {
-            approveCurve = .init()
-            approveCurve.map(referendumDetailsTableView.addArrangedSubview)
+
+        updateLayout()
+    }
+
+    func setJson(viewModel: String?, locale: Locale) {
+        jsonView?.removeFromSuperview()
+        jsonView = nil
+
+        if let viewModel = viewModel {
+            let jsonView: GenericMultiValueView<BlurredView<UITextView>> = .create {
+                $0.valueTop.apply(style: .caption1White64)
+                $0.valueTop.textAlignment = .left
+                $0.spacing = 12.0
+
+                let textView = $0.valueBottom.view
+                textView.isEditable = false
+                textView.textContainerInset = .zero
+                textView.textContainer.lineFragmentPadding = 0
+                textView.isScrollEnabled = false
+                textView.backgroundColor = .clear
+                textView.textAlignment = .left
+
+                $0.valueBottom.contentInsets = .zero
+                $0.valueBottom.innerInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+            }
+
+            jsonView.valueTop.text = R.string.localizable.govParametersJson(preferredLanguages: locale.rLanguages)
+
+            jsonView.valueBottom.view.text = viewModel
+            containerView.stackView.addArrangedSubview(jsonView)
+
+            self.jsonView = jsonView
         }
-        approveCurve?.titleLabel.text = model.title
-        approveCurve?.detailsLabel.text = model.subtitle
     }
 
-    func update(supportCurveModel: TitleWithSubtitleViewModel?) {
-        guard let model = supportCurveModel else {
-            supportCurve?.removeFromSuperview()
-            supportCurve = nil
-            return
+    private func insertView(_ view: UIView, afterOneOf subviews: [UIView?]) {
+        if let optSubview = subviews.first(where: { $0 != nil }), let subview = optSubview {
+            containerView.stackView.insertArranged(view: view, after: subview)
+        } else {
+            containerView.stackView.insertArrangedSubview(view, at: 0)
         }
-        if supportCurve == nil {
-            supportCurve = .init()
-            supportCurve.map(referendumDetailsTableView.addArrangedSubview)
+    }
+
+    private func createAccountCell(with title: String, viewModel: DisplayAddressViewModel) -> StackInfoTableCell {
+        let cell = StackInfoTableCell()
+        cell.titleLabel.text = title
+        cell.detailsLabel.lineBreakMode = viewModel.lineBreakMode
+        cell.bind(viewModel: viewModel.cellViewModel)
+        return cell
+    }
+
+    private func createBalanceCell(
+        with title: String,
+        viewModel: BalanceViewModelProtocol
+    ) -> StackTitleMultiValueCell {
+        let cell = StackTitleMultiValueCell()
+        cell.canSelect = false
+        cell.titleLabel.text = title
+        cell.rowContentView.valueView.bind(topValue: viewModel.amount, bottomValue: viewModel.price)
+        cell.rowContentView.titleView.hidesIcon = true
+        return cell
+    }
+
+    private func createTitleValueCell(with title: String, value: String) -> StackTableCell {
+        let cell = StackTableCell()
+        cell.titleLabel.text = title
+        cell.bind(details: value)
+        return cell
+    }
+
+    private func createInfoCell(with title: String, value: String) -> StackInfoTableCell {
+        let cell = StackInfoTableCell()
+        cell.titleLabel.text = title
+        cell.bind(details: value)
+        return cell
+    }
+
+    private func updateLayout() {
+        let views: [UIView?] = [proposerTableView, beneficiaryTableView, curveAndHashTableView]
+        views.forEach {
+            if let view = $0 {
+                containerView.stackView.setCustomSpacing(8.0, after: view)
+            }
         }
-        supportCurve?.titleLabel.text = model.title
-        supportCurve?.detailsLabel.text = model.subtitle
-    }
 
-    func update(callHashModel: TitleWithSubtitleViewModel?) {
-        guard let model = callHashModel else {
-            callHash?.removeFromSuperview()
-            callHash = nil
-            return
+        if let optView = views.reversed().first(where: { $0 != nil }), let lastView = optView {
+            containerView.stackView.setCustomSpacing(24.0, after: lastView)
         }
-        if callHash == nil {
-            callHash = .init()
-            callHash.map(referendumDetailsTableView.addArrangedSubview)
-        }
-        callHash?.titleLabel.text = model.title
-        callHash?.detailsLabel.text = model.subtitle
-    }
-
-    private func createStackInfoCell(title: String) -> StackInfoTableCell {
-        let proposerCell = StackInfoTableCell()
-        proposerCell.rowContentView.valueView.mode = .iconDetails
-        proposerCell.rowContentView.titleView.text = title
-        return proposerCell
-    }
-}
-
-typealias ProposerTableCell = StackInfoTableCell
-extension ProposerTableCell {
-    struct Model {
-        let title: String
-        let model: StackCellViewModel?
-    }
-}
-
-typealias AmountSpendDetailsTableView = StackTableView
-extension AmountSpendDetailsTableView {
-    struct Model {
-        let beneficiary: BeneficiaryModel
-        let requestedAmount: RequestedAmountModel
-    }
-
-    struct BeneficiaryModel {
-        let title: String
-        let model: StackCellViewModel?
-    }
-
-    struct RequestedAmountModel {
-        let title: String
-        let model: MultiValueView.Model
     }
 }
