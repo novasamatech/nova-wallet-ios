@@ -2,7 +2,8 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Decodable>: BaseSyncService {
+final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Decodable>: BaseSyncService,
+    AnyCancellableCleaning {
     typealias RemoteResponse = (remoteKey: U, response: StorageResponse<T>)
     typealias LocalResponse = (remoteKey: U, response: T)
 
@@ -16,6 +17,8 @@ final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Deco
 
     let completionClosure: (StorageListSyncResult<U, T>) -> Void
     let completionQueue: DispatchQueue
+
+    @Atomic(defaultValue: nil) private var cancellable: CancellableCall?
 
     init(
         key: K,
@@ -47,7 +50,7 @@ final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Deco
     }
 
     override func stopSyncUp() {
-        operationQueue.cancelAllOperations()
+        clear(cancellable: &cancellable)
     }
 }
 
@@ -262,7 +265,18 @@ extension StorageListSyncService {
 
         replaceOperation.addDependency(remoteFetchWrapper.targetOperation)
 
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: replaceOperation,
+            dependencies: remoteFetchWrapper.allOperations
+        )
+
         replaceOperation.completionBlock = { [weak self] in
+            guard self?.cancellable === wrapper else {
+                return
+            }
+
+            self?.cancellable = nil
+
             do {
                 let remoteItems = try remoteFetchWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -281,9 +295,9 @@ extension StorageListSyncService {
             }
         }
 
-        let operations = remoteFetchWrapper.allOperations + [replaceOperation]
+        cancellable = wrapper
 
-        operationQueue.addOperations(operations, waitUntilFinished: false)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func fetchLocalAndUpdateIfNeeded(for chainId: ChainModel.Id, storagePath: StorageCodingPath) {
@@ -293,14 +307,11 @@ extension StorageListSyncService {
 
         encodingOperation.addDependency(codingFactoryOperation)
 
-        let localKeyOperation = prepareLocalKeyOperation(
-            dependingOn: encodingOperation,
-            chainId: chainId
-        )
+        let localKeyOperation = prepareLocalKeyOperation(dependingOn: encodingOperation, chainId: chainId)
 
         localKeyOperation.addDependency(encodingOperation)
 
-        let localFetchWrapper = prepareLocalFetchOperation(
+        let fetchWrapper = prepareLocalFetchOperation(
             dependingOn: localKeyOperation,
             codingFactoryOperation: codingFactoryOperation,
             repositoryFactory: repositoryFactory,
@@ -308,11 +319,24 @@ extension StorageListSyncService {
             chainId: chainId
         )
 
-        localFetchWrapper.addDependency(operations: [localKeyOperation, codingFactoryOperation])
+        fetchWrapper.addDependency(operations: [localKeyOperation, codingFactoryOperation])
 
-        localFetchWrapper.targetOperation.completionBlock = { [weak self] in
+        let dependencies = [codingFactoryOperation, encodingOperation, localKeyOperation] + fetchWrapper.dependencies
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: fetchWrapper.targetOperation,
+            dependencies: dependencies
+        )
+
+        fetchWrapper.targetOperation.completionBlock = { [weak self] in
+            guard self?.cancellable === wrapper else {
+                return
+            }
+
+            self?.cancellable = nil
+
             do {
-                let localItems = try localFetchWrapper.targetOperation.extractNoCancellableResultData()
+                let localItems = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
                 if !localItems.isEmpty {
                     let resulItems = localItems.map { localItem in
@@ -338,9 +362,8 @@ extension StorageListSyncService {
             }
         }
 
-        let operations = [codingFactoryOperation, encodingOperation, localKeyOperation] +
-            localFetchWrapper.allOperations
+        cancellable = wrapper
 
-        operationQueue.addOperations(operations, waitUntilFinished: false)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
