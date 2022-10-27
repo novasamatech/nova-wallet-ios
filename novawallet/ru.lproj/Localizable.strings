@@ -1067,3 +1067,4 @@
 "gov.support.curve" = "Кривая поддержки";
 "gov.call.hash" = "Хэш вызова";
 "gov.parameters.json" = "Параметры вызова";
+"common.copy" = "Копировать";

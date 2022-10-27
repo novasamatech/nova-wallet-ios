@@ -25,7 +25,7 @@ protocol ReferendumFullDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol ReferendumFullDetailsWireframeProtocol: ErrorPresentable, AlertPresentable, AddressOptionsPresentable,
-    CommonRetryable {}
+    CommonRetryable, CopyPresentable {}
 
 enum ReferendumFullDetailsError: Error {
     case priceFailed(Error)

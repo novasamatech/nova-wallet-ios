@@ -53,6 +53,8 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 viewModel: viewModel.proposer
             )
 
+            self.proposerCell = proposerCell
+
             proposerTableView?.addArrangedSubview(proposerCell)
 
             if let deposit = viewModel.deposit {
@@ -85,6 +87,8 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 with: R.string.localizable.govBeneficiary(preferredLanguages: locale.rLanguages),
                 viewModel: viewModel.account
             )
+
+            self.beneficiaryCell = beneficiaryCell
 
             beneficiaryTableView?.addArrangedSubview(beneficiaryCell)
 

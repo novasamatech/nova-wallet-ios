@@ -120,6 +120,19 @@ final class ReferendumFullDetailsPresenter {
         provideBeneficiaryViewModel()
         provideCurveAndHashViewModel()
     }
+
+    private func presentDetails(for address: AccountAddress) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
+    }
 }
 
 extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol {
@@ -128,11 +141,32 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol
         updateView()
     }
 
-    func presentProposer() {}
+    func presentProposer() {
+        guard let address = try? referendum.proposer?.toAddress(using: chain.chainFormat) else {
+            return
+        }
 
-    func presentBeneficiary() {}
+        presentDetails(for: address)
+    }
 
-    func presentCallHash() {}
+    func presentBeneficiary() {
+        guard
+            let address = try? actionDetails.amountSpendDetails?.beneficiary.accountId?.toAddress(
+                using: chain.chainFormat
+            ) else {
+            return
+        }
+
+        presentDetails(for: address)
+    }
+
+    func presentCallHash() {
+        guard let view = view, let callHash = referendum.state.callHash else {
+            return
+        }
+
+        wireframe.presentCopy(from: view, value: callHash, locale: selectedLocale)
+    }
 }
 
 extension ReferendumFullDetailsPresenter: ReferendumFullDetailsInteractorOutputProtocol {
