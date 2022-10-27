@@ -1068,3 +1068,4 @@
 "gov.call.hash" = "Хэш вызова";
 "gov.parameters.json" = "Параметры вызова";
 "common.copy" = "Копировать";
+"common.too.long.preview" = "Слишком большой размер для просмотра";

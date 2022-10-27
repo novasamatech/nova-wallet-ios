@@ -1066,4 +1066,5 @@
 "gov.support.curve" = "Support Curve";
 "gov.call.hash" = "Call Hash";
 "gov.parameters.json" = "Parameters JSON";
-"common.copy" = "Copy";"
+"common.copy" = "Copy";
+"common.too.long.preview" = "Too long for preview";

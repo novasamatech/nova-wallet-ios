@@ -17,7 +17,7 @@ final class ReferendumFullDetailsPresenter {
     let identities: [AccountAddress: AccountIdentity]
 
     private var price: PriceData?
-    private var json: String?
+    private var call: ReferendumActionLocal.Call<String>?
 
     init(
         interactor: ReferendumFullDetailsInteractorInputProtocol,
@@ -115,10 +115,22 @@ final class ReferendumFullDetailsPresenter {
         view?.didReceive(params: model)
     }
 
+    private func provideJson() {
+        switch call {
+        case let .concrete(json):
+            view?.didReceive(json: json)
+        case .tooLong:
+            view?.didReceiveTooLongJson()
+        case .none:
+            view?.didReceive(json: nil)
+        }
+    }
+
     private func updateView() {
         provideProposerViewModel()
         provideBeneficiaryViewModel()
         provideCurveAndHashViewModel()
+        provideJson()
     }
 
     private func presentDetails(for address: AccountAddress) {
@@ -177,8 +189,9 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsInteractorOutputP
         provideBeneficiaryViewModel()
     }
 
-    func didReceive(json: String?) {
-        view?.didReceive(json: json)
+    func didReceive(call: ReferendumActionLocal.Call<String>?) {
+        self.call = call
+        provideJson()
     }
 
     func didReceive(error: ReferendumFullDetailsError) {
