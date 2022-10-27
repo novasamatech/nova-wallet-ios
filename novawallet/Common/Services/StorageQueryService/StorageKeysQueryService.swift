@@ -27,6 +27,7 @@ final class StorageKeysQueryService<T>: Longrunable {
     let prefixKeyClosure: () throws -> Data
     let mapper: AnyMapper<Data, T>
     let blockHash: Data?
+    let timeout: Int
 
     private var state: State = .none
     private var completionClosure: ((Result<ResultType, Error>) -> Void)?
@@ -39,7 +40,8 @@ final class StorageKeysQueryService<T>: Longrunable {
         prefixKeyClosure: @escaping () throws -> Data,
         mapper: AnyMapper<Data, T>,
         pageSize: UInt32? = 1000,
-        blockHash: Data? = nil
+        blockHash: Data? = nil,
+        timeout: Int = 60
     ) {
         self.connection = connection
         self.operationManager = operationManager
@@ -47,6 +49,7 @@ final class StorageKeysQueryService<T>: Longrunable {
         self.pageSize = pageSize
         self.mapper = mapper
         self.blockHash = blockHash
+        self.timeout = timeout
     }
 
     private func loadNext() {
@@ -78,7 +81,8 @@ final class StorageKeysQueryService<T>: Longrunable {
             let operation = JSONRPCOperation<PagedKeysRequest, [String]>(
                 engine: connection,
                 method: method,
-                parameters: request
+                parameters: request,
+                timeout: timeout
             )
 
             currentOperation = operation
