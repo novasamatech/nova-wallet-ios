@@ -31,8 +31,19 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showReferendumDetails(from view: ControllerBackedProtocol?, referendum: ReferendumLocal) {
-        guard let detailsView = ReferendumDetailsViewFactory.createView(for: referendum, state: state) else {
+    func showReferendumDetails(
+        from view: ControllerBackedProtocol?,
+        referendum: ReferendumLocal,
+        accountVotes: ReferendumAccountVoteLocal?,
+        metadata: ReferendumMetadataLocal?
+    ) {
+        guard
+            let detailsView = ReferendumDetailsViewFactory.createView(
+                for: state,
+                referendum: referendum,
+                accountVotes: accountVotes,
+                metadata: metadata
+            ) else {
             return
         }
 
