@@ -17,7 +17,7 @@ final class ReferendumsPresenter {
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
-    private var votes: [UInt: ReferendumAccountVoteLocal]?
+    private var votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
 
@@ -186,7 +186,12 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
-        wireframe.showReferendumDetails(from: view, referendum: referendum)
+        wireframe.showReferendumDetails(
+            from: view,
+            referendum: referendum,
+            accountVotes: votes?[referendum.index],
+            metadata: referendumsMetadata?[referendum.index]
+        )
     }
 }
 
