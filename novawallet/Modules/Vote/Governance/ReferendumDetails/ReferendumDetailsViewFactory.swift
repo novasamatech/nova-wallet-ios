@@ -5,8 +5,10 @@ import SoraFoundation
 
 struct ReferendumDetailsViewFactory {
     static func createView(
-        for referendum: ReferendumLocal,
-        state: GovernanceSharedState
+        for state: GovernanceSharedState,
+        referendum: ReferendumLocal,
+        accountVotes: ReferendumAccountVoteLocal?,
+        metadata: ReferendumMetadataLocal?
     ) -> ReferendumDetailsViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -33,10 +35,12 @@ struct ReferendumDetailsViewFactory {
 
         let indexFormatter = NumberFormatter.index.localizableResource()
         let referendumViewModelFactory = ReferendumsModelFactory(
+            referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: NumberFormatter.percentHalfEven.localizableResource(),
-            indexFormatter: indexFormatter
+            percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
+            indexFormatter: indexFormatter,
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
         let referendumStringFactory = ReferendumDisplayStringFactory()
@@ -50,6 +54,8 @@ struct ReferendumDetailsViewFactory {
         let presenter = ReferendumDetailsPresenter(
             referendum: referendum,
             chain: chain,
+            accountVotes: accountVotes,
+            metadata: metadata,
             interactor: interactor,
             wireframe: wireframe,
             referendumViewModelFactory: referendumViewModelFactory,

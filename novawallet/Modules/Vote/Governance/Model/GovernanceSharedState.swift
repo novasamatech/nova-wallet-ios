@@ -56,7 +56,10 @@ final class GovernanceSharedState {
             return
         }
 
-        let operationFactory = Gov2OperationFactory(requestFactory: requestFactory)
+        let operationFactory = Gov2OperationFactory(
+            requestFactory: requestFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
 
         subscriptionFactory = Gov2SubscriptionFactory(
             chainId: chainId,

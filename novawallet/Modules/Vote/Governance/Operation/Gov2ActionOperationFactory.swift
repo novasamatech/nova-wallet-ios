@@ -13,14 +13,15 @@ final class Gov2ActionOperationFactory {
         self.operationQueue = operationQueue
     }
 
-    // switftlint:disable:next function_body_length
+    // swiftlint:disable:next function_body_length
     private func createCallFetchWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         referendum: ReferendumLocal,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
-        let callFetchClosure: (Data) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> = { hash in
+        let callFetchClosure: (Data) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>
+        callFetchClosure = { hash in
             let statusKeyParams: () throws -> [BytesCodable] = {
                 [BytesCodable(wrappedValue: hash)]
             }
@@ -36,7 +37,7 @@ final class Gov2ActionOperationFactory {
             let callKeyParams: () throws -> [Preimage.PreimageKey] = {
                 let status = try statusFetchWrapper.targetOperation.extractNoCancellableResultData().first?.value
 
-                guard let length = status?.length else {
+                guard let length = status?.length, length <= Self.maxFetchCallSize else {
                     return []
                 }
 
@@ -56,7 +57,13 @@ final class Gov2ActionOperationFactory {
                 let callKeys = try callKeyParams()
 
                 guard !callKeys.isEmpty else {
-                    return nil
+                    let optStatus = try statusFetchWrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+                    if let length = optStatus?.length {
+                        return length > Self.maxFetchCallSize ? .tooLong : nil
+                    } else {
+                        return nil
+                    }
                 }
 
                 let responses = try callFetchWrapper.targetOperation.extractNoCancellableResultData()
@@ -68,12 +75,16 @@ final class Gov2ActionOperationFactory {
 
                 let decoder = try codingFactory.createDecoder(from: response.wrappedValue)
 
-                let call: RuntimeCall<JSON> = try decoder.read(
+                let optCall: RuntimeCall<JSON>? = try? decoder.read(
                     of: GenericType.call.name,
                     with: codingFactory.createRuntimeJsonContext().toRawContext()
                 )
 
-                return .concrete(call)
+                if let call = optCall {
+                    return .concrete(call)
+                } else {
+                    return nil
+                }
             }
 
             mappingOperation.addDependency(callFetchWrapper.targetOperation)

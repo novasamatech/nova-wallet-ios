@@ -28,6 +28,7 @@ extension ReferendumStatusViewModelFactoryProtocol {
 }
 
 final class ReferendumStatusViewModelFactory {
+    // swiftlint:disable:next function_parameter_count
     private func createTimeViewModel(
         state: ReferendumStateLocal,
         atBlock: Moment,
@@ -64,13 +65,13 @@ final class ReferendumStatusViewModelFactory {
         timeStringProvider: (String, [String]?) -> String,
         state: ReferendumStateLocal,
         locale: Locale
-    ) -> ReferendumInfoView.Model.Time? {
+    ) -> ReferendumInfoView.Time? {
         guard let localizedDaysHours = time.localizedDaysOrTime(for: locale) else {
             return nil
         }
         let timeString = timeStringProvider(localizedDaysHours, locale.rLanguages)
         let timeModel = isUrgent(state: state, time: time).map { isUrgent in
-            ReferendumInfoView.Model.Time(
+            ReferendumInfoView.Time(
                 titleIcon: .init(
                     title: timeString,
                     icon: isUrgent ? R.image.iconFire() : R.image.iconLightPending()
@@ -102,6 +103,7 @@ final class ReferendumStatusViewModelFactory {
 }
 
 extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProtocol {
+    // swiftlint:disable:next function_body_length
     func createTimeViewModel(
         for referendum: ReferendumLocal,
         currentBlock: BlockNumber,
@@ -113,7 +115,7 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
         case let .preparing(model):
             if model.deposit == nil {
                 let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
-                let timeViewModel = ReferendumInfoView.Model.Time(
+                let timeViewModel = ReferendumInfoView.Time(
                     titleIcon: .init(title: title, icon: R.image.iconLightPending()),
                     isUrgent: false
                 )
@@ -121,7 +123,7 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
                 return StatusTimeViewModel(viewModel: timeViewModel, timeInterval: nil) { _ in
                     timeViewModel
                 }
-            } else if currentBlock >= model.preparingPeriod {
+            } else if currentBlock >= model.preparingEnd {
                 return createTimeViewModel(
                     state: referendum.state,
                     atBlock: max(currentBlock, model.timeoutAt),

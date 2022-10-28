@@ -80,7 +80,7 @@ enum ReferendumTrackType: String, CaseIterable, Equatable {
         from rawName: String,
         chain: ChainModel,
         locale: Locale
-    ) -> ReferendumInfoView.Model.Track {
+    ) -> ReferendumInfoView.Track {
         let type = ReferendumTrackType(rawValue: rawName)
         let title = type?.title(for: locale)?.uppercased() ?? rawName.replacingSnakeCase().uppercased()
         let icon = type?.imageViewModel(for: chain)
