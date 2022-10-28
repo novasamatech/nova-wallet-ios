@@ -45,7 +45,7 @@ final class ReferendumVotingStatusView: UIView {
 extension ReferendumVotingStatusView {
     struct Model {
         let status: Status
-        let time: ReferendumInfoView.Model.Time?
+        let time: ReferendumInfoView.Time?
         let title: String?
     }
 
@@ -59,7 +59,7 @@ extension ReferendumVotingStatusView {
         case negative
         case neutral
 
-        init(infoKind: ReferendumInfoView.Model.StatusKind) {
+        init(infoKind: ReferendumInfoView.StatusKind) {
             switch infoKind {
             case .positive:
                 self = .positive
@@ -86,7 +86,7 @@ extension ReferendumVotingStatusView {
         }
     }
 
-    func bind(timeModel: ReferendumInfoView.Model.Time?) {
+    func bind(timeModel: ReferendumInfoView.Time?) {
         if let time = timeModel {
             timeView.bind(viewModel: time.titleIcon)
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)

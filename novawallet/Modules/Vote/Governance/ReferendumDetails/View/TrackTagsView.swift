@@ -47,7 +47,7 @@ final class TrackTagsView: UIView {
 
 extension TrackTagsView: BindableView {
     struct Model {
-        let titleIcon: ReferendumInfoView.Model.Track?
+        let titleIcon: ReferendumInfoView.Track?
         let referendumNumber: String?
     }
 
