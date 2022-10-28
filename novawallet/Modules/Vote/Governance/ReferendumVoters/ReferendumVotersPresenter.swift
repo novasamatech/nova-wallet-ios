@@ -46,11 +46,20 @@ final class ReferendumVotersPresenter {
         let viewModels: [ReferendumVotersViewModel] = model.voters.filter { voter in
             switch type {
             case .ayes:
-                return voter.vote.ayes > 0
+                return voter.vote.hasAyeVotes
             case .nays:
-                return voter.vote.nays > 0
+                return voter.vote.hasNayVotes
             }
-        }.compactMap { voter in
+        }
+        .sorted {
+            switch type {
+            case .ayes:
+                return $0.vote.ayes > $1.vote.ayes
+            case .nays:
+                return $0.vote.nays > $1.vote.nays
+            }
+        }
+        .compactMap { voter in
             guard let address = try? voter.accountId.toAddress(using: chain.chainFormat) else {
                 return nil
             }
