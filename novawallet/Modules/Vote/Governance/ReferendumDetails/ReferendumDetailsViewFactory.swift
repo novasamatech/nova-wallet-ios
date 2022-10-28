@@ -35,7 +35,7 @@ struct ReferendumDetailsViewFactory {
         let referendumViewModelFactory = ReferendumsModelFactory(
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: NumberFormatter.percentHalfEven.localizableResource(),
+            percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: indexFormatter
         )
 

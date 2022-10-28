@@ -53,8 +53,13 @@ final class VotingProgressView: UIView {
 
 extension VotingProgressView: BindableView {
     struct Model {
-        let support: TitleIconViewModel?
+        let support: SupportModel?
         let approval: ApprovalModel
+    }
+
+    struct SupportModel {
+        let titleIcon: TitleIconViewModel
+        let completed: Bool
     }
 
     struct ApprovalModel {
@@ -75,8 +80,12 @@ extension VotingProgressView: BindableView {
         passProgressLabel.text = viewModel.approval.passMessage
         nayProgressLabel.text = viewModel.approval.nayMessage
 
-        thresholdView.bind(viewModel: viewModel.support)
-        thresholdView.isHidden = viewModel.support == nil
+        if let support = viewModel.support, !support.completed {
+            thresholdView.isHidden = false
+            thresholdView.bind(viewModel: support.titleIcon)
+        } else {
+            thresholdView.isHidden = true
+        }
     }
 }
 
