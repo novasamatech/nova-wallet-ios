@@ -50,7 +50,7 @@ final class InlineAlertView: UIView {
 extension InlineAlertView {
     static func warning() -> InlineAlertView {
         let view = InlineAlertView()
-        view.backgroundView.fillColor = R.color.colorYellow12()!
+        view.backgroundView.fillColor = R.color.colorYellow16()!
         view.contentView.imageView.image = R.image.iconWarning()
         view.contentView.stackView.alignment = .top
         return view

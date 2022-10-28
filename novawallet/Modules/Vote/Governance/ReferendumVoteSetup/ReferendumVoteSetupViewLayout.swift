@@ -129,6 +129,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
         let button = TriangularedButton()
         button.applySecondaryDefaultStyle()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        button.imageWithTitleView?.titleFont = .semiBoldFootnote
         return button
     }
 
