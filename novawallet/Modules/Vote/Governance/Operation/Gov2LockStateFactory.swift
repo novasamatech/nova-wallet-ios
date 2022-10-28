@@ -227,7 +227,7 @@ final class Gov2LockStateFactory {
 
             let newState: GovernanceLockState?
 
-            if let newVote = newVote, newVote.voteAction.amount > 0 {
+            if let newVote = newVote {
                 let newAmount = max(oldAmount, newVote.voteAction.amount)
 
                 // as we replacing the vote we can immediately claim previos one so don't take into account
@@ -241,7 +241,9 @@ final class Gov2LockStateFactory {
 
                 let newPeriod: Moment?
 
+                // if amount is zero we don't take into account the vote for the referendum
                 if
+                    newVote.voteAction.amount > 0,
                     let referendum = referendums[newVote.index],
                     let periodWithNewVote = self.estimateVoteLockingPeriod(
                         for: referendum,
