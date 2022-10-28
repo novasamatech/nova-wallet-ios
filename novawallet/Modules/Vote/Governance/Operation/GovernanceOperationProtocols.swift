@@ -32,7 +32,7 @@ protocol ReferendumActionOperationFactoryProtocol {
 
 protocol GovernanceLockStateFactoryProtocol {
     func calculateLockStateDiff(
-        for votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
+        for trackVotes: ReferendumTracksVotingDistribution,
         newVote: ReferendumNewVote?,
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
