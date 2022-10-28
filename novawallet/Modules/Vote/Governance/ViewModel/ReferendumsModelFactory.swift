@@ -143,9 +143,7 @@ final class ReferendumsModelFactory {
         chainAsset: AssetModel?,
         locale: Locale
     ) -> YourVotesView.Model? {
-        guard let votes = votes,
-              let chainAsset = chainAsset,
-              votes.ayes + votes.nays > 0 else {
+        guard let votes = votes, let chainAsset = chainAsset else {
             return nil
         }
 
@@ -164,12 +162,12 @@ final class ReferendumsModelFactory {
                 preferredLanguages: locale.rLanguages
             )
         }
-        let ayesModel = votes.ayes > 0 ? YourVoteView.Model(
+        let ayesModel = votes.hasAyeVotes ? YourVoteView.Model(
             title: Strings.governanceAye(preferredLanguages: locale.rLanguages).uppercased(),
             description: formatVotes(votes.ayes),
             style: .aye
         ) : nil
-        let naysModel = votes.nays > 0 ? YourVoteView.Model(
+        let naysModel = votes.hasNayVotes ? YourVoteView.Model(
             title: Strings.governanceNay(preferredLanguages: locale.rLanguages).uppercased(),
             description: formatVotes(votes.nays),
             style: .nay
