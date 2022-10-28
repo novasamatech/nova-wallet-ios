@@ -275,7 +275,7 @@ final class ReferendumsModelFactory {
         chain: ChainModel,
         currentBlock: BlockNumber,
         locale: Locale
-    ) -> TitleIconViewModel? {
+    ) -> VotingProgressView.SupportModel? {
         guard
             let chainAsset = chain.utilityAsset(),
             let supportThreshold = supportAndVotes.supportFunction?.calculateThreshold(for: currentBlock) else {
@@ -314,7 +314,9 @@ final class ReferendumsModelFactory {
             preferredLanguages: locale.rLanguages
         )
 
-        return .init(title: text, icon: image)
+        let titleIcon = TitleIconViewModel(title: text, icon: image)
+
+        return .init(titleIcon: titleIcon, completed: isCompleted)
     }
 
     private func createVotingApprovalProgressViewModel(

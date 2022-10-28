@@ -180,7 +180,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
         let viewModelFactory = ReferendumsModelFactory(
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: NumberFormatter.percentHalfEven.localizableResource(),
+            percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource()
         )
 

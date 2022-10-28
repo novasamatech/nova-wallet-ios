@@ -77,6 +77,12 @@ extension NumberFormatter {
         return numberFormatter
     }
 
+    static var referendumPercent: NumberFormatter {
+        let numberFormatter = percentHalfEven
+        numberFormatter.minimumFractionDigits = 0
+        return numberFormatter
+    }
+
     static var index: NumberFormatter {
         let numberFormatter = quantity
         numberFormatter.positivePrefix = "#"
