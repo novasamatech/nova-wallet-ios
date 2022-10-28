@@ -206,8 +206,12 @@ final class ReferendumVoteConfirmPresenter {
     }
 
     private func refreshLockDiff() {
+        guard let trackVoting = votesResult?.value else {
+            return
+        }
+
         interactor.refreshLockDiff(
-            for: votesResult?.value?.votes.votes ?? [:],
+            for: trackVoting,
             newVote: vote,
             blockHash: votesResult?.blockHash
         )
