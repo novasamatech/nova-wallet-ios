@@ -43,13 +43,16 @@ final class ReferendumsModelFactory {
     let localizedPercentFormatter: LocalizableResource<NumberFormatter>
     let localizedIndexFormatter: LocalizableResource<NumberFormatter>
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
 
     init(
+        referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
         indexFormatter: LocalizableResource<NumberFormatter>
     ) {
+        self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         localizedPercentFormatter = percentFormatter
@@ -71,11 +74,17 @@ final class ReferendumsModelFactory {
             from: NSNumber(value: params.referendum.index)
         )
 
+        let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+            for: params.referendum,
+            metadata: params.metadata,
+            locale: locale
+        )
+
         return .init(
             referendumInfo: .init(
                 status: status,
                 time: nil,
-                title: params.metadata?.name ?? "",
+                title: referendumTitle,
                 track: nil,
                 referendumNumber: referendumNumber
             ),
@@ -124,11 +133,17 @@ final class ReferendumsModelFactory {
                 from: NSNumber(value: params.referendum.index)
             )
 
+            let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+                for: params.referendum,
+                metadata: params.metadata,
+                locale: locale
+            )
+
             return .init(
                 referendumInfo: .init(
                     status: .init(name: title.uppercased(), kind: .neutral),
                     time: timeModel?.viewModel,
-                    title: params.metadata?.name ?? "",
+                    title: referendumTitle,
                     track: track,
                     referendumNumber: referendumNumber
                 ),
@@ -218,11 +233,17 @@ final class ReferendumsModelFactory {
             let indexFormatter = localizedIndexFormatter.value(for: locale)
             let referendumNumber = indexFormatter.string(from: NSNumber(value: params.referendum.index))
 
+            let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+                for: params.referendum,
+                metadata: params.metadata,
+                locale: locale
+            )
+
             return .init(
                 referendumInfo: .init(
                     status: .init(name: statusName.uppercased(), kind: statusKind),
                     time: timeModel?.viewModel,
-                    title: params.metadata?.name,
+                    title: referendumTitle,
                     track: track,
                     referendumNumber: referendumNumber
                 ),
@@ -255,11 +276,17 @@ final class ReferendumsModelFactory {
             from: NSNumber(value: params.referendum.index)
         )
 
+        let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+            for: params.referendum,
+            metadata: params.metadata,
+            locale: locale
+        )
+
         return .init(
             referendumInfo: .init(
                 status: .init(name: title.uppercased(), kind: .positive),
                 time: timeModel?.viewModel,
-                title: params.metadata?.name,
+                title: referendumTitle,
                 track: nil,
                 referendumNumber: referendumNumber
             ),
