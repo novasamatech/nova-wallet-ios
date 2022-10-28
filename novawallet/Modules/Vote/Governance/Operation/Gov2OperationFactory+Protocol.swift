@@ -37,18 +37,29 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         enactmentsWrapper.addDependency(wrapper: referendumWrapper)
 
+        let inQueueStateWrapper = createTrackQueueOperation(
+            dependingOn: referendumWrapper.targetOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            requestFactory: requestFactory
+        )
+
+        inQueueStateWrapper.addDependency(operations: [referendumWrapper.targetOperation])
+
         let mapOperation = createReferendumMapOperation(
             dependingOn: referendumWrapper.targetOperation,
             additionalInfoOperation: additionalInfoWrapper.targetOperation,
-            enactmentsOperation: enactmentsWrapper.targetOperation
+            enactmentsOperation: enactmentsWrapper.targetOperation,
+            inQueueOperation: inQueueStateWrapper.targetOperation
         )
 
         mapOperation.addDependency(referendumWrapper.targetOperation)
         mapOperation.addDependency(additionalInfoWrapper.targetOperation)
         mapOperation.addDependency(enactmentsWrapper.targetOperation)
+        mapOperation.addDependency(inQueueStateWrapper.targetOperation)
 
         let dependencies = [codingFactoryOperation] + referendumWrapper.allOperations +
-            additionalInfoWrapper.allOperations + enactmentsWrapper.allOperations
+            additionalInfoWrapper.allOperations + inQueueStateWrapper.allOperations + enactmentsWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
@@ -80,15 +91,26 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         enactmentsWrapper.addDependency(operations: [referendumOperation])
 
+        let inQueueStateWrapper = createTrackQueueOperation(
+            dependingOn: referendumOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            requestFactory: requestFactory
+        )
+
+        inQueueStateWrapper.addDependency(operations: [referendumOperation])
+
         let mergeOperation = createReferendumMapOperation(
             dependingOn: referendumOperation,
             additionalInfoOperation: additionalInfoWrapper.targetOperation,
-            enactmentsOperation: enactmentsWrapper.targetOperation
+            enactmentsOperation: enactmentsWrapper.targetOperation,
+            inQueueOperation: inQueueStateWrapper.targetOperation
         )
 
         mergeOperation.addDependency(referendumOperation)
         mergeOperation.addDependency(additionalInfoWrapper.targetOperation)
         mergeOperation.addDependency(enactmentsWrapper.targetOperation)
+        mergeOperation.addDependency(inQueueStateWrapper.targetOperation)
 
         let mapOperation = ClosureOperation<ReferendumLocal> {
             guard let referendum = try mergeOperation.extractNoCancellableResultData().first else {
@@ -101,7 +123,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         mapOperation.addDependency(mergeOperation)
 
         let dependencies = [referendumOperation] + additionalInfoWrapper.allOperations +
-            enactmentsWrapper.allOperations + [mergeOperation]
+            enactmentsWrapper.allOperations + inQueueStateWrapper.allOperations + [mergeOperation]
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }

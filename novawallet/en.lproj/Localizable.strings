@@ -1072,3 +1072,4 @@
 "gov.stepped.decreasing" = "Stepped Decreasing";
 "gov.reciprocal" = "Reciprocal";
 "gov.unknown" = "Unknown";
+"gov.in.queue.counter" = "(%@ of %@)";
