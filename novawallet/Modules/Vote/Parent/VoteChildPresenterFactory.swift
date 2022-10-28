@@ -192,6 +192,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
+            sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager,
             logger: logger
         )
