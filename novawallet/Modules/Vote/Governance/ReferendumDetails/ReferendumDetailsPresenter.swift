@@ -364,6 +364,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         provideReferendumInfoViewModel()
         provideVotingDetails()
         provideTitleViewModel()
+        updateTimerIfNeeded()
     }
 
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal) {
