@@ -221,14 +221,14 @@ extension ReferendumVoteInteractor: ReferendumVoteInteractorInputProtocol {
     }
 
     func refreshLockDiff(
-        for votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
+        for trackVoting: ReferendumTracksVotingDistribution,
         newVote: ReferendumNewVote?,
         blockHash: Data?
     ) {
         clear(cancellable: &lockDiffCancellable)
 
         let wrapper = lockStateFactory.calculateLockStateDiff(
-            for: votes,
+            for: trackVoting,
             newVote: newVote,
             from: connection,
             runtimeProvider: runtimeProvider,

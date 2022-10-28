@@ -3,6 +3,22 @@ import RobinHood
 import SubstrateSdk
 import BigInt
 
+/**
+ *  Class that calculates:
+ *  Locked amount diff - maximum amount of tokens locked before vote is applied and after
+ *  Locked period diff - period of time needed to unlock all the tokens before vote is applied and after.
+ *
+ *  Locked amount calculation assumes that no unlocks can happen during voting (event if voting for the same referendum).
+ *  So the diff may not decrease.
+ *
+ *  Locked period is calculated first by maximizing estimation for unlock block of votes (only nonzero amount).
+ *  And then maximizing result between maximum period for votes and prior locks
+ *  (taking into account both casting votes and delegations).
+ *
+ *  Note that locked period calculation uses an estimation that takes maximum time when voting for particular referendum
+ *  may end.
+ */
+
 final class Gov2LockStateFactory {
     struct AdditionalInfo {
         let tracks: [Referenda.TrackId: Referenda.TrackInfo]
@@ -102,7 +118,7 @@ final class Gov2LockStateFactory {
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: fetchOperations)
     }
 
-    private func calculateLocking(
+    private func estimateVoteLockingPeriod(
         for referendumInfo: ReferendumInfo,
         accountVote: ReferendumAccountVoteLocal,
         additionalInfo: AdditionalInfo
@@ -142,8 +158,55 @@ final class Gov2LockStateFactory {
         }
     }
 
+    private func calculatePriorLockMax(from trackVotes: ReferendumTracksVotingDistribution) -> BlockNumber? {
+        let optCastingMax = trackVotes.votes.priorLocks.values
+            .filter { $0.amount > 0 }
+            .map(\.unlockAt)
+            .max()
+
+        let optDelegatingMax = trackVotes.votes.delegatings.values
+            .compactMap { $0.prior.amount > 0 ? $0.prior.unlockAt : nil }
+            .max()
+
+        if let castingMax = optCastingMax, let delegatingMax = optDelegatingMax {
+            return max(castingMax, delegatingMax)
+        } else if let castingMax = optCastingMax {
+            return castingMax
+        } else {
+            return optDelegatingMax
+        }
+    }
+
+    private func calculateMaxLock(
+        for referendums: [ReferendumIdLocal: ReferendumInfo],
+        trackVotes: ReferendumTracksVotingDistribution,
+        additions: AdditionalInfo
+    ) -> BlockNumber? {
+        let optVotesMax: Moment? = referendums.compactMap { referendumKeyValue in
+            let referendumIndex = referendumKeyValue.key
+            let referendum = referendumKeyValue.value
+
+            let accountVoting = trackVotes.votes
+            guard let vote = accountVoting.votes[referendumIndex], vote.totalBalance > 0 else {
+                return nil
+            }
+
+            return estimateVoteLockingPeriod(for: referendum, accountVote: vote, additionalInfo: additions)
+        }.max()
+
+        let optPriorMax = calculatePriorLockMax(from: trackVotes)
+
+        if let votesMax = optVotesMax, let priorMax = optPriorMax {
+            return max(votesMax, priorMax)
+        } else if let votesMax = optVotesMax {
+            return votesMax
+        } else {
+            return optPriorMax
+        }
+    }
+
     private func createStateDiffOperation(
-        for votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
+        for trackVotes: ReferendumTracksVotingDistribution,
         newVote: ReferendumNewVote?,
         referendumsOperation: BaseOperation<[ReferendumIdLocal: ReferendumInfo]>,
         additionalInfoOperation: BaseOperation<AdditionalInfo>
@@ -152,49 +215,43 @@ final class Gov2LockStateFactory {
             let referendums = try referendumsOperation.extractNoCancellableResultData()
             let additions = try additionalInfoOperation.extractNoCancellableResultData()
 
-            let oldAmount = votes.values.map(\.totalBalance).max() ?? 0
+            let oldAmount = trackVotes.trackLocks.map(\.amount).max() ?? 0
 
-            let oldPeriod: Moment? = referendums.compactMap { referendumKeyValue in
-                let referendumIndex = referendumKeyValue.key
-                let referendum = referendumKeyValue.value
-
-                guard let vote = votes[referendumIndex], vote.totalBalance > 0 else {
-                    return nil
-                }
-
-                return self.calculateLocking(for: referendum, accountVote: vote, additionalInfo: additions)
-            }.max()
+            let oldPeriod: Moment? = self.calculateMaxLock(
+                for: referendums,
+                trackVotes: trackVotes,
+                additions: additions
+            )
 
             let oldState = GovernanceLockState(maxLockedAmount: oldAmount, lockedUntil: oldPeriod)
 
             let newState: GovernanceLockState?
 
-            if let newVote = newVote {
-                let filteredVotes = votes.filter { $0.key != newVote.index }
-                let newAmount = (filteredVotes.values.map(\.totalBalance) + [newVote.voteAction.amount]).max() ?? 0
+            if let newVote = newVote, newVote.voteAction.amount > 0 {
+                let newAmount = max(oldAmount, newVote.voteAction.amount)
 
-                let newPeriod: Moment? = referendums.compactMap { referendumKeyValue in
-                    let referendumIndex = referendumKeyValue.key
-                    let referendum = referendumKeyValue.value
+                // as we replacing the vote we can immediately claim previos one so don't take into account
+                let filteredReferendums = referendums.filter { $0.key != newVote.index }
 
-                    let accountVote: ReferendumAccountVoteLocal
+                let periodWithoutReferendum = self.calculateMaxLock(
+                    for: filteredReferendums,
+                    trackVotes: trackVotes,
+                    additions: additions
+                )
 
-                    if referendumIndex == newVote.index {
-                        guard newVote.voteAction.amount > 0 else {
-                            return nil
-                        }
+                let newPeriod: Moment?
 
-                        accountVote = newVote.toAccountVote()
-                    } else {
-                        guard let vote = filteredVotes[referendumIndex], vote.totalBalance > 0 else {
-                            return nil
-                        }
-
-                        accountVote = vote
-                    }
-
-                    return self.calculateLocking(for: referendum, accountVote: accountVote, additionalInfo: additions)
-                }.max()
+                if
+                    let referendum = referendums[newVote.index],
+                    let periodWithNewVote = self.estimateVoteLockingPeriod(
+                        for: referendum,
+                        accountVote: newVote.toAccountVote(),
+                        additionalInfo: additions
+                    ) {
+                    newPeriod = periodWithoutReferendum.flatMap { max(periodWithNewVote, $0) } ?? periodWithNewVote
+                } else {
+                    newPeriod = periodWithoutReferendum
+                }
 
                 newState = GovernanceLockState(maxLockedAmount: newAmount, lockedUntil: newPeriod)
             } else {
@@ -208,7 +265,7 @@ final class Gov2LockStateFactory {
 
 extension Gov2LockStateFactory: GovernanceLockStateFactoryProtocol {
     func calculateLockStateDiff(
-        for votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
+        for trackVotes: ReferendumTracksVotingDistribution,
         newVote: ReferendumNewVote?,
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
@@ -216,7 +273,8 @@ extension Gov2LockStateFactory: GovernanceLockStateFactoryProtocol {
     ) -> CompoundOperationWrapper<GovernanceLockStateDiff> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        var allReferendumIds = Set(votes.keys)
+        let accountVoting = trackVotes.votes
+        var allReferendumIds = Set(accountVoting.votes.keys)
 
         if let newVoteIndex = newVote?.index {
             allReferendumIds.insert(newVoteIndex)
@@ -235,7 +293,7 @@ extension Gov2LockStateFactory: GovernanceLockStateFactoryProtocol {
         additionalInfoWrapper.addDependency(operations: [codingFactoryOperation])
 
         let calculationOperation = createStateDiffOperation(
-            for: votes,
+            for: trackVotes,
             newVote: newVote,
             referendumsOperation: referendumsWrapper.targetOperation,
             additionalInfoOperation: additionalInfoWrapper.targetOperation
