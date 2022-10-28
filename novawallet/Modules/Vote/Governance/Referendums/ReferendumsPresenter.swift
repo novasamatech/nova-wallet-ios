@@ -223,7 +223,9 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
         self.referendums = referendums.sorted(by: { $0.index < $1.index })
+
         updateView()
+        updateTimeModels()
     }
 
     func didReceiveSelectedChain(_ chain: ChainModel) {
