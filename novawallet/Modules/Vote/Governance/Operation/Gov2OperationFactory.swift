@@ -324,6 +324,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
                 votes: [:],
                 votedTracks: [:],
                 delegatings: [:],
+                priorLocks: [:],
                 maxVotesPerTrack: maxVotes
             )
 
@@ -340,7 +341,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
                         }
 
                         return newResult.addingVote(localVote, referendumId: ReferendumIdLocal(vote.pollIndex))
-                    }
+                    }.addingPriorLock(castingVoting.prior, track: track)
                 case let .delegating(delegatingVoting):
                     let delegatingLocal = ReferendumDelegatingLocal(remote: delegatingVoting)
                     return resultVoting.addingDelegating(delegatingLocal, trackId: track)

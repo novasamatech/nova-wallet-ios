@@ -74,20 +74,20 @@ final class ReferendumVoteSetupPresenter {
     }
 
     private func updateAvailableBalanceView() {
-        if let assetBalance = assetBalance {
-            let precision = chain.utilityAsset()?.displayInfo.assetPrecision ?? 0
-            let balanceDecimal = Decimal.fromSubstrateAmount(
-                assetBalance.freeInPlank,
-                precision: precision
-            ) ?? 0
+        let freeInPlank = assetBalance?.freeInPlank ?? 0
 
-            let viewModel = balanceViewModelFactory.balanceFromPrice(
-                balanceDecimal,
-                priceData: nil
-            ).value(for: selectedLocale).amount
+        let precision = chain.utilityAsset()?.displayInfo.assetPrecision ?? 0
+        let balanceDecimal = Decimal.fromSubstrateAmount(
+            freeInPlank,
+            precision: precision
+        ) ?? 0
 
-            view?.didReceiveBalance(viewModel: viewModel)
-        }
+        let viewModel = balanceViewModelFactory.balanceFromPrice(
+            balanceDecimal,
+            priceData: nil
+        ).value(for: selectedLocale).amount
+
+        view?.didReceiveBalance(viewModel: viewModel)
     }
 
     private func updateChainAssetViewModel() {
@@ -268,14 +268,14 @@ final class ReferendumVoteSetupPresenter {
     }
 
     private func refreshLockDiff() {
-        guard let votesResult = votesResult, let newVote = deriveNewVote() else {
+        guard let trackVoting = votesResult?.value, let newVote = deriveNewVote() else {
             return
         }
 
         interactor.refreshLockDiff(
-            for: votesResult.value?.votes.votes ?? [:],
+            for: trackVoting,
             newVote: newVote,
-            blockHash: votesResult.blockHash
+            blockHash: votesResult?.blockHash
         )
     }
 
