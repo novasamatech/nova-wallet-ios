@@ -42,6 +42,7 @@ final class ReferendumsModelFactory {
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let localizedPercentFormatter: LocalizableResource<NumberFormatter>
     let localizedIndexFormatter: LocalizableResource<NumberFormatter>
+    let localizedQuantityFormatter: LocalizableResource<NumberFormatter>
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
 
@@ -50,13 +51,15 @@ final class ReferendumsModelFactory {
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
-        indexFormatter: LocalizableResource<NumberFormatter>
+        indexFormatter: LocalizableResource<NumberFormatter>,
+        quantityFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         localizedPercentFormatter = percentFormatter
         localizedIndexFormatter = indexFormatter
+        localizedQuantityFormatter = quantityFormatter
     }
 
     private func provideCommonReferendumCellViewModel(
@@ -93,6 +96,33 @@ final class ReferendumsModelFactory {
         )
     }
 
+    private func createInQueueFormatting(
+        for position: ReferendumStateLocal.InQueuePosition?,
+        locale: Locale
+    ) -> String {
+        if let position = position {
+            let formatter = localizedQuantityFormatter.value(for: locale)
+            let positionString = formatter.string(from: (position.index + 1) as NSNumber) ?? ""
+            let totalString = formatter.string(from: position.total as NSNumber) ?? ""
+
+            let queueString = R.string.localizable.govInQueueCounter(
+                positionString,
+                totalString,
+                preferredLanguages: locale.rLanguages
+            )
+
+            let prefixTitle = R.string.localizable.governanceReferendumsStatusPreparingInqueue(
+                preferredLanguages: locale.rLanguages
+            )
+
+            return prefixTitle + " " + queueString
+        } else {
+            return R.string.localizable.governanceReferendumsStatusPreparingInqueue(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+    }
+
     private func providePreparingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Preparing,
         params: StatusParams,
@@ -105,9 +135,13 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
-        let title = model.inQueue ?
-            Strings.governanceReferendumsStatusPreparingInqueue(preferredLanguages: locale.rLanguages) :
-            Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
+        let title: String
+
+        if model.inQueue {
+            title = createInQueueFormatting(for: model.inQueuePosition, locale: locale)
+        } else {
+            title = Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
+        }
 
         switch model.voting {
         case let .supportAndVotes(supportAndVotes):
