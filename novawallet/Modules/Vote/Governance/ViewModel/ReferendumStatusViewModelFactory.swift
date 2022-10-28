@@ -102,6 +102,7 @@ final class ReferendumStatusViewModelFactory {
 }
 
 extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProtocol {
+    // swiftlint:disable:next function_body_length
     func createTimeViewModel(
         for referendum: ReferendumLocal,
         currentBlock: BlockNumber,
@@ -121,7 +122,7 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
                 return StatusTimeViewModel(viewModel: timeViewModel, timeInterval: nil) { _ in
                     timeViewModel
                 }
-            } else if currentBlock >= model.preparingPeriod {
+            } else if currentBlock >= model.preparingEnd {
                 return createTimeViewModel(
                     state: referendum.state,
                     atBlock: max(currentBlock, model.timeoutAt),
