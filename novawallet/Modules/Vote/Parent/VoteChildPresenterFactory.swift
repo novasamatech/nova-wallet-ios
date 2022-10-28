@@ -177,7 +177,10 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
 
+        let indexFormatter = NumberFormatter.index.localizableResource()
+
         let viewModelFactory = ReferendumsModelFactory(
+            referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
