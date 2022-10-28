@@ -7,6 +7,20 @@ struct ReferendumAccountVotingDistribution {
     let priorLocks: [TrackIdLocal: ConvictionVoting.PriorLock]
     let maxVotesPerTrack: UInt32
 
+    init(
+        votes: [ReferendumIdLocal: ReferendumAccountVoteLocal] = [:],
+        votedTracks: [TrackIdLocal: Set<ReferendumIdLocal>] = [:],
+        delegatings: [TrackIdLocal: ReferendumDelegatingLocal] = [:],
+        priorLocks: [TrackIdLocal: ConvictionVoting.PriorLock] = [:],
+        maxVotesPerTrack: UInt32
+    ) {
+        self.votes = votes
+        self.votedTracks = votedTracks
+        self.delegatings = delegatings
+        self.priorLocks = priorLocks
+        self.maxVotesPerTrack = maxVotesPerTrack
+    }
+
     func addingVote(
         _ vote: ReferendumAccountVoteLocal,
         referendumId: ReferendumIdLocal
