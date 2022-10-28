@@ -13,13 +13,14 @@ final class Gov2ActionOperationFactory {
         self.operationQueue = operationQueue
     }
 
+    // switftlint:disable:next function_body_length
     private func createCallFetchWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         referendum: ReferendumLocal,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<RuntimeCall<JSON>?> {
-        let callFetchClosure: (Data) -> CompoundOperationWrapper<RuntimeCall<JSON>?> = { hash in
+    ) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
+        let callFetchClosure: (Data) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> = { hash in
             let statusKeyParams: () throws -> [BytesCodable] = {
                 [BytesCodable(wrappedValue: hash)]
             }
@@ -51,7 +52,7 @@ final class Gov2ActionOperationFactory {
 
             callFetchWrapper.addDependency(wrapper: statusFetchWrapper)
 
-            let mappingOperation = ClosureOperation<RuntimeCall<JSON>?> {
+            let mappingOperation = ClosureOperation<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
                 let callKeys = try callKeyParams()
 
                 guard !callKeys.isEmpty else {
@@ -67,10 +68,12 @@ final class Gov2ActionOperationFactory {
 
                 let decoder = try codingFactory.createDecoder(from: response.wrappedValue)
 
-                return try decoder.read(
+                let call: RuntimeCall<JSON> = try decoder.read(
                     of: GenericType.call.name,
                     with: codingFactory.createRuntimeJsonContext().toRawContext()
                 )
+
+                return .concrete(call)
             }
 
             mappingOperation.addDependency(callFetchWrapper.targetOperation)
@@ -80,7 +83,7 @@ final class Gov2ActionOperationFactory {
             return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
         }
 
-        let callDecodingService = OperationCombiningService<RuntimeCall<JSON>?>(
+        let callDecodingService = OperationCombiningService<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             switch referendum.state.proposal {
@@ -88,13 +91,13 @@ final class Gov2ActionOperationFactory {
                 let wrapper = callFetchClosure(hash)
                 return [wrapper]
             case let .inline(value):
-                return [CompoundOperationWrapper.createWithResult(value)]
+                return [CompoundOperationWrapper.createWithResult(.concrete(value))]
             case let .lookup(lookup):
                 if lookup.len <= Self.maxFetchCallSize {
                     let wrapper = callFetchClosure(lookup.hash)
                     return [wrapper]
                 } else {
-                    return []
+                    return [CompoundOperationWrapper.createWithResult(.tooLong)]
                 }
             case .none, .unknown:
                 return []
@@ -102,7 +105,7 @@ final class Gov2ActionOperationFactory {
         }
 
         let callDecodingOperation = callDecodingService.longrunOperation()
-        let mappingOperation = ClosureOperation<RuntimeCall<JSON>?> {
+        let mappingOperation = ClosureOperation<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
             try callDecodingOperation.extractNoCancellableResultData().first ?? nil
         }
 
@@ -112,7 +115,7 @@ final class Gov2ActionOperationFactory {
     }
 
     private func createSpendAmountExtractionWrapper(
-        dependingOn callOperation: BaseOperation<RuntimeCall<JSON>?>,
+        dependingOn callOperation: BaseOperation<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         connection: JSONRPCEngine,
         requestFactory: StorageRequestFactoryProtocol
@@ -121,7 +124,7 @@ final class Gov2ActionOperationFactory {
         let fetchService = OperationCombiningService<ReferendumActionLocal.AmountSpendDetails?>(
             operationManager: operationManager
         ) {
-            guard let call = try callOperation.extractNoCancellableResultData() else {
+            guard let call = try callOperation.extractNoCancellableResultData()?.value else {
                 return [CompoundOperationWrapper.createWithResult(nil)]
             }
 

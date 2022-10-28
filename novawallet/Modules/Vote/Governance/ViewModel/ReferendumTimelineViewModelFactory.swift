@@ -246,26 +246,26 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             )
 
             models = [approved]
-        case let .rejected(atBlock):
+        case let .rejected(model):
             createdAt = nil
 
             let rejected = createVotedTerminal(
                 status: R.string.localizable.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages),
-                atBlock: atBlock,
+                atBlock: model.atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
                 locale: locale
             )
 
             models = [rejected]
-        case let .cancelled(atBlock):
+        case let .cancelled(model):
             createdAt = nil
 
             let cancelled = createVotedTerminal(
                 status: R.string.localizable.governanceReferendumsStatusCancelled(
                     preferredLanguages: locale.rLanguages
                 ),
-                atBlock: atBlock,
+                atBlock: model.atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
                 locale: locale
@@ -284,12 +284,12 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             )
 
             models = [killed]
-        case let .timedOut(atBlock):
+        case let .timedOut(model):
             createdAt = nil
 
             let timedOut = createVotedTerminal(
                 status: R.string.localizable.governanceReferendumsStatusTimedOut(preferredLanguages: locale.rLanguages),
-                atBlock: atBlock,
+                atBlock: model.atBlock,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
                 locale: locale

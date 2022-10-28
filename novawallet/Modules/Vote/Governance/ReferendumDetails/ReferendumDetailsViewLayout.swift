@@ -132,7 +132,7 @@ final class ReferendumDetailsViewLayout: UIView {
     func setFullDetails(hidden: Bool, locale: Locale) {
         fullDetailsView.isHidden = hidden
 
-        fullDetailsView.bind(title: R.string.localizable.commonFullDetails(preferredLanguages: locale.rLanguages))
+        fullDetailsView.bind(title: R.string.localizable.govFullDetails(preferredLanguages: locale.rLanguages))
     }
 
     private func createHeader(with text: String) -> StackTableHeaderCell {
