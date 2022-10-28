@@ -74,7 +74,7 @@ final class ReferendumVoteConfirmPresenter {
             return
         }
 
-        let viewModel = balanceViewModelFactory.spendingAmountFromPrice(
+        let viewModel = balanceViewModelFactory.balanceFromPrice(
             decimalAmount,
             priceData: priceData
         ).value(for: selectedLocale)
