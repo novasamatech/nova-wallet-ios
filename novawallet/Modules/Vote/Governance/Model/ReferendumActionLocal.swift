@@ -8,6 +8,20 @@ struct ReferendumActionLocal {
         let beneficiary: MultiAddress
     }
 
+    enum Call<C> {
+        case concrete(C)
+        case tooLong
+
+        var value: C? {
+            switch self {
+            case let .concrete(call):
+                return call
+            case .tooLong:
+                return nil
+            }
+        }
+    }
+
     let amountSpendDetails: AmountSpendDetails?
-    let call: RuntimeCall<JSON>?
+    let call: Call<RuntimeCall<JSON>>?
 }

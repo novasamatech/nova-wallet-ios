@@ -44,6 +44,25 @@ struct ReferendumLocal {
             return nil
         }
     }
+
+    var deposit: BigUInt? {
+        switch state {
+        case let .preparing(model):
+            return model.deposit
+        case let .deciding(model):
+            return model.deposit
+        case let .approved(model):
+            return model.deposit
+        case let .rejected(model):
+            return model.deposit
+        case let .cancelled(model):
+            return model.deposit
+        case let .timedOut(model):
+            return model.deposit
+        case .killed, .executed:
+            return nil
+        }
+    }
 }
 
 struct SupportAndVotesLocal {
@@ -103,6 +122,7 @@ enum ReferendumStateLocal {
         let since: BlockNumber
         let period: Moment
         let confirmationUntil: BlockNumber?
+        let deposit: BigUInt?
 
         var rejectedAt: BlockNumber {
             since + period
@@ -131,14 +151,20 @@ enum ReferendumStateLocal {
     struct Approved {
         let since: BlockNumber
         let whenEnactment: BlockNumber?
+        let deposit: BigUInt?
+    }
+
+    struct NotApproved {
+        let atBlock: BlockNumber
+        let deposit: BigUInt?
     }
 
     case preparing(model: Preparing)
     case deciding(model: Deciding)
     case approved(model: Approved)
-    case rejected(atBlock: Moment)
-    case cancelled(atBlock: Moment)
-    case timedOut(atBlock: Moment)
+    case rejected(model: NotApproved)
+    case cancelled(model: NotApproved)
+    case timedOut(model: NotApproved)
     case killed(atBlock: Moment)
     case executed
 
