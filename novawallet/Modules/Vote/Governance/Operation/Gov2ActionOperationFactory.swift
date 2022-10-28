@@ -13,7 +13,7 @@ final class Gov2ActionOperationFactory {
         self.operationQueue = operationQueue
     }
 
-    // switftlint:disable:next function_body_length
+    // swiftlint:disable:next function_body_length
     private func createCallFetchWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         referendum: ReferendumLocal,
@@ -75,12 +75,16 @@ final class Gov2ActionOperationFactory {
 
                 let decoder = try codingFactory.createDecoder(from: response.wrappedValue)
 
-                let call: RuntimeCall<JSON> = try decoder.read(
+                let optCall: RuntimeCall<JSON>? = try? decoder.read(
                     of: GenericType.call.name,
                     with: codingFactory.createRuntimeJsonContext().toRawContext()
                 )
 
-                return .concrete(call)
+                if let call = optCall {
+                    return .concrete(call)
+                } else {
+                    return nil
+                }
             }
 
             mappingOperation.addDependency(callFetchWrapper.targetOperation)
