@@ -106,7 +106,7 @@ extension ReferendumTimelineView: BindableView {
 
     enum StatusSubtitle {
         case date(String)
-        case interval(ReferendumInfoView.Model.Time)
+        case interval(ReferendumInfoView.Time)
     }
 
     func bind(viewModel: [Model]) {
@@ -114,7 +114,7 @@ extension ReferendumTimelineView: BindableView {
         setNeedsLayout()
     }
 
-    func bind(activeTimeViewModel: ReferendumInfoView.Model.Time?) {
+    func bind(activeTimeViewModel: ReferendumInfoView.Time?) {
         guard let activeView = statusViews.last as? GenericMultiValueView<IconDetailsView> else {
             return
         }

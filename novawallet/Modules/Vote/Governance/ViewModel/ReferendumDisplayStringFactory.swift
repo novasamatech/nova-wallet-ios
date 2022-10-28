@@ -69,7 +69,7 @@ extension ReferendumDisplayStringFactoryProtocol {
         let voteSideString: String
         let voteSideStyle: YourVoteView.Style
 
-        if vote.ayes > 0 {
+        if vote.hasAyeVotes {
             voteSideString = R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages)
             voteSideStyle = .ayeInverse
         } else {

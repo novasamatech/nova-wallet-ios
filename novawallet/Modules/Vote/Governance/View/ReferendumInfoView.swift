@@ -19,6 +19,7 @@ final class ReferendumInfoView: UIView {
         $0.iconDetailsView.detailsLabel.apply(style: .track)
         $0.backgroundView.apply(style: .referendum)
         $0.iconDetailsView.detailsLabel.numberOfLines = 1
+        $0.backgroundView.cornerRadius = 7
     }
 
     let numberLabel: BorderedLabelView = .create {
@@ -26,6 +27,7 @@ final class ReferendumInfoView: UIView {
         $0.contentInsets = .init(top: 4, left: 6, bottom: 4, right: 8)
         $0.backgroundView.apply(style: .referendum)
         $0.titleLabel.numberOfLines = 1
+        $0.backgroundView.cornerRadius = 7
     }
 
     private var trackImageViewModel: ImageViewModelProtocol?
@@ -63,10 +65,16 @@ final class ReferendumInfoView: UIView {
                 trackInformation
             ]
         )
+
         content.setCustomSpacing(12, after: titleLabel)
+
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+
+        trackInformation.snp.makeConstraints {
+            $0.height.equalTo(22.0)
         }
     }
 }
@@ -78,27 +86,27 @@ extension ReferendumInfoView {
         let title: String?
         let track: Track?
         let referendumNumber: String?
+    }
 
-        struct Time: Equatable {
-            let titleIcon: TitleIconViewModel
-            let isUrgent: Bool
-        }
+    struct Time: Equatable {
+        let titleIcon: TitleIconViewModel
+        let isUrgent: Bool
+    }
 
-        struct Track {
-            let title: String
-            let icon: ImageViewModelProtocol?
-        }
+    struct Track {
+        let title: String
+        let icon: ImageViewModelProtocol?
+    }
 
-        struct Status {
-            let name: String
-            let kind: StatusKind
-        }
+    struct Status {
+        let name: String
+        let kind: StatusKind
+    }
 
-        enum StatusKind {
-            case positive
-            case negative
-            case neutral
-        }
+    enum StatusKind {
+        case positive
+        case negative
+        case neutral
     }
 
     func bind(viewModel: Model) {
@@ -144,7 +152,7 @@ extension ReferendumInfoView {
         }
     }
 
-    func bind(timeModel: Model.Time?) {
+    func bind(timeModel: Time?) {
         if let time = timeModel {
             timeView.bind(viewModel: time.titleIcon)
             timeView.apply(style: time.isUrgent ? .activeTimeView : .timeView)
