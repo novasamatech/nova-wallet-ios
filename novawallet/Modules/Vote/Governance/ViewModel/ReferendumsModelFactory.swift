@@ -63,7 +63,7 @@ final class ReferendumsModelFactory {
     }
 
     private func provideCommonReferendumCellViewModel(
-        status: ReferendumInfoView.Model.Status,
+        status: ReferendumInfoView.Status,
         params: StatusParams,
         locale: Locale
     ) -> ReferendumView.Model {
@@ -251,7 +251,7 @@ final class ReferendumsModelFactory {
             let statusName = isPassing ?
                 Strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
                 Strings.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
-            let statusKind: ReferendumInfoView.Model.StatusKind = isPassing ? .positive : .negative
+            let statusKind: ReferendumInfoView.StatusKind = isPassing ? .positive : .negative
             let yourVotesModel = createVotesViewModel(
                 votes: params.votes,
                 chainAsset: params.chainInfo.chain.utilityAsset(),
@@ -493,7 +493,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         params: StatusParams,
         locale: Locale
     ) -> ReferendumView.Model {
-        let status: ReferendumInfoView.Model.Status
+        let status: ReferendumInfoView.Status
         switch state {
         case let .preparing(model):
             return providePreparingReferendumCellViewModel(model, params: params, locale: locale)

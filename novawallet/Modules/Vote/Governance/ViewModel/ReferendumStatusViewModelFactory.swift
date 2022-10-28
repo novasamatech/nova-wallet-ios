@@ -65,13 +65,13 @@ final class ReferendumStatusViewModelFactory {
         timeStringProvider: (String, [String]?) -> String,
         state: ReferendumStateLocal,
         locale: Locale
-    ) -> ReferendumInfoView.Model.Time? {
+    ) -> ReferendumInfoView.Time? {
         guard let localizedDaysHours = time.localizedDaysOrTime(for: locale) else {
             return nil
         }
         let timeString = timeStringProvider(localizedDaysHours, locale.rLanguages)
         let timeModel = isUrgent(state: state, time: time).map { isUrgent in
-            ReferendumInfoView.Model.Time(
+            ReferendumInfoView.Time(
                 titleIcon: .init(
                     title: timeString,
                     icon: isUrgent ? R.image.iconFire() : R.image.iconLightPending()
@@ -115,7 +115,7 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
         case let .preparing(model):
             if model.deposit == nil {
                 let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
-                let timeViewModel = ReferendumInfoView.Model.Time(
+                let timeViewModel = ReferendumInfoView.Time(
                     titleIcon: .init(title: title, icon: R.image.iconLightPending()),
                     isUrgent: false
                 )
