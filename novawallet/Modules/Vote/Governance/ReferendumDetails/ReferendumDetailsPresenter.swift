@@ -39,6 +39,8 @@ final class ReferendumDetailsPresenter {
     init(
         referendum: ReferendumLocal,
         chain: ChainModel,
+        accountVotes: ReferendumAccountVoteLocal?,
+        metadata: ReferendumMetadataLocal?,
         interactor: ReferendumDetailsInteractorInputProtocol,
         wireframe: ReferendumDetailsWireframeProtocol,
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
@@ -63,6 +65,8 @@ final class ReferendumDetailsPresenter {
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.referendum = referendum
+        self.accountVotes = accountVotes
+        referendumMetadata = metadata
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -245,7 +249,7 @@ final class ReferendumDetailsPresenter {
     }
 
     private func provideFullDetailsViewModel() {
-        let shouldHide = actionDetails == nil
+        let shouldHide = actionDetails == nil || referendum.state.completed
         view?.didReceive(shouldHideFullDetails: shouldHide)
     }
 
@@ -364,6 +368,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         provideReferendumInfoViewModel()
         provideVotingDetails()
         provideTitleViewModel()
+        updateTimerIfNeeded()
     }
 
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal) {

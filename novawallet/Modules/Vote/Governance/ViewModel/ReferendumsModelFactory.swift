@@ -42,22 +42,28 @@ final class ReferendumsModelFactory {
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let localizedPercentFormatter: LocalizableResource<NumberFormatter>
     let localizedIndexFormatter: LocalizableResource<NumberFormatter>
+    let localizedQuantityFormatter: LocalizableResource<NumberFormatter>
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
 
     init(
+        referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
-        indexFormatter: LocalizableResource<NumberFormatter>
+        indexFormatter: LocalizableResource<NumberFormatter>,
+        quantityFormatter: LocalizableResource<NumberFormatter>
     ) {
+        self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         localizedPercentFormatter = percentFormatter
         localizedIndexFormatter = indexFormatter
+        localizedQuantityFormatter = quantityFormatter
     }
 
     private func provideCommonReferendumCellViewModel(
-        status: ReferendumInfoView.Model.Status,
+        status: ReferendumInfoView.Status,
         params: StatusParams,
         locale: Locale
     ) -> ReferendumView.Model {
@@ -71,17 +77,50 @@ final class ReferendumsModelFactory {
             from: NSNumber(value: params.referendum.index)
         )
 
+        let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+            for: params.referendum,
+            metadata: params.metadata,
+            locale: locale
+        )
+
         return .init(
             referendumInfo: .init(
                 status: status,
                 time: nil,
-                title: params.metadata?.name ?? "",
+                title: referendumTitle,
                 track: nil,
                 referendumNumber: referendumNumber
             ),
             progress: nil,
             yourVotes: yourVotesModel
         )
+    }
+
+    private func createInQueueFormatting(
+        for position: ReferendumStateLocal.InQueuePosition?,
+        locale: Locale
+    ) -> String {
+        if let position = position {
+            let formatter = localizedQuantityFormatter.value(for: locale)
+            let positionString = formatter.string(from: (position.index + 1) as NSNumber) ?? ""
+            let totalString = formatter.string(from: position.total as NSNumber) ?? ""
+
+            let queueString = R.string.localizable.govInQueueCounter(
+                positionString,
+                totalString,
+                preferredLanguages: locale.rLanguages
+            )
+
+            let prefixTitle = R.string.localizable.governanceReferendumsStatusPreparingInqueue(
+                preferredLanguages: locale.rLanguages
+            )
+
+            return prefixTitle + " " + queueString
+        } else {
+            return R.string.localizable.governanceReferendumsStatusPreparingInqueue(
+                preferredLanguages: locale.rLanguages
+            )
+        }
     }
 
     private func providePreparingReferendumCellViewModel(
@@ -96,9 +135,13 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
-        let title = model.inQueue ?
-            Strings.governanceReferendumsStatusPreparingInqueue(preferredLanguages: locale.rLanguages) :
-            Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
+        let title: String
+
+        if model.inQueue {
+            title = createInQueueFormatting(for: model.inQueuePosition, locale: locale)
+        } else {
+            title = Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
+        }
 
         switch model.voting {
         case let .supportAndVotes(supportAndVotes):
@@ -124,11 +167,17 @@ final class ReferendumsModelFactory {
                 from: NSNumber(value: params.referendum.index)
             )
 
+            let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+                for: params.referendum,
+                metadata: params.metadata,
+                locale: locale
+            )
+
             return .init(
                 referendumInfo: .init(
                     status: .init(name: title.uppercased(), kind: .neutral),
                     time: timeModel?.viewModel,
-                    title: params.metadata?.name ?? "",
+                    title: referendumTitle,
                     track: track,
                     referendumNumber: referendumNumber
                 ),
@@ -143,9 +192,7 @@ final class ReferendumsModelFactory {
         chainAsset: AssetModel?,
         locale: Locale
     ) -> YourVotesView.Model? {
-        guard let votes = votes,
-              let chainAsset = chainAsset,
-              votes.ayes + votes.nays > 0 else {
+        guard let votes = votes, let chainAsset = chainAsset else {
             return nil
         }
 
@@ -164,12 +211,12 @@ final class ReferendumsModelFactory {
                 preferredLanguages: locale.rLanguages
             )
         }
-        let ayesModel = votes.ayes > 0 ? YourVoteView.Model(
+        let ayesModel = votes.hasAyeVotes ? YourVoteView.Model(
             title: Strings.governanceAye(preferredLanguages: locale.rLanguages).uppercased(),
             description: formatVotes(votes.ayes),
             style: .aye
         ) : nil
-        let naysModel = votes.nays > 0 ? YourVoteView.Model(
+        let naysModel = votes.hasNayVotes ? YourVoteView.Model(
             title: Strings.governanceNay(preferredLanguages: locale.rLanguages).uppercased(),
             description: formatVotes(votes.nays),
             style: .nay
@@ -204,7 +251,7 @@ final class ReferendumsModelFactory {
             let statusName = isPassing ?
                 Strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
                 Strings.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
-            let statusKind: ReferendumInfoView.Model.StatusKind = isPassing ? .positive : .negative
+            let statusKind: ReferendumInfoView.StatusKind = isPassing ? .positive : .negative
             let yourVotesModel = createVotesViewModel(
                 votes: params.votes,
                 chainAsset: params.chainInfo.chain.utilityAsset(),
@@ -220,11 +267,17 @@ final class ReferendumsModelFactory {
             let indexFormatter = localizedIndexFormatter.value(for: locale)
             let referendumNumber = indexFormatter.string(from: NSNumber(value: params.referendum.index))
 
+            let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+                for: params.referendum,
+                metadata: params.metadata,
+                locale: locale
+            )
+
             return .init(
                 referendumInfo: .init(
                     status: .init(name: statusName.uppercased(), kind: statusKind),
                     time: timeModel?.viewModel,
-                    title: params.metadata?.name,
+                    title: referendumTitle,
                     track: track,
                     referendumNumber: referendumNumber
                 ),
@@ -257,11 +310,17 @@ final class ReferendumsModelFactory {
             from: NSNumber(value: params.referendum.index)
         )
 
+        let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+            for: params.referendum,
+            metadata: params.metadata,
+            locale: locale
+        )
+
         return .init(
             referendumInfo: .init(
                 status: .init(name: title.uppercased(), kind: .positive),
                 time: timeModel?.viewModel,
-                title: params.metadata?.name,
+                title: referendumTitle,
                 track: nil,
                 referendumNumber: referendumNumber
             ),
@@ -275,7 +334,7 @@ final class ReferendumsModelFactory {
         chain: ChainModel,
         currentBlock: BlockNumber,
         locale: Locale
-    ) -> TitleIconViewModel? {
+    ) -> VotingProgressView.SupportModel? {
         guard
             let chainAsset = chain.utilityAsset(),
             let supportThreshold = supportAndVotes.supportFunction?.calculateThreshold(for: currentBlock) else {
@@ -314,7 +373,9 @@ final class ReferendumsModelFactory {
             preferredLanguages: locale.rLanguages
         )
 
-        return .init(title: text, icon: image)
+        let titleIcon = TitleIconViewModel(title: text, icon: image)
+
+        return .init(titleIcon: titleIcon, completed: isCompleted)
     }
 
     private func createVotingApprovalProgressViewModel(
@@ -432,7 +493,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         params: StatusParams,
         locale: Locale
     ) -> ReferendumView.Model {
-        let status: ReferendumInfoView.Model.Status
+        let status: ReferendumInfoView.Status
         switch state {
         case let .preparing(model):
             return providePreparingReferendumCellViewModel(model, params: params, locale: locale)

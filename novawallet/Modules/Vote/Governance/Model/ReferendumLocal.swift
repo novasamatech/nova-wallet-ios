@@ -129,6 +129,11 @@ enum ReferendumStateLocal {
         }
     }
 
+    struct InQueuePosition {
+        let index: Int
+        let total: Int
+    }
+
     struct Preparing {
         let track: GovernanceTrackLocal
         let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
@@ -138,6 +143,7 @@ enum ReferendumStateLocal {
         let preparingPeriod: Moment
         let timeoutPeriod: Moment
         let inQueue: Bool
+        let inQueuePosition: InQueuePosition?
 
         var preparingEnd: BlockNumber {
             since + preparingPeriod

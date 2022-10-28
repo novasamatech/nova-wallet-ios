@@ -107,7 +107,10 @@ final class VoteChildPresenterFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let referendumOperationFactory = Gov2OperationFactory(requestFactory: requestFactory)
+        let referendumOperationFactory = Gov2OperationFactory(
+            requestFactory: requestFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
 
         let serviceFactory = GovernanceServiceFactory(
             chainRegisty: chainRegistry,
@@ -177,11 +180,15 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
 
+        let indexFormatter = NumberFormatter.index.localizableResource()
+
         let viewModelFactory = ReferendumsModelFactory(
+            referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            percentFormatter: NumberFormatter.percentHalfEven.localizableResource(),
-            indexFormatter: NumberFormatter.index.localizableResource()
+            percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
+            indexFormatter: NumberFormatter.index.localizableResource(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
         let presenter = ReferendumsPresenter(
@@ -189,6 +196,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
+            sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager,
             logger: logger
         )

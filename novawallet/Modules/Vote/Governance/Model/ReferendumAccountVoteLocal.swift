@@ -5,6 +5,24 @@ enum ReferendumAccountVoteLocal {
     case split(ConvictionVoting.AccountVoteSplit)
     case standard(ConvictionVoting.AccountVoteStandard)
 
+    var hasAyeVotes: Bool {
+        switch self {
+        case let .split(voting):
+            return voting.aye > 0
+        case let .standard(voting):
+            return voting.vote.aye
+        }
+    }
+
+    var hasNayVotes: Bool {
+        switch self {
+        case let .split(voting):
+            return voting.nay > 0
+        case let .standard(voting):
+            return !voting.vote.aye
+        }
+    }
+
     /// post conviction votes for referendum
     var ayes: BigUInt {
         switch self {

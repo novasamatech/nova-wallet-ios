@@ -30,7 +30,7 @@ final class TimelineRow: RoundedView, BindableView {
         contentView.bind(viewModel: viewModel)
     }
 
-    func bind(activeTimeViewModel: ReferendumInfoView.Model.Time?) {
+    func bind(activeTimeViewModel: ReferendumInfoView.Time?) {
         contentView.bind(activeTimeViewModel: activeTimeViewModel)
     }
 
