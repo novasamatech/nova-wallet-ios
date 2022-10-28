@@ -1069,3 +1069,7 @@
 "gov.parameters.json" = "Параметры вызова";
 "common.copy" = "Копировать";
 "common.too.long.preview" = "Слишком большой размер для просмотра";
+"gov.linear.decreasing" = "Линейное убывание";
+"gov.stepped.decreasing" = "Ступенчатое убывание";
+"gov.reciprocal" = "Обратное линейное убывание";
+"gov.unknown" = "Неизвестно";

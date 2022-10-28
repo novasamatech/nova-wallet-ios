@@ -1,3 +1,5 @@
+import Foundation
+
 extension ReferendumStateLocal {
     var approvalCurve: Referenda.Curve? {
         switch voting {
@@ -46,17 +48,16 @@ extension ReferendumStateLocal {
 }
 
 extension Referenda.Curve {
-    // TODO: localize?
-    var displayName: String {
+    func displayName(for locale: Locale) -> String {
         switch self {
         case .linearDecreasing:
-            return "Linear Decreasing"
+            return R.string.localizable.govLinearDecreasing(preferredLanguages: locale.rLanguages)
         case .reciprocal:
-            return "Reciprocal"
+            return R.string.localizable.govReciprocal(preferredLanguages: locale.rLanguages)
         case .steppedDecreasing:
-            return "Stepped Decreasing"
+            return R.string.localizable.govSteppedDecreasing(preferredLanguages: locale.rLanguages)
         case .unknown:
-            return "Unknown"
+            return R.string.localizable.govUnknown(preferredLanguages: locale.rLanguages)
         }
     }
 }
