@@ -33,6 +33,7 @@ struct ReferendumDetailsViewFactory {
 
         let indexFormatter = NumberFormatter.index.localizableResource()
         let referendumViewModelFactory = ReferendumsModelFactory(
+            referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
