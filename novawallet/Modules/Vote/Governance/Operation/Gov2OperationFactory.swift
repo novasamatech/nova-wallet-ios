@@ -27,9 +27,11 @@ final class Gov2OperationFactory {
     }
 
     let requestFactory: StorageRequestFactoryProtocol
+    let operationQueue: OperationQueue
 
-    init(requestFactory: StorageRequestFactoryProtocol) {
+    init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
         self.requestFactory = requestFactory
+        self.operationQueue = operationQueue
     }
 
     func createEnacmentTimeFetchWrapper(
@@ -87,12 +89,14 @@ final class Gov2OperationFactory {
     func createReferendumMapOperation(
         dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: ReferendumInfo]>,
         additionalInfoOperation: BaseOperation<AdditionalInfo>,
-        enactmentsOperation: BaseOperation<[ReferendumIdLocal: BlockNumber]>
+        enactmentsOperation: BaseOperation<[ReferendumIdLocal: BlockNumber]>,
+        inQueueOperation: BaseOperation<[Referenda.TrackId: [Referenda.TrackQueueItem]]>
     ) -> BaseOperation<[ReferendumLocal]> {
         ClosureOperation<[ReferendumLocal]> {
             let remoteReferendums = try referendumOperation.extractNoCancellableResultData()
             let additionalInfo = try additionalInfoOperation.extractNoCancellableResultData()
             let enactments = try enactmentsOperation.extractNoCancellableResultData()
+            let inQueueState = try inQueueOperation.extractNoCancellableResultData()
 
             let mappingFactory = Gov2LocalMappingFactory()
 
@@ -104,7 +108,8 @@ final class Gov2OperationFactory {
                     referendum: remoteReferendum,
                     index: Referenda.ReferendumIndex(referendumIndex),
                     additionalInfo: additionalInfo,
-                    enactmentBlock: enactments[referendumIndex]
+                    enactmentBlock: enactments[referendumIndex],
+                    inQueueState: inQueueState
                 )
             }
         }
@@ -184,5 +189,78 @@ final class Gov2OperationFactory {
         }
 
         return maxVotesOperation
+    }
+
+    func createTrackQueueOperation(
+        dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: ReferendumInfo]>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        requestFactory: StorageRequestFactoryProtocol
+    ) -> CompoundOperationWrapper<[Referenda.TrackId: [Referenda.TrackQueueItem]]> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let fetchOperation: BaseOperation<[[Referenda.TrackId: [Referenda.TrackQueueItem]]]> =
+            OperationCombiningService(operationManager: OperationManager(operationQueue: operationQueue)) {
+                let referendums = try referendumOperation.extractNoCancellableResultData()
+
+                let trackIdsList: [Referenda.TrackId] = referendums.compactMap { keyValue in
+                    let referendum = keyValue.value
+
+                    switch referendum {
+                    case let .ongoing(status):
+                        if status.inQueue {
+                            return status.track
+                        } else {
+                            return nil
+                        }
+                    default:
+                        return nil
+                    }
+                }
+
+                let keyParams = Array(Set(trackIdsList).map { StringScaleMapper(value: $0) })
+
+                guard !keyParams.isEmpty else { return [] }
+
+                let wrapper: CompoundOperationWrapper<[StorageResponse<[Referenda.TrackQueueItem]>]> =
+                    requestFactory.queryItems(
+                        engine: connection,
+                        keyParams: { keyParams },
+                        factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                        storagePath: Referenda.trackQueue
+                    )
+
+                let mappingOperation = ClosureOperation<[Referenda.TrackId: [Referenda.TrackQueueItem]]> {
+                    let responses = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                    let initValue = [Referenda.TrackId: [Referenda.TrackQueueItem]]()
+                    return zip(keyParams, responses).reduce(into: initValue) { accum, trackQueue in
+                        accum[trackQueue.0.value] = trackQueue.1.value
+                    }
+                }
+
+                mappingOperation.addDependency(wrapper.targetOperation)
+
+                let result = CompoundOperationWrapper(
+                    targetOperation: mappingOperation,
+                    dependencies: wrapper.allOperations
+                )
+
+                return [result]
+
+            }.longrunOperation()
+
+        fetchOperation.addDependency(codingFactoryOperation)
+
+        let mappingOperation = ClosureOperation<[Referenda.TrackId: [Referenda.TrackQueueItem]]> {
+            try fetchOperation.extractNoCancellableResultData().first ?? [:]
+        }
+
+        mappingOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mappingOperation,
+            dependencies: [codingFactoryOperation, fetchOperation]
+        )
     }
 }

@@ -49,8 +49,10 @@ final class Gov2LocalMappingFactory {
 
     private func createPreparingState(
         from status: ReferendumInfo.OngoingStatus,
+        index: Referenda.ReferendumIndex,
         track: Referenda.TrackInfo,
-        additionalInfo: Gov2OperationFactory.AdditionalInfo
+        additionalInfo: Gov2OperationFactory.AdditionalInfo,
+        trackQueue: [Referenda.TrackQueueItem]?
     ) -> ReferendumStateLocal {
         let approvalFunction = Gov2LocalDecidingFunction(
             curve: track.minApproval,
@@ -75,6 +77,17 @@ final class Gov2LocalMappingFactory {
 
         let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
 
+        let inQueuePosition: ReferendumStateLocal.InQueuePosition?
+
+        if
+            status.inQueue,
+            let queue = trackQueue,
+            let position = queue.firstIndex(where: { $0.referendum == index }) {
+            inQueuePosition = .init(index: position, total: queue.count)
+        } else {
+            inQueuePosition = nil
+        }
+
         let preparing = ReferendumStateLocal.Preparing(
             track: localTrack,
             proposal: status.proposal,
@@ -83,7 +96,8 @@ final class Gov2LocalMappingFactory {
             since: status.submitted,
             preparingPeriod: track.preparePeriod,
             timeoutPeriod: additionalInfo.undecidingTimeout,
-            inQueue: status.inQueue
+            inQueue: status.inQueue,
+            inQueuePosition: inQueuePosition
         )
 
         return .preparing(model: preparing)
@@ -92,7 +106,8 @@ final class Gov2LocalMappingFactory {
     private func createOngoingReferendumState(
         from status: ReferendumInfo.OngoingStatus,
         index: Referenda.ReferendumIndex,
-        additionalInfo: Gov2OperationFactory.AdditionalInfo
+        additionalInfo: Gov2OperationFactory.AdditionalInfo,
+        trackQueue: [Referenda.TrackQueueItem]?
     ) -> ReferendumLocal? {
         guard let track = additionalInfo.tracks[status.track] else {
             return nil
@@ -110,8 +125,10 @@ final class Gov2LocalMappingFactory {
         } else {
             state = createPreparingState(
                 from: status,
+                index: index,
                 track: track,
-                additionalInfo: additionalInfo
+                additionalInfo: additionalInfo,
+                trackQueue: trackQueue
             )
         }
 
@@ -123,11 +140,17 @@ final class Gov2LocalMappingFactory {
         referendum: ReferendumInfo,
         index: Referenda.ReferendumIndex,
         additionalInfo: Gov2OperationFactory.AdditionalInfo,
-        enactmentBlock: BlockNumber?
+        enactmentBlock: BlockNumber?,
+        inQueueState: [Referenda.TrackId: [Referenda.TrackQueueItem]]
     ) -> ReferendumLocal? {
         switch referendum {
         case let .ongoing(status):
-            return createOngoingReferendumState(from: status, index: index, additionalInfo: additionalInfo)
+            return createOngoingReferendumState(
+                from: status,
+                index: index,
+                additionalInfo: additionalInfo,
+                trackQueue: inQueueState[status.track]
+            )
         case let .approved(status):
             let state: ReferendumStateLocal
 

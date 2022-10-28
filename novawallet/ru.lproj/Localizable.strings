@@ -1073,3 +1073,4 @@
 "gov.stepped.decreasing" = "Ступенчатое убывание";
 "gov.reciprocal" = "Обратное линейное убывание";
 "gov.unknown" = "Неизвестно";
+"gov.in.queue.counter" = "(%@ из %@)";

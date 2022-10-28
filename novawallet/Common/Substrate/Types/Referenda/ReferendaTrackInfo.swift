@@ -26,4 +26,16 @@ extension Referenda {
             info = try container.decode(TrackInfo.self)
         }
     }
+
+    struct TrackQueueItem: Decodable {
+        let referendum: Referenda.ReferendumIndex
+        let votes: BigUInt
+
+        public init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            referendum = try container.decode(StringScaleMapper<Referenda.ReferendumIndex>.self).value
+            votes = try container.decode(StringScaleMapper<BigUInt>.self).value
+        }
+    }
 }

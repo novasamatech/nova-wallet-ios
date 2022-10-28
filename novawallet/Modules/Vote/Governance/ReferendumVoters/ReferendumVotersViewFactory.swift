@@ -71,7 +71,11 @@ struct ReferendumVotersViewFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let referendumsOperationFactory = Gov2OperationFactory(requestFactory: requestFactory)
+        let referendumsOperationFactory = Gov2OperationFactory(
+            requestFactory: requestFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let identityOperationFactory = IdentityOperationFactory(
             requestFactory: requestFactory,
             emptyIdentitiesWhenNoStorage: true
