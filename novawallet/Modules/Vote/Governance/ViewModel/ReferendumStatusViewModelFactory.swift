@@ -28,6 +28,7 @@ extension ReferendumStatusViewModelFactoryProtocol {
 }
 
 final class ReferendumStatusViewModelFactory {
+    // swiftlint:disable:next function_parameter_count
     private func createTimeViewModel(
         state: ReferendumStateLocal,
         atBlock: Moment,
