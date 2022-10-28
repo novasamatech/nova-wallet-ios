@@ -9,6 +9,7 @@ final class ReferendumsPresenter {
     let wireframe: ReferendumsWireframeProtocol
     let viewModelFactory: ReferendumsModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let sorting: ReferendumsSorting
     let logger: LoggerProtocol
 
     private var freeBalance: BigUInt?
@@ -35,6 +36,7 @@ final class ReferendumsPresenter {
         wireframe: ReferendumsWireframeProtocol,
         viewModelFactory: ReferendumsModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
+        sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -42,8 +44,25 @@ final class ReferendumsPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
+        self.sorting = sorting
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    func clearOnAssetSwitch() {
+        invalidateTimer()
+
+        freeBalance = nil
+        price = nil
+        referendums = nil
+        referendumsMetadata = nil
+        votes = nil
+        blockNumber = nil
+        blockTime = nil
+        maxStatusTimeInterval = nil
+        timeModels = nil
+
+        view?.update(model: .init(sections: []))
     }
 
     private func provideChainBalance() {
@@ -222,7 +241,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums.sorted(by: { $0.index < $1.index })
+        self.referendums = referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
 
         updateView()
         updateTimeModels()
@@ -283,8 +302,8 @@ extension ReferendumsPresenter: AssetSelectionDelegate {
         }
 
         chain = chainAsset.chain
-        freeBalance = nil
-        price = nil
+
+        clearOnAssetSwitch()
 
         provideChainBalance()
 
