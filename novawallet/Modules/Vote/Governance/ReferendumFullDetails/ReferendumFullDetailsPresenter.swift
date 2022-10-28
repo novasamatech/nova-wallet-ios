@@ -107,8 +107,8 @@ final class ReferendumFullDetailsPresenter {
         let callHash = referendum.state.callHash
 
         let model = ReferendumFullDetailsViewModel.CurveAndHash(
-            approveCurve: approvalCurve.displayName,
-            supportCurve: supportCurve.displayName,
+            approveCurve: approvalCurve.displayName(for: selectedLocale),
+            supportCurve: supportCurve.displayName(for: selectedLocale),
             callHash: callHash
         )
 

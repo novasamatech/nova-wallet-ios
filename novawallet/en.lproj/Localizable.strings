@@ -1068,3 +1068,7 @@
 "gov.parameters.json" = "Parameters JSON";
 "common.copy" = "Copy";
 "common.too.long.preview" = "Too long for preview";
+"gov.linear.decreasing" = "Linear Decreasing";
+"gov.stepped.decreasing" = "Stepped Decreasing";
+"gov.reciprocal" = "Reciprocal";
+"gov.unknown" = "Unknown";
