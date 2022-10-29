@@ -224,6 +224,10 @@ enum ConvictionVoting {
 
         @StringCodable var unlockAt: BlockNumber
         @StringCodable var amount: BigUInt
+
+        var exists: Bool {
+            unlockAt > 0 || amount > 0
+        }
     }
 
     struct CastingVotes: Decodable {

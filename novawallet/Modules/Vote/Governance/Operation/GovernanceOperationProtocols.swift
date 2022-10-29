@@ -38,4 +38,11 @@ protocol GovernanceLockStateFactoryProtocol {
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data?
     ) -> CompoundOperationWrapper<GovernanceLockStateDiff>
+
+    func buildUnlockScheduleWrapper(
+        for tracksVoting: ReferendumTracksVotingDistribution,
+        from connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<GovernanceUnlockSchedule>
 }
