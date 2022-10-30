@@ -10,7 +10,6 @@ struct ReferendumVoteSetupViewFactory {
     ) -> ReferendumVoteSetupViewProtocol? {
         guard
             let chain = state.settings.value,
-            let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
@@ -22,7 +21,47 @@ struct ReferendumVoteSetupViewFactory {
 
         let wireframe = ReferendumVoteSetupWireframe(state: state)
 
-        let localizationManager = LocalizationManager.shared
+        let dataValidatingFactory = GovernanceValidatorFactory(
+            presentable: wireframe,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
+
+        guard
+            let presenter = createPresenter(
+                from: interactor,
+                wireframe: wireframe,
+                dataValidatingFactory: dataValidatingFactory,
+                referendum: referendum,
+                chain: chain
+            ) else {
+            return nil
+        }
+
+        let view = ReferendumVoteSetupViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+        dataValidatingFactory.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createPresenter(
+        from interactor: ReferendumVoteSetupInteractor,
+        wireframe: ReferendumVoteSetupWireframeProtocol,
+        dataValidatingFactory: GovernanceValidatorFactoryProtocol,
+        referendum: ReferendumIdLocal,
+        chain: ChainModel
+    ) -> ReferendumVoteSetupPresenter? {
+        guard
+            let assetDisplayInfo = chain.utilityAssetDisplayInfo(),
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
@@ -39,13 +78,7 @@ struct ReferendumVoteSetupViewFactory {
 
         let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
 
-        let dataValidatingFactory = GovernanceValidatorFactory(
-            presentable: wireframe,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
-        )
-
-        let presenter = ReferendumVoteSetupPresenter(
+        return ReferendumVoteSetupPresenter(
             chain: chain,
             referendumIndex: referendum,
             dataValidatingFactory: dataValidatingFactory,
@@ -56,20 +89,9 @@ struct ReferendumVoteSetupViewFactory {
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             interactor: interactor,
             wireframe: wireframe,
-            localizationManager: localizationManager,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
-
-        let view = ReferendumVoteSetupViewController(
-            presenter: presenter,
-            localizationManager: LocalizationManager.shared
-        )
-
-        presenter.view = view
-        dataValidatingFactory.view = view
-        interactor.presenter = presenter
-
-        return view
     }
 
     private static func createInteractor(
@@ -97,12 +119,11 @@ struct ReferendumVoteSetupViewFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
 
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
+        let storageFactory = StorageKeyFactory()
+        let requestFactory = StorageRequestFactory(remoteFactory: storageFactory, operationManager: operationManager)
 
-        let lockStateFactory = Gov2LockStateFactory(requestFactory: requestFactory)
+        let calculator = Gov2UnlocksCalculator()
+        let lockStateFactory = Gov2LockStateFactory(requestFactory: requestFactory, unlocksCalculator: calculator)
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
