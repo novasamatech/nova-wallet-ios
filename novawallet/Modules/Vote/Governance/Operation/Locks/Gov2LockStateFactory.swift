@@ -8,8 +8,8 @@ import BigInt
  *  Locked amount diff - maximum amount of tokens locked before vote is applied and after
  *  Locked period diff - period of time needed to unlock all the tokens before vote is applied and after.
  *
- *  Locked amount calculation assumes that no unlocks can happen during voting (event if voting for the same referendum).
- *  So the diff may not decrease.
+ *  Locked amount calculation assumes that no unlocks can happen during
+ *  voting (event if voting for the same referendum). So the diff may not decrease.
  *
  *  Locked period is calculated first by maximizing estimation for unlock block of votes (only nonzero amount).
  *  And then maximizing result between maximum period for votes and prior locks
@@ -20,16 +20,12 @@ import BigInt
  */
 
 final class Gov2LockStateFactory {
-    struct AdditionalInfo {
-        let tracks: [Referenda.TrackId: Referenda.TrackInfo]
-        let undecidingTimeout: Moment
-        let voteLockingPeriod: Moment
-    }
-
     let requestFactory: StorageRequestFactoryProtocol
+    let unlocksCalculator: GovernanceUnlockCalculatorProtocol
 
-    init(requestFactory: StorageRequestFactoryProtocol) {
+    init(requestFactory: StorageRequestFactoryProtocol, unlocksCalculator: GovernanceUnlockCalculatorProtocol) {
         self.requestFactory = requestFactory
+        self.unlocksCalculator = unlocksCalculator
     }
 
     func createReferendumsWrapper(
@@ -63,7 +59,7 @@ final class Gov2LockStateFactory {
 
     func createAdditionalInfoWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<AdditionalInfo> {
+    ) -> CompoundOperationWrapper<GovUnlockCalculationInfo> {
         let tracksOperation = StorageConstantOperation<[Referenda.Track]>(path: Referenda.tracks)
 
         tracksOperation.configurationBlock = {
@@ -97,7 +93,7 @@ final class Gov2LockStateFactory {
         let fetchOperations = [tracksOperation, undecidingTimeoutOperation, lockingPeriodOperation]
         fetchOperations.forEach { $0.addDependency(codingFactoryOperation) }
 
-        let mappingOperation = ClosureOperation<AdditionalInfo> {
+        let mappingOperation = ClosureOperation<GovUnlockCalculationInfo> {
             let tracks = try tracksOperation.extractNoCancellableResultData().reduce(
                 into: [Referenda.TrackId: Referenda.TrackInfo]()
             ) { $0[$1.trackId] = $1.info }
@@ -106,7 +102,7 @@ final class Gov2LockStateFactory {
 
             let lockingPeriod = try lockingPeriodOperation.extractNoCancellableResultData()
 
-            return AdditionalInfo(
+            return GovUnlockCalculationInfo(
                 tracks: tracks,
                 undecidingTimeout: undecidingTimeout,
                 voteLockingPeriod: lockingPeriod
@@ -116,48 +112,6 @@ final class Gov2LockStateFactory {
         fetchOperations.forEach { mappingOperation.addDependency($0) }
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: fetchOperations)
-    }
-
-    func estimateVoteLockingPeriod(
-        for referendumInfo: ReferendumInfo,
-        accountVote: ReferendumAccountVoteLocal,
-        additionalInfo: AdditionalInfo
-    ) throws -> BlockNumber? {
-        let conviction = accountVote.convictionValue
-
-        guard let convictionPeriod = conviction.conviction(for: additionalInfo.voteLockingPeriod) else {
-            throw CommonError.dataCorruption
-        }
-
-        switch referendumInfo {
-        case let .ongoing(ongoingStatus):
-            guard let track = additionalInfo.tracks[ongoingStatus.track] else {
-                return nil
-            }
-
-            if let decidingSince = ongoingStatus.deciding?.since {
-                return decidingSince + track.decisionPeriod + convictionPeriod
-            } else {
-                return ongoingStatus.submitted + additionalInfo.undecidingTimeout +
-                    track.decisionPeriod + convictionPeriod
-            }
-        case let .approved(completedStatus):
-            if accountVote.ayes > 0 {
-                return completedStatus.since + convictionPeriod
-            } else {
-                return nil
-            }
-        case let .rejected(completedStatus):
-            if accountVote.nays > 0 {
-                return completedStatus.since + convictionPeriod
-            } else {
-                return nil
-            }
-        case .killed, .timedOut, .cancelled:
-            return nil
-        case .unknown:
-            throw CommonError.dataCorruption
-        }
     }
 
     func calculatePriorLockMax(from trackVotes: ReferendumTracksVotingDistribution) -> BlockNumber? {
@@ -182,7 +136,7 @@ final class Gov2LockStateFactory {
     func calculateMaxLock(
         for referendums: [ReferendumIdLocal: ReferendumInfo],
         trackVotes: ReferendumTracksVotingDistribution,
-        additions: AdditionalInfo
+        additions: GovUnlockCalculationInfo
     ) -> BlockNumber? {
         let optVotesMax: Moment? = referendums.compactMap { referendumKeyValue in
             let referendumIndex = referendumKeyValue.key
@@ -193,7 +147,11 @@ final class Gov2LockStateFactory {
                 return nil
             }
 
-            return try? estimateVoteLockingPeriod(for: referendum, accountVote: vote, additionalInfo: additions)
+            return try? unlocksCalculator.estimateVoteLockingPeriod(
+                for: referendum,
+                accountVote: vote,
+                additionalInfo: additions
+            )
         }.max()
 
         let optPriorMax = calculatePriorLockMax(from: trackVotes)
@@ -211,7 +169,7 @@ final class Gov2LockStateFactory {
         for trackVotes: ReferendumTracksVotingDistribution,
         newVote: ReferendumNewVote?,
         referendumsOperation: BaseOperation<[ReferendumIdLocal: ReferendumInfo]>,
-        additionalInfoOperation: BaseOperation<AdditionalInfo>
+        additionalInfoOperation: BaseOperation<GovUnlockCalculationInfo>
     ) -> BaseOperation<GovernanceLockStateDiff> {
         ClosureOperation<GovernanceLockStateDiff> {
             let referendums = try referendumsOperation.extractNoCancellableResultData()
@@ -247,7 +205,7 @@ final class Gov2LockStateFactory {
                 if
                     newVote.voteAction.amount > 0,
                     let referendum = referendums[newVote.index],
-                    let periodWithNewVote = try? self.estimateVoteLockingPeriod(
+                    let periodWithNewVote = try? self.unlocksCalculator.estimateVoteLockingPeriod(
                         for: referendum,
                         accountVote: newVote.toAccountVote(),
                         additionalInfo: additions
@@ -335,11 +293,16 @@ extension Gov2LockStateFactory: GovernanceLockStateFactoryProtocol {
         referendumsWrapper.addDependency(operations: [codingFactoryOperation])
         additionalInfoWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let scheduleOperation = createScheduleOperation(
-            dependingOn: referendumsWrapper.targetOperation,
-            additionalInfoOperation: additionalInfoWrapper.targetOperation,
-            tracksVoting: tracksVoting
-        )
+        let scheduleOperation = ClosureOperation<GovernanceUnlockSchedule> {
+            let referendums = try referendumsWrapper.targetOperation.extractNoCancellableResultData()
+            let additions = try additionalInfoWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.unlocksCalculator.createUnlocksSchedule(
+                for: tracksVoting,
+                referendums: referendums,
+                additionalInfo: additions
+            )
+        }
 
         scheduleOperation.addDependency(referendumsWrapper.targetOperation)
         scheduleOperation.addDependency(additionalInfoWrapper.targetOperation)

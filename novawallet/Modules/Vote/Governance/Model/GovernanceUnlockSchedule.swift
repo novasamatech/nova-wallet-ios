@@ -33,7 +33,7 @@ struct GovernanceUnlockSchedule {
     func availableUnlock(at block: BlockNumber) -> Item {
         items
             .filter { $0.unlockAt <= block }
-            .reduce(Item.emptyUnlock(at: block)) { (accum, unlock) in
+            .reduce(Item.emptyUnlock(at: block)) { accum, unlock in
                 Item(
                     amount: accum.amount + unlock.amount,
                     unlockAt: block,

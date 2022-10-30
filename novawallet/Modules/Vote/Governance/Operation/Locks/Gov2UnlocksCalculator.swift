@@ -1,13 +1,12 @@
 import Foundation
-import RobinHood
 import BigInt
 
-extension Gov2LockStateFactory {
+final class Gov2UnlocksCalculator {
     private func createUnlocksFromVotes(
         _ votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
         referendums: [ReferendumIdLocal: ReferendumInfo],
         tracks: [ReferendumIdLocal: TrackIdLocal],
-        additionalInfo: AdditionalInfo
+        additionalInfo: GovUnlockCalculationInfo
     ) -> [TrackIdLocal: [GovernanceUnlockSchedule.Item]] {
         let initial = [TrackIdLocal: [GovernanceUnlockSchedule.Item]]()
 
@@ -135,7 +134,7 @@ extension Gov2LockStateFactory {
     private func createVotingUnlocks(
         for tracksVoting: ReferendumTracksVotingDistribution,
         referendums: [ReferendumIdLocal: ReferendumInfo],
-        additionalInfo: AdditionalInfo
+        additionalInfo: GovUnlockCalculationInfo
     ) -> [TrackIdLocal: [GovernanceUnlockSchedule.Item]] {
         let tracks = tracksVoting.votes.tracksByReferendums()
 
@@ -230,23 +229,62 @@ extension Gov2LockStateFactory {
 
         return .init(items: items)
     }
+}
 
-    func createScheduleOperation(
-        dependingOn referendumsOperation: BaseOperation<[ReferendumIdLocal: ReferendumInfo]>,
-        additionalInfoOperation: BaseOperation<AdditionalInfo>,
-        tracksVoting: ReferendumTracksVotingDistribution
-    ) -> BaseOperation<GovernanceUnlockSchedule> {
-        ClosureOperation<GovernanceUnlockSchedule> {
-            let referendums = try referendumsOperation.extractNoCancellableResultData()
-            let additions = try additionalInfoOperation.extractNoCancellableResultData()
+extension Gov2UnlocksCalculator: GovernanceUnlockCalculatorProtocol {
+    func estimateVoteLockingPeriod(
+        for referendumInfo: ReferendumInfo,
+        accountVote: ReferendumAccountVoteLocal,
+        additionalInfo: GovUnlockCalculationInfo
+    ) throws -> BlockNumber? {
+        let conviction = accountVote.convictionValue
 
-            let unlocks = self.createVotingUnlocks(
-                for: tracksVoting,
-                referendums: referendums,
-                additionalInfo: additions
-            )
-
-            return self.createSchedule(from: unlocks)
+        guard let convictionPeriod = conviction.conviction(for: additionalInfo.voteLockingPeriod) else {
+            throw CommonError.dataCorruption
         }
+
+        switch referendumInfo {
+        case let .ongoing(ongoingStatus):
+            guard let track = additionalInfo.tracks[ongoingStatus.track] else {
+                return nil
+            }
+
+            if let decidingSince = ongoingStatus.deciding?.since {
+                return decidingSince + track.decisionPeriod + convictionPeriod
+            } else {
+                return ongoingStatus.submitted + additionalInfo.undecidingTimeout +
+                    track.decisionPeriod + convictionPeriod
+            }
+        case let .approved(completedStatus):
+            if accountVote.ayes > 0 {
+                return completedStatus.since + convictionPeriod
+            } else {
+                return nil
+            }
+        case let .rejected(completedStatus):
+            if accountVote.nays > 0 {
+                return completedStatus.since + convictionPeriod
+            } else {
+                return nil
+            }
+        case .killed, .timedOut, .cancelled:
+            return nil
+        case .unknown:
+            throw CommonError.dataCorruption
+        }
+    }
+
+    func createUnlocksSchedule(
+        for tracksVoting: ReferendumTracksVotingDistribution,
+        referendums: [ReferendumIdLocal: ReferendumInfo],
+        additionalInfo: GovUnlockCalculationInfo
+    ) -> GovernanceUnlockSchedule {
+        let unlocks = createVotingUnlocks(
+            for: tracksVoting,
+            referendums: referendums,
+            additionalInfo: additionalInfo
+        )
+
+        return createSchedule(from: unlocks)
     }
 }

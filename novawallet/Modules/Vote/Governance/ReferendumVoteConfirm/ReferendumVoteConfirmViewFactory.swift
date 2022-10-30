@@ -72,6 +72,7 @@ struct ReferendumVoteConfirmViewFactory {
         return view
     }
 
+    // swiftlint:disable:next function_body_length
     private static func createInteractor(
         for state: GovernanceSharedState,
         referendum: ReferendumIdLocal,
@@ -102,7 +103,10 @@ struct ReferendumVoteConfirmViewFactory {
             operationManager: operationManager
         )
 
-        let lockStateFactory = Gov2LockStateFactory(requestFactory: requestFactory)
+        let lockStateFactory = Gov2LockStateFactory(
+            requestFactory: requestFactory,
+            unlocksCalculator: Gov2UnlocksCalculator()
+        )
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
