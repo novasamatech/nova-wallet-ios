@@ -219,7 +219,7 @@ extension Gov2LockStateFactory {
             }
         }
 
-        return Array(sortedByBlockNumber.reversed().filter { $0.amount > 0 })
+        return Array(sortedByBlockNumber.reversed().filter { !$0.isEmpty })
     }
 
     private func createSchedule(
