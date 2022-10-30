@@ -7,7 +7,7 @@ struct GovernanceUnlockSchedule {
         case unlock(track: TrackIdLocal)
     }
 
-    struct Item {
+    struct Item: Equatable {
         let amount: BigUInt
 
         /// use 0 to mark the lock is available to unlock now
@@ -24,19 +24,31 @@ struct GovernanceUnlockSchedule {
         }
     }
 
+    struct Claimable: Equatable {
+        let amount: BigUInt
+        let actions: Set<Action>
+
+        var isEmpty: Bool {
+            amount == 0 && actions.isEmpty
+        }
+
+        static func empty() -> Claimable {
+            Claimable(amount: 0, actions: [])
+        }
+    }
+
     let items: [Item]
 
     func lockedBalance() -> BigUInt {
         items.reduce(BigUInt(0)) { $0 + $1.amount }
     }
 
-    func availableUnlock(at block: BlockNumber) -> Item {
+    func availableUnlock(at block: BlockNumber) -> Claimable {
         items
             .filter { $0.unlockAt <= block }
-            .reduce(Item.emptyUnlock(at: block)) { accum, unlock in
-                Item(
+            .reduce(Claimable.empty()) { accum, unlock in
+                .init(
                     amount: accum.amount + unlock.amount,
-                    unlockAt: block,
                     actions: accum.actions.union(unlock.actions)
                 )
             }
