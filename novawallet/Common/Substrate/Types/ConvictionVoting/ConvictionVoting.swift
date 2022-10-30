@@ -228,6 +228,10 @@ enum ConvictionVoting {
         var exists: Bool {
             unlockAt > 0 || amount > 0
         }
+
+        static var notExisting: PriorLock {
+            PriorLock(unlockAt: 0, amount: 0)
+        }
     }
 
     struct CastingVotes: Decodable {

@@ -688,6 +688,7 @@
 		843461EC290D0D9400379936 /* GovernanceUnlockSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461EB290D0D9400379936 /* GovernanceUnlockSchedule.swift */; };
 		843461F5290E4A1C00379936 /* GovernanceUnlocksCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461F4290E4A1C00379936 /* GovernanceUnlocksCalculator.swift */; };
 		843461F7290E4AF500379936 /* Gov2UnlocksCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461F6290E4AF500379936 /* Gov2UnlocksCalculator.swift */; };
+		843461FA290E55D100379936 /* GovernanceTestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461F9290E55D100379936 /* GovernanceTestBuilder.swift */; };
 		8434C9E425401EF3009E4191 /* TransactionHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8434C9E325401EF3009E4191 /* TransactionHistoryItem.swift */; };
 		8434C9E625403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8434C9E525403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift */; };
 		8434C9EA2540AE51009E4191 /* ExtrinsicEraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8434C9E92540AE51009E4191 /* ExtrinsicEraTests.swift */; };
@@ -3612,6 +3613,7 @@
 		843461EB290D0D9400379936 /* GovernanceUnlockSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockSchedule.swift; sourceTree = "<group>"; };
 		843461F4290E4A1C00379936 /* GovernanceUnlocksCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlocksCalculator.swift; sourceTree = "<group>"; };
 		843461F6290E4AF500379936 /* Gov2UnlocksCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov2UnlocksCalculator.swift; sourceTree = "<group>"; };
+		843461F9290E55D100379936 /* GovernanceTestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceTestBuilder.swift; sourceTree = "<group>"; };
 		8434C9E325401EF3009E4191 /* TransactionHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryItem.swift; sourceTree = "<group>"; };
 		8434C9E525403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDTransactionHistoryItem+CoreDataDecodable.swift"; sourceTree = "<group>"; };
 		8434C9E92540AE51009E4191 /* ExtrinsicEraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicEraTests.swift; sourceTree = "<group>"; };
@@ -7363,6 +7365,14 @@
 			path = Locks;
 			sourceTree = "<group>";
 		};
+		843461F8290E55BE00379936 /* Governance */ = {
+			isa = PBXGroup;
+			children = (
+				843461F9290E55D100379936 /* GovernanceTestBuilder.swift */,
+			);
+			path = Governance;
+			sourceTree = "<group>";
+		};
 		84350AD7284604B50031EF24 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -10377,6 +10387,7 @@
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				843461F8290E55BE00379936 /* Governance */,
 				84B7C683289BFA78001A3566 /* Settings */,
 				84B7C685289BFA78001A3566 /* ParaStkUnstake */,
 				84B7C686289BFA78001A3566 /* DAppAuthSettings */,
@@ -17081,6 +17092,7 @@
 				84B7C73B289BFA79001A3566 /* StakingUnbondConfirmTests.swift in Sources */,
 				842A738E27DEF592006EE1EA /* AssetTransactionGenerator.swift in Sources */,
 				84CE69ED25667A5600559427 /* ByteLengthEncodingTests.swift in Sources */,
+				843461FA290E55D100379936 /* GovernanceTestBuilder.swift in Sources */,
 				84B7C73D289BFA79001A3566 /* StakingPayoutsConfirmTests.swift in Sources */,
 				84B7C72E289BFA79001A3566 /* CustomValidatorListTestDataGenerator.swift in Sources */,
 				84B7C746289BFA79001A3566 /* WalletHistoryFilterTests.swift in Sources */,
