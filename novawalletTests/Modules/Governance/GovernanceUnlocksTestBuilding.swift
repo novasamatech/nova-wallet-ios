@@ -178,7 +178,7 @@ enum TrackTestBuilding {
                             .standard(
                                 .init(
                                     vote: .init(aye: vote.isAye, conviction: vote.conviction),
-                                    balance: vote.balance
+                                    balance: vote.amount
                                 )
                             ),
                             referendumId: vote.referendum
@@ -226,20 +226,20 @@ enum TrackTestBuilding {
 
     struct Vote {
         let referendum: ReferendumIdLocal
-        let balance: BigUInt
+        let amount: BigUInt
         let conviction: ConvictionVoting.Conviction
         let unlockAt: BlockNumber
         let isAye: Bool
 
         init(
             referendum: ReferendumIdLocal,
-            balance: BigUInt,
+            amount: BigUInt,
             unlockAt: BlockNumber,
             conviction: ConvictionVoting.Conviction = .locked1x,
             isAye: Bool = true
         ) {
             self.referendum = referendum
-            self.balance = balance
+            self.amount = amount
             self.unlockAt = unlockAt
             self.conviction = conviction
             self.isAye = isAye
