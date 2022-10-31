@@ -15,7 +15,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
             GovernanceUnlocksTestBuilding.given {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 0, balance: 1, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 0, amount: 1, unlockAt: 1000)
                     }
                 }
             }
@@ -61,7 +61,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.prior(amount: 1, unlockAt: 1100)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 1, balance: 2, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 1, amount: 2, unlockAt: 1000)
                     }
                 }
             }
@@ -82,8 +82,8 @@ class Gov2UnlockScheduleTests: XCTestCase {
             GovernanceUnlocksTestBuilding.given {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 0, balance: 8, unlockAt: 1000)
-                        TrackTestBuilding.Vote(referendum: 1, balance: 2, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 0, amount: 8, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 1, amount: 2, unlockAt: 1000)
                     }
                 }
             }
@@ -104,7 +104,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.prior(amount: 1, unlockAt: 1100)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 1, balance: 2, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 1, amount: 2, unlockAt: 1000)
                     }
                 }
             }
@@ -124,13 +124,13 @@ class Gov2UnlockScheduleTests: XCTestCase {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.locked(0)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 0, balance: 1, unlockAt: 1100)
+                        TrackTestBuilding.Vote(referendum: 0, amount: 1, unlockAt: 1100)
                     }
                 }
                 TrackTestBuilding.track(1) {
                     TrackTestBuilding.VotingParams.locked(0)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 1, balance: 2, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 1, amount: 2, unlockAt: 1000)
                     }
                 }
             }
@@ -152,19 +152,19 @@ class Gov2UnlockScheduleTests: XCTestCase {
                 TrackTestBuilding.track(1) {
                     TrackTestBuilding.VotingParams.locked(0)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 1, balance: 1, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 1, amount: 1, unlockAt: 1000)
                     }
                 }
                 TrackTestBuilding.track(2) {
                     TrackTestBuilding.VotingParams.locked(0)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 2, balance: 2, unlockAt: 1100)
+                        TrackTestBuilding.Vote(referendum: 2, amount: 2, unlockAt: 1100)
                     }
                 }
                 TrackTestBuilding.track(3) {
                     TrackTestBuilding.VotingParams.locked(0)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 3, balance: 1, unlockAt: 1200)
+                        TrackTestBuilding.Vote(referendum: 3, amount: 1, unlockAt: 1200)
                     }
                 }
             }
@@ -188,7 +188,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.locked(10)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 0, balance: 2, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 0, amount: 2, unlockAt: 1000)
                     }
                 }
             }
@@ -208,7 +208,7 @@ class Gov2UnlockScheduleTests: XCTestCase {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.locked(10)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 0, balance: 1, unlockAt: 1000)
+                        TrackTestBuilding.Vote(referendum: 0, amount: 1, unlockAt: 1000)
                     }
                 }
 
@@ -282,9 +282,9 @@ class Gov2UnlockScheduleTests: XCTestCase {
             GovernanceUnlocksTestBuilding.given {
                 TrackTestBuilding.track(0) {
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 0, balance: 3, unlockAt: 1100)
-                        TrackTestBuilding.Vote(referendum: 2, balance: 2, unlockAt: 1200)
-                        TrackTestBuilding.Vote(referendum: 1, balance: 1, unlockAt: 1300)
+                        TrackTestBuilding.Vote(referendum: 0, amount: 3, unlockAt: 1100)
+                        TrackTestBuilding.Vote(referendum: 2, amount: 2, unlockAt: 1200)
+                        TrackTestBuilding.Vote(referendum: 1, amount: 1, unlockAt: 1300)
                     }
                 }
             }
@@ -316,14 +316,14 @@ class Gov2UnlockScheduleTests: XCTestCase {
                 TrackTestBuilding.track(20) {
                     TrackTestBuilding.VotingParams.locked(1)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 13, balance: 1, unlockAt: 2000)
+                        TrackTestBuilding.Vote(referendum: 13, amount: 1, unlockAt: 2000)
                     }
                 }
 
                 TrackTestBuilding.track(21) {
                     TrackTestBuilding.VotingParams.locked(101)
                     TrackTestBuilding.VotingParams.votes {
-                        TrackTestBuilding.Vote(referendum: 5, balance: 10, unlockAt: 1500)
+                        TrackTestBuilding.Vote(referendum: 5, amount: 10, unlockAt: 1500)
                     }
                 }
             }

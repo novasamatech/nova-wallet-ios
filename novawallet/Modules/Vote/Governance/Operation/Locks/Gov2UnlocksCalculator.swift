@@ -2,50 +2,46 @@ import Foundation
 import BigInt
 
 /**
- * Given the information about Voting (priors + active votes), statuses of referenda and TrackLocks
+ * Given the information about Voting (priors + active votes), statuses of referenda and track locks
  * Constructs the estimated claiming schedule.
  * The schedule is exact when all involved referenda are completed. Only ongoing referenda' end time is estimateted
  *
  * The claiming schedule shows how much tokens will be unlocked and when.
- * Schedule may consist of zero or one [ClaimSchedule.UnlockChunk.Claimable] chunk
- * and zero or more [ClaimSchedule.UnlockChunk.Pending] chunks.
- *
- * [ClaimSchedule.UnlockChunk.Pending] chunks also provides a set of [ClaimSchedule.ClaimAction] actions
- * needed to claim whole chunk.
+ * Schedule may consist of zero or more [GovernanceUnlockSchedule.Item] with corresponding actions to do.
  *
  * The algorithm itself consists of several parts
  *
  * 1. Determine individual unlocks
- * This step is based on prior [Voting.Casting.prior] and [AccountVote.Standard] standard votes
- * a. Each non-zero prior has a single individual unlock
+ * This step is based on prior [ConvictionVoting.PriorLock], [ConvictionVoting.AccountVote],
+ * [ConvictionVoting.Delegating]
+ * a. Each non-zero prior (both from casting and delegating) has a single individual unlock
  * b. Each non-zero vote has a single individual unlock.
  *    However, unlock time for votes is at least unlock time of corresponding prior.
  * c. Find a gap between [voting] and [trackLocks], which indicates an extra claimable amount
  *    To provide additive effect of gap, we add total voting lock on top of it:
- if [voting] has some pending locks - they gonna delay their amount but always leaving trackGap untouched & claimable
- On the other hand, if other tracks have locks bigger than [voting]'s total lock,
- trackGap will be partially or full delayed by them
+ *    if [voting] has some pending locks - they gonna delay their amount but always leaving
+ *    trackGap untouched & claimable.
+ *    On the other hand, if other tracks have locks bigger than [voting]'s total lock,
+ *    trackGap will be partially or full delayed by them
  *
- * During this step we also determine the list of [ClaimAffect],
- * which later gets translated to [ClaimSchedule.ClaimAction].
+ * During this step we also determine the set of [GovernanceUnlockSchedule.Action]
  *
  * 2. Combine all locks with the same unlock time into single lock
  *  a. Result's amount is the maximum between combined locks
  *  b. Result's affects is a concatenation of all affects from combined locks
  *
  * 3. Construct preliminary unlock schedule based on the following algorithm
- *   a. Sort pairs from step (2) by descending [ClaimableLock.claimAt] order
- *   b. For each item in the sorted list, find the difference between the biggest currently processed lock and item's amount
+ *   a. Sort pairs from step (2) by descending [GovernanceUnlockSchedule.Item.unlockAt] order;
+ *   b. For each item in the sorted list, find the difference between the biggest currently
+ *   processed lock and item's amount;
  *   c. Since we start from the most far locks in the future, finding a positive difference means that
  *   this difference is actually an entry in desired unlock schedule. Negative difference means that this unlock is
- *   completely covered by future's unlock with bigger amount. Thus, we should discard it from the schedule and move its affects
- *   to the currently known maximum lock in order to not to loose its actions when unlocking maximum lock.
+ *   completely covered by future's unlock with bigger amount.
+ *   Thus, we should discard it from the schedule and move its affects to the currently known maximum lock
+ *   in order to not to loose its actions when unlocking maximum lock.
  *
- * 4. Check which if unlocks are claimable and which are not by constructing [ClaimSchedule.UnlockChunk] based on [currentBlockNumber]
- * 5. Fold all [ClaimSchedule.UnlockChunk] into single chunk.
- * 6. If gap exists, then we should add it to claimable chunk. We should also check if we should perform extra [ClaimSchedule.ClaimAction.Unlock]
- *  for each track that is included in the gap. We do that by finding by checking which [ClaimSchedule.ClaimAction.Unlock] unlocks are already present
- *  in claimable chunk's actions in order to not to do them twice.
+ * 4. To find which unlocks are claimable one should call [GovernanceUnlockSchedule.availableItem(at:)]
+ * function by providing current block number;
  */
 final class Gov2UnlocksCalculator {
     private func createUnlocksFromVotes(
