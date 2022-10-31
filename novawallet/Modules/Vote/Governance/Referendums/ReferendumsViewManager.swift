@@ -2,9 +2,14 @@ import Foundation
 import UIKit
 
 final class ReferendumsViewManager: NSObject {
+    private enum Constants {
+        static let unlocksCellHeight: CGFloat = 52
+    }
+
     let tableView: UITableView
     let chainSelectionView: VoteChainViewProtocol
-    private var model: ReferendumsViewModel = .init(sections: [])
+    private var referendumsViewModel: ReferendumsViewModel = .init(sections: [])
+    private var unlocksViewModel: ReferendumsUnlocksViewModel?
 
     var locale = Locale.current {
         didSet {
@@ -28,25 +33,43 @@ final class ReferendumsViewManager: NSObject {
 
 extension ReferendumsViewManager: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        model.sections.count
+        referendumsViewModel.sections.count + 1
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch model.sections[section] {
-        case let .active(_, cells), let .completed(_, cells):
-            return cells.count
+        if section == 0 {
+            return unlocksViewModel != nil ? 1 : 0
+        } else {
+            let referendumsSection = section - 1
+            switch referendumsViewModel.sections[referendumsSection] {
+            case let .active(_, cells), let .completed(_, cells):
+                return cells.count
+            }
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        cell.applyStyle()
-        let section = model.sections[indexPath.section]
-        switch section {
-        case let .active(_, cellModels), let .completed(_, cellModels):
-            let cellModel = cellModels[indexPath.row].viewModel
-            cell.view.bind(viewModel: cellModel)
-            return cell
+        if indexPath.section == 0 {
+            let unlocksCell: ReferendumsUnlocksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            unlocksCell.applyStyle()
+
+            if let viewModel = unlocksViewModel {
+                unlocksCell.view.bind(viewModel: viewModel, locale: locale)
+            }
+
+            return unlocksCell
+        } else {
+            let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.applyStyle()
+
+            let referendumsCell = indexPath.section - 1
+            let section = referendumsViewModel.sections[referendumsCell]
+            switch section {
+            case let .active(_, cellModels), let .completed(_, cellModels):
+                let cellModel = cellModels[indexPath.row].viewModel
+                cell.view.bind(viewModel: cellModel)
+                return cell
+            }
         }
     }
 }
@@ -55,16 +78,26 @@ extension ReferendumsViewManager: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let section = model.sections[indexPath.section]
-        switch section {
-        case let .active(_, cellModels), let .completed(_, cellModels):
-            let referendumIndex = cellModels[indexPath.row].referendumIndex
-            presenter?.select(referendumIndex: referendumIndex)
+        if indexPath.section == 0 {
+            presenter?.selectUnlocks()
+        } else {
+            let referendumsSection = indexPath.section - 1
+            let section = referendumsViewModel.sections[referendumsSection]
+            switch section {
+            case let .active(_, cellModels), let .completed(_, cellModels):
+                let referendumIndex = cellModels[indexPath.row].referendumIndex
+                presenter?.select(referendumIndex: referendumIndex)
+            }
         }
     }
 
     func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let sectionModel = model.sections[section]
+        guard section > 0 else {
+            return nil
+        }
+
+        let referendumsSection = section - 1
+        let sectionModel = referendumsViewModel.sections[referendumsSection]
         switch sectionModel {
         case let .active(title, cells), let .completed(title, cells):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
@@ -80,8 +113,20 @@ extension ReferendumsViewManager: UITableViewDelegate {
         }
     }
 
-    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        UITableView.automaticDimension
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section > 0 {
+            return UITableView.automaticDimension
+        } else {
+            return 0
+        }
+    }
+
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section > 0 {
+            return UITableView.automaticDimension
+        } else {
+            return Constants.unlocksCellHeight
+        }
     }
 }
 
@@ -91,7 +136,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
     }
 
     func update(model: ReferendumsViewModel) {
-        self.model = model
+        referendumsViewModel = model
         tableView.reloadData()
     }
 
@@ -102,7 +147,8 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
                 return
             }
 
-            switch model.sections[indexPath.section] {
+            let referendumsSection = indexPath.section - 1
+            switch referendumsViewModel.sections[referendumsSection] {
             case let .active(_, cells), let .completed(_, cells):
                 let cellModel = cells[indexPath.row]
                 guard let timeModel = time[cellModel.referendumIndex]??.viewModel else {
@@ -112,6 +158,11 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
                 referendumCell.view.referendumInfoView.bind(timeModel: timeModel)
             }
         }
+    }
+
+    func didReceiveUnlocks(viewModel: ReferendumsUnlocksViewModel?) {
+        unlocksViewModel = viewModel
+        tableView.reloadData()
     }
 }
 
@@ -128,6 +179,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.registerClassForCell(ReferendumTableViewCell.self)
+        tableView.registerClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }
@@ -136,6 +188,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.dataSource = nil
         tableView.delegate = nil
         tableView.unregisterClassForCell(ReferendumTableViewCell.self)
+        tableView.unregisterClassForCell(ReferendumsUnlocksTableViewCell.self)
         tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }

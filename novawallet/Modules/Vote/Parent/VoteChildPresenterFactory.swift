@@ -188,10 +188,12 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
         let indexFormatter = NumberFormatter.index.localizableResource()
 
+        let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
+
         let viewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()
@@ -202,6 +204,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
+            assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager,
             logger: logger

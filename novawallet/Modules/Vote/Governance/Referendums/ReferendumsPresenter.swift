@@ -9,6 +9,7 @@ final class ReferendumsPresenter {
     let wireframe: ReferendumsWireframeProtocol
     let viewModelFactory: ReferendumsModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let sorting: ReferendumsSorting
     let logger: LoggerProtocol
 
@@ -37,6 +38,7 @@ final class ReferendumsPresenter {
         wireframe: ReferendumsWireframeProtocol,
         viewModelFactory: ReferendumsModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
+        assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -45,6 +47,7 @@ final class ReferendumsPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
+        self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.sorting = sorting
         self.logger = logger
         self.localizationManager = localizationManager
@@ -63,6 +66,7 @@ final class ReferendumsPresenter {
         maxStatusTimeInterval = nil
         timeModels = nil
 
+        view?.didReceiveUnlocks(viewModel: nil)
         view?.update(model: .init(sections: []))
     }
 
@@ -80,7 +84,32 @@ final class ReferendumsPresenter {
         view?.didReceiveChainBalance(viewModel: viewModel)
     }
 
-    private func updateUnlocksView() {}
+    private func updateUnlocksView() {
+        guard
+            let totalLocked = voting?.value?.totalLocked(),
+            totalLocked > 0,
+            let displayInfo = chain?.utilityAssetDisplayInfo()
+        else {
+            view?.didReceiveUnlocks(viewModel: nil)
+            return
+        }
+
+        let totalLockedDecimal = Decimal.fromSubstrateAmount(totalLocked, precision: displayInfo.assetPrecision) ?? 0
+
+        let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: displayInfo)
+        let totalLockedString = tokenFormatter.value(for: selectedLocale).stringFromDecimal(totalLockedDecimal)
+
+        let hasUnlock: Bool
+
+        if let blockNumber = blockNumber, let unlockSchedule = unlockSchedule {
+            hasUnlock = unlockSchedule.availableUnlock(at: blockNumber).amount > 0
+        } else {
+            hasUnlock = false
+        }
+
+        let viewModel = ReferendumsUnlocksViewModel(totalLock: totalLockedString ?? "", hasUnlock: hasUnlock)
+        view?.didReceiveUnlocks(viewModel: viewModel)
+    }
 
     private func updateReferendumsView() {
         guard let view = view else {
@@ -236,6 +265,8 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
             selectedChainAssetId: chainAssetId
         )
     }
+
+    func selectUnlocks() {}
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
