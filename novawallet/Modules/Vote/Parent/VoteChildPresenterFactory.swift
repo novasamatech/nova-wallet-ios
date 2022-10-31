@@ -120,6 +120,11 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
+        let lockStateFactory = Gov2LockStateFactory(
+            requestFactory: requestFactory,
+            unlocksCalculator: Gov2UnlocksCalculator()
+        )
+
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
@@ -127,6 +132,7 @@ final class VoteChildPresenterFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             referendumsOperationFactory: referendumOperationFactory,
+            lockStateFactory: lockStateFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,
