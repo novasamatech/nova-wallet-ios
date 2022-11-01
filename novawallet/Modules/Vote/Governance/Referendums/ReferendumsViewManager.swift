@@ -62,8 +62,8 @@ extension ReferendumsViewManager: UITableViewDataSource {
             let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             cell.applyStyle()
 
-            let referendumsCell = indexPath.section - 1
-            let section = referendumsViewModel.sections[referendumsCell]
+            let referendumsSection = indexPath.section - 1
+            let section = referendumsViewModel.sections[referendumsSection]
             switch section {
             case let .active(_, cellModels), let .completed(_, cellModels):
                 let cellModel = cellModels[indexPath.row].viewModel
