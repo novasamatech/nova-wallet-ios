@@ -4,6 +4,8 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
     let view: TContentView = .init()
     let backgroundBlurView = TriangularedBlurView()
 
+    var shouldApplyHighlighting: Bool = false
+
     var contentInsets: UIEdgeInsets = .init(top: 0, left: 16, bottom: 0, right: 16) {
         didSet {
             updateLayout()
@@ -22,6 +24,14 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
         backgroundColor = .clear
         selectedBackgroundView = UIView()
         setupLayout()
+    }
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+
+        backgroundBlurView.overlayView.fillColor = shouldApplyHighlighting && highlighted ?
+            R.color.colorAccentSelected()!
+            : .clear
     }
 
     @available(*, unavailable)

@@ -119,4 +119,8 @@ struct ReferendumAccountVotingDistribution {
 struct ReferendumTracksVotingDistribution {
     let votes: ReferendumAccountVotingDistribution
     let trackLocks: [ConvictionVoting.ClassLock]
+
+    func totalLocked() -> BigUInt {
+        trackLocks.reduce(BigUInt(0)) { max($0, $1.amount) }
+    }
 }

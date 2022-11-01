@@ -6,10 +6,12 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
     func didReceiveChainBalance(viewModel: ChainBalanceViewModel)
     func update(model: ReferendumsViewModel)
     func updateReferendums(time: [UInt: StatusTimeViewModel?])
+    func didReceiveUnlocks(viewModel: ReferendumsUnlocksViewModel?)
 }
 
 protocol ReferendumsPresenterProtocol: AnyObject {
     func select(referendumIndex: UInt)
+    func selectUnlocks()
 }
 
 protocol ReferendumsInteractorInputProtocol: AnyObject {
@@ -18,6 +20,7 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func becomeOnline()
     func putOffline()
     func refresh()
+    func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?)
     func remakeSubscriptions()
     func retryBlockTime()
 }
@@ -25,12 +28,13 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?)
-    func didReceiveVotes(_ votes: [ReferendumIdLocal: ReferendumAccountVoteLocal])
+    func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
+    func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule)
     func didReceiveError(_ error: ReferendumsInteractorError)
 }
 
