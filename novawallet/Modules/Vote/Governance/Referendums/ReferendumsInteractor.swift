@@ -347,7 +347,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
 
     func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?) {
         if let chain = governanceState.settings.value {
-            clear(cancellable: &referendumsCancellable)
+            clear(cancellable: &unlockScheduleCancellable)
 
             guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
                 presenter?.didReceiveError(.unlockScheduleFetchFailed(ChainRegistryError.connectionUnavailable))
