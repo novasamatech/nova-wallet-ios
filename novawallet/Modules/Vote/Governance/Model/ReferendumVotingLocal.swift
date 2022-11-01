@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 struct ReferendumAccountVotingDistribution {
     let votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]
@@ -19,6 +20,33 @@ struct ReferendumAccountVotingDistribution {
         self.delegatings = delegatings
         self.priorLocks = priorLocks
         self.maxVotesPerTrack = maxVotesPerTrack
+    }
+
+    func tracksByReferendums() -> [ReferendumIdLocal: TrackIdLocal] {
+        let initial = [ReferendumIdLocal: TrackIdLocal]()
+
+        return votedTracks.reduce(into: initial) { accum, keyValue in
+            let trackId = keyValue.key
+
+            for referendumId in keyValue.value {
+                accum[referendumId] = trackId
+            }
+        }
+    }
+
+    func lockedBalance(for trackId: TrackIdLocal) -> BigUInt {
+        if let delegating = delegatings[trackId] {
+            return max(delegating.balance, delegating.prior.amount)
+        } else {
+            let maxVotedBalance = (votedTracks[trackId] ?? []).map { referendumId in
+                votes[referendumId]?.totalBalance ?? 0
+            }
+            .max() ?? 0
+
+            let priorLockedBalance = priorLocks[trackId]?.amount ?? 0
+
+            return max(maxVotedBalance, priorLockedBalance)
+        }
     }
 
     func addingVote(

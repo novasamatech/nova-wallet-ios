@@ -7,6 +7,11 @@ extension ConvictionVoting {
         let trackId: Referenda.TrackId
         let amount: BigUInt
 
+        init(trackId: Referenda.TrackId, amount: BigUInt) {
+            self.trackId = trackId
+            self.amount = amount
+        }
+
         public init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
 
