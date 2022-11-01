@@ -1135,6 +1135,11 @@
 		847119D5262EF95A00716580 /* PayoutInfoFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847119D4262EF95A00716580 /* PayoutInfoFactoryProtocol.swift */; };
 		847119EB262EFF3800716580 /* ValidatorPayoutInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847119EA262EFF3800716580 /* ValidatorPayoutInfoFactory.swift */; };
 		8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471538C2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift */; };
+		8471577B2910F0AF00D7D003 /* GovernanceUnlockInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471577A2910F0AF00D7D003 /* GovernanceUnlockInteractor.swift */; };
+		8471577D2910F18300D7D003 /* GovernanceUnlockProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471577C2910F18300D7D003 /* GovernanceUnlockProtocols.swift */; };
+		847157802910F30500D7D003 /* GovernanceUnlockInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471577F2910F30500D7D003 /* GovernanceUnlockInteractorError.swift */; };
+		84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84715782291132B400D7D003 /* GovernanceUnlockTableViewCell.swift */; };
+		84715786291136B100D7D003 /* GovernanceUnlocksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84715785291136B100D7D003 /* GovernanceUnlocksViewModel.swift */; };
 		8471825F2846A8E2002C5720 /* ActionManageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471825E2846A8E2002C5720 /* ActionManageTableViewCell.swift */; };
 		8472072E277C203A00F593DD /* UICollectionView+Reuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */; };
 		84720730277C335000F593DD /* DAppListFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072F277C335000F593DD /* DAppListFlowLayout.swift */; };
@@ -4074,6 +4079,11 @@
 		847119D4262EF95A00716580 /* PayoutInfoFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutInfoFactoryProtocol.swift; sourceTree = "<group>"; };
 		847119EA262EFF3800716580 /* ValidatorPayoutInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPayoutInfoFactory.swift; sourceTree = "<group>"; };
 		8471538C2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeRewardDestinationViewModelFactory.swift; sourceTree = "<group>"; };
+		8471577A2910F0AF00D7D003 /* GovernanceUnlockInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockInteractor.swift; sourceTree = "<group>"; };
+		8471577C2910F18300D7D003 /* GovernanceUnlockProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockProtocols.swift; sourceTree = "<group>"; };
+		8471577F2910F30500D7D003 /* GovernanceUnlockInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockInteractorError.swift; sourceTree = "<group>"; };
+		84715782291132B400D7D003 /* GovernanceUnlockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockTableViewCell.swift; sourceTree = "<group>"; };
+		84715785291136B100D7D003 /* GovernanceUnlocksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlocksViewModel.swift; sourceTree = "<group>"; };
 		8471825E2846A8E2002C5720 /* ActionManageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionManageTableViewCell.swift; sourceTree = "<group>"; };
 		8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Reuse.swift"; sourceTree = "<group>"; };
 		8472072F277C335000F593DD /* DAppListFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListFlowLayout.swift; sourceTree = "<group>"; };
@@ -8591,6 +8601,32 @@
 			path = StorageSubscription;
 			sourceTree = "<group>";
 		};
+		847157792910F06000D7D003 /* GovernanceUnlock */ = {
+			isa = PBXGroup;
+			children = (
+				8471577A2910F0AF00D7D003 /* GovernanceUnlockInteractor.swift */,
+				8471577C2910F18300D7D003 /* GovernanceUnlockProtocols.swift */,
+				8471577F2910F30500D7D003 /* GovernanceUnlockInteractorError.swift */,
+			);
+			path = GovernanceUnlock;
+			sourceTree = "<group>";
+		};
+		847157812911321000D7D003 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84715782291132B400D7D003 /* GovernanceUnlockTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		847157842911367400D7D003 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				84715785291136B100D7D003 /* GovernanceUnlocksViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		8472974B260A9CAD009B86D0 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -8714,6 +8750,7 @@
 				8425D0E128FE75EA003B782A /* ReferendumVote */,
 				CEE6BB9D4D5A0E46E857EED4 /* ReferendumVoteSetup */,
 				B320B465EE16F566DDFE5D8C /* ReferendumVoteConfirm */,
+				847157792910F06000D7D003 /* GovernanceUnlock */,
 				FD4B0C614F7A70D8FB51A1C3 /* GovernanceUnlockSetup */,
 			);
 			path = Governance;
@@ -13961,6 +13998,8 @@
 		FD4B0C614F7A70D8FB51A1C3 /* GovernanceUnlockSetup */ = {
 			isa = PBXGroup;
 			children = (
+				847157842911367400D7D003 /* ViewModel */,
+				847157812911321000D7D003 /* View */,
 				F4642DD5186EFA940518CCB4 /* GovernanceUnlockSetupProtocols.swift */,
 				856BF961EACEB9703B2B37C7 /* GovernanceUnlockSetupWireframe.swift */,
 				7B9CC114CB6B28CDC59F99CF /* GovernanceUnlockSetupPresenter.swift */,
@@ -14644,6 +14683,7 @@
 				889D889528F01E5B00C4320F /* ReferendumTableViewCell.swift in Sources */,
 				F41CEB83272FF3DD00C06154 /* CrowdloanYourContributionsVMFactory.swift in Sources */,
 				8490146A24A9463B008F705E /* Locale+Localization.swift in Sources */,
+				84715786291136B100D7D003 /* GovernanceUnlocksViewModel.swift in Sources */,
 				84DD5F64263DFAB700425ACF /* ErrorConditionViolation.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				8493D3E62705994200157009 /* StakingSharedState.swift in Sources */,
@@ -14753,6 +14793,7 @@
 				84BFFA0C288FFFA100069846 /* WalletsListViewModel.swift in Sources */,
 				843461CD26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift in Sources */,
 				88F7716428BF6B59008C028A /* GenericMultiValueView.swift in Sources */,
+				847157802910F30500D7D003 /* GovernanceUnlockInteractorError.swift in Sources */,
 				843612BB278FD6E000DC739E /* DAppSigningType.swift in Sources */,
 				AE2C84D525EF989A00986716 /* ValidatorInfoWireframe.swift in Sources */,
 				F471897626C297AA006487AD /* AnalyticsValidatorsPage.swift in Sources */,
@@ -15172,6 +15213,7 @@
 				849013AC24A80984008F705E /* AppDelegate.swift in Sources */,
 				8476D39D27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift in Sources */,
 				8442002028E6FDBE00C49C4A /* CrowdloanListViewManager.swift in Sources */,
+				8471577B2910F0AF00D7D003 /* GovernanceUnlockInteractor.swift in Sources */,
 				84CE69E82566750D00559427 /* ByteLengthProcessor.swift in Sources */,
 				8494D87A2525350000614D8F /* SubscanStatusData.swift in Sources */,
 				8499FEDA27BFDB8C00712589 /* NFTStreamableSource.swift in Sources */,
@@ -16232,6 +16274,7 @@
 				3D1FB0EF87D42F08D9250552 /* PurchasePresenter.swift in Sources */,
 				F4F22976260DBF3F00ACFDB8 /* StakingPayoutRewardTableCell.swift in Sources */,
 				8428229A289BC8E400163031 /* AddAccount+ParitySignerWelcomeWireframe.swift in Sources */,
+				8471577D2910F18300D7D003 /* GovernanceUnlockProtocols.swift in Sources */,
 				2CF2F93AF862CF54FC46B560 /* PurchaseInteractor.swift in Sources */,
 				90EFE3768F1375470FDBE6F6 /* PurchaseViewFactory.swift in Sources */,
 				F452D895273D22CF008F7295 /* SettingsTableHeaderView.swift in Sources */,
@@ -17020,6 +17063,7 @@
 				E488F3E052650FF525D41D63 /* LedgerTxConfirmInteractor.swift in Sources */,
 				75DAB313623E900EC475E215 /* LedgerTxConfirmViewFactory.swift in Sources */,
 				44D9F74D7851B874F2045E7E /* LedgerInstructionsProtocols.swift in Sources */,
+				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,
 				CD4240B756F20C338A8B3589 /* LedgerInstructionsWireframe.swift in Sources */,
 				91A1286763617DE022BD495F /* LedgerInstructionsPresenter.swift in Sources */,
 				529B87AC9E500CC2A503A859 /* LedgerInstructionsViewController.swift in Sources */,
