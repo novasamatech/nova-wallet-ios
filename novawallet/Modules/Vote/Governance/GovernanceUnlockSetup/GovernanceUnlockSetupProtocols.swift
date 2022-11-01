@@ -1,11 +1,14 @@
-protocol GovernanceUnlockSetupViewProtocol: ControllerBackedProtocol {}
+protocol GovernanceUnlockSetupViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: GovernanceUnlocksViewModel)
+}
 
 protocol GovernanceUnlockSetupPresenterProtocol: AnyObject {
     func setup()
+    func unlock()
 }
 
-protocol GovernanceUnlockSetupInteractorInputProtocol: AnyObject {}
+protocol GovernanceUnlockSetupInteractorInputProtocol: GovernanceUnlockInteractorInputProtocol {}
 
-protocol GovernanceUnlockSetupInteractorOutputProtocol: AnyObject {}
+protocol GovernanceUnlockSetupInteractorOutputProtocol: GovernanceUnlockInteractorOutputProtocol {}
 
-protocol GovernanceUnlockSetupWireframeProtocol: AnyObject {}
+protocol GovernanceUnlockSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
