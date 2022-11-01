@@ -342,6 +342,8 @@
 		8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8402CC9B275B92AC00E5BF30 /* ControlView.swift */; };
 		8402CC9E275B946100E5BF30 /* DAppItemViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8402CC9D275B946100E5BF30 /* DAppItemViewCell.swift */; };
 		84031C17263EC95C008FD9D4 /* SetPayeeCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84031C16263EC95C008FD9D4 /* SetPayeeCall.swift */; };
+		84033055290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84033054290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift */; };
+		84033057290FD8AB009C18E6 /* ReferendumsUnlocksTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84033056290FD8AB009C18E6 /* ReferendumsUnlocksTableViewCell.swift */; };
 		84038FEC26FFBA4D00C73F3F /* PriceLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84038FEB26FFBA4D00C73F3F /* PriceLocalStorageSubscriber.swift */; };
 		84038FEE26FFBA6200C73F3F /* PriceLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84038FED26FFBA6200C73F3F /* PriceLocalSubscriptionHandler.swift */; };
 		84038FF026FFBE0600C73F3F /* JsonLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84038FEF26FFBE0600C73F3F /* JsonLocalStorageSubscriber.swift */; };
@@ -3267,6 +3269,8 @@
 		8402CC9B275B92AC00E5BF30 /* ControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlView.swift; sourceTree = "<group>"; };
 		8402CC9D275B946100E5BF30 /* DAppItemViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppItemViewCell.swift; sourceTree = "<group>"; };
 		84031C16263EC95C008FD9D4 /* SetPayeeCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPayeeCall.swift; sourceTree = "<group>"; };
+		84033054290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsUnlocksViewModel.swift; sourceTree = "<group>"; };
+		84033056290FD8AB009C18E6 /* ReferendumsUnlocksTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsUnlocksTableViewCell.swift; sourceTree = "<group>"; };
 		84038FEB26FFBA4D00C73F3F /* PriceLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		84038FED26FFBA6200C73F3F /* PriceLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		84038FEF26FFBE0600C73F3F /* JsonLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonLocalStorageSubscriber.swift; sourceTree = "<group>"; };
@@ -7991,6 +7995,7 @@
 				84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */,
 				848701092907055900F2C0C3 /* ReferendumTimelineViewModelFactory.swift */,
 				8487010B2907AA9B00F2C0C3 /* ReferendumMetadataViewModelFactory.swift */,
+				84033054290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -12270,6 +12275,7 @@
 				889D889428F01E5B00C4320F /* ReferendumTableViewCell.swift */,
 				889D889628F022AA00C4320F /* UILabel+Style.swift */,
 				88F34FDC28FFE6E400712BDE /* MultiValueView+Model.swift */,
+				84033056290FD8AB009C18E6 /* ReferendumsUnlocksTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -16759,6 +16765,7 @@
 				8321399396FA5B25BC93A090 /* DAppPhishingViewLayout.swift in Sources */,
 				B1BB78684B059A113AB3AD30 /* DAppPhishingViewFactory.swift in Sources */,
 				6ECB27B386124F87382073FD /* DAppAddFavoriteProtocols.swift in Sources */,
+				84033057290FD8AB009C18E6 /* ReferendumsUnlocksTableViewCell.swift in Sources */,
 				433A3C2B0D1E4BA5974D681B /* DAppAddFavoriteWireframe.swift in Sources */,
 				F5CA222FA684AAC8B556E667 /* DAppAddFavoritePresenter.swift in Sources */,
 				AC904E313DC15AE40C927946 /* DAppAddFavoriteInteractor.swift in Sources */,
@@ -17038,6 +17045,7 @@
 				85600C63BB1BEC76EDFA04CB /* ReferendumFullDetailsViewController.swift in Sources */,
 				EAAFB082E2BB0CA418714061 /* ReferendumFullDetailsViewLayout.swift in Sources */,
 				74F470AE889B0E49D9808802 /* ReferendumFullDetailsViewFactory.swift in Sources */,
+				84033055290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift in Sources */,
 				003063A17B04BA6327EA355F /* ReferendumVotersProtocols.swift in Sources */,
 				E4021A6E90432CC5C797A647 /* ReferendumVotersWireframe.swift in Sources */,
 				93EB8C73108944E9C576936C /* ReferendumVotersPresenter.swift in Sources */,

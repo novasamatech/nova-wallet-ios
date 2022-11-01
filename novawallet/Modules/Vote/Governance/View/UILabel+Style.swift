@@ -76,9 +76,15 @@ extension UILabel.Style {
         textColor: R.color.colorWhite64()!,
         font: .regularFootnote
     )
+
     static let caption1White64 = UILabel.Style(
         textColor: R.color.colorWhite64()!,
         font: .caption1
+    )
+
+    static let regularSubhedlineWhite = UILabel.Style(
+        textColor: R.color.colorWhite()!,
+        font: .regularSubheadline
     )
 }
 

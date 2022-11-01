@@ -120,6 +120,11 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
+        let lockStateFactory = Gov2LockStateFactory(
+            requestFactory: requestFactory,
+            unlocksCalculator: Gov2UnlocksCalculator()
+        )
+
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
@@ -127,6 +132,7 @@ final class VoteChildPresenterFactory {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
             referendumsOperationFactory: referendumOperationFactory,
+            lockStateFactory: lockStateFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,
@@ -182,10 +188,12 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
 
         let indexFormatter = NumberFormatter.index.localizableResource()
 
+        let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
+
         let viewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()
@@ -196,6 +204,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
+            assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             sorting: ReferendumsTimeSortingProvider(),
             localizationManager: localizationManager,
             logger: logger

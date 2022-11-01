@@ -34,13 +34,13 @@ enum ConvictionVoting {
             case .locked2x:
                 return 2 * balance
             case .locked3x:
-                return 4 * balance
+                return 3 * balance
             case .locked4x:
-                return 8 * balance
+                return 4 * balance
             case .locked5x:
-                return 16 * balance
+                return 5 * balance
             case .locked6x:
-                return 32 * balance
+                return 6 * balance
             case .unknown:
                 return nil
             }
@@ -76,13 +76,13 @@ enum ConvictionVoting {
             case .locked2x:
                 return 2
             case .locked3x:
-                return 4
+                return 3
             case .locked4x:
-                return 8
+                return 4
             case .locked5x:
-                return 16
+                return 5
             case .locked6x:
-                return 32
+                return 6
             case .unknown:
                 return nil
             }
