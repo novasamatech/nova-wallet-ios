@@ -12,6 +12,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
+    let lockStateFactory: GovernanceLockStateFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
     let operationQueue: OperationQueue
@@ -32,8 +33,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
     private var referendumsCancellable: CancellableCall?
-    private var votesCancellable: CancellableCall?
     private var blockTimeCancellable: CancellableCall?
+    private var unlockScheduleCancellable: CancellableCall?
 
     init(
         selectedMetaAccount: MetaAccountModel,
@@ -42,6 +43,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
+        lockStateFactory: GovernanceLockStateFactoryProtocol,
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -53,6 +55,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.referendumsOperationFactory = referendumsOperationFactory
+        self.lockStateFactory = lockStateFactory
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
@@ -79,8 +82,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func clearCancellable() {
         clear(cancellable: &referendumsCancellable)
-        clear(cancellable: &votesCancellable)
         clear(cancellable: &blockTimeCancellable)
+        clear(cancellable: &unlockScheduleCancellable)
     }
 
     private func clearBlockTimeService() {
@@ -123,6 +126,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         subscribeToBlockNumber(for: chain)
         subscribeToMetadata(for: chain)
+
+        if let accountId = accountId {
+            subscribeAccountVotes(for: accountId)
+        }
     }
 
     private func setupBlockTimeService(for chain: ChainModel) {
@@ -258,58 +265,21 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func provideVotesIfNeeded() {
-        guard votesCancellable == nil else {
+    private func subscribeAccountVotes(for accountId: AccountId) {
+        guard let subscriptionFactory = governanceState.subscriptionFactory else {
             return
         }
 
-        guard let chain = governanceState.settings.value else {
-            presenter?.didReceiveError(.votesFetchFailed(PersistentValueSettingsError.missingValue))
-            return
-        }
-
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            presenter?.didReceiveError(.votesFetchFailed(ChainRegistryError.connectionUnavailable))
-            return
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceiveError(.votesFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            presenter?.didReceiveVotes([:])
-            return
-        }
-
-        let wrapper = referendumsOperationFactory.fetchAccountVotesWrapper(
-            for: accountId,
-            from: connection,
-            runtimeProvider: runtimeProvider,
-            blockHash: nil
-        )
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.votesCancellable else {
-                    return
-                }
-
-                self?.votesCancellable = nil
-
-                do {
-                    let votes = try wrapper.targetOperation.extractNoCancellableResultData().votes
-                    self?.presenter?.didReceiveVotes(votes)
-                } catch {
-                    self?.presenter?.didReceiveError(.votesFetchFailed(error))
-                }
+        subscriptionFactory.subscribeToAccountVotes(self, accountId: accountId) { [weak self] result in
+            switch result {
+            case let .success(voting):
+                self?.presenter?.didReceiveVoting(voting)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(.votingSubscriptionFailed(error))
+            case .none:
+                break
             }
         }
-
-        votesCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
@@ -369,10 +339,53 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     func refresh() {
         if governanceState.settings.value != nil {
             provideReferendumsIfNeeded()
-            provideVotesIfNeeded()
             provideBlockTime()
 
             metadataProvider?.refresh()
+        }
+    }
+
+    func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?) {
+        if let chain = governanceState.settings.value {
+            clear(cancellable: &referendumsCancellable)
+
+            guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
+                presenter?.didReceiveError(.unlockScheduleFetchFailed(ChainRegistryError.connectionUnavailable))
+                return
+            }
+
+            guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+                presenter?.didReceiveError(.unlockScheduleFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+                return
+            }
+
+            let wrapper = lockStateFactory.buildUnlockScheduleWrapper(
+                for: tracksVoting,
+                from: connection,
+                runtimeProvider: runtimeProvider,
+                blockHash: blockHash
+            )
+
+            wrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard self?.unlockScheduleCancellable === wrapper else {
+                        return
+                    }
+
+                    self?.unlockScheduleCancellable = nil
+
+                    do {
+                        let schedule = try wrapper.targetOperation.extractNoCancellableResultData()
+                        self?.presenter?.didReceiveUnlockSchedule(schedule)
+                    } catch {
+                        self?.presenter?.didReceiveError(.unlockScheduleFetchFailed(error))
+                    }
+                }
+            }
+
+            unlockScheduleCancellable = wrapper
+
+            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
         }
     }
 

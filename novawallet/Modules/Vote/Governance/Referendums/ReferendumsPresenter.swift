@@ -9,6 +9,7 @@ final class ReferendumsPresenter {
     let wireframe: ReferendumsWireframeProtocol
     let viewModelFactory: ReferendumsModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let sorting: ReferendumsSorting
     let logger: LoggerProtocol
 
@@ -17,7 +18,8 @@ final class ReferendumsPresenter {
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
-    private var votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]?
+    private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private var unlockSchedule: GovernanceUnlockSchedule?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
 
@@ -36,6 +38,7 @@ final class ReferendumsPresenter {
         wireframe: ReferendumsWireframeProtocol,
         viewModelFactory: ReferendumsModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
+        assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         sorting: ReferendumsSorting,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -44,6 +47,7 @@ final class ReferendumsPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
+        self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.sorting = sorting
         self.logger = logger
         self.localizationManager = localizationManager
@@ -56,12 +60,13 @@ final class ReferendumsPresenter {
         price = nil
         referendums = nil
         referendumsMetadata = nil
-        votes = nil
+        voting = nil
         blockNumber = nil
         blockTime = nil
         maxStatusTimeInterval = nil
         timeModels = nil
 
+        view?.didReceiveUnlocks(viewModel: nil)
         view?.update(model: .init(sections: []))
     }
 
@@ -79,7 +84,34 @@ final class ReferendumsPresenter {
         view?.didReceiveChainBalance(viewModel: viewModel)
     }
 
-    private func updateView() {
+    private func updateUnlocksView() {
+        guard
+            let totalLocked = voting?.value?.totalLocked(),
+            totalLocked > 0,
+            let displayInfo = chain?.utilityAssetDisplayInfo()
+        else {
+            view?.didReceiveUnlocks(viewModel: nil)
+            return
+        }
+
+        let totalLockedDecimal = Decimal.fromSubstrateAmount(totalLocked, precision: displayInfo.assetPrecision) ?? 0
+
+        let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: displayInfo)
+        let totalLockedString = tokenFormatter.value(for: selectedLocale).stringFromDecimal(totalLockedDecimal)
+
+        let hasUnlock: Bool
+
+        if let blockNumber = blockNumber, let unlockSchedule = unlockSchedule {
+            hasUnlock = unlockSchedule.availableUnlock(at: blockNumber).amount > 0
+        } else {
+            hasUnlock = false
+        }
+
+        let viewModel = ReferendumsUnlocksViewModel(totalLock: totalLockedString ?? "", hasUnlock: hasUnlock)
+        view?.didReceiveUnlocks(viewModel: viewModel)
+    }
+
+    private func updateReferendumsView() {
         guard let view = view else {
             return
         }
@@ -89,10 +121,12 @@ final class ReferendumsPresenter {
               let chainModel = chain else {
             return
         }
+
+        let accountVotes = voting?.value?.votes
         let sections = viewModelFactory.createSections(input: .init(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
-            votes: votes ?? [:],
+            votes: accountVotes?.votes ?? [:],
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
             locale: selectedLocale
         ))
@@ -178,6 +212,14 @@ final class ReferendumsPresenter {
         self.timeModels = updatedTimeModels
         view.updateReferendums(time: updatedTimeModels)
     }
+
+    private func refreshUnlockSchedule() {
+        guard let tracksVoting = voting?.value else {
+            return
+        }
+
+        interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
+    }
 }
 
 extension ReferendumsPresenter: ReferendumsPresenterProtocol {
@@ -186,10 +228,12 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
+        let accountVotes = voting?.value?.votes
+
         wireframe.showReferendumDetails(
             from: view,
             referendum: referendum,
-            accountVotes: votes?[referendum.index],
+            accountVotes: accountVotes?.votes[referendum.index],
             metadata: referendumsMetadata?[referendum.index]
         )
     }
@@ -221,16 +265,22 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
             selectedChainAssetId: chainAssetId
         )
     }
+
+    func selectUnlocks() {}
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
-    func didReceiveVotes(_ votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]) {
-        self.votes = votes
+    func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
+        self.voting = voting
+        updateReferendumsView()
+        updateUnlocksView()
+
+        refreshUnlockSchedule()
     }
 
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?) {
         referendumsMetadata = metadata
-        updateView()
+        updateReferendumsView()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
@@ -248,15 +298,17 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
         self.referendums = referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
 
-        updateView()
+        updateReferendumsView()
         updateTimeModels()
+
+        refreshUnlockSchedule()
     }
 
     func didReceiveSelectedChain(_ chain: ChainModel) {
         self.chain = chain
 
         provideChainBalance()
-        updateView()
+        updateReferendumsView()
     }
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
@@ -267,6 +319,11 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceivePrice(_ price: PriceData?) {
         self.price = price
+    }
+
+    func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule) {
+        self.unlockSchedule = unlockSchedule
+        updateUnlocksView()
     }
 
     func didReceiveError(_ error: ReferendumsInteractorError) {
@@ -283,18 +340,22 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                     self?.interactor.saveSelected(chainModel: chain)
                 }
             }
-        case .referendumsFetchFailed, .votesFetchFailed:
+        case .referendumsFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refresh()
             }
         case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
-             .metadataSubscriptionFailed, .blockTimeServiceFailed:
+             .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
         case .blockTimeFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryBlockTime()
+            }
+        case .unlockScheduleFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshUnlockSchedule()
             }
         }
     }
@@ -321,7 +382,8 @@ extension ReferendumsPresenter: Localizable {
         if let view = view, view.isSetup {
             provideChainBalance()
 
-            updateView()
+            updateReferendumsView()
+            updateUnlocksView()
         }
     }
 }
