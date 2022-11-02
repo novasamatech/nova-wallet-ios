@@ -43,6 +43,8 @@ final class GovernanceUnlockTableViewCell: UITableViewCell {
         detailsLabel.numberOfLines = 1
         lockView.valueView.spacing = 4
         iconImageView.image = R.image.iconPending()
+
+        lockView.valueView.mode = .detailsIcon
     }
 
     private func setupLayout() {
