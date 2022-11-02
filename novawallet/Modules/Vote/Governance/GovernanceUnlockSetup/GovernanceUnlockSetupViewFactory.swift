@@ -17,6 +17,8 @@ struct GovernanceUnlockSetupViewFactory {
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = GovernanceUnlockSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -26,7 +28,7 @@ struct GovernanceUnlockSetupViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = GovernanceUnlockSetupViewController(presenter: presenter)
+        let view = GovernanceUnlockSetupViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
         interactor.presenter = presenter

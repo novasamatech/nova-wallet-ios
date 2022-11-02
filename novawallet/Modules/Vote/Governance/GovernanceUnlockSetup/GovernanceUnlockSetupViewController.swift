@@ -8,9 +8,11 @@ final class GovernanceUnlockSetupViewController: UIViewController, ViewHolder {
 
     private var viewModel: GovernanceUnlocksViewModel?
 
-    init(presenter: GovernanceUnlockSetupPresenterProtocol) {
+    init(presenter: GovernanceUnlockSetupPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
