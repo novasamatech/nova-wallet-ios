@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-struct GovernanceUnlockSchedule {
+struct GovernanceUnlockSchedule: Equatable {
     enum Action: Equatable, Hashable {
         case unvote(track: TrackIdLocal, index: ReferendumIdLocal)
         case unlock(track: TrackIdLocal)

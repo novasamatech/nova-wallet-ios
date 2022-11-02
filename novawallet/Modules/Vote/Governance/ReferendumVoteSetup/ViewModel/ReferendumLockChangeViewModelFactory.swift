@@ -1,25 +1,78 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 protocol ReferendumLockChangeViewModelFactoryProtocol {
     func createTransferableAmountViewModel(
-        from diff: GovernanceLockStateDiff,
+        resultLocked: BigUInt?,
         balance: AssetBalance,
         locks: AssetLocks,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel?
 
     func createAmountViewModel(
-        from diff: GovernanceLockStateDiff,
+        initLocked: BigUInt,
+        resultLocked: BigUInt?,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel?
+
+    func createPeriodViewModel(
+        initLockedUntil: BlockNumber,
+        resultLockedUntil: BlockNumber?,
+        blockNumber: BlockNumber,
+        blockTime: BlockTime,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel?
+}
+
+extension ReferendumLockChangeViewModelFactoryProtocol {
+    func createTransferableAmountViewModel(
+        from diff: GovernanceLockStateDiff,
+        balance: AssetBalance,
+        locks: AssetLocks,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel? {
+        createTransferableAmountViewModel(
+            resultLocked: diff.after?.maxLockedAmount,
+            balance: balance,
+            locks: locks,
+            locale: locale
+        )
+    }
+
+    func createAmountViewModel(
+        from diff: GovernanceLockStateDiff,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel? {
+        createAmountViewModel(
+            initLocked: diff.before.maxLockedAmount,
+            resultLocked: diff.after?.maxLockedAmount,
+            locale: locale
+        )
+    }
 
     func createPeriodViewModel(
         from diff: GovernanceLockStateDiff,
         blockNumber: BlockNumber,
         blockTime: BlockTime,
         locale: Locale
-    ) -> ReferendumLockTransitionViewModel?
+    ) -> ReferendumLockTransitionViewModel? {
+        let resultLockedUntil: BlockNumber?
+
+        if let toState = diff.after {
+            resultLockedUntil = toState.lockedUntil ?? blockNumber
+        } else {
+            resultLockedUntil = nil
+        }
+
+        return createPeriodViewModel(
+            initLockedUntil: diff.before.lockedUntil ?? blockNumber,
+            resultLockedUntil: resultLockedUntil,
+            blockNumber: blockNumber,
+            blockTime: blockTime,
+            locale: locale
+        )
+    }
 }
 
 final class ReferendumLockChangeViewModelFactory {
@@ -42,7 +95,7 @@ final class ReferendumLockChangeViewModelFactory {
 
 extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol {
     func createTransferableAmountViewModel(
-        from diff: GovernanceLockStateDiff,
+        resultLocked: BigUInt?,
         balance: AssetBalance,
         locks: AssetLocks,
         locale: Locale
@@ -61,13 +114,13 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
 
         let balanceFormatter = balanceFormatter.value(for: locale)
 
-        if let toState = diff.after {
+        if let resultLocked = resultLocked {
             let otherLocks = locks
                 .filter { $0.identifier != votingLockId }
                 .map(\.amount)
                 .max() ?? 0
 
-            let newLocked = max(otherLocks, toState.maxLockedAmount)
+            let newLocked = max(otherLocks, resultLocked)
 
             let newTransferable = balance.newTransferable(for: newLocked)
 
@@ -100,12 +153,13 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
     }
 
     func createAmountViewModel(
-        from diff: GovernanceLockStateDiff,
+        initLocked: BigUInt,
+        resultLocked: BigUInt?,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel? {
         guard
             let fromAmountDecimal = Decimal.fromSubstrateAmount(
-                diff.before.maxLockedAmount,
+                initLocked,
                 precision: assetDisplayInfo.assetPrecision
             ),
             let fromAmountString = amountFormatter.value(for: locale).stringFromDecimal(fromAmountDecimal) else {
@@ -117,10 +171,10 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
 
         let balanceFormatter = balanceFormatter.value(for: locale)
 
-        if let toState = diff.after {
+        if let resultLocked = resultLocked {
             guard
                 let toAmountDecimal = Decimal.fromSubstrateAmount(
-                    toState.maxLockedAmount,
+                    resultLocked,
                     precision: assetDisplayInfo.assetPrecision
                 ) else {
                 return nil
@@ -147,12 +201,13 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
     }
 
     func createPeriodViewModel(
-        from diff: GovernanceLockStateDiff,
+        initLockedUntil: BlockNumber,
+        resultLockedUntil: BlockNumber?,
         blockNumber: BlockNumber,
         blockTime: BlockTime,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel? {
-        let fromBlock = max(diff.before.lockedUntil ?? blockNumber, blockNumber)
+        let fromBlock = max(initLockedUntil, blockNumber)
 
         let fromPeriod = blockNumber.secondsTo(block: fromBlock, blockDuration: blockTime)
         let fromPeriodString = fromPeriod.localizedDaysHoursIncludingZero(for: locale)
@@ -160,8 +215,8 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
         let toPeriodString: String
         let change: ReferendumLockTransitionViewModel.Change?
 
-        if let toState = diff.after {
-            let toBlock = max(toState.lockedUntil ?? blockNumber, blockNumber)
+        if let resultLockedUntil = resultLockedUntil {
+            let toBlock = max(resultLockedUntil, blockNumber)
             let toPeriod = blockNumber.secondsTo(block: toBlock, blockDuration: blockTime)
 
             toPeriodString = toPeriod.localizedDaysHoursIncludingZero(for: locale)
