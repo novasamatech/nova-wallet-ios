@@ -1349,8 +1349,6 @@
 		84906FEA28AFCC3F0049B57D /* LoadableStackCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FE928AFCC3F0049B57D /* LoadableStackCellView.swift */; };
 		84906FEC28AFD23B0049B57D /* LoadableStackActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */; };
 		84906FEF28B2C7090049B57D /* LedgerErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84906FEE28B2C7090049B57D /* LedgerErrorPresentable.swift */; };
-		8490895028D4A2DC00C3CCE9 /* WeightCompatabilityNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490894F28D4A2DC00C3CCE9 /* WeightCompatabilityNode.swift */; };
-		8490895228D4A90100C3CCE9 /* WeightCompatibilityTypeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490895128D4A90100C3CCE9 /* WeightCompatibilityTypeMapper.swift */; };
 		8490895428D4BA7C00C3CCE9 /* CustomSiMappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490895328D4BA7C00C3CCE9 /* CustomSiMappers.swift */; };
 		849244922514EDE800477C1B /* SelectableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849244912514EDE800477C1B /* SelectableViewModel.swift */; };
 		84939B1826E1690D000111DA /* TreasuryDepositEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84939B1726E1690D000111DA /* TreasuryDepositEvent.swift */; };
@@ -4108,8 +4106,6 @@
 		84906FE928AFCC3F0049B57D /* LoadableStackCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableStackCellView.swift; sourceTree = "<group>"; };
 		84906FEB28AFD23B0049B57D /* LoadableStackActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableStackActionCell.swift; sourceTree = "<group>"; };
 		84906FEE28B2C7090049B57D /* LedgerErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerErrorPresentable.swift; sourceTree = "<group>"; };
-		8490894F28D4A2DC00C3CCE9 /* WeightCompatabilityNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightCompatabilityNode.swift; sourceTree = "<group>"; };
-		8490895128D4A90100C3CCE9 /* WeightCompatibilityTypeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightCompatibilityTypeMapper.swift; sourceTree = "<group>"; };
 		8490895328D4BA7C00C3CCE9 /* CustomSiMappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSiMappers.swift; sourceTree = "<group>"; };
 		849244912514EDE800477C1B /* SelectableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableViewModel.swift; sourceTree = "<group>"; };
 		84939B1726E1690D000111DA /* TreasuryDepositEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryDepositEvent.swift; sourceTree = "<group>"; };
@@ -9224,8 +9220,6 @@
 		8490894E28D4A2C300C3CCE9 /* CustomNodes */ = {
 			isa = PBXGroup;
 			children = (
-				8490894F28D4A2DC00C3CCE9 /* WeightCompatabilityNode.swift */,
-				8490895128D4A90100C3CCE9 /* WeightCompatibilityTypeMapper.swift */,
 				8490895328D4BA7C00C3CCE9 /* CustomSiMappers.swift */,
 			);
 			path = CustomNodes;
@@ -14392,7 +14386,6 @@
 				8490386B262E22DC0016D541 /* NominatorPayoutInfoFactory.swift in Sources */,
 				2A028D28275688AF0061CB4C /* AddChainAccount.swift in Sources */,
 				F4CE0FF3273453E30094CD8A /* AcalaContributionSetupWireframe.swift in Sources */,
-				8490895228D4A90100C3CCE9 /* WeightCompatibilityTypeMapper.swift in Sources */,
 				8479607E283B60AA0084E779 /* ActionLoadingView.swift in Sources */,
 				84466B3A28B7653E00FA1E0D /* LedgerPerformOperationProtocols.swift in Sources */,
 				8430AB1726023D2D005B1066 /* BaseStashNextState.swift in Sources */,
@@ -15491,7 +15484,6 @@
 				8489A6D627FDA50D0040C066 /* AccountLocalStorageSubscriber.swift in Sources */,
 				846F758727B5550700536547 /* EthereumRpcRequest.swift in Sources */,
 				278F5341DC043EBED7C0733D /* CrowdloanListViewFactory.swift in Sources */,
-				8490895028D4A2DC00C3CCE9 /* WeightCompatabilityNode.swift in Sources */,
 				7CBE9FFAF8394786CA131D4D /* CustomValidatorListProtocols.swift in Sources */,
 				84D9C8EF28AD97E7007FB23B /* SupportedLedgerApps.swift in Sources */,
 				8482F62A280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift in Sources */,
@@ -16424,7 +16416,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 27GUNVKXNM;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -16436,9 +16428,9 @@
 				);
 				MARKETING_VERSION = 2.4.4;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "nova-debug";
+				PROVISIONING_PROFILE_SPECIFIER = "Ruslan's Dev";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -16478,8 +16470,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 27GUNVKXNM;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -16489,6 +16483,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -16504,7 +16500,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 27GUNVKXNM;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -16589,7 +16585,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 27GUNVKXNM;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -16601,7 +16597,7 @@
 				);
 				MARKETING_VERSION = 2.4.4;
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev";
 				SWIFT_VERSION = 5.0;
@@ -16617,7 +16613,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 27GUNVKXNM;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -16697,7 +16693,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 27GUNVKXNM;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -16708,7 +16704,7 @@
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				MARKETING_VERSION = 2.4.4;
-				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.staging;
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.staging;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-staging";
 				SWIFT_VERSION = 5.0;
@@ -16724,7 +16720,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 27GUNVKXNM;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
