@@ -123,6 +123,16 @@ final class ReferendumsModelFactory {
         }
     }
 
+    private func createPreparingStatus(for model: ReferendumStateLocal.Preparing, locale: Locale) -> String {
+        if model.inQueue {
+            return createInQueueFormatting(for: model.inQueuePosition, locale: locale)
+        } else if model.deposit == nil {
+            return Strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
+        } else {
+            return Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
+        }
+    }
+
     private func providePreparingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Preparing,
         params: StatusParams,
@@ -135,13 +145,7 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
-        let title: String
-
-        if model.inQueue {
-            title = createInQueueFormatting(for: model.inQueuePosition, locale: locale)
-        } else {
-            title = Strings.governanceReferendumsStatusPreparing(preferredLanguages: locale.rLanguages)
-        }
+        let title = createPreparingStatus(for: model, locale: locale)
 
         switch model.voting {
         case let .supportAndVotes(supportAndVotes):
