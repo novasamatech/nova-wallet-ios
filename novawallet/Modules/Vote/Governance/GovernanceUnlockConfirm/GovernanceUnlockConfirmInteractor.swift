@@ -20,6 +20,7 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
     let signer: SigningWrapperProtocol
 
     private var locksSubscription: StreamableProvider<AssetLock>?
+    private var assetBalanceProvider: StreamableProvider<AssetBalance>?
 
     init(
         chain: ChainModel,
@@ -64,6 +65,20 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
         }
 
         locksSubscription = subscribeToLocksProvider(
+            for: selectedAccount.chainAccount.accountId,
+            chainId: chain.chainId,
+            assetId: assetId
+        )
+    }
+
+    private func clearAndSubscribeBalance() {
+        clear(streamableProvider: &assetBalanceProvider)
+
+        guard let assetId = chain.utilityAsset()?.assetId else {
+            return
+        }
+
+        assetBalanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.chainAccount.accountId,
             chainId: chain.chainId,
             assetId: assetId
@@ -141,5 +156,14 @@ extension GovernanceUnlockConfirmInteractor: WalletLocalStorageSubscriber, Walle
         case let .failure(error):
             presenter?.didReceiveError(.locksSubscriptionFailed(error))
         }
+    }
+
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) {
+        
     }
 }

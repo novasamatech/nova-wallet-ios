@@ -1,7 +1,11 @@
 import Foundation
 
 struct GovernanceUnlockConfirmViewFactory {
-    static func createView(for state: GovernanceSharedState) -> GovernanceUnlockConfirmViewProtocol? {
+    static func createView(
+        for state: GovernanceSharedState,
+        schedule: GovernanceUnlockSchedule,
+        blockNumber: BlockNumber
+    ) -> GovernanceUnlockConfirmViewProtocol? {
         let interactor = GovernanceUnlockConfirmInteractor()
         let wireframe = GovernanceUnlockConfirmWireframe()
 

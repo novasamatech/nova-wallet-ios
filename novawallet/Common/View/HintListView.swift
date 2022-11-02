@@ -25,23 +25,37 @@ class HintListView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(texts: [String]) {
-        if texts.count < hints.count {
-            let hintsToRemove = hints.suffix(hints.count - texts.count)
-            hints = Array(hints.prefix(texts.count))
+    private func updateHints(for newCount: Int) {
+        if newCount < hints.count {
+            let hintsToRemove = hints.suffix(hints.count - newCount)
+            hints = Array(hints.prefix(newCount))
 
             hintsToRemove.forEach { $0.removeFromSuperview() }
-        } else if texts.count > hints.count {
-            let addHintsCount = texts.count - hints.count
+        } else if newCount > hints.count {
+            let addHintsCount = newCount - hints.count
             let newHints = (0 ..< addHintsCount).map { _ in IconDetailsView.hint() }
 
             newHints.forEach { stackView.addArrangedSubview($0) }
 
             hints += newHints
         }
+    }
+
+    func bind(texts: [String]) {
+        updateHints(for: texts.count)
 
         for (text, hint) in zip(texts, hints) {
             hint.detailsLabel.text = text
+        }
+
+        setNeedsLayout()
+    }
+
+    func bind(attributedTexts: [NSAttributedString]) {
+        updateHints(for: attributedTexts.count)
+
+        for (text, hint) in zip(attributedTexts, hints) {
+            hint.detailsLabel.attributedText = text
         }
 
         setNeedsLayout()
