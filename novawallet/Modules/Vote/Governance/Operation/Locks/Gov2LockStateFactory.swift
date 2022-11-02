@@ -116,12 +116,12 @@ final class Gov2LockStateFactory {
 
     func calculatePriorLockMax(from trackVotes: ReferendumTracksVotingDistribution) -> BlockNumber? {
         let optCastingMax = trackVotes.votes.priorLocks.values
-            .filter { $0.amount > 0 }
+            .filter { $0.exists }
             .map(\.unlockAt)
             .max()
 
         let optDelegatingMax = trackVotes.votes.delegatings.values
-            .compactMap { $0.prior.amount > 0 ? $0.prior.unlockAt : nil }
+            .compactMap { $0.prior.exists ? $0.prior.unlockAt : nil }
             .max()
 
         if let castingMax = optCastingMax, let delegatingMax = optDelegatingMax {
@@ -143,7 +143,7 @@ final class Gov2LockStateFactory {
             let referendum = referendumKeyValue.value
 
             let accountVoting = trackVotes.votes
-            guard let vote = accountVoting.votes[referendumIndex], vote.totalBalance > 0 else {
+            guard let vote = accountVoting.votes[referendumIndex] else {
                 return nil
             }
 
@@ -201,9 +201,7 @@ final class Gov2LockStateFactory {
 
                 let newPeriod: Moment?
 
-                // if amount is zero we don't take into account the vote for the referendum
                 if
-                    newVote.voteAction.amount > 0,
                     let referendum = referendums[newVote.index],
                     let periodWithNewVote = try? self.unlocksCalculator.estimateVoteLockingPeriod(
                         for: referendum,
