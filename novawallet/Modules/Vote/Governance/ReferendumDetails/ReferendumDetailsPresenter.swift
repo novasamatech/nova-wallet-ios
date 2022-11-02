@@ -290,10 +290,6 @@ final class ReferendumDetailsPresenter {
             return
         }
 
-        guard maxStatusTimeInterval != timeInterval else {
-            return
-        }
-
         maxStatusTimeInterval = timeInterval
         statusViewModel = activeTimeModel
 

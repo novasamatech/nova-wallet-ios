@@ -51,4 +51,6 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         accountVotes: ReferendumAccountVoteLocal?,
         metadata: ReferendumMetadataLocal?
     )
+
+    func showUnlocksDetails(from view: ControllerBackedProtocol?)
 }
