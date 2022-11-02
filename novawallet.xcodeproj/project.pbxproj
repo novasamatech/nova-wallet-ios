@@ -1624,6 +1624,7 @@
 		84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */; };
 		84A90489288EA0E500DFC8E2 /* NoKeysCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A90488288EA0E500DFC8E2 /* NoKeysCommand.swift */; };
 		84A9ECC1291292900094C763 /* GovernanceUnlockConfirmInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9ECC0291292900094C763 /* GovernanceUnlockConfirmInteractorError.swift */; };
+		84A9ECC429129FF10094C763 /* GovernanceRemainedLockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A9ECC329129FF10094C763 /* GovernanceRemainedLockViewModel.swift */; };
 		84AA004326C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AA004226C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift */; };
 		84AA004526C6A04A00BCB4DC /* CommonTypesSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AA004426C6A04A00BCB4DC /* CommonTypesSyncService.swift */; };
 		84AC0B6A28C0D8CE00FA5B5D /* NoLedgerSupportCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AC0B6928C0D8CE00FA5B5D /* NoLedgerSupportCommand.swift */; };
@@ -4581,6 +4582,7 @@
 		84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmData.swift; sourceTree = "<group>"; };
 		84A90488288EA0E500DFC8E2 /* NoKeysCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoKeysCommand.swift; sourceTree = "<group>"; };
 		84A9ECC0291292900094C763 /* GovernanceUnlockConfirmInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockConfirmInteractorError.swift; sourceTree = "<group>"; };
+		84A9ECC329129FF10094C763 /* GovernanceRemainedLockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceRemainedLockViewModel.swift; sourceTree = "<group>"; };
 		84AA004226C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeSyncServiceTests.swift; sourceTree = "<group>"; };
 		84AA004426C6A04A00BCB4DC /* CommonTypesSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTypesSyncService.swift; sourceTree = "<group>"; };
 		84AC0B6928C0D8CE00FA5B5D /* NoLedgerSupportCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoLedgerSupportCommand.swift; sourceTree = "<group>"; };
@@ -6626,6 +6628,7 @@
 		77E4088EF503B8FD414F14EA /* GovernanceUnlockConfirm */ = {
 			isa = PBXGroup;
 			children = (
+				84A9ECC229129F360094C763 /* ViewModel */,
 				84A9ECBF2912925E0094C763 /* Model */,
 				0D3FE2CE7F9F2836755DBA63 /* GovernanceUnlockConfirmProtocols.swift */,
 				1E067006C1BC9DFCA5E8DB86 /* GovernanceUnlockConfirmWireframe.swift */,
@@ -10425,6 +10428,14 @@
 				84A9ECC0291292900094C763 /* GovernanceUnlockConfirmInteractorError.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		84A9ECC229129F360094C763 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				84A9ECC329129FF10094C763 /* GovernanceRemainedLockViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		84ACEBF0261E663700AAE665 /* ViewModel */ = {
@@ -14514,6 +14525,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				842A735B27DB1EDE006EE1EA /* OperationDetailsCommand.swift in Sources */,
+				84A9ECC429129FF10094C763 /* GovernanceRemainedLockViewModel.swift in Sources */,
 				F4C2009C2727ED1C00B0F3D0 /* SystemRemarkCall.swift in Sources */,
 				AEF505102616769F0098574D /* InitiatedBonding.swift in Sources */,
 				8434C9E625403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift in Sources */,

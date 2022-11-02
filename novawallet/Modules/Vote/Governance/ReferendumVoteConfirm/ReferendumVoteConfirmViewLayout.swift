@@ -100,5 +100,7 @@ final class ReferendumVoteConfirmViewLayout: UIView {
         changesTableView.addArrangedSubview(transferableCell)
         changesTableView.addArrangedSubview(lockedAmountCell)
         changesTableView.addArrangedSubview(lockedPeriodCell)
+
+        containerView.stackView.addArrangedSubview(hintsView)
     }
 }
