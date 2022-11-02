@@ -113,6 +113,22 @@ extension GovernanceUnlockSetupViewController: UITableViewDataSource {
             return cell
         }
     }
+
+    private func applyClaimStates() {
+        guard let items = viewModel?.items else {
+            return
+        }
+
+        let visibleIndexPaths = rootView.tableView.indexPathsForVisibleRows?.filter { $0.section > 0 } ?? []
+
+        visibleIndexPaths.forEach { indexPath in
+            guard let cell = rootView.tableView.cellForRow(at: indexPath) as? GovernanceUnlockTableViewCell else {
+                return
+            }
+
+            cell.bind(claimState: items[indexPath.row].claimState, locale: selectedLocale)
+        }
+    }
 }
 
 extension GovernanceUnlockSetupViewController: GovernanceUnlockSetupViewProtocol {
@@ -120,6 +136,20 @@ extension GovernanceUnlockSetupViewController: GovernanceUnlockSetupViewProtocol
         self.viewModel = viewModel
 
         rootView.tableView.reloadData()
+    }
+
+    func didTickClaim(states: [GovernanceUnlocksViewModel.ClaimState]) {
+        guard let viewModel = viewModel else {
+            return
+        }
+
+        let newItems = zip(states, viewModel.items).map {
+            GovernanceUnlocksViewModel.Item(amount: $0.1.amount, claimState: $0.0)
+        }
+
+        self.viewModel = .init(total: viewModel.total, items: newItems)
+
+        applyClaimStates()
     }
 }
 
