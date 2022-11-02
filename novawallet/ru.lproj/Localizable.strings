@@ -1075,3 +1075,4 @@
 "gov.unknown" = "Неизвестно";
 "gov.in.queue.counter" = "(%@ из %@)";
 "common.unlock" = "Разблокировать";
+"common.unlockable" = "Разблокируемые";

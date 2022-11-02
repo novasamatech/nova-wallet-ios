@@ -266,7 +266,9 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
         )
     }
 
-    func selectUnlocks() {}
+    func selectUnlocks() {
+        wireframe.showUnlocksDetails(from: view)
+    }
 }
 
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
@@ -275,7 +277,9 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         updateReferendumsView()
         updateUnlocksView()
 
-        refreshUnlockSchedule()
+        if let tracksVoting = voting.value {
+            interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
+        }
     }
 
     func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?) {
