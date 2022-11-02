@@ -16,6 +16,9 @@ final class GovernanceUnlockSetupPresenter {
     private var blockTime: BlockTime?
     private var price: PriceData?
 
+    private var maxStatusTimeInterval: TimeInterval?
+    private var countdownTimer: CountdownTimer?
+
     init(
         interactor: GovernanceUnlockSetupInteractorInputProtocol,
         wireframe: GovernanceUnlockSetupWireframeProtocol,
@@ -32,20 +35,49 @@ final class GovernanceUnlockSetupPresenter {
         self.localizationManager = localizationManager
     }
 
+    deinit {
+        invalidateTimer()
+    }
+
     private func createTotalBalanceViewModel(for amount: BigUInt) -> BalanceViewModelProtocol {
         let decimalAmount = Decimal.fromSubstrateAmount(amount, precision: assetDisplayInfo.assetPrecision) ?? 0
         return balanceViewModelFactory.balanceFromPrice(decimalAmount, priceData: price).value(for: selectedLocale)
     }
 
+    private func calculateMaxUnlockTimeInterval(
+        block: BlockNumber,
+        blockTime: BlockTime
+    ) -> TimeInterval? {
+        let intervals: [TimeInterval] = (unlockSchedule?.items ?? []).compactMap { item in
+            if block < item.unlockAt {
+                return block.secondsTo(block: item.unlockAt, blockDuration: blockTime)
+            } else {
+                return nil
+            }
+        }
+
+        return intervals.max()
+    }
+
     private func createUnlockClaimState(
         for unlockAt: BlockNumber,
         block: BlockNumber,
-        blockTime: BlockTime
+        blockTime: BlockTime,
+        elapsedTimeInterval: TimeInterval?
     ) -> GovernanceUnlocksViewModel.ClaimState {
         if block < unlockAt {
             let remainedTimeInSeconds = block.secondsTo(block: unlockAt, blockDuration: blockTime)
 
-            if let leftTime = remainedTimeInSeconds.localizedDaysOrTime(for: selectedLocale) {
+            let tickedTime: TimeInterval
+
+            if let elapsedTimeInterval = elapsedTimeInterval {
+                tickedTime = remainedTimeInSeconds > elapsedTimeInterval ?
+                    remainedTimeInSeconds - elapsedTimeInterval : 0
+            } else {
+                tickedTime = remainedTimeInSeconds
+            }
+
+            if let leftTime = tickedTime.localizedDaysOrTime(for: selectedLocale) {
                 let time = R.string.localizable.commonTimeLeftFormat(
                     leftTime,
                     preferredLanguages: selectedLocale.rLanguages
@@ -85,7 +117,12 @@ final class GovernanceUnlockSetupPresenter {
 
         let amountString = balanceViewModelFactory.amountFromValue(amountDecimal).value(for: selectedLocale)
 
-        let claimState = createUnlockClaimState(for: unlockAt, block: block, blockTime: blockTime)
+        let claimState = createUnlockClaimState(
+            for: unlockAt,
+            block: block,
+            blockTime: blockTime,
+            elapsedTimeInterval: nil
+        )
 
         return .init(amount: amountString, claimState: claimState)
     }
@@ -136,6 +173,69 @@ final class GovernanceUnlockSetupPresenter {
 
         interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
     }
+
+    private func invalidateTimer() {
+        countdownTimer?.delegate = self
+        countdownTimer?.stop()
+        countdownTimer = nil
+    }
+
+    private func setupTimerIfNeeded() {
+        invalidateTimer()
+
+        guard
+            let blockNumber = blockNumber,
+            let blockTime = blockTime else {
+            return
+        }
+
+        guard let maxTimeInterval = calculateMaxUnlockTimeInterval(block: blockNumber, blockTime: blockTime) else {
+            return
+        }
+
+        maxStatusTimeInterval = maxTimeInterval
+
+        countdownTimer = CountdownTimer()
+        countdownTimer?.delegate = self
+        countdownTimer?.start(with: maxTimeInterval)
+    }
+
+    private func updateViewOnTimerTick() {
+        guard
+            let maxStatusTimeInterval = maxStatusTimeInterval,
+            let remainedInterval = countdownTimer?.remainedInterval,
+            let blockNumber = blockNumber,
+            let blockTime = blockTime else {
+            return
+        }
+
+        let elapsedTimeInterval = maxStatusTimeInterval - remainedInterval
+
+        let items: [GovernanceUnlocksViewModel.ClaimState]
+
+        if let unlockSchedule = unlockSchedule {
+            let availableUnlock = unlockSchedule.availableUnlock(at: blockNumber)
+
+            let remainingUnlocks = unlockSchedule.remainingLocks(after: blockNumber).map {
+                createUnlockClaimState(
+                    for: $0.unlockAt,
+                    block: blockNumber,
+                    blockTime: blockTime,
+                    elapsedTimeInterval: elapsedTimeInterval
+                )
+            }
+
+            if !availableUnlock.isEmpty {
+                items = [.now] + remainingUnlocks
+            } else {
+                items = remainingUnlocks
+            }
+        } else {
+            items = []
+        }
+
+        view?.didTickClaim(states: items)
+    }
 }
 
 extension GovernanceUnlockSetupPresenter: GovernanceUnlockSetupPresenterProtocol {
@@ -169,12 +269,16 @@ extension GovernanceUnlockSetupPresenter: GovernanceUnlockSetupInteractorOutputP
         updateView()
 
         interactor.refreshBlockTime()
+
+        refreshUnlockSchedule()
     }
 
     func didReceiveBlockTime(_ time: BlockTime) {
         blockTime = time
 
         updateView()
+
+        setupTimerIfNeeded()
     }
 
     func didReceivePrice(_ price: PriceData?) {
@@ -200,6 +304,20 @@ extension GovernanceUnlockSetupPresenter: GovernanceUnlockSetupInteractorOutputP
                 self?.interactor.refreshBlockTime()
             }
         }
+    }
+}
+
+extension GovernanceUnlockSetupPresenter: CountdownTimerDelegate {
+    func didStart(with _: TimeInterval) {
+        updateViewOnTimerTick()
+    }
+
+    func didCountdown(remainedInterval _: TimeInterval) {
+        updateViewOnTimerTick()
+    }
+
+    func didStop(with _: TimeInterval) {
+        updateViewOnTimerTick()
     }
 }
 

@@ -1,5 +1,6 @@
 protocol GovernanceUnlockSetupViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: GovernanceUnlocksViewModel)
+    func didTickClaim(states: [GovernanceUnlocksViewModel.ClaimState])
 }
 
 protocol GovernanceUnlockSetupPresenterProtocol: AnyObject {

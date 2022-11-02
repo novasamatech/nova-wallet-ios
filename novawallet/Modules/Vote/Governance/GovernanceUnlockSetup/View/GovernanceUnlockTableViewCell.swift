@@ -22,7 +22,11 @@ final class GovernanceUnlockTableViewCell: UITableViewCell {
     func bind(viewModel: GovernanceUnlocksViewModel.Item, locale: Locale) {
         amountLabel.text = viewModel.amount
 
-        switch viewModel.claimState {
+        bind(claimState: viewModel.claimState, locale: locale)
+    }
+
+    func bind(claimState: GovernanceUnlocksViewModel.ClaimState, locale: Locale) {
+        switch claimState {
         case let .afterPeriod(time):
             lockView.valueView.hidesIcon = false
             detailsLabel.textColor = R.color.colorTransparentText()
