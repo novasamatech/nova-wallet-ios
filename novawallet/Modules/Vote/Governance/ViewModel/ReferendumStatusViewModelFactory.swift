@@ -113,17 +113,7 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
         let strings = R.string.localizable.self
         switch referendum.state {
         case let .preparing(model):
-            if model.deposit == nil {
-                let title = strings.governanceReferendumsTimeWaitingDeposit(preferredLanguages: locale.rLanguages)
-                let timeViewModel = ReferendumInfoView.Time(
-                    titleIcon: .init(title: title, icon: R.image.iconLightPending()),
-                    isUrgent: false
-                )
-
-                return StatusTimeViewModel(viewModel: timeViewModel, timeInterval: nil) { _ in
-                    timeViewModel
-                }
-            } else if currentBlock >= model.preparingEnd {
+            if model.deposit == nil || currentBlock >= model.preparingEnd {
                 return createTimeViewModel(
                     state: referendum.state,
                     atBlock: max(currentBlock, model.timeoutAt),
