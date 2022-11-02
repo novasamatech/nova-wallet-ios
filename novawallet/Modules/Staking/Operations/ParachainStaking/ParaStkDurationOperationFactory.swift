@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 struct ParachainStakingDuration {
     let block: TimeInterval
@@ -10,19 +11,49 @@ struct ParachainStakingDuration {
 protocol ParaStkDurationOperationFactoryProtocol {
     func createDurationOperation(
         from runtimeService: RuntimeCodingServiceProtocol,
+        connection: JSONRPCEngine,
         blockTimeEstimationService: BlockTimeEstimationServiceProtocol
     ) -> CompoundOperationWrapper<ParachainStakingDuration>
 }
 
 final class ParaStkDurationOperationFactory: ParaStkDurationOperationFactoryProtocol {
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let storageRequestFactory: StorageRequestFactoryProtocol
 
-    init(blockTimeOperationFactory: BlockTimeOperationFactoryProtocol) {
+    init(
+        storageRequestFactory: StorageRequestFactoryProtocol,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    ) {
+        self.storageRequestFactory = storageRequestFactory
         self.blockTimeOperationFactory = blockTimeOperationFactory
+    }
+
+    private func createRoundDurationWrapper(
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        connection: JSONRPCEngine
+    ) -> CompoundOperationWrapper<UInt32> {
+        let wrapper: CompoundOperationWrapper<StorageResponse<ParachainStaking.RoundInfo>> = storageRequestFactory.queryItem(
+            engine: connection,
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+            storagePath: ParachainStaking.roundPath
+        )
+
+        let mappingOperation = ClosureOperation<UInt32> {
+            guard let length = try wrapper.targetOperation.extractNoCancellableResultData().value?.length else {
+                throw CommonError.dataCorruption
+            }
+
+            return length
+        }
+
+        mappingOperation.addDependency(wrapper.targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: wrapper.allOperations)
     }
 
     func createDurationOperation(
         from runtimeService: RuntimeCodingServiceProtocol,
+        connection: JSONRPCEngine,
         blockTimeEstimationService: BlockTimeEstimationServiceProtocol
     ) -> CompoundOperationWrapper<ParachainStakingDuration> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
@@ -32,23 +63,23 @@ final class ParaStkDurationOperationFactory: ParaStkDurationOperationFactoryProt
             blockTimeEstimationService: blockTimeEstimationService
         )
 
-        let roundDurationOperation: BaseOperation<Int32> = PrimitiveConstantOperation.operation(
-            for: ParachainStaking.blocksPerRound,
-            dependingOn: codingFactoryOperation
+        let roundDurationWrapper: CompoundOperationWrapper<UInt32> = createRoundDurationWrapper(
+            dependingOn: codingFactoryOperation,
+            connection: connection
         )
+
+        roundDurationWrapper.addDependency(operations: [codingFactoryOperation])
 
         let unstakingPeriodOperation: BaseOperation<Int32> = PrimitiveConstantOperation.operation(
             for: ParachainStaking.delegationBondLessDelay,
             dependingOn: codingFactoryOperation
         )
 
-        [roundDurationOperation, unstakingPeriodOperation].forEach {
-            $0.addDependency(codingFactoryOperation)
-        }
+        unstakingPeriodOperation.addDependency(codingFactoryOperation)
 
         let mapOperation = ClosureOperation<ParachainStakingDuration> {
             let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-            let blocksInRound = try roundDurationOperation.extractNoCancellableResultData()
+            let blocksInRound = try roundDurationWrapper.targetOperation.extractNoCancellableResultData()
             let unstakingRounds = try unstakingPeriodOperation.extractNoCancellableResultData()
 
             let blockTimeInterval = TimeInterval(blockTime).seconds
@@ -62,11 +93,8 @@ final class ParaStkDurationOperationFactory: ParaStkDurationOperationFactoryProt
             )
         }
 
-        let dependencies = [
-            codingFactoryOperation,
-            roundDurationOperation,
-            unstakingPeriodOperation
-        ] + blockTimeWrapper.allOperations
+        let dependencies = [codingFactoryOperation, unstakingPeriodOperation] +
+            roundDurationWrapper.allOperations + blockTimeWrapper.allOperations
 
         dependencies.forEach { mapOperation.addDependency($0) }
 
