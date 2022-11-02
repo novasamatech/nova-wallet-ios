@@ -30,6 +30,7 @@ final class GovernanceUnlockSetupViewController: UIViewController, ViewHolder {
         setupLocalization()
         setupTableView()
         setupHandlers()
+        updateUnlockState()
 
         presenter.setup()
     }
@@ -56,6 +57,25 @@ final class GovernanceUnlockSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
         rootView.unlockButton.invalidateLayout()
+    }
+
+    private func updateUnlockState() {
+        let hasUnlockable = viewModel?.items.contains {
+            switch $0.claimState {
+            case .now:
+                return true
+            case .afterPeriod:
+                return false
+            }
+        } ?? false
+
+        if hasUnlockable {
+            rootView.unlockButton.applyEnabledStyle()
+        } else {
+            rootView.unlockButton.applyDisabledStyle()
+        }
+
+        rootView.unlockButton.isUserInteractionEnabled = hasUnlockable
     }
 
     @objc private func actionUnlock() {
@@ -136,6 +156,8 @@ extension GovernanceUnlockSetupViewController: GovernanceUnlockSetupViewProtocol
         self.viewModel = viewModel
 
         rootView.tableView.reloadData()
+
+        updateUnlockState()
     }
 
     func didTickClaim(states: [GovernanceUnlocksViewModel.ClaimState]) {
@@ -150,6 +172,7 @@ extension GovernanceUnlockSetupViewController: GovernanceUnlockSetupViewProtocol
         self.viewModel = .init(total: viewModel.total, items: newItems)
 
         applyClaimStates()
+        updateUnlockState()
     }
 }
 
