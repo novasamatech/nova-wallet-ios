@@ -10,7 +10,7 @@ struct GovernanceUnlockSetupViewFactory {
             return nil
         }
 
-        let wireframe = GovernanceUnlockSetupWireframe()
+        let wireframe = GovernanceUnlockSetupWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetInfo,
@@ -40,7 +40,8 @@ struct GovernanceUnlockSetupViewFactory {
         guard
             let wallet = SelectedWalletSettings.shared.value,
             let chain = state.settings.value,
-            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()) else {
+            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
+            let currencyManager = CurrencyManager.shared else {
             return nil
         }
 
@@ -67,7 +68,8 @@ struct GovernanceUnlockSetupViewFactory {
             blockTimeService: blockTimeService,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            currencyManager: currencyManager
         )
     }
 }
