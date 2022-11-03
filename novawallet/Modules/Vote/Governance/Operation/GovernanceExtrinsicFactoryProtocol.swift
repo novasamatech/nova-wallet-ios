@@ -7,4 +7,10 @@ protocol GovernanceExtrinsicFactoryProtocol {
         referendum: ReferendumIdLocal,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol
+
+    func unlock(
+        with actions: Set<GovernanceUnlockSchedule.Action>,
+        accountId: AccountId,
+        builder: ExtrinsicBuilderProtocol
+    ) throws -> ExtrinsicBuilderProtocol
 }

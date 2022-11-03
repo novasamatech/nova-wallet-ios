@@ -6,6 +6,7 @@ enum LockType: String {
     case vesting
     case democracy = "democrac"
     case elections = "phrelect"
+    case governance = "pyconvot"
 
     static var locksOrder: [Self] = [.vesting, .staking, .democracy, .elections]
 
@@ -20,7 +21,7 @@ enum LockType: String {
                 return R.string.localizable.stakingTitle(
                     preferredLanguages: locale.rLanguages
                 )
-            case .democracy:
+            case .democracy, .governance:
                 return R.string.localizable.walletAccountLocksDemocracy(
                     preferredLanguages: locale.rLanguages
                 )
