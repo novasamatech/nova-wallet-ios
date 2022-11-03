@@ -1,9 +1,24 @@
-//
-//  Gov1OperationFactory.swift
-//  novawallet
-//
-//  Created by Ruslan Rezin on 03.11.2022.
-//  Copyright © 2022 Nova Foundation. All rights reserved.
-//
-
 import Foundation
+import RobinHood
+import BigInt
+import SubstrateSdk
+
+final class Gov1OperationFactory {
+
+}
+
+extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
+    func fetchAllReferendumsWrapper(from connection: JSONRPCEngine, runtimeProvider: RuntimeProviderProtocol) -> CompoundOperationWrapper<[ReferendumLocal]> {
+        <#code#>
+    }
+
+    func fetchAccountVotesWrapper(for accountId: AccountId, from connection: JSONRPCEngine, runtimeProvider: RuntimeProviderProtocol, blockHash: Data?) -> CompoundOperationWrapper<ReferendumAccountVotingDistribution> {
+        <#code#>
+    }
+
+    func fetchVotersWrapper(for referendumIndex: ReferendumIdLocal, from connection: JSONRPCEngine, runtimeProvider: RuntimeProviderProtocol) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        <#code#>
+    }
+
+
+}
