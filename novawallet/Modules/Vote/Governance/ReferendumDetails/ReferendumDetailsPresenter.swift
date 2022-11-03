@@ -341,7 +341,9 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
 
     func opeDApp(at _: Int) {}
 
-    func readFullDescription() {}
+    func readFullDescription() {
+        wireframe.showFullDescription(from: view, referendum: referendum)
+    }
 
     func openFullDetails() {
         guard let actionDetails = actionDetails else {
