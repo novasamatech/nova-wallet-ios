@@ -89,7 +89,7 @@ class CrowdloanListTests: XCTestCase {
     func testCrowdloansSuccessRetrieving() throws {
         // given
 
-        let view = MockCrowdloanListViewProtocol()
+        let view = MockCrowdloansViewProtocol()
         let wireframe = MockCrowdloanListWireframeProtocol()
 
         let expectedActiveParaIds: Set<ParaId> = activeCrowdloans
@@ -106,14 +106,9 @@ class CrowdloanListTests: XCTestCase {
 
         let chainCompletionExpectation = XCTestExpectation()
         let listCompletionExpectation = XCTestExpectation()
-        let walletSwitchReceiveExpectation = XCTestExpectation()
 
         stub(view) { stub in
             stub.isSetup.get.thenReturn(false, true)
-
-            stub.didReceive(walletSwitchViewModel: any()).then { state in
-                walletSwitchReceiveExpectation.fulfill()
-            }
 
             stub.didReceive(listState: any()).then { state in
                 let allLoaded: Bool = state.sections.reduce(true) { result, state in
@@ -156,7 +151,7 @@ class CrowdloanListTests: XCTestCase {
 
         // then
 
-        wait(for: [listCompletionExpectation, chainCompletionExpectation, walletSwitchReceiveExpectation], timeout: 10)
+        wait(for: [listCompletionExpectation, chainCompletionExpectation], timeout: 10)
 
         let yourContributionsCount: Int = {
             let yourContribution = actualViewModel!.sections[0]
@@ -195,7 +190,7 @@ class CrowdloanListTests: XCTestCase {
     }
 
     private func createPresenter(
-        for view: MockCrowdloanListViewProtocol,
+        for view: MockCrowdloansViewProtocol,
         wireframe: MockCrowdloanListWireframeProtocol
     ) throws -> CrowdloanListPresenter? {
         let localizationManager = LocalizationManager.shared
@@ -229,6 +224,7 @@ class CrowdloanListTests: XCTestCase {
         let presenter = CrowdloanListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            wallet: selectedAccount,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
             crowdloansCalculator: CrowdloansCalculator(),

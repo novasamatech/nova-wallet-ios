@@ -71,6 +71,24 @@ extension NumberFormatter {
         return numberFormatter
     }
 
+    static var percentHalfEven: NumberFormatter {
+        let numberFormatter = percent
+        numberFormatter.roundingMode = .halfEven
+        return numberFormatter
+    }
+
+    static var referendumPercent: NumberFormatter {
+        let numberFormatter = percentHalfEven
+        numberFormatter.minimumFractionDigits = 0
+        return numberFormatter
+    }
+
+    static var index: NumberFormatter {
+        let numberFormatter = quantity
+        numberFormatter.positivePrefix = "#"
+        return numberFormatter
+    }
+
     static var quantity: NumberFormatter {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal
