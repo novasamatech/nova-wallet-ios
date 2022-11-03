@@ -12,4 +12,11 @@ protocol GovernanceUnlockSetupInteractorInputProtocol: GovernanceUnlockInteracto
 
 protocol GovernanceUnlockSetupInteractorOutputProtocol: GovernanceUnlockInteractorOutputProtocol {}
 
-protocol GovernanceUnlockSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol GovernanceUnlockSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+    func showConfirm(
+        from view: GovernanceUnlockSetupViewProtocol?,
+        votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
+        schedule: GovernanceUnlockSchedule,
+        blockNumber: BlockNumber
+    )
+}

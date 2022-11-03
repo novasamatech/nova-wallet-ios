@@ -15,7 +15,7 @@ final class GovernanceUnlockConfirmPresenter {
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
     let logger: LoggerProtocol
 
-    private var votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private var votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
     private var unlockSchedule: GovernanceUnlockSchedule
     private var locks: AssetLocks?
     private var assetBalance: AssetBalance?
@@ -31,6 +31,7 @@ final class GovernanceUnlockConfirmPresenter {
         wireframe: GovernanceUnlockConfirmWireframeProtocol,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
+        votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
         schedule: GovernanceUnlockSchedule,
         blockNumber: BlockNumber,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -43,7 +44,8 @@ final class GovernanceUnlockConfirmPresenter {
         self.wireframe = wireframe
         self.chain = chain
         self.selectedAccount = selectedAccount
-        self.unlockSchedule = schedule
+        self.votingResult = votingResult
+        unlockSchedule = schedule
         self.blockNumber = blockNumber
         self.balanceViewModelFactory = balanceViewModelFactory
         self.lockChangeViewModelFactory = lockChangeViewModelFactory
@@ -109,12 +111,8 @@ final class GovernanceUnlockConfirmPresenter {
         }
     }
 
-    private func provideTransferableViewModel() {
-
-    }
-
     private func provideChangesViewModels() {
-        guard let tracksVoting = votingResult?.value else {
+        guard let tracksVoting = votingResult.value else {
             return
         }
 
@@ -141,6 +139,20 @@ final class GovernanceUnlockConfirmPresenter {
                 locale: selectedLocale
             ) {
             view?.didReceiveTransferableAmount(viewModel: transferableViewModel)
+        }
+
+        if let locks = locks, let chainAssetId = chain.utilityChainAssetId() {
+            let remainedLocksViewModel = lockChangeViewModelFactory.createRemainedLockViewModel(
+                after: remainedLocked,
+                chainAssetId: chainAssetId,
+                accountId: selectedAccount.chainAccount.accountId,
+                locks: locks,
+                locale: selectedLocale
+            )
+
+            view?.didReceiveRemainedLock(viewModel: remainedLocksViewModel)
+        } else {
+            view?.didReceiveRemainedLock(viewModel: nil)
         }
     }
 
@@ -171,7 +183,7 @@ final class GovernanceUnlockConfirmPresenter {
     }
 
     private func refreshUnlockSchedule() {
-        guard let tracksVoting = votingResult?.value else {
+        guard let tracksVoting = votingResult.value else {
             return
         }
 
@@ -186,6 +198,55 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmPresenterProt
         interactor.setup()
 
         refreshFee()
+    }
+
+    func confirm() {
+        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
+            return
+        }
+
+        DataValidationRunner(
+            validators: [
+                dataValidatingFactory.hasInPlank(
+                    fee: fee,
+                    locale: selectedLocale,
+                    precision: assetInfo.assetPrecision
+                ) { [weak self] in
+                    self?.refreshFee()
+                },
+                dataValidatingFactory.canPayFeeInPlank(
+                    balance: assetBalance?.transferable,
+                    fee: fee,
+                    asset: assetInfo,
+                    locale: selectedLocale
+                )
+            ]
+        ).runValidation { [weak self] in
+            guard
+                let blockNumber = self?.blockNumber,
+                let actions = self?.unlockSchedule.availableUnlock(at: blockNumber).actions,
+                !actions.isEmpty else {
+                return
+            }
+
+            self?.view?.didStartLoading()
+            self?.interactor.unlock(using: actions)
+        }
+    }
+
+    func presentSenderDetails() {
+        guard
+            let address = try? selectedAccount.chainAccount.accountId.toAddress(using: chain.chainFormat),
+            let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
     }
 }
 
@@ -202,7 +263,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
         provideChangesViewModels()
     }
 
-    func didReceiveUnlockHash(_ hash: String) {
+    func didReceiveUnlockHash(_: String) {
         view?.didStopLoading()
 
         wireframe.presentExtrinsicSubmission(from: view, completionAction: .dismiss, locale: selectedLocale)
@@ -238,7 +299,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
     }
 
     func didReceiveVoting(_ result: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
-        self.votingResult = result
+        votingResult = result
 
         if let tracksVoting = result.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: result.blockHash)
@@ -249,7 +310,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
 
     func didReceiveUnlockSchedule(_ schedule: GovernanceUnlockSchedule) {
         if schedule != unlockSchedule {
-            self.unlockSchedule = schedule
+            unlockSchedule = schedule
 
             provideChangesViewModels()
             provideAmountViewModel()
@@ -258,7 +319,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
     }
 
     func didReceiveBlockNumber(_ block: BlockNumber) {
-        self.blockNumber = block
+        blockNumber = block
 
         provideFeeViewModel()
 
@@ -267,7 +328,7 @@ extension GovernanceUnlockConfirmPresenter: GovernanceUnlockConfirmInteractorOut
         refreshUnlockSchedule()
     }
 
-    func didReceiveBlockTime(_ time: BlockTime) {}
+    func didReceiveBlockTime(_: BlockTime) {}
 
     func didReceivePrice(_ price: PriceData?) {
         self.price = price

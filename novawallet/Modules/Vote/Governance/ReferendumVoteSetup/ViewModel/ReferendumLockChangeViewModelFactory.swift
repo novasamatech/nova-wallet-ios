@@ -23,6 +23,14 @@ protocol ReferendumLockChangeViewModelFactoryProtocol {
         blockTime: BlockTime,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel?
+
+    func createRemainedLockViewModel(
+        after remainedGovernanceLock: BigUInt,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId,
+        locks: AssetLocks,
+        locale: Locale
+    ) -> GovernanceRemainedLockViewModel?
 }
 
 extension ReferendumLockChangeViewModelFactoryProtocol {
@@ -94,6 +102,41 @@ final class ReferendumLockChangeViewModelFactory {
 }
 
 extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol {
+    func createRemainedLockViewModel(
+        after remainedGovernanceLock: BigUInt,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId,
+        locks: AssetLocks,
+        locale: Locale
+    ) -> GovernanceRemainedLockViewModel? {
+        let otherLocks = locks.filter { $0.displayId != votingLockId }
+
+        let newLock = AssetLock(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            type: votingLockId.data(using: .utf8) ?? Data(),
+            amount: remainedGovernanceLock
+        )
+
+        let newLocks = (otherLocks + [newLock]).sorted { $0.amount > $1.amount }
+
+        if let lockedAmount = newLocks.first?.amount, lockedAmount > 0 {
+            let amountDecimal = Decimal.fromSubstrateAmount(
+                lockedAmount,
+                precision: assetDisplayInfo.assetPrecision
+            ) ?? 0
+
+            let balanceFormatter = balanceFormatter.value(for: locale)
+            let amountString = balanceFormatter.stringFromDecimal(amountDecimal) ?? ""
+
+            let types = newLocks.map { $0.lockType?.displayType.value(for: locale) ?? $0.displayId ?? "" }
+
+            return .init(amount: amountString, modules: types)
+        } else {
+            return nil
+        }
+    }
+
     func createTransferableAmountViewModel(
         resultLocked: BigUInt?,
         balance: AssetBalance,
@@ -116,7 +159,7 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
 
         if let resultLocked = resultLocked {
             let otherLocks = locks
-                .filter { $0.identifier != votingLockId }
+                .filter { $0.displayId != votingLockId }
                 .map(\.amount)
                 .max() ?? 0
 

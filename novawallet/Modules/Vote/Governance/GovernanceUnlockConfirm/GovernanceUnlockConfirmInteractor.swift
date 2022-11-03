@@ -36,7 +36,8 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
         blockTimeService: BlockTimeEstimationServiceProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.extrinsicFactory = extrinsicFactory
@@ -53,7 +54,8 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
             blockTimeService: blockTimeService,
             connection: connection,
             runtimeProvider: runtimeProvider,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            currencyManager: currencyManager
         )
     }
 
@@ -85,7 +87,9 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
         )
     }
 
-    private func createExtrinsicBuilderClosure(for actions: Set<GovernanceUnlockSchedule.Action>) -> ExtrinsicBuilderClosure {
+    private func createExtrinsicBuilderClosure(
+        for actions: Set<GovernanceUnlockSchedule.Action>
+    ) -> ExtrinsicBuilderClosure {
         { [weak self] builder in
             guard let strongSelf = self else {
                 return builder
@@ -99,16 +103,21 @@ final class GovernanceUnlockConfirmInteractor: GovernanceUnlockInteractor, AnyPr
         }
     }
 
+    private func makeSubscription() {
+        clearAndSubscribeBalance()
+        clearAndSubscribeLocks()
+    }
+
     override func setup() {
         super.setup()
 
-        clearAndSubscribeLocks()
+        makeSubscription()
     }
 
     override func remakeSubscriptions() {
         super.remakeSubscriptions()
 
-        clearAndSubscribeLocks()
+        makeSubscription()
     }
 }
 
@@ -160,10 +169,15 @@ extension GovernanceUnlockConfirmInteractor: WalletLocalStorageSubscriber, Walle
 
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
-        accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        
+        switch result {
+        case let .success(changes):
+            presenter?.didReceiveBalance(changes)
+        case let .failure(error):
+            presenter?.didReceiveError(.balanceSubscriptionFailed(error))
+        }
     }
 }
