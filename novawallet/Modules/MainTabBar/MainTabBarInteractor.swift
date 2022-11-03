@@ -49,7 +49,6 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 extension MainTabBarInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         serviceCoordinator.updateOnAccountChange()
-        presenter?.didReloadSelectedAccount()
     }
 }
 

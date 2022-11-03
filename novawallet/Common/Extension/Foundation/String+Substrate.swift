@@ -28,6 +28,20 @@ extension String {
         return replacedCamelCase
     }
 
+    func twoLineString(with threshold: Int) -> String {
+        guard count > threshold else {
+            return self
+        }
+
+        let leftPartCount = count / 2
+
+        guard leftPartCount > 0 else {
+            return self
+        }
+
+        return prefix(leftPartCount) + "\n" + suffix(count - leftPartCount)
+    }
+
     var twoLineAddress: String {
         let leftPartCount = count / 2
 

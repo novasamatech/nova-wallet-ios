@@ -254,6 +254,10 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             options.append(.crowdloans)
         }
 
+        if entity.hasGovernance {
+            options.append(.governance)
+        }
+
         let externalApiSet = createExternalApi(from: entity)
         let explorers = createExplorers(from: entity)
 
@@ -294,6 +298,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.isEthereumBased = model.isEthereumBased
         entity.isTestnet = model.isTestnet
         entity.hasCrowdloans = model.hasCrowdloans
+        entity.hasGovernance = model.hasGovernance
         entity.order = model.order
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)

@@ -5,6 +5,11 @@ extension UITableView {
         register(cellClass, forCellReuseIdentifier: cellClass.reuseIdentifier)
     }
 
+    func unregisterClassForCell(_ cellClass: UITableViewCell.Type) {
+        let registeredClass: UITableViewCell.Type? = nil
+        register(registeredClass, forCellReuseIdentifier: cellClass.reuseIdentifier)
+    }
+
     func registerClassesForCell(_ cellClasses: [UITableViewCell.Type]) {
         cellClasses.forEach { cellClass in
             register(cellClass, forCellReuseIdentifier: cellClass.reuseIdentifier)
@@ -13,6 +18,11 @@ extension UITableView {
 
     func registerHeaderFooterView(withClass viewClass: UITableViewHeaderFooterView.Type) {
         register(viewClass, forHeaderFooterViewReuseIdentifier: viewClass.reuseIdentifier)
+    }
+
+    func unregisterHeaderFooterView(withClass viewClass: UITableViewHeaderFooterView.Type) {
+        let registeredView: UITableViewHeaderFooterView.Type? = nil
+        register(registeredView, forHeaderFooterViewReuseIdentifier: viewClass.reuseIdentifier)
     }
 
     func dequeueReusableCellWithType<T: UITableViewCell>(_ cellClass: T.Type) -> T? {
