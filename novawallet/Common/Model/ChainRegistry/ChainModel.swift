@@ -119,6 +119,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(.crowdloans) ?? false
     }
 
+    var hasGovernance: Bool {
+        options?.contains(.governance) ?? false
+    }
+
     var isRelaychain: Bool { parentId == nil }
 
     func utilityAssets() -> Set<AssetModel> {
@@ -127,6 +131,18 @@ struct ChainModel: Equatable, Codable, Hashable {
 
     func utilityAsset() -> AssetModel? {
         utilityAssets().first
+    }
+
+    func utilityAssetDisplayInfo() -> AssetBalanceDisplayInfo? {
+        utilityAsset()?.displayInfo(with: icon)
+    }
+
+    func utilityChainAssetId() -> ChainAssetId? {
+        guard let utilityAsset = utilityAssets().first else {
+            return nil
+        }
+
+        return ChainAssetId(chainId: chainId, assetId: utilityAsset.assetId)
     }
 
     var typesUsage: TypesUsage {
@@ -154,4 +170,5 @@ enum ChainOptions: String, Codable {
     case ethereumBased
     case testnet
     case crowdloans
+    case governance
 }
