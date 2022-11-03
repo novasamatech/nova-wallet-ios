@@ -87,6 +87,8 @@ final class GovernanceUnlockConfirmViewLayout: UIView {
         changesTableView.addArrangedSubview(transferableCell)
         changesTableView.addArrangedSubview(lockedAmountCell)
 
+        containerView.stackView.setCustomSpacing(16.0, after: changesTableView)
+
         containerView.stackView.addArrangedSubview(hintsView)
     }
 }

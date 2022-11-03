@@ -29,7 +29,7 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactoryProtocol {
     ) throws -> ExtrinsicBuilderProtocol {
         let removeVoteCalls: [RuntimeCall<ConvictionVoting.RemoveVoteCall>] = actions.compactMap { action in
             switch action {
-            case .unvote(let track, let index):
+            case let .unvote(track, index):
                 return ConvictionVoting.RemoveVoteCall(
                     track: Referenda.TrackId(track),
                     index: Referenda.ReferendumIndex(index)
