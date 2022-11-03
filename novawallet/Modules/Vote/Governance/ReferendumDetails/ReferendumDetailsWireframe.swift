@@ -60,4 +60,18 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
+
+    func showFullDescription(from view: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal) {
+        guard
+            let fullDescriptionView = ReferendumFullDescriptionViewFactory.createView(
+                state: state,
+                referendum: referendum
+            ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: fullDescriptionView.controller)
+
+        view?.controller.present(navigationController, animated: true)
+    }
 }
