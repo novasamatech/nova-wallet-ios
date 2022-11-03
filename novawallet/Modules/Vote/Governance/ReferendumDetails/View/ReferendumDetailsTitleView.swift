@@ -47,8 +47,6 @@ final class ReferendumDetailsTitleView: UIView {
         $0.textContainer.lineFragmentPadding = 0
     }
 
-    private var readMoreContainer: UIView?
-
     let moreButton: RoundedButton = .create { button in
         button.applyIconStyle()
 
@@ -74,39 +72,20 @@ final class ReferendumDetailsTitleView: UIView {
     }
 
     private func setupLayout() {
-        let buttonContainer = UIView.hStack([
-            moreButton,
-            UIView()
-        ])
-
-        readMoreContainer = buttonContainer
-
         let content = UIView.vStack(
+            alignment: .leading,
+            spacing: 8,
             [
-                UIView.hStack(
-                    [
-                        accountContainerView,
-                        UIView()
-                    ]
-                ),
-                UIView.vStack(
-                    spacing: 6,
-                    [
-                        titleLabel,
-                        textView,
-                        buttonContainer
-                    ]
-                )
+                accountContainerView,
+                titleLabel,
+                textView,
+                moreButton
             ]
         )
-
+        content.setCustomSpacing(0, after: accountContainerView)
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
-        }
-
-        moreButton.snp.makeConstraints { make in
-            make.height.equalTo(32)
         }
     }
 }
@@ -153,11 +132,11 @@ extension ReferendumDetailsTitleView {
                 preferredLanguages: locale.rLanguages
             )
 
-            readMoreContainer?.isHidden = !details.shouldReadMore
+            moreButton.isHidden = !details.shouldReadMore
         } else {
             titleLabel.isHidden = true
             textView.isHidden = true
-            readMoreContainer?.isHidden = true
+            moreButton.isHidden = true
         }
     }
 }

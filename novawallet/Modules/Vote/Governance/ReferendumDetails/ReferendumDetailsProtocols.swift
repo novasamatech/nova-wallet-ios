@@ -59,4 +59,6 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
         referendum: ReferendumLocal,
         type: ReferendumVotersType
     )
+
+    func showFullDescription(from: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal)
 }
