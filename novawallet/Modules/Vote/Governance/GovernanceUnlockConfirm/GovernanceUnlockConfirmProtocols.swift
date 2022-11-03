@@ -12,6 +12,8 @@ protocol GovernanceUnlockConfirmViewProtocol: ControllerBackedProtocol, Loadable
 
 protocol GovernanceUnlockConfirmPresenterProtocol: AnyObject {
     func setup()
+    func confirm()
+    func presentSenderDetails()
 }
 
 protocol GovernanceUnlockConfirmInteractorInputProtocol: GovernanceUnlockInteractorInputProtocol {
@@ -28,5 +30,5 @@ protocol GovernanceUnlockConfirmInteractorOutputProtocol: GovernanceUnlockIntera
 }
 
 protocol GovernanceUnlockConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-                                                    FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
-                                                    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable  {}
+    FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {}

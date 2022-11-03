@@ -28,9 +28,20 @@ final class GovernanceUnlockConfirmViewController: UIViewController, ViewHolder 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.accountCell.addTarget(self, action: #selector(actionSender), for: .touchUpInside)
+
+        rootView.actionLoadableView.actionButton.addTarget(
+            self,
+            action: #selector(actionConfirm),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
@@ -58,6 +69,14 @@ final class GovernanceUnlockConfirmViewController: UIViewController, ViewHolder 
 
         rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+    }
+
+    @objc private func actionConfirm() {
+        presenter.confirm()
+    }
+
+    @objc private func actionSender() {
+        presenter.presentSenderDetails()
     }
 }
 
@@ -88,9 +107,34 @@ extension GovernanceUnlockConfirmViewController: GovernanceUnlockConfirmViewProt
 
     func didReceiveRemainedLock(viewModel: GovernanceRemainedLockViewModel?) {
         if let viewModel = viewModel {
+            let amountString = NSMutableAttributedString(
+                string: viewModel.amount,
+                attributes: [
+                    .foregroundColor: R.color.colorWhite()!,
+                    .font: UIFont.caption1
+                ]
+            )
 
+            let remainingLocksString = viewModel.modules
+                .map { $0.firstLetterCapitalized() }
+                .joined(separator: ", ")
+
+            let remainingLocksAttributedString = NSAttributedString(
+                string: R.string.localizable.govRemainsLockedSuffix(
+                    remainingLocksString,
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                attributes: [
+                    .foregroundColor: R.color.colorTransparentText()!,
+                    .font: UIFont.caption1
+                ]
+            )
+
+            amountString.append(remainingLocksAttributedString)
+
+            rootView.hintsView.bind(attributedTexts: [amountString])
         } else {
-            rootView.hintsView.bind(texts: [""])
+            rootView.hintsView.bind(attributedTexts: [])
         }
     }
 

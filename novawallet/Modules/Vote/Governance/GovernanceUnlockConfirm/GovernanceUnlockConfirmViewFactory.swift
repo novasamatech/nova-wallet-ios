@@ -1,21 +1,119 @@
 import Foundation
+import RobinHood
+import SoraFoundation
 
 struct GovernanceUnlockConfirmViewFactory {
     static func createView(
         for state: GovernanceSharedState,
+        votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
         schedule: GovernanceUnlockSchedule,
         blockNumber: BlockNumber
     ) -> GovernanceUnlockConfirmViewProtocol? {
-        let interactor = GovernanceUnlockConfirmInteractor()
+        guard
+            let wallet = SelectedWalletSettings.shared.value,
+            let chain = state.settings.value,
+            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
+            let interactor = createInteractor(for: state, chain: chain, selectedAccount: selectedAccount),
+            let assetInfo = chain.utilityAssetDisplayInfo(),
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
         let wireframe = GovernanceUnlockConfirmWireframe()
 
-        let presenter = GovernanceUnlockConfirmPresenter(interactor: interactor, wireframe: wireframe)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
 
-        let view = GovernanceUnlockConfirmViewController(presenter: presenter)
+        let localizationManager = LocalizationManager.shared
+
+        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
+            assetDisplayInfo: assetInfo,
+            votingLockId: ConvictionVoting.lockId
+        )
+
+        let dataValidatingFactory = GovernanceValidatorFactory(
+            presentable: wireframe,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
+
+        let presenter = GovernanceUnlockConfirmPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chain: chain,
+            selectedAccount: selectedAccount,
+            votingResult: votingResult,
+            schedule: schedule,
+            blockNumber: blockNumber,
+            balanceViewModelFactory: balanceViewModelFactory,
+            lockChangeViewModelFactory: lockChangeViewModelFactory,
+            dataValidatingFactory: dataValidatingFactory,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
+
+        let view = GovernanceUnlockConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
+        dataValidatingFactory.view = view
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        for state: GovernanceSharedState,
+        chain: ChainModel,
+        selectedAccount: MetaChainAccountResponse
+    ) -> GovernanceUnlockConfirmInteractor? {
+        guard
+            let connection = state.chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let subscriptionFactory = state.subscriptionFactory,
+            let blockTimeService = state.blockTimeService,
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let lockStateFactory = Gov2LockStateFactory(
+            requestFactory: state.requestFactory,
+            unlocksCalculator: Gov2UnlocksCalculator()
+        )
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ).createService(account: selectedAccount.chainAccount, chain: chain)
+
+        let signer = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
+            accountResponse: selectedAccount.chainAccount
+        )
+
+        return .init(
+            chain: chain,
+            selectedAccount: selectedAccount,
+            subscriptionFactory: subscriptionFactory,
+            lockStateFactory: lockStateFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            extrinsicFactory: Gov2ExtrinsicFactory(),
+            extrinsicService: extrinsicService,
+            signer: signer,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            blockTimeService: blockTimeService,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue,
+            currencyManager: currencyManager
+        )
     }
 }
