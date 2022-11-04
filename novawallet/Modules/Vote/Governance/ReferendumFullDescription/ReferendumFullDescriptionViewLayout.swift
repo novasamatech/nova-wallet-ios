@@ -16,16 +16,6 @@ final class ReferendumFullDescriptionViewLayout: UIView {
         $0.numberOfLines = 0
     }
 
-    let descriptionTextView: UITextView = .create {
-        $0.backgroundColor = .clear
-        $0.textColor = R.color.colorWhite64()
-        $0.font = .regularSubheadline
-        $0.isScrollEnabled = false
-        $0.isEditable = false
-        $0.textContainerInset = .zero
-        $0.textContainer.lineFragmentPadding = 0
-    }
-
     let markdownView = MarkdownView()
 
     override init(frame: CGRect) {
@@ -46,7 +36,11 @@ final class ReferendumFullDescriptionViewLayout: UIView {
     }
 
     func set(markdownText: String) {
-        markdownView.load(markdown: markdownText, enableImage: true, plugins: plugins())
+        markdownView.load(
+            markdown: markdownText,
+            css: css(),
+            plugins: plugins()
+        )
     }
 
     func set(title: String) {
@@ -64,5 +58,12 @@ final class ReferendumFullDescriptionViewLayout: UIView {
             URL(string: "https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js")
         ].compactMap { $0 }
             .compactMap { try? String(contentsOf: $0, encoding: .utf8) }
+    }
+
+    private func css() -> String? {
+        guard let color = R.color.colorNovaBlue()?.hexRGB else {
+            return nil
+        }
+        return "a { color: \(color); }"
     }
 }
