@@ -57,7 +57,8 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             signaturePayloadFormat: account.type.signaturePayloadFormat,
             runtimeRegistry: runtimeRegistry,
             customExtensions: DefaultExtrinsicExtension.extensions,
-            engine: engine
+            engine: engine,
+            operationManager: operationManager
         )
     }
 }

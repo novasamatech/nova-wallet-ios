@@ -172,7 +172,6 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             let fee = gas * gasPrice
 
             return RuntimeDispatchInfo(
-                dispatchClass: "ethereum",
                 fee: String(fee),
                 weight: 0
             )

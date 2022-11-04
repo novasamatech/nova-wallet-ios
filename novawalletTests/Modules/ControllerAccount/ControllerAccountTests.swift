@@ -105,7 +105,7 @@ class ControllerAccountTests: XCTestCase {
         )
         presenter.didReceiveAccountInfo(result: .success(stashAccountInfo), address: stashAddress)
 
-        let fee = RuntimeDispatchInfo(dispatchClass: "normal", fee: "12600002654", weight: 331759000)
+        let fee = RuntimeDispatchInfo(fee: "12600002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(fee))
 
         // when
@@ -131,7 +131,7 @@ class ControllerAccountTests: XCTestCase {
         )
         presenter.didReceiveAccountInfo(result: .success(accountInfoSmallBalance), address: stashAddress)
 
-        let extraFee = RuntimeDispatchInfo(dispatchClass: "normal", fee: "126000002654", weight: 331759000)
+        let extraFee = RuntimeDispatchInfo(fee: "126000002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(extraFee))
 
         // when

@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 @propertyWrapper
 struct FeeWeight: Codable {
@@ -35,14 +36,41 @@ struct FeeWeight: Codable {
     }
 }
 
+/// This struct is used to query fee vi api
 struct RuntimeDispatchInfo: Codable {
     enum CodingKeys: String, CodingKey {
-        case dispatchClass = "class"
         case fee = "partialFee"
         case weight
     }
 
-    let dispatchClass: String
     let fee: String
     @FeeWeight var weight: UInt64
+
+    init(fee: String, weight: UInt64) {
+        self.fee = fee
+        _weight = FeeWeight(wrappedValue: weight)
+    }
+}
+
+/// This struct is used to query fee via state call
+struct RemoteRuntimeDispatchInfo: Decodable {
+    enum CodingKeys: String, CodingKey {
+        case fee = "partialFee"
+        case weight
+    }
+
+    let fee: BigUInt
+    let weight: UInt64
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        fee = try container.decode(StringScaleMapper<BigUInt>.self, forKey: .fee).value
+
+        if let remoteWeight = try? container.decode(BlockchainWeight.WeightV2.self, forKey: .weight) {
+            weight = remoteWeight.refTime
+        } else {
+            weight = try container.decode(BlockchainWeight.WeightV1.self, forKey: .weight).value
+        }
+    }
 }
