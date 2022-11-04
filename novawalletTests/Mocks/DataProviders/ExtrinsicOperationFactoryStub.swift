@@ -18,9 +18,10 @@ final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
     }
 
     func estimateFeeOperation(_ closure: @escaping ExtrinsicBuilderIndexedClosure, numberOfExtrinsics: Int) -> CompoundOperationWrapper<[FeeExtrinsicResult]> {
-        let dispatchInfo = RuntimeDispatchInfo(dispatchClass: "Extrinsic",
-                                               fee: "10000000000",
-                                               weight: 10005000)
+        let dispatchInfo = RuntimeDispatchInfo(
+            fee: "10000000000",
+            weight: 10005000
+        )
 
         return CompoundOperationWrapper.createWithResult([.success(dispatchInfo)])
     }
