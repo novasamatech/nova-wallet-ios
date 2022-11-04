@@ -82,7 +82,8 @@ final class ExtrinsicService {
             signaturePayloadFormat: walletType.signaturePayloadFormat,
             runtimeRegistry: runtimeRegistry,
             customExtensions: DefaultExtrinsicExtension.extensions,
-            engine: engine
+            engine: engine,
+            operationManager: operationManager
         )
 
         self.operationManager = operationManager
