@@ -87,7 +87,8 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             signaturePayloadFormat: selectedAccount.type.signaturePayloadFormat,
             runtimeRegistry: runtimeService,
             customExtensions: DefaultExtrinsicExtension.extensions,
-            engine: connection
+            engine: connection,
+            operationManager: OperationManagerFacade.sharedManager
         )
 
         let wrapper = extrinsicFactory.submit(builderClosure, signer: signer)
