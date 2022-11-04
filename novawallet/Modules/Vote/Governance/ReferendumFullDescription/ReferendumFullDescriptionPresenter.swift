@@ -16,6 +16,17 @@ final class ReferendumFullDescriptionPresenter {
 
 extension ReferendumFullDescriptionPresenter: ReferendumFullDescriptionPresenterProtocol {
     func setup() {}
+
+    func open(url: URL) {
+        guard let view = view else {
+            return
+        }
+        wireframe.showWeb(
+            url: url,
+            from: view,
+            style: .modal
+        )
+    }
 }
 
 extension ReferendumFullDescriptionPresenter: ReferendumFullDescriptionInteractorOutputProtocol {}
