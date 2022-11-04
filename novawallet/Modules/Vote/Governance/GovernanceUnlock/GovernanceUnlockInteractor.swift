@@ -32,7 +32,8 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         blockTimeService: BlockTimeEstimationServiceProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        currencyManager: CurrencyManagerProtocol
     ) {
         self.chain = chain
         self.selectedAccount = selectedAccount
@@ -44,6 +45,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
+        self.currencyManager = currencyManager
     }
 
     deinit {
