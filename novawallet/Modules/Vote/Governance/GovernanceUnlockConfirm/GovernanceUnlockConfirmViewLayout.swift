@@ -1,6 +1,6 @@
 import UIKit
 
-final class ReferendumVoteConfirmViewLayout: UIView {
+final class GovernanceUnlockConfirmViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
@@ -23,8 +23,6 @@ final class ReferendumVoteConfirmViewLayout: UIView {
 
     let feeCell = StackNetworkFeeCell()
 
-    let yourVoteView = YourVoteRow()
-
     let changesTableView = StackTableView()
 
     var transferableTitleLabel: UILabel {
@@ -41,14 +39,6 @@ final class ReferendumVoteConfirmViewLayout: UIView {
 
     let lockedAmountCell: StackTitleValueDiffCell = .create { cell in
         cell.rowContentView.titleView.imageView.image = R.image.iconGovAmountLock()
-    }
-
-    var lockPeriodTitleLabel: UILabel {
-        lockedPeriodCell.rowContentView.titleView.detailsLabel
-    }
-
-    let lockedPeriodCell: StackTitleValueDiffCell = .create { cell in
-        cell.rowContentView.titleView.imageView.image = R.image.iconGovPeriodLock()
     }
 
     let hintsView = HintListView()
@@ -92,14 +82,10 @@ final class ReferendumVoteConfirmViewLayout: UIView {
         senderTableView.addArrangedSubview(accountCell)
         senderTableView.addArrangedSubview(feeCell)
 
-        containerView.stackView.addArrangedSubview(yourVoteView)
-        containerView.stackView.setCustomSpacing(12.0, after: yourVoteView)
-
         containerView.stackView.addArrangedSubview(changesTableView)
 
         changesTableView.addArrangedSubview(transferableCell)
         changesTableView.addArrangedSubview(lockedAmountCell)
-        changesTableView.addArrangedSubview(lockedPeriodCell)
 
         containerView.stackView.setCustomSpacing(16.0, after: changesTableView)
 
