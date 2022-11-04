@@ -96,7 +96,7 @@ final class ExtrinsicOperationFactory {
     let customExtensions: [ExtrinsicExtension]
     let engine: JSONRPCEngine
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
-    let operationQueue: OperationQueue
+    let operationManager: OperationManagerProtocol
 
     init(
         accountId: AccountId,
@@ -107,7 +107,7 @@ final class ExtrinsicOperationFactory {
         customExtensions: [ExtrinsicExtension],
         engine: JSONRPCEngine,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory(),
-        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue
+        operationManager: OperationManagerProtocol
     ) {
         self.accountId = accountId
         self.chain = chain
@@ -117,7 +117,7 @@ final class ExtrinsicOperationFactory {
         self.customExtensions = customExtensions
         self.engine = engine
         self.eraOperationFactory = eraOperationFactory
-        self.operationQueue = operationQueue
+        self.operationManager = operationManager
     }
 
     private func createNonceOperation() -> BaseOperation<UInt32> {
@@ -319,15 +319,67 @@ final class ExtrinsicOperationFactory {
 
     private func createApiFeeWrapper(
         extrinsic: Data,
-        connection _: JSONRPCEngine
+        connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<RuntimeDispatchInfo> {
         let infoOperation = JSONRPCListOperation<RuntimeDispatchInfo>(
-            engine: engine,
+            engine: connection,
             method: RPCMethod.paymentInfo,
             parameters: [extrinsic.toHex(includePrefix: true)]
         )
 
         return CompoundOperationWrapper(targetOperation: infoOperation)
+    }
+
+    private func createFeeOperation(
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        extrinsicOperation: BaseOperation<[Data]>,
+        connection: JSONRPCEngine,
+        numberOfExtrinsics: Int
+    ) -> BaseOperation<[RuntimeDispatchInfo]> {
+        OperationCombiningService<RuntimeDispatchInfo>(
+            operationManager: operationManager
+        ) {
+            let coderFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let extrinsics = try extrinsicOperation.extractNoCancellableResultData()
+
+            let feeType = StateCallRpc.feeResultType
+            let hasFeeType = coderFactory.hasType(for: feeType)
+
+            let feeOperationWrappers: [CompoundOperationWrapper<RuntimeDispatchInfo>] =
+                (0 ..< numberOfExtrinsics).map { index in
+                    let feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>
+
+                    let extrinsicData = extrinsics[index]
+                    if hasFeeType {
+                        feeWrapper = self.createStateCallFeeWrapper(
+                            for: coderFactory,
+                            type: feeType,
+                            extrinsic: extrinsicData,
+                            connection: connection
+                        )
+                    } else {
+                        feeWrapper = self.createApiFeeWrapper(
+                            extrinsic: extrinsicData,
+                            connection: connection
+                        )
+                    }
+
+                    let tipInclusionOperation = self.createTipInclusionOperation(
+                        dependingOn: feeWrapper.targetOperation,
+                        extrinsicData: extrinsicData,
+                        codingFactory: coderFactory
+                    )
+
+                    tipInclusionOperation.addDependency(feeWrapper.targetOperation)
+
+                    return CompoundOperationWrapper(
+                        targetOperation: tipInclusionOperation,
+                        dependencies: feeWrapper.allOperations
+                    )
+                }
+
+            return feeOperationWrappers
+        }.longrunOperation()
     }
 }
 
@@ -352,51 +404,12 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
         let coderFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
 
-        let feeOperation: BaseOperation<[RuntimeDispatchInfo]> =
-            OperationCombiningService<RuntimeDispatchInfo>(
-                operationManager: OperationManager(operationQueue: operationQueue)
-            ) {
-            let coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
-            let extrinsics = try builderWrapper.targetOperation.extractNoCancellableResultData()
-
-            let feeType = StateCallRpc.feeResultType
-            let hasFeeType = coderFactory.hasType(for: feeType)
-
-            let feeOperationWrappers: [CompoundOperationWrapper<RuntimeDispatchInfo>] =
-                (0 ..< numberOfExtrinsics).map { index in
-                    let feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>
-
-                    let extrinsicData = extrinsics[index]
-                    if hasFeeType {
-                        feeWrapper = self.createStateCallFeeWrapper(
-                            for: coderFactory,
-                            type: feeType,
-                            extrinsic: extrinsicData,
-                            connection: self.connection
-                        )
-                    } else {
-                        feeWrapper = self.createApiFeeWrapper(
-                            extrinsic: extrinsicData,
-                            connection: self.connection
-                        )
-                    }
-
-                    let tipInclusionOperation = self.createTipInclusionOperation(
-                        dependingOn: feeWrapper.targetOperation,
-                        extrinsicData: extrinsicData,
-                        codingFactory: coderFactory
-                    )
-
-                    tipInclusionOperation.addDependency(feeWrapper.targetOperation)
-
-                    return CompoundOperationWrapper(
-                        targetOperation: tipInclusionOperation,
-                        dependencies: feeWrapper.allOperations
-                    )
-                }
-
-            return feeOperationWrappers
-        }.longrunOperation()
+        let feeOperation = createFeeOperation(
+            dependingOn: coderFactoryOperation,
+            extrinsicOperation: builderWrapper.targetOperation,
+            connection: connection,
+            numberOfExtrinsics: numberOfExtrinsics
+        )
 
         feeOperation.addDependency(coderFactoryOperation)
         feeOperation.addDependency(builderWrapper.targetOperation)
