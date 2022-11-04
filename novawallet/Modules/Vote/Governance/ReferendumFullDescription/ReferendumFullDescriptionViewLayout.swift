@@ -1,5 +1,5 @@
 import UIKit
-import Markdown
+import MarkdownView
 
 final class ReferendumFullDescriptionViewLayout: UIView {
     let containerView: ScrollableContainerView = {
@@ -26,6 +26,8 @@ final class ReferendumFullDescriptionViewLayout: UIView {
         $0.textContainer.lineFragmentPadding = 0
     }
 
+    let markdownView = MarkdownView()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -34,7 +36,7 @@ final class ReferendumFullDescriptionViewLayout: UIView {
             $0.edges.equalToSuperview()
         }
         containerView.stackView.addArrangedSubview(titleLabel)
-        containerView.stackView.addArrangedSubview(descriptionTextView)
+        containerView.stackView.addArrangedSubview(markdownView)
         containerView.stackView.setCustomSpacing(16, after: titleLabel)
     }
 
@@ -44,12 +46,23 @@ final class ReferendumFullDescriptionViewLayout: UIView {
     }
 
     func set(markdownText: String) {
-        let document = Document(parsing: markdownText)
-        var markdownosaur = Markdownosaur(options: .init())
-        descriptionTextView.attributedText = markdownosaur.attributedString(from: document)
+        markdownView.load(markdown: markdownText, enableImage: true, plugins: plugins())
     }
 
     func set(title: String) {
         titleLabel.text = title
+    }
+
+    private func plugins() -> [String]? {
+        [
+            URL(string: "https://cdnjs.cloudflare.com/ajax/libs/markdown-it-footnote/3.0.3/markdown-it-footnote.js"),
+            URL(string: "https://cdn.jsdelivr.net/npm/markdown-it-sub@1.0.0/index.min.js"),
+            URL(string: "https://cdn.jsdelivr.net/npm/markdown-it-sup@1.0.0/index.min.js"),
+            URL(string: "https://cdn.jsdelivr.net/npm/markdown-it-ins@3.0.1/dist/markdown-it-ins.min.js"),
+            URL(string: "https://cdn.jsdelivr.net/npm/markdown-it-mark@3.0.1/dist/markdown-it-mark.min.js"),
+            URL(string: "https://cdn.jsdelivr.net/npm/markdown-it-container@3.0.0/dist/markdown-it-container.min.js"),
+            URL(string: "https://cdn.jsdelivr.net/npm/markdown-it-deflist@2.1.0/dist/markdown-it-deflist.min.js")
+        ].compactMap { $0 }
+            .compactMap { try? String(contentsOf: $0, encoding: .utf8) }
     }
 }
