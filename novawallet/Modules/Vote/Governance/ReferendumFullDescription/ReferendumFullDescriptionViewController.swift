@@ -22,7 +22,18 @@ final class ReferendumFullDescriptionViewController: UIViewController, ViewHolde
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHandlers()
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.markdownView.onTouchLink = { [weak self] request in
+            guard let url = request.url, url.scheme == "https" else {
+                return false
+            }
+            self?.presenter.open(url: url)
+            return false
+        }
     }
 }
 
