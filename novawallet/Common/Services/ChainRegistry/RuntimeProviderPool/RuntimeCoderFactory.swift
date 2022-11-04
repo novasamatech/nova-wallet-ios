@@ -9,6 +9,7 @@ protocol RuntimeCoderFactoryProtocol {
     func createEncoder() -> DynamicScaleEncoding
     func createDecoder(from data: Data) throws -> DynamicScaleDecoding
     func createRuntimeJsonContext() -> RuntimeJsonContext
+    func hasType(for name: String) -> Bool
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
@@ -51,5 +52,9 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
         } else {
             return RuntimeJsonContext(prefersRawAddress: false)
         }
+    }
+
+    func hasType(for name: String) -> Bool {
+        catalog.node(for: name, version: UInt64(specVersion)) != nil
     }
 }
