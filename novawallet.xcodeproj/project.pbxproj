@@ -2275,7 +2275,6 @@
 		882C29AC28DC7B7F009CA4B6 /* SubstrateStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882C29AB28DC7B7F009CA4B6 /* SubstrateStorageVersion.swift */; };
 		882C29AE28DC7CB4009CA4B6 /* StorageMigrating+CheckVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882C29AD28DC7CB4009CA4B6 /* StorageMigrating+CheckVersion.swift */; };
 		88300944291409600030B31C /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 88300943291409600030B31C /* Markdown */; };
-		8830094629140CC00030B31C /* test.md in Resources */ = {isa = PBXBuildFile; fileRef = 8830094529140CBF0030B31C /* test.md */; };
 		88300948291410FC0030B31C /* Markdownosaur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88300947291410FC0030B31C /* Markdownosaur.swift */; };
 		8831F10028C65B95009F7682 /* AssetLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8831F0FF28C65B95009F7682 /* AssetLock.swift */; };
 		8836AF4428AA293500A94EDD /* CurrencyManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8836AF4328AA293500A94EDD /* CurrencyManagerTests.swift */; };
@@ -5238,7 +5237,6 @@
 		882C29A928DC7B3D009CA4B6 /* SubstrateStorageMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageMigrator.swift; sourceTree = "<group>"; };
 		882C29AB28DC7B7F009CA4B6 /* SubstrateStorageVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageVersion.swift; sourceTree = "<group>"; };
 		882C29AD28DC7CB4009CA4B6 /* StorageMigrating+CheckVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageMigrating+CheckVersion.swift"; sourceTree = "<group>"; };
-		8830094529140CBF0030B31C /* test.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = test.md; sourceTree = "<group>"; };
 		88300947291410FC0030B31C /* Markdownosaur.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Markdownosaur.swift; sourceTree = "<group>"; };
 		8831F0FF28C65B95009F7682 /* AssetLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetLock.swift; sourceTree = "<group>"; };
 		8836AF4328AA293500A94EDD /* CurrencyManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyManagerTests.swift; sourceTree = "<group>"; };
@@ -12712,7 +12710,6 @@
 		ABAF6F503B172CEE34E19030 /* ReferendumFullDescription */ = {
 			isa = PBXGroup;
 			children = (
-				8830094529140CBF0030B31C /* test.md */,
 				88300947291410FC0030B31C /* Markdownosaur.swift */,
 				722DC609FE13ACBEE4328873 /* ReferendumFullDescriptionProtocols.swift */,
 				57E6825E525785A1A12C62E7 /* ReferendumFullDescriptionWireframe.swift */,
@@ -14172,7 +14169,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8830094629140CC00030B31C /* test.md in Resources */,
 				848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */,
 				84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */,
 				849013FC24A92A05008F705E /* novawallet.release.xcconfig in Resources */,
