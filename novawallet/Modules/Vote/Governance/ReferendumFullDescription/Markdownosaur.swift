@@ -1,19 +1,40 @@
 import UIKit
 import Markdown
 
-// swiftlint:disable line_length
-// swiftlint:disable force_cast
-public struct Markdownosaur: MarkupVisitor {
-    let baseFontSize: CGFloat = 15.0
-    let baseTextColor: UIColor = R.color.colorWhite64()!
+struct Markdownosaur: MarkupVisitor {
+    struct Options {
+        let baseFont: UIFont
+        let baseTextColor: UIColor
+        let codeColor: UIColor
+        let codeFont: UIFont
+        let numeralFont: UIFont
 
-    public init() {}
+        init(
+            baseFont: UIFont = .regularSubheadline,
+            baseTextColor: UIColor = R.color.colorWhite64()!,
+            codeColor: UIColor = .systemGray,
+            codeFont: UIFont = .monospacedSystemFont(ofSize: 14, weight: .regular),
+            numeralFont: UIFont = .monospacedDigitSystemFont(ofSize: 15, weight: .regular)
+        ) {
+            self.baseFont = baseFont
+            self.baseTextColor = baseTextColor
+            self.codeColor = codeColor
+            self.codeFont = codeFont
+            self.numeralFont = numeralFont
+        }
+    }
 
-    public mutating func attributedString(from document: Document) -> NSAttributedString {
+    let options: Options
+
+    init(options: Options) {
+        self.options = options
+    }
+
+    mutating func attributedString(from document: Document) -> NSAttributedString {
         visit(document)
     }
 
-    public mutating func defaultVisit(_ markup: Markup) -> NSAttributedString {
+    mutating func defaultVisit(_ markup: Markup) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in markup.children {
@@ -23,14 +44,17 @@ public struct Markdownosaur: MarkupVisitor {
         return result
     }
 
-    public mutating func visitText(_ text: Text) -> NSAttributedString {
-        NSAttributedString(string: text.plainText, attributes: [
-            .font: UIFont.systemFont(ofSize: baseFontSize, weight: .regular),
-            .foregroundColor: baseTextColor
-        ])
+    mutating func visitText(_ text: Text) -> NSAttributedString {
+        NSAttributedString(
+            string: text.plainText,
+            attributes: [
+                .font: options.baseFont,
+                .foregroundColor: options.baseTextColor
+            ]
+        )
     }
 
-    public mutating func visitEmphasis(_ emphasis: Emphasis) -> NSAttributedString {
+    mutating func visitEmphasis(_ emphasis: Emphasis) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in emphasis.children {
@@ -42,7 +66,7 @@ public struct Markdownosaur: MarkupVisitor {
         return result
     }
 
-    public mutating func visitStrong(_ strong: Strong) -> NSAttributedString {
+    mutating func visitStrong(_ strong: Strong) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in strong.children {
@@ -54,7 +78,7 @@ public struct Markdownosaur: MarkupVisitor {
         return result
     }
 
-    public mutating func visitParagraph(_ paragraph: Paragraph) -> NSAttributedString {
+    mutating func visitParagraph(_ paragraph: Paragraph) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in paragraph.children {
@@ -62,13 +86,13 @@ public struct Markdownosaur: MarkupVisitor {
         }
 
         if paragraph.hasSuccessor {
-            result.append(paragraph.isContainedInList ? .singleNewline(withFontSize: baseFontSize) : .doubleNewline(withFontSize: baseFontSize))
+            result.append(paragraph.isContainedInList ? .singleNewline(withFont: options.baseFont) : .doubleNewline(withFont: options.baseFont))
         }
 
         return result
     }
 
-    public mutating func visitHeading(_ heading: Heading) -> NSAttributedString {
+    mutating func visitHeading(_ heading: Heading) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in heading.children {
@@ -78,41 +102,53 @@ public struct Markdownosaur: MarkupVisitor {
         result.applyHeading(withLevel: heading.level)
 
         if heading.hasSuccessor {
-            result.append(.doubleNewline(withFontSize: baseFontSize))
+            result.append(.doubleNewline(withFont: options.baseFont))
         }
 
         return result
     }
 
-    public mutating func visitLink(_ link: Link) -> NSAttributedString {
+    mutating func visitLink(_ link: Link) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in link.children {
             result.append(visit(child))
         }
 
-        let url = link.destination != nil ? URL(string: link.destination!) : nil
-
-        result.applyLink(withURL: url)
-
-        return result
-    }
-
-    public mutating func visitInlineCode(_ inlineCode: InlineCode) -> NSAttributedString {
-        NSAttributedString(string: inlineCode.code, attributes: [.font: UIFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: UIColor.systemGray])
-    }
-
-    public func visitCodeBlock(_ codeBlock: CodeBlock) -> NSAttributedString {
-        let result = NSMutableAttributedString(string: codeBlock.code, attributes: [.font: UIFont.monospacedSystemFont(ofSize: baseFontSize - 1.0, weight: .regular), .foregroundColor: UIColor.systemGray])
-
-        if codeBlock.hasSuccessor {
-            result.append(.singleNewline(withFontSize: baseFontSize))
+        if let url = link.destination.map { URL(string: $0) } {
+            result.applyLink(withURL: url)
         }
 
         return result
     }
 
-    public mutating func visitStrikethrough(_ strikethrough: Strikethrough) -> NSAttributedString {
+    mutating func visitInlineCode(_ inlineCode: InlineCode) -> NSAttributedString {
+        NSAttributedString(
+            string: inlineCode.code,
+            attributes: [
+                .font: options.codeFont,
+                .foregroundColor: options.codeColor
+            ]
+        )
+    }
+
+    func visitCodeBlock(_ codeBlock: CodeBlock) -> NSAttributedString {
+        let result = NSMutableAttributedString(
+            string: codeBlock.code,
+            attributes: [
+                .font: options.codeFont,
+                .foregroundColor: options.codeColor
+            ]
+        )
+
+        if codeBlock.hasSuccessor {
+            result.append(.singleNewline(withFont: options.baseFont))
+        }
+
+        return result
+    }
+
+    mutating func visitStrikethrough(_ strikethrough: Strikethrough) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in strikethrough.children {
@@ -124,10 +160,10 @@ public struct Markdownosaur: MarkupVisitor {
         return result
     }
 
-    public mutating func visitUnorderedList(_ unorderedList: UnorderedList) -> NSAttributedString {
+    mutating func visitUnorderedList(_ unorderedList: UnorderedList) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
-        let font = UIFont.systemFont(ofSize: baseFontSize, weight: .regular)
+        let font = options.baseFont
 
         for listItem in unorderedList.listItems {
             var listItemAttributes: [NSAttributedString.Key: Any] = [:]
@@ -149,23 +185,24 @@ public struct Markdownosaur: MarkupVisitor {
             listItemParagraphStyle.headIndent = secondTabLocation
 
             listItemAttributes[.paragraphStyle] = listItemParagraphStyle
-            listItemAttributes[.font] = UIFont.systemFont(ofSize: baseFontSize, weight: .regular)
+            listItemAttributes[.font] = font
             listItemAttributes[.listDepth] = unorderedList.listDepth
 
-            let listItemAttributedString = visit(listItem).mutableCopy() as! NSMutableAttributedString
-            listItemAttributedString.insert(NSAttributedString(string: "\t•\t", attributes: listItemAttributes), at: 0)
+            if let listItemAttributedString = visit(listItem).mutableCopy() as? NSMutableAttributedString {
+                listItemAttributedString.insert(NSAttributedString(string: "\t•\t", attributes: listItemAttributes), at: 0)
 
-            result.append(listItemAttributedString)
+                result.append(listItemAttributedString)
+            }
         }
 
         if unorderedList.hasSuccessor {
-            result.append(.doubleNewline(withFontSize: baseFontSize))
+            result.append(.doubleNewline(withFont: font))
         }
 
         return result
     }
 
-    public mutating func visitListItem(_ listItem: ListItem) -> NSAttributedString {
+    mutating func visitListItem(_ listItem: ListItem) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in listItem.children {
@@ -173,20 +210,20 @@ public struct Markdownosaur: MarkupVisitor {
         }
 
         if listItem.hasSuccessor {
-            result.append(.singleNewline(withFontSize: baseFontSize))
+            result.append(.singleNewline(withFont: options.baseFont))
         }
 
         return result
     }
 
-    public mutating func visitOrderedList(_ orderedList: OrderedList) -> NSAttributedString {
+    mutating func visitOrderedList(_ orderedList: OrderedList) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for (index, listItem) in orderedList.listItems.enumerated() {
             var listItemAttributes: [NSAttributedString.Key: Any] = [:]
 
-            let font = UIFont.systemFont(ofSize: baseFontSize, weight: .regular)
-            let numeralFont = UIFont.monospacedDigitSystemFont(ofSize: baseFontSize, weight: .regular)
+            let font = options.baseFont
+            let numeralFont = options.numeralFont
 
             let listItemParagraphStyle = NSMutableParagraphStyle()
 
@@ -194,9 +231,13 @@ public struct Markdownosaur: MarkupVisitor {
             let baseLeftMargin: CGFloat = 15.0
             let leftMarginOffset = baseLeftMargin + (20.0 * CGFloat(orderedList.listDepth))
 
-            // Grab the highest number to be displayed and measure its width (yes normally some digits are wider than others but since we're using the numeral mono font all will be the same width in this case)
+            // Grab the highest number to be displayed and measure its width (yes normally some digits are wider than
+            // others but since we're using the numeral mono font all will be the same width in this case)
             let highestNumberInList = orderedList.childCount
-            let numeralColumnWidth = ceil(NSAttributedString(string: "\(highestNumberInList).", attributes: [.font: numeralFont]).size().width)
+            let numeralColumnWidth = ceil(NSAttributedString(
+                string: "\(highestNumberInList).",
+                attributes: [.font: numeralFont]
+            ).size().width)
 
             let spacingFromIndex: CGFloat = 8.0
             let firstTabLocation = leftMarginOffset + numeralColumnWidth
@@ -213,26 +254,31 @@ public struct Markdownosaur: MarkupVisitor {
             listItemAttributes[.font] = font
             listItemAttributes[.listDepth] = orderedList.listDepth
 
-            let listItemAttributedString = visit(listItem).mutableCopy() as! NSMutableAttributedString
+            if let listItemAttributedString = visit(listItem).mutableCopy() as? NSMutableAttributedString {
+                // Same as the normal list attributes, but for prettiness in formatting we want to use
+                // the cool monospaced numeral font
+                var numberAttributes = listItemAttributes
+                numberAttributes[.font] = numeralFont
 
-            // Same as the normal list attributes, but for prettiness in formatting we want to use the cool monospaced numeral font
-            var numberAttributes = listItemAttributes
-            numberAttributes[.font] = numeralFont
+                let numberAttributedString = NSAttributedString(
+                    string: "\t\(index + 1).\t",
+                    attributes: numberAttributes
+                )
+                listItemAttributedString.insert(numberAttributedString, at: 0)
 
-            let numberAttributedString = NSAttributedString(string: "\t\(index + 1).\t", attributes: numberAttributes)
-            listItemAttributedString.insert(numberAttributedString, at: 0)
-
-            result.append(listItemAttributedString)
+                result.append(listItemAttributedString)
+            }
         }
 
         if orderedList.hasSuccessor {
-            result.append(orderedList.isContainedInList ? .singleNewline(withFontSize: baseFontSize) : .doubleNewline(withFontSize: baseFontSize))
+            result.append(orderedList.isContainedInList ?
+                .singleNewline(withFont: options.baseFont) : .doubleNewline(withFont: options.baseFont))
         }
 
         return result
     }
 
-    public mutating func visitBlockQuote(_ blockQuote: BlockQuote) -> NSAttributedString {
+    mutating func visitBlockQuote(_ blockQuote: BlockQuote) -> NSAttributedString {
         let result = NSMutableAttributedString()
 
         for child in blockQuote.children {
@@ -248,26 +294,27 @@ public struct Markdownosaur: MarkupVisitor {
             quoteParagraphStyle.headIndent = leftMarginOffset
 
             quoteAttributes[.paragraphStyle] = quoteParagraphStyle
-            quoteAttributes[.font] = UIFont.systemFont(ofSize: baseFontSize, weight: .regular)
+            quoteAttributes[.font] = options.baseFont
             quoteAttributes[.listDepth] = blockQuote.quoteDepth
 
-            let quoteAttributedString = visit(child).mutableCopy() as! NSMutableAttributedString
-            quoteAttributedString.insert(NSAttributedString(string: "\t", attributes: quoteAttributes), at: 0)
+            if let quoteAttributedString = visit(child).mutableCopy() as? NSMutableAttributedString {
+                quoteAttributedString.insert(NSAttributedString(string: "\t", attributes: quoteAttributes), at: 0)
 
-            quoteAttributedString.addAttribute(.foregroundColor, value: UIColor.systemGray)
+                quoteAttributedString.addAttribute(.foregroundColor, value: UIColor.systemGray)
 
-            result.append(quoteAttributedString)
+                result.append(quoteAttributedString)
+            }
         }
 
         if blockQuote.hasSuccessor {
-            result.append(.doubleNewline(withFontSize: baseFontSize))
+            result.append(.doubleNewline(withFont: options.baseFont))
         }
 
         return result
     }
 }
 
-// MARK: - Extensions Land
+// MARK: - NSMutableAttributedString Extensions
 
 extension NSMutableAttributedString {
     func applyEmphasis() {
@@ -400,14 +447,11 @@ extension Markup {
 }
 
 extension NSAttributedString {
-    static func singleNewline(withFontSize fontSize: CGFloat) -> NSAttributedString {
-        NSAttributedString(string: "\n", attributes: [.font: UIFont.systemFont(ofSize: fontSize, weight: .regular)])
+    static func singleNewline(withFont font: UIFont) -> NSAttributedString {
+        NSAttributedString(string: "\n", attributes: [.font: font])
     }
 
-    static func doubleNewline(withFontSize fontSize: CGFloat) -> NSAttributedString {
-        NSAttributedString(string: "\n\n", attributes: [.font: UIFont.systemFont(ofSize: fontSize, weight: .regular)])
+    static func doubleNewline(withFont font: UIFont) -> NSAttributedString {
+        NSAttributedString(string: "\n\n", attributes: [.font: font])
     }
 }
-
-// swiftlint:enable line_length
-// swiftlint:enable force_cast

@@ -1,4 +1,6 @@
-protocol ReferendumFullDescriptionViewProtocol: ControllerBackedProtocol {}
+protocol ReferendumFullDescriptionViewProtocol: ControllerBackedProtocol {
+    func didReceive(title: String, description: String)
+}
 
 protocol ReferendumFullDescriptionPresenterProtocol: AnyObject {
     func setup()

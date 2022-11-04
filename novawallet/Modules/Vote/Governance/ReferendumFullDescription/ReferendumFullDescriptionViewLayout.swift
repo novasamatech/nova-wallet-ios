@@ -45,7 +45,7 @@ final class ReferendumFullDescriptionViewLayout: UIView {
 
     func set(markdownText: String) {
         let document = Document(parsing: markdownText)
-        var markdownosaur = Markdownosaur()
+        var markdownosaur = Markdownosaur(options: .init())
         descriptionTextView.attributedText = markdownosaur.attributedString(from: document)
     }
 
