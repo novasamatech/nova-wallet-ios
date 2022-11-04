@@ -243,7 +243,21 @@ extension GovernanceUnlockSetupPresenter: GovernanceUnlockSetupPresenterProtocol
         interactor.setup()
     }
 
-    func unlock() {}
+    func unlock() {
+        guard
+            let votingResult = votingResult,
+            let unlockSchedule = unlockSchedule,
+            let blockNumber = blockNumber else {
+            return
+        }
+
+        wireframe.showConfirm(
+            from: view,
+            votingResult: votingResult,
+            schedule: unlockSchedule,
+            blockNumber: blockNumber
+        )
+    }
 }
 
 extension GovernanceUnlockSetupPresenter: GovernanceUnlockSetupInteractorOutputProtocol {

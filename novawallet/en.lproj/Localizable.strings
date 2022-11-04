@@ -1075,3 +1075,4 @@
 "gov.in.queue.counter" = "(%@ of %@)";
 "common.unlock" = "Unlock";
 "common.unlockable" = "Unlockable";
+"gov.remains.locked.suffix" = " remains locked in %@";
