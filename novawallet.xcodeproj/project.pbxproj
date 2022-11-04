@@ -1119,6 +1119,7 @@
 		846CD24D2656FEB800A2E4B6 /* StorageKeysQueryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CD24C2656FEB800A2E4B6 /* StorageKeysQueryService.swift */; };
 		846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CD25A265709A800A2E4B6 /* StorageKeySuffixMapper.swift */; };
 		846CDECD258D212D009F3E75 /* AlertImageWithTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CDECC258D212D009F3E75 /* AlertImageWithTitleView.swift */; };
+		846CF0CD2914DC25008A96A1 /* RemoteStateCallRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846CF0CC2914DC25008A96A1 /* RemoteStateCallRequest.swift */; };
 		846E5010277998040049B659 /* DAppAuthRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E500F277998040049B659 /* DAppAuthRequest.swift */; };
 		846E5013277999FC0049B659 /* DAppAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E5012277999FC0049B659 /* DAppAuthViewModel.swift */; };
 		846E501527799B3E0049B659 /* DAppAuthViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */; };
@@ -4072,6 +4073,7 @@
 		846CD24C2656FEB800A2E4B6 /* StorageKeysQueryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeysQueryService.swift; sourceTree = "<group>"; };
 		846CD25A265709A800A2E4B6 /* StorageKeySuffixMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeySuffixMapper.swift; sourceTree = "<group>"; };
 		846CDECC258D212D009F3E75 /* AlertImageWithTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertImageWithTitleView.swift; sourceTree = "<group>"; };
+		846CF0CC2914DC25008A96A1 /* RemoteStateCallRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteStateCallRequest.swift; sourceTree = "<group>"; };
 		846E500F277998040049B659 /* DAppAuthRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthRequest.swift; sourceTree = "<group>"; };
 		846E5012277999FC0049B659 /* DAppAuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModel.swift; sourceTree = "<group>"; };
 		846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModelFactory.swift; sourceTree = "<group>"; };
@@ -11379,6 +11381,7 @@
 				84300B2726C107AD00D64514 /* ConnectionAutobalancing.swift */,
 				84300B2B26C10C9B00D64514 /* ConnectionStateReporting.swift */,
 				F4C201812728678400B0F3D0 /* ExtrinsicStatus.swift */,
+				846CF0CC2914DC25008A96A1 /* RemoteStateCallRequest.swift */,
 			);
 			path = JSONRPC;
 			sourceTree = "<group>";
@@ -14941,6 +14944,7 @@
 				849014BC24AA87E4008F705E /* PinSetupInteractor.swift in Sources */,
 				8468119728E6C90F00BF54F1 /* VoteProtocols.swift in Sources */,
 				844B6EC728A3B05300A8BE83 /* MessageSheetViewModel.swift in Sources */,
+				846CF0CD2914DC25008A96A1 /* RemoteStateCallRequest.swift in Sources */,
 				84EE780227C4C2A40027357F /* DAppListFeaturedHeaderView.swift in Sources */,
 				845BB8D125E45F1300E5FCDC /* NominateCall.swift in Sources */,
 				88421057289BBA8D00306F2C /* CurrencyProtocols.swift in Sources */,
