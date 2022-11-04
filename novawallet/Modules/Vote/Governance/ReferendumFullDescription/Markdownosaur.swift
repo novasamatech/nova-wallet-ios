@@ -312,6 +312,24 @@ struct Markdownosaur: MarkupVisitor {
 
         return result
     }
+
+    mutating func visitImage(_ image: Image) -> NSAttributedString {
+        let result = NSMutableAttributedString()
+
+        if
+            let source = image.source,
+            let imageURL = URL(string: source),
+            let imageData = try? Data(contentsOf: imageURL) {
+            let image = UIImage(data: imageData)
+            let imageAttachment = NSTextAttachment()
+            imageAttachment.bounds = CGRect(x: 0, y: 0, width: 50, height: 50)
+            imageAttachment.image = image
+
+            result.append(NSAttributedString(attachment: imageAttachment))
+        }
+
+        return result
+    }
 }
 
 // MARK: - NSMutableAttributedString Extensions
