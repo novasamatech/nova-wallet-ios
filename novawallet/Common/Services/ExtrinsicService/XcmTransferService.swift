@@ -93,7 +93,8 @@ final class XcmTransferService {
             signaturePayloadFormat: signaturePayloadFormat,
             runtimeRegistry: runtimeProvider,
             customExtensions: DefaultExtrinsicExtension.extensions,
-            engine: connection
+            engine: connection,
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
 
