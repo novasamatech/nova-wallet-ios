@@ -95,7 +95,7 @@ class DAppOperationConfirmTests: XCTestCase {
             when(stub).callMethod(any(), params: any(), options: any(), completion: any())
                 .then { (_, params: [String]?, _, completion: ((Result<RuntimeDispatchInfo, Error>) -> Void)?) in
 
-                    let fee = RuntimeDispatchInfo(dispatchClass: "Fee", fee: "1", weight: 32)
+                    let fee = RuntimeDispatchInfo(fee: "1", weight: 32)
 
                     completion?(.success(fee))
 
