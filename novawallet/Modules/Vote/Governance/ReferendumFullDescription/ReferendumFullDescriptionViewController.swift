@@ -19,30 +19,15 @@ final class ReferendumFullDescriptionViewController: UIViewController, ViewHolde
         view = ReferendumFullDescriptionViewLayout()
     }
 
-    // swiftlint:disable line_length
     override func viewDidLoad() {
         super.viewDidLoad()
 
         presenter.setup()
-
-        guard let markdownText = try? createMarkdownTextSample() else {
-            return
-        }
-        didRecieve(
-            title: "Polkadot and Kusama participation in the 10th Pais Digital Chile Summit.",
-            description: markdownText
-        )
-    }
-
-    private func createMarkdownTextSample() throws -> String {
-        let url = Bundle.main.url(forResource: "test", withExtension: "md")!
-        let data = try Data(contentsOf: url)
-        return String(data: data, encoding: .utf8)!
     }
 }
 
 extension ReferendumFullDescriptionViewController: ReferendumFullDescriptionViewProtocol {
-    func didRecieve(title: String, description: String) {
+    func didReceive(title: String, description: String) {
         rootView.set(title: title)
         rootView.set(markdownText: description)
     }
