@@ -952,6 +952,15 @@
 		845AADA12902D02400B5AE96 /* TitleValueDiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845AADA02902D02400B5AE96 /* TitleValueDiffView.swift */; };
 		845AADA32902D1EB00B5AE96 /* StackTitleValueDiffCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */; };
 		845AADA62903B32E00B5AE96 /* ReferendumVoteConfirmError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845AADA52903B32E00B5AE96 /* ReferendumVoteConfirmError.swift */; };
+		845B07EB29159190005785D3 /* Democracy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07EA29159190005785D3 /* Democracy.swift */; };
+		845B07ED291594E1005785D3 /* DemocracyReferendum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07EC291594E1005785D3 /* DemocracyReferendum.swift */; };
+		845B07EF2915951A005785D3 /* DemocracyVoteThreshold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07EE2915951A005785D3 /* DemocracyVoteThreshold.swift */; };
+		845B07F129159AE7005785D3 /* DemocracyVoting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07F029159AE7005785D3 /* DemocracyVoting.swift */; };
+		845B07F329159C15005785D3 /* Democracy+CodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07F229159C15005785D3 /* Democracy+CodingPath.swift */; };
+		845B07F5291627A3005785D3 /* Gov1OperationFactory+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07F4291627A3005785D3 /* Gov1OperationFactory+Protocol.swift */; };
+		845B07F729162AB3005785D3 /* Democracy+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07F629162AB3005785D3 /* Democracy+ConstantPath.swift */; };
+		845B07F929162D24005785D3 /* Gov1LocalMappingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */; };
+		845B07FD291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */; };
 		845B811228F429BB0040CE84 /* SupportPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811128F429BB0040CE84 /* SupportPallet.swift */; };
 		845B811528F43C350040CE84 /* Treasury.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811428F43C350040CE84 /* Treasury.swift */; };
 		845B811728F43C730040CE84 /* TreasuryProposal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811628F43C730040CE84 /* TreasuryProposal.swift */; };
@@ -3906,6 +3915,15 @@
 		845AADA02902D02400B5AE96 /* TitleValueDiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleValueDiffView.swift; sourceTree = "<group>"; };
 		845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackTitleValueDiffCell.swift; sourceTree = "<group>"; };
 		845AADA52903B32E00B5AE96 /* ReferendumVoteConfirmError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVoteConfirmError.swift; sourceTree = "<group>"; };
+		845B07EA29159190005785D3 /* Democracy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Democracy.swift; sourceTree = "<group>"; };
+		845B07EC291594E1005785D3 /* DemocracyReferendum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyReferendum.swift; sourceTree = "<group>"; };
+		845B07EE2915951A005785D3 /* DemocracyVoteThreshold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyVoteThreshold.swift; sourceTree = "<group>"; };
+		845B07F029159AE7005785D3 /* DemocracyVoting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyVoting.swift; sourceTree = "<group>"; };
+		845B07F229159C15005785D3 /* Democracy+CodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Democracy+CodingPath.swift"; sourceTree = "<group>"; };
+		845B07F4291627A3005785D3 /* Gov1OperationFactory+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gov1OperationFactory+Protocol.swift"; sourceTree = "<group>"; };
+		845B07F629162AB3005785D3 /* Democracy+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Democracy+ConstantPath.swift"; sourceTree = "<group>"; };
+		845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1LocalMappingFactory.swift; sourceTree = "<group>"; };
+		845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyDecidingFunctionProtocol.swift; sourceTree = "<group>"; };
 		845B811128F429BB0040CE84 /* SupportPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportPallet.swift; sourceTree = "<group>"; };
 		845B811428F43C350040CE84 /* Treasury.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Treasury.swift; sourceTree = "<group>"; };
 		845B811628F43C730040CE84 /* TreasuryProposal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryProposal.swift; sourceTree = "<group>"; };
@@ -7568,6 +7586,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				845B07E929159174005785D3 /* Democracy */,
 				84B6349B28F4A05A00503306 /* Preimage */,
 				845B811328F43C1E0040CE84 /* Treasury */,
 				845B811028F429AB0040CE84 /* Support */,
@@ -8080,6 +8099,19 @@
 				845AADA52903B32E00B5AE96 /* ReferendumVoteConfirmError.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		845B07E929159174005785D3 /* Democracy */ = {
+			isa = PBXGroup;
+			children = (
+				845B07EA29159190005785D3 /* Democracy.swift */,
+				845B07EC291594E1005785D3 /* DemocracyReferendum.swift */,
+				845B07EE2915951A005785D3 /* DemocracyVoteThreshold.swift */,
+				845B07F029159AE7005785D3 /* DemocracyVoting.swift */,
+				845B07F229159C15005785D3 /* Democracy+CodingPath.swift */,
+				845B07F629162AB3005785D3 /* Democracy+ConstantPath.swift */,
+			);
+			path = Democracy;
 			sourceTree = "<group>";
 		};
 		845B811028F429AB0040CE84 /* Support */ = {
@@ -10325,6 +10357,8 @@
 				84A1742828ED625D0096F943 /* Gov2OperationFactory.swift */,
 				8438432D2913B3150048595C /* Gov1OperationFactory.swift */,
 				843461E9290C04C400379936 /* Gov2OperationFactory+Protocol.swift */,
+				845B07F4291627A3005785D3 /* Gov1OperationFactory+Protocol.swift */,
+				845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */,
 				84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */,
 				845B811E28F451A40040CE84 /* Gov2ActionOperationFactory.swift */,
 				8425D0E928FE9A45003B782A /* GovernanceExtrinsicFactoryProtocol.swift */,
@@ -11628,6 +11662,7 @@
 				84F1D67029068F810050F4E3 /* GovernanceDApp.swift */,
 				843461E7290BF14400379936 /* ReferendumsSorting.swift */,
 				843461EB290D0D9400379936 /* GovernanceUnlockSchedule.swift */,
+				845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -15066,6 +15101,7 @@
 				AE7129B4260872ED000AA3F5 /* EraStakersInfoChanged.swift in Sources */,
 				842D1E9624D2DD6700C30A7A /* MnemonicDisplayView.swift in Sources */,
 				8411707A285B10F5006F4DFB /* XcmAssetTransferFee.swift in Sources */,
+				845B07F729162AB3005785D3 /* Democracy+ConstantPath.swift in Sources */,
 				84DBEA56265ED62700FDF73C /* BaseErrorPresentable.swift in Sources */,
 				845B811928F43D4C0040CE84 /* Treasury+CodingPath.swift in Sources */,
 				842876B224AE059700D91AD8 /* SupportData.swift in Sources */,
@@ -15297,6 +15333,7 @@
 				88C7165A28C8D3450015D1E9 /* LocksHeaderView.swift in Sources */,
 				840B3D6E289A56BA00DA1DA9 /* ParitySignerScanWireframe.swift in Sources */,
 				F48EB5462722BB7000AE15ED /* AcalaBonusService.swift in Sources */,
+				845B07ED291594E1005785D3 /* DemocracyReferendum.swift in Sources */,
 				84466B4028B77B4500FA1E0D /* SignatureVerificationWrapper.swift in Sources */,
 				844DBC62274D1E29009F8351 /* SecretTypeTableViewCell.swift in Sources */,
 				847297A2260B3146009B86D0 /* ChangeTargetsSelectValidatorsStartWireframe.swift in Sources */,
@@ -15955,6 +15992,7 @@
 				8442003628EA9DF100C49C4A /* VoteViewFactory.swift in Sources */,
 				84BC7041289DBF62008A9758 /* QRDisplayView.swift in Sources */,
 				2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */,
+				845B07F329159C15005785D3 /* Democracy+CodingPath.swift in Sources */,
 				847C96492553614F002D288F /* ExportRestoreJsonPresenter.swift in Sources */,
 				8463A71225E30C95003B8160 /* BalanceViewModelFactory.swift in Sources */,
 				84A04622277DE83E000B24DA /* DAppListErrorView.swift in Sources */,
@@ -16193,6 +16231,7 @@
 				8401AEC62642A71D000B03E3 /* StakingRebondConfirmationLayout.swift in Sources */,
 				8487584327F08F9600495306 /* AddressScanPresenter.swift in Sources */,
 				847F2D5127AAB4BC00AFD476 /* GradientModel.swift in Sources */,
+				845B07FD291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift in Sources */,
 				84981CC32666D95F00C4C691 /* GradientButton+Style.swift in Sources */,
 				84E258A12892CC0F00DC8A51 /* AccountManagementViewLayout.swift in Sources */,
 				848FD1A528AE27E700CCD9E2 /* HardwareWalletOption.swift in Sources */,
@@ -16209,6 +16248,7 @@
 				8473D4212657FFFB00B394B2 /* Crowdloan.swift in Sources */,
 				843461F7290E4AF500379936 /* Gov2UnlocksCalculator.swift in Sources */,
 				849E17E327913220002D1744 /* DAppSearchResult.swift in Sources */,
+				845B07EB29159190005785D3 /* Democracy.swift in Sources */,
 				844CB57626FA064700396E13 /* ChainRegistryError.swift in Sources */,
 				842A737327DB7F75006EE1EA /* OperationRewardViewModel.swift in Sources */,
 				84CA68CF26BD6872003B9453 /* RuntimeSyncService.swift in Sources */,
@@ -16403,6 +16443,7 @@
 				84F6B6502619E1ED0038F10D /* Int+Operations.swift in Sources */,
 				8487010E2907DF2F00F2C0C3 /* MultiValueView+Styles.swift in Sources */,
 				85547F698B551ACD387D84E2 /* SelectValidatorsStartViewController.swift in Sources */,
+				845B07F129159AE7005785D3 /* DemocracyVoting.swift in Sources */,
 				41B29C1C9239BB2DCB7903A7 /* SelectValidatorsStartViewFactory.swift in Sources */,
 				25381484F16FB930B8A90CE3 /* SelectValidatorsConfirmProtocols.swift in Sources */,
 				B02EAF42C91E069FE6872EE0 /* SelectValidatorsConfirmWireframe.swift in Sources */,
@@ -16574,6 +16615,7 @@
 				8489A6CE27FC5C5E0040C066 /* StakingActionsView.swift in Sources */,
 				84DED40B266656D400A153BB /* KaruraBonusService.swift in Sources */,
 				842A736627DB485E006EE1EA /* OperationSlashModel.swift in Sources */,
+				845B07EF2915951A005785D3 /* DemocracyVoteThreshold.swift in Sources */,
 				885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */,
 				8442002F28E9AEFB00C49C4A /* VoteWireframe.swift in Sources */,
 				841E553C282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift in Sources */,
@@ -17056,6 +17098,7 @@
 				2F6FA089995FD12FB2AA814B /* ParitySignerWelcomePresenter.swift in Sources */,
 				012AE9F8BDA682C691B6F9FD /* ParitySignerWelcomeViewController.swift in Sources */,
 				DC2867A7DC1415052D090C53 /* ParitySignerWelcomeViewLayout.swift in Sources */,
+				845B07F5291627A3005785D3 /* Gov1OperationFactory+Protocol.swift in Sources */,
 				97608590E8D770A86CCFBE86 /* ParitySignerWelcomeViewFactory.swift in Sources */,
 				8425D0E028FE738D003B782A /* ReferendumVoteSetupInteractorError.swift in Sources */,
 				5443122935BBFDD55AE9E6FD /* ParitySignerAddressesProtocols.swift in Sources */,
@@ -17098,6 +17141,7 @@
 				30542C0BD486FD1583F36BA2 /* LedgerNetworkSelectionProtocols.swift in Sources */,
 				84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */,
 				84FBDBE128C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift in Sources */,
+				845B07F929162D24005785D3 /* Gov1LocalMappingFactory.swift in Sources */,
 				C102544345E604976BF7AFFC /* LedgerNetworkSelectionWireframe.swift in Sources */,
 				D71B2C6056D803C196DF4CDA /* LedgerNetworkSelectionPresenter.swift in Sources */,
 				19D3739A3C7800A5A18DA41C /* LedgerNetworkSelectionInteractor.swift in Sources */,
