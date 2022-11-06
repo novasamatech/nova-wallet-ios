@@ -36,4 +36,24 @@ enum SupportPallet {
             }
         }
     }
+
+    @propertyWrapper
+    struct HashOrBoundedCallWrapper<T>: Decodable where T: Decodable {
+        let wrappedValue: Bounded<T>
+
+        init(wrappedValue: Bounded<T>) {
+            self.wrappedValue = wrappedValue
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+
+            if let boundedCall = try? container.decode(Bounded<T>.self) {
+                wrappedValue = boundedCall
+            } else {
+                let hash = try container.decode(BytesCodable.self).wrappedValue
+                wrappedValue = .legacy(hash: hash)
+            }
+        }
+    }
 }

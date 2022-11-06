@@ -17,6 +17,7 @@ extension Democracy {
     struct OngoingStatus: Decodable {
         @StringCodable var end: BlockNumber
         @StringCodable var delay: BlockNumber
+        @SupportPallet.HashOrBoundedCallWrapper var proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
         let threshold: Democracy.VoteThreshold
         let tally: Tally
     }
