@@ -136,6 +136,14 @@ struct VotingThresholdLocal {
             electorate: electorate
         )
     }
+
+    func isPassing() -> Bool {
+        if let threshold = calculateThreshold(), let approvalFraction = approvalFraction {
+            return approvalFraction > threshold
+        } else {
+            return false
+        }
+    }
 }
 
 enum ReferendumStateLocal {
@@ -156,6 +164,15 @@ enum ReferendumStateLocal {
 
         var rejectedAt: BlockNumber {
             since + period
+        }
+
+        func isPassing(for currentBlock: BlockNumber) -> Bool {
+            switch voting {
+            case let .supportAndVotes(model):
+                return model.isPassing(at: currentBlock)
+            case let .threshold(model):
+                return model.isPassing()
+            }
         }
     }
 

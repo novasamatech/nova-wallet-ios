@@ -5,6 +5,8 @@ extension ReferendumStateLocal {
         switch voting {
         case let .supportAndVotes(model):
             return model.approvalFunction?.curve
+        case .threshold:
+            return nil
         case .none:
             return nil
         }
@@ -14,6 +16,8 @@ extension ReferendumStateLocal {
         switch voting {
         case let .supportAndVotes(model):
             return model.supportFunction?.curve
+        case .threshold:
+            return nil
         case .none:
             return nil
         }

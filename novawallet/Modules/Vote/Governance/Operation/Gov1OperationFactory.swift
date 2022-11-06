@@ -97,7 +97,7 @@ final class Gov1OperationFactory {
     func createMaxVotesOperation(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> BaseOperation<UInt32> {
-        let maxVotesOperation = PrimitiveConstantOperation<UInt32>(path: ConvictionVoting.maxVotes)
+        let maxVotesOperation = PrimitiveConstantOperation<UInt32>(path: Democracy.maxVotes)
         maxVotesOperation.configurationBlock = {
             do {
                 maxVotesOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
