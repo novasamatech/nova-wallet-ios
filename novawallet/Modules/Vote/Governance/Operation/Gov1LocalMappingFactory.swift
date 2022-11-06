@@ -20,12 +20,12 @@ final class Gov1LocalMappingFactory {
 
         let state = ReferendumStateLocal.Deciding(
             track: track,
-            proposal: .unknown,
+            proposal: referendum.proposal,
             voting: .threshold(voting),
             submitted: submitted,
             since: submitted,
             period: additionalInfo.votingPeriod,
-            confirmationUntil: nil,
+            confirmationUntil: referendum.end,
             deposit: nil
         )
 
