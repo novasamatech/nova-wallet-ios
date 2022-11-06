@@ -52,5 +52,4 @@ extension Democracy {
             }
         }
     }
-
 }

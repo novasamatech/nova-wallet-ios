@@ -52,6 +52,36 @@ final class Gov1LocalMappingFactory {
             return .init(index: ReferendumIdLocal(index), state: .rejected(model: rejected), proposer: nil)
         }
     }
+
+    private func mapToAccountVoting(
+        _ voting: Democracy.Voting?,
+        maxVotes: UInt32
+    ) -> ReferendumAccountVotingDistribution {
+        let initVotingLocal = ReferendumAccountVotingDistribution(maxVotesPerTrack: maxVotes)
+
+        if let voting = voting {
+            let track = TrackIdLocal(Gov1OperationFactory.trackId)
+            switch voting {
+            case let .direct(castingVoting):
+                return castingVoting.votes.reduce(initVotingLocal) { result, vote in
+                    let newResult = result.addingReferendum(ReferendumIdLocal(vote.pollIndex), track: track)
+
+                    guard let localVote = ReferendumAccountVoteLocal(accountVote: vote.accountVote) else {
+                        return newResult
+                    }
+
+                    return newResult.addingVote(localVote, referendumId: ReferendumIdLocal(vote.pollIndex))
+                }.addingPriorLock(castingVoting.prior, track: track)
+            case let .delegating(delegatingVoting):
+                let delegatingLocal = ReferendumDelegatingLocal(remote: delegatingVoting)
+                return initVotingLocal.addingDelegating(delegatingLocal, trackId: track)
+            case .unknown:
+                return initVotingLocal
+            }
+        } else {
+            return initVotingLocal
+        }
+    }
 }
 
 extension Gov1LocalMappingFactory {
@@ -67,6 +97,20 @@ extension Gov1LocalMappingFactory {
             return mapFinished(referendum: status, index: index, additionalInfo: additionalInfo)
         case .unknown:
             return nil
+        }
+    }
+
+    func mapVoting(_ voting: Democracy.Voting?, maxVotes: UInt32) -> ReferendumTracksVotingDistribution {
+        let accountVoting = mapToAccountVoting(voting, maxVotes: maxVotes)
+
+        let trackId = Gov1OperationFactory.trackId
+        let lockedBalance = accountVoting.lockedBalance(for: TrackIdLocal(trackId))
+
+        if lockedBalance > 0 {
+            let trackLock = ConvictionVoting.ClassLock(trackId: trackId, amount: lockedBalance)
+            return .init(votes: accountVoting, trackLocks: [trackLock])
+        } else {
+            return .init(votes: accountVoting, trackLocks: [])
         }
     }
 }

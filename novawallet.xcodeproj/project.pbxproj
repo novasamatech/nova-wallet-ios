@@ -961,6 +961,7 @@
 		845B07F729162AB3005785D3 /* Democracy+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07F629162AB3005785D3 /* Democracy+ConstantPath.swift */; };
 		845B07F929162D24005785D3 /* Gov1LocalMappingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */; };
 		845B07FD291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */; };
+		845B07FF2916F529005785D3 /* Gov1SubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07FE2916F529005785D3 /* Gov1SubscriptionFactory.swift */; };
 		845B811228F429BB0040CE84 /* SupportPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811128F429BB0040CE84 /* SupportPallet.swift */; };
 		845B811528F43C350040CE84 /* Treasury.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811428F43C350040CE84 /* Treasury.swift */; };
 		845B811728F43C730040CE84 /* TreasuryProposal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811628F43C730040CE84 /* TreasuryProposal.swift */; };
@@ -3924,6 +3925,7 @@
 		845B07F629162AB3005785D3 /* Democracy+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Democracy+ConstantPath.swift"; sourceTree = "<group>"; };
 		845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1LocalMappingFactory.swift; sourceTree = "<group>"; };
 		845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyDecidingFunctionProtocol.swift; sourceTree = "<group>"; };
+		845B07FE2916F529005785D3 /* Gov1SubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1SubscriptionFactory.swift; sourceTree = "<group>"; };
 		845B811128F429BB0040CE84 /* SupportPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportPallet.swift; sourceTree = "<group>"; };
 		845B811428F43C350040CE84 /* Treasury.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Treasury.swift; sourceTree = "<group>"; };
 		845B811628F43C730040CE84 /* TreasuryProposal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryProposal.swift; sourceTree = "<group>"; };
@@ -8056,6 +8058,7 @@
 			children = (
 				8453DE5428FD24FF0055345C /* GovernanceSubscriptionProtocol.swift */,
 				8453DE5628FD27390055345C /* Gov2SubscriptionFactory.swift */,
+				845B07FE2916F529005785D3 /* Gov1SubscriptionFactory.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -14894,6 +14897,7 @@
 				F471897626C297AA006487AD /* AnalyticsValidatorsPage.swift in Sources */,
 				F44CD8F426242825005DDF23 /* PayoutRewardsService+Fetch.swift in Sources */,
 				2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */,
+				845B07FF2916F529005785D3 /* Gov1SubscriptionFactory.swift in Sources */,
 				888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */,
 				843E9B3627C8B915009C143A /* NftFileDownloadService.swift in Sources */,
 				842B17FF28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift in Sources */,
