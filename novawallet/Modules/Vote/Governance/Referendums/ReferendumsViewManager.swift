@@ -128,6 +128,14 @@ extension ReferendumsViewManager: UITableViewDelegate {
             return Constants.unlocksCellHeight
         }
     }
+
+    func tableView(_: UITableView, willDisplay cell: UITableViewCell, forRowAt _: IndexPath) {
+        (cell as? SkeletonableViewCell)?.updateLoadingState()
+    }
+
+    func tableView(_: UITableView, willDisplayHeaderView view: UIView, forSection _: Int) {
+        (view as? SkeletonableView)?.updateLoadingState()
+    }
 }
 
 extension ReferendumsViewManager: ReferendumsViewProtocol {
