@@ -17,17 +17,12 @@ extension Democracy {
     struct OngoingStatus: Decodable {
         @StringCodable var end: BlockNumber
         @StringCodable var delay: BlockNumber
-        @SupportPallet.HashOrBoundedCallWrapper var proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
+        @SupportPallet.HashOrBoundedCallWrapper var proposalHash: SupportPallet.Bounded<RuntimeCall<JSON>>
         let threshold: Democracy.VoteThreshold
         let tally: Tally
     }
 
     struct FinishedStatus: Decodable {
-        enum CodingKeys: String, CodingKey {
-            case approved = "0"
-            case end = "1"
-        }
-
         let approved: Bool
         @StringCodable var end: BlockNumber
     }

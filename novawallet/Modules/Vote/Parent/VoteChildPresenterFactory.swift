@@ -107,11 +107,6 @@ final class VoteChildPresenterFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let referendumOperationFactory = Gov2OperationFactory(
-            requestFactory: requestFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
         let serviceFactory = GovernanceServiceFactory(
             chainRegisty: chainRegistry,
             storageFacade: substrateStorageFacade,
@@ -131,7 +126,6 @@ final class VoteChildPresenterFactory {
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
-            referendumsOperationFactory: referendumOperationFactory,
             lockStateFactory: lockStateFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,

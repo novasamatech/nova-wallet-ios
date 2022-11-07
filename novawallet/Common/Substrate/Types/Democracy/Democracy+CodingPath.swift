@@ -2,7 +2,7 @@ import Foundation
 
 extension Democracy {
     static var referendumInfo: StorageCodingPath {
-        StorageCodingPath(moduleName: "Democracy", itemName: "ReferendumInfoFor")
+        StorageCodingPath(moduleName: "Democracy", itemName: "ReferendumInfoOf")
     }
 
     static var votingOf: StorageCodingPath {

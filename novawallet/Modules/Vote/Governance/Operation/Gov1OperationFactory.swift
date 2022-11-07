@@ -68,7 +68,9 @@ final class Gov1OperationFactory {
         mapOperation.addDependency(totalIssuanceWrapper.targetOperation)
         mapOperation.addDependency(enactmentPeriodOperation)
 
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [votingPeriodOperation])
+        let dependencies = [votingPeriodOperation, enactmentPeriodOperation] + totalIssuanceWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     func createReferendumMapOperation(
