@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import MarkdownView
 
 final class ReferendumDetailsTitleView: UIView {
     var accountIconSize: CGSize {
@@ -38,13 +39,8 @@ final class ReferendumDetailsTitleView: UIView {
         $0.numberOfLines = 0
     }
 
-    let textView: UITextView = .create {
-        $0.textColor = R.color.colorTransparentText()
-        $0.font = .regularSubheadline
+    let descriptionView: MarkdownView = .create {
         $0.isScrollEnabled = false
-        $0.isEditable = false
-        $0.textContainerInset = .zero
-        $0.textContainer.lineFragmentPadding = 0
     }
 
     let moreButton: RoundedButton = .create { button in
@@ -78,7 +74,7 @@ final class ReferendumDetailsTitleView: UIView {
             [
                 accountContainerView,
                 titleLabel,
-                textView,
+                descriptionView,
                 moreButton
             ]
         )
@@ -86,6 +82,16 @@ final class ReferendumDetailsTitleView: UIView {
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+        descriptionView.onRendered = { [weak self] contentHeight in
+            self?.updateMarkdownView(height: contentHeight)
+        }
+    }
+
+    private func updateMarkdownView(height: CGFloat) {
+        descriptionView.snp.updateConstraints {
+            $0.height.equalTo(height)
+            $0.leading.trailing.equalToSuperview()
         }
     }
 }
@@ -121,22 +127,30 @@ extension ReferendumDetailsTitleView {
             accountContainerView.isHidden = true
         }
 
-        if let details = viewModel.details {
-            titleLabel.isHidden = false
-            textView.isHidden = false
+        bind(details: viewModel.details, locale: locale)
+    }
 
-            titleLabel.text = details.title
-            textView.text = details.description
-
-            moreButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
-                preferredLanguages: locale.rLanguages
-            )
-
-            moreButton.isHidden = !details.shouldReadMore
-        } else {
+    private func bind(details: Details?, locale: Locale) {
+        guard let details = details else {
             titleLabel.isHidden = true
-            textView.isHidden = true
+            descriptionView.isHidden = true
             moreButton.isHidden = true
+            return
         }
+        titleLabel.isHidden = false
+        titleLabel.text = details.title
+
+        if !details.description.isEmpty {
+            descriptionView.isHidden = false
+            descriptionView.loadLimitedText(
+                markdownText: details.description,
+                maxLinesCount: 4
+            )
+        }
+
+        moreButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
+            preferredLanguages: locale.rLanguages
+        )
+        moreButton.isHidden = !details.shouldReadMore
     }
 }
