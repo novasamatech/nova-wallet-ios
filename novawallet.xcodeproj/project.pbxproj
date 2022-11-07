@@ -966,6 +966,9 @@
 		845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08032918C308005785D3 /* Gov1ActionOperationFactory.swift */; };
 		845B08062918C3FB005785D3 /* DemocracyProposalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08052918C3FB005785D3 /* DemocracyProposalCall.swift */; };
 		845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08072918C8DA005785D3 /* RemoteStorageSizeRequest.swift */; };
+		845B080A2918D381005785D3 /* Gov1ExtrinsicFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08092918D381005785D3 /* Gov1ExtrinsicFactory.swift */; };
+		845B080D2918D4F8005785D3 /* Democracy+Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B080C2918D4F8005785D3 /* Democracy+Call.swift */; };
+		845B08102918D65E005785D3 /* GovernanceExtrinsicFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B080F2918D65E005785D3 /* GovernanceExtrinsicFactory.swift */; };
 		845B811228F429BB0040CE84 /* SupportPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811128F429BB0040CE84 /* SupportPallet.swift */; };
 		845B811528F43C350040CE84 /* Treasury.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811428F43C350040CE84 /* Treasury.swift */; };
 		845B811728F43C730040CE84 /* TreasuryProposal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811628F43C730040CE84 /* TreasuryProposal.swift */; };
@@ -3934,6 +3937,9 @@
 		845B08032918C308005785D3 /* Gov1ActionOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1ActionOperationFactory.swift; sourceTree = "<group>"; };
 		845B08052918C3FB005785D3 /* DemocracyProposalCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyProposalCall.swift; sourceTree = "<group>"; };
 		845B08072918C8DA005785D3 /* RemoteStorageSizeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteStorageSizeRequest.swift; sourceTree = "<group>"; };
+		845B08092918D381005785D3 /* Gov1ExtrinsicFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1ExtrinsicFactory.swift; sourceTree = "<group>"; };
+		845B080C2918D4F8005785D3 /* Democracy+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Democracy+Call.swift"; sourceTree = "<group>"; };
+		845B080F2918D65E005785D3 /* GovernanceExtrinsicFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceExtrinsicFactory.swift; sourceTree = "<group>"; };
 		845B811128F429BB0040CE84 /* SupportPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportPallet.swift; sourceTree = "<group>"; };
 		845B811428F43C350040CE84 /* Treasury.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Treasury.swift; sourceTree = "<group>"; };
 		845B811628F43C730040CE84 /* TreasuryProposal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryProposal.swift; sourceTree = "<group>"; };
@@ -8136,6 +8142,24 @@
 			path = Action;
 			sourceTree = "<group>";
 		};
+		845B080B2918D4E9005785D3 /* Democracy */ = {
+			isa = PBXGroup;
+			children = (
+				845B080C2918D4F8005785D3 /* Democracy+Call.swift */,
+			);
+			path = Democracy;
+			sourceTree = "<group>";
+		};
+		845B080E2918D64B005785D3 /* Extrinsics */ = {
+			isa = PBXGroup;
+			children = (
+				845B080F2918D65E005785D3 /* GovernanceExtrinsicFactory.swift */,
+				8425D0EB28FE9ACB003B782A /* Gov2ExtrinsicFactory.swift */,
+				845B08092918D381005785D3 /* Gov1ExtrinsicFactory.swift */,
+			);
+			path = Extrinsics;
+			sourceTree = "<group>";
+		};
 		845B811028F429AB0040CE84 /* Support */ = {
 			isa = PBXGroup;
 			children = (
@@ -8176,6 +8200,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				845B080B2918D4E9005785D3 /* Democracy */,
 				84A9ECBE29128D130094C763 /* ConvictionVoting */,
 				844ADE7C28CB34F600EE29F7 /* AutomationTime */,
 				84EBFCEC285E82AB0006327E /* Xcm */,
@@ -10374,6 +10399,7 @@
 		84A1742528ED60610096F943 /* Operation */ = {
 			isa = PBXGroup;
 			children = (
+				845B080E2918D64B005785D3 /* Extrinsics */,
 				845B08022918C2E5005785D3 /* Action */,
 				843461F1290D370000379936 /* Locks */,
 				84A1742628ED607B0096F943 /* GovernanceOperationProtocols.swift */,
@@ -10384,7 +10410,6 @@
 				845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */,
 				84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */,
 				8425D0E928FE9A45003B782A /* GovernanceExtrinsicFactoryProtocol.swift */,
-				8425D0EB28FE9ACB003B782A /* Gov2ExtrinsicFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -16504,6 +16529,7 @@
 				AEF507AF262423FD0098574D /* HmacSigner.swift in Sources */,
 				3229E306230161AA99B14BDD /* StakingRewardPayoutsViewFactory.swift in Sources */,
 				8473D4002657E8BB00B394B2 /* CrowdloanFunds.swift in Sources */,
+				845B08102918D65E005785D3 /* GovernanceExtrinsicFactory.swift in Sources */,
 				7E1A03082260E0D31AD394CA /* StakingRewardDetailsProtocols.swift in Sources */,
 				65909D701527D99837B439D9 /* StakingRewardDetailsWireframe.swift in Sources */,
 				84350ACC284569560031EF24 /* ParaStkCollatorInfoViewController.swift in Sources */,
@@ -16813,6 +16839,7 @@
 				5E621A350A6DDD78597CC9E5 /* CrowdloanYourContributionsWireframe.swift in Sources */,
 				716F0819BAB14322E34E416C /* CrowdloanYourContributionsPresenter.swift in Sources */,
 				F0675F495766D07473B065F7 /* CrowdloanYourContributionsInteractor.swift in Sources */,
+				845B080D2918D4F8005785D3 /* Democracy+Call.swift in Sources */,
 				8425D0EE28FE9BF1003B782A /* ReferendumVoteAction.swift in Sources */,
 				6857DAF09C8D7D5F9C5A5000 /* CrowdloanYourContributionsViewController.swift in Sources */,
 				487A912B697604FE3367FAEC /* CrowdloanYourContributionsViewLayout.swift in Sources */,
@@ -16851,6 +16878,7 @@
 				E325FBFE10A037E58525DA66 /* DAppSearchViewFactory.swift in Sources */,
 				65C06FCE82EEC0B476DB1CEF /* DAppBrowserProtocols.swift in Sources */,
 				84FBDBE328C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift in Sources */,
+				845B080A2918D381005785D3 /* Gov1ExtrinsicFactory.swift in Sources */,
 				846A836128B8DB7700D92892 /* MessageSheetTimerLabel.swift in Sources */,
 				40087CC8E6A91976807F7D44 /* DAppBrowserWireframe.swift in Sources */,
 				37E229641DCDF64AC5AF1DCD /* DAppBrowserPresenter.swift in Sources */,
