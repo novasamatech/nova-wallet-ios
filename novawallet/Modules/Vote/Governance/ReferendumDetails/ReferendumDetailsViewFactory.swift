@@ -98,7 +98,8 @@ struct ReferendumDetailsViewFactory {
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
-            let subscriptionFactory = state.subscriptionFactory else {
+            let subscriptionFactory = state.subscriptionFactory,
+            let actionDetailsFactory = state.createActionsDetailsFactory(for: chain) else {
             return nil
         }
 
@@ -106,11 +107,6 @@ struct ReferendumDetailsViewFactory {
         let requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: operationQueue)
-        )
-
-        let actionDetailsOperationFactory = Gov2ActionOperationFactory(
-            requestFactory: requestFactory,
-            operationQueue: operationQueue
         )
 
         let identityOperationFactory = IdentityOperationFactory(
@@ -124,7 +120,7 @@ struct ReferendumDetailsViewFactory {
             referendum: referendum,
             selectedAccount: selectedAccount,
             chain: chain,
-            actionDetailsOperationFactory: actionDetailsOperationFactory,
+            actionDetailsOperationFactory: actionDetailsFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,

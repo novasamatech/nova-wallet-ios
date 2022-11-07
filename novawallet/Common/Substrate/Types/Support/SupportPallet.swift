@@ -48,11 +48,10 @@ enum SupportPallet {
         init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
 
-            if let boundedCall = try? container.decode(Bounded<T>.self) {
-                wrappedValue = boundedCall
-            } else {
-                let hash = try container.decode(BytesCodable.self).wrappedValue
+            if let hash = try? container.decode(BytesCodable.self).wrappedValue, hash.count == 32 {
                 wrappedValue = .legacy(hash: hash)
+            } else {
+                wrappedValue = try container.decode(Bounded<T>.self)
             }
         }
     }
