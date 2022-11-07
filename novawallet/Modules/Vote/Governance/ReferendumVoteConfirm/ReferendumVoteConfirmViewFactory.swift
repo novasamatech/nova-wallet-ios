@@ -19,7 +19,9 @@ struct ReferendumVoteConfirmViewFactory {
             let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
             let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
                 for: chain.accountRequest()
-            ) else {
+            ),
+            let votingLockId = state.governanceId(for: chain)
+        else {
             return nil
         }
 
@@ -34,7 +36,7 @@ struct ReferendumVoteConfirmViewFactory {
 
         let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
             assetDisplayInfo: assetDisplayInfo,
-            votingLockId: ConvictionVoting.lockId
+            votingLockId: votingLockId
         )
 
         let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
@@ -84,6 +86,8 @@ struct ReferendumVoteConfirmViewFactory {
             let chain = state.settings.value,
             let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
             let subscriptionFactory = state.subscriptionFactory,
+            let lockStateFactory = state.locksOperationFactory,
+            let extrinsicFactory = state.createExtrinsicFactory(for: chain),
             let blockTimeService = state.blockTimeService
         else {
             return nil
@@ -97,16 +101,6 @@ struct ReferendumVoteConfirmViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
-
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
-
-        let lockStateFactory = Gov2LockStateFactory(
-            requestFactory: requestFactory,
-            unlocksCalculator: Gov2UnlocksCalculator()
-        )
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
@@ -131,7 +125,7 @@ struct ReferendumVoteConfirmViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,
-            extrinsicFactory: Gov2ExtrinsicFactory(),
+            extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
             signer: signer,
             feeProxy: ExtrinsicFeeProxy(),

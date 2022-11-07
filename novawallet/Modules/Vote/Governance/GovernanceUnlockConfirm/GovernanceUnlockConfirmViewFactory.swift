@@ -15,7 +15,9 @@ struct GovernanceUnlockConfirmViewFactory {
             let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
             let interactor = createInteractor(for: state, chain: chain, selectedAccount: selectedAccount),
             let assetInfo = chain.utilityAssetDisplayInfo(),
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let votingLockId = state.governanceId(for: chain)
+        else {
             return nil
         }
 
@@ -30,7 +32,7 @@ struct GovernanceUnlockConfirmViewFactory {
 
         let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
             assetDisplayInfo: assetInfo,
-            votingLockId: ConvictionVoting.lockId
+            votingLockId: votingLockId
         )
 
         let dataValidatingFactory = GovernanceValidatorFactory(
@@ -75,15 +77,12 @@ struct GovernanceUnlockConfirmViewFactory {
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
+            let lockStateFactory = state.locksOperationFactory,
+            let extrinsicFactory = state.createExtrinsicFactory(for: chain),
             let blockTimeService = state.blockTimeService,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
-
-        let lockStateFactory = Gov2LockStateFactory(
-            requestFactory: state.requestFactory,
-            unlocksCalculator: Gov2UnlocksCalculator()
-        )
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -104,7 +103,7 @@ struct GovernanceUnlockConfirmViewFactory {
             subscriptionFactory: subscriptionFactory,
             lockStateFactory: lockStateFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            extrinsicFactory: Gov2ExtrinsicFactory(),
+            extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
             signer: signer,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

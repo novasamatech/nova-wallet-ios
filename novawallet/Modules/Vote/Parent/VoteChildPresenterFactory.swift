@@ -102,11 +102,6 @@ final class VoteChildPresenterFactory {
         for state: GovernanceSharedState,
         wallet: MetaAccountModel
     ) -> ReferendumsInteractor {
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(operationQueue: operationQueue)
-        )
-
         let serviceFactory = GovernanceServiceFactory(
             chainRegisty: chainRegistry,
             storageFacade: substrateStorageFacade,
@@ -115,18 +110,12 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
-        let lockStateFactory = Gov2LockStateFactory(
-            requestFactory: requestFactory,
-            unlocksCalculator: Gov2UnlocksCalculator()
-        )
-
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
-            lockStateFactory: lockStateFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,

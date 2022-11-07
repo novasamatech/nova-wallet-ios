@@ -38,12 +38,19 @@ final class Gov1LocalMappingFactory {
         additionalInfo: Gov1OperationFactory.AdditionalInfo
     ) -> ReferendumLocal {
         if referendum.approved {
-            let approved = ReferendumStateLocal.Approved(
-                since: referendum.end,
-                whenEnactment: referendum.end + additionalInfo.enactmentPeriod,
-                deposit: nil
-            )
-            return .init(index: ReferendumIdLocal(index), state: .approved(model: approved), proposer: nil)
+            let whenEnactment = referendum.end + additionalInfo.enactmentPeriod
+
+            if additionalInfo.block < whenEnactment {
+                let approved = ReferendumStateLocal.Approved(
+                    since: referendum.end,
+                    whenEnactment: whenEnactment,
+                    deposit: nil
+                )
+
+                return .init(index: ReferendumIdLocal(index), state: .approved(model: approved), proposer: nil)
+            } else {
+                return .init(index: ReferendumIdLocal(index), state: .executed, proposer: nil)
+            }
         } else {
             let rejected = ReferendumStateLocal.NotApproved(
                 atBlock: referendum.end,

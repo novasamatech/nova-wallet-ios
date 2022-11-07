@@ -12,7 +12,8 @@ final class GovernanceSharedState {
     let operationQueue: OperationQueue
 
     private(set) var subscriptionFactory: GovernanceSubscriptionFactoryProtocol?
-    private(set) var operationFactory: ReferendumsOperationFactoryProtocol?
+    private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
+    private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
 
     init(
@@ -53,7 +54,8 @@ final class GovernanceSharedState {
 
     func replaceGovernanceFactory(for chain: ChainModel?) {
         subscriptionFactory = nil
-        operationFactory = nil
+        referendumsOperationFactory = nil
+        locksOperationFactory = nil
 
         guard let chain = chain else {
             return
@@ -67,7 +69,7 @@ final class GovernanceSharedState {
                 operationQueue: operationQueue
             )
 
-            self.operationFactory = operationFactory
+            referendumsOperationFactory = operationFactory
 
             subscriptionFactory = Gov2SubscriptionFactory(
                 chainId: chainId,
@@ -75,19 +77,29 @@ final class GovernanceSharedState {
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue
             )
+
+            locksOperationFactory = Gov2LockStateFactory(
+                requestFactory: requestFactory,
+                unlocksCalculator: GovUnlocksCalculator()
+            )
         } else if chain.hasGov1 {
             let operationFactory = Gov1OperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
             )
 
-            self.operationFactory = operationFactory
+            referendumsOperationFactory = operationFactory
 
             subscriptionFactory = Gov1SubscriptionFactory(
                 chainId: chainId,
                 operationFactory: operationFactory,
                 chainRegistry: chainRegistry,
                 operationQueue: operationQueue
+            )
+
+            locksOperationFactory = Gov1LockStateFactory(
+                requestFactory: requestFactory,
+                unlocksCalculator: GovUnlocksCalculator()
             )
         }
     }
