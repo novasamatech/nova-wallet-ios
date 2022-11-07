@@ -1,3 +1,5 @@
 import Foundation
 
-enum Democracy {}
+enum Democracy {
+    static var lockId: String = "democrac"
+}

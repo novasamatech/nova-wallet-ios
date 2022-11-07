@@ -3940,6 +3940,7 @@
 		845B08092918D381005785D3 /* Gov1ExtrinsicFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1ExtrinsicFactory.swift; sourceTree = "<group>"; };
 		845B080C2918D4F8005785D3 /* Democracy+Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Democracy+Call.swift"; sourceTree = "<group>"; };
 		845B080F2918D65E005785D3 /* GovernanceExtrinsicFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceExtrinsicFactory.swift; sourceTree = "<group>"; };
+		845B08112918E343005785D3 /* SubstrateDataModel4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel4.xcdatamodel; sourceTree = "<group>"; };
 		845B811128F429BB0040CE84 /* SupportPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportPallet.swift; sourceTree = "<group>"; };
 		845B811428F43C350040CE84 /* Treasury.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Treasury.swift; sourceTree = "<group>"; };
 		845B811628F43C730040CE84 /* TreasuryProposal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryProposal.swift; sourceTree = "<group>"; };
@@ -18120,11 +18121,12 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				845B08112918E343005785D3 /* SubstrateDataModel4.xcdatamodel */,
 				84D8754628EB726E004065BD /* SubstrateDataModel3.xcdatamodel */,
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 84D8754628EB726E004065BD /* SubstrateDataModel3.xcdatamodel */;
+			currentVersion = 845B08112918E343005785D3 /* SubstrateDataModel4.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
