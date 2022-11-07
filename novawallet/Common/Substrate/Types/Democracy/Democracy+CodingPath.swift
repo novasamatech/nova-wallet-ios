@@ -8,4 +8,8 @@ extension Democracy {
     static var votingOf: StorageCodingPath {
         StorageCodingPath(moduleName: "Democracy", itemName: "VotingOf")
     }
+
+    static var preimages: StorageCodingPath {
+        StorageCodingPath(moduleName: "Democracy", itemName: "Preimages")
+    }
 }

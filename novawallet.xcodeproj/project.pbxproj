@@ -963,6 +963,9 @@
 		845B07FD291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */; };
 		845B07FF2916F529005785D3 /* Gov1SubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B07FE2916F529005785D3 /* Gov1SubscriptionFactory.swift */; };
 		845B08012918406A005785D3 /* Gov2ActionOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08002918406A005785D3 /* Gov2ActionOperationFactory.swift */; };
+		845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08032918C308005785D3 /* Gov1ActionOperationFactory.swift */; };
+		845B08062918C3FB005785D3 /* DemocracyProposalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08052918C3FB005785D3 /* DemocracyProposalCall.swift */; };
+		845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B08072918C8DA005785D3 /* RemoteStorageSizeRequest.swift */; };
 		845B811228F429BB0040CE84 /* SupportPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811128F429BB0040CE84 /* SupportPallet.swift */; };
 		845B811528F43C350040CE84 /* Treasury.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811428F43C350040CE84 /* Treasury.swift */; };
 		845B811728F43C730040CE84 /* TreasuryProposal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B811628F43C730040CE84 /* TreasuryProposal.swift */; };
@@ -3928,6 +3931,9 @@
 		845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyDecidingFunctionProtocol.swift; sourceTree = "<group>"; };
 		845B07FE2916F529005785D3 /* Gov1SubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1SubscriptionFactory.swift; sourceTree = "<group>"; };
 		845B08002918406A005785D3 /* Gov2ActionOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov2ActionOperationFactory.swift; sourceTree = "<group>"; };
+		845B08032918C308005785D3 /* Gov1ActionOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1ActionOperationFactory.swift; sourceTree = "<group>"; };
+		845B08052918C3FB005785D3 /* DemocracyProposalCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemocracyProposalCall.swift; sourceTree = "<group>"; };
+		845B08072918C8DA005785D3 /* RemoteStorageSizeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteStorageSizeRequest.swift; sourceTree = "<group>"; };
 		845B811128F429BB0040CE84 /* SupportPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportPallet.swift; sourceTree = "<group>"; };
 		845B811428F43C350040CE84 /* Treasury.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Treasury.swift; sourceTree = "<group>"; };
 		845B811628F43C730040CE84 /* TreasuryProposal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreasuryProposal.swift; sourceTree = "<group>"; };
@@ -8115,8 +8121,19 @@
 				845B07F029159AE7005785D3 /* DemocracyVoting.swift */,
 				845B07F229159C15005785D3 /* Democracy+CodingPath.swift */,
 				845B07F629162AB3005785D3 /* Democracy+ConstantPath.swift */,
+				845B08052918C3FB005785D3 /* DemocracyProposalCall.swift */,
 			);
 			path = Democracy;
+			sourceTree = "<group>";
+		};
+		845B08022918C2E5005785D3 /* Action */ = {
+			isa = PBXGroup;
+			children = (
+				845B811E28F451A40040CE84 /* GovernanceActionOperationFactory.swift */,
+				845B08002918406A005785D3 /* Gov2ActionOperationFactory.swift */,
+				845B08032918C308005785D3 /* Gov1ActionOperationFactory.swift */,
+			);
+			path = Action;
 			sourceTree = "<group>";
 		};
 		845B811028F429AB0040CE84 /* Support */ = {
@@ -10357,6 +10374,7 @@
 		84A1742528ED60610096F943 /* Operation */ = {
 			isa = PBXGroup;
 			children = (
+				845B08022918C2E5005785D3 /* Action */,
 				843461F1290D370000379936 /* Locks */,
 				84A1742628ED607B0096F943 /* GovernanceOperationProtocols.swift */,
 				84A1742828ED625D0096F943 /* Gov2OperationFactory.swift */,
@@ -10365,8 +10383,6 @@
 				845B07F4291627A3005785D3 /* Gov1OperationFactory+Protocol.swift */,
 				845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */,
 				84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */,
-				845B811E28F451A40040CE84 /* GovernanceActionOperationFactory.swift */,
-				845B08002918406A005785D3 /* Gov2ActionOperationFactory.swift */,
 				8425D0E928FE9A45003B782A /* GovernanceExtrinsicFactoryProtocol.swift */,
 				8425D0EB28FE9ACB003B782A /* Gov2ExtrinsicFactory.swift */,
 			);
@@ -11422,6 +11438,7 @@
 				84300B2B26C10C9B00D64514 /* ConnectionStateReporting.swift */,
 				F4C201812728678400B0F3D0 /* ExtrinsicStatus.swift */,
 				846CF0CC2914DC25008A96A1 /* RemoteStateCallRequest.swift */,
+				845B08072918C8DA005785D3 /* RemoteStorageSizeRequest.swift */,
 			);
 			path = JSONRPC;
 			sourceTree = "<group>";
@@ -16599,6 +16616,7 @@
 				88A95FA628F8664100BE26F3 /* ReferendumTimelineView.swift in Sources */,
 				843A2C7326A8641400266F53 /* MultiValueView.swift in Sources */,
 				3FF8EE1158A273D0D50BC7A6 /* StakingUnbondConfirmPresenter.swift in Sources */,
+				845B08042918C308005785D3 /* Gov1ActionOperationFactory.swift in Sources */,
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				849FA21628A26CB500F83EAA /* CountdownTimerMediator.swift in Sources */,
 				D3B48F82A875E301D749AC0B /* StakingUnbondConfirmViewController.swift in Sources */,
@@ -16663,6 +16681,7 @@
 				F47D328226C260CC00CF35A2 /* FWPieChartView.swift in Sources */,
 				84F1CB4027CF6BEF0095D523 /* UniquesClassDetails.swift in Sources */,
 				84FEADEE287837E8001DFC26 /* TuringRewardCalculatorService.swift in Sources */,
+				845B08062918C3FB005785D3 /* DemocracyProposalCall.swift in Sources */,
 				78D94A761EFECED60F38232D /* CustomValidatorListViewController.swift in Sources */,
 				7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */,
 				84BFE89C28C23A2500140F1F /* AutomationTime.swift in Sources */,
@@ -16780,6 +16799,7 @@
 				BE8CF97B6EA62C75277B78AA /* MoonbeamTermsProtocols.swift in Sources */,
 				B316F0D2BDF0F44AD27F58E0 /* MoonbeamTermsWireframe.swift in Sources */,
 				8027EA456C0C13F6DA73D540 /* MoonbeamTermsPresenter.swift in Sources */,
+				845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */,
 				8452585527ABF270004F9082 /* AssetListEmptyCell.swift in Sources */,
 				D72773CE9AF638387DA9BA77 /* MoonbeamTermsInteractor.swift in Sources */,
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
