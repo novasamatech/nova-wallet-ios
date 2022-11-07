@@ -59,6 +59,8 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
             blockHash: blockHash
         )
 
+        additionalInfoWrapper.addDependency(operations: [codingFactoryOperation])
+
         let referendumOperation = ClosureOperation<[ReferendumIndexKey: Democracy.ReferendumInfo]> {
             let referendumIndexKey = ReferendumIndexKey(referendumIndex: Referenda.ReferendumIndex(index))
             return [referendumIndexKey: remoteReferendum]
@@ -151,7 +153,11 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 
-    func fetchVotersWrapper(for referendumIndex: ReferendumIdLocal, from connection: JSONRPCEngine, runtimeProvider: RuntimeProviderProtocol) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+    func fetchVotersWrapper(
+        for referendumIndex: ReferendumIdLocal,
+        from connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let request = UnkeyedRemoteStorageRequest(storagePath: Democracy.votingOf)

@@ -11,6 +11,7 @@ final class Gov1OperationFactory {
         let votingPeriod: UInt32
         let enactmentPeriod: UInt32
         let totalIssuance: BigUInt
+        let block: BlockNumber
     }
 
     let requestFactory: StorageRequestFactoryProtocol
@@ -52,23 +53,35 @@ final class Gov1OperationFactory {
                 at: blockHash
             )
 
+        let blockNumberWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BlockNumber>>> =
+            requestFactory.queryItem(
+                engine: connection,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: .blockNumber,
+                at: blockHash
+            )
+
         let mapOperation = ClosureOperation<AdditionalInfo> {
             let votingPeriod = try votingPeriodOperation.extractNoCancellableResultData()
             let totalIssuance = try totalIssuanceWrapper.targetOperation.extractNoCancellableResultData().value
             let enactmentPeriod = try enactmentPeriodOperation.extractNoCancellableResultData()
+            let block = try blockNumberWrapper.targetOperation.extractNoCancellableResultData().value
 
             return .init(
                 votingPeriod: votingPeriod,
                 enactmentPeriod: enactmentPeriod,
-                totalIssuance: totalIssuance?.value ?? 0
+                totalIssuance: totalIssuance?.value ?? 0,
+                block: block?.value ?? 0
             )
         }
 
         mapOperation.addDependency(votingPeriodOperation)
         mapOperation.addDependency(totalIssuanceWrapper.targetOperation)
         mapOperation.addDependency(enactmentPeriodOperation)
+        mapOperation.addDependency(blockNumberWrapper.targetOperation)
 
-        let dependencies = [votingPeriodOperation, enactmentPeriodOperation] + totalIssuanceWrapper.allOperations
+        let dependencies = [votingPeriodOperation, enactmentPeriodOperation] + totalIssuanceWrapper.allOperations +
+            blockNumberWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
