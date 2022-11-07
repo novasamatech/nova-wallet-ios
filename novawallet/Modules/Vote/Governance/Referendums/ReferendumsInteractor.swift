@@ -11,7 +11,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let lockStateFactory: GovernanceLockStateFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
     let operationQueue: OperationQueue
@@ -37,7 +36,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        lockStateFactory: GovernanceLockStateFactoryProtocol,
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -48,7 +46,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.lockStateFactory = lockStateFactory
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
@@ -231,7 +228,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
             return
         }
 
-        guard let referendumsOperationFactory = governanceState.operationFactory else {
+        guard let referendumsOperationFactory = governanceState.referendumsOperationFactory else {
             presenter?.didReceiveReferendums([])
             return
         }
@@ -354,6 +351,11 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
 
             guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
                 presenter?.didReceiveError(.unlockScheduleFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+                return
+            }
+
+            guard let lockStateFactory = governanceState.locksOperationFactory else {
+                presenter?.didReceiveUnlockSchedule(.init(items: []))
                 return
             }
 
