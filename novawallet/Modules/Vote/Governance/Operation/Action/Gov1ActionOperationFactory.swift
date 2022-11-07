@@ -18,16 +18,16 @@ final class Gov1ActionOperationFactory: GovernanceActionOperationFactory {
 
     private func createDemocracyPreimageWrapper(
         dependingOn keyEncodingOperation: BaseOperation<[Data]>,
-        storageSizeOperation: BaseOperation<String>,
+        storageSizeOperation: BaseOperation<UInt?>,
         connection: JSONRPCEngine,
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> BaseOperation<[ReferendumActionLocal.Call<RuntimeCall<JSON>>?]> {
         OperationCombiningService<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
-            let result = try storageSizeOperation.extractNoCancellableResultData()
+            let optResult = try storageSizeOperation.extractNoCancellableResultData()
 
-            if let size = BigUInt.fromHexString(result), size <= Self.maxFetchCallSize {
+            if let size = optResult, size <= Self.maxFetchCallSize {
                 let callFetchWrapper: CompoundOperationWrapper<[StorageResponse<Democracy.ProposalCall>]> =
                     self.requestFactory.queryItems(
                         engine: connection,
@@ -86,7 +86,10 @@ final class Gov1ActionOperationFactory: GovernanceActionOperationFactory {
         keyEncodingOperation.codingFactory = codingFactory
         keyEncodingOperation.keyParams = [BytesCodable(wrappedValue: hash)]
 
-        let storageSizeOperation = JSONRPCListOperation<String>(engine: connection, method: RemoteStorageSize.method)
+        let storageSizeOperation = JSONRPCListOperation<UInt?>(
+            engine: connection,
+            method: RemoteStorageSize.method
+        )
 
         storageSizeOperation.configurationBlock = {
             do {
@@ -136,8 +139,7 @@ final class Gov1ActionOperationFactory: GovernanceActionOperationFactory {
         ) {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let callPath = Democracy.preimages
-            if codingFactory.metadata.getCall(from: callPath.moduleName, with: callPath.itemName) != nil {
+            if codingFactory.metadata.getStorageMetadata(for: Democracy.preimages) != nil {
                 let wrapper = self.fetchDemocracyPreimage(
                     for: hash,
                     connection: connection,
