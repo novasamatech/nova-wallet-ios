@@ -92,22 +92,45 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
 
     func fetchTracksVotingWrapper(
         for voting: Democracy.Voting?,
-        runtimeProvider: RuntimeProviderProtocol
+        accountId: AccountId,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
     ) -> CompoundOperationWrapper<ReferendumTracksVotingDistribution> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let lockKeys: () throws -> [BytesCodable] = {
+            [BytesCodable(wrappedValue: accountId)]
+        }
+
+        let locksWrapper: CompoundOperationWrapper<[StorageResponse<BalanceLocks>]> = requestFactory.queryItems(
+            engine: connection,
+            keyParams: lockKeys,
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+            storagePath: .balanceLocks,
+            at: blockHash
+        )
+
+        locksWrapper.addDependency(operations: [codingFactoryOperation])
 
         let maxVotesOperation = createMaxVotesOperation(dependingOn: codingFactoryOperation)
         maxVotesOperation.addDependency(codingFactoryOperation)
 
         let mappingOperation = ClosureOperation<ReferendumTracksVotingDistribution> {
             let maxVotes = try maxVotesOperation.extractNoCancellableResultData()
+            let locks = try locksWrapper.targetOperation.extractNoCancellableResultData().first?.value
 
-            return Gov1LocalMappingFactory().mapVoting(voting, maxVotes: maxVotes)
+            let lockedAmount = locks?
+                .first { String(data: $0.identifier, encoding: .utf8) == Democracy.lockId }?
+                .amount ?? 0
+
+            return Gov1LocalMappingFactory().mapToTracksVoting(voting, lockedBalance: lockedAmount, maxVotes: maxVotes)
         }
 
         mappingOperation.addDependency(maxVotesOperation)
+        mappingOperation.addDependency(locksWrapper.targetOperation)
 
-        let dependencies = [codingFactoryOperation, maxVotesOperation]
+        let dependencies = [codingFactoryOperation, maxVotesOperation] + locksWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
@@ -142,7 +165,7 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
             let optVoting = try votesWrapper.targetOperation.extractNoCancellableResultData().first?.value
             let maxVotes = try maxVotesOperation.extractNoCancellableResultData()
 
-            return Gov1LocalMappingFactory().mapVoting(optVoting, maxVotes: maxVotes).votes
+            return Gov1LocalMappingFactory().mapToAccountVoting(optVoting, maxVotes: maxVotes)
         }
 
         mappingOperation.addDependency(votesWrapper.targetOperation)
