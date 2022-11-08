@@ -80,7 +80,8 @@ extension Gov1LocalMappingFactory {
 
     func mapToTracksVoting(
         _ voting: Democracy.Voting?,
-        lockedBalance: BigUInt?, maxVotes: UInt32
+        lockedBalance: BigUInt?,
+        maxVotes: UInt32
     ) -> ReferendumTracksVotingDistribution {
         let accountVoting = mapToAccountVoting(voting, maxVotes: maxVotes)
 
