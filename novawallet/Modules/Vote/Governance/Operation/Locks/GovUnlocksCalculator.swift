@@ -43,10 +43,10 @@ import BigInt
  * 4. To find which unlocks are claimable one should call [GovernanceUnlockSchedule.availableItem(at:)]
  * function by providing current block number;
  */
-final class Gov2UnlocksCalculator {
+final class GovUnlocksCalculator {
     private func createUnlocksFromVotes(
         _ votes: [ReferendumIdLocal: ReferendumAccountVoteLocal],
-        referendums: [ReferendumIdLocal: ReferendumInfo],
+        referendums: [ReferendumIdLocal: GovUnlockReferendumProtocol],
         tracks: [ReferendumIdLocal: TrackIdLocal],
         additionalInfo: GovUnlockCalculationInfo
     ) -> [TrackIdLocal: [GovernanceUnlockSchedule.Item]] {
@@ -61,9 +61,8 @@ final class Gov2UnlocksCalculator {
             }
 
             do {
-                let unlockAt = try estimateVoteLockingPeriod(
-                    for: referendum,
-                    accountVote: vote,
+                let unlockAt = try referendum.estimateVoteLockingPeriod(
+                    for: vote,
                     additionalInfo: additionalInfo
                 ) ?? 0
 
@@ -173,7 +172,7 @@ final class Gov2UnlocksCalculator {
 
     private func createVotingUnlocks(
         for tracksVoting: ReferendumTracksVotingDistribution,
-        referendums: [ReferendumIdLocal: ReferendumInfo],
+        referendums: [ReferendumIdLocal: GovUnlockReferendumProtocol],
         additionalInfo: GovUnlockCalculationInfo
     ) -> [TrackIdLocal: [GovernanceUnlockSchedule.Item]] {
         let tracks = tracksVoting.votes.tracksByReferendums()
@@ -271,52 +270,10 @@ final class Gov2UnlocksCalculator {
     }
 }
 
-extension Gov2UnlocksCalculator: GovernanceUnlockCalculatorProtocol {
-    func estimateVoteLockingPeriod(
-        for referendumInfo: ReferendumInfo,
-        accountVote: ReferendumAccountVoteLocal,
-        additionalInfo: GovUnlockCalculationInfo
-    ) throws -> BlockNumber? {
-        let conviction = accountVote.convictionValue
-
-        guard let convictionPeriod = conviction.conviction(for: additionalInfo.voteLockingPeriod) else {
-            throw CommonError.dataCorruption
-        }
-
-        switch referendumInfo {
-        case let .ongoing(ongoingStatus):
-            guard let track = additionalInfo.tracks[ongoingStatus.track] else {
-                return nil
-            }
-
-            if let decidingSince = ongoingStatus.deciding?.since {
-                return decidingSince + track.decisionPeriod + convictionPeriod
-            } else {
-                return ongoingStatus.submitted + additionalInfo.undecidingTimeout +
-                    track.decisionPeriod + convictionPeriod
-            }
-        case let .approved(completedStatus):
-            if accountVote.ayes > 0 {
-                return completedStatus.since + convictionPeriod
-            } else {
-                return nil
-            }
-        case let .rejected(completedStatus):
-            if accountVote.nays > 0 {
-                return completedStatus.since + convictionPeriod
-            } else {
-                return nil
-            }
-        case .killed, .timedOut, .cancelled:
-            return nil
-        case .unknown:
-            throw CommonError.dataCorruption
-        }
-    }
-
+extension GovUnlocksCalculator: GovernanceUnlockCalculatorProtocol {
     func createUnlocksSchedule(
         for tracksVoting: ReferendumTracksVotingDistribution,
-        referendums: [ReferendumIdLocal: ReferendumInfo],
+        referendums: [ReferendumIdLocal: GovUnlockReferendumProtocol],
         additionalInfo: GovUnlockCalculationInfo
     ) -> GovernanceUnlockSchedule {
         let unlocks = createVotingUnlocks(

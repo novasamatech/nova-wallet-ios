@@ -133,28 +133,24 @@ extension ReferendumStatusViewModelFactory: ReferendumStatusViewModelFactoryProt
                 )
             }
         case let .deciding(model):
-            switch model.voting {
-            case let .supportAndVotes(supportAndVotes):
-                if supportAndVotes.isPassing(at: currentBlock),
-                   let confirmationUntil = model.confirmationUntil {
-                    return createTimeViewModel(
-                        state: referendum.state,
-                        atBlock: confirmationUntil,
-                        currentBlock: currentBlock,
-                        blockDuration: blockDuration,
-                        timeStringProvider: strings.governanceReferendumsTimeApprove,
-                        locale: locale
-                    )
-                } else {
-                    return createTimeViewModel(
-                        state: referendum.state,
-                        atBlock: model.rejectedAt,
-                        currentBlock: currentBlock,
-                        blockDuration: blockDuration,
-                        timeStringProvider: strings.governanceReferendumsTimeReject,
-                        locale: locale
-                    )
-                }
+            if model.isPassing(for: currentBlock), let confirmationUntil = model.confirmationUntil {
+                return createTimeViewModel(
+                    state: referendum.state,
+                    atBlock: confirmationUntil,
+                    currentBlock: currentBlock,
+                    blockDuration: blockDuration,
+                    timeStringProvider: strings.governanceReferendumsTimeApprove,
+                    locale: locale
+                )
+            } else {
+                return createTimeViewModel(
+                    state: referendum.state,
+                    atBlock: model.rejectedAt,
+                    currentBlock: currentBlock,
+                    blockDuration: blockDuration,
+                    timeStringProvider: strings.governanceReferendumsTimeReject,
+                    locale: locale
+                )
             }
         case let .approved(model):
             guard let whenEnactment = model.whenEnactment else {
