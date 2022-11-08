@@ -4,6 +4,7 @@ import UIKit
 final class ReferendumsViewManager: NSObject {
     private enum Constants {
         static let unlocksCellHeight: CGFloat = 52
+        static let minimumReferndumCellHeight: CGFloat = 185
     }
 
     let tableView: UITableView
@@ -123,7 +124,17 @@ extension ReferendumsViewManager: UITableViewDelegate {
 
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section > 0 {
-            return UITableView.automaticDimension
+            let referendumsSection = indexPath.section - 1
+            let sectionModel = referendumsViewModel.sections[referendumsSection]
+            switch sectionModel {
+            case let .active(_, cells), let .completed(_, cells):
+                switch cells[indexPath.row].viewModel {
+                case .loaded, .cached:
+                    return UITableView.automaticDimension
+                case .loading:
+                    return Constants.minimumReferndumCellHeight
+                }
+            }
         } else {
             return Constants.unlocksCellHeight
         }
