@@ -13,7 +13,7 @@ protocol GovMetadataLocalStorageSubscriber: AnyObject {
     func subscribeGovernanceMetadata(
         for chain: ChainModel,
         referendumId: ReferendumIdLocal
-    ) -> AnySingleValueProvider<ReferendumMetadataLocal>
+    ) -> AnySingleValueProvider<ReferendumMetadataLocal>?
 }
 
 extension GovMetadataLocalStorageSubscriber {
@@ -24,13 +24,14 @@ extension GovMetadataLocalStorageSubscriber {
             return nil
         }
 
-        let updateClosure: ([DataProviderChange<ReferendumMetadataLocal>]) -> Void = { [weak self] changes in
+        let updateClosure: ([DataProviderChange<ReferendumMetadataLocal>]) -> Void
+        updateClosure = { [weak self] changes in
 
             let items = changes.mergeToDict([:]).reduce(into: ReferendumMetadataMapping()) {
                 $0[$1.value.referendumId] = $1.value
             }
 
-            self?.govMetadataLocalSubscriptionHandler.handleGovMetadata(
+            self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataPreview(
                 result: .success(items),
                 chain: chain
             )
@@ -38,7 +39,57 @@ extension GovMetadataLocalStorageSubscriber {
         }
 
         let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.govMetadataLocalSubscriptionHandler.handleGovMetadata(result: .failure(error), chain: chain)
+            self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataPreview(
+                result: .failure(error),
+                chain: chain
+            )
+            return
+        }
+
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: true
+        )
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return provider
+    }
+
+    func subscribeGovernanceMetadata(
+        for chain: ChainModel,
+        referendumId: ReferendumIdLocal
+    ) -> AnySingleValueProvider<ReferendumMetadataLocal>? {
+        guard let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(for: chain) else {
+            return nil
+        }
+
+        let updateClosure: ([DataProviderChange<ReferendumMetadataLocal>]) -> Void
+        updateClosure = { [weak self] changes in
+            let item = changes.reduceToLastChange()
+
+            self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataDetails(
+                result: .success(item),
+                chain: chain,
+                referendumId: referendumId
+            )
+            return
+        }
+
+        let failureClosure: (Error) -> Void = { [weak self] error in
+            self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataDetails(
+                result: .failure(error),
+                chain: chain,
+                referendumId: referendumId
+            )
             return
         }
 

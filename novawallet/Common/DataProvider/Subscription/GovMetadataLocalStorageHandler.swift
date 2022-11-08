@@ -1,15 +1,27 @@
 import Foundation
 
 protocol GovMetadataLocalStorageHandler: AnyObject {
-    func handleGovMetadata(
+    func handleGovernanceMetadataPreview(
         result: Result<ReferendumMetadataMapping?, Error>,
         chain: ChainModel
+    )
+
+    func handleGovernanceMetadataDetails(
+        result: Result<ReferendumMetadataLocal?, Error>,
+        chain: ChainModel
+        referendumId: ReferendumIdLocal
     )
 }
 
 extension GovMetadataLocalStorageHandler {
-    func handleGovMetadata(
+    func handleGovernanceMetadataPreview(
         result _: Result<ReferendumMetadataMapping?, Error>,
         chain _: ChainModel
+    ) {}
+
+    func handleGovernanceMetadataDetails(
+        result: Result<ReferendumMetadataLocal?, Error>,
+        chain: ChainModel
+        referendumId: ReferendumIdLocal
     ) {}
 }
