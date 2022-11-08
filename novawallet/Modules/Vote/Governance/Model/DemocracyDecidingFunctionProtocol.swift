@@ -49,8 +49,8 @@ final class Gov1DecidingFunction {
 
 extension Gov1DecidingFunction: DemocracyDecidingFunctionProtocol {
     func calculateThreshold(
-        for ayes: BigUInt,
-        nays: BigUInt,
+        for _: BigUInt,
+        nays _: BigUInt,
         turnout: BigUInt,
         electorate: BigUInt
     ) -> Decimal? {

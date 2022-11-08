@@ -309,4 +309,12 @@ extension NSPredicate {
 
         return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, accountPredicate])
     }
+
+    static func referendums(for chainId: ChainModel.Id) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDReferendumMetadata.chainId),
+            chainId
+        )
+    }
 }
