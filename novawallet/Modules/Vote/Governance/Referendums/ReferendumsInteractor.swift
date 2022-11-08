@@ -11,18 +11,12 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
-    let lockStateFactory: GovernanceLockStateFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
     let operationQueue: OperationQueue
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
         governanceState.generalLocalSubscriptionFactory
-    }
-
-    var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
-        governanceState.govMetadataLocalSubscriptionFactory
     }
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -42,8 +36,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
-        lockStateFactory: GovernanceLockStateFactoryProtocol,
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -54,8 +46,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.referendumsOperationFactory = referendumsOperationFactory
-        self.lockStateFactory = lockStateFactory
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
@@ -92,7 +82,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func clearSubscriptionFactory() {
-        governanceState.replaceSubscriptionFactory(for: nil)
+        governanceState.replaceGovernanceFactory(for: nil)
     }
 
     private func continueSetup() {
@@ -145,7 +135,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func setupSubscriptionFactory(for chain: ChainModel) {
-        governanceState.replaceSubscriptionFactory(for: chain)
+        governanceState.replaceGovernanceFactory(for: chain)
     }
 
     private func subscribeToBlockNumber(for chain: ChainModel) {
@@ -235,6 +225,11 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        guard let referendumsOperationFactory = governanceState.referendumsOperationFactory else {
+            presenter?.didReceiveReferendums([])
             return
         }
 
@@ -359,6 +354,11 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
                 return
             }
 
+            guard let lockStateFactory = governanceState.locksOperationFactory else {
+                presenter?.didReceiveUnlockSchedule(.init(items: []))
+                return
+            }
+
             let wrapper = lockStateFactory.buildUnlockScheduleWrapper(
                 for: tracksVoting,
                 from: connection,
@@ -395,6 +395,10 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
 }
 
 extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
+    var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
+        governanceState.govMetadataLocalSubscriptionFactory
+    }
+
     func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain: ChainModel) {
         guard let currentChain = governanceState.settings.value, currentChain.chainId == chain.chainId else {
             return

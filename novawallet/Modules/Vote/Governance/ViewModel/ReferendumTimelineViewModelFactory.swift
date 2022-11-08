@@ -116,26 +116,30 @@ final class ReferendumTimelineViewModelFactory {
             locale: locale
         )
 
+        let isPassing: Bool
         switch model.voting {
         case let .supportAndVotes(votingModel):
-            let isPassing = votingModel.isPassing(at: currentBlock)
-            let votingTitle = isPassing ?
-                R.string.localizable.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
-                R.string.localizable.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
-
-            let title = R.string.localizable.govTimelineVotingFormat(
-                votingTitle.lowercased().firstLetterCapitalized(),
-                preferredLanguages: locale.rLanguages
-            )
-
-            let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
-
-            return .init(
-                title: title,
-                subtitle: subtitle,
-                isLast: false
-            )
+            isPassing = votingModel.isPassing(at: currentBlock)
+        case let .threshold(votingModel):
+            isPassing = votingModel.isPassing()
         }
+
+        let votingTitle = isPassing ?
+            R.string.localizable.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
+            R.string.localizable.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
+
+        let title = R.string.localizable.govTimelineVotingFormat(
+            votingTitle.lowercased().firstLetterCapitalized(),
+            preferredLanguages: locale.rLanguages
+        )
+
+        let subtitle = status.map { ReferendumTimelineView.StatusSubtitle.interval($0.viewModel) }
+
+        return .init(
+            title: title,
+            subtitle: subtitle,
+            isLast: false
+        )
     }
 
     private func createApprovedTitle(for locale: Locale) -> String {
