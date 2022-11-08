@@ -55,25 +55,27 @@ enum GovernanceUnlocksTestBuilding {
         let tracksVoting = compoundVoting.votingDistribution
         let refendumsUnlock = compoundVoting.referendumsUnlock
 
-        let initReferendums = [ReferendumIdLocal: ReferendumInfo]()
+        let initReferendums = [ReferendumIdLocal: GovUnlockReferendumProtocol]()
         let referendums = tracksVoting.votes.tracksByReferendums().keys.reduce(into: initReferendums) { (accum, referendumId) in
             let deposit = Referenda.Deposit(who: AccountId.zeroAccountId(of: 32), amount: BigUInt(0))
-            accum[referendumId] = ReferendumInfo.approved(
+            let referendum = ReferendumInfo.approved(
                 .init(
                     since: refendumsUnlock[referendumId] ?? 0,
                     submissionDeposit: deposit,
                     decisionDeposit: deposit
                 )
             )
+
+            accum[referendumId] = Gov2UnlockReferendum(referendumInfo: referendum)
         }
 
         let additions = GovUnlockCalculationInfo(
-            tracks: [:],
+            decisionPeriods: [:],
             undecidingTimeout: 0,
             voteLockingPeriod: 0
         )
 
-        let schedule = Gov2UnlocksCalculator().createUnlocksSchedule(
+        let schedule = GovUnlocksCalculator().createUnlocksSchedule(
             for: tracksVoting,
             referendums: referendums,
             additionalInfo: additions

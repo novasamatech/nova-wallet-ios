@@ -120,7 +120,15 @@ struct ChainModel: Equatable, Codable, Hashable {
     }
 
     var hasGovernance: Bool {
-        options?.contains(.governance) ?? false
+        options?.contains(where: { $0 == .governance || $0 == .governanceV1 }) ?? false
+    }
+
+    var hasGov1: Bool {
+        options?.contains(where: { $0 == .governanceV1 }) ?? false
+    }
+
+    var hasGov2: Bool {
+        options?.contains(where: { $0 == .governance }) ?? false
     }
 
     var isRelaychain: Bool { parentId == nil }
@@ -171,4 +179,5 @@ enum ChainOptions: String, Codable {
     case testnet
     case crowdloans
     case governance
+    case governanceV1 = "governance-v1"
 }
