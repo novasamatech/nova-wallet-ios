@@ -6,17 +6,32 @@ protocol GovMetadataLocalStorageSubscriber: AnyObject {
 
     var govMetadataLocalSubscriptionHandler: GovMetadataLocalStorageHandler { get }
 
-    func subscribeGovMetadata(for chain: ChainModel) -> AnySingleValueProvider<ReferendumMetadataMapping>
+    func subscribeGovernanceMetadata(
+        for chain: ChainModel
+    ) -> StreamableProvider<ReferendumMetadataLocal>?
+
+    func subscribeGovernanceMetadata(
+        for chain: ChainModel,
+        referendumId: ReferendumIdLocal
+    ) -> AnySingleValueProvider<ReferendumMetadataLocal>
 }
 
 extension GovMetadataLocalStorageSubscriber {
-    func subscribeGovMetadata(for chain: ChainModel) -> AnySingleValueProvider<ReferendumMetadataMapping> {
-        let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(for: chain)
+    func subscribeGovernanceMetadata(
+        for chain: ChainModel
+    ) -> StreamableProvider<ReferendumMetadataLocal>? {
+        guard let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(for: chain) else {
+            return nil
+        }
 
-        let updateClosure: ([DataProviderChange<ReferendumMetadataMapping>]) -> Void = { [weak self] changes in
-            let result = changes.reduceToLastChange()
+        let updateClosure: ([DataProviderChange<ReferendumMetadataLocal>]) -> Void = { [weak self] changes in
+
+            let items = changes.mergeToDict([:]).reduce(into: ReferendumMetadataMapping()) {
+                $0[$1.value.referendumId] = $1.value
+            }
+
             self?.govMetadataLocalSubscriptionHandler.handleGovMetadata(
-                result: .success(result),
+                result: .success(items),
                 chain: chain
             )
             return
@@ -27,9 +42,11 @@ extension GovMetadataLocalStorageSubscriber {
             return
         }
 
-        let options = DataProviderObserverOptions(
+        let options = StreamableProviderObserverOptions(
             alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: true
         )
 
         provider.addObserver(

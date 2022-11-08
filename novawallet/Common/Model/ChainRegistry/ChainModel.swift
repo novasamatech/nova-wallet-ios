@@ -21,6 +21,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         let staking: ExternalApi?
         let history: ExternalApi?
         let crowdloans: ExternalApi?
+        let governance: ExternalApi?
     }
 
     struct Explorer: Codable, Hashable {
@@ -123,11 +124,11 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(where: { $0 == .governance || $0 == .governanceV1 }) ?? false
     }
 
-    var hasGov1: Bool {
+    var hasGovernanceV1: Bool {
         options?.contains(where: { $0 == .governanceV1 }) ?? false
     }
 
-    var hasGov2: Bool {
+    var hasGovernanceV2: Bool {
         options?.contains(where: { $0 == .governance }) ?? false
     }
 
