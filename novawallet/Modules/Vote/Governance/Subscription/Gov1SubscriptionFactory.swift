@@ -108,6 +108,7 @@ final class Gov1SubscriptionFactory: AnyCancellableCleaning {
 
     private func handleVotesResult(
         _ result: Result<CallbackStorageSubscriptionResult<Democracy.Voting>, Error>,
+        connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         accountId: AccountId
     ) {
@@ -119,6 +120,7 @@ final class Gov1SubscriptionFactory: AnyCancellableCleaning {
         case let .success(result):
             handleVotes(
                 for: result.value,
+                connection: connection,
                 runtimeProvider: runtimeProvider,
                 accountId: accountId,
                 blockHash: result.blockHash
@@ -130,6 +132,7 @@ final class Gov1SubscriptionFactory: AnyCancellableCleaning {
 
     private func handleVotes(
         for votes: Democracy.Voting?,
+        connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         accountId: AccountId,
         blockHash: Data?
@@ -139,7 +142,10 @@ final class Gov1SubscriptionFactory: AnyCancellableCleaning {
 
         let wrapper = operationFactory.fetchTracksVotingWrapper(
             for: votes,
-            runtimeProvider: runtimeProvider
+            accountId: accountId,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
@@ -268,6 +274,7 @@ extension Gov1SubscriptionFactory: GovernanceSubscriptionFactoryProtocol {
             ) { [weak self] result in
                 self?.handleVotesResult(
                     result,
+                    connection: connection,
                     runtimeProvider: runtimeProvider,
                     accountId: accountId
                 )

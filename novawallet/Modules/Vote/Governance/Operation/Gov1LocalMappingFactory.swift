@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 final class Gov1LocalMappingFactory {
     private func mapOngoing(
@@ -59,8 +60,41 @@ final class Gov1LocalMappingFactory {
             return .init(index: ReferendumIdLocal(index), state: .rejected(model: rejected), proposer: nil)
         }
     }
+}
 
-    private func mapToAccountVoting(
+extension Gov1LocalMappingFactory {
+    func mapRemote(
+        referendum: Democracy.ReferendumInfo,
+        index: Referenda.ReferendumIndex,
+        additionalInfo: Gov1OperationFactory.AdditionalInfo
+    ) -> ReferendumLocal? {
+        switch referendum {
+        case let .ongoing(status):
+            return mapOngoing(referendum: status, index: index, additionalInfo: additionalInfo)
+        case let .finished(status):
+            return mapFinished(referendum: status, index: index, additionalInfo: additionalInfo)
+        case .unknown:
+            return nil
+        }
+    }
+
+    func mapToTracksVoting(
+        _ voting: Democracy.Voting?,
+        lockedBalance: BigUInt?, maxVotes: UInt32
+    ) -> ReferendumTracksVotingDistribution {
+        let accountVoting = mapToAccountVoting(voting, maxVotes: maxVotes)
+
+        let trackId = Gov1OperationFactory.trackId
+
+        if let lockedBalance = lockedBalance, lockedBalance > 0 {
+            let trackLock = ConvictionVoting.ClassLock(trackId: trackId, amount: lockedBalance)
+            return .init(votes: accountVoting, trackLocks: [trackLock])
+        } else {
+            return .init(votes: accountVoting, trackLocks: [])
+        }
+    }
+
+    func mapToAccountVoting(
         _ voting: Democracy.Voting?,
         maxVotes: UInt32
     ) -> ReferendumAccountVotingDistribution {
@@ -87,37 +121,6 @@ final class Gov1LocalMappingFactory {
             }
         } else {
             return initVotingLocal
-        }
-    }
-}
-
-extension Gov1LocalMappingFactory {
-    func mapRemote(
-        referendum: Democracy.ReferendumInfo,
-        index: Referenda.ReferendumIndex,
-        additionalInfo: Gov1OperationFactory.AdditionalInfo
-    ) -> ReferendumLocal? {
-        switch referendum {
-        case let .ongoing(status):
-            return mapOngoing(referendum: status, index: index, additionalInfo: additionalInfo)
-        case let .finished(status):
-            return mapFinished(referendum: status, index: index, additionalInfo: additionalInfo)
-        case .unknown:
-            return nil
-        }
-    }
-
-    func mapVoting(_ voting: Democracy.Voting?, maxVotes: UInt32) -> ReferendumTracksVotingDistribution {
-        let accountVoting = mapToAccountVoting(voting, maxVotes: maxVotes)
-
-        let trackId = Gov1OperationFactory.trackId
-        let lockedBalance = accountVoting.lockedBalance(for: TrackIdLocal(trackId))
-
-        if lockedBalance > 0 {
-            let trackLock = ConvictionVoting.ClassLock(trackId: trackId, amount: lockedBalance)
-            return .init(votes: accountVoting, trackLocks: [trackLock])
-        } else {
-            return .init(votes: accountVoting, trackLocks: [])
         }
     }
 }
