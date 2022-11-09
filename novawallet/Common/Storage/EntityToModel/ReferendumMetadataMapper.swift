@@ -36,7 +36,7 @@ extension ReferendumMetadataMapper: CoreDataMapperProtocol {
     func populate(
         entity: CoreDataEntity,
         from model: DataProviderModel,
-        using context: NSManagedObjectContext
+        using _: NSManagedObjectContext
     ) throws {
         entity.identifier = model.identifier
         entity.chainId = model.chainId

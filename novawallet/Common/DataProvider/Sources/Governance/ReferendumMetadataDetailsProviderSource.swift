@@ -50,14 +50,13 @@ extension ReferendumMetadataDetailsProviderSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: ((Result<Int, Error>?) -> Void)?
     ) {
-
         let remoteFetchOperation = operationFactory.createDetailsOperation(for: referendumId)
 
         let identifier = ReferendumMetadataLocal.identifier(from: chainId, referendumId: referendumId)
         let saveOperation = repository.saveOperation({
             let optItem = try remoteFetchOperation.extractNoCancellableResultData()
             if let item = optItem {
-               return [item]
+                return [item]
             } else {
                 return []
             }

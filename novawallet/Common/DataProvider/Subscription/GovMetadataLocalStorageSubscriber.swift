@@ -13,7 +13,7 @@ protocol GovMetadataLocalStorageSubscriber: AnyObject {
     func subscribeGovernanceMetadata(
         for chain: ChainModel,
         referendumId: ReferendumIdLocal
-    ) -> AnySingleValueProvider<ReferendumMetadataLocal>?
+    ) -> StreamableProvider<ReferendumMetadataLocal>?
 }
 
 extension GovMetadataLocalStorageSubscriber {
@@ -67,8 +67,12 @@ extension GovMetadataLocalStorageSubscriber {
     func subscribeGovernanceMetadata(
         for chain: ChainModel,
         referendumId: ReferendumIdLocal
-    ) -> AnySingleValueProvider<ReferendumMetadataLocal>? {
-        guard let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(for: chain) else {
+    ) -> StreamableProvider<ReferendumMetadataLocal>? {
+        guard
+            let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(
+                for: chain,
+                referendumId: referendumId
+            ) else {
             return nil
         }
 

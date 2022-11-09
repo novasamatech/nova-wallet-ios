@@ -8,7 +8,7 @@ protocol GovMetadataLocalStorageHandler: AnyObject {
 
     func handleGovernanceMetadataDetails(
         result: Result<ReferendumMetadataLocal?, Error>,
-        chain: ChainModel
+        chain: ChainModel,
         referendumId: ReferendumIdLocal
     )
 }
@@ -20,8 +20,8 @@ extension GovMetadataLocalStorageHandler {
     ) {}
 
     func handleGovernanceMetadataDetails(
-        result: Result<ReferendumMetadataLocal?, Error>,
-        chain: ChainModel
-        referendumId: ReferendumIdLocal
+        result _: Result<ReferendumMetadataLocal?, Error>,
+        chain _: ChainModel,
+        referendumId _: ReferendumIdLocal
     ) {}
 }

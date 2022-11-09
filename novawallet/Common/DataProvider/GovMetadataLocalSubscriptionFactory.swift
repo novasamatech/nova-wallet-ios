@@ -26,6 +26,20 @@ final class GovMetadataLocalSubscriptionFactory {
         self.operationQueue = operationQueue
         self.logger = logger
     }
+
+    private func createOperationFactory(
+        for apiType: GovernanceOffchainApi,
+        url: URL,
+        chainId: ChainModel.Id
+    ) -> PolkassemblyOperationFactoryProtocol {
+        switch apiType {
+        case .polkassembly:
+            return PolkassemblyChainOperationFactory(
+                chainId: chainId,
+                url: url
+            )
+        }
+    }
 }
 
 extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
@@ -51,17 +65,10 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         let repository = storageFacade.createRepository(
             filter: NSPredicate.referendums(for: chainId),
             sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper))
+            mapper: AnyCoreDataMapper(mapper)
+        )
 
-        let operationFactory: PolkassemblyOperationFactoryProtocol
-
-        switch apiType {
-        case .polkassembly:
-            operationFactory = PolkassemblyChainOperationFactory(
-                chainId: chainId,
-                url: url
-            )
-        }
+        let operationFactory = createOperationFactory(for: apiType, url: url, chainId: chainId)
 
         let source = ReferendumsMetadataPreviewProviderSource(
             operationFactory: operationFactory,
@@ -116,19 +123,12 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
 
         let mapper = ReferendumMetadataMapper()
         let repository = storageFacade.createRepository(
-            filter: NSPredicate.referendums(for: chainId),
+            filter: NSPredicate.referendums(for: chainId, referendumId: referendumId),
             sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper))
+            mapper: AnyCoreDataMapper(mapper)
+        )
 
-        let operationFactory: PolkassemblyOperationFactoryProtocol
-
-        switch apiType {
-        case .polkassembly:
-            operationFactory = PolkassemblyChainOperationFactory(
-                chainId: chainId,
-                url: url
-            )
-        }
+        let operationFactory = createOperationFactory(for: apiType, url: url, chainId: chainId)
 
         let source = ReferendumMetadataDetailsProviderSource(
             chainId: chainId,
@@ -143,7 +143,7 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
                 chainId == entity.chainId &&
-                referendumId == entity.referendumId
+                    referendumId == entity.referendumId
             }
         )
 
