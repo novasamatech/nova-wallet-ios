@@ -25,7 +25,7 @@ protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func refreshBlockTime()
     func refreshActionDetails()
-    func refreshIdentities()
+    func refreshIdentities(for accountIds: Set<AccountId>)
     func refreshDApps()
     func remakeSubscriptions()
 }

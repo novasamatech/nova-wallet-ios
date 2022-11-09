@@ -1,8 +1,9 @@
 import Foundation
+import RobinHood
 
 protocol GovMetadataLocalStorageHandler: AnyObject {
     func handleGovernanceMetadataPreview(
-        result: Result<ReferendumMetadataMapping?, Error>,
+        result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
         chain: ChainModel
     )
 
@@ -15,7 +16,7 @@ protocol GovMetadataLocalStorageHandler: AnyObject {
 
 extension GovMetadataLocalStorageHandler {
     func handleGovernanceMetadataPreview(
-        result _: Result<ReferendumMetadataMapping?, Error>,
+        result _: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
         chain _: ChainModel
     ) {}
 
