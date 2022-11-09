@@ -99,16 +99,20 @@ final class ReferendumFullDetailsPresenter {
 
     private func provideCurveAndHashViewModel() {
         guard
-            let approvalCurve = referendum.state.approvalCurve,
-            let supportCurve = referendum.state.supportCurve else {
+            let voting = referendum.state.votingModel(locale: selectedLocale),
+            let turnout = referendum.state.turnout,
+            let electorate = referendum.state.electorate,
+            let turnoutBalance = getBalanceViewModel(turnout, locale: selectedLocale),
+            let electorateBalance = getBalanceViewModel(electorate, locale: selectedLocale) else {
             return
         }
 
         let callHash = referendum.state.callHash
 
         let model = ReferendumFullDetailsViewModel.CurveAndHash(
-            approveCurve: approvalCurve.displayName(for: selectedLocale),
-            supportCurve: supportCurve.displayName(for: selectedLocale),
+            vote: voting,
+            turnout: turnoutBalance,
+            electorate: electorateBalance,
             callHash: callHash
         )
 
@@ -187,6 +191,7 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsInteractorOutputP
 
         provideProposerViewModel()
         provideBeneficiaryViewModel()
+        provideCurveAndHashViewModel()
     }
 
     func didReceive(call: ReferendumActionLocal.Call<String>?) {

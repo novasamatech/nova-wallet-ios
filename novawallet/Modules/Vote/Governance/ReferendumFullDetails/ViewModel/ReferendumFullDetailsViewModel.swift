@@ -12,8 +12,14 @@ enum ReferendumFullDetailsViewModel {
     }
 
     struct CurveAndHash {
-        let approveCurve: String
-        let supportCurve: String
+        let vote: CurveAndHashVoting
+        let turnout: BalanceViewModelProtocol
+        let electorate: BalanceViewModelProtocol
         let callHash: String?
+    }
+
+    enum CurveAndHashVoting {
+        case supportAndVotes(approveCurve: String, supportCurve: String)
+        case threshold(function: String)
     }
 }
