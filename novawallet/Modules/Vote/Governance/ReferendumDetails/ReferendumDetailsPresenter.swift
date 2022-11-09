@@ -92,8 +92,10 @@ final class ReferendumDetailsPresenter {
     private func provideTitleViewModel() {
         let accountViewModel: DisplayAddressViewModel?
 
+        let optProposer = referendum.proposer ?? referendumMetadata?.proposerAccountId(for: chain.chainFormat)
+
         if
-            let proposer = referendum.proposer,
+            let proposer = optProposer,
             let identities = identities,
             let address = try? proposer.toAddress(using: chain.chainFormat) {
             let displayAddress = DisplayAddress(address: address, username: identities[address]?.displayName ?? "")
@@ -308,6 +310,24 @@ final class ReferendumDetailsPresenter {
 
         view?.didReceive(activeTimeViewModel: updatedViewModel)
     }
+
+    private func refreshIdentities() {
+        var accountIds: Set<AccountId> = []
+
+        if let proposer = referendum.proposer {
+            accountIds.insert(proposer)
+        }
+
+        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiary.accountId {
+            accountIds.insert(beneficiary)
+        }
+
+        if let proposer = referendumMetadata?.proposerAccountId(for: chain.chainFormat) {
+            accountIds.insert(proposer)
+        }
+
+        interactor.refreshIdentities(for: accountIds)
+    }
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
@@ -322,13 +342,16 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func showProposerDetails() {
+        let referendumProposer = try? referendum.proposer?.toAddress(using: chain.chainFormat)
+        let optAddress = referendumProposer ?? referendumMetadata?.proposer
+
         guard
-            let proposerAddress = try? referendum.proposer?.toAddress(using: chain.chainFormat),
+            let address = optAddress,
             let view = view else {
             return
         }
 
-        wireframe.presentAccountOptions(from: view, address: proposerAddress, chain: chain, locale: selectedLocale)
+        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: selectedLocale)
     }
 
     func showAyeVoters() {
@@ -365,6 +388,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         provideVotingDetails()
         provideTitleViewModel()
         updateTimerIfNeeded()
+
+        refreshIdentities()
     }
 
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal) {
@@ -373,6 +398,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         provideTitleViewModel()
         provideRequestedAmount()
         provideFullDetailsViewModel()
+
+        refreshIdentities()
     }
 
     func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?) {
@@ -386,6 +413,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
 
         provideTitleViewModel()
         provideFullDetailsViewModel()
+
+        refreshIdentities()
     }
 
     func didReceiveIdentities(_ identities: [AccountAddress: AccountIdentity]) {
@@ -437,7 +466,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
             }
         case .identitiesFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refreshIdentities()
+                self?.refreshIdentities()
             }
         case .blockTimeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

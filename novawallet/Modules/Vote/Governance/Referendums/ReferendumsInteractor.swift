@@ -170,7 +170,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         metadataProvider = subscribeGovernanceMetadata(for: chain)
 
         if metadataProvider == nil {
-            presenter?.didReceiveReferendumsMetadata(nil)
+            presenter?.didReceiveReferendumsMetadata([])
         }
     }
 
@@ -404,7 +404,7 @@ extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataL
     }
 
     func handleGovernanceMetadataPreview(
-        result: Result<ReferendumMetadataMapping?, Error>,
+        result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
         chain: ChainModel
     ) {
         guard let currentChain = governanceState.settings.value, currentChain.chainId == chain.chainId else {
@@ -412,8 +412,8 @@ extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataL
         }
 
         switch result {
-        case let .success(mapping):
-            presenter?.didReceiveReferendumsMetadata(mapping)
+        case let .success(changes):
+            presenter?.didReceiveReferendumsMetadata(changes)
         case let .failure(error):
             presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }

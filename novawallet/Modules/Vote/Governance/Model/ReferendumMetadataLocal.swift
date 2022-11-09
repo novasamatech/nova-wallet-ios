@@ -19,6 +19,10 @@ struct ReferendumMetadataLocal: Equatable {
     let content: String?
     let proposer: String?
     let timeline: [TimelineItem]?
+
+    func proposerAccountId(for chainFormat: ChainFormat) -> AccountId? {
+        try? proposer?.toAccountId(using: chainFormat)
+    }
 }
 
 extension ReferendumMetadataLocal: Identifiable {

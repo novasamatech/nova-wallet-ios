@@ -26,13 +26,8 @@ extension GovMetadataLocalStorageSubscriber {
 
         let updateClosure: ([DataProviderChange<ReferendumMetadataLocal>]) -> Void
         updateClosure = { [weak self] changes in
-
-            let items = changes.mergeToDict([:]).reduce(into: ReferendumMetadataMapping()) {
-                $0[$1.value.referendumId] = $1.value
-            }
-
             self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataPreview(
-                result: .success(items),
+                result: .success(changes),
                 chain: chain
             )
             return
