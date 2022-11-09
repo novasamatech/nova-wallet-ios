@@ -29,6 +29,9 @@ extension ReferendumDisplayStringFactoryProtocol {
         case let .supportAndVotes(model):
             ayesString = createVotes(from: model.ayes, chain: chain, locale: locale)
             naysString = createVotes(from: model.nays, chain: chain, locale: locale)
+        case let .threshold(model):
+            ayesString = createVotes(from: model.ayes, chain: chain, locale: locale)
+            naysString = createVotes(from: model.nays, chain: chain, locale: locale)
         }
 
         let aye: VoteRowView.Model? = ayesString.map {

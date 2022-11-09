@@ -149,48 +149,53 @@ final class ReferendumsModelFactory {
 
         let title = createPreparingStatus(for: model, locale: locale)
 
+        let votingProgressViewModel: VotingProgressView.Model
+
         switch model.voting {
         case let .supportAndVotes(supportAndVotes):
-            let progressViewModel = createVotingProgressViewModel(
+            votingProgressViewModel = createGov2VotingProgressViewModel(
                 supportAndVotes: supportAndVotes,
                 chain: params.chainInfo.chain,
                 currentBlock: params.chainInfo.currentBlock,
                 locale: locale
             )
-            let yourVotesModel = createVotesViewModel(
-                votes: params.votes,
-                chainAsset: params.chainInfo.chain.utilityAsset(),
-                locale: locale
-            )
-
-            let track = ReferendumTrackType.createViewModel(
-                from: model.track.name,
-                chain: params.chainInfo.chain,
-                locale: locale
-            )
-
-            let referendumNumber = localizedIndexFormatter.value(for: locale).string(
-                from: NSNumber(value: params.referendum.index)
-            )
-
-            let referendumTitle = referendumMetadataViewModelFactory.createTitle(
-                for: params.referendum,
-                metadata: params.metadata,
-                locale: locale
-            )
-
-            return .init(
-                referendumInfo: .init(
-                    status: .init(name: title.uppercased(), kind: .neutral),
-                    time: timeModel?.viewModel,
-                    title: referendumTitle,
-                    track: track,
-                    referendumNumber: referendumNumber
-                ),
-                progress: progressViewModel,
-                yourVotes: yourVotesModel
-            )
+        case let .threshold(threshold):
+            votingProgressViewModel = createGov1VotingProgressViewModel(votingThreshold: threshold, locale: locale)
         }
+
+        let yourVotesModel = createVotesViewModel(
+            votes: params.votes,
+            chainAsset: params.chainInfo.chain.utilityAsset(),
+            locale: locale
+        )
+
+        let track = ReferendumTrackType.createViewModel(
+            from: model.track.name,
+            chain: params.chainInfo.chain,
+            locale: locale
+        )
+
+        let referendumNumber = localizedIndexFormatter.value(for: locale).string(
+            from: NSNumber(value: params.referendum.index)
+        )
+
+        let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+            for: params.referendum,
+            metadata: params.metadata,
+            locale: locale
+        )
+
+        return .init(
+            referendumInfo: .init(
+                status: .init(name: title.uppercased(), kind: .neutral),
+                time: timeModel?.viewModel,
+                title: referendumTitle,
+                track: track,
+                referendumNumber: referendumNumber
+            ),
+            progress: votingProgressViewModel,
+            yourVotes: yourVotesModel
+        )
     }
 
     private func createVotesViewModel(
@@ -238,59 +243,69 @@ final class ReferendumsModelFactory {
         params: StatusParams,
         locale: Locale
     ) -> ReferendumView.Model {
+        let votingProgressViewModel: VotingProgressView.Model
+        let isPassing: Bool
+
         switch model.voting {
         case let .supportAndVotes(supportAndVotes):
-            let timeModel = statusViewModelFactory.createTimeViewModel(
-                for: params.referendum,
-                currentBlock: params.chainInfo.currentBlock,
-                blockDuration: params.chainInfo.blockDuration,
-                locale: locale
-            )
-
-            let progressViewModel = createVotingProgressViewModel(
+            votingProgressViewModel = createGov2VotingProgressViewModel(
                 supportAndVotes: supportAndVotes,
                 chain: params.chainInfo.chain,
                 currentBlock: params.chainInfo.currentBlock,
                 locale: locale
             )
-            let isPassing = supportAndVotes.isPassing(at: params.chainInfo.currentBlock)
-            let statusName = isPassing ?
-                Strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
-                Strings.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
-            let statusKind: ReferendumInfoView.StatusKind = isPassing ? .positive : .negative
-            let yourVotesModel = createVotesViewModel(
-                votes: params.votes,
-                chainAsset: params.chainInfo.chain.utilityAsset(),
-                locale: locale
-            )
 
-            let track = ReferendumTrackType.createViewModel(
-                from: model.track.name,
-                chain: params.chainInfo.chain,
-                locale: locale
-            )
+            isPassing = supportAndVotes.isPassing(at: params.chainInfo.currentBlock)
+        case let .threshold(threshold):
+            votingProgressViewModel = createGov1VotingProgressViewModel(votingThreshold: threshold, locale: locale)
 
-            let indexFormatter = localizedIndexFormatter.value(for: locale)
-            let referendumNumber = indexFormatter.string(from: NSNumber(value: params.referendum.index))
-
-            let referendumTitle = referendumMetadataViewModelFactory.createTitle(
-                for: params.referendum,
-                metadata: params.metadata,
-                locale: locale
-            )
-
-            return .init(
-                referendumInfo: .init(
-                    status: .init(name: statusName.uppercased(), kind: statusKind),
-                    time: timeModel?.viewModel,
-                    title: referendumTitle,
-                    track: track,
-                    referendumNumber: referendumNumber
-                ),
-                progress: progressViewModel,
-                yourVotes: yourVotesModel
-            )
+            isPassing = threshold.isPassing()
         }
+
+        let timeModel = statusViewModelFactory.createTimeViewModel(
+            for: params.referendum,
+            currentBlock: params.chainInfo.currentBlock,
+            blockDuration: params.chainInfo.blockDuration,
+            locale: locale
+        )
+
+        let statusName = isPassing ?
+            Strings.governanceReferendumsStatusPassing(preferredLanguages: locale.rLanguages) :
+            Strings.governanceReferendumsStatusNotPassing(preferredLanguages: locale.rLanguages)
+
+        let statusKind: ReferendumInfoView.StatusKind = isPassing ? .positive : .negative
+        let yourVotesModel = createVotesViewModel(
+            votes: params.votes,
+            chainAsset: params.chainInfo.chain.utilityAsset(),
+            locale: locale
+        )
+
+        let track = ReferendumTrackType.createViewModel(
+            from: model.track.name,
+            chain: params.chainInfo.chain,
+            locale: locale
+        )
+
+        let indexFormatter = localizedIndexFormatter.value(for: locale)
+        let referendumNumber = indexFormatter.string(from: NSNumber(value: params.referendum.index))
+
+        let referendumTitle = referendumMetadataViewModelFactory.createTitle(
+            for: params.referendum,
+            metadata: params.metadata,
+            locale: locale
+        )
+
+        return .init(
+            referendumInfo: .init(
+                status: .init(name: statusName.uppercased(), kind: statusKind),
+                time: timeModel?.viewModel,
+                title: referendumTitle,
+                track: track,
+                referendumNumber: referendumNumber
+            ),
+            progress: votingProgressViewModel,
+            yourVotes: yourVotesModel
+        )
     }
 
     private func provideApprovedReferendumCellViewModel(
@@ -414,7 +429,36 @@ final class ReferendumsModelFactory {
         )
     }
 
-    private func createVotingProgressViewModel(
+    private func createVotingThresholdProgressViewModel(
+        for votingThreshold: VotingThresholdLocal,
+        locale: Locale
+    ) -> VotingProgressView.ApprovalModel {
+        let ayeProgressString: String
+        let nayProgressString: String
+
+        let percentFormatter = localizedPercentFormatter.value(for: locale)
+
+        if let approvalFraction = votingThreshold.approvalFraction {
+            ayeProgressString = percentFormatter.stringFromDecimal(approvalFraction) ?? ""
+            nayProgressString = percentFormatter.stringFromDecimal(1 - approvalFraction) ?? ""
+        } else {
+            ayeProgressString = percentFormatter.stringFromDecimal(0) ?? ""
+            nayProgressString = percentFormatter.stringFromDecimal(0) ?? ""
+        }
+
+        let passThreshold = votingThreshold.calculateThreshold() ?? 0
+        let passThresholdString = percentFormatter.stringFromDecimal(passThreshold) ?? ""
+
+        return .init(
+            passThreshold: passThreshold,
+            ayeProgress: votingThreshold.approvalFraction,
+            ayeMessage: Strings.governanceAyesFormat(ayeProgressString, preferredLanguages: locale.rLanguages),
+            passMessage: Strings.governanceToPassFormat(passThresholdString, preferredLanguages: locale.rLanguages),
+            nayMessage: Strings.governanceNaysFormat(nayProgressString, preferredLanguages: locale.rLanguages)
+        )
+    }
+
+    private func createGov2VotingProgressViewModel(
         supportAndVotes: SupportAndVotesLocal,
         chain: ChainModel,
         currentBlock: BlockNumber,
@@ -434,6 +478,15 @@ final class ReferendumsModelFactory {
         )
 
         return .init(support: supportModel, approval: approvalModel)
+    }
+
+    private func createGov1VotingProgressViewModel(
+        votingThreshold: VotingThresholdLocal,
+        locale: Locale
+    ) -> VotingProgressView.Model {
+        let thresholdViewModel = createVotingThresholdProgressViewModel(for: votingThreshold, locale: locale)
+
+        return .init(support: nil, approval: thresholdViewModel)
     }
 }
 

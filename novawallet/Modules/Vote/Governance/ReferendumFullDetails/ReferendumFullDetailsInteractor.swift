@@ -5,7 +5,6 @@ final class ReferendumFullDetailsInteractor {
     weak var presenter: ReferendumFullDetailsInteractorOutputProtocol?
     let chain: ChainModel
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
     let processingOperationFactory: PrettyPrintedJSONOperationFactoryProtocol
     let referendumAction: ReferendumActionLocal
