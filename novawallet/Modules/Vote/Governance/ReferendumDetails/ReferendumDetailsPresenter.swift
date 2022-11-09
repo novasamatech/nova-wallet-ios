@@ -412,6 +412,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         self.referendumMetadata = referendumMetadata
 
         provideTitleViewModel()
+        provideTimelineViewModel()
         provideFullDetailsViewModel()
 
         refreshIdentities()
