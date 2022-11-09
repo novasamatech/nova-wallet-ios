@@ -92,7 +92,8 @@ extension ReferendumView: SkeletonableView {
     var hidingViews: [UIView] {
         [
             referendumInfoView,
-            progressView
+            progressView,
+            yourVoteView
         ]
     }
 
@@ -106,34 +107,26 @@ extension ReferendumView: SkeletonableView {
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let (referendumInfoViewSkeletonFrames, referendumInfoViewBottomViewMaxY) =
-            referendumInfoView.skeletons(contentInsets: .zero, spaceSize: spaceSize)
+        let (referendumInfoViewSkeletons, referendumInfoViewBottomViewMaxY) =
+            referendumInfoView.createSkeletons(on: self, contentInsets: .zero, spaceSize: spaceSize)
 
-        let progressViewSkeletonsFrames = progressView.skeletonFrames(contentInsets: .init(
-            top: referendumInfoViewBottomViewMaxY,
-            left: 0,
-            bottom: 0,
-            right: 0
-        ), spaceSize: spaceSize)
+        let progressViewSkeletons = progressView.createSkeletons(
+            on: self,
+            contentInsets: .init(top: referendumInfoViewBottomViewMaxY, left: 0, bottom: 0, right: 0),
+            spaceSize: spaceSize
+        )
 
-        return (referendumInfoViewSkeletonFrames + progressViewSkeletonsFrames).map {
-            SingleSkeleton.createRow(
-                on: self,
-                containerView: self,
-                spaceSize: spaceSize,
-                offset: $0.origin,
-                size: $0.size
-            )
-        }
+        return referendumInfoViewSkeletons + progressViewSkeletons
     }
 }
 
 extension VotingProgressView {
     // swiftlint:disable:next function_body_length
-    func skeletonFrames(
+    func createSkeletons(
+        on view: UIView,
         contentInsets externalInsets: UIEdgeInsets,
         spaceSize: CGSize
-    ) -> [CGRect] {
+    ) -> [SingleSkeleton] {
         let contentInsets = UIEdgeInsets(
             top: externalInsets.top + Constants.contentInsets.top,
             left: externalInsets.left + Constants.contentInsets.left,
@@ -183,19 +176,28 @@ extension VotingProgressView {
         )
 
         return [
-            .init(origin: thresholdSkeletonOffset, size: tresholdSkeletonSize),
-            .init(origin: progressSkeletonFirstPartOffset, size: progressSkeletonSize),
-            .init(origin: progressSkeletonSecondPartOffset, size: progressSkeletonSize),
-            .init(origin: ayeVotingSkeletonOffset, size: votingSkeletonSize),
-            .init(origin: passVotingSkeletonOffset, size: votingSkeletonSize),
-            .init(origin: nayVotingSkeletonOffset, size: votingSkeletonSize)
-        ]
+            CGRect(origin: thresholdSkeletonOffset, size: tresholdSkeletonSize),
+            CGRect(origin: progressSkeletonFirstPartOffset, size: progressSkeletonSize),
+            CGRect(origin: progressSkeletonSecondPartOffset, size: progressSkeletonSize),
+            CGRect(origin: ayeVotingSkeletonOffset, size: votingSkeletonSize),
+            CGRect(origin: passVotingSkeletonOffset, size: votingSkeletonSize),
+            CGRect(origin: nayVotingSkeletonOffset, size: votingSkeletonSize)
+        ].map {
+            SingleSkeleton.createRow(
+                on: view,
+                containerView: view,
+                spaceSize: spaceSize,
+                offset: $0.origin,
+                size: $0.size
+            )
+        }
     }
 }
 
 extension ReferendumInfoView {
-    func skeletons(contentInsets: UIEdgeInsets, spaceSize: CGSize) -> (
-        frames: [CGRect],
+    // swiftlint:disable:next function_body_length
+    func createSkeletons(on view: UIView, contentInsets: UIEdgeInsets, spaceSize: CGSize) -> (
+        skeletons: [SingleSkeleton],
         bottomViewMaxY: CGFloat
     ) {
         let statusSkeletonSize = CGSize(width: 60, height: 12)
@@ -241,12 +243,50 @@ extension ReferendumInfoView {
         )
 
         return (
-            frames: [
-                .init(origin: statusSkeletonOffset, size: statusSkeletonSize),
-                .init(origin: timeSkeletonOffset, size: timeSkeletonSize),
-                .init(origin: titleSkeletonOffset, size: titleSkeletonSize),
-                .init(origin: trackNameSkeletonOffset, size: trackNameSkeletonSize),
-                .init(origin: numberSkeletonOffset, size: numberSkeletonSize)
+            skeletons: [
+                SingleSkeleton.createRow(
+                    on: view,
+                    containerView: view,
+                    spaceSize: spaceSize,
+                    offset: statusSkeletonOffset,
+                    size: statusSkeletonSize
+                ),
+                SingleSkeleton.createRow(
+                    on: view,
+                    containerView: view,
+                    spaceSize: spaceSize,
+                    offset: timeSkeletonOffset,
+                    size: timeSkeletonSize
+                ),
+                SingleSkeleton.createRow(
+                    on: view,
+                    containerView: view,
+                    spaceSize: spaceSize,
+                    offset: titleSkeletonOffset,
+                    size: titleSkeletonSize
+                ),
+                SingleSkeleton.createRow(
+                    on: view,
+                    containerView: view,
+                    spaceSize: spaceSize,
+                    offset: trackNameSkeletonOffset,
+                    size: trackNameSkeletonSize,
+                    cornerRadii: .init(
+                        width: 7 / trackNameSkeletonSize.width,
+                        height: 7 / trackNameSkeletonSize.height
+                    )
+                ),
+                SingleSkeleton.createRow(
+                    on: view,
+                    containerView: view,
+                    spaceSize: spaceSize,
+                    offset: numberSkeletonOffset,
+                    size: numberSkeletonSize,
+                    cornerRadii: .init(
+                        width: 7 / numberSkeletonSize.width,
+                        height: 7 / numberSkeletonSize.height
+                    )
+                )
             ],
             bottomViewMaxY: trackNameOffsetY + Constants.trackInformationHeight
         )

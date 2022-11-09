@@ -4,7 +4,7 @@ import UIKit
 final class ReferendumsViewManager: NSObject {
     private enum Constants {
         static let unlocksCellHeight: CGFloat = 52
-        static let referndumCellMinimumHeight: CGFloat = 185
+        static let referendumCellMinimumHeight: CGFloat = 185
         static let headerMinimumHeight: CGFloat = 56
     }
 
@@ -144,7 +144,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
             case .loaded, .cached:
                 return UITableView.automaticDimension
             case .loading:
-                return Constants.referndumCellMinimumHeight
+                return Constants.referendumCellMinimumHeight
             }
         }
     }
