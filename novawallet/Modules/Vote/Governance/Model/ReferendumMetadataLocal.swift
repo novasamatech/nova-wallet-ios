@@ -7,6 +7,13 @@ struct ReferendumMetadataPreview: Equatable {
     let title: String?
 }
 
+enum ReferendumMetadataStatus: String {
+    case started = "Started"
+    case passed = "Passed"
+    case notPassed = "NotPassed"
+    case executed = "Executed"
+}
+
 struct ReferendumMetadataLocal: Equatable {
     struct TimelineItem: Equatable, Codable {
         let block: BlockNumber
