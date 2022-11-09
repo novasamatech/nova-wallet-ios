@@ -28,7 +28,7 @@ final class ReferendumDetailsPresenter {
     private var price: PriceData?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
-    private var dApps: [GovernanceDApp]?
+    private var dApps: [GovernanceDApps.DApp]?
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
@@ -223,8 +223,8 @@ final class ReferendumDetailsPresenter {
         let viewModels = dApps.map {
             ReferendumDAppView.Model(
                 icon: RemoteImageViewModel(url: $0.icon),
-                title: $0.name,
-                subtitle: $0.subtitle
+                title: $0.title,
+                subtitle: $0.details
             )
         }
 
@@ -362,7 +362,15 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         wireframe.showVoters(from: view, referendum: referendum, type: .nays)
     }
 
-    func opeDApp(at _: Int) {}
+    func opeDApp(at index: Int) {
+        guard
+            let dApp = dApps?[index],
+            let url = try? dApp.extractFullUrl(for: referendum.index) else {
+            return
+        }
+
+        wireframe.showDApp(from: view, url: url)
+    }
 
     func readFullDescription() {}
 
@@ -447,7 +455,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         updateTimerIfNeeded()
     }
 
-    func didReceiveDApps(_ dApps: [GovernanceDApp]) {
+    func didReceiveDApps(_ dApps: [GovernanceDApps.DApp]) {
         self.dApps = dApps
 
         provideDAppViewModel()
@@ -475,7 +483,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
             }
         case .dAppsFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refreshDApps()
+                self?.interactor.remakeDAppsSubscription()
             }
         }
     }

@@ -1595,6 +1595,7 @@
 		849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */; };
 		849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */; };
 		849C0671276516F900394C82 /* BaseOperation+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */; };
+		849D3220291C26BA00D25839 /* GovernanceDAppList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D321F291C26BA00D25839 /* GovernanceDAppList.swift */; };
 		849D755B2756910A007726C3 /* RoundedView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D755A2756910A007726C3 /* RoundedView+Style.swift */; };
 		849D755D27577602007726C3 /* AccountExportPasswordViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D755C27577602007726C3 /* AccountExportPasswordViewLayout.swift */; };
 		849DEBD425ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849DEBD325ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift */; };
@@ -2147,7 +2148,6 @@
 		84F1D66B29051A730050F4E3 /* ReferendumLockReuseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */; };
 		84F1D66D29051F240050F4E3 /* ReferendumReuseLockModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66C29051F240050F4E3 /* ReferendumReuseLockModel.swift */; };
 		84F1D66F29066F740050F4E3 /* ReferendumVotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */; };
-		84F1D67129068F810050F4E3 /* GovernanceDApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1D67029068F810050F4E3 /* GovernanceDApp.swift */; };
 		84F1D67329069FFB0050F4E3 /* governanceDApps.json in Resources */ = {isa = PBXBuildFile; fileRef = 84F1D67229069FFB0050F4E3 /* governanceDApps.json */; };
 		84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */; };
 		84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */; };
@@ -4581,6 +4581,7 @@
 		849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+Matching.swift"; sourceTree = "<group>"; };
 		849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCancellableCleaning.swift; sourceTree = "<group>"; };
 		849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseOperation+Cancellable.swift"; sourceTree = "<group>"; };
+		849D321F291C26BA00D25839 /* GovernanceDAppList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDAppList.swift; sourceTree = "<group>"; };
 		849D755A2756910A007726C3 /* RoundedView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedView+Style.swift"; sourceTree = "<group>"; };
 		849D755C27577602007726C3 /* AccountExportPasswordViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExportPasswordViewLayout.swift; sourceTree = "<group>"; };
 		849DEBD325ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmViewModel.swift; sourceTree = "<group>"; };
@@ -5138,7 +5139,6 @@
 		84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumLockReuseViewModel.swift; sourceTree = "<group>"; };
 		84F1D66C29051F240050F4E3 /* ReferendumReuseLockModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumReuseLockModel.swift; sourceTree = "<group>"; };
 		84F1D66E29066F740050F4E3 /* ReferendumVotesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotesViewModel.swift; sourceTree = "<group>"; };
-		84F1D67029068F810050F4E3 /* GovernanceDApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDApp.swift; sourceTree = "<group>"; };
 		84F1D67229069FFB0050F4E3 /* governanceDApps.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = governanceDApps.json; sourceTree = "<group>"; };
 		84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRequestFactory.swift; sourceTree = "<group>"; };
 		84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPrefs.swift; sourceTree = "<group>"; };
@@ -11740,11 +11740,11 @@
 				8427495228FEB8C800B2B70B /* ReferendumNewVote.swift */,
 				84880C4329026C3E00CADB06 /* ReferendumDelegatingLocal.swift */,
 				84880C452902781E00CADB06 /* ReferendumVotingLocal.swift */,
-				84F1D67029068F810050F4E3 /* GovernanceDApp.swift */,
 				843461E7290BF14400379936 /* ReferendumsSorting.swift */,
 				843461EB290D0D9400379936 /* GovernanceUnlockSchedule.swift */,
 				845B07FC291634D4005785D3 /* DemocracyDecidingFunctionProtocol.swift */,
 				84C9CF3C291AF1B1002BF328 /* GovernanceOffchainApi.swift */,
+				849D321F291C26BA00D25839 /* GovernanceDAppList.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -16629,6 +16629,7 @@
 				845B0819291905CA005785D3 /* Gov1LockStateFactory.swift in Sources */,
 				AE6F7FE82685F2F0002BBC3E /* ValidatorListFilterViewModelFactory.swift in Sources */,
 				84948C38287E0B4F00E6DD3E /* FilterImageProcessor.swift in Sources */,
+				849D3220291C26BA00D25839 /* GovernanceDAppList.swift in Sources */,
 				F022F1444E0F75CCA42F4648 /* YourValidatorListProtocols.swift in Sources */,
 				8493D0E326FF571D00A28008 /* PriceProviderFactory.swift in Sources */,
 				F7EB8F835CFA7FC949EF4C22 /* YourValidatorListWireframe.swift in Sources */,
@@ -17058,7 +17059,6 @@
 				840B3D672899BFD200DA1DA9 /* QRScannerViewSettings.swift in Sources */,
 				577918C3D4AA22D887F605B5 /* ParaStkStakeSetupPresenter.swift in Sources */,
 				7050A26051FE62DB06B695F1 /* ParaStkStakeSetupInteractor.swift in Sources */,
-				84F1D67129068F810050F4E3 /* GovernanceDApp.swift in Sources */,
 				0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */,
 				D9ECCCCF1449EFAFD0FA886E /* ParaStkStakeSetupViewLayout.swift in Sources */,
 				A714CEAF7A86292E8D679056 /* ParaStkStakeSetupViewFactory.swift in Sources */,
