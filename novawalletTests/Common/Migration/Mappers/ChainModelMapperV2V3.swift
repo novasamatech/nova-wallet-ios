@@ -4,7 +4,7 @@ import CoreData
 import RobinHood
 import SubstrateSdk
 
-final class ChainModelMapperV2V3 {
+final class ChainModelMapperV2V5 {
     var entityIdentifierFieldName: String { #keyPath(CDChain.chainId) }
 
     typealias DataProviderModel = ChainModel
@@ -197,7 +197,12 @@ final class ChainModelMapperV2V3 {
         }
 
         if staking != nil || history != nil || crowdloans != nil {
-            return ChainModel.ExternalApiSet(staking: staking, history: history, crowdloans: crowdloans)
+            return ChainModel.ExternalApiSet(
+                staking: staking,
+                history: history,
+                crowdloans: crowdloans,
+                governance: nil
+            )
         } else {
             return nil
         }
@@ -215,7 +220,7 @@ final class ChainModelMapperV2V3 {
     }
 }
 
-extension ChainModelMapperV2V3: CoreDataMapperProtocol {
+extension ChainModelMapperV2V5: CoreDataMapperProtocol {
     func transform(entity: CDChain) throws -> ChainModel {
         let assets: [AssetModel] = try entity.assets?.compactMap { anyAsset in
             guard let asset = anyAsset as? CDAsset else {
