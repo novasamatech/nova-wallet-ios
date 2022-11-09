@@ -116,7 +116,7 @@ final class PolkassemblyChainOperationFactory {
 
             let proposer = onChainLink?.proposer_address?.stringValue
 
-            let remoteTimeline = onChainLink?.onchain_referendum?.referendumStatus?.arrayValue
+            let remoteTimeline = onChainLink?.onchain_referendum?.arrayValue?.first?.referendumStatus?.arrayValue
 
             let timeline: [ReferendumMetadataLocal.TimelineItem]?
             timeline = remoteTimeline?.compactMap { item in
