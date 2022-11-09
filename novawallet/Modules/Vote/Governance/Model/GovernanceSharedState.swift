@@ -26,11 +26,18 @@ final class GovernanceSharedState {
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue)
         ),
-        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.chainRegistry = chainRegistry
         settings = GovernanceChainSettings(chainRegistry: chainRegistry, settings: internalSettings)
-        govMetadataLocalSubscriptionFactory = GovMetadataLocalSubscriptionFactory(storageFacade: substrateStorageFacade)
+
+        govMetadataLocalSubscriptionFactory = GovMetadataLocalSubscriptionFactory(
+            storageFacade: substrateStorageFacade,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
         self.blockTimeService = blockTimeService
 
         if let generalLocalSubscriptionFactory = generalLocalSubscriptionFactory {

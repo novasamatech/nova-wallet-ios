@@ -23,7 +23,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
-    private var metadataProvider: AnySingleValueProvider<ReferendumMetadataMapping>?
+    private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
     private var identitiesCancellable: CancellableCall?
@@ -271,7 +271,13 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         subscribeReferendum()
         subscribeAccountVotes()
 
-        metadataProvider = subscribeGovMetadata(for: chain)
+        metadataProvider = subscribeGovernanceMetadata(for: chain, referendumId: referendum.index)
+
+        if metadataProvider == nil {
+            presenter?.didReceiveMetadata(nil)
+        } else {
+            metadataProvider?.refresh()
+        }
     }
 }
 
@@ -338,10 +344,13 @@ extension ReferendumDetailsInteractor: PriceLocalSubscriptionHandler, PriceLocal
 }
 
 extension ReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
-    func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain _: ChainModel) {
+    func handleGovernanceMetadataDetails(
+        result: Result<ReferendumMetadataLocal?, Error>,
+        chain _: ChainModel,
+        referendumId _: ReferendumIdLocal
+    ) {
         switch result {
-        case let .success(mapping):
-            let metadata = mapping?[referendum.index]
+        case let .success(metadata):
             presenter?.didReceiveMetadata(metadata)
         case let .failure(error):
             presenter?.didReceiveError(.metadataFailed(error))

@@ -60,7 +60,7 @@ final class PolkassemblyChainOperationFactory {
     }
 
     private func createRequestFactory(for url: URL, query: String) -> NetworkRequestFactoryProtocol {
-        return BlockNetworkRequestFactory {
+        BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
             let info = JSON.dictionaryValue(["query": JSON.stringValue(query)])
             request.httpBody = try JSONEncoder().encode(info)
@@ -159,6 +159,4 @@ extension PolkassemblyChainOperationFactory: PolkassemblyOperationFactoryProtoco
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
-
-
 }
