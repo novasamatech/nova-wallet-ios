@@ -146,25 +146,15 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func provideIdentities() {
+    private func provideIdentities(for accountIds: Set<AccountId>) {
         clear(cancellable: &identitiesCancellable)
-
-        var accountIds: [AccountId] = []
-
-        if let proposer = referendum.proposer {
-            accountIds.append(proposer)
-        }
-
-        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiary.accountId {
-            accountIds.append(beneficiary)
-        }
 
         guard !accountIds.isEmpty else {
             presenter?.didReceiveIdentities([:])
             return
         }
 
-        let accountIdsClosure: () throws -> [AccountId] = { accountIds }
+        let accountIdsClosure: () throws -> [AccountId] = { Array(accountIds) }
 
         let wrapper = identityOperationFactory.createIdentityWrapper(
             for: accountIdsClosure,
@@ -248,8 +238,6 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
                     self?.actionDetails = actionDetails
 
                     self?.presenter?.didReceiveActionDetails(actionDetails)
-
-                    self?.provideIdentities()
                 } catch {
                     self?.presenter?.didReceiveError(.actionDetailsFailed(error))
                 }
@@ -285,7 +273,6 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
     func setup() {
         makeSubscriptions()
         updateActionDetails()
-        provideIdentities()
         provideDApps()
     }
 
@@ -301,8 +288,8 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
         updateActionDetails()
     }
 
-    func refreshIdentities() {
-        provideIdentities()
+    func refreshIdentities(for accountIds: Set<AccountId>) {
+        provideIdentities(for: accountIds)
     }
 
     func remakeSubscriptions() {

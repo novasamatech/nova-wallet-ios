@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import RobinHood
 
 final class ReferendumsPresenter {
     weak var view: ReferendumsViewProtocol?
@@ -282,8 +283,19 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         }
     }
 
-    func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?) {
-        referendumsMetadata = metadata
+    func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>]) {
+        let indexedReferendums = Array((referendumsMetadata ?? [:]).values).reduceToDict()
+
+        referendumsMetadata = changes.reduce(into: referendumsMetadata ?? [:]) { accum, change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                accum[newItem.referendumId] = newItem
+            case let .delete(deletedIdentifier):
+                if let referendumId = indexedReferendums[deletedIdentifier]?.referendumId {
+                    accum[referendumId] = nil
+                }
+            }
+        }
         updateReferendumsView()
     }
 
