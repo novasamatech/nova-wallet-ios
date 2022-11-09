@@ -109,7 +109,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
         updateLayout()
     }
 
-    func setCurveAndHash(viewModel: ReferendumFullDetailsViewModel.CurveAndHash?, locale: Locale) {
+    func setVoting(viewModel: ReferendumFullDetailsViewModel.Voting?, locale: Locale) {
         curveAndHashTableView?.clear()
         curveAndHashTableView = nil
 
@@ -119,7 +119,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 insertView(tableView, afterOneOf: [beneficiaryTableView, proposerTableView])
                 curveAndHashTableView = tableView
             }
-            createVotingCells(viewModel: viewModel.vote, locale: locale).forEach {
+            createVotingCells(viewModel: viewModel.functionInfo, locale: locale).forEach {
                 curveAndHashTableView?.addArrangedSubview($0)
             }
             let turnoutCell = createBalanceCell(
@@ -213,7 +213,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
     }
 
     private func createVotingCells(
-        viewModel: ReferendumFullDetailsViewModel.CurveAndHashVoting,
+        viewModel: ReferendumFullDetailsViewModel.FunctionInfo,
         locale: Locale
     ) -> [StackTableViewCellProtocol] {
         switch viewModel {

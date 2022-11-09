@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 extension ReferendumStateLocal {
-    func votingModel(locale: Locale) -> ReferendumFullDetailsViewModel.CurveAndHashVoting? {
+    func functionInfo(locale: Locale) -> ReferendumFullDetailsViewModel.FunctionInfo? {
         switch voting {
         case let .supportAndVotes(model):
             guard let supportCurve = model.supportFunction?.curve,
@@ -92,11 +92,14 @@ extension Democracy.VoteThreshold {
         case .simpleMajority:
             return R.string.localizable.govVoteTresholdFunctionSimpleMajority(preferredLanguages: locale.rLanguages)
         case .superMajorityAgainst:
-            return R.string.localizable.govVoteTresholdFunctionSuperMajorityAgainst(preferredLanguages: locale.rLanguages)
+            return R.string.localizable.govVoteTresholdFunctionSuperMajorityAgainst(
+                preferredLanguages: locale.rLanguages)
         case .superMajorityApprove:
-            return R.string.localizable.govVoteTresholdFunctionSuperMajorityApprove(preferredLanguages: locale.rLanguages)
+            return R.string.localizable.govVoteTresholdFunctionSuperMajorityApprove(
+                preferredLanguages: locale.rLanguages)
         case .unknown:
-            return R.string.localizable.govVoteTresholdFunctionUnknown(preferredLanguages: locale.rLanguages)
+            return R.string.localizable.govVoteTresholdFunctionUnknown(
+                preferredLanguages: locale.rLanguages)
         }
     }
 }

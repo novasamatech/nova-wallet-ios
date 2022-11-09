@@ -99,7 +99,7 @@ final class ReferendumFullDetailsPresenter {
 
     private func provideCurveAndHashViewModel() {
         guard
-            let voting = referendum.state.votingModel(locale: selectedLocale),
+            let functionInfo = referendum.state.functionInfo(locale: selectedLocale),
             let turnout = referendum.state.turnout,
             let electorate = referendum.state.electorate,
             let turnoutBalance = getBalanceViewModel(turnout, locale: selectedLocale),
@@ -109,8 +109,8 @@ final class ReferendumFullDetailsPresenter {
 
         let callHash = referendum.state.callHash
 
-        let model = ReferendumFullDetailsViewModel.CurveAndHash(
-            vote: voting,
+        let model = ReferendumFullDetailsViewModel.Voting(
+            functionInfo: functionInfo,
             turnout: turnoutBalance,
             electorate: electorateBalance,
             callHash: callHash
