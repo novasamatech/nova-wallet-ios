@@ -74,7 +74,7 @@ final class ReferendumInfoView: UIView {
         }
 
         trackInformation.snp.makeConstraints {
-            $0.height.equalTo(Constants.trackInformationHeght)
+            $0.height.equalTo(Constants.trackInformationHeight)
         }
     }
 }
@@ -83,7 +83,7 @@ extension ReferendumInfoView {
     enum Constants {
         static let verticalSpace: CGFloat = 8
         static let afterTitleLabelVerticalSpace: CGFloat = 12
-        static let trackInformationHeght: CGFloat = 22
+        static let trackInformationHeight: CGFloat = 22
         static let trackInformationHorizontalSpace: CGFloat = 6
     }
 }

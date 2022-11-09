@@ -34,6 +34,14 @@ final class ReferendumView: UIView {
             $0.edges.equalToSuperview()
         }
     }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if skeletonView == nil, viewModel?.isLoading == true {
+            updateLoadingState()
+        }
+    }
 }
 
 typealias ReferendumTableViewCell = BlurredTableViewCell<ReferendumView>
@@ -98,15 +106,17 @@ extension ReferendumView: SkeletonableView {
     }
 
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
-        let (referendumInfoViewSkeletonRects, offset) = referendumInfoView.skeletonSizes(contentInsets: .zero, spaceSize: spaceSize)
+        let (referendumInfoViewSkeletonFrames, referendumInfoViewBottomViewMaxY) =
+            referendumInfoView.skeletons(contentInsets: .zero, spaceSize: spaceSize)
 
-        let progressViewSkeletonRects = progressView.skeletonSizes(contentInsets: .init(
-            top: offset,
+        let progressViewSkeletonsFrames = progressView.skeletonFrames(contentInsets: .init(
+            top: referendumInfoViewBottomViewMaxY,
             left: 0,
             bottom: 0,
             right: 0
         ), spaceSize: spaceSize)
-        return (referendumInfoViewSkeletonRects + progressViewSkeletonRects).map {
+
+        return (referendumInfoViewSkeletonFrames + progressViewSkeletonsFrames).map {
             SingleSkeleton.createRow(
                 on: self,
                 containerView: self,
@@ -119,56 +129,11 @@ extension ReferendumView: SkeletonableView {
 }
 
 extension VotingProgressView {
-    func skeletonSizesBasedOnBottom(spaceSize: CGSize) -> [CGRect] {
-        let contentInsets = Constants.contentInsets
-        let tresholdSkeletonSize = CGSize(width: 121, height: 8)
-        let progressSkeletonSize = CGSize(width: 152.5, height: 5)
-        let votingSkeletonSize = CGSize(width: 60, height: 8)
-
-        let votingOffsetY = spaceSize.height - contentInsets.bottom
-        let votingSkeletonOffsetY = votingOffsetY - ayeProgressLabel.font.lineHeight / 2 - votingSkeletonSize.height / 2
-        let ayeVotingSkeletonOffset = CGPoint(
-            x: contentInsets.left,
-            y: votingSkeletonOffsetY
-        )
-        let nayVotingSkeletonOffset = CGPoint(
-            x: spaceSize.width - contentInsets.right - votingSkeletonSize.width,
-            y: votingSkeletonOffsetY
-        )
-
-        let passVotingSkeletonOffset = CGPoint(
-            x: nayVotingSkeletonOffset.x - (ayeVotingSkeletonOffset.x + votingSkeletonSize.width) / 2,
-            y: votingSkeletonOffsetY
-        )
-
-        let progressOffsetY = votingOffsetY - ayeProgressLabel.font.lineHeight - Constants.verticalSpace
-        let progressSkeletonOffsetY = progressOffsetY - slider.intrinsicContentSize.height / 2 - progressSkeletonSize.height / 2
-
-        let progressSkeletonFirstPartOffset = CGPoint(
-            x: contentInsets.left,
-            y: progressSkeletonOffsetY
-        )
-        let progressSkeletonSecondPartOffset = CGPoint(
-            x: progressSkeletonFirstPartOffset.x + progressSkeletonSize.width + 6,
-            y: progressSkeletonOffsetY
-        )
-
-        let thresholdSkeletonOffsetY = progressOffsetY - slider.intrinsicContentSize.height - tresholdSkeletonSize.height / 2
-        let thresholdSkeletonOffset = CGPoint(
-            x: contentInsets.left,
-            y: thresholdSkeletonOffsetY
-        )
-        return [
-            .init(origin: thresholdSkeletonOffset, size: tresholdSkeletonSize),
-            .init(origin: progressSkeletonFirstPartOffset, size: progressSkeletonSize),
-            .init(origin: progressSkeletonSecondPartOffset, size: progressSkeletonSize),
-            .init(origin: ayeVotingSkeletonOffset, size: votingSkeletonSize),
-            .init(origin: passVotingSkeletonOffset, size: votingSkeletonSize),
-            .init(origin: nayVotingSkeletonOffset, size: votingSkeletonSize)
-        ]
-    }
-
-    func skeletonSizes(contentInsets externalInsets: UIEdgeInsets, spaceSize: CGSize) -> [CGRect] {
+    // swiftlint:disable:next function_body_length
+    func skeletonFrames(
+        contentInsets externalInsets: UIEdgeInsets,
+        spaceSize: CGSize
+    ) -> [CGRect] {
         let contentInsets = UIEdgeInsets(
             top: externalInsets.top + Constants.contentInsets.top,
             left: externalInsets.left + Constants.contentInsets.left,
@@ -176,7 +141,7 @@ extension VotingProgressView {
             right: externalInsets.right + Constants.contentInsets.right
         )
         let tresholdSkeletonSize = CGSize(width: 121, height: 8)
-        let progressSkeletonSize = CGSize(width: 152.5, height: 5)
+        let progressSkeletonHeight: CGFloat = 5
         let votingSkeletonSize = CGSize(width: 60, height: 8)
 
         let thresholdViewHeight = max(thresholdView.iconWidth, thresholdView.detailsLabel.font.lineHeight)
@@ -187,17 +152,21 @@ extension VotingProgressView {
         )
 
         let progressOffsetY = contentInsets.top + thresholdViewHeight + Constants.verticalSpace
-        let progressSkeletonOffsetY = progressOffsetY + slider.intrinsicContentSize.height / 2 - progressSkeletonSize.height / 2
+        let sliderHeight = slider.intrinsicContentSize.height
+        let progressSkeletonOffsetY = progressOffsetY + sliderHeight / 2 - progressSkeletonHeight / 2
+        let progressHalfWidth = (spaceSize.width - contentInsets.left - contentInsets.right - 6) / 2
+
         let progressSkeletonFirstPartOffset = CGPoint(
             x: contentInsets.left,
             y: progressSkeletonOffsetY
         )
         let progressSkeletonSecondPartOffset = CGPoint(
-            x: progressSkeletonFirstPartOffset.x + progressSkeletonSize.width + 6,
+            x: progressSkeletonFirstPartOffset.x + progressHalfWidth + 6,
             y: progressSkeletonOffsetY
         )
-
-        let votingSkeletonOffsetY = progressOffsetY + slider.intrinsicContentSize.height + Constants.verticalSpace + ayeProgressLabel.font.lineHeight / 2 - votingSkeletonSize.height / 2
+        let progressSkeletonSize = CGSize(width: progressHalfWidth, height: progressSkeletonHeight)
+        let votingSkeletonOffsetY = progressOffsetY + sliderHeight + Constants.verticalSpace +
+            ayeProgressLabel.font.lineHeight / 2 - votingSkeletonSize.height / 2
         let ayeVotingSkeletonOffset = CGPoint(
             x: contentInsets.left,
             y: votingSkeletonOffsetY
@@ -206,7 +175,8 @@ extension VotingProgressView {
             x: spaceSize.width - contentInsets.right - votingSkeletonSize.width,
             y: votingSkeletonOffsetY
         )
-        let progressCenterX = (progressSkeletonSecondPartOffset.x + progressSkeletonSize.width - progressSkeletonFirstPartOffset.x) / 2
+        let progressCenterX = (progressSkeletonSecondPartOffset.x + progressSkeletonSize.width -
+            progressSkeletonFirstPartOffset.x) / 2
         let passVotingSkeletonOffset = CGPoint(
             x: progressCenterX - votingSkeletonSize.width / 2,
             y: votingSkeletonOffsetY
@@ -224,7 +194,10 @@ extension VotingProgressView {
 }
 
 extension ReferendumInfoView {
-    func skeletonSizes(contentInsets: UIEdgeInsets, spaceSize: CGSize) -> ([CGRect], CGFloat) {
+    func skeletons(contentInsets: UIEdgeInsets, spaceSize: CGSize) -> (
+        frames: [CGRect],
+        bottomViewMaxY: CGFloat
+    ) {
         let statusSkeletonSize = CGSize(width: 60, height: 12)
         let timeSkeletonSize = CGSize(width: 116, height: 12)
         let titleSkeletonSize = CGSize(width: 178, height: 12)
@@ -238,7 +211,8 @@ extension ReferendumInfoView {
             y: statusSkeletonOffsetY
         )
 
-        let timeSkeletonOffsetY = contentInsets.top + timeView.detailsLabel.font.lineHeight / 2 - timeSkeletonSize.height / 2
+        let timeSkeletonOffsetY = contentInsets.top + timeView.detailsLabel.font.lineHeight / 2 -
+            timeSkeletonSize.height / 2
         let timeSkeletonOffset = CGPoint(
             x: spaceSize.width - contentInsets.right - timeSkeletonSize.width,
             y: timeSkeletonOffsetY
@@ -253,7 +227,8 @@ extension ReferendumInfoView {
         )
         let trackNameOffsetY = contentInsets.top + statusLabel.font.lineHeight + Constants.verticalSpace +
             titleLabel.font.lineHeight + Constants.afterTitleLabelVerticalSpace
-        let trackNameSkeletonOffsetY = trackNameOffsetY + Constants.trackInformationHeght / 2 - trackNameSkeletonSize.height / 2
+        let trackNameSkeletonOffsetY = trackNameOffsetY + Constants.trackInformationHeight / 2 -
+            trackNameSkeletonSize.height / 2
 
         let trackNameSkeletonOffset = CGPoint(
             x: contentInsets.left,
@@ -265,12 +240,15 @@ extension ReferendumInfoView {
             y: trackNameSkeletonOffsetY
         )
 
-        return ([
-            .init(origin: statusSkeletonOffset, size: statusSkeletonSize),
-            .init(origin: timeSkeletonOffset, size: timeSkeletonSize),
-            .init(origin: titleSkeletonOffset, size: titleSkeletonSize),
-            .init(origin: trackNameSkeletonOffset, size: trackNameSkeletonSize),
-            .init(origin: numberSkeletonOffset, size: numberSkeletonSize)
-        ], trackNameOffsetY + Constants.trackInformationHeght)
+        return (
+            frames: [
+                .init(origin: statusSkeletonOffset, size: statusSkeletonSize),
+                .init(origin: timeSkeletonOffset, size: timeSkeletonSize),
+                .init(origin: titleSkeletonOffset, size: titleSkeletonSize),
+                .init(origin: trackNameSkeletonOffset, size: trackNameSkeletonSize),
+                .init(origin: numberSkeletonOffset, size: numberSkeletonSize)
+            ],
+            bottomViewMaxY: trackNameOffsetY + Constants.trackInformationHeight
+        )
     }
 }

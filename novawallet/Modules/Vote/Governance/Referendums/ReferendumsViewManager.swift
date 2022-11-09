@@ -4,7 +4,8 @@ import UIKit
 final class ReferendumsViewManager: NSObject {
     private enum Constants {
         static let unlocksCellHeight: CGFloat = 52
-        static let minimumReferndumCellHeight: CGFloat = 185
+        static let referndumCellMinimumHeight: CGFloat = 185
+        static let headerMinimumHeight: CGFloat = 56
     }
 
     let tableView: UITableView
@@ -115,28 +116,36 @@ extension ReferendumsViewManager: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section > 0 {
-            return UITableView.automaticDimension
-        } else {
+        guard section > 0 else {
             return 0
+        }
+        let referendumsSection = section - 1
+        let sectionModel = referendumsViewModel.sections[referendumsSection]
+        switch sectionModel {
+        case let .active(header, _), let .completed(header, _):
+            switch header {
+            case .loaded, .cached:
+                return UITableView.automaticDimension
+            case .loading:
+                return Constants.headerMinimumHeight
+            }
         }
     }
 
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section > 0 {
-            let referendumsSection = indexPath.section - 1
-            let sectionModel = referendumsViewModel.sections[referendumsSection]
-            switch sectionModel {
-            case let .active(_, cells), let .completed(_, cells):
-                switch cells[indexPath.row].viewModel {
-                case .loaded, .cached:
-                    return UITableView.automaticDimension
-                case .loading:
-                    return Constants.minimumReferndumCellHeight
-                }
-            }
-        } else {
+        guard indexPath.section > 0 else {
             return Constants.unlocksCellHeight
+        }
+        let referendumsSection = indexPath.section - 1
+        let sectionModel = referendumsViewModel.sections[referendumsSection]
+        switch sectionModel {
+        case let .active(_, cells), let .completed(_, cells):
+            switch cells[indexPath.row].viewModel {
+            case .loaded, .cached:
+                return UITableView.automaticDimension
+            case .loading:
+                return Constants.referndumCellMinimumHeight
+            }
         }
     }
 
