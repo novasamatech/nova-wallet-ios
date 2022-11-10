@@ -1,11 +1,13 @@
 import Foundation
 import RobinHood
 import SoraFoundation
+import BigInt
 
 struct AssetSelectionViewFactory {
     static func createView(
         delegate: AssetSelectionDelegate,
         selectedChainAssetId: ChainAssetId?,
+        balanceSlice: KeyPath<AssetBalance, BigUInt>? = nil,
         assetFilter: @escaping AssetSelectionFilter
     ) -> AssetSelectionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
@@ -18,6 +20,7 @@ struct AssetSelectionViewFactory {
 
         let interactor = AssetSelectionInteractor(
             selectedMetaAccount: SelectedWalletSettings.shared.value,
+            balanceSlice: balanceSlice ?? \.transferable,
             repository: AnyDataProviderRepository(repository),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
