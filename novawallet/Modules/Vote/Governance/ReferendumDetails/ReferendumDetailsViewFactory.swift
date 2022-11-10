@@ -114,7 +114,9 @@ struct ReferendumDetailsViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let dAppsRepository = JsonFileRepository<[GovernanceDApp]>()
+        let dAppsUrl = ApplicationConfig.shared.governanceDAppsListURL
+        let dAppsProvider: AnySingleValueProvider<GovernanceDAppList> =
+            JsonDataProviderFactory.shared.getJson(for: dAppsUrl)
 
         return ReferendumDetailsInteractor(
             referendum: referendum,
@@ -129,7 +131,7 @@ struct ReferendumDetailsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
-            dAppsRepository: dAppsRepository,
+            dAppsProvider: dAppsProvider,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

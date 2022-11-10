@@ -26,11 +26,18 @@ final class GovernanceSharedState {
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue)
         ),
-        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.chainRegistry = chainRegistry
         settings = GovernanceChainSettings(chainRegistry: chainRegistry, settings: internalSettings)
-        govMetadataLocalSubscriptionFactory = GovMetadataLocalSubscriptionFactory(storageFacade: substrateStorageFacade)
+
+        govMetadataLocalSubscriptionFactory = GovMetadataLocalSubscriptionFactory(
+            storageFacade: substrateStorageFacade,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
         self.blockTimeService = blockTimeService
 
         if let generalLocalSubscriptionFactory = generalLocalSubscriptionFactory {
@@ -63,7 +70,7 @@ final class GovernanceSharedState {
 
         let chainId = chain.chainId
 
-        if chain.hasGov2 {
+        if chain.hasGovernanceV2 {
             let operationFactory = Gov2OperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
@@ -82,7 +89,7 @@ final class GovernanceSharedState {
                 requestFactory: requestFactory,
                 unlocksCalculator: GovUnlocksCalculator()
             )
-        } else if chain.hasGov1 {
+        } else if chain.hasGovernanceV1 {
             let operationFactory = Gov1OperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
@@ -105,9 +112,9 @@ final class GovernanceSharedState {
     }
 
     func createExtrinsicFactory(for chain: ChainModel) -> GovernanceExtrinsicFactoryProtocol? {
-        if chain.hasGov2 {
+        if chain.hasGovernanceV2 {
             return Gov2ExtrinsicFactory()
-        } else if chain.hasGov1 {
+        } else if chain.hasGovernanceV1 {
             return Gov1ExtrinsicFactory()
         } else {
             return nil
@@ -115,12 +122,12 @@ final class GovernanceSharedState {
     }
 
     func createActionsDetailsFactory(for chain: ChainModel) -> ReferendumActionOperationFactoryProtocol? {
-        if chain.hasGov2 {
+        if chain.hasGovernanceV2 {
             return Gov2ActionOperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
             )
-        } else if chain.hasGov1 {
+        } else if chain.hasGovernanceV1 {
             let gov2ActionsFactory = Gov2ActionOperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
@@ -137,9 +144,9 @@ final class GovernanceSharedState {
     }
 
     func governanceId(for chain: ChainModel) -> String? {
-        if chain.hasGov2 {
+        if chain.hasGovernanceV2 {
             return ConvictionVoting.lockId
-        } else if chain.hasGov1 {
+        } else if chain.hasGovernanceV1 {
             return Democracy.lockId
         } else {
             return nil
