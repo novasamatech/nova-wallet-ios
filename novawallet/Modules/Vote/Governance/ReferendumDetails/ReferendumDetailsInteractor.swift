@@ -19,7 +19,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    let dAppsRepository: JsonFileRepository<[GovernanceDApp]>
+    let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -44,7 +44,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
-        dAppsRepository: JsonFileRepository<[GovernanceDApp]>,
+        dAppsProvider: AnySingleValueProvider<GovernanceDAppList>,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -60,7 +60,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.blockTimeService = blockTimeService
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
-        self.dAppsRepository = dAppsRepository
+        self.dAppsProvider = dAppsProvider
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -116,34 +116,38 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func provideDApps() {
-        clear(cancellable: &dAppsCancellable)
+    private func handleDAppsUpdate(_ updatedDApps: GovernanceDAppList) {
+        let dApps = updatedDApps.first(where: { $0.chainId == chain.chainId })?.dapps ?? []
+        presenter?.didReceiveDApps(dApps)
+    }
 
-        let wrapper = dAppsRepository.fetchOperationWrapper(
-            by: R.file.governanceDAppsJson(),
-            defaultValue: []
+    private func subscribeDApps() {
+        dAppsProvider.removeObserver(self)
+
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
         )
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.dAppsCancellable === wrapper else {
-                    return
-                }
-
-                self?.dAppsCancellable = nil
-
-                do {
-                    let dApps = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveDApps(dApps)
-                } catch {
-                    self?.presenter?.didReceiveError(.dAppsFailed(error))
-                }
+        let updateClosure: ([DataProviderChange<GovernanceDAppList>]) -> Void = { [weak self] changes in
+            if let result = changes.reduceToLastChange() {
+                self?.handleDAppsUpdate(result)
+            } else {
+                self?.presenter?.didReceiveDApps([])
             }
         }
 
-        dAppsCancellable = wrapper
+        let failureClosure: (Error) -> Void = { [weak self] error in
+            self?.presenter?.didReceiveError(.dAppsFailed(error))
+        }
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        dAppsProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
     }
 
     private func provideIdentities(for accountIds: Set<AccountId>) {
@@ -273,11 +277,11 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
     func setup() {
         makeSubscriptions()
         updateActionDetails()
-        provideDApps()
+        subscribeDApps()
     }
 
-    func refreshDApps() {
-        provideDApps()
+    func remakeDAppsSubscription() {
+        subscribeDApps()
     }
 
     func refreshBlockTime() {
