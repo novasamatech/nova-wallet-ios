@@ -373,9 +373,9 @@ extension ReferendumsPresenter: AssetSelectionDelegate {
 
         chain = chainAsset.chain
 
+        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
         clearOnAssetSwitch()
         provideChainBalance()
-        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
 
         interactor.saveSelected(chainModel: chainAsset.chain)
     }
