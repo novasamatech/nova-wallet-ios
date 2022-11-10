@@ -67,7 +67,7 @@ final class ReferendumsPresenter {
         timeModels = nil
 
         view?.didReceiveUnlocks(viewModel: nil)
-        view?.update(model: .init(sections: []))
+        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
     }
 
     private func provideChainBalance() {
@@ -373,7 +373,6 @@ extension ReferendumsPresenter: AssetSelectionDelegate {
 
         chain = chainAsset.chain
 
-        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
         clearOnAssetSwitch()
         provideChainBalance()
 
