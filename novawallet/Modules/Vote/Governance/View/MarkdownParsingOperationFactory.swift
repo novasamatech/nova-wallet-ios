@@ -14,7 +14,7 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
         self.maxSize = maxSize
     }
 
-    private func createMarkdownParser(for preferredWidth: CGFloat) -> CDMarkdownParser {
+    private func createMarkdownParser(for preferredWidth: CGFloat, imageDetectionEnabled: Bool) -> CDMarkdownParser {
         let textParagraphStyle = NSMutableParagraphStyle()
         textParagraphStyle.paragraphSpacing = 8
         textParagraphStyle.paragraphSpacingBefore = 8
@@ -22,7 +22,8 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
         let parser = CDMarkdownParser(
             font: CDFont.systemFont(ofSize: 15),
             fontColor: R.color.colorTransparentText()!,
-            paragraphStyle: textParagraphStyle
+            paragraphStyle: textParagraphStyle,
+            imageDetectionEnabled: imageDetectionEnabled
         )
 
         parser.bold.color = R.color.colorTransparentText()!
@@ -68,11 +69,11 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
             if let maxSize = maxSize {
                 isFull = string.count <= maxSize
                 preprocessed = string.convertToReadMore(after: maxSize)
-                parser = self.createMarkdownParser(for: preferredWidth)
+                parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: false)
             } else {
                 isFull = true
                 preprocessed = string
-                parser = self.createMarkdownParser(for: preferredWidth)
+                parser = self.createMarkdownParser(for: preferredWidth, imageDetectionEnabled: true)
             }
 
             let attributedString = parser.parse(preprocessed)
