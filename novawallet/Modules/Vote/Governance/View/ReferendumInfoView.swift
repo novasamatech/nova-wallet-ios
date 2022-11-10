@@ -33,7 +33,7 @@ final class ReferendumInfoView: UIView {
     private var trackImageViewModel: ImageViewModelProtocol?
 
     lazy var trackInformation: UIStackView = UIView.hStack(
-        spacing: 6,
+        spacing: Constants.trackInformationHorizontalSpace,
         [
             trackNameView,
             numberLabel,
@@ -54,7 +54,7 @@ final class ReferendumInfoView: UIView {
 
     private func setupLayout() {
         let content = UIView.vStack(
-            spacing: 8,
+            spacing: Constants.verticalSpace,
             [
                 UIView.hStack([
                     statusLabel,
@@ -66,7 +66,7 @@ final class ReferendumInfoView: UIView {
             ]
         )
 
-        content.setCustomSpacing(12, after: titleLabel)
+        content.setCustomSpacing(Constants.afterTitleLabelVerticalSpace, after: titleLabel)
 
         addSubview(content)
         content.snp.makeConstraints {
@@ -74,8 +74,17 @@ final class ReferendumInfoView: UIView {
         }
 
         trackInformation.snp.makeConstraints {
-            $0.height.equalTo(22.0)
+            $0.height.equalTo(Constants.trackInformationHeight)
         }
+    }
+}
+
+extension ReferendumInfoView {
+    enum Constants {
+        static let verticalSpace: CGFloat = 8
+        static let afterTitleLabelVerticalSpace: CGFloat = 12
+        static let trackInformationHeight: CGFloat = 22
+        static let trackInformationHorizontalSpace: CGFloat = 6
     }
 }
 
