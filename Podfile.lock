@@ -126,7 +126,7 @@ PODS:
   - xxHash-Swift (1.0.13)
 
 DEPENDENCIES:
-  - CDMarkdownKit (= 2.3.0)
+  - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, commit `2983924e34461646b6bd770a16ab6f6603fc4b24`)
   - Charts
   - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, tag `1.16.0`)
   - Cuckoo
@@ -151,7 +151,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - BigInt
-    - CDMarkdownKit
     - Charts
     - CocoaLumberjack
     - Cuckoo
@@ -177,6 +176,9 @@ SPEC REPOS:
     - xxHash-Swift
 
 EXTERNAL SOURCES:
+  CDMarkdownKit:
+    :commit: 2983924e34461646b6bd770a16ab6f6603fc4b24
+    :git: https://github.com/nova-wallet/CDMarkdownKit.git
   CommonWallet:
     :git: https://github.com/ERussel/Capital-iOS.git
     :tag: 1.16.0
@@ -196,6 +198,9 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/SwiftRLP.git
 
 CHECKOUT OPTIONS:
+  CDMarkdownKit:
+    :commit: 2983924e34461646b6bd770a16ab6f6603fc4b24
+    :git: https://github.com/nova-wallet/CDMarkdownKit.git
   CommonWallet:
     :git: https://github.com/ERussel/Capital-iOS.git
     :tag: 1.16.0
@@ -248,6 +253,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: f717aca984f7000395f683957acb94373c645eaf
+PODFILE CHECKSUM: ebaedd559bf22ed6a7f0f6ad82c2fb6f5342e172
 
 COCOAPODS: 1.11.3
