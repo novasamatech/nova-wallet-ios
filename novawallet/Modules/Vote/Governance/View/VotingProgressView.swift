@@ -29,7 +29,7 @@ final class VotingProgressView: UIView {
 
     private func setupLayout() {
         let content = UIView.vStack(
-            spacing: 6,
+            spacing: Constants.verticalSpace,
             [
                 thresholdView,
                 slider,
@@ -46,8 +46,15 @@ final class VotingProgressView: UIView {
 
         addSubview(content)
         content.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0))
+            $0.edges.equalToSuperview().inset(Constants.contentInsets)
         }
+    }
+}
+
+extension VotingProgressView {
+    enum Constants {
+        static let verticalSpace: CGFloat = 6
+        static let contentInsets = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
     }
 }
 

@@ -1064,6 +1064,9 @@
 "gov.requested.amount" = "Requested amount";
 "gov.approve.curve" = "Approve Curve";
 "gov.support.curve" = "Support Curve";
+"gov.vote.threshold" = "Vote threshold";
+"gov.turnout" = "Turnout";
+"gov.electorate" = "Electorate";
 "gov.call.hash" = "Call Hash";
 "gov.parameters.json" = "Parameters JSON";
 "common.copy" = "Copy";
@@ -1076,3 +1079,6 @@
 "common.unlock" = "Unlock";
 "common.unlockable" = "Unlockable";
 "gov.remains.locked.suffix" = " remains locked in %@";
+"gov.vote.treshold.function.simpleMajority" = "Simple Majority";
+"gov.vote.treshold.function.superMajorityAgainst" = "Super Majority Against";
+"gov.vote.treshold.function.superMajorityApprove" = "Super Majority Approve";

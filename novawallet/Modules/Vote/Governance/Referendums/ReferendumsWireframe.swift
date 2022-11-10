@@ -19,6 +19,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         guard let selectionView = AssetSelectionViewFactory.createView(
             delegate: delegate,
             selectedChainAssetId: selectedChainAssetId,
+            balanceSlice: \.freeInPlank,
             assetFilter: assetFilter
         ) else {
             return
