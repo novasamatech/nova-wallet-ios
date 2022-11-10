@@ -195,8 +195,21 @@ final class ChainModelMapper {
             crowdloans = nil
         }
 
-        if staking != nil || history != nil || crowdloans != nil {
-            return ChainModel.ExternalApiSet(staking: staking, history: history, crowdloans: crowdloans)
+        let governance: ChainModel.ExternalApi?
+
+        if let type = entity.governanceApiType, let url = entity.governanceApiUrl {
+            governance = .init(type: type, url: url)
+        } else {
+            governance = nil
+        }
+
+        if staking != nil || history != nil || crowdloans != nil || governance != nil {
+            return ChainModel.ExternalApiSet(
+                staking: staking,
+                history: history,
+                crowdloans: crowdloans,
+                governance: governance
+            )
         } else {
             return nil
         }
@@ -211,6 +224,35 @@ final class ChainModelMapper {
 
         entity.crowdloansApiType = apis?.crowdloans?.type
         entity.crowdloansApiUrl = apis?.crowdloans?.url
+
+        entity.governanceApiType = apis?.governance?.type
+        entity.governanceApiUrl = apis?.governance?.url
+    }
+
+    private func createChainOptions(from entity: CDChain) -> [ChainOptions]? {
+        var options: [ChainOptions] = []
+
+        if entity.isEthereumBased {
+            options.append(.ethereumBased)
+        }
+
+        if entity.isTestnet {
+            options.append(.testnet)
+        }
+
+        if entity.hasCrowdloans {
+            options.append(.crowdloans)
+        }
+
+        if entity.hasGovernance {
+            options.append(.governance)
+        }
+
+        if entity.hasGovernanceV1 {
+            options.append(.governanceV1)
+        }
+
+        return !options.isEmpty ? options : nil
     }
 }
 
@@ -240,30 +282,10 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             types = nil
         }
 
-        var options: [ChainOptions] = []
-
-        if entity.isEthereumBased {
-            options.append(.ethereumBased)
-        }
-
-        if entity.isTestnet {
-            options.append(.testnet)
-        }
-
-        if entity.hasCrowdloans {
-            options.append(.crowdloans)
-        }
-
-        if entity.hasGovernance {
-            options.append(.governance)
-        }
-
-        if entity.hasGovernanceV1 {
-            options.append(.governanceV1)
-        }
-
         let externalApiSet = createExternalApi(from: entity)
         let explorers = createExplorers(from: entity)
+
+        let options = createChainOptions(from: entity)
 
         let additional: JSON? = try entity.additional.map {
             try jsonDecoder.decode(JSON.self, from: $0)
@@ -278,7 +300,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             addressPrefix: UInt16(bitPattern: entity.addressPrefix),
             types: types,
             icon: entity.icon!,
-            options: options.isEmpty ? nil : options,
+            options: options,
             externalApi: externalApiSet,
             explorers: explorers,
             order: entity.order,
@@ -302,8 +324,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.isEthereumBased = model.isEthereumBased
         entity.isTestnet = model.isTestnet
         entity.hasCrowdloans = model.hasCrowdloans
-        entity.hasGovernanceV1 = model.hasGov1
-        entity.hasGovernance = model.hasGov2
+        entity.hasGovernanceV1 = model.hasGovernanceV1
+        entity.hasGovernance = model.hasGovernanceV2
         entity.order = model.order
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)

@@ -22,7 +22,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var metadataProvider: AnySingleValueProvider<ReferendumMetadataMapping>?
+    private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
@@ -60,7 +60,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private func clear() {
         clear(streamableProvider: &assetBalanceProvider)
         clear(singleValueProvider: &priceProvider)
-        clear(singleValueProvider: &metadataProvider)
+        clear(streamableProvider: &metadataProvider)
 
         clearBlockTimeService()
         clearSubscriptionFactory()
@@ -167,7 +167,11 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func subscribeToMetadata(for chain: ChainModel) {
-        metadataProvider = subscribeGovMetadata(for: chain)
+        metadataProvider = subscribeGovernanceMetadata(for: chain)
+
+        if metadataProvider == nil {
+            presenter?.didReceiveReferendumsMetadata([])
+        }
     }
 
     private func handleChainChange(for newChain: ChainModel) {
@@ -399,14 +403,17 @@ extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataL
         governanceState.govMetadataLocalSubscriptionFactory
     }
 
-    func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain: ChainModel) {
+    func handleGovernanceMetadataPreview(
+        result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
+        chain: ChainModel
+    ) {
         guard let currentChain = governanceState.settings.value, currentChain.chainId == chain.chainId else {
             return
         }
 
         switch result {
-        case let .success(mapping):
-            presenter?.didReceiveReferendumsMetadata(mapping)
+        case let .success(changes):
+            presenter?.didReceiveReferendumsMetadata(changes)
         case let .failure(error):
             presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
