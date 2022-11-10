@@ -26,6 +26,8 @@ protocol ReferendumsModelFactoryProtocol {
         chainInfo: ReferendumsModelFactoryInput.ChainInformation,
         selectedLocale: Locale
     ) -> ReferendumView.Model
+
+    func createLoadingViewModel() -> [ReferendumsSection]
 }
 
 final class ReferendumsModelFactory {
@@ -489,6 +491,16 @@ final class ReferendumsModelFactory {
 }
 
 extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
+    func createLoadingViewModel() -> [ReferendumsSection] {
+        let cells: [ReferendumsCellViewModel] = (0 ..< 10).map {
+            ReferendumsCellViewModel(
+                referendumIndex: UInt($0),
+                viewModel: .loading
+            )
+        }
+        return [ReferendumsSection.active(.loading, cells)]
+    }
+
     func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection] {
         var active: [ReferendumsCellViewModel] = []
         var completed: [ReferendumsCellViewModel] = []

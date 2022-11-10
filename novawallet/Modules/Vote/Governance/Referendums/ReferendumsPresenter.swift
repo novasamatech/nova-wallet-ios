@@ -241,6 +241,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
 extension ReferendumsPresenter: VoteChildPresenterProtocol {
     func setup() {
+        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
         interactor.setup()
     }
 
@@ -304,7 +305,6 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
         updateReferendumsView()
         updateTimeModels()
-
         refreshUnlockSchedule()
     }
 
