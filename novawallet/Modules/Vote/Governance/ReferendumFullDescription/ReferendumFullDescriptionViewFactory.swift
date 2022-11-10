@@ -1,7 +1,9 @@
 import Foundation
 
 struct ReferendumFullDescriptionViewFactory {
-    static func createView(state _: GovernanceSharedState, referendum _: ReferendumLocal) -> ReferendumFullDescriptionViewProtocol? {
+    static func createView(
+        for _: ReferendumMetadataLocal
+    ) -> ReferendumFullDescriptionViewProtocol? {
         let interactor = ReferendumFullDescriptionInteractor()
         let wireframe = ReferendumFullDescriptionWireframe()
 
