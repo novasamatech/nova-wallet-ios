@@ -1,7 +1,7 @@
 protocol ReferendumFullDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(proposer: ReferendumFullDetailsViewModel.Proposer?)
     func didReceive(beneficiary: ReferendumFullDetailsViewModel.Beneficiary?)
-    func didReceive(params: ReferendumFullDetailsViewModel.CurveAndHash?)
+    func didReceive(params: ReferendumFullDetailsViewModel.Voting?)
     func didReceive(json: String?)
     func didReceiveTooLongJson()
 }

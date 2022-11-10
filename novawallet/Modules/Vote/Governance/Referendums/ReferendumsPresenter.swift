@@ -68,7 +68,7 @@ final class ReferendumsPresenter {
         timeModels = nil
 
         view?.didReceiveUnlocks(viewModel: nil)
-        view?.update(model: .init(sections: []))
+        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
     }
 
     private func provideChainBalance() {
@@ -242,6 +242,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
 extension ReferendumsPresenter: VoteChildPresenterProtocol {
     func setup() {
+        view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
         interactor.setup()
     }
 
@@ -316,7 +317,6 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
         updateReferendumsView()
         updateTimeModels()
-
         refreshUnlockSchedule()
     }
 
@@ -386,7 +386,6 @@ extension ReferendumsPresenter: AssetSelectionDelegate {
         chain = chainAsset.chain
 
         clearOnAssetSwitch()
-
         provideChainBalance()
 
         interactor.saveSelected(chainModel: chainAsset.chain)

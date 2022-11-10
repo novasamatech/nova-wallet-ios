@@ -68,8 +68,8 @@ extension ReferendumFullDetailsViewController: ReferendumFullDetailsViewProtocol
         )
     }
 
-    func didReceive(params: ReferendumFullDetailsViewModel.CurveAndHash?) {
-        rootView.setCurveAndHash(viewModel: params, locale: selectedLocale)
+    func didReceive(params: ReferendumFullDetailsViewModel.Voting?) {
+        rootView.setVoting(viewModel: params, locale: selectedLocale)
 
         rootView.callHashCell?.addTarget(
             self,
