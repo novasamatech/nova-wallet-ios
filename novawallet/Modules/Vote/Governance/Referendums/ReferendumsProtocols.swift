@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 protocol ReferendumsViewProtocol: ControllerBackedProtocol {
     var presenter: ReferendumsPresenterProtocol? { get set }
@@ -27,7 +28,7 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
-    func didReceiveReferendumsMetadata(_ metadata: ReferendumMetadataMapping?)
+    func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>])
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
     func didReceiveSelectedChain(_ chain: ChainModel)
     func didReceiveAssetBalance(_ balance: AssetBalance?)

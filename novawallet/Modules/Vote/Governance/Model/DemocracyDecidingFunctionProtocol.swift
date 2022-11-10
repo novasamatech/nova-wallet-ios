@@ -18,75 +18,47 @@ final class Gov1DecidingFunction {
         self.thresholdType = thresholdType
     }
 
-    private func calculateSupermajorityApprove(
-        for ayes: BigUInt,
-        nays: BigUInt,
-        turnout: BigUInt,
-        electorate: BigUInt
-    ) -> Decimal? {
+    private func calculateSupermajorityApprove(turnout: BigUInt, electorate: BigUInt) -> Decimal? {
         guard
-            let totalDecimal = Decimal(ayes + nays),
-            let naysDecimal = Decimal(nays),
             let turnoutSqrt = Decimal(turnout.squareRoot()),
             let electorateSqrt = Decimal(electorate.squareRoot()) else {
             return nil
         }
 
-        guard totalDecimal > 0, turnoutSqrt > 0 else {
+        guard electorateSqrt + turnoutSqrt > 0 else {
             return nil
         }
 
-        let naysFraction = naysDecimal / totalDecimal
-
-        return naysFraction * (electorateSqrt / turnoutSqrt)
+        return electorateSqrt / (electorateSqrt + turnoutSqrt)
     }
 
-    private func calculateSupermajorityAgainst(
-        for ayes: BigUInt,
-        nays: BigUInt,
-        turnout: BigUInt,
-        electorate: BigUInt
-    ) -> Decimal? {
+    private func calculateSupermajorityAgainst(turnout: BigUInt, electorate: BigUInt) -> Decimal? {
         guard
-            let totalDecimal = Decimal(ayes + nays),
-            let naysDecimal = Decimal(nays),
             let turnoutSqrt = Decimal(turnout.squareRoot()),
             let electorateSqrt = Decimal(electorate.squareRoot()) else {
             return nil
         }
 
-        guard totalDecimal > 0, electorateSqrt > 0 else {
+        guard electorateSqrt + turnoutSqrt > 0 else {
             return nil
         }
 
-        let naysFraction = naysDecimal / totalDecimal
-
-        return naysFraction * (turnoutSqrt / electorateSqrt)
+        return turnoutSqrt / (electorateSqrt + turnoutSqrt)
     }
 }
 
 extension Gov1DecidingFunction: DemocracyDecidingFunctionProtocol {
     func calculateThreshold(
-        for ayes: BigUInt,
-        nays: BigUInt,
+        for _: BigUInt,
+        nays _: BigUInt,
         turnout: BigUInt,
         electorate: BigUInt
     ) -> Decimal? {
         switch thresholdType {
         case .superMajorityApprove:
-            return calculateSupermajorityApprove(
-                for: ayes,
-                nays: nays,
-                turnout: turnout,
-                electorate: electorate
-            )
+            return calculateSupermajorityApprove(turnout: turnout, electorate: electorate)
         case .superMajorityAgainst:
-            return calculateSupermajorityAgainst(
-                for: ayes,
-                nays: nays,
-                turnout: turnout,
-                electorate: electorate
-            )
+            return calculateSupermajorityAgainst(turnout: turnout, electorate: electorate)
         case .simpleMajority:
             return 0.5
         case .unknown:

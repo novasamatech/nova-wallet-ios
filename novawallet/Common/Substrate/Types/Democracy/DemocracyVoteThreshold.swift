@@ -20,7 +20,7 @@ extension Democracy {
             switch type {
             case "SuperMajorityApprove":
                 self = .superMajorityApprove
-            case "superMajorityAgainst":
+            case "SuperMajorityAgainst":
                 self = .superMajorityAgainst
             case "SimpleMajority":
                 self = .simpleMajority
