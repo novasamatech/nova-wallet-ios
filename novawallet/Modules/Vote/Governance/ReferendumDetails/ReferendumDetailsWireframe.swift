@@ -61,11 +61,13 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
         view?.controller.present(navigationController, animated: true)
     }
 
-    func showFullDescription(from view: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal) {
+    func showFullDescription(
+        from view: ReferendumDetailsViewProtocol?,
+        referendumMetadata: ReferendumMetadataLocal
+    ) {
         guard
             let fullDescriptionView = ReferendumFullDescriptionViewFactory.createView(
-                state: state,
-                referendum: referendum
+                for: referendumMetadata
             ) else {
             return
         }
