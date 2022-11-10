@@ -42,6 +42,7 @@ class AssetSelectionTests: XCTestCase {
 
         let interactor = AssetSelectionInteractor(
             selectedMetaAccount: selectedAccount,
+            balanceSlice: \.transferable,
             repository: repository,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
