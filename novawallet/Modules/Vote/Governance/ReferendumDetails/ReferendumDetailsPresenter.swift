@@ -28,7 +28,7 @@ final class ReferendumDetailsPresenter {
     private var price: PriceData?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
-    private var dApps: [GovernanceDApp]?
+    private var dApps: [GovernanceDApps.DApp]?
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
@@ -92,8 +92,10 @@ final class ReferendumDetailsPresenter {
     private func provideTitleViewModel() {
         let accountViewModel: DisplayAddressViewModel?
 
+        let optProposer = referendum.proposer ?? referendumMetadata?.proposerAccountId(for: chain.chainFormat)
+
         if
-            let proposer = referendum.proposer,
+            let proposer = optProposer,
             let identities = identities,
             let address = try? proposer.toAddress(using: chain.chainFormat) {
             let displayAddress = DisplayAddress(address: address, username: identities[address]?.displayName ?? "")
@@ -221,8 +223,8 @@ final class ReferendumDetailsPresenter {
         let viewModels = dApps.map {
             ReferendumDAppView.Model(
                 icon: RemoteImageViewModel(url: $0.icon),
-                title: $0.name,
-                subtitle: $0.subtitle
+                title: $0.title,
+                subtitle: $0.details
             )
         }
 
@@ -308,6 +310,24 @@ final class ReferendumDetailsPresenter {
 
         view?.didReceive(activeTimeViewModel: updatedViewModel)
     }
+
+    private func refreshIdentities() {
+        var accountIds: Set<AccountId> = []
+
+        if let proposer = referendum.proposer {
+            accountIds.insert(proposer)
+        }
+
+        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiary.accountId {
+            accountIds.insert(beneficiary)
+        }
+
+        if let proposer = referendumMetadata?.proposerAccountId(for: chain.chainFormat) {
+            accountIds.insert(proposer)
+        }
+
+        interactor.refreshIdentities(for: accountIds)
+    }
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
@@ -322,13 +342,16 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func showProposerDetails() {
+        let referendumProposer = try? referendum.proposer?.toAddress(using: chain.chainFormat)
+        let optAddress = referendumProposer ?? referendumMetadata?.proposer
+
         guard
-            let proposerAddress = try? referendum.proposer?.toAddress(using: chain.chainFormat),
+            let address = optAddress,
             let view = view else {
             return
         }
 
-        wireframe.presentAccountOptions(from: view, address: proposerAddress, chain: chain, locale: selectedLocale)
+        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: selectedLocale)
     }
 
     func showAyeVoters() {
@@ -339,7 +362,15 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         wireframe.showVoters(from: view, referendum: referendum, type: .nays)
     }
 
-    func opeDApp(at _: Int) {}
+    func opeDApp(at index: Int) {
+        guard
+            let dApp = dApps?[index],
+            let url = try? dApp.extractFullUrl(for: referendum.index) else {
+            return
+        }
+
+        wireframe.showDApp(from: view, url: url)
+    }
 
     func readFullDescription() {}
 
@@ -365,6 +396,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         provideVotingDetails()
         provideTitleViewModel()
         updateTimerIfNeeded()
+
+        refreshIdentities()
     }
 
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal) {
@@ -373,6 +406,8 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         provideTitleViewModel()
         provideRequestedAmount()
         provideFullDetailsViewModel()
+
+        refreshIdentities()
     }
 
     func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?) {
@@ -385,7 +420,10 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         self.referendumMetadata = referendumMetadata
 
         provideTitleViewModel()
+        provideTimelineViewModel()
         provideFullDetailsViewModel()
+
+        refreshIdentities()
     }
 
     func didReceiveIdentities(_ identities: [AccountAddress: AccountIdentity]) {
@@ -417,7 +455,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         updateTimerIfNeeded()
     }
 
-    func didReceiveDApps(_ dApps: [GovernanceDApp]) {
+    func didReceiveDApps(_ dApps: [GovernanceDApps.DApp]) {
         self.dApps = dApps
 
         provideDAppViewModel()
@@ -437,7 +475,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
             }
         case .identitiesFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refreshIdentities()
+                self?.refreshIdentities()
             }
         case .blockTimeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -445,7 +483,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
             }
         case .dAppsFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.refreshDApps()
+                self?.interactor.remakeDAppsSubscription()
             }
         }
     }
