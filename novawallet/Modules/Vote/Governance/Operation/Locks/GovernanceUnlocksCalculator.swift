@@ -1,21 +1,22 @@
 import Foundation
 
 struct GovUnlockCalculationInfo {
-    let tracks: [Referenda.TrackId: Referenda.TrackInfo]
+    let decisionPeriods: [Referenda.TrackId: Moment]
     let undecidingTimeout: Moment
     let voteLockingPeriod: Moment
 }
 
-protocol GovernanceUnlockCalculatorProtocol {
+protocol GovUnlockReferendumProtocol {
     func estimateVoteLockingPeriod(
-        for referendumInfo: ReferendumInfo,
-        accountVote: ReferendumAccountVoteLocal,
+        for accountVote: ReferendumAccountVoteLocal,
         additionalInfo: GovUnlockCalculationInfo
     ) throws -> BlockNumber?
+}
 
+protocol GovernanceUnlockCalculatorProtocol {
     func createUnlocksSchedule(
         for tracksVoting: ReferendumTracksVotingDistribution,
-        referendums: [ReferendumIdLocal: ReferendumInfo],
+        referendums: [ReferendumIdLocal: GovUnlockReferendumProtocol],
         additionalInfo: GovUnlockCalculationInfo
     ) -> GovernanceUnlockSchedule
 }

@@ -36,7 +36,7 @@ final class Gov2LocalMappingFactory {
         let model = ReferendumStateLocal.Deciding(
             track: localTrack,
             proposal: status.proposal,
-            voting: .supportAndVotes(model: votes),
+            voting: .supportAndVotes(votes),
             submitted: status.submitted,
             since: deciding.since,
             period: track.decisionPeriod,
@@ -91,7 +91,7 @@ final class Gov2LocalMappingFactory {
         let preparing = ReferendumStateLocal.Preparing(
             track: localTrack,
             proposal: status.proposal,
-            voting: .supportAndVotes(model: votes),
+            voting: .supportAndVotes(votes),
             deposit: status.decisionDeposit?.amount,
             since: status.submitted,
             preparingPeriod: track.preparePeriod,

@@ -70,8 +70,21 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: fullDescriptionView.controller)
+        let navigationController = FearlessNavigationController(
+            rootViewController: fullDescriptionView.controller
+        )
 
         view?.controller.present(navigationController, animated: true)
+    }
+
+    func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL) {
+        guard
+            let browser = DAppBrowserViewFactory.createView(
+                for: .query(string: url.absoluteString)
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(browser.controller, animated: true)
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-final class Gov2ActionOperationFactory {
+class GovernanceActionOperationFactory {
     static let maxFetchCallSize: UInt32 = 1024
 
     let requestFactory: StorageRequestFactoryProtocol
@@ -13,99 +13,41 @@ final class Gov2ActionOperationFactory {
         self.operationQueue = operationQueue
     }
 
-    // swiftlint:disable:next function_body_length
+    func fetchCall(
+        for _: Data,
+        connection _: JSONRPCEngine,
+        codingFactoryOperation _: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
+        fatalError("Must be overriden by child class")
+    }
+
     private func createCallFetchWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         referendum: ReferendumLocal,
-        requestFactory: StorageRequestFactoryProtocol,
+        requestFactory _: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
-        let callFetchClosure: (Data) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>
-        callFetchClosure = { hash in
-            let statusKeyParams: () throws -> [BytesCodable] = {
-                [BytesCodable(wrappedValue: hash)]
-            }
-
-            let statusFetchWrapper: CompoundOperationWrapper<[StorageResponse<Preimage.RequestStatus>]> =
-                requestFactory.queryItems(
-                    engine: connection,
-                    keyParams: statusKeyParams,
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    storagePath: Preimage.statusForStoragePath
-                )
-
-            let callKeyParams: () throws -> [Preimage.PreimageKey] = {
-                let status = try statusFetchWrapper.targetOperation.extractNoCancellableResultData().first?.value
-
-                guard let length = status?.length, length <= Self.maxFetchCallSize else {
-                    return []
-                }
-
-                return [Preimage.PreimageKey(hash: hash, length: length)]
-            }
-
-            let callFetchWrapper: CompoundOperationWrapper<[StorageResponse<BytesCodable>]> = requestFactory.queryItems(
-                engine: connection,
-                keyParams: callKeyParams,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: Preimage.preimageForStoragePath
-            )
-
-            callFetchWrapper.addDependency(wrapper: statusFetchWrapper)
-
-            let mappingOperation = ClosureOperation<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
-                let callKeys = try callKeyParams()
-
-                guard !callKeys.isEmpty else {
-                    let optStatus = try statusFetchWrapper.targetOperation.extractNoCancellableResultData().first?.value
-
-                    if let length = optStatus?.length {
-                        return length > Self.maxFetchCallSize ? .tooLong : nil
-                    } else {
-                        return nil
-                    }
-                }
-
-                let responses = try callFetchWrapper.targetOperation.extractNoCancellableResultData()
-                guard let response = responses.first?.value else {
-                    return nil
-                }
-
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                let decoder = try codingFactory.createDecoder(from: response.wrappedValue)
-
-                let optCall: RuntimeCall<JSON>? = try? decoder.read(
-                    of: GenericType.call.name,
-                    with: codingFactory.createRuntimeJsonContext().toRawContext()
-                )
-
-                if let call = optCall {
-                    return .concrete(call)
-                } else {
-                    return nil
-                }
-            }
-
-            mappingOperation.addDependency(callFetchWrapper.targetOperation)
-
-            let dependencies = statusFetchWrapper.allOperations + callFetchWrapper.allOperations
-
-            return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
-        }
-
         let callDecodingService = OperationCombiningService<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
             switch referendum.state.proposal {
             case let .legacy(hash):
-                let wrapper = callFetchClosure(hash)
+                let wrapper = self.fetchCall(
+                    for: hash,
+                    connection: connection,
+                    codingFactoryOperation: codingFactoryOperation
+                )
                 return [wrapper]
             case let .inline(value):
                 return [CompoundOperationWrapper.createWithResult(.concrete(value))]
             case let .lookup(lookup):
                 if lookup.len <= Self.maxFetchCallSize {
-                    let wrapper = callFetchClosure(lookup.hash)
+                    let wrapper = self.fetchCall(
+                        for: lookup.hash,
+                        connection: connection,
+                        codingFactoryOperation: codingFactoryOperation
+                    )
+
                     return [wrapper]
                 } else {
                     return [CompoundOperationWrapper.createWithResult(.tooLong)]
@@ -201,7 +143,7 @@ final class Gov2ActionOperationFactory {
     }
 }
 
-extension Gov2ActionOperationFactory: ReferendumActionOperationFactoryProtocol {
+extension GovernanceActionOperationFactory: ReferendumActionOperationFactoryProtocol {
     func fetchActionWrapper(
         for referendum: ReferendumLocal,
         connection: JSONRPCEngine,

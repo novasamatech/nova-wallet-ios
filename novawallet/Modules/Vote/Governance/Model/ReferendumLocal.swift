@@ -109,9 +109,47 @@ struct SupportAndVotesLocal {
     }
 }
 
+struct VotingThresholdLocal {
+    let ayes: BigUInt
+    let nays: BigUInt
+    let turnout: BigUInt
+    let electorate: BigUInt
+
+    /// fraction of ayes
+    var approvalFraction: Decimal? {
+        guard
+            let total = Decimal(ayes + nays), total > 0,
+            let ayesDecimal = Decimal(ayes) else {
+            return nil
+        }
+
+        return ayesDecimal / total
+    }
+
+    let thresholdFunction: DemocracyDecidingFunctionProtocol
+
+    func calculateThreshold() -> Decimal? {
+        thresholdFunction.calculateThreshold(
+            for: ayes,
+            nays: nays,
+            turnout: turnout,
+            electorate: electorate
+        )
+    }
+
+    func isPassing() -> Bool {
+        if let threshold = calculateThreshold(), let approvalFraction = approvalFraction {
+            return approvalFraction > threshold
+        } else {
+            return false
+        }
+    }
+}
+
 enum ReferendumStateLocal {
     enum Voting {
-        case supportAndVotes(model: SupportAndVotesLocal)
+        case supportAndVotes(SupportAndVotesLocal)
+        case threshold(VotingThresholdLocal)
     }
 
     struct Deciding {
@@ -126,6 +164,15 @@ enum ReferendumStateLocal {
 
         var rejectedAt: BlockNumber {
             since + period
+        }
+
+        func isPassing(for currentBlock: BlockNumber) -> Bool {
+            switch voting {
+            case let .supportAndVotes(model):
+                return model.isPassing(at: currentBlock)
+            case let .threshold(model):
+                return model.isPassing()
+            }
         }
     }
 

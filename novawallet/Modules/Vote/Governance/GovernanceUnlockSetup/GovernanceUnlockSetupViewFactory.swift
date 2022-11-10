@@ -49,14 +49,10 @@ struct GovernanceUnlockSetupViewFactory {
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
+            let lockStateFactory = state.locksOperationFactory,
             let blockTimeService = state.blockTimeService else {
             return nil
         }
-
-        let lockStateFactory = Gov2LockStateFactory(
-            requestFactory: state.requestFactory,
-            unlocksCalculator: Gov2UnlocksCalculator()
-        )
 
         return .init(
             chain: chain,

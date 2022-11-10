@@ -289,7 +289,12 @@ enum ChainModelGenerator {
         }
 
         if crowdloanApi != nil || stakingApi != nil {
-            return ChainModel.ExternalApiSet(staking: stakingApi, history: nil, crowdloans: crowdloanApi)
+            return ChainModel.ExternalApiSet(
+                staking: stakingApi,
+                history: nil,
+                crowdloans: crowdloanApi,
+                governance: nil
+            )
         } else {
             return nil
         }
