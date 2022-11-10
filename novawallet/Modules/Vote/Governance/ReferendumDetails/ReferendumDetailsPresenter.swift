@@ -3,8 +3,6 @@ import SoraFoundation
 import SubstrateSdk
 
 final class ReferendumDetailsPresenter {
-    static let readMoreThreshold = 180
-
     weak var view: ReferendumDetailsViewProtocol?
     let wireframe: ReferendumDetailsWireframeProtocol
     let interactor: ReferendumDetailsInteractorInputProtocol
@@ -107,7 +105,6 @@ final class ReferendumDetailsPresenter {
         let detailsViewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
             for: referendum,
             metadata: referendumMetadata,
-            readMoreThreshold: Self.readMoreThreshold,
             locale: selectedLocale
         )
 
@@ -373,11 +370,13 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func readFullDescription() {
-        guard let metadata = referendumMetadata else {
-            return
-        }
+        let viewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
+            for: referendum,
+            metadata: referendumMetadata,
+            locale: selectedLocale
+        )
 
-        wireframe.showFullDescription(from: view, referendumMetadata: metadata)
+        wireframe.showFullDescription(from: view, title: viewModel.title, description: viewModel.description)
     }
 
     func openFullDetails() {
@@ -391,6 +390,14 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             actionDetails: actionDetails,
             identities: identities ?? [:]
         )
+    }
+
+    func openURL(_ url: URL) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.showWeb(url: url, from: view, style: .automatic)
     }
 }
 

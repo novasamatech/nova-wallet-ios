@@ -1,6 +1,6 @@
 import UIKit
 import SoraUI
-import MarkdownView
+import CDMarkdownKit
 
 final class ReferendumDetailsTitleView: UIView {
     var accountIconSize: CGSize {
@@ -39,9 +39,10 @@ final class ReferendumDetailsTitleView: UIView {
         $0.numberOfLines = 0
     }
 
-    let descriptionView: MarkdownView = .create {
-        $0.isScrollEnabled = false
-    }
+    let descriptionView = MarkdownViewContainer(
+        preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset,
+        maxTextLength: MarkdownText.readMoreThreshold
+    )
 
     let moreButton: RoundedButton = .create { button in
         button.applyIconStyle()
@@ -83,16 +84,6 @@ final class ReferendumDetailsTitleView: UIView {
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        descriptionView.onRendered = { [weak self] contentHeight in
-            self?.updateMarkdownView(height: contentHeight)
-        }
-    }
-
-    private func updateMarkdownView(height: CGFloat) {
-        descriptionView.snp.updateConstraints {
-            $0.height.equalTo(height)
-            $0.leading.trailing.equalToSuperview()
-        }
     }
 }
 
@@ -105,7 +96,6 @@ extension ReferendumDetailsTitleView {
     struct Details {
         let title: String
         let description: String
-        let shouldReadMore: Bool
     }
 
     func bind(viewModel: Model, locale: Locale) {
@@ -140,17 +130,17 @@ extension ReferendumDetailsTitleView {
         titleLabel.isHidden = false
         titleLabel.text = details.title
 
-        if !details.description.isEmpty {
-            descriptionView.isHidden = false
-            descriptionView.loadLimitedText(
-                markdownText: details.description,
-                maxLinesCount: 4
-            )
+        moreButton.isHidden = true
+
+        descriptionView.isHidden = false
+        descriptionView.load(from: details.description) { [weak self] (model: MarkdownText?) in
+            if let shouldReadMore = model?.isFull {
+                self?.moreButton.isHidden = shouldReadMore
+            }
         }
 
         moreButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
             preferredLanguages: locale.rLanguages
         )
-        moreButton.isHidden = !details.shouldReadMore
     }
 }

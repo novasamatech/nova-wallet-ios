@@ -1599,6 +1599,9 @@
 		849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */; };
 		849C0671276516F900394C82 /* BaseOperation+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */; };
 		849D3220291C26BA00D25839 /* GovernanceDAppList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D321F291C26BA00D25839 /* GovernanceDAppList.swift */; };
+		849D3223291CC43D00D25839 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D3222291CC43D00D25839 /* MarkdownText.swift */; };
+		849D3225291CC4A500D25839 /* MarkdownParsingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D3224291CC4A500D25839 /* MarkdownParsingOperationFactory.swift */; };
+		849D3227291CE25E00D25839 /* MarkdownViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D3226291CE25E00D25839 /* MarkdownViewContainer.swift */; };
 		849D755B2756910A007726C3 /* RoundedView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D755A2756910A007726C3 /* RoundedView+Style.swift */; };
 		849D755D27577602007726C3 /* AccountExportPasswordViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D755C27577602007726C3 /* AccountExportPasswordViewLayout.swift */; };
 		849DEBD425ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849DEBD325ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift */; };
@@ -2291,7 +2294,6 @@
 		880855FC28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880855FB28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift */; };
 		88107D5F290133F8001AB0B0 /* RoundedView+Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88107D5E290133F8001AB0B0 /* RoundedView+Styles.swift */; };
 		88107D6129015FAB001AB0B0 /* TrackTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88107D6029015FAB001AB0B0 /* TrackTagsView.swift */; };
-		882232E92919226000CBA7B3 /* MarkdownView+load.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882232E82919225E00CBA7B3 /* MarkdownView+load.swift */; };
 		8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */; };
 		8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */; };
 		8824D42629032B410022D778 /* BlurredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D42529032B410022D778 /* BlurredView.swift */; };
@@ -4592,6 +4594,9 @@
 		849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCancellableCleaning.swift; sourceTree = "<group>"; };
 		849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseOperation+Cancellable.swift"; sourceTree = "<group>"; };
 		849D321F291C26BA00D25839 /* GovernanceDAppList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDAppList.swift; sourceTree = "<group>"; };
+		849D3222291CC43D00D25839 /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
+		849D3224291CC4A500D25839 /* MarkdownParsingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownParsingOperationFactory.swift; sourceTree = "<group>"; };
+		849D3226291CE25E00D25839 /* MarkdownViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownViewContainer.swift; sourceTree = "<group>"; };
 		849D755A2756910A007726C3 /* RoundedView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedView+Style.swift"; sourceTree = "<group>"; };
 		849D755C27577602007726C3 /* AccountExportPasswordViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExportPasswordViewLayout.swift; sourceTree = "<group>"; };
 		849DEBD325ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmViewModel.swift; sourceTree = "<group>"; };
@@ -5292,7 +5297,6 @@
 		88107D5E290133F8001AB0B0 /* RoundedView+Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedView+Styles.swift"; sourceTree = "<group>"; };
 		88107D6029015FAB001AB0B0 /* TrackTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTagsView.swift; sourceTree = "<group>"; };
 		8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewFactory.swift; sourceTree = "<group>"; };
-		882232E82919225E00CBA7B3 /* MarkdownView+load.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MarkdownView+load.swift"; sourceTree = "<group>"; };
 		8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsInteractor.swift; sourceTree = "<group>"; };
 		8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrettyPrintedJSONOperationFactory.swift; sourceTree = "<group>"; };
 		8824D42529032B410022D778 /* BlurredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredView.swift; sourceTree = "<group>"; };
@@ -9479,6 +9483,7 @@
 				887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */,
 				8831F0FF28C65B95009F7682 /* AssetLock.swift */,
 				2AC7BC832731A214001D99B0 /* AssetLocks+Sort.swift */,
+				849D3222291CC43D00D25839 /* MarkdownText.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -12513,7 +12518,6 @@
 		880059D628EEA55500E87B9B /* View */ = {
 			isa = PBXGroup;
 			children = (
-				882232E82919225E00CBA7B3 /* MarkdownView+load.swift */,
 				880059DD28EF093400E87B9B /* Slider */,
 				880059E028EF0A5C00E87B9B /* VotingProgressView.swift */,
 				880059E228EF128000E87B9B /* ReferendumInfoView.swift */,
@@ -12522,6 +12526,8 @@
 				889D889628F022AA00C4320F /* UILabel+Style.swift */,
 				88F34FDC28FFE6E400712BDE /* MultiValueView+Model.swift */,
 				84033056290FD8AB009C18E6 /* ReferendumsUnlocksTableViewCell.swift */,
+				849D3226291CE25E00D25839 /* MarkdownViewContainer.swift */,
+				849D3224291CC4A500D25839 /* MarkdownParsingOperationFactory.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -14811,6 +14817,7 @@
 				847ABE332853333A00851218 /* StakingSharedState+Duration.swift in Sources */,
 				8424A8C7262EC0E50091BFB1 /* PayoutInfo.swift in Sources */,
 				843910C7253F56EA00E3C217 /* BaseOperation+Result.swift in Sources */,
+				849D3225291CC4A500D25839 /* MarkdownParsingOperationFactory.swift in Sources */,
 				84D6D7FE27A7F4CD0094FC33 /* AssetListChainView.swift in Sources */,
 				842D1E8424D197C900C30A7A /* KeyboardAdoptable.swift in Sources */,
 				849DEBD425ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift in Sources */,
@@ -15288,6 +15295,7 @@
 				8444D1BE2671465A00AF6D8C /* CrowdloanBonusServiceError.swift in Sources */,
 				8448F7A22882ABF50080CEA9 /* CustomSearchView.swift in Sources */,
 				84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */,
+				849D3223291CC43D00D25839 /* MarkdownText.swift in Sources */,
 				84FFE45B2862076F002432BB /* XcmUnweightedTransferRequest.swift in Sources */,
 				84D1110C26B922D50016D962 /* ConnectionPool.swift in Sources */,
 				8490152E24ABD0F5008F705E /* Logger+Wallet.swift in Sources */,
@@ -15408,6 +15416,7 @@
 				F4223F102732D445003D8E4E /* AcalaStatementData.swift in Sources */,
 				847DD8DC26034B99003DE053 /* LocalizableViewProtocol.swift in Sources */,
 				F4CE0F9527343E630094CD8A /* AcalaContributionConfirmPresenter.swift in Sources */,
+				849D3227291CE25E00D25839 /* MarkdownViewContainer.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
 				84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */,
@@ -15621,7 +15630,6 @@
 				AE6F7FE42685E812002BBC3E /* ValidatorListFilterViewFactory.swift in Sources */,
 				842876AA24AE049B00D91AD8 /* SelectionTitleTableViewCell.swift in Sources */,
 				84CA68DD26BEA60A003B9453 /* ConnectionFactory.swift in Sources */,
-				882232E92919226000CBA7B3 /* MarkdownView+load.swift in Sources */,
 				F40966B626B297D6008CD244 /* AnalyticsRewardsPresenter.swift in Sources */,
 				84A58FD428A05820003F6ABF /* HardwareSigningError.swift in Sources */,
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
