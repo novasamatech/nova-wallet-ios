@@ -2342,6 +2342,7 @@
 		888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */; };
 		888A3B6728F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */; };
 		888B853828ED966600AC9614 /* SkeletonableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B853728ED966600AC9614 /* SkeletonableView.swift */; };
+		888B8E95291D274B00AA78E9 /* MercuryoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B8E94291D274B00AA78E9 /* MercuryoProvider.swift */; };
 		8890E51628DDC98C001D3994 /* SubstrateStorageMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8890E51528DDC98C001D3994 /* SubstrateStorageMigrationTests.swift */; };
 		8892284828F353A5003F8B9E /* ReferendumsModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8892284728F353A5003F8B9E /* ReferendumsModelFactory.swift */; };
 		8892284A28F35410003F8B9E /* ReferendumsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8892284928F35410003F8B9E /* ReferendumsViewModel.swift */; };
@@ -5335,6 +5336,7 @@
 		888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingStatusView.swift; sourceTree = "<group>"; };
 		888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingStatusDetailsView.swift; sourceTree = "<group>"; };
 		888B853728ED966600AC9614 /* SkeletonableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkeletonableView.swift; sourceTree = "<group>"; };
+		888B8E94291D274B00AA78E9 /* MercuryoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoProvider.swift; sourceTree = "<group>"; };
 		8890E51528DDC98C001D3994 /* SubstrateStorageMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageMigrationTests.swift; sourceTree = "<group>"; };
 		8892284728F353A5003F8B9E /* ReferendumsModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsModelFactory.swift; sourceTree = "<group>"; };
 		8892284928F35410003F8B9E /* ReferendumsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsViewModel.swift; sourceTree = "<group>"; };
@@ -7555,14 +7557,15 @@
 			isa = PBXGroup;
 			children = (
 				8436EDE125895804004D9E97 /* RampProvider.swift */,
+				8448336627FAAF780077FB55 /* TransakProvider.swift */,
+				AEF50555261A04AD0098574D /* MoonpayProvider.swift */,
+				888B8E94291D274B00AA78E9 /* MercuryoProvider.swift */,
 				8436EDE625895846004D9E97 /* PurchaseProvider.swift */,
 				8436EDEE25896722004D9E97 /* PurchaseAggregator+Default.swift */,
 				8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */,
-				AEF50555261A04AD0098574D /* MoonpayProvider.swift */,
 				AEF5071D262369C00098574D /* PurchaseProviderProtocol.swift */,
 				AEF507B9262486F80098574D /* MoonpayProviderFactory.swift */,
 				AE20602B2636EA5800357578 /* MoonPayKeys.swift */,
-				8448336627FAAF780077FB55 /* TransakProvider.swift */,
 			);
 			path = PurchaseProvider;
 			sourceTree = "<group>";
@@ -16868,6 +16871,7 @@
 				845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */,
 				8452585527ABF270004F9082 /* AssetListEmptyCell.swift in Sources */,
 				D72773CE9AF638387DA9BA77 /* MoonbeamTermsInteractor.swift in Sources */,
+				888B8E95291D274B00AA78E9 /* MercuryoProvider.swift in Sources */,
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
 				B1B0F4818510EB082ACA83AB /* MoonbeamTermsViewLayout.swift in Sources */,
 				97F1D128D46B072D68940FC4 /* MoonbeamTermsViewFactory.swift in Sources */,

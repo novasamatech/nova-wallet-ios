@@ -13,7 +13,8 @@ extension PurchaseAggregator {
 
         let purchaseProviders: [PurchaseProviderProtocol] = [
             RampProvider(),
-            TransakProvider()
+            TransakProvider(),
+            MercuryoProvider()
         ]
         return PurchaseAggregator(providers: purchaseProviders)
             .with(appName: config.purchaseAppName)
