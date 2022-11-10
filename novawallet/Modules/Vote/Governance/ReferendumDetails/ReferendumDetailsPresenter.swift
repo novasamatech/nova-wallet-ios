@@ -373,7 +373,11 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func readFullDescription() {
-        wireframe.showFullDescription(from: view, referendum: referendum)
+        guard let metadata = referendumMetadata else {
+            return
+        }
+
+        wireframe.showFullDescription(from: view, referendumMetadata: metadata)
     }
 
     func openFullDetails() {
