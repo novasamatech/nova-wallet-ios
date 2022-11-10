@@ -1063,6 +1063,9 @@
 "gov.deposit" = "Депозит";
 "gov.beneficiary" = "Получатель";
 "gov.requested.amount" = "Запрашиваемая сумма";
+"gov.fulldetails.threshold" = "Порог голосования";
+"gov.fulldetails.turnout" = "Явка";
+"gov.fulldetails.electorate" = "Электорат";
 "gov.approve.curve" = "Кривая подтверждения";
 "gov.support.curve" = "Кривая поддержки";
 "gov.call.hash" = "Хэш вызова";
@@ -1077,3 +1080,6 @@
 "common.unlock" = "Разблокировать";
 "common.unlockable" = "Разблокируемые";
 "gov.remains.locked.suffix" = " остаются заблокированны в %@";
+"gov.vote.treshold.function.simpleMajority" = "Простое большинство";
+"gov.vote.treshold.function.superMajorityAgainst" = "Супербольшинство против";
+"gov.vote.treshold.function.superMajorityApprove" = "Супербольшинство за";
