@@ -2,12 +2,18 @@ import Foundation
 
 struct ReferendumFullDescriptionViewFactory {
     static func createView(
-        for _: ReferendumMetadataLocal
+        for title: String,
+        description: String
     ) -> ReferendumFullDescriptionViewProtocol? {
         let interactor = ReferendumFullDescriptionInteractor()
         let wireframe = ReferendumFullDescriptionWireframe()
 
-        let presenter = ReferendumFullDescriptionPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = ReferendumFullDescriptionPresenter(
+            title: title,
+            description: description,
+            interactor: interactor,
+            wireframe: wireframe
+        )
 
         let view = ReferendumFullDescriptionViewController(presenter: presenter)
 

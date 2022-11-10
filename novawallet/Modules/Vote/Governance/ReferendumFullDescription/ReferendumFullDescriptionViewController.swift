@@ -27,13 +27,7 @@ final class ReferendumFullDescriptionViewController: UIViewController, ViewHolde
     }
 
     private func setupHandlers() {
-        rootView.markdownView.onTouchLink = { [weak self] request in
-            guard let url = request.url, url.scheme == "https" else {
-                return false
-            }
-            self?.presenter.open(url: url)
-            return false
-        }
+        rootView.markdownView.delegate = self
     }
 }
 
@@ -41,5 +35,11 @@ extension ReferendumFullDescriptionViewController: ReferendumFullDescriptionView
     func didReceive(title: String, description: String) {
         rootView.set(title: title)
         rootView.set(markdownText: description)
+    }
+}
+
+extension ReferendumFullDescriptionViewController: MarkdownViewContainerDelegate {
+    func markdownView(_: MarkdownViewContainer, asksHandle url: URL) {
+        presenter.open(url: url)
     }
 }
