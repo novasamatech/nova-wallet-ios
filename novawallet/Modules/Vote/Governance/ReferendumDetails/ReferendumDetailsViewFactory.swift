@@ -98,7 +98,8 @@ struct ReferendumDetailsViewFactory {
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
-            let subscriptionFactory = state.subscriptionFactory else {
+            let subscriptionFactory = state.subscriptionFactory,
+            let actionDetailsFactory = state.createActionsDetailsFactory(for: chain) else {
             return nil
         }
 
@@ -108,23 +109,20 @@ struct ReferendumDetailsViewFactory {
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        let actionDetailsOperationFactory = Gov2ActionOperationFactory(
-            requestFactory: requestFactory,
-            operationQueue: operationQueue
-        )
-
         let identityOperationFactory = IdentityOperationFactory(
             requestFactory: requestFactory,
             emptyIdentitiesWhenNoStorage: true
         )
 
-        let dAppsRepository = JsonFileRepository<[GovernanceDApp]>()
+        let dAppsUrl = ApplicationConfig.shared.governanceDAppsListURL
+        let dAppsProvider: AnySingleValueProvider<GovernanceDAppList> =
+            JsonDataProviderFactory.shared.getJson(for: dAppsUrl)
 
         return ReferendumDetailsInteractor(
             referendum: referendum,
             selectedAccount: selectedAccount,
             chain: chain,
-            actionDetailsOperationFactory: actionDetailsOperationFactory,
+            actionDetailsOperationFactory: actionDetailsFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,
@@ -133,7 +131,7 @@ struct ReferendumDetailsViewFactory {
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
-            dAppsRepository: dAppsRepository,
+            dAppsProvider: dAppsProvider,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

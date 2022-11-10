@@ -15,7 +15,7 @@ final class SubstrateStorageMigrationTests: XCTestCase {
     let databaseName = SubstrateStorageParams.databaseName
     let modelDirectory = SubstrateStorageParams.modelDirectory
     var storeURL: URL { databaseDirectoryURL.appendingPathComponent(databaseName) }
-    let oldMapper = ChainModelMapperV2V3()
+    let oldMapper = ChainModelMapperV2V5()
     let mapper = ChainModelMapper()
 
     override func setUpWithError() throws {
@@ -31,14 +31,14 @@ final class SubstrateStorageMigrationTests: XCTestCase {
         try removeDirectory(at: databaseDirectoryURL)
     }
 
-    func testMigrationVersion2ToVersion3() {
+    func testMigrationVersion4ToVersion5() {
         let timeout: TimeInterval = 5
         let generatedChains = generateChainsWithTimeout(timeout)
         XCTAssertGreaterThan(generatedChains.count, 0)
         
         let migrator = SubstrateStorageMigrator(storeURL: storeURL,
                                                 modelDirectory: modelDirectory,
-                                                model: .version3,
+                                                model: .version5,
                                                 fileManager: FileManager.default)
         
         XCTAssertTrue(migrator.requiresMigration(), "Migration is not required")
@@ -95,7 +95,7 @@ final class SubstrateStorageMigrationTests: XCTestCase {
     
     private func generateChains(completion: @escaping (Result<[ChainModel], Error>) -> Void) {
         let chains = ChainModelGenerator.generate(count: 5)
-        let dbService = createCoreDataService(for: .version2)
+        let dbService = createCoreDataService(for: .version4)
         
         dbService.performAsync { [unowned self] (context, error) in
             if let error = error {
@@ -132,7 +132,7 @@ final class SubstrateStorageMigrationTests: XCTestCase {
     }
     
     private func fetchChains(completion: @escaping (Result<[ChainModel], Error>) -> Void) {
-        let dbService = createCoreDataService(for: .version3)
+        let dbService = createCoreDataService(for: .version5)
         
         dbService.performAsync { [unowned self] (context, error) in
             if let error = error {

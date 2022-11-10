@@ -309,4 +309,28 @@ extension NSPredicate {
 
         return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, accountPredicate])
     }
+
+    static func referendums(for chainId: ChainModel.Id) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDReferendumMetadata.chainId),
+            chainId
+        )
+    }
+
+    static func referendums(for chainId: ChainModel.Id, referendumId: ReferendumIdLocal) -> NSPredicate {
+        let chainPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDReferendumMetadata.chainId),
+            chainId
+        )
+
+        let referendumPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDReferendumMetadata.referendumId),
+            referendumId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, referendumPredicate])
+    }
 }

@@ -1,3 +1,5 @@
+import Foundation
+
 protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(votingDetails: ReferendumVotingStatusDetailsView.Model)
     func didReceive(dAppModels: [ReferendumDAppView.Model]?)
@@ -25,8 +27,8 @@ protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func refreshBlockTime()
     func refreshActionDetails()
-    func refreshIdentities()
-    func refreshDApps()
+    func refreshIdentities(for accountIds: Set<AccountId>)
+    func remakeDAppsSubscription()
     func remakeSubscriptions()
 }
 
@@ -39,7 +41,7 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceivePrice(_ price: PriceData?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
-    func didReceiveDApps(_ dApps: [GovernanceDApp])
+    func didReceiveDApps(_ dApps: [GovernanceDApps.DApp])
     func didReceiveError(_ error: ReferendumDetailsInteractorError)
 }
 
@@ -61,4 +63,5 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
     )
 
     func showFullDescription(from: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal)
+    func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL)
 }

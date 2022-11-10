@@ -19,11 +19,11 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    let dAppsRepository: JsonFileRepository<[GovernanceDApp]>
+    let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
-    private var metadataProvider: AnySingleValueProvider<ReferendumMetadataMapping>?
+    private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 
     private var identitiesCancellable: CancellableCall?
@@ -44,7 +44,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
-        dAppsRepository: JsonFileRepository<[GovernanceDApp]>,
+        dAppsProvider: AnySingleValueProvider<GovernanceDAppList>,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -60,7 +60,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.blockTimeService = blockTimeService
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
-        self.dAppsRepository = dAppsRepository
+        self.dAppsProvider = dAppsProvider
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -116,55 +116,49 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func provideDApps() {
-        clear(cancellable: &dAppsCancellable)
+    private func handleDAppsUpdate(_ updatedDApps: GovernanceDAppList) {
+        let dApps = updatedDApps.first(where: { $0.chainId == chain.chainId })?.dapps ?? []
+        presenter?.didReceiveDApps(dApps)
+    }
 
-        let wrapper = dAppsRepository.fetchOperationWrapper(
-            by: R.file.governanceDAppsJson(),
-            defaultValue: []
+    private func subscribeDApps() {
+        dAppsProvider.removeObserver(self)
+
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
         )
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.dAppsCancellable === wrapper else {
-                    return
-                }
-
-                self?.dAppsCancellable = nil
-
-                do {
-                    let dApps = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveDApps(dApps)
-                } catch {
-                    self?.presenter?.didReceiveError(.dAppsFailed(error))
-                }
+        let updateClosure: ([DataProviderChange<GovernanceDAppList>]) -> Void = { [weak self] changes in
+            if let result = changes.reduceToLastChange() {
+                self?.handleDAppsUpdate(result)
+            } else {
+                self?.presenter?.didReceiveDApps([])
             }
         }
 
-        dAppsCancellable = wrapper
+        let failureClosure: (Error) -> Void = { [weak self] error in
+            self?.presenter?.didReceiveError(.dAppsFailed(error))
+        }
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        dAppsProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
     }
 
-    private func provideIdentities() {
+    private func provideIdentities(for accountIds: Set<AccountId>) {
         clear(cancellable: &identitiesCancellable)
-
-        var accountIds: [AccountId] = []
-
-        if let proposer = referendum.proposer {
-            accountIds.append(proposer)
-        }
-
-        if let beneficiary = actionDetails?.amountSpendDetails?.beneficiary.accountId {
-            accountIds.append(beneficiary)
-        }
 
         guard !accountIds.isEmpty else {
             presenter?.didReceiveIdentities([:])
             return
         }
 
-        let accountIdsClosure: () throws -> [AccountId] = { accountIds }
+        let accountIdsClosure: () throws -> [AccountId] = { Array(accountIds) }
 
         let wrapper = identityOperationFactory.createIdentityWrapper(
             for: accountIdsClosure,
@@ -248,8 +242,6 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
                     self?.actionDetails = actionDetails
 
                     self?.presenter?.didReceiveActionDetails(actionDetails)
-
-                    self?.provideIdentities()
                 } catch {
                     self?.presenter?.didReceiveError(.actionDetailsFailed(error))
                 }
@@ -271,7 +263,13 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         subscribeReferendum()
         subscribeAccountVotes()
 
-        metadataProvider = subscribeGovMetadata(for: chain)
+        metadataProvider = subscribeGovernanceMetadata(for: chain, referendumId: referendum.index)
+
+        if metadataProvider == nil {
+            presenter?.didReceiveMetadata(nil)
+        } else {
+            metadataProvider?.refresh()
+        }
     }
 }
 
@@ -279,12 +277,11 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
     func setup() {
         makeSubscriptions()
         updateActionDetails()
-        provideIdentities()
-        provideDApps()
+        subscribeDApps()
     }
 
-    func refreshDApps() {
-        provideDApps()
+    func remakeDAppsSubscription() {
+        subscribeDApps()
     }
 
     func refreshBlockTime() {
@@ -295,8 +292,8 @@ extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol 
         updateActionDetails()
     }
 
-    func refreshIdentities() {
-        provideIdentities()
+    func refreshIdentities(for accountIds: Set<AccountId>) {
+        provideIdentities(for: accountIds)
     }
 
     func remakeSubscriptions() {
@@ -338,10 +335,13 @@ extension ReferendumDetailsInteractor: PriceLocalSubscriptionHandler, PriceLocal
 }
 
 extension ReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
-    func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain _: ChainModel) {
+    func handleGovernanceMetadataDetails(
+        result: Result<ReferendumMetadataLocal?, Error>,
+        chain _: ChainModel,
+        referendumId _: ReferendumIdLocal
+    ) {
         switch result {
-        case let .success(mapping):
-            let metadata = mapping?[referendum.index]
+        case let .success(metadata):
             presenter?.didReceiveMetadata(metadata)
         case let .failure(error):
             presenter?.didReceiveError(.metadataFailed(error))
