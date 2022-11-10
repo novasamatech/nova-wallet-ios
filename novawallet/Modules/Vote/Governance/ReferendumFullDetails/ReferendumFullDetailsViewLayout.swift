@@ -109,7 +109,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
         updateLayout()
     }
 
-    func setCurveAndHash(viewModel: ReferendumFullDetailsViewModel.CurveAndHash?, locale: Locale) {
+    func setVoting(viewModel: ReferendumFullDetailsViewModel.Voting?, locale: Locale) {
         curveAndHashTableView?.clear()
         curveAndHashTableView = nil
 
@@ -119,21 +119,19 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 insertView(tableView, afterOneOf: [beneficiaryTableView, proposerTableView])
                 curveAndHashTableView = tableView
             }
-
-            let approveCurveCell = createTitleValueCell(
-                with: R.string.localizable.govApproveCurve(preferredLanguages: locale.rLanguages),
-                value: viewModel.approveCurve
+            createVotingCells(viewModel: viewModel.functionInfo, locale: locale).forEach {
+                curveAndHashTableView?.addArrangedSubview($0)
+            }
+            let turnoutCell = createBalanceCell(
+                with: R.string.localizable.govTurnout(preferredLanguages: locale.rLanguages),
+                viewModel: viewModel.turnout
             )
-
-            curveAndHashTableView?.addArrangedSubview(approveCurveCell)
-
-            let supportCurveCell = createTitleValueCell(
-                with: R.string.localizable.govSupportCurve(preferredLanguages: locale.rLanguages),
-                value: viewModel.supportCurve
+            let elecorateCell = createBalanceCell(
+                with: R.string.localizable.govElectorate(preferredLanguages: locale.rLanguages),
+                viewModel: viewModel.electorate
             )
-
-            curveAndHashTableView?.addArrangedSubview(supportCurveCell)
-
+            curveAndHashTableView?.addArrangedSubview(turnoutCell)
+            curveAndHashTableView?.addArrangedSubview(elecorateCell)
             if let callHash = viewModel.callHash {
                 let callHashCell = createInfoCell(
                     with: R.string.localizable.govCallHash(preferredLanguages: locale.rLanguages),
@@ -212,6 +210,30 @@ final class ReferendumFullDetailsViewLayout: UIView {
         containerView.stackView.addArrangedSubview(jsonView)
 
         self.jsonView = jsonView
+    }
+
+    private func createVotingCells(
+        viewModel: ReferendumFullDetailsViewModel.FunctionInfo,
+        locale: Locale
+    ) -> [StackTableViewCellProtocol] {
+        switch viewModel {
+        case let .supportAndVotes(approveCurve, supportCurve):
+            let approveCurveCell = createTitleValueCell(
+                with: R.string.localizable.govApproveCurve(preferredLanguages: locale.rLanguages),
+                value: approveCurve
+            )
+            let supportCurveCell = createTitleValueCell(
+                with: R.string.localizable.govSupportCurve(preferredLanguages: locale.rLanguages),
+                value: supportCurve
+            )
+            return [approveCurveCell, supportCurveCell]
+        case let .threshold(function):
+            let thresholdFunctionCell = createTitleValueCell(
+                with: R.string.localizable.govVoteThreshold(preferredLanguages: locale.rLanguages),
+                value: function
+            )
+            return [thresholdFunctionCell]
+        }
     }
 
     private func insertView(_ view: UIView, afterOneOf subviews: [UIView?]) {
