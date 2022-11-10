@@ -98,7 +98,7 @@ extension Democracy.VoteThreshold {
             return R.string.localizable.govVoteTresholdFunctionSuperMajorityApprove(
                 preferredLanguages: locale.rLanguages)
         case .unknown:
-            return R.string.localizable.govVoteTresholdFunctionUnknown(
+            return R.string.localizable.govUnknown(
                 preferredLanguages: locale.rLanguages)
         }
     }

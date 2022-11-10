@@ -1083,4 +1083,3 @@
 "gov.vote.treshold.function.simpleMajority" = "Простое большинство";
 "gov.vote.treshold.function.superMajorityAgainst" = "Супербольшинство против";
 "gov.vote.treshold.function.superMajorityApprove" = "Супербольшинство за";
-"gov.vote.treshold.function.unknown" = "Unknown";

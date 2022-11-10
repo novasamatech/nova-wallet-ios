@@ -1082,4 +1082,3 @@
 "gov.vote.treshold.function.simpleMajority" = "Simple Majority";
 "gov.vote.treshold.function.superMajorityAgainst" = "Super Majority Against";
 "gov.vote.treshold.function.superMajorityApprove" = "Super Majority Approve";
-"gov.vote.treshold.function.unknown" = "Unknown";
