@@ -11,6 +11,7 @@ final class AssetSelectionInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let assetFilter: AssetSelectionFilter
     let operationQueue: OperationQueue
+    let balanceSlice: KeyPath<AssetBalance, BigUInt>
 
     private var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
     private var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
@@ -19,6 +20,7 @@ final class AssetSelectionInteractor {
 
     init(
         selectedMetaAccount: MetaAccountModel,
+        balanceSlice: KeyPath<AssetBalance, BigUInt>,
         repository: AnyDataProviderRepository<ChainModel>,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -27,6 +29,7 @@ final class AssetSelectionInteractor {
         operationQueue: OperationQueue
     ) {
         self.selectedMetaAccount = selectedMetaAccount
+        self.balanceSlice = balanceSlice
         self.repository = repository
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -245,7 +248,7 @@ extension AssetSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSub
                     assetId: assetBalanceId.assetId
                 )
 
-                accum[chainAssetId] = .success(balance.transferable)
+                accum[chainAssetId] = .success(balance[keyPath: balanceSlice])
             case let .delete(deletedIdentifier):
                 guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
                     return
