@@ -51,6 +51,7 @@ extension DateComponentsFormatter {
             let dateFormatter = DateComponentsFormatter()
             dateFormatter.allowedUnits = [.hour, .minute, .second]
             dateFormatter.unitsStyle = .positional
+            dateFormatter.zeroFormattingBehavior = .pad
             dateFormatter.calendar = calendar
 
             return dateFormatter
