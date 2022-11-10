@@ -1,5 +1,5 @@
 import UIKit
-import MarkdownView
+import CDMarkdownKit
 
 final class ReferendumFullDescriptionViewLayout: UIView {
     let containerView: ScrollableContainerView = {
@@ -16,18 +16,20 @@ final class ReferendumFullDescriptionViewLayout: UIView {
         $0.numberOfLines = 0
     }
 
-    let markdownView = MarkdownView()
+    let markdownView = MarkdownViewContainer(
+        preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset
+    )
+
+    let activityIndicator: UIActivityIndicatorView = .create {
+        $0.hidesWhenStopped = true
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        addSubview(containerView)
-        containerView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-        containerView.stackView.addArrangedSubview(titleLabel)
-        containerView.stackView.addArrangedSubview(markdownView)
-        containerView.stackView.setCustomSpacing(16, after: titleLabel)
+        backgroundColor = R.color.colorBlack()
+
+        setupLayout()
     }
 
     @available(*, unavailable)
@@ -36,10 +38,32 @@ final class ReferendumFullDescriptionViewLayout: UIView {
     }
 
     func set(markdownText: String) {
-        markdownView.loadFull(markdownText: markdownText)
+        activityIndicator.startAnimating()
+
+        markdownView.load(from: markdownText) { [weak self] model in
+            if model != nil {
+                self?.activityIndicator.stopAnimating()
+            }
+        }
     }
 
     func set(title: String) {
         titleLabel.text = title
+    }
+
+    private func setupLayout() {
+        addSubview(containerView)
+        containerView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
+        containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.addArrangedSubview(markdownView)
+        containerView.stackView.setCustomSpacing(16, after: titleLabel)
+
+        addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
     }
 }
