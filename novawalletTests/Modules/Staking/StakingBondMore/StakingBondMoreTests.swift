@@ -58,7 +58,7 @@ class StakingBondMoreTests: XCTestCase {
 
         presenter.didReceiveAccountInfo(result: .success(accountInfo))
 
-        let paymentInfo = RuntimeDispatchInfo(dispatchClass: "normal", fee: "12600002654", weight: 331759000)
+        let paymentInfo = RuntimeDispatchInfo(fee: "12600002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(paymentInfo))
 
         let stashItem = StashItem(stash: WestendStub.address, controller: WestendStub.address)
@@ -97,7 +97,7 @@ class StakingBondMoreTests: XCTestCase {
         }
         // empty balance & extra fee is received
         presenter.didReceiveAccountInfo(result: .success(nil))
-        let paymentInfoWithExtraFee = RuntimeDispatchInfo(dispatchClass: "normal", fee: "12600000000002654", weight: 331759000)
+        let paymentInfoWithExtraFee = RuntimeDispatchInfo(fee: "12600000000002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(paymentInfoWithExtraFee))
 
         // when

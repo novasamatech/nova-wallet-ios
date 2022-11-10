@@ -11,8 +11,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
-    let lockStateFactory: GovernanceLockStateFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
     let operationQueue: OperationQueue
@@ -21,14 +19,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         governanceState.generalLocalSubscriptionFactory
     }
 
-    var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
-        governanceState.govMetadataLocalSubscriptionFactory
-    }
-
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var metadataProvider: AnySingleValueProvider<ReferendumMetadataMapping>?
+    private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
@@ -42,8 +36,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
-        lockStateFactory: GovernanceLockStateFactoryProtocol,
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -54,8 +46,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.referendumsOperationFactory = referendumsOperationFactory
-        self.lockStateFactory = lockStateFactory
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
@@ -70,7 +60,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private func clear() {
         clear(streamableProvider: &assetBalanceProvider)
         clear(singleValueProvider: &priceProvider)
-        clear(singleValueProvider: &metadataProvider)
+        clear(streamableProvider: &metadataProvider)
 
         clearBlockTimeService()
         clearSubscriptionFactory()
@@ -92,7 +82,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func clearSubscriptionFactory() {
-        governanceState.replaceSubscriptionFactory(for: nil)
+        governanceState.replaceGovernanceFactory(for: nil)
     }
 
     private func continueSetup() {
@@ -145,7 +135,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func setupSubscriptionFactory(for chain: ChainModel) {
-        governanceState.replaceSubscriptionFactory(for: chain)
+        governanceState.replaceGovernanceFactory(for: chain)
     }
 
     private func subscribeToBlockNumber(for chain: ChainModel) {
@@ -177,7 +167,11 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func subscribeToMetadata(for chain: ChainModel) {
-        metadataProvider = subscribeGovMetadata(for: chain)
+        metadataProvider = subscribeGovernanceMetadata(for: chain)
+
+        if metadataProvider == nil {
+            presenter?.didReceiveReferendumsMetadata([])
+        }
     }
 
     private func handleChainChange(for newChain: ChainModel) {
@@ -235,6 +229,11 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        guard let referendumsOperationFactory = governanceState.referendumsOperationFactory else {
+            presenter?.didReceiveReferendums([])
             return
         }
 
@@ -359,6 +358,11 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
                 return
             }
 
+            guard let lockStateFactory = governanceState.locksOperationFactory else {
+                presenter?.didReceiveUnlockSchedule(.init(items: []))
+                return
+            }
+
             let wrapper = lockStateFactory.buildUnlockScheduleWrapper(
                 for: tracksVoting,
                 from: connection,
@@ -395,14 +399,21 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
 }
 
 extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
-    func handleGovMetadata(result: Result<ReferendumMetadataMapping?, Error>, chain: ChainModel) {
+    var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
+        governanceState.govMetadataLocalSubscriptionFactory
+    }
+
+    func handleGovernanceMetadataPreview(
+        result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
+        chain: ChainModel
+    ) {
         guard let currentChain = governanceState.settings.value, currentChain.chainId == chain.chainId else {
             return
         }
 
         switch result {
-        case let .success(mapping):
-            presenter?.didReceiveReferendumsMetadata(mapping)
+        case let .success(changes):
+            presenter?.didReceiveReferendumsMetadata(changes)
         case let .failure(error):
             presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }

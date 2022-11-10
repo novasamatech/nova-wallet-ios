@@ -45,7 +45,7 @@ final class ReferendumMetadataViewModelFactory {
 
 extension ReferendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol {
     func createTitle(for referendum: ReferendumLocal, metadata: ReferendumMetadataLocal?, locale: Locale) -> String {
-        if let title = metadata?.name, !title.isEmpty {
+        if let title = metadata?.title, !title.isEmpty {
             return title
         } else {
             let index = indexFormatter.value(for: locale).string(from: referendum.index as NSNumber)
@@ -58,7 +58,7 @@ extension ReferendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory
     }
 
     func createDescription(for _: ReferendumLocal, metadata: ReferendumMetadataLocal?, locale: Locale) -> String {
-        if let description = metadata?.details, !description.isEmpty {
+        if let description = metadata?.content, !description.isEmpty {
             return description
         } else {
             return R.string.localizable.govReferendumDescriptionFallback(preferredLanguages: locale.rLanguages)

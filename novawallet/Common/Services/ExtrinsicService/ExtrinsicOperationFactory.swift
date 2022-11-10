@@ -96,6 +96,7 @@ final class ExtrinsicOperationFactory {
     let customExtensions: [ExtrinsicExtension]
     let engine: JSONRPCEngine
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
+    let operationManager: OperationManagerProtocol
 
     init(
         accountId: AccountId,
@@ -105,7 +106,8 @@ final class ExtrinsicOperationFactory {
         runtimeRegistry: RuntimeCodingServiceProtocol,
         customExtensions: [ExtrinsicExtension],
         engine: JSONRPCEngine,
-        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory()
+        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory(),
+        operationManager: OperationManagerProtocol
     ) {
         self.accountId = accountId
         self.chain = chain
@@ -115,6 +117,7 @@ final class ExtrinsicOperationFactory {
         self.customExtensions = customExtensions
         self.engine = engine
         self.eraOperationFactory = eraOperationFactory
+        self.operationManager = operationManager
     }
 
     private func createNonceOperation() -> BaseOperation<UInt32> {
@@ -231,8 +234,9 @@ final class ExtrinsicOperationFactory {
     }
 
     private func createTipInclusionOperation(
-        dependingOn infoOperation: JSONRPCListOperation<RuntimeDispatchInfo>,
-        coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        dependingOn infoOperation: BaseOperation<RuntimeDispatchInfo>,
+        extrinsicData: Data,
+        codingFactory: RuntimeCoderFactoryProtocol
     ) -> BaseOperation<RuntimeDispatchInfo> {
         ClosureOperation<RuntimeDispatchInfo> {
             let info = try infoOperation.extractNoCancellableResultData()
@@ -240,13 +244,6 @@ final class ExtrinsicOperationFactory {
             guard let baseFee = BigUInt(info.fee) else {
                 return info
             }
-
-            guard let hexExtrinsic = infoOperation.parameters?.first else {
-                return info
-            }
-
-            let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
-            let extrinsicData = try Data(hexString: hexExtrinsic)
 
             let decoder = try codingFactory.createDecoder(from: extrinsicData)
             let context = codingFactory.createRuntimeJsonContext()
@@ -258,7 +255,6 @@ final class ExtrinsicOperationFactory {
             if let tip = decodedExtrinsic.signature?.extra.getTip() {
                 let newFee = baseFee + tip
                 return RuntimeDispatchInfo(
-                    dispatchClass: info.dispatchClass,
                     fee: String(newFee),
                     weight: info.weight
                 )
@@ -266,6 +262,124 @@ final class ExtrinsicOperationFactory {
                 return info
             }
         }
+    }
+
+    private func createStateCallFeeWrapper(
+        for factory: RuntimeCoderFactoryProtocol,
+        type: String,
+        extrinsic: Data,
+        connection: JSONRPCEngine
+    ) -> CompoundOperationWrapper<RuntimeDispatchInfo> {
+        let requestOperation = ClosureOperation<StateCallRpc.Request> {
+            let lengthEncoder = factory.createEncoder()
+            try lengthEncoder.appendU32(json: .stringValue(String(extrinsic.count)))
+            let lengthInBytes = try lengthEncoder.encode()
+
+            let totalBytes = extrinsic + lengthInBytes
+
+            return StateCallRpc.Request(builtInFunction: StateCallRpc.feeBuiltIn) { container in
+                try container.encode(totalBytes.toHex(includePrefix: true))
+            }
+        }
+
+        let infoOperation = JSONRPCOperation<StateCallRpc.Request, String>(
+            engine: connection,
+            method: StateCallRpc.method
+        )
+
+        infoOperation.configurationBlock = {
+            do {
+                infoOperation.parameters = try requestOperation.extractNoCancellableResultData()
+            } catch {
+                infoOperation.result = .failure(error)
+            }
+        }
+
+        infoOperation.addDependency(requestOperation)
+
+        let mapOperation = ClosureOperation<RuntimeDispatchInfo> {
+            let result = try infoOperation.extractNoCancellableResultData()
+            let resultData = try Data(hexString: result)
+            let decoder = try factory.createDecoder(from: resultData)
+            let remoteModel = try decoder.read(type: type).map(
+                to: RemoteRuntimeDispatchInfo.self,
+                with: factory.createRuntimeJsonContext().toRawContext()
+            )
+
+            return .init(fee: String(remoteModel.fee), weight: remoteModel.weight)
+        }
+
+        mapOperation.addDependency(infoOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [requestOperation, infoOperation]
+        )
+    }
+
+    private func createApiFeeWrapper(
+        extrinsic: Data,
+        connection: JSONRPCEngine
+    ) -> CompoundOperationWrapper<RuntimeDispatchInfo> {
+        let infoOperation = JSONRPCListOperation<RuntimeDispatchInfo>(
+            engine: connection,
+            method: RPCMethod.paymentInfo,
+            parameters: [extrinsic.toHex(includePrefix: true)]
+        )
+
+        return CompoundOperationWrapper(targetOperation: infoOperation)
+    }
+
+    private func createFeeOperation(
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        extrinsicOperation: BaseOperation<[Data]>,
+        connection: JSONRPCEngine,
+        numberOfExtrinsics: Int
+    ) -> BaseOperation<[RuntimeDispatchInfo]> {
+        OperationCombiningService<RuntimeDispatchInfo>(
+            operationManager: operationManager
+        ) {
+            let coderFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let extrinsics = try extrinsicOperation.extractNoCancellableResultData()
+
+            let feeType = StateCallRpc.feeResultType
+            let hasFeeType = coderFactory.hasType(for: feeType)
+
+            let feeOperationWrappers: [CompoundOperationWrapper<RuntimeDispatchInfo>] =
+                (0 ..< numberOfExtrinsics).map { index in
+                    let feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>
+
+                    let extrinsicData = extrinsics[index]
+                    if hasFeeType {
+                        feeWrapper = self.createStateCallFeeWrapper(
+                            for: coderFactory,
+                            type: feeType,
+                            extrinsic: extrinsicData,
+                            connection: connection
+                        )
+                    } else {
+                        feeWrapper = self.createApiFeeWrapper(
+                            extrinsic: extrinsicData,
+                            connection: connection
+                        )
+                    }
+
+                    let tipInclusionOperation = self.createTipInclusionOperation(
+                        dependingOn: feeWrapper.targetOperation,
+                        extrinsicData: extrinsicData,
+                        codingFactory: coderFactory
+                    )
+
+                    tipInclusionOperation.addDependency(feeWrapper.targetOperation)
+
+                    return CompoundOperationWrapper(
+                        targetOperation: tipInclusionOperation,
+                        dependencies: feeWrapper.allOperations
+                    )
+                }
+
+            return feeOperationWrappers
+        }.longrunOperation()
     }
 }
 
@@ -290,55 +404,35 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
         let coderFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
 
-        let feeOperationWrappers: [CompoundOperationWrapper<RuntimeDispatchInfo>] =
-            (0 ..< numberOfExtrinsics).map { index in
-                let infoOperation = JSONRPCListOperation<RuntimeDispatchInfo>(
-                    engine: engine,
-                    method: RPCMethod.paymentInfo
-                )
+        let feeOperation = createFeeOperation(
+            dependingOn: coderFactoryOperation,
+            extrinsicOperation: builderWrapper.targetOperation,
+            connection: connection,
+            numberOfExtrinsics: numberOfExtrinsics
+        )
 
-                infoOperation.configurationBlock = {
-                    do {
-                        let extrinsics = try builderWrapper.targetOperation.extractNoCancellableResultData()
-                        let extrinsic = extrinsics[index].toHex(includePrefix: true)
-                        infoOperation.parameters = [extrinsic]
-                    } catch {
-                        infoOperation.result = .failure(error)
-                    }
-                }
-
-                infoOperation.addDependency(builderWrapper.targetOperation)
-
-                let tipInclusionOperation = createTipInclusionOperation(
-                    dependingOn: infoOperation,
-                    coderFactoryOperation: coderFactoryOperation
-                )
-
-                tipInclusionOperation.addDependency(infoOperation)
-
-                return CompoundOperationWrapper(targetOperation: tipInclusionOperation, dependencies: [infoOperation])
-            }
+        feeOperation.addDependency(coderFactoryOperation)
+        feeOperation.addDependency(builderWrapper.targetOperation)
 
         let wrapperOperation = ClosureOperation<[FeeExtrinsicResult]> {
-            feeOperationWrappers.map { feeWrapper in
-                if let result = feeWrapper.targetOperation.result {
-                    return result
-                } else {
-                    return .failure(BaseOperationError.parentOperationCancelled)
+            do {
+                let results = try feeOperation.extractNoCancellableResultData()
+
+                return results.map {
+                    return .success($0)
+                }
+            } catch {
+                return (0 ..< numberOfExtrinsics).map { _ in
+                    .failure(error)
                 }
             }
         }
 
-        feeOperationWrappers.forEach { feeWrapper in
-            feeWrapper.addDependency(operations: [coderFactoryOperation])
-            wrapperOperation.addDependency(feeWrapper.targetOperation)
-        }
-
-        let rawFeeOperations = feeOperationWrappers.flatMap(\.allOperations)
+        wrapperOperation.addDependency(feeOperation)
 
         return CompoundOperationWrapper(
             targetOperation: wrapperOperation,
-            dependencies: builderWrapper.allOperations + [coderFactoryOperation] + rawFeeOperations
+            dependencies: builderWrapper.allOperations + [coderFactoryOperation, feeOperation]
         )
     }
 

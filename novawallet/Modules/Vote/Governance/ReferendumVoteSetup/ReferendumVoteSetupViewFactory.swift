@@ -9,7 +9,6 @@ struct ReferendumVoteSetupViewFactory {
         referendum: ReferendumIdLocal
     ) -> ReferendumVoteSetupViewProtocol? {
         guard
-            let chain = state.settings.value,
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
                 for: state,
@@ -33,7 +32,7 @@ struct ReferendumVoteSetupViewFactory {
                 wireframe: wireframe,
                 dataValidatingFactory: dataValidatingFactory,
                 referendum: referendum,
-                chain: chain
+                state: state
             ) else {
             return nil
         }
@@ -55,11 +54,14 @@ struct ReferendumVoteSetupViewFactory {
         wireframe: ReferendumVoteSetupWireframeProtocol,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         referendum: ReferendumIdLocal,
-        chain: ChainModel
+        state: GovernanceSharedState
     ) -> ReferendumVoteSetupPresenter? {
         guard
+            let chain = state.settings.value,
             let assetDisplayInfo = chain.utilityAssetDisplayInfo(),
-            let currencyManager = CurrencyManager.shared else {
+            let currencyManager = CurrencyManager.shared,
+            let votingLockId = state.governanceId(for: chain)
+        else {
             return nil
         }
 
@@ -73,7 +75,7 @@ struct ReferendumVoteSetupViewFactory {
 
         let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
             assetDisplayInfo: assetDisplayInfo,
-            votingLockId: ConvictionVoting.lockId
+            votingLockId: votingLockId
         )
 
         let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
@@ -105,6 +107,8 @@ struct ReferendumVoteSetupViewFactory {
             let chain = state.settings.value,
             let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
             let subscriptionFactory = state.subscriptionFactory,
+            let lockStateFactory = state.locksOperationFactory,
+            let extrinsicFactory = state.createExtrinsicFactory(for: chain),
             let blockTimeService = state.blockTimeService
         else {
             return nil
@@ -118,12 +122,6 @@ struct ReferendumVoteSetupViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let operationManager = OperationManager(operationQueue: operationQueue)
-
-        let storageFactory = StorageKeyFactory()
-        let requestFactory = StorageRequestFactory(remoteFactory: storageFactory, operationManager: operationManager)
-
-        let calculator = Gov2UnlocksCalculator()
-        let lockStateFactory = Gov2LockStateFactory(requestFactory: requestFactory, unlocksCalculator: calculator)
 
         let extrinsicService = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeProvider,
@@ -143,7 +141,7 @@ struct ReferendumVoteSetupViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,
-            extrinsicFactory: Gov2ExtrinsicFactory(),
+            extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
