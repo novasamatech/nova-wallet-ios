@@ -47,7 +47,7 @@ protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-    AddressOptionsPresentable, WebPresentable {
+    AddressOptionsPresentable, WebPresentable, NoAccountSupportPresentable {
     func showFullDetails(
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,
@@ -70,4 +70,6 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
     )
 
     func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL)
+
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
 }
