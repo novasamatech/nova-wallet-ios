@@ -1226,6 +1226,7 @@
 		8476D39D27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D39C27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift */; };
 		8476D39F27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D39E27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift */; };
 		8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */; };
+		84770F22291E58AE00852A33 /* GovernanceOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84770F21291E58AE00852A33 /* GovernanceOperationFactory.swift */; };
 		8477DAA32888329800129B45 /* watchOnlyPreset.json in Resources */ = {isa = PBXBuildFile; fileRef = 8477DAA22888329800129B45 /* watchOnlyPreset.json */; };
 		8477DAA6288832CB00129B45 /* WatchOnlyPresetRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8477DAA5288832CB00129B45 /* WatchOnlyPresetRepository.swift */; };
 		84786DA825F9F58E0089DFF7 /* EraValidatorService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */; };
@@ -4215,6 +4216,7 @@
 		8476D39C27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhishingSiteVerifier+Init.swift"; sourceTree = "<group>"; };
 		8476D39E27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMetamaskPhishingDetectedState.swift; sourceTree = "<group>"; };
 		8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserPhishingDetectedState.swift; sourceTree = "<group>"; };
+		84770F21291E58AE00852A33 /* GovernanceOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceOperationFactory.swift; sourceTree = "<group>"; };
 		8477DAA22888329800129B45 /* watchOnlyPreset.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = watchOnlyPreset.json; sourceTree = "<group>"; };
 		8477DAA5288832CB00129B45 /* WatchOnlyPresetRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyPresetRepository.swift; sourceTree = "<group>"; };
 		84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EraValidatorService+Fetch.swift"; sourceTree = "<group>"; };
@@ -8881,6 +8883,20 @@
 			path = ModalAlert;
 			sourceTree = "<group>";
 		};
+		84770F23291E590800852A33 /* Fetch */ = {
+			isa = PBXGroup;
+			children = (
+				84A1742828ED625D0096F943 /* Gov2OperationFactory.swift */,
+				8438432D2913B3150048595C /* Gov1OperationFactory.swift */,
+				84770F21291E58AE00852A33 /* GovernanceOperationFactory.swift */,
+				843461E9290C04C400379936 /* Gov2OperationFactory+Protocol.swift */,
+				845B07F4291627A3005785D3 /* Gov1OperationFactory+Protocol.swift */,
+				845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */,
+				84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */,
+			);
+			path = Fetch;
+			sourceTree = "<group>";
+		};
 		847999B22888B46300D1BAD2 /* Address */ = {
 			isa = PBXGroup;
 			children = (
@@ -10446,16 +10462,11 @@
 		84A1742528ED60610096F943 /* Operation */ = {
 			isa = PBXGroup;
 			children = (
+				84770F23291E590800852A33 /* Fetch */,
 				845B080E2918D64B005785D3 /* Extrinsics */,
 				845B08022918C2E5005785D3 /* Action */,
 				843461F1290D370000379936 /* Locks */,
 				84A1742628ED607B0096F943 /* GovernanceOperationProtocols.swift */,
-				84A1742828ED625D0096F943 /* Gov2OperationFactory.swift */,
-				8438432D2913B3150048595C /* Gov1OperationFactory.swift */,
-				843461E9290C04C400379936 /* Gov2OperationFactory+Protocol.swift */,
-				845B07F4291627A3005785D3 /* Gov1OperationFactory+Protocol.swift */,
-				845B07F829162D24005785D3 /* Gov1LocalMappingFactory.swift */,
-				84DD49F328EE91ED00B804F3 /* Gov2LocalMappingFactory.swift */,
 				8425D0E928FE9A45003B782A /* GovernanceExtrinsicFactoryProtocol.swift */,
 			);
 			path = Operation;
@@ -17403,6 +17414,7 @@
 				3A4743C7C74BE4F74F6390F6 /* ReferendumFullDescriptionViewLayout.swift in Sources */,
 				F8C0CA3DDBCB5E509295F099 /* ReferendumFullDescriptionViewFactory.swift in Sources */,
 				9DE1757D047A4D1E97913774 /* GovernanceUnlockConfirmProtocols.swift in Sources */,
+				84770F22291E58AE00852A33 /* GovernanceOperationFactory.swift in Sources */,
 				2272FB0A01000A46D097634E /* GovernanceUnlockConfirmWireframe.swift in Sources */,
 				A3BDFA01A32B6C7463E6EFFA /* GovernanceUnlockConfirmPresenter.swift in Sources */,
 				62649D3FB6AACB508872C67A /* GovernanceUnlockConfirmInteractor.swift in Sources */,

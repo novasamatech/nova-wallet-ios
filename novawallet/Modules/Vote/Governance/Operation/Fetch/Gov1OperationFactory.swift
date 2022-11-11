@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-final class Gov1OperationFactory {
+final class Gov1OperationFactory: GovernanceOperationFactory {
     static let trackName: String = "root"
     static let trackId: Referenda.TrackId = 0
 
@@ -14,12 +14,39 @@ final class Gov1OperationFactory {
         let block: BlockNumber
     }
 
-    let requestFactory: StorageRequestFactoryProtocol
-    let operationQueue: OperationQueue
+    func createEnacmentTimeFetchWrapper(
+        dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: Democracy.ReferendumInfo]>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<[ReferendumIdLocal: BlockNumber]> {
+        let approvedReferendumsOperation = ClosureOperation<Set<Referenda.ReferendumIndex>> {
+            let referendums = try referendumOperation.extractNoCancellableResultData()
 
-    init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
-        self.requestFactory = requestFactory
-        self.operationQueue = operationQueue
+            let items: [Referenda.ReferendumIndex] = referendums.compactMap { keyValue in
+                switch keyValue.value {
+                case let .finished(status):
+                    return status.approved ? keyValue.key.referendumIndex : nil
+                default:
+                    return nil
+                }
+            }
+
+            return Set(items)
+        }
+
+        let fetchWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: approvedReferendumsOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash
+        )
+
+        fetchWrapper.addDependency(operations: [approvedReferendumsOperation])
+
+        let dependencies = [approvedReferendumsOperation] + fetchWrapper.dependencies
+
+        return CompoundOperationWrapper(targetOperation: fetchWrapper.targetOperation, dependencies: dependencies)
     }
 
     func createAdditionalInfoWrapper(
@@ -88,7 +115,9 @@ final class Gov1OperationFactory {
 
     func createReferendumMapOperation(
         dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: Democracy.ReferendumInfo]>,
-        additionalInfoOperation: BaseOperation<AdditionalInfo>
+        additionalInfoOperation: BaseOperation<AdditionalInfo>,
+        enactmentsOperation _: BaseOperation<[ReferendumIdLocal: BlockNumber]>
+
     ) -> BaseOperation<[ReferendumLocal]> {
         ClosureOperation<[ReferendumLocal]> {
             let remoteReferendums = try referendumOperation.extractNoCancellableResultData()
