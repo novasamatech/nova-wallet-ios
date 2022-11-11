@@ -71,6 +71,7 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
         textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
         textView.roundAllCorners = true
+        textView.dataDetectorTypes = [.link]
 
         textView.backgroundColor = .clear
 
