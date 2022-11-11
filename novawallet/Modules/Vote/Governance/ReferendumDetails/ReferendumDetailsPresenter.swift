@@ -15,11 +15,11 @@ final class ReferendumDetailsPresenter {
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
+    let wallet: MetaAccountModel
 
     let chain: ChainModel
     let logger: LoggerProtocol
 
-    private var wallet: MetaAccountModel?
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
@@ -39,6 +39,7 @@ final class ReferendumDetailsPresenter {
     init(
         referendum: ReferendumLocal,
         chain: ChainModel,
+        wallet: MetaAccountModel,
         accountManagementFilter: AccountManagementFilterProtocol,
         accountVotes: ReferendumAccountVoteLocal?,
         metadata: ReferendumMetadataLocal?,
@@ -57,6 +58,7 @@ final class ReferendumDetailsPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.wallet = wallet
         self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
         self.referendumStringsFactory = referendumStringsFactory
@@ -339,7 +341,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func vote() {
-        guard let wallet = wallet, let view = view else {
+        guard let view = view else {
             return
         }
 
@@ -437,10 +439,6 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {
-    func didReceiveWallet(_ wallet: MetaAccountModel?) {
-        self.wallet = wallet
-    }
-
     func didReceiveReferendum(_ referendum: ReferendumLocal) {
         self.referendum = referendum
 
