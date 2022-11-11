@@ -169,11 +169,7 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
-        let track = ReferendumTrackType.createViewModel(
-            from: model.track.name,
-            chain: params.chainInfo.chain,
-            locale: locale
-        )
+        let track = createTrackViewModel(from: model.track, params: params, locale: locale)
 
         let referendumNumber = localizedIndexFormatter.value(for: locale).string(
             from: NSNumber(value: params.referendum.index)
@@ -238,6 +234,19 @@ final class ReferendumsModelFactory {
         )
     }
 
+    private func createTrackViewModel(
+        from track: GovernanceTrackLocal,
+        params: StatusParams,
+        locale: Locale
+    ) -> ReferendumInfoView.Track? {
+        // display track name if more than 1 track in the network
+        guard track.totalTracksCount > 1 else {
+            return nil
+        }
+
+        return ReferendumTrackType.createViewModel(from: track.name, chain: params.chainInfo.chain, locale: locale)
+    }
+
     private func provideDecidingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Deciding,
         params: StatusParams,
@@ -280,11 +289,7 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
-        let track = ReferendumTrackType.createViewModel(
-            from: model.track.name,
-            chain: params.chainInfo.chain,
-            locale: locale
-        )
+        let track = createTrackViewModel(from: model.track, params: params, locale: locale)
 
         let indexFormatter = localizedIndexFormatter.value(for: locale)
         let referendumNumber = indexFormatter.string(from: NSNumber(value: params.referendum.index))

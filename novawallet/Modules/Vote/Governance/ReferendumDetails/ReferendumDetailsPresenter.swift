@@ -85,8 +85,16 @@ final class ReferendumDetailsPresenter {
             from: referendum.index as NSNumber
         )
 
-        let trackViewModel = referendum.track.map {
-            ReferendumTrackType.createViewModel(from: $0.name, chain: chain, locale: selectedLocale)
+        // display track name only if there is more than 1 track in the network
+        let trackViewModel: ReferendumInfoView.Track?
+        if let track = referendum.track, track.totalTracksCount > 1 {
+            trackViewModel = ReferendumTrackType.createViewModel(
+                from: track.name,
+                chain: chain,
+                locale: selectedLocale
+            )
+        } else {
+            trackViewModel = nil
         }
 
         let viewModel = TrackTagsView.Model(titleIcon: trackViewModel, referendumNumber: referendumIndex)
