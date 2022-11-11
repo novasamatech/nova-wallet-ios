@@ -53,7 +53,7 @@ final class ReferendumVoteConfirmViewController: UIViewController, ViewHolder {
         applyReferendumNumber()
 
         rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonSender(preferredLanguages: languages)
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: languages)
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
