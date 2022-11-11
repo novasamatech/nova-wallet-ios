@@ -119,6 +119,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         if let accountId = accountId {
             subscribeAccountVotes(for: accountId)
+        } else {
+            presenter?.didReceiveVoting(.init(value: nil, blockHash: nil))
         }
     }
 
