@@ -3,8 +3,6 @@ import SoraFoundation
 import SubstrateSdk
 
 final class ReferendumDetailsPresenter {
-    static let readMoreThreshold = 180
-
     weak var view: ReferendumDetailsViewProtocol?
     let wireframe: ReferendumDetailsWireframeProtocol
     let interactor: ReferendumDetailsInteractorInputProtocol
@@ -16,6 +14,8 @@ final class ReferendumDetailsPresenter {
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let accountManagementFilter: AccountManagementFilterProtocol
+    let wallet: MetaAccountModel
 
     let chain: ChainModel
     let logger: LoggerProtocol
@@ -39,6 +39,8 @@ final class ReferendumDetailsPresenter {
     init(
         referendum: ReferendumLocal,
         chain: ChainModel,
+        wallet: MetaAccountModel,
+        accountManagementFilter: AccountManagementFilterProtocol,
         accountVotes: ReferendumAccountVoteLocal?,
         metadata: ReferendumMetadataLocal?,
         interactor: ReferendumDetailsInteractorInputProtocol,
@@ -56,6 +58,8 @@ final class ReferendumDetailsPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.wallet = wallet
+        self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
         self.referendumStringsFactory = referendumStringsFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -107,7 +111,6 @@ final class ReferendumDetailsPresenter {
         let detailsViewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
             for: referendum,
             metadata: referendumMetadata,
-            readMoreThreshold: Self.readMoreThreshold,
             locale: selectedLocale
         )
 
@@ -338,7 +341,38 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func vote() {
-        wireframe.showVote(from: view, referendum: referendum)
+        guard let view = view else {
+            return
+        }
+
+        if wallet.fetch(for: chain.accountRequest()) != nil {
+            wireframe.showVote(from: view, referendum: referendum)
+        } else if accountManagementFilter.accountManagementSupports(wallet: wallet, for: chain) {
+            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
+                chain.name,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: selectedLocale
+            ) { [weak self] in
+                guard let wallet = self?.wallet else {
+                    return
+                }
+
+                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
+            }
+        } else {
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chain.name,
+                locale: selectedLocale
+            )
+        }
     }
 
     func showProposerDetails() {
@@ -372,7 +406,15 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         wireframe.showDApp(from: view, url: url)
     }
 
-    func readFullDescription() {}
+    func readFullDescription() {
+        let viewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
+            for: referendum,
+            metadata: referendumMetadata,
+            locale: selectedLocale
+        )
+
+        wireframe.showFullDescription(from: view, title: viewModel.title, description: viewModel.description)
+    }
 
     func openFullDetails() {
         guard let actionDetails = actionDetails else {
@@ -385,6 +427,14 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             actionDetails: actionDetails,
             identities: identities ?? [:]
         )
+    }
+
+    func openURL(_ url: URL) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.showWeb(url: url, from: view, style: .automatic)
     }
 }
 
