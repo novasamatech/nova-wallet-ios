@@ -1022,8 +1022,8 @@
 "gov.track.big.spender" = "Treasury: Big Spend";
 "gov.track.whitelisted.caller" = "Fellowship: Whitelist";
 "gov.track.fellowship.admin" = "Fellowship: Admin";
-"gov.voters.aye" = "За голосовали";
-"gov.voters.nay" = "Против голосовали";
+"gov.voters.aye" = "Голоса за";
+"gov.voters.nay" = "Голоса против";
 "gov.common.votes.format" = "%@ голосов";
 "gov.common.amount.conviction.format" = "%@ × %@x";
 "gov.voters.empty" = "Список проголосовавших появится здесь";
