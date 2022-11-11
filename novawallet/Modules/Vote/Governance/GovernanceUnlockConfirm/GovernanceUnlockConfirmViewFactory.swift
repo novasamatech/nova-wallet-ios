@@ -80,6 +80,7 @@ struct GovernanceUnlockConfirmViewFactory {
             let lockStateFactory = state.locksOperationFactory,
             let extrinsicFactory = state.createExtrinsicFactory(for: chain),
             let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory(),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -109,6 +110,7 @@ struct GovernanceUnlockConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue,
