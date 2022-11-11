@@ -3,11 +3,35 @@ import SubstrateSdk
 import RobinHood
 import BigInt
 
-final class Gov2OperationFactory: GovernanceOperationFactory {
+final class Gov2OperationFactory {
     struct AdditionalInfo {
         let tracks: [Referenda.TrackId: Referenda.TrackInfo]
         let totalIssuance: BigUInt
         let undecidingTimeout: Moment
+    }
+
+    struct SchedulerTaskName: Encodable {
+        let index: Referenda.ReferendumIndex
+
+        func encode(to encoder: Encoder) throws {
+            let scaleEncoder = ScaleEncoder()
+            "assembly".data(using: .utf8).map { scaleEncoder.appendRaw(data: $0) }
+            try "enactment".encode(scaleEncoder: scaleEncoder)
+            try index.encode(scaleEncoder: scaleEncoder)
+
+            let data = try scaleEncoder.encode().blake2b32()
+
+            var container = encoder.singleValueContainer()
+            try container.encode(BytesCodable(wrappedValue: data))
+        }
+    }
+
+    let requestFactory: StorageRequestFactoryProtocol
+    let operationQueue: OperationQueue
+
+    init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
+        self.requestFactory = requestFactory
+        self.operationQueue = operationQueue
     }
 
     func createEnacmentTimeFetchWrapper(
@@ -16,33 +40,50 @@ final class Gov2OperationFactory: GovernanceOperationFactory {
         runtimeProvider: RuntimeProviderProtocol,
         blockHash: Data?
     ) -> CompoundOperationWrapper<[ReferendumIdLocal: BlockNumber]> {
-        let approvedReferendumsOperation = ClosureOperation<Set<Referenda.ReferendumIndex>> {
+        let keysClosure: () throws -> [SchedulerTaskName] = {
             let referendums = try referendumOperation.extractNoCancellableResultData()
 
-            let items: [Referenda.ReferendumIndex] = referendums.compactMap { keyValue in
+            return referendums.compactMap { keyValue in
                 switch keyValue.value {
                 case .approved:
-                    return keyValue.key.referendumIndex
+                    return SchedulerTaskName(index: keyValue.key.referendumIndex)
                 default:
                     return nil
                 }
             }
-
-            return Set(items)
         }
 
-        let fetchWrapper = createEnacmentTimeFetchWrapper(
-            dependingOn: approvedReferendumsOperation,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
-            blockHash: blockHash
-        )
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        fetchWrapper.addDependency(operations: [approvedReferendumsOperation])
+        let enactmentWrapper: CompoundOperationWrapper<[StorageResponse<OnChainScheduler.TaskAddress>]> =
+            requestFactory.queryItems(
+                engine: connection,
+                keyParams: keysClosure,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: OnChainScheduler.lookupTaskPath,
+                at: blockHash
+            )
 
-        let dependencies = [approvedReferendumsOperation] + fetchWrapper.dependencies
+        enactmentWrapper.addDependency(operations: [codingFactoryOperation])
 
-        return CompoundOperationWrapper(targetOperation: fetchWrapper.targetOperation, dependencies: dependencies)
+        let mapOperation = ClosureOperation<[ReferendumIdLocal: BlockNumber]> {
+            let keys = try keysClosure()
+            let results = try enactmentWrapper.targetOperation.extractNoCancellableResultData()
+
+            return zip(keys, results).reduce(into: [ReferendumIdLocal: BlockNumber]()) { accum, keyResult in
+                guard let when = keyResult.1.value?.when else {
+                    return
+                }
+
+                accum[ReferendumIdLocal(keyResult.0.index)] = when
+            }
+        }
+
+        mapOperation.addDependency(enactmentWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + enactmentWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     func createReferendumMapOperation(

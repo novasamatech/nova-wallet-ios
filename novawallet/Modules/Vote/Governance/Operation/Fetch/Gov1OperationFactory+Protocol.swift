@@ -77,14 +77,24 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
             return [referendumIndexKey: remoteReferendum]
         }
 
+        let enactmentsWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: referendumOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash
+        )
+
+        enactmentsWrapper.addDependency(operations: [referendumOperation])
+
         let mergeOperation = createReferendumMapOperation(
             dependingOn: referendumOperation,
             additionalInfoOperation: additionalInfoWrapper.targetOperation,
-            enactmentsOperation: <#T##BaseOperation<[ReferendumIdLocal : BlockNumber]>#>
+            enactmentsOperation: enactmentsWrapper.targetOperation
         )
 
         mergeOperation.addDependency(referendumOperation)
         mergeOperation.addDependency(additionalInfoWrapper.targetOperation)
+        mergeOperation.addDependency(enactmentsWrapper.targetOperation)
 
         let mapOperation = ClosureOperation<ReferendumLocal> {
             guard let referendum = try mergeOperation.extractNoCancellableResultData().first else {
@@ -97,7 +107,7 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
         mapOperation.addDependency(mergeOperation)
 
         let dependencies = [codingFactoryOperation, referendumOperation] +
-            additionalInfoWrapper.allOperations + [mergeOperation]
+            additionalInfoWrapper.allOperations + enactmentsWrapper.allOperations + [mergeOperation]
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
