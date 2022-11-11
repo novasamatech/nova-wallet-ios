@@ -22,6 +22,15 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
 
         referendumWrapper.addDependency(operations: [codingFactoryOperation])
 
+        let enactmentsWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: referendumWrapper.targetOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
+        )
+
+        enactmentsWrapper.addDependency(wrapper: referendumWrapper)
+
         let additionalWrapper = createAdditionalInfoWrapper(
             dependingOn: codingFactoryOperation,
             connection: connection,
@@ -32,16 +41,18 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
 
         let mapOperation = createReferendumMapOperation(
             dependingOn: referendumWrapper.targetOperation,
-            additionalInfoOperation: additionalWrapper.targetOperation
+            additionalInfoOperation: additionalWrapper.targetOperation,
+            enactmentsOperation: enactmentsWrapper.targetOperation
         )
 
         mapOperation.addDependency(additionalWrapper.targetOperation)
         mapOperation.addDependency(referendumWrapper.targetOperation)
+        mapOperation.addDependency(enactmentsWrapper.targetOperation)
 
-        return .init(
-            targetOperation: mapOperation,
-            dependencies: [codingFactoryOperation] + referendumWrapper.allOperations + additionalWrapper.allOperations
-        )
+        let dependencies = [codingFactoryOperation] + referendumWrapper.allOperations +
+            enactmentsWrapper.allOperations + additionalWrapper.allOperations
+
+        return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     func fetchReferendumWrapper(
@@ -68,7 +79,8 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
 
         let mergeOperation = createReferendumMapOperation(
             dependingOn: referendumOperation,
-            additionalInfoOperation: additionalInfoWrapper.targetOperation
+            additionalInfoOperation: additionalInfoWrapper.targetOperation,
+            enactmentsOperation: <#T##BaseOperation<[ReferendumIdLocal : BlockNumber]>#>
         )
 
         mergeOperation.addDependency(referendumOperation)
