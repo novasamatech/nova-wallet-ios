@@ -15,6 +15,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let runtimeProvider: RuntimeProviderProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
+    let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
@@ -39,6 +40,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
+        blockTimeFactory: BlockTimeOperationFactoryProtocol,
         identityOperationFactory: IdentityOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -58,6 +60,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
+        self.blockTimeFactory = blockTimeFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.dAppsProvider = dAppsProvider
@@ -202,28 +205,31 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             return
         }
 
-        let operation = blockTimeService.createEstimatedBlockTimeOperation()
+        let wrapper = blockTimeFactory.createBlockTimeOperation(
+            from: runtimeProvider,
+            blockTimeEstimationService: blockTimeService
+        )
 
-        operation.completionBlock = { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard operation === self?.blockTimeCancellable else {
+                guard wrapper === self?.blockTimeCancellable else {
                     return
                 }
 
                 self?.blockTimeCancellable = nil
 
                 do {
-                    let blockTimeModel = try operation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveBlockTime(blockTimeModel.blockTime)
+                    let blockTimeModel = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveBlockTime(blockTimeModel)
                 } catch {
                     self?.presenter?.didReceiveError(.blockTimeFailed(error))
                 }
             }
         }
 
-        blockTimeCancellable = operation
+        blockTimeCancellable = wrapper
 
-        operationQueue.addOperation(operation)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func updateActionDetails() {

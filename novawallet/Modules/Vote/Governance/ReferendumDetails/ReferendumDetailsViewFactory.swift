@@ -101,6 +101,7 @@ struct ReferendumDetailsViewFactory {
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory(),
             let subscriptionFactory = state.subscriptionFactory,
             let actionDetailsFactory = state.createActionsDetailsFactory(for: chain) else {
             return nil
@@ -129,6 +130,7 @@ struct ReferendumDetailsViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             identityOperationFactory: identityOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
