@@ -8,7 +8,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private(set) var referendum: ReferendumLocal
     private(set) var actionDetails: ReferendumActionLocal?
 
-    let walletSettings: SelectedWalletSettings
+    let selectedAccount: ChainAccountResponse?
     let chain: ChainModel
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
@@ -20,7 +20,6 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
     let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
-    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -34,7 +33,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
     init(
         referendum: ReferendumLocal,
-        walletSettings: SelectedWalletSettings,
+        selectedAccount: ChainAccountResponse?,
         chain: ChainModel,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
         connection: JSONRPCEngine,
@@ -46,12 +45,11 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
         referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         dAppsProvider: AnySingleValueProvider<GovernanceDAppList>,
-        eventCenter: EventCenterProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.referendum = referendum
-        self.walletSettings = walletSettings
+        self.selectedAccount = selectedAccount
         self.chain = chain
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
         self.connection = connection
@@ -63,7 +61,6 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.dAppsProvider = dAppsProvider
-        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
@@ -76,17 +73,9 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
 
-        if let accountId = selectedAccountId() {
+        if let accountId = selectedAccount?.accountId {
             referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: accountId)
         }
-    }
-
-    private func selectedAccountId() -> AccountId? {
-        walletSettings.value?.fetch(for: chain.accountRequest())?.accountId
-    }
-
-    private func provideSelectedWallet() {
-        presenter?.didReceiveWallet(walletSettings.value)
     }
 
     private func subscribeReferendum() {
@@ -111,7 +100,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func subscribeAccountVotes() {
-        guard let accountId = selectedAccountId() else {
+        guard let accountId = selectedAccount?.accountId else {
             presenter?.didReceiveAccountVotes(nil)
             return
         }
@@ -299,12 +288,9 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
 extension ReferendumDetailsInteractor: ReferendumDetailsInteractorInputProtocol {
     func setup() {
-        provideSelectedWallet()
         makeSubscriptions()
         updateActionDetails()
         subscribeDApps()
-
-        eventCenter.add(observer: self, dispatchIn: .main)
     }
 
     func remakeDAppsSubscription() {
@@ -383,12 +369,5 @@ extension ReferendumDetailsInteractor: SelectedCurrencyDepending {
                 priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
             }
         }
-    }
-}
-
-extension ReferendumDetailsInteractor: EventVisitorProtocol {
-    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        provideSelectedWallet()
-        makeAccountBasedSubscriptions()
     }
 }
