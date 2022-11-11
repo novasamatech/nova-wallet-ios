@@ -27,7 +27,11 @@ final class VotePresenter {
             return
         }
 
-        let viewModel = walletSwitchViewModelFactory.createViewModel(from: wallet.walletIdenticonData(), walletType: wallet.type)
+        let viewModel = walletSwitchViewModelFactory.createViewModel(
+            from: wallet.walletIdenticonData(),
+            walletType: wallet.type
+        )
+
         view?.didSwitchWallet(with: viewModel)
     }
 }
