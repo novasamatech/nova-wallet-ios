@@ -61,6 +61,26 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
         view?.controller.present(navigationController, animated: true)
     }
 
+    func showFullDescription(
+        from view: ReferendumDetailsViewProtocol?,
+        title: String,
+        description: String
+    ) {
+        guard
+            let fullDescriptionView = ReferendumFullDescriptionViewFactory.createView(
+                for: title,
+                description: description
+            ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: fullDescriptionView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true)
+    }
+
     func showDApp(from view: ReferendumDetailsViewProtocol?, url: URL) {
         guard
             let browser = DAppBrowserViewFactory.createView(
@@ -70,5 +90,13 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
         }
 
         view?.controller.navigationController?.pushViewController(browser.controller, animated: true)
+    }
+
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel) {
+        guard let accountManagementView = AccountManagementViewFactory.createView(for: wallet.identifier) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(accountManagementView.controller, animated: true)
     }
 }
