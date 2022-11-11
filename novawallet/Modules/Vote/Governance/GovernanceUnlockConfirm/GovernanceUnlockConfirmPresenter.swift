@@ -141,11 +141,8 @@ final class GovernanceUnlockConfirmPresenter {
             view?.didReceiveTransferableAmount(viewModel: transferableViewModel)
         }
 
-        if let locks = locks, let chainAssetId = chain.utilityChainAssetId() {
-            let remainedLocksViewModel = lockChangeViewModelFactory.createRemainedLockViewModel(
-                after: remainedLocked,
-                chainAssetId: chainAssetId,
-                accountId: selectedAccount.chainAccount.accountId,
+        if let locks = locks {
+            let remainedLocksViewModel = lockChangeViewModelFactory.createRemainedOtherLocksViewModel(
                 locks: locks,
                 locale: selectedLocale
             )
