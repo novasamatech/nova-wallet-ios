@@ -62,6 +62,7 @@ final class ReferendumsPresenter {
         referendums = nil
         referendumsMetadata = nil
         voting = nil
+        unlockSchedule = nil
         blockNumber = nil
         blockTime = nil
         maxStatusTimeInterval = nil
