@@ -14,10 +14,12 @@ final class ReferendumDetailsPresenter {
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let accountManagementFilter: AccountManagementFilterProtocol
 
     let chain: ChainModel
     let logger: LoggerProtocol
 
+    private var wallet: MetaAccountModel?
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
@@ -37,6 +39,7 @@ final class ReferendumDetailsPresenter {
     init(
         referendum: ReferendumLocal,
         chain: ChainModel,
+        accountManagementFilter: AccountManagementFilterProtocol,
         accountVotes: ReferendumAccountVoteLocal?,
         metadata: ReferendumMetadataLocal?,
         interactor: ReferendumDetailsInteractorInputProtocol,
@@ -54,6 +57,7 @@ final class ReferendumDetailsPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
         self.referendumStringsFactory = referendumStringsFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -335,7 +339,38 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func vote() {
-        wireframe.showVote(from: view, referendum: referendum)
+        guard let wallet = wallet, let view = view else {
+            return
+        }
+
+        if wallet.fetch(for: chain.accountRequest()) != nil {
+            wireframe.showVote(from: view, referendum: referendum)
+        } else if accountManagementFilter.accountManagementSupports(wallet: wallet, for: chain) {
+            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
+                chain.name,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: selectedLocale
+            ) { [weak self] in
+                guard let wallet = self?.wallet else {
+                    return
+                }
+
+                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
+            }
+        } else {
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chain.name,
+                locale: selectedLocale
+            )
+        }
     }
 
     func showProposerDetails() {
@@ -402,6 +437,10 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
 }
 
 extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol {
+    func didReceiveWallet(_ wallet: MetaAccountModel?) {
+        self.wallet = wallet
+    }
+
     func didReceiveReferendum(_ referendum: ReferendumLocal) {
         self.referendum = referendum
 
