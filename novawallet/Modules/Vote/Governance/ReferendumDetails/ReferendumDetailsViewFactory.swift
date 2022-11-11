@@ -54,6 +54,7 @@ struct ReferendumDetailsViewFactory {
         let presenter = ReferendumDetailsPresenter(
             referendum: referendum,
             chain: chain,
+            accountManagementFilter: AccountManagementFilter(),
             accountVotes: accountVotes,
             metadata: metadata,
             interactor: interactor,
@@ -86,9 +87,7 @@ struct ReferendumDetailsViewFactory {
         currencyManager: CurrencyManagerProtocol,
         state: GovernanceSharedState
     ) -> ReferendumDetailsInteractor? {
-        guard
-            let chain = state.settings.value,
-            let selectedAccount = SelectedWalletSettings.shared.value.fetch(for: chain.accountRequest()) else {
+        guard let chain = state.settings.value else {
             return nil
         }
 
@@ -120,7 +119,7 @@ struct ReferendumDetailsViewFactory {
 
         return ReferendumDetailsInteractor(
             referendum: referendum,
-            selectedAccount: selectedAccount,
+            walletSettings: SelectedWalletSettings.shared,
             chain: chain,
             actionDetailsOperationFactory: actionDetailsFactory,
             connection: connection,
@@ -132,6 +131,7 @@ struct ReferendumDetailsViewFactory {
             govMetadataLocalSubscriptionFactory: state.govMetadataLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
             dAppsProvider: dAppsProvider,
+            eventCenter: EventCenter.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
