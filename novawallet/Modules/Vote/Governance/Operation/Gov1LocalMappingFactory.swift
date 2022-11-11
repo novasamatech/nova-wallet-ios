@@ -7,7 +7,11 @@ final class Gov1LocalMappingFactory {
         index: Referenda.ReferendumIndex,
         additionalInfo: Gov1OperationFactory.AdditionalInfo
     ) -> ReferendumLocal {
-        let track = GovernanceTrackLocal(trackId: Gov1OperationFactory.trackId, name: Gov1OperationFactory.trackName)
+        let track = GovernanceTrackLocal(
+            trackId: Gov1OperationFactory.trackId,
+            name: Gov1OperationFactory.trackName,
+            totalTracksCount: 1
+        )
 
         let submitted = referendum.end - additionalInfo.votingPeriod
 
