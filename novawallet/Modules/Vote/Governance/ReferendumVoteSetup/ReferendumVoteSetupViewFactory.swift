@@ -109,7 +109,8 @@ struct ReferendumVoteSetupViewFactory {
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
             let extrinsicFactory = state.createExtrinsicFactory(for: chain),
-            let blockTimeService = state.blockTimeService
+            let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory()
         else {
             return nil
         }
@@ -138,6 +139,7 @@ struct ReferendumVoteSetupViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,

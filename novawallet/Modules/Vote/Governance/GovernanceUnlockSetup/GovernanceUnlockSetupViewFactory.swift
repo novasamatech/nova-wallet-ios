@@ -50,7 +50,8 @@ struct GovernanceUnlockSetupViewFactory {
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
-            let blockTimeService = state.blockTimeService else {
+            let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory() else {
             return nil
         }
 
@@ -62,6 +63,7 @@ struct GovernanceUnlockSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
