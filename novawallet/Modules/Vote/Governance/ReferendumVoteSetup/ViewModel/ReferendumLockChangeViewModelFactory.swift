@@ -24,10 +24,7 @@ protocol ReferendumLockChangeViewModelFactoryProtocol {
         locale: Locale
     ) -> ReferendumLockTransitionViewModel?
 
-    func createRemainedLockViewModel(
-        after remainedGovernanceLock: BigUInt,
-        chainAssetId: ChainAssetId,
-        accountId: AccountId,
+    func createRemainedOtherLocksViewModel(
         locks: AssetLocks,
         locale: Locale
     ) -> GovernanceRemainedLockViewModel?
@@ -102,23 +99,13 @@ final class ReferendumLockChangeViewModelFactory {
 }
 
 extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol {
-    func createRemainedLockViewModel(
-        after remainedGovernanceLock: BigUInt,
-        chainAssetId: ChainAssetId,
-        accountId: AccountId,
+    func createRemainedOtherLocksViewModel(
         locks: AssetLocks,
         locale: Locale
     ) -> GovernanceRemainedLockViewModel? {
         let otherLocks = locks.filter { $0.displayId != votingLockId }
 
-        let newLock = AssetLock(
-            chainAssetId: chainAssetId,
-            accountId: accountId,
-            type: votingLockId.data(using: .utf8) ?? Data(),
-            amount: remainedGovernanceLock
-        )
-
-        let newLocks = (otherLocks + [newLock]).sorted { $0.amount > $1.amount }
+        let newLocks = otherLocks.sorted { $0.amount > $1.amount }
 
         if let lockedAmount = newLocks.first?.amount, lockedAmount > 0 {
             let amountDecimal = Decimal.fromSubstrateAmount(
