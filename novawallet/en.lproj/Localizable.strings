@@ -1083,3 +1083,4 @@
 "gov.vote.treshold.function.superMajorityAgainst" = "Super Majority Against";
 "gov.vote.treshold.function.superMajorityApprove" = "Super Majority Approve";
 "common.days.fraction.format" = "%@ days";
+"gov.empty.list" = "Referenda information\nwill appear here when they start";
