@@ -240,7 +240,7 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
         let fromBlock = max(initLockedUntil, blockNumber)
 
         let fromPeriod = blockNumber.secondsTo(block: fromBlock, blockDuration: blockTime)
-        let fromPeriodString = fromPeriod.localizedDaysHoursIncludingZero(for: locale)
+        let fromPeriodString = fromPeriod.localizedFractionDays(for: locale, shouldAnnotate: false)
 
         let toPeriodString: String
         let change: ReferendumLockTransitionViewModel.Change?
@@ -249,7 +249,7 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
             let toBlock = max(resultLockedUntil, blockNumber)
             let toPeriod = blockNumber.secondsTo(block: toBlock, blockDuration: blockTime)
 
-            toPeriodString = toPeriod.localizedDaysHoursIncludingZero(for: locale)
+            toPeriodString = toPeriod.localizedFractionDays(for: locale, shouldAnnotate: true)
 
             if fromPeriod < toPeriod, (toPeriod - fromPeriod).hoursFromSeconds > 0 {
                 change = .init(
@@ -271,7 +271,7 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
                 change = nil
             }
         } else {
-            toPeriodString = fromPeriodString
+            toPeriodString = fromPeriod.localizedFractionDays(for: locale, shouldAnnotate: true)
             change = nil
         }
 
