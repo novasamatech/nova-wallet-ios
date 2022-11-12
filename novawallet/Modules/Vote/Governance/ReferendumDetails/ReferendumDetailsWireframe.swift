@@ -30,11 +30,16 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
         view?.controller.present(navigationController, animated: true)
     }
 
-    func showVote(from view: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal) {
+    func showVote(
+        from view: ReferendumDetailsViewProtocol?,
+        referendum: ReferendumLocal,
+        initData: ReferendumVotingInitData
+    ) {
         guard
             let voteSetupView = ReferendumVoteSetupViewFactory.createView(
                 for: state,
-                referendum: referendum.index
+                referendum: referendum.index,
+                initData: initData
             ) else {
             return
         }

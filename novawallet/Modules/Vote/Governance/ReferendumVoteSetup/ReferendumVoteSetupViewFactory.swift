@@ -6,7 +6,8 @@ import SoraFoundation
 struct ReferendumVoteSetupViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        referendum: ReferendumIdLocal
+        referendum: ReferendumIdLocal,
+        initData: ReferendumVotingInitData
     ) -> ReferendumVoteSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -32,6 +33,7 @@ struct ReferendumVoteSetupViewFactory {
                 wireframe: wireframe,
                 dataValidatingFactory: dataValidatingFactory,
                 referendum: referendum,
+                initData: initData,
                 state: state
             ) else {
             return nil
@@ -54,6 +56,7 @@ struct ReferendumVoteSetupViewFactory {
         wireframe: ReferendumVoteSetupWireframeProtocol,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         referendum: ReferendumIdLocal,
+        initData: ReferendumVotingInitData,
         state: GovernanceSharedState
     ) -> ReferendumVoteSetupPresenter? {
         guard
@@ -83,6 +86,7 @@ struct ReferendumVoteSetupViewFactory {
         return ReferendumVoteSetupPresenter(
             chain: chain,
             referendumIndex: referendum,
+            initData: initData,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             referendumFormatter: NumberFormatter.index.localizableResource(),

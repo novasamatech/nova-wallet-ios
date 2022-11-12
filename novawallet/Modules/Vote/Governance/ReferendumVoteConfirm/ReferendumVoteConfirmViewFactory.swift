@@ -6,7 +6,8 @@ import SoraFoundation
 struct ReferendumVoteConfirmViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        newVote: ReferendumNewVote
+        newVote: ReferendumNewVote,
+        initData: ReferendumVotingInitData
     ) -> ReferendumVoteConfirmViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -48,6 +49,7 @@ struct ReferendumVoteConfirmViewFactory {
         )
 
         let presenter = ReferendumVoteConfirmPresenter(
+            initData: initData,
             vote: newVote,
             chain: chain,
             selectedAccount: selectedAccount,
