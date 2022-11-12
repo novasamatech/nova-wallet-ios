@@ -23,4 +23,6 @@ protocol GovernanceSubscriptionFactoryProtocol {
     )
 
     func unsubscribeFromAccountVotes(_ target: AnyObject, accountId: AccountId)
+
+    func cancelCancellable()
 }

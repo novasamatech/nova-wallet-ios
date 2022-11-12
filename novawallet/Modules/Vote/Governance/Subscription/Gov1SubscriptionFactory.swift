@@ -177,6 +177,14 @@ final class Gov1SubscriptionFactory: AnyCancellableCleaning {
 }
 
 extension Gov1SubscriptionFactory: GovernanceSubscriptionFactoryProtocol {
+    func cancelCancellable() {
+        let keys = cancellables.keys
+
+        for key in keys {
+            clear(cancellable: &cancellables[key])
+        }
+    }
+
     func subscribeToReferendum(
         _ target: AnyObject,
         referendumIndex: UInt,
