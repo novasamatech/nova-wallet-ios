@@ -41,6 +41,7 @@ extension TimeInterval {
     func localizedFractionDays(for locale: Locale, shouldAnnotate: Bool) -> String {
         let days = fractionDaysFromSeconds
         let formatter = NumberFormatter.decimalFormatter(precision: 1, rounding: .down)
+        formatter.locale = locale
         let optDaysString = formatter.stringFromDecimal(days)
 
         if shouldAnnotate {
