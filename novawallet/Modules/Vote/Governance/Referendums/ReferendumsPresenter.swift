@@ -206,7 +206,7 @@ final class ReferendumsPresenter {
 
             result[model.key] = .init(
                 viewModel: updatedViewModel,
-                timeInterval: remainedTime,
+                timeInterval: time,
                 updateModelClosure: timeModel.updateModelClosure
             )
         }
@@ -313,7 +313,6 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         self.blockNumber = blockNumber
 
         interactor.refresh()
-        updateTimeModels()
     }
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {
