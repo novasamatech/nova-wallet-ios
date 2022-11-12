@@ -534,7 +534,8 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             referendum.state.completed ? completed.append(viewModel) : active.append(viewModel)
         }
         var sections: [ReferendumsSection] = []
-        if !active.isEmpty {
+        if !active.isEmpty || completed.isEmpty {
+            // still add empty section to display empty state
             let title = Strings.governanceReferendumsActive(preferredLanguages: input.locale.rLanguages)
             sections.append(.active(.loaded(value: title), active))
         }
