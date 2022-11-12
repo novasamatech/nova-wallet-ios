@@ -433,6 +433,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             from: view,
             referendum: referendum,
             actionDetails: actionDetails,
+            metadata: referendumMetadata,
             identities: identities ?? [:]
         )
     }

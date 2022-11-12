@@ -111,7 +111,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
     func setVoting(viewModel: ReferendumFullDetailsViewModel.Voting?, locale: Locale) {
         curveAndHashTableView?.clear()
-        curveAndHashTableView = nil
+        callHashCell = nil
 
         if let viewModel = viewModel {
             if curveAndHashTableView == nil {
