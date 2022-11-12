@@ -230,14 +230,15 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
-        let accountVotes = voting?.value?.votes
-
-        wireframe.showReferendumDetails(
-            from: view,
+        let initData = ReferendumDetailsInitData(
             referendum: referendum,
-            accountVotes: accountVotes?.votes[referendum.index],
+            votesResult: voting,
+            blockNumber: blockNumber,
+            blockTime: blockTime,
             metadata: referendumsMetadata?[referendum.index]
         )
+
+        wireframe.showReferendumDetails(from: view, initData: initData)
     }
 }
 

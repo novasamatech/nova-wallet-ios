@@ -104,7 +104,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
     private func subscribeAccountVotes() {
         guard let accountId = selectedAccount?.accountId else {
-            presenter?.didReceiveAccountVotes(nil)
+            presenter?.didReceiveAccountVotes(nil, votingDistribution: nil)
             return
         }
 
@@ -117,7 +117,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             switch result {
             case let .success(votesResult):
                 if let votes = votesResult.value?.votes.votes, let referendumId = self?.referendum.index {
-                    self?.presenter?.didReceiveAccountVotes(votes[referendumId])
+                    self?.presenter?.didReceiveAccountVotes(
+                        votes[referendumId],
+                        votingDistribution: votesResult
+                    )
                 }
             case let .failure(error):
                 self?.presenter?.didReceiveError(.accountVotesFailed(error))
