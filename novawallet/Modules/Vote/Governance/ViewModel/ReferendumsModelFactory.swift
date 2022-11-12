@@ -540,7 +540,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             sections.append(.active(.loaded(value: title), active))
         }
         if !completed.isEmpty {
-            let title = Strings.governanceReferendumsCompleted(preferredLanguages: input.locale.rLanguages)
+            let title = Strings.commonCompleted(preferredLanguages: input.locale.rLanguages)
             sections.append(.completed(.loaded(value: title), completed))
         }
         return sections
