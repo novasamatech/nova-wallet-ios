@@ -365,7 +365,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             )
 
             wireframe.showVote(from: view, referendum: referendum, initData: initData)
-        } else if accountManagementFilter.accountManagementSupports(wallet: wallet, for: chain) {
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
             let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
                 chain.name,
                 preferredLanguages: selectedLocale.rLanguages
