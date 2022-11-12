@@ -1083,3 +1083,4 @@
 "gov.vote.treshold.function.simpleMajority" = "Простое большинство";
 "gov.vote.treshold.function.superMajorityAgainst" = "Супербольшинство против";
 "gov.vote.treshold.function.superMajorityApprove" = "Супербольшинство за";
+"common.days.fraction.format" = "%@ дней";
