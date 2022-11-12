@@ -46,8 +46,8 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.navigationController?.pushViewController(detailsView.controller, animated: true)
     }
 
-    func showUnlocksDetails(from view: ControllerBackedProtocol?) {
-        guard let unlocksView = GovernanceUnlockSetupViewFactory.createView(for: state) else {
+    func showUnlocksDetails(from view: ControllerBackedProtocol?, initData: GovernanceUnlockInitData) {
+        guard let unlocksView = GovernanceUnlockSetupViewFactory.createView(for: state, initData: initData) else {
             return
         }
 

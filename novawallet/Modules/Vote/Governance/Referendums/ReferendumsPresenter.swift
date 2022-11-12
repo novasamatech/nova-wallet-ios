@@ -240,6 +240,17 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
         wireframe.showReferendumDetails(from: view, initData: initData)
     }
+
+    func selectUnlocks() {
+        let initData = GovernanceUnlockInitData(
+            votingResult: voting,
+            unlockSchedule: unlockSchedule,
+            blockNumber: blockNumber,
+            blockTime: blockTime
+        )
+
+        wireframe.showUnlocksDetails(from: view, initData: initData)
+    }
 }
 
 extension ReferendumsPresenter: VoteChildPresenterProtocol {
@@ -268,10 +279,6 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
             delegate: self,
             selectedChainAssetId: chainAssetId
         )
-    }
-
-    func selectUnlocks() {
-        wireframe.showUnlocksDetails(from: view)
     }
 }
 

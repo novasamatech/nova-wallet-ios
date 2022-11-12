@@ -1228,6 +1228,8 @@
 		8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */; };
 		84770F25291F72D700852A33 /* ReferendumVotingInitData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84770F24291F72D700852A33 /* ReferendumVotingInitData.swift */; };
 		84770F27291F7CD400852A33 /* ReferendumDetailsInitData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84770F26291F7CD400852A33 /* ReferendumDetailsInitData.swift */; };
+		84770F2A291F864500852A33 /* GovernanceUnlockInitData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84770F29291F864500852A33 /* GovernanceUnlockInitData.swift */; };
+		84770F2C291F893200852A33 /* GovernanceUnlockConfirmInitData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84770F2B291F893200852A33 /* GovernanceUnlockConfirmInitData.swift */; };
 		8477DAA32888329800129B45 /* watchOnlyPreset.json in Resources */ = {isa = PBXBuildFile; fileRef = 8477DAA22888329800129B45 /* watchOnlyPreset.json */; };
 		8477DAA6288832CB00129B45 /* WatchOnlyPresetRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8477DAA5288832CB00129B45 /* WatchOnlyPresetRepository.swift */; };
 		84786DA825F9F58E0089DFF7 /* EraValidatorService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */; };
@@ -4219,6 +4221,8 @@
 		8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserPhishingDetectedState.swift; sourceTree = "<group>"; };
 		84770F24291F72D700852A33 /* ReferendumVotingInitData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingInitData.swift; sourceTree = "<group>"; };
 		84770F26291F7CD400852A33 /* ReferendumDetailsInitData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumDetailsInitData.swift; sourceTree = "<group>"; };
+		84770F29291F864500852A33 /* GovernanceUnlockInitData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockInitData.swift; sourceTree = "<group>"; };
+		84770F2B291F893200852A33 /* GovernanceUnlockConfirmInitData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockConfirmInitData.swift; sourceTree = "<group>"; };
 		8477DAA22888329800129B45 /* watchOnlyPreset.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = watchOnlyPreset.json; sourceTree = "<group>"; };
 		8477DAA5288832CB00129B45 /* WatchOnlyPresetRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyPresetRepository.swift; sourceTree = "<group>"; };
 		84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EraValidatorService+Fetch.swift"; sourceTree = "<group>"; };
@@ -8900,6 +8904,14 @@
 			path = Fetch;
 			sourceTree = "<group>";
 		};
+		84770F28291F85D500852A33 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				84770F29291F864500852A33 /* GovernanceUnlockInitData.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		847999B22888B46300D1BAD2 /* Address */ = {
 			isa = PBXGroup;
 			children = (
@@ -10573,6 +10585,7 @@
 			isa = PBXGroup;
 			children = (
 				84A9ECC0291292900094C763 /* GovernanceUnlockConfirmInteractorError.swift */,
+				84770F2B291F893200852A33 /* GovernanceUnlockConfirmInitData.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -14226,6 +14239,7 @@
 		FD4B0C614F7A70D8FB51A1C3 /* GovernanceUnlockSetup */ = {
 			isa = PBXGroup;
 			children = (
+				84770F28291F85D500852A33 /* Model */,
 				847157842911367400D7D003 /* ViewModel */,
 				847157812911321000D7D003 /* View */,
 				F4642DD5186EFA940518CCB4 /* GovernanceUnlockSetupProtocols.swift */,
@@ -16588,6 +16602,7 @@
 				84C5ADDF28133F3E006D7388 /* UnknownAddressView.swift in Sources */,
 				84F6B6502619E1ED0038F10D /* Int+Operations.swift in Sources */,
 				8487010E2907DF2F00F2C0C3 /* MultiValueView+Styles.swift in Sources */,
+				84770F2A291F864500852A33 /* GovernanceUnlockInitData.swift in Sources */,
 				85547F698B551ACD387D84E2 /* SelectValidatorsStartViewController.swift in Sources */,
 				845B07F129159AE7005785D3 /* DemocracyVoting.swift in Sources */,
 				41B29C1C9239BB2DCB7903A7 /* SelectValidatorsStartViewFactory.swift in Sources */,
@@ -17278,6 +17293,7 @@
 				845B0817291902CF005785D3 /* Gov2LockStateFactory.swift in Sources */,
 				41DE96F778AE909978775438 /* ParitySignerTxQrViewController.swift in Sources */,
 				87F7556E02F6F5BB6F1B1AEA /* ParitySignerTxQrViewLayout.swift in Sources */,
+				84770F2C291F893200852A33 /* GovernanceUnlockConfirmInitData.swift in Sources */,
 				84E90BA128D0B51000529633 /* CheckboxControlView.swift in Sources */,
 				821518375113295E41E0481C /* ParitySignerTxQrViewFactory.swift in Sources */,
 				641D7CF89F37B1890516015E /* ParitySignerTxScanProtocols.swift in Sources */,

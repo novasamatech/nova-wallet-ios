@@ -1,7 +1,6 @@
 import Foundation
 import BigInt
 import SoraFoundation
-import BigInt
 
 final class GovernanceUnlockConfirmPresenter {
     weak var view: GovernanceUnlockConfirmViewProtocol?
@@ -31,9 +30,7 @@ final class GovernanceUnlockConfirmPresenter {
         wireframe: GovernanceUnlockConfirmWireframeProtocol,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
-        votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
-        schedule: GovernanceUnlockSchedule,
-        blockNumber: BlockNumber,
+        initData: GovernanceUnlockConfirmInitData,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
@@ -44,9 +41,9 @@ final class GovernanceUnlockConfirmPresenter {
         self.wireframe = wireframe
         self.chain = chain
         self.selectedAccount = selectedAccount
-        self.votingResult = votingResult
-        unlockSchedule = schedule
-        self.blockNumber = blockNumber
+        votingResult = initData.votingResult
+        unlockSchedule = initData.unlockSchedule
+        blockNumber = initData.blockNumber
         self.balanceViewModelFactory = balanceViewModelFactory
         self.lockChangeViewModelFactory = lockChangeViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
