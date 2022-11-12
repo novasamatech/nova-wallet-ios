@@ -48,5 +48,5 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
 
     func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
 
-    func showUnlocksDetails(from view: ControllerBackedProtocol?)
+    func showUnlocksDetails(from view: ControllerBackedProtocol?, initData: GovernanceUnlockInitData)
 }

@@ -2,7 +2,10 @@ import Foundation
 import SoraFoundation
 
 struct GovernanceUnlockSetupViewFactory {
-    static func createView(for state: GovernanceSharedState) -> GovernanceUnlockSetupViewProtocol? {
+    static func createView(
+        for state: GovernanceSharedState,
+        initData: GovernanceUnlockInitData
+    ) -> GovernanceUnlockSetupViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
             let assetInfo = state.settings.value?.utilityAssetDisplayInfo(),
@@ -20,6 +23,7 @@ struct GovernanceUnlockSetupViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let presenter = GovernanceUnlockSetupPresenter(
+            initData: initData,
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
