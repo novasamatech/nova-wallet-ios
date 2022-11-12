@@ -162,7 +162,8 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol
     }
 
     func presentProposer() {
-        guard let address = try? referendum.proposer?.toAddress(using: chain.chainFormat) else {
+        let optAccountId = referendum.proposer ?? metadata?.proposerAccountId(for: chain.chainFormat)
+        guard let address = try? optAccountId?.toAddress(using: chain.chainFormat) else {
             return
         }
 
