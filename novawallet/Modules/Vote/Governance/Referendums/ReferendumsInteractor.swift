@@ -489,5 +489,6 @@ extension ReferendumsInteractor: SelectedCurrencyDepending {
 extension ReferendumsInteractor: ApplicationHandlerDelegate {
     func didReceiveDidEnterBackground(notification _: Notification) {
         clearCancellable()
+        governanceState.subscriptionFactory?.cancelCancellable()
     }
 }
