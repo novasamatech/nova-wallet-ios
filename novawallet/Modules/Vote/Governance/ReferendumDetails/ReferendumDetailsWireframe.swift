@@ -11,6 +11,7 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,
         actionDetails: ReferendumActionLocal,
+        metadata: ReferendumMetadataLocal?,
         identities: [AccountAddress: AccountIdentity]
     ) {
         guard
@@ -18,6 +19,7 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
                 state: state,
                 referendum: referendum,
                 actionDetails: actionDetails,
+                metadata: metadata,
                 identities: identities
             ) else {
             return

@@ -52,6 +52,7 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,
         actionDetails: ReferendumActionLocal,
+        metadata: ReferendumMetadataLocal?,
         identities: [AccountAddress: AccountIdentity]
     )
 
