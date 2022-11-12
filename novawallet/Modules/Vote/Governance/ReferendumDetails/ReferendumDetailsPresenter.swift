@@ -23,6 +23,7 @@ final class ReferendumDetailsPresenter {
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
+    private var votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
     private var price: PriceData?
@@ -37,12 +38,10 @@ final class ReferendumDetailsPresenter {
     private var statusViewModel: StatusTimeViewModel?
 
     init(
-        referendum: ReferendumLocal,
         chain: ChainModel,
         wallet: MetaAccountModel,
         accountManagementFilter: AccountManagementFilterProtocol,
-        accountVotes: ReferendumAccountVoteLocal?,
-        metadata: ReferendumMetadataLocal?,
+        initData: ReferendumDetailsInitData,
         interactor: ReferendumDetailsInteractorInputProtocol,
         wireframe: ReferendumDetailsWireframeProtocol,
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
@@ -68,9 +67,12 @@ final class ReferendumDetailsPresenter {
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
-        self.referendum = referendum
-        self.accountVotes = accountVotes
-        referendumMetadata = metadata
+        referendum = initData.referendum
+        accountVotes = initData.accountVotes
+        votingDistribution = initData.votesResult
+        blockNumber = initData.blockNumber
+        blockTime = initData.blockTime
+        referendumMetadata = initData.metadata
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -354,7 +356,15 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         }
 
         if wallet.fetch(for: chain.accountRequest()) != nil {
-            wireframe.showVote(from: view, referendum: referendum)
+            let initData = ReferendumVotingInitData(
+                votesResult: nil,
+                blockNumber: blockNumber,
+                blockTime: blockTime,
+                referendum: referendum,
+                lockDiff: nil
+            )
+
+            wireframe.showVote(from: view, referendum: referendum, initData: initData)
         } else if accountManagementFilter.accountManagementSupports(wallet: wallet, for: chain) {
             let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
                 chain.name,
@@ -469,8 +479,12 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?) {
+    func didReceiveAccountVotes(
+        _ votes: ReferendumAccountVoteLocal?,
+        votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    ) {
         accountVotes = votes
+        self.votingDistribution = votingDistribution
 
         provideYourVote()
     }

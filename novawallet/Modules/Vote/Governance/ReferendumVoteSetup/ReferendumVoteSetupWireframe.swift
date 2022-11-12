@@ -7,10 +7,15 @@ final class ReferendumVoteSetupWireframe: ReferendumVoteSetupWireframeProtocol {
         self.state = state
     }
 
-    func showConfirmation(from view: ReferendumVoteSetupViewProtocol?, vote: ReferendumNewVote) {
+    func showConfirmation(
+        from view: ReferendumVoteSetupViewProtocol?,
+        vote: ReferendumNewVote,
+        initData: ReferendumVotingInitData
+    ) {
         guard let confirmView = ReferendumVoteConfirmViewFactory.createView(
             for: state,
-            newVote: vote
+            newVote: vote,
+            initData: initData
         ) else {
             return
         }
