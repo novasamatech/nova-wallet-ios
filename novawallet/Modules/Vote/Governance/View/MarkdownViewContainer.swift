@@ -7,8 +7,7 @@ protocol MarkdownViewContainerDelegate: AnyObject {
 }
 
 final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
-    private var textView: CDMarkdownTextView?
-
+    private var textView: UITextView?
     private var model: MarkdownText?
     let preferredWidth: CGFloat
 
@@ -55,22 +54,22 @@ final class MarkdownViewContainer: UIView, AnyCancellableCleaning {
 
         let textContainer = NSTextContainer(size: size)
         let layoutManager = CDMarkdownLayoutManager()
+        layoutManager.roundAllCorners = true
         layoutManager.addTextContainer(textContainer)
+        let textStorage = NSTextStorage()
+        textStorage.addLayoutManager(layoutManager)
 
-        let textView = CDMarkdownTextView(
+        let textView = UITextView(
             frame: .init(origin: .zero, size: size),
-            textContainer: textContainer,
-            layoutManager: layoutManager
+            textContainer: textContainer
         )
 
         textView.delegate = self
-
         textView.isEditable = false
         textView.isScrollEnabled = false
         textView.isSelectable = true
         textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
-        textView.roundAllCorners = true
 
         textView.backgroundColor = .clear
 
