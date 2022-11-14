@@ -12,45 +12,53 @@
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3" customClass="SplashView" customModule="novawallet" customModuleProvider="target">
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="novabg-splash" translatesAutoresizingMaskIntoConstraints="NO" id="uNk-tt-Coo">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="602"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="nova-star" translatesAutoresizingMaskIntoConstraints="NO" id="eBa-Mk-uzt">
-                                <rect key="frame" x="91" y="254" width="244" height="251"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nova-star" translatesAutoresizingMaskIntoConstraints="NO" id="eBa-Mk-uzt">
+                                <rect key="frame" x="91" y="185" width="232" height="232"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="eBa-Mk-uzt" secondAttribute="height" id="nd4-Ri-ZSh"/>
+                                </constraints>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nova-wallet" translatesAutoresizingMaskIntoConstraints="NO" id="FcX-YA-MyY" userLabel="nova-wallet">
+                                <rect key="frame" x="134" y="417" width="146" height="70"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="nova-wallet" translatesAutoresizingMaskIntoConstraints="NO" id="FcX-YA-MyY" userLabel="nova-wallet">
-                                <rect key="frame" x="108" y="426" width="227" height="79"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="novasama-logo" translatesAutoresizingMaskIntoConstraints="NO" id="TfZ-m5-71O" userLabel="copyright">
-                                <rect key="frame" x="108" y="712" width="196" height="34"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Developed by" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MDk-JH-F6U">
-                                <rect key="frame" x="173" y="658" width="105" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Developed by" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MDk-JH-F6U">
+                                <rect key="frame" x="154.5" y="652" width="105" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.20000000000000001" green="0.25882352941176467" blue="0.51764705882352935" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="novasama-logo" translatesAutoresizingMaskIntoConstraints="NO" id="TfZ-m5-71O" userLabel="copyright">
+                                <rect key="frame" x="145" y="687" width="124" height="26"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.094117647060000004" green="0.094117647060000004" blue="0.094117647060000004" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="uNk-tt-Coo" secondAttribute="trailing" id="1kr-VF-oxV"/>
+                            <constraint firstItem="uNk-tt-Coo" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" id="1kr-VF-oxV"/>
+                            <constraint firstItem="TfZ-m5-71O" firstAttribute="top" secondItem="MDk-JH-F6U" secondAttribute="bottom" constant="14" id="580-gx-DDT"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" constant="185" id="7Ac-VQ-yXl"/>
+                            <constraint firstItem="MDk-JH-F6U" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="7sK-Uy-vis"/>
+                            <constraint firstItem="FcX-YA-MyY" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Ne0-qK-fK1"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="eBa-Mk-uzt" secondAttribute="trailing" constant="91" id="YY2-9j-2Bq"/>
-                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="e3N-fi-1cm"/>
+                            <constraint firstItem="TfZ-m5-71O" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="bWE-m7-i9C"/>
+                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="e3N-fi-1cm"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="jSf-Xs-KKb"/>
                             <constraint firstItem="eBa-Mk-uzt" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="91" id="jT4-bh-2Kg"/>
+                            <constraint firstItem="FcX-YA-MyY" firstAttribute="top" secondItem="eBa-Mk-uzt" secondAttribute="bottom" id="k2R-Lw-wHy"/>
                             <constraint firstAttribute="bottom" secondItem="uNk-tt-Coo" secondAttribute="bottom" id="m2l-xc-ZRp"/>
                             <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="oSK-Pu-J59"/>
                             <constraint firstItem="uNk-tt-Coo" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="tA1-r1-8ya"/>
+                            <constraint firstItem="TfZ-m5-71O" firstAttribute="bottom" secondItem="Ze5-6b-2t3" secondAttribute="bottom" constant="111" id="tO3-0C-NXw"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -60,7 +68,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="nova-star" width="388" height="389"/>
+        <image name="nova-star" width="325" height="326"/>
         <image name="nova-wallet" width="146" height="70"/>
         <image name="novabg-splash" width="375" height="812"/>
         <image name="novasama-logo" width="124" height="26"/>
