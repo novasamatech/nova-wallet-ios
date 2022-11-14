@@ -73,6 +73,8 @@ final class ReferendumDetailsViewController: UIViewController, ViewHolder {
             action: #selector(actionFullDetails),
             for: .touchUpInside
         )
+
+        rootView.titleView.descriptionView.delegate = self
     }
 
     @objc private func actionVote() {
@@ -128,6 +130,8 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
 
     func didReceive(titleModel: ReferendumDetailsTitleView.Model) {
         rootView.titleView.bind(viewModel: titleModel, locale: localizationManager.selectedLocale)
+
+        rootView.setNeedsLayout()
     }
 
     func didReceive(yourVoteModel: YourVoteRow.Model?) {
@@ -154,5 +158,11 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
     func didReceive(activeTimeViewModel: ReferendumInfoView.Time?) {
         rootView.votingDetailsRow.statusView.bind(timeModel: activeTimeViewModel)
         rootView.timelineView.bind(activeTimeViewModel: activeTimeViewModel)
+    }
+}
+
+extension ReferendumDetailsViewController: MarkdownViewContainerDelegate {
+    func markdownView(_: MarkdownViewContainer, asksHandle url: URL) {
+        presenter.openURL(url)
     }
 }

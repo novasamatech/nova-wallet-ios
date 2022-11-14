@@ -262,7 +262,7 @@ enum ConvictionVoting {
         @StringCodable var balance: BigUInt
 
         /// The account to which the voting power is delegated.
-        let target: AccountId
+        @BytesCodable var target: AccountId
 
         /**
          * The conviction with which the voting power is delegated. When this gets undelegated, the
