@@ -40,7 +40,6 @@ final class Gov1LocalMappingFactory {
     private func mapFinished(
         referendum: Democracy.FinishedStatus,
         index: Referenda.ReferendumIndex,
-        additionalInfo _: Gov1OperationFactory.AdditionalInfo,
         enactmentBlock: BlockNumber?
     ) -> ReferendumLocal {
         if referendum.approved {
@@ -79,7 +78,6 @@ extension Gov1LocalMappingFactory {
             return mapFinished(
                 referendum: status,
                 index: index,
-                additionalInfo: additionalInfo,
                 enactmentBlock: enactmentBlock
             )
         case .unknown:
