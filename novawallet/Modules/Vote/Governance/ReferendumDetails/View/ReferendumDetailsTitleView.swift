@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import CDMarkdownKit
 
 final class ReferendumDetailsTitleView: UIView {
     var accountIconSize: CGSize {
@@ -38,16 +39,10 @@ final class ReferendumDetailsTitleView: UIView {
         $0.numberOfLines = 0
     }
 
-    let textView: UITextView = .create {
-        $0.textColor = R.color.colorTransparentText()
-        $0.font = .regularSubheadline
-        $0.isScrollEnabled = false
-        $0.isEditable = false
-        $0.textContainerInset = .zero
-        $0.textContainer.lineFragmentPadding = 0
-    }
-
-    private var readMoreContainer: UIView?
+    let descriptionView = MarkdownViewContainer(
+        preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset,
+        maxTextLength: MarkdownText.readMoreThreshold
+    )
 
     let moreButton: RoundedButton = .create { button in
         button.applyIconStyle()
@@ -74,39 +69,20 @@ final class ReferendumDetailsTitleView: UIView {
     }
 
     private func setupLayout() {
-        let buttonContainer = UIView.hStack([
-            moreButton,
-            UIView()
-        ])
-
-        readMoreContainer = buttonContainer
-
         let content = UIView.vStack(
+            alignment: .leading,
+            spacing: 8,
             [
-                UIView.hStack(
-                    [
-                        accountContainerView,
-                        UIView()
-                    ]
-                ),
-                UIView.vStack(
-                    spacing: 6,
-                    [
-                        titleLabel,
-                        textView,
-                        buttonContainer
-                    ]
-                )
+                accountContainerView,
+                titleLabel,
+                descriptionView,
+                moreButton
             ]
         )
-
+        content.setCustomSpacing(0, after: accountContainerView)
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
-        }
-
-        moreButton.snp.makeConstraints { make in
-            make.height.equalTo(32)
         }
     }
 }
@@ -120,7 +96,6 @@ extension ReferendumDetailsTitleView {
     struct Details {
         let title: String
         let description: String
-        let shouldReadMore: Bool
     }
 
     func bind(viewModel: Model, locale: Locale) {
@@ -142,22 +117,30 @@ extension ReferendumDetailsTitleView {
             accountContainerView.isHidden = true
         }
 
-        if let details = viewModel.details {
-            titleLabel.isHidden = false
-            textView.isHidden = false
+        bind(details: viewModel.details, locale: locale)
+    }
 
-            titleLabel.text = details.title
-            textView.text = details.description
-
-            moreButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
-                preferredLanguages: locale.rLanguages
-            )
-
-            readMoreContainer?.isHidden = !details.shouldReadMore
-        } else {
+    private func bind(details: Details?, locale: Locale) {
+        guard let details = details else {
             titleLabel.isHidden = true
-            textView.isHidden = true
-            readMoreContainer?.isHidden = true
+            descriptionView.isHidden = true
+            moreButton.isHidden = true
+            return
         }
+        titleLabel.isHidden = false
+        titleLabel.text = details.title
+
+        moreButton.isHidden = true
+
+        descriptionView.isHidden = false
+        descriptionView.load(from: details.description) { [weak self] (model: MarkdownText?) in
+            if let shouldReadMore = model?.isFull {
+                self?.moreButton.isHidden = shouldReadMore
+            }
+        }
+
+        moreButton.imageWithTitleView?.title = R.string.localizable.commonReadMore(
+            preferredLanguages: locale.rLanguages
+        )
     }
 }

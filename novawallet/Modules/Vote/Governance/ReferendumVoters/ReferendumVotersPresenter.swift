@@ -38,6 +38,50 @@ final class ReferendumVotersPresenter {
         self.localizationManager = localizationManager
     }
 
+    private func createViewModel(
+        _ model: ReferendumVotersModel,
+        voter: ReferendumVoterLocal
+    ) -> ReferendumVotersViewModel? {
+        guard let address = try? voter.accountId.toAddress(using: chain.chainFormat) else {
+            return nil
+        }
+
+        let displayAddressViewModel: DisplayAddressViewModel
+
+        if let displayName = model.identites[address]?.displayName {
+            let displayAddress = DisplayAddress(address: address, username: displayName)
+            displayAddressViewModel = displayAddressFactory.createViewModel(from: displayAddress)
+        } else {
+            displayAddressViewModel = displayAddressFactory.createViewModel(from: address)
+        }
+
+        let amountInPlank: BigUInt
+        let votes: BigUInt
+
+        switch type {
+        case .ayes:
+            amountInPlank = voter.vote.ayeBalance
+            votes = voter.vote.ayes
+        case .nays:
+            amountInPlank = voter.vote.nayBalance
+            votes = voter.vote.nays
+        }
+
+        let votesString = stringFactory.createVotes(from: votes, chain: chain, locale: selectedLocale)
+        let details = stringFactory.createVotesDetails(
+            from: amountInPlank,
+            conviction: voter.vote.conviction,
+            chain: chain,
+            locale: selectedLocale
+        )
+
+        return ReferendumVotersViewModel(
+            displayAddress: displayAddressViewModel,
+            votes: votesString ?? "",
+            preConviction: details ?? ""
+        )
+    }
+
     private func updateView() {
         guard let model = model else {
             return
@@ -60,44 +104,7 @@ final class ReferendumVotersPresenter {
             }
         }
         .compactMap { voter in
-            guard let address = try? voter.accountId.toAddress(using: chain.chainFormat) else {
-                return nil
-            }
-
-            let displayAddressViewModel: DisplayAddressViewModel
-
-            if let displayName = model.identites[address]?.displayName {
-                let displayAddress = DisplayAddress(address: address, username: displayName)
-                displayAddressViewModel = displayAddressFactory.createViewModel(from: displayAddress)
-            } else {
-                displayAddressViewModel = displayAddressFactory.createViewModel(from: address)
-            }
-
-            let amountInPlank: BigUInt
-            let votes: BigUInt
-
-            switch type {
-            case .ayes:
-                amountInPlank = voter.vote.ayeBalance
-                votes = voter.vote.ayes
-            case .nays:
-                amountInPlank = voter.vote.nayBalance
-                votes = voter.vote.nays
-            }
-
-            let votesString = stringFactory.createVotes(from: votes, chain: chain, locale: selectedLocale)
-            let details = stringFactory.createVotesDetails(
-                from: amountInPlank,
-                conviction: voter.vote.conviction,
-                chain: chain,
-                locale: selectedLocale
-            )
-
-            return ReferendumVotersViewModel(
-                displayAddress: displayAddressViewModel,
-                votes: votesString ?? "",
-                preConviction: details ?? ""
-            )
+            createViewModel(model, voter: voter)
         }
 
         view?.didReceiveViewModels(.loaded(value: viewModels))
@@ -138,7 +145,7 @@ extension ReferendumVotersPresenter: ReferendumVotersInteractorOutputProtocol {
         switch error {
         case .votersFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.updateView()
+                self?.interactor.refreshVoters()
             }
         }
     }
