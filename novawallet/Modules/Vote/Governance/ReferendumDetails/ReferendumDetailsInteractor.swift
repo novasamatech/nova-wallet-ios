@@ -8,7 +8,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private(set) var referendum: ReferendumLocal
     private(set) var actionDetails: ReferendumActionLocal?
 
-    let selectedAccount: ChainAccountResponse
+    let selectedAccount: ChainAccountResponse?
     let chain: ChainModel
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
@@ -33,7 +33,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
     init(
         referendum: ReferendumLocal,
-        selectedAccount: ChainAccountResponse,
+        selectedAccount: ChainAccountResponse?,
         chain: ChainModel,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
         connection: JSONRPCEngine,
@@ -72,7 +72,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         clear(cancellable: &dAppsCancellable)
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
-        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
+
+        if let accountId = selectedAccount?.accountId {
+            referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: accountId)
+        }
     }
 
     private func subscribeReferendum() {
@@ -97,11 +100,16 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func subscribeAccountVotes() {
-        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
+        guard let accountId = selectedAccount?.accountId else {
+            presenter?.didReceiveAccountVotes(nil)
+            return
+        }
+
+        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: accountId)
 
         referendumsSubscriptionFactory.subscribeToAccountVotes(
             self,
-            accountId: selectedAccount.accountId
+            accountId: accountId
         ) { [weak self] result in
             switch result {
             case let .success(votesResult):
@@ -253,6 +261,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    private func makeAccountBasedSubscriptions() {
+        subscribeAccountVotes()
+    }
+
     private func makeSubscriptions() {
         if let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
@@ -261,7 +273,8 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
 
         subscribeReferendum()
-        subscribeAccountVotes()
+
+        makeAccountBasedSubscriptions()
 
         metadataProvider = subscribeGovernanceMetadata(for: chain, referendumId: referendum.index)
 
