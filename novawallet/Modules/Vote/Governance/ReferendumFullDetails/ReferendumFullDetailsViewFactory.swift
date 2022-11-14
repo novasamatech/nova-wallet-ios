@@ -7,6 +7,7 @@ struct ReferendumFullDetailsViewFactory {
         state: GovernanceSharedState,
         referendum: ReferendumLocal,
         actionDetails: ReferendumActionLocal,
+        metadata: ReferendumMetadataLocal?,
         identities: [AccountAddress: AccountIdentity]
     ) -> ReferendumFullDetailsViewProtocol? {
         guard
@@ -41,6 +42,7 @@ struct ReferendumFullDetailsViewFactory {
             chain: chain,
             referendum: referendum,
             actionDetails: actionDetails,
+            metadata: metadata,
             identities: identities,
             balanceViewModelFactory: balanceViewModelFactory,
             addressViewModelFactory: DisplayAddressViewModelFactory(),

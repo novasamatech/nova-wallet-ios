@@ -22,7 +22,7 @@ abstract_target 'novawalletAll' do
   pod 'Charts'
   pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
   pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.5'
-  pod 'CDMarkdownKit', :git => 'https://github.com/nova-wallet/CDMarkdownKit.git', :commit => '2983924e34461646b6bd770a16ab6f6603fc4b24'
+  pod 'CDMarkdownKit', :git => 'https://github.com/nova-wallet/CDMarkdownKit.git', :tag => '2.4.0'
   
   target 'novawalletTests' do
     inherit! :search_paths

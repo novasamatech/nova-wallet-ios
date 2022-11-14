@@ -62,6 +62,7 @@ final class ReferendumsPresenter {
         referendums = nil
         referendumsMetadata = nil
         voting = nil
+        unlockSchedule = nil
         blockNumber = nil
         blockTime = nil
         maxStatusTimeInterval = nil
@@ -205,7 +206,7 @@ final class ReferendumsPresenter {
 
             result[model.key] = .init(
                 viewModel: updatedViewModel,
-                timeInterval: remainedTime,
+                timeInterval: time,
                 updateModelClosure: timeModel.updateModelClosure
             )
         }
@@ -229,14 +230,26 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
-        let accountVotes = voting?.value?.votes
-
-        wireframe.showReferendumDetails(
-            from: view,
+        let initData = ReferendumDetailsInitData(
             referendum: referendum,
-            accountVotes: accountVotes?.votes[referendum.index],
+            votesResult: voting,
+            blockNumber: blockNumber,
+            blockTime: blockTime,
             metadata: referendumsMetadata?[referendum.index]
         )
+
+        wireframe.showReferendumDetails(from: view, initData: initData)
+    }
+
+    func selectUnlocks() {
+        let initData = GovernanceUnlockInitData(
+            votingResult: voting,
+            unlockSchedule: unlockSchedule,
+            blockNumber: blockNumber,
+            blockTime: blockTime
+        )
+
+        wireframe.showUnlocksDetails(from: view, initData: initData)
     }
 }
 
@@ -266,10 +279,6 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
             delegate: self,
             selectedChainAssetId: chainAssetId
         )
-    }
-
-    func selectUnlocks() {
-        wireframe.showUnlocksDetails(from: view)
     }
 }
 
@@ -304,7 +313,6 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         self.blockNumber = blockNumber
 
         interactor.refresh()
-        updateTimeModels()
     }
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {

@@ -32,6 +32,7 @@ final class ReferendumVoteConfirmPresenter {
     private lazy var addressDisplayViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
+        initData: ReferendumVotingInitData,
         vote: ReferendumNewVote,
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
@@ -48,6 +49,11 @@ final class ReferendumVoteConfirmPresenter {
         self.vote = vote
         self.chain = chain
         self.selectedAccount = selectedAccount
+        votesResult = initData.votesResult
+        blockNumber = initData.blockNumber
+        blockTime = initData.blockTime
+        referendum = initData.referendum
+        lockDiff = initData.lockDiff
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.referendumFormatter = referendumFormatter

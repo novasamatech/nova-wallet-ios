@@ -22,6 +22,15 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
 
         referendumWrapper.addDependency(operations: [codingFactoryOperation])
 
+        let enactmentsWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: referendumWrapper.targetOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
+        )
+
+        enactmentsWrapper.addDependency(wrapper: referendumWrapper)
+
         let additionalWrapper = createAdditionalInfoWrapper(
             dependingOn: codingFactoryOperation,
             connection: connection,
@@ -32,16 +41,18 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
 
         let mapOperation = createReferendumMapOperation(
             dependingOn: referendumWrapper.targetOperation,
-            additionalInfoOperation: additionalWrapper.targetOperation
+            additionalInfoOperation: additionalWrapper.targetOperation,
+            enactmentsOperation: enactmentsWrapper.targetOperation
         )
 
         mapOperation.addDependency(additionalWrapper.targetOperation)
         mapOperation.addDependency(referendumWrapper.targetOperation)
+        mapOperation.addDependency(enactmentsWrapper.targetOperation)
 
-        return .init(
-            targetOperation: mapOperation,
-            dependencies: [codingFactoryOperation] + referendumWrapper.allOperations + additionalWrapper.allOperations
-        )
+        let dependencies = [codingFactoryOperation] + referendumWrapper.allOperations +
+            enactmentsWrapper.allOperations + additionalWrapper.allOperations
+
+        return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     func fetchReferendumWrapper(
@@ -66,13 +77,24 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
             return [referendumIndexKey: remoteReferendum]
         }
 
+        let enactmentsWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: referendumOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash
+        )
+
+        enactmentsWrapper.addDependency(operations: [referendumOperation])
+
         let mergeOperation = createReferendumMapOperation(
             dependingOn: referendumOperation,
-            additionalInfoOperation: additionalInfoWrapper.targetOperation
+            additionalInfoOperation: additionalInfoWrapper.targetOperation,
+            enactmentsOperation: enactmentsWrapper.targetOperation
         )
 
         mergeOperation.addDependency(referendumOperation)
         mergeOperation.addDependency(additionalInfoWrapper.targetOperation)
+        mergeOperation.addDependency(enactmentsWrapper.targetOperation)
 
         let mapOperation = ClosureOperation<ReferendumLocal> {
             guard let referendum = try mergeOperation.extractNoCancellableResultData().first else {
@@ -85,7 +107,7 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
         mapOperation.addDependency(mergeOperation)
 
         let dependencies = [codingFactoryOperation, referendumOperation] +
-            additionalInfoWrapper.allOperations + [mergeOperation]
+            additionalInfoWrapper.allOperations + enactmentsWrapper.allOperations + [mergeOperation]
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
