@@ -53,7 +53,7 @@ final class GovernanceUnlockConfirmViewController: UIViewController, ViewHolder,
             preferredLanguages: languages
         )
 
-        rootView.accountCell.titleLabel.text = R.string.localizable.commonSender(
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
             preferredLanguages: languages
         )
 

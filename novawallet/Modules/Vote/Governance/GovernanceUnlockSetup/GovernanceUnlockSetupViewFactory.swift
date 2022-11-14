@@ -2,7 +2,10 @@ import Foundation
 import SoraFoundation
 
 struct GovernanceUnlockSetupViewFactory {
-    static func createView(for state: GovernanceSharedState) -> GovernanceUnlockSetupViewProtocol? {
+    static func createView(
+        for state: GovernanceSharedState,
+        initData: GovernanceUnlockInitData
+    ) -> GovernanceUnlockSetupViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
             let assetInfo = state.settings.value?.utilityAssetDisplayInfo(),
@@ -20,6 +23,7 @@ struct GovernanceUnlockSetupViewFactory {
         let localizationManager = LocalizationManager.shared
 
         let presenter = GovernanceUnlockSetupPresenter(
+            initData: initData,
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
@@ -50,7 +54,8 @@ struct GovernanceUnlockSetupViewFactory {
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
-            let blockTimeService = state.blockTimeService else {
+            let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory() else {
             return nil
         }
 
@@ -62,6 +67,7 @@ struct GovernanceUnlockSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

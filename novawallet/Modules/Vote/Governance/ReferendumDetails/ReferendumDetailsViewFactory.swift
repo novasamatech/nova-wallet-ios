@@ -6,26 +6,55 @@ import SoraFoundation
 struct ReferendumDetailsViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        referendum: ReferendumLocal,
-        accountVotes: ReferendumAccountVoteLocal?,
-        metadata: ReferendumMetadataLocal?
+        initData: ReferendumDetailsInitData
     ) -> ReferendumDetailsViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
-                for: referendum,
+                for: initData.referendum,
                 currencyManager: currencyManager,
                 state: state
-            ),
-            let chain = state.settings.value,
-            let assetInfo = chain.utilityAssetDisplayInfo(),
-            let wallet = SelectedWalletSettings.shared.value else {
+            ) else {
             return nil
         }
 
         let wireframe = ReferendumDetailsWireframe(state: state)
 
-        let localizationManager = LocalizationManager.shared
+        guard
+            let presenter = createPresenter(
+                interactor: interactor,
+                wireframe: wireframe,
+                currencyManager: currencyManager,
+                state: state,
+                initData: initData
+            ) else {
+            return nil
+        }
+
+        let view = ReferendumDetailsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createPresenter(
+        interactor: ReferendumDetailsInteractor,
+        wireframe: ReferendumDetailsWireframe,
+        currencyManager: CurrencyManagerProtocol,
+        state: GovernanceSharedState,
+        initData: ReferendumDetailsInitData
+    ) -> ReferendumDetailsPresenter? {
+        guard
+            let chain = state.settings.value,
+            let assetInfo = chain.utilityAssetDisplayInfo(),
+            let wallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetInfo,
@@ -52,13 +81,11 @@ struct ReferendumDetailsViewFactory {
 
         let metadataViewModelFactory = ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter)
 
-        let presenter = ReferendumDetailsPresenter(
-            referendum: referendum,
+        return ReferendumDetailsPresenter(
             chain: chain,
             wallet: wallet,
             accountManagementFilter: AccountManagementFilter(),
-            accountVotes: accountVotes,
-            metadata: metadata,
+            initData: initData,
             interactor: interactor,
             wireframe: wireframe,
             referendumViewModelFactory: referendumViewModelFactory,
@@ -69,19 +96,9 @@ struct ReferendumDetailsViewFactory {
             referendumMetadataViewModelFactory: metadataViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
-            localizationManager: localizationManager,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
-
-        let view = ReferendumDetailsViewController(
-            presenter: presenter,
-            localizationManager: localizationManager
-        )
-
-        presenter.view = view
-        interactor.presenter = presenter
-
-        return view
     }
 
     private static func createInteractor(
@@ -101,6 +118,7 @@ struct ReferendumDetailsViewFactory {
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory(),
             let subscriptionFactory = state.subscriptionFactory,
             let actionDetailsFactory = state.createActionsDetailsFactory(for: chain) else {
             return nil
@@ -129,6 +147,7 @@ struct ReferendumDetailsViewFactory {
             connection: connection,
             runtimeProvider: runtimeProvider,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             identityOperationFactory: identityOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

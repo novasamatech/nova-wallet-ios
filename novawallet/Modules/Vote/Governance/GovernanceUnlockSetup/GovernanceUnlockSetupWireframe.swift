@@ -9,15 +9,11 @@ final class GovernanceUnlockSetupWireframe: GovernanceUnlockSetupWireframeProtoc
 
     func showConfirm(
         from view: GovernanceUnlockSetupViewProtocol?,
-        votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
-        schedule: GovernanceUnlockSchedule,
-        blockNumber: BlockNumber
+        initData: GovernanceUnlockConfirmInitData
     ) {
         guard let confirmView = GovernanceUnlockConfirmViewFactory.createView(
             for: state,
-            votingResult: votingResult,
-            schedule: schedule,
-            blockNumber: blockNumber
+            initData: initData
         ) else {
             return
         }

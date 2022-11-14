@@ -36,7 +36,10 @@ protocol ReferendumDetailsInteractorInputProtocol: AnyObject {
 protocol ReferendumDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendum(_ referendum: ReferendumLocal)
     func didReceiveActionDetails(_ actionDetails: ReferendumActionLocal)
-    func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?)
+    func didReceiveAccountVotes(
+        _ votes: ReferendumAccountVoteLocal?,
+        votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    )
     func didReceiveMetadata(_ referendumMetadata: ReferendumMetadataLocal?)
     func didReceiveIdentities(_ identities: [AccountAddress: AccountIdentity])
     func didReceivePrice(_ price: PriceData?)
@@ -52,10 +55,15 @@ protocol ReferendumDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
         from view: ReferendumDetailsViewProtocol?,
         referendum: ReferendumLocal,
         actionDetails: ReferendumActionLocal,
+        metadata: ReferendumMetadataLocal?,
         identities: [AccountAddress: AccountIdentity]
     )
 
-    func showVote(from view: ReferendumDetailsViewProtocol?, referendum: ReferendumLocal)
+    func showVote(
+        from view: ReferendumDetailsViewProtocol?,
+        referendum: ReferendumLocal,
+        initData: ReferendumVotingInitData
+    )
 
     func showVoters(
         from view: ReferendumDetailsViewProtocol?,
