@@ -45,7 +45,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
             let referendumsSection = section - 1
             switch referendumsViewModel.sections[referendumsSection] {
             case let .active(_, cells), let .completed(_, cells):
-                return cells.count
+                return !cells.isEmpty ? cells.count : 1
             }
         }
     }
@@ -61,16 +61,26 @@ extension ReferendumsViewManager: UITableViewDataSource {
 
             return unlocksCell
         } else {
-            let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.applyStyle()
-
             let referendumsSection = indexPath.section - 1
             let section = referendumsViewModel.sections[referendumsSection]
-            switch section {
-            case let .active(_, cellModels), let .completed(_, cellModels):
-                let cellModel = cellModels[indexPath.row].viewModel
-                cell.view.bind(viewModel: cellModel)
+
+            if section.isEmpty {
+                let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
+                let text = R.string.localizable.govEmptyList(preferredLanguages: locale.rLanguages)
+                cell.view.bind(image: R.image.iconEmptyHistory(), text: text)
+                cell.applyStyle()
+
                 return cell
+            } else {
+                let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                cell.applyStyle()
+
+                switch section {
+                case let .active(_, cellModels), let .completed(_, cellModels):
+                    let cellModel = cellModels[indexPath.row].viewModel
+                    cell.view.bind(viewModel: cellModel)
+                    return cell
+                }
             }
         }
     }
@@ -85,6 +95,11 @@ extension ReferendumsViewManager: UITableViewDelegate {
         } else {
             let referendumsSection = indexPath.section - 1
             let section = referendumsViewModel.sections[referendumsSection]
+
+            guard !section.isEmpty else {
+                return
+            }
+
             switch section {
             case let .active(_, cellModels), let .completed(_, cellModels):
                 let referendumIndex = cellModels[indexPath.row].referendumIndex
@@ -119,6 +134,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         guard section > 0 else {
             return 0
         }
+
         let referendumsSection = section - 1
         let sectionModel = referendumsViewModel.sections[referendumsSection]
         switch sectionModel {
@@ -133,18 +149,24 @@ extension ReferendumsViewManager: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard indexPath.section > 0 else {
+        if indexPath.section == 0 {
             return Constants.unlocksCellHeight
-        }
-        let referendumsSection = indexPath.section - 1
-        let sectionModel = referendumsViewModel.sections[referendumsSection]
-        switch sectionModel {
-        case let .active(_, cells), let .completed(_, cells):
-            switch cells[indexPath.row].viewModel {
-            case .loaded, .cached:
+        } else {
+            let referendumsSection = indexPath.section - 1
+            let sectionModel = referendumsViewModel.sections[referendumsSection]
+
+            if sectionModel.isEmpty {
                 return UITableView.automaticDimension
-            case .loading:
-                return Constants.referendumCellMinimumHeight
+            } else {
+                switch sectionModel {
+                case let .active(_, cells), let .completed(_, cells):
+                    switch cells[indexPath.row].viewModel {
+                    case .loaded, .cached:
+                        return UITableView.automaticDimension
+                    case .loading:
+                        return Constants.referendumCellMinimumHeight
+                    }
+                }
             }
         }
     }
@@ -208,6 +230,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.delegate = self
         tableView.registerClassForCell(ReferendumTableViewCell.self)
         tableView.registerClassForCell(ReferendumsUnlocksTableViewCell.self)
+        tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
         tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }
@@ -217,6 +240,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.delegate = nil
         tableView.unregisterClassForCell(ReferendumTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsUnlocksTableViewCell.self)
+        tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
         tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
     }

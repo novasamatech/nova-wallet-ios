@@ -14,6 +14,7 @@ final class ReferendumFullDetailsPresenter {
     let chain: ChainModel
     let referendum: ReferendumLocal
     let actionDetails: ReferendumActionLocal
+    let metadata: ReferendumMetadataLocal?
     let identities: [AccountAddress: AccountIdentity]
 
     private var price: PriceData?
@@ -25,6 +26,7 @@ final class ReferendumFullDetailsPresenter {
         chain: ChainModel,
         referendum: ReferendumLocal,
         actionDetails: ReferendumActionLocal,
+        metadata: ReferendumMetadataLocal?,
         identities: [AccountAddress: AccountIdentity],
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
@@ -35,6 +37,7 @@ final class ReferendumFullDetailsPresenter {
         self.wireframe = wireframe
         self.chain = chain
         self.referendum = referendum
+        self.metadata = metadata
         self.actionDetails = actionDetails
         self.identities = identities
         self.logger = logger
@@ -72,7 +75,8 @@ final class ReferendumFullDetailsPresenter {
     }
 
     private func provideProposerViewModel() {
-        guard let proposer = getAccountViewModel(referendum.proposer) else {
+        let optProposerId = referendum.proposer ?? metadata?.proposerAccountId(for: chain.chainFormat)
+        guard let proposer = getAccountViewModel(optProposerId) else {
             view?.didReceive(proposer: nil)
             return
         }
@@ -158,7 +162,8 @@ extension ReferendumFullDetailsPresenter: ReferendumFullDetailsPresenterProtocol
     }
 
     func presentProposer() {
-        guard let address = try? referendum.proposer?.toAddress(using: chain.chainFormat) else {
+        let optAccountId = referendum.proposer ?? metadata?.proposerAccountId(for: chain.chainFormat)
+        guard let address = try? optAccountId?.toAddress(using: chain.chainFormat) else {
             return
         }
 

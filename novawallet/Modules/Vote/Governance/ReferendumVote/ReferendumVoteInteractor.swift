@@ -17,6 +17,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
     let extrinsicFactory: GovernanceExtrinsicFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
+    let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let lockStateFactory: GovernanceLockStateFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
@@ -38,6 +39,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
+        blockTimeFactory: BlockTimeOperationFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -52,6 +54,7 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
         self.chain = chain
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
+        self.blockTimeFactory = blockTimeFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
@@ -89,28 +92,31 @@ class ReferendumVoteInteractor: AnyCancellableCleaning {
             return
         }
 
-        let operation = blockTimeService.createEstimatedBlockTimeOperation()
+        let wrapper = blockTimeFactory.createBlockTimeOperation(
+            from: runtimeProvider,
+            blockTimeEstimationService: blockTimeService
+        )
 
-        operation.completionBlock = { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard operation === self?.blockTimeCancellable else {
+                guard wrapper === self?.blockTimeCancellable else {
                     return
                 }
 
                 self?.blockTimeCancellable = nil
 
                 do {
-                    let blockTimeModel = try operation.extractNoCancellableResultData()
-                    self?.basePresenter?.didReceiveBlockTime(blockTimeModel.blockTime)
+                    let blockTimeModel = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.basePresenter?.didReceiveBlockTime(blockTimeModel)
                 } catch {
                     self?.basePresenter?.didReceiveBaseError(.blockTimeFailed(error))
                 }
             }
         }
 
-        blockTimeCancellable = operation
+        blockTimeCancellable = wrapper
 
-        operationQueue.addOperation(operation)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func subscribeAccountVotes() {

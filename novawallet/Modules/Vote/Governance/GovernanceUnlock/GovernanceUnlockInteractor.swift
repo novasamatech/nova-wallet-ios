@@ -12,6 +12,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
+    let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
@@ -30,6 +31,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
+        blockTimeFactory: BlockTimeOperationFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         operationQueue: OperationQueue,
@@ -42,6 +44,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
+        self.blockTimeFactory = blockTimeFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
@@ -63,28 +66,31 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
             return
         }
 
-        let operation = blockTimeService.createEstimatedBlockTimeOperation()
+        let wrapper = blockTimeFactory.createBlockTimeOperation(
+            from: runtimeProvider,
+            blockTimeEstimationService: blockTimeService
+        )
 
-        operation.completionBlock = { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard operation === self?.blockTimeCancellable else {
+                guard wrapper === self?.blockTimeCancellable else {
                     return
                 }
 
                 self?.blockTimeCancellable = nil
 
                 do {
-                    let blockTimeModel = try operation.extractNoCancellableResultData()
-                    self?.basePresenter?.didReceiveBlockTime(blockTimeModel.blockTime)
+                    let blockTimeModel = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.basePresenter?.didReceiveBlockTime(blockTimeModel)
                 } catch {
                     self?.basePresenter?.didReceiveBaseError(.blockTimeFetchFailed(error))
                 }
             }
         }
 
-        blockTimeCancellable = operation
+        blockTimeCancellable = wrapper
 
-        operationQueue.addOperation(operation)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     func provideUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?) {

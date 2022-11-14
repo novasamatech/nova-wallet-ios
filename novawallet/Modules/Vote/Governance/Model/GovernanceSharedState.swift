@@ -152,4 +152,12 @@ final class GovernanceSharedState {
             return nil
         }
     }
+
+    func createBlockTimeOperationFactory() -> BlockTimeOperationFactoryProtocol? {
+        guard let chain = settings.value else {
+            return nil
+        }
+
+        return BlockTimeOperationFactory(chain: chain)
+    }
 }
