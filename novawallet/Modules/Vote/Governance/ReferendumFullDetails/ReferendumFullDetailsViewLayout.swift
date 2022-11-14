@@ -95,7 +95,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
             if let amount = viewModel.amount {
                 let amountCell = createBalanceCell(
-                    with: R.string.localizable.govRequestedAmount(preferredLanguages: locale.rLanguages),
+                    with: R.string.localizable.commonRequestedAmount(preferredLanguages: locale.rLanguages),
                     viewModel: amount
                 )
 
