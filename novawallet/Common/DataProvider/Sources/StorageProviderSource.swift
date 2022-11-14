@@ -52,15 +52,18 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
     // MARK: Private
 
     private func replaceAndNotifyIfNeeded(_ newItem: ChainStorageItem?) {
-        let newValue = LastSeen.received(value: newItem)
-        if newValue != lastSeenResult || lastSeenError != nil {
-            lock.lock()
+        lock.lock()
 
+        let newValue = LastSeen.received(value: newItem)
+        let shouldUpdate = newValue != lastSeenResult || lastSeenError != nil
+        if shouldUpdate {
             lastSeenError = nil
             lastSeenResult = newValue
+        }
 
-            lock.unlock()
+        lock.unlock()
 
+        if shouldUpdate {
             trigger.delegate?.didTrigger()
         }
     }
