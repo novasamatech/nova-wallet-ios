@@ -19,7 +19,7 @@ final class Gov1OperationFactory {
 
         func encode(to encoder: Encoder) throws {
             let scaleEncoder = ScaleEncoder()
-            "democrac".data(using: .utf8).map { scaleEncoder.appendRaw(data: $0) }
+            Democracy.lockId.data(using: .utf8).map { scaleEncoder.appendRaw(data: $0) }
             try index.encode(scaleEncoder: scaleEncoder)
 
             let data = scaleEncoder.encode()
