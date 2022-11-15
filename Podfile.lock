@@ -1,5 +1,5 @@
 PODS:
-  - BigInt (5.2.0)
+  - BigInt (5.0.0)
   - CDMarkdownKit (2.3.0)
   - Charts (4.1.0):
     - Charts/Core (= 4.1.0)
@@ -19,6 +19,7 @@ PODS:
     - Cuckoo/Swift (= 1.7.1)
   - Cuckoo/Swift (1.7.1)
   - FireMock (3.1)
+  - GenericJSON (2.0.2)
   - IrohaCrypto/BIP39 (0.9.0):
     - IrohaCrypto/Common
   - IrohaCrypto/blake2 (0.9.0)
@@ -47,6 +48,7 @@ PODS:
   - RobinHood (2.6.0)
   - scrypt.c (0.1.1)
   - secp256k1.c (0.1.2)
+  - secp256k1.swift (0.1.4)
   - SnapKit (5.0.1)
   - SoraFoundation (1.0.0):
     - SoraFoundation/DateProcessing (= 1.0.0)
@@ -123,6 +125,10 @@ PODS:
     - BigInt (~> 5.0)
   - SwiftyBeaver (1.9.3)
   - TweetNacl (1.0.2)
+  - web3.swift (1.2.0):
+    - BigInt (~> 5.0.0)
+    - GenericJSON (~> 2.0)
+    - secp256k1.swift (~> 0.1)
   - xxHash-Swift (1.0.13)
 
 DEPENDENCIES:
@@ -147,6 +153,7 @@ DEPENDENCIES:
   - SwiftLint
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
   - SwiftyBeaver
+  - web3.swift (from `https://github.com/argentlabs/web3.swift.git`, tag `1.2.0`)
 
 SPEC REPOS:
   trunk:
@@ -155,6 +162,7 @@ SPEC REPOS:
     - CocoaLumberjack
     - Cuckoo
     - FireMock
+    - GenericJSON
     - IrohaCrypto
     - keccak.c
     - Kingfisher
@@ -164,6 +172,7 @@ SPEC REPOS:
     - RobinHood
     - scrypt.c
     - secp256k1.c
+    - secp256k1.swift
     - SnapKit
     - SoraFoundation
     - SoraKeystore
@@ -196,6 +205,9 @@ EXTERNAL SOURCES:
     :tag: 3.0.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
+  web3.swift:
+    :git: https://github.com/argentlabs/web3.swift.git
+    :tag: 1.2.0
 
 CHECKOUT OPTIONS:
   CDMarkdownKit:
@@ -219,15 +231,19 @@ CHECKOUT OPTIONS:
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
+  web3.swift:
+    :git: https://github.com/argentlabs/web3.swift.git
+    :tag: 1.2.0
 
 SPEC CHECKSUMS:
-  BigInt: f668a80089607f521586bbe29513d708491ef2f7
+  BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
   CDMarkdownKit: 9154c4e31f105e6a83b726412787d85e56edba46
   Charts: 354f86803d11d9c35de280587fef50d1af063978
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   CommonWallet: 59fdbf5511d6fcdc38496db4baf425dd0cf29274
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
+  GenericJSON: 79a840eeb77030962e8cf02a62d36bd413b67626
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
@@ -237,6 +253,7 @@ SPEC CHECKSUMS:
   RobinHood: f8628c9841dc1a082f4565247f6b598e82157b28
   scrypt.c: b42ae06183251329d2b2c620c226fb541a4a3592
   secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
+  secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SoraFoundation: 988d90ee3159311b02e42aeba0cf7e85d8bc724c
   SoraKeystore: 92cff6e2a12f212dd64ed089970ff7c365247b1c
@@ -251,8 +268,9 @@ SPEC CHECKSUMS:
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
+  web3.swift: 5b1c6275d92cfa60e4365159057bd63a83dfb9bd
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: f0266fabfe6e7f6dfb62690262b3b1c8ab02bfba
+PODFILE CHECKSUM: 5d84620e6be2d1048fc4e98bbfc5bbb17c180a2c
 
 COCOAPODS: 1.11.3
