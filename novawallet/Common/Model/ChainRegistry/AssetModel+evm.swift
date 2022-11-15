@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 import xxHash_Swift
 
 extension AssetModel {

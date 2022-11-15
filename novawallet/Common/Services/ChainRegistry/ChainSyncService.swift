@@ -72,19 +72,15 @@ final class ChainSyncService {
         let evmRemoteFetchOperation = dataFetchFactory.fetchData(from: evmAssetsURL)
 
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-        let evmTokensProcessingOperation: BaseOperation<[ChainModel.Id: Set<AssetModel>]> = ClosureOperation {
-            let remoteData = try evmRemoteFetchOperation.extractNoCancellableResultData()
-            let remoteItems = try JSONDecoder().decode([RemoteEvmToken].self, from: remoteData)
-            return Self.createAssets(evmTokens: remoteItems)
-        }
-
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
             let remoteData = try remoteFetchOperation.extractNoCancellableResultData()
             let remoteItems = try JSONDecoder().decode([RemoteChainModel].self, from: remoteData)
             let remoteChains = remoteItems.enumerated().map { index, chain in
                 ChainModel(remoteModel: chain, order: Int64(index))
             }
-            let remoteEvmTokens = try evmTokensProcessingOperation.extractNoCancellableResultData()
+            let evmRemoteData = try evmRemoteFetchOperation.extractNoCancellableResultData()
+            let evmRemoteItems = try JSONDecoder().decode([RemoteEvmToken].self, from: evmRemoteData)
+            let remoteEvmTokens = Self.createAssets(evmTokens: evmRemoteItems)
 
             let remoteMapping = remoteChains.reduce(into: [ChainModel.Id: ChainModel]()) { mapping, item in
                 let chainModel: ChainModel
@@ -130,9 +126,8 @@ final class ChainSyncService {
             return SyncChanges(newOrUpdatedItems: newOrUpdated, removedItems: removed)
         }
 
-        evmTokensProcessingOperation.addDependency(evmRemoteFetchOperation)
         processingOperation.addDependency(remoteFetchOperation)
-        processingOperation.addDependency(evmTokensProcessingOperation)
+        processingOperation.addDependency(evmRemoteFetchOperation)
         processingOperation.addDependency(localFetchOperation)
 
         let localSaveOperation = repository.saveOperation({
@@ -160,7 +155,12 @@ final class ChainSyncService {
         }
 
         operationQueue.addOperations([
-            remoteFetchOperation, localFetchOperation, processingOperation, localSaveOperation, mapOperation
+            remoteFetchOperation,
+            localFetchOperation,
+            evmRemoteFetchOperation,
+            processingOperation,
+            localSaveOperation,
+            mapOperation
         ], waitUntilFinished: false)
     }
 
