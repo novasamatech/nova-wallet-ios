@@ -30,3 +30,22 @@ extension AssetModel {
         )
     }
 }
+
+extension Array where Element == RemoteEvmToken {
+    func chainAssets() -> [ChainModel.Id: Set<AssetModel>] {
+        var result = [ChainModel.Id: Set<AssetModel>]()
+
+        for token in self {
+            for instance in token.instances {
+                guard let asset = AssetModel(evmToken: token, evmInstance: instance) else {
+                    continue
+                }
+                var assets = result[instance.chainId] ?? Set<AssetModel>()
+                assets.insert(asset)
+                result[instance.chainId] = assets
+            }
+        }
+
+        return result
+    }
+}

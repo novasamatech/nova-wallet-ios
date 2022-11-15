@@ -75,35 +75,20 @@ final class ChainSyncService {
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
             let remoteData = try remoteFetchOperation.extractNoCancellableResultData()
             let remoteItems = try JSONDecoder().decode([RemoteChainModel].self, from: remoteData)
-            let remoteChains = remoteItems.enumerated().map { index, chain in
-                ChainModel(remoteModel: chain, order: Int64(index))
-            }
             let evmRemoteData = try evmRemoteFetchOperation.extractNoCancellableResultData()
             let evmRemoteItems = try JSONDecoder().decode([RemoteEvmToken].self, from: evmRemoteData)
-            let remoteEvmTokens = Self.createAssets(evmTokens: evmRemoteItems)
+            let remoteEvmTokens = evmRemoteItems.chainAssets()
+
+            let remoteChains = remoteItems.enumerated().map { index, chain in
+                ChainModel(
+                    remoteModel: chain,
+                    additionalAssets: remoteEvmTokens[chain.chainId] ?? .init(),
+                    order: Int64(index)
+                )
+            }
 
             let remoteMapping = remoteChains.reduce(into: [ChainModel.Id: ChainModel]()) { mapping, item in
-                let chainModel: ChainModel
-                if let evmTokens = remoteEvmTokens[item.chainId] {
-                    chainModel = ChainModel(
-                        chainId: item.chainId,
-                        parentId: item.parentId,
-                        name: item.name,
-                        assets: item.assets.union(evmTokens),
-                        nodes: item.nodes,
-                        addressPrefix: item.addressPrefix,
-                        types: item.types,
-                        icon: item.icon,
-                        options: item.options,
-                        externalApi: item.externalApi,
-                        explorers: item.explorers,
-                        order: item.order,
-                        additional: item.additional
-                    )
-                } else {
-                    chainModel = item
-                }
-                mapping[item.chainId] = chainModel
+                mapping[item.chainId] = item
             }
 
             let localChains = try localFetchOperation.extractNoCancellableResultData()
@@ -156,29 +141,12 @@ final class ChainSyncService {
 
         operationQueue.addOperations([
             remoteFetchOperation,
-            localFetchOperation,
             evmRemoteFetchOperation,
+            localFetchOperation,
             processingOperation,
             localSaveOperation,
             mapOperation
         ], waitUntilFinished: false)
-    }
-
-    private static func createAssets(evmTokens tokens: [RemoteEvmToken]) -> [ChainModel.Id: Set<AssetModel>] {
-        var result = [ChainModel.Id: Set<AssetModel>]()
-
-        for token in tokens {
-            for instance in token.instances {
-                guard let asset = AssetModel(evmToken: token, evmInstance: instance) else {
-                    continue
-                }
-                var assets = result[instance.chainId] ?? Set<AssetModel>()
-                assets.insert(asset)
-                result[instance.chainId] = assets
-            }
-        }
-
-        return result
     }
 
     private func complete(result: Result<SyncChanges, Error>?) {
