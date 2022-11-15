@@ -13,6 +13,7 @@ final class ChainSyncService {
     }
 
     let url: URL
+    let evmAssetsURL: URL
     let repository: AnyDataProviderRepository<ChainModel>
     let dataFetchFactory: DataOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
@@ -31,6 +32,7 @@ final class ChainSyncService {
 
     init(
         url: URL,
+        evmAssetsURL: URL,
         dataFetchFactory: DataOperationFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         eventCenter: EventCenterProtocol,
@@ -45,6 +47,7 @@ final class ChainSyncService {
         self.operationQueue = operationQueue
         self.retryStrategy = retryStrategy
         self.logger = logger
+        self.evmAssetsURL = evmAssetsURL
     }
 
     private func performSyncUpIfNeeded() {
@@ -66,17 +69,45 @@ final class ChainSyncService {
 
     private func executeSync() {
         let remoteFetchOperation = dataFetchFactory.fetchData(from: url)
+        let evmRemoteFetchOperation = dataFetchFactory.fetchData(from: evmAssetsURL)
+
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        let evmTokensProcessingOperation: BaseOperation<[ChainModel.Id: Set<AssetModel>]> = ClosureOperation {
+            let remoteData = try evmRemoteFetchOperation.extractNoCancellableResultData()
+            let remoteItems = try JSONDecoder().decode([RemoteEvmToken].self, from: remoteData)
+            return Self.createAssets(evmTokens: remoteItems)
+        }
+
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
             let remoteData = try remoteFetchOperation.extractNoCancellableResultData()
             let remoteItems = try JSONDecoder().decode([RemoteChainModel].self, from: remoteData)
-
             let remoteChains = remoteItems.enumerated().map { index, chain in
                 ChainModel(remoteModel: chain, order: Int64(index))
             }
+            let remoteEvmTokens = try evmTokensProcessingOperation.extractNoCancellableResultData()
 
             let remoteMapping = remoteChains.reduce(into: [ChainModel.Id: ChainModel]()) { mapping, item in
-                mapping[item.chainId] = item
+                let chainModel: ChainModel
+                if let evmTokens = remoteEvmTokens[item.chainId] {
+                    chainModel = ChainModel(
+                        chainId: item.chainId,
+                        parentId: item.parentId,
+                        name: item.name,
+                        assets: item.assets.union(evmTokens),
+                        nodes: item.nodes,
+                        addressPrefix: item.addressPrefix,
+                        types: item.types,
+                        icon: item.icon,
+                        options: item.options,
+                        externalApi: item.externalApi,
+                        explorers: item.explorers,
+                        order: item.order,
+                        additional: item.additional
+                    )
+                } else {
+                    chainModel = item
+                }
+                mapping[item.chainId] = chainModel
             }
 
             let localChains = try localFetchOperation.extractNoCancellableResultData()
@@ -99,7 +130,9 @@ final class ChainSyncService {
             return SyncChanges(newOrUpdatedItems: newOrUpdated, removedItems: removed)
         }
 
+        evmTokensProcessingOperation.addDependency(evmRemoteFetchOperation)
         processingOperation.addDependency(remoteFetchOperation)
+        processingOperation.addDependency(evmTokensProcessingOperation)
         processingOperation.addDependency(localFetchOperation)
 
         let localSaveOperation = repository.saveOperation({
@@ -129,6 +162,23 @@ final class ChainSyncService {
         operationQueue.addOperations([
             remoteFetchOperation, localFetchOperation, processingOperation, localSaveOperation, mapOperation
         ], waitUntilFinished: false)
+    }
+
+    private static func createAssets(evmTokens tokens: [RemoteEvmToken]) -> [ChainModel.Id: Set<AssetModel>] {
+        var result = [ChainModel.Id: Set<AssetModel>]()
+
+        for token in tokens {
+            for instance in token.instances {
+                guard let asset = AssetModel(evmToken: token, evmInstance: instance) else {
+                    continue
+                }
+                var assets = result[instance.chainId] ?? Set<AssetModel>()
+                assets.insert(asset)
+                result[instance.chainId] = assets
+            }
+        }
+
+        return result
     }
 
     private func complete(result: Result<SyncChanges, Error>?) {

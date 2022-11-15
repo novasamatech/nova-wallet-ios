@@ -2353,6 +2353,8 @@
 		8892284A28F35410003F8B9E /* ReferendumsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8892284928F35410003F8B9E /* ReferendumsViewModel.swift */; };
 		889D889528F01E5B00C4320F /* ReferendumTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889D889428F01E5B00C4320F /* ReferendumTableViewCell.swift */; };
 		889D889728F022AA00C4320F /* UILabel+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889D889628F022AA00C4320F /* UILabel+Style.swift */; };
+		889F7F3B292373560024CB1E /* AssetModel+evm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889F7F3A292373560024CB1E /* AssetModel+evm.swift */; };
+		889F7F3D2923737B0024CB1E /* RemoteEvmToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889F7F3C2923737B0024CB1E /* RemoteEvmToken.swift */; };
 		88A0C52128D49A090083A524 /* CrowdloanOffChainSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0C52028D49A090083A524 /* CrowdloanOffChainSyncService.swift */; };
 		88A0E0FF28A284C700A9C940 /* SelectedCurrencyDepending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0E0FC28A284C700A9C940 /* SelectedCurrencyDepending.swift */; };
 		88A0E10028A284C700A9C940 /* CurrencyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A0E0FD28A284C700A9C940 /* CurrencyManager.swift */; };
@@ -5356,6 +5358,8 @@
 		889A825F58F5CB54118A9D35 /* SelectValidatorsStartWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartWireframe.swift; sourceTree = "<group>"; };
 		889D889428F01E5B00C4320F /* ReferendumTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumTableViewCell.swift; sourceTree = "<group>"; };
 		889D889628F022AA00C4320F /* UILabel+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Style.swift"; sourceTree = "<group>"; };
+		889F7F3A292373560024CB1E /* AssetModel+evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetModel+evm.swift"; sourceTree = "<group>"; };
+		889F7F3C2923737B0024CB1E /* RemoteEvmToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteEvmToken.swift; sourceTree = "<group>"; };
 		88A0C52028D49A090083A524 /* CrowdloanOffChainSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffChainSyncService.swift; sourceTree = "<group>"; };
 		88A0E0FC28A284C700A9C940 /* SelectedCurrencyDepending.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedCurrencyDepending.swift; sourceTree = "<group>"; };
 		88A0E0FD28A284C700A9C940 /* CurrencyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyManager.swift; sourceTree = "<group>"; };
@@ -11666,6 +11670,8 @@
 				845B821E26EF8E8900D25C72 /* ManagedMetaAccountModel.swift */,
 				84800B01273301C800E1E4DD /* RemoteChainModel.swift */,
 				84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */,
+				889F7F3A292373560024CB1E /* AssetModel+evm.swift */,
+				889F7F3C2923737B0024CB1E /* RemoteEvmToken.swift */,
 			);
 			path = ChainRegistry;
 			sourceTree = "<group>";
@@ -15416,6 +15422,7 @@
 				F4223F102732D445003D8E4E /* AcalaStatementData.swift in Sources */,
 				847DD8DC26034B99003DE053 /* LocalizableViewProtocol.swift in Sources */,
 				F4CE0F9527343E630094CD8A /* AcalaContributionConfirmPresenter.swift in Sources */,
+				889F7F3B292373560024CB1E /* AssetModel+evm.swift in Sources */,
 				849D3227291CE25E00D25839 /* MarkdownViewContainer.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
@@ -16522,6 +16529,7 @@
 				8446F5F228172BBC00B7A86C /* StakingUnbonHintView.swift in Sources */,
 				F40966F526B299FC008CD244 /* SubqueryRewardsSource.swift in Sources */,
 				AF8193D9F818638254854232 /* StakingMainProtocols.swift in Sources */,
+				889F7F3D2923737B0024CB1E /* RemoteEvmToken.swift in Sources */,
 				C46EEF6A9A9A601694E72DB1 /* StakingMainWireframe.swift in Sources */,
 				AEE5FB09264289FD002B8FDC /* RebondCall.swift in Sources */,
 				8406B5AD26FBE69200635B61 /* SelectableIconDetailsListViewModel.swift in Sources */,
