@@ -743,6 +743,8 @@
 		8436EDE225895804004D9E97 /* RampProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436EDE125895804004D9E97 /* RampProvider.swift */; };
 		8436EDE725895846004D9E97 /* PurchaseProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436EDE625895846004D9E97 /* PurchaseProvider.swift */; };
 		8436EDEF25896722004D9E97 /* PurchaseAggregator+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8436EDEE25896722004D9E97 /* PurchaseAggregator+Default.swift */; };
+		8437F7C12924FF6400DB6366 /* EvmSubscriptionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8437F7C02924FF6400DB6366 /* EvmSubscriptionMessage.swift */; };
+		8437F7C3292506D000DB6366 /* EvmSubscriptionMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8437F7C2292506D000DB6366 /* EvmSubscriptionMessageFactory.swift */; };
 		8438432E2913B3150048595C /* Gov1OperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438432D2913B3150048595C /* Gov1OperationFactory.swift */; };
 		8438C45B2655AC2600047E3F /* runtime-rococo.json in Resources */ = {isa = PBXBuildFile; fileRef = 8438C45A2655AC2600047E3F /* runtime-rococo.json */; };
 		8438E1D224BFAAD2001BDB13 /* JSONRPCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8438E1D124BFAAD2001BDB13 /* JSONRPCTests.swift */; };
@@ -3733,6 +3735,8 @@
 		8436EDE125895804004D9E97 /* RampProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RampProvider.swift; sourceTree = "<group>"; };
 		8436EDE625895846004D9E97 /* PurchaseProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseProvider.swift; sourceTree = "<group>"; };
 		8436EDEE25896722004D9E97 /* PurchaseAggregator+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PurchaseAggregator+Default.swift"; sourceTree = "<group>"; };
+		8437F7C02924FF6400DB6366 /* EvmSubscriptionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmSubscriptionMessage.swift; sourceTree = "<group>"; };
+		8437F7C2292506D000DB6366 /* EvmSubscriptionMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmSubscriptionMessageFactory.swift; sourceTree = "<group>"; };
 		8438432D2913B3150048595C /* Gov1OperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gov1OperationFactory.swift; sourceTree = "<group>"; };
 		8438C45A2655AC2600047E3F /* runtime-rococo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "runtime-rococo.json"; sourceTree = "<group>"; };
 		8438E1CF24BFAAD2001BDB13 /* novawalletIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = novawalletIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -11375,6 +11379,8 @@
 				84BCC7172924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift */,
 				84BCC7192924B53500354DE0 /* EvmRemoteSubscription.swift */,
 				84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */,
+				8437F7C02924FF6400DB6366 /* EvmSubscriptionMessage.swift */,
+				8437F7C2292506D000DB6366 /* EvmSubscriptionMessageFactory.swift */,
 			);
 			path = Evm;
 			sourceTree = "<group>";
@@ -15081,6 +15087,7 @@
 				888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */,
 				843E9B3627C8B915009C143A /* NftFileDownloadService.swift in Sources */,
 				842B17FF28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift in Sources */,
+				8437F7C12924FF6400DB6366 /* EvmSubscriptionMessage.swift in Sources */,
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
 				F409670026B29A58008CD244 /* FWLineChartView.swift in Sources */,
 				84D1ABE027E1CB870073C631 /* TitleHorizontalMultiValueView.swift in Sources */,
@@ -16627,6 +16634,7 @@
 				84FB9E1A285C57D900B42FC0 /* XcmVersionedMultilocation.swift in Sources */,
 				849ABE6826278A4100011A2A /* NominateMapper.swift in Sources */,
 				2C3124A5EBC1AD57C01EEA17 /* SelectValidatorsStartInteractor.swift in Sources */,
+				8437F7C3292506D000DB6366 /* EvmSubscriptionMessageFactory.swift in Sources */,
 				88A5318028B9328E00AF18F5 /* YourWalletsViewSectionModel.swift in Sources */,
 				842EBB312890A76A00B952D8 /* WalletSelectionViewController.swift in Sources */,
 				8427495728FEBFA400B2B70B /* ConvictionVoting+ConstantPath.swift in Sources */,
