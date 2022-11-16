@@ -157,6 +157,7 @@ final class ChainSyncService {
         }
 
         isSyncing = false
+        operationQueue.cancelAllOperations()
 
         switch result {
         case let .success(changes):
