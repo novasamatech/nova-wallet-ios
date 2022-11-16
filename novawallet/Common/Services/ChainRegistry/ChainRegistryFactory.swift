@@ -80,6 +80,7 @@ final class ChainRegistryFactory {
 
         let chainSyncService = ChainSyncService(
             url: ApplicationConfig.shared.chainListURL,
+            evmAssetsURL: ApplicationConfig.shared.evmAssetsURL,
             dataFetchFactory: dataFetchOperationFactory,
             repository: AnyDataProviderRepository(chainRepository),
             eventCenter: EventCenter.shared,
