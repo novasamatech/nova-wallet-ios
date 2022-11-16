@@ -117,10 +117,11 @@ class ChainSyncServiceTests: XCTestCase {
         let successOperation = BaseOperation.createWithResult(responseData)
         let evmResponseData = try JSONEncoder().encode([RemoteEvmToken]())
         let evmSuccessOperation = BaseOperation.createWithResult(evmResponseData)
+        let otherEvmSuccessOperation = BaseOperation.createWithResult(evmResponseData)
         
         stub(dataOperationFactory) { stub in
             stub.fetchData(from: chainURL).thenReturn(failureOperation, successOperation)
-            stub.fetchData(from: evmAssetURL).thenReturn(evmSuccessOperation)
+            stub.fetchData(from: evmAssetURL).thenReturn(evmSuccessOperation, otherEvmSuccessOperation)
         }
         
         let failureExpectation = XCTestExpectation()
