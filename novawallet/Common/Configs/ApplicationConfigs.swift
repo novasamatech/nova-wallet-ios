@@ -128,6 +128,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
+    var evmAssetsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v1/assets.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v1/assets_dev.json")!
+        #endif
+    }
+
     var xcmTransfersURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v2/transfers.json")!
