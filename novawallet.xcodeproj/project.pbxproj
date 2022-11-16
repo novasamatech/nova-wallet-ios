@@ -1790,6 +1790,10 @@
 		84BC7047289EFFFA008A9758 /* ChainWalletDisplayAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC7046289EFFFA008A9758 /* ChainWalletDisplayAddress.swift */; };
 		84BC7049289F10AE008A9758 /* WalletAccountInfoView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC7048289F10AE008A9758 /* WalletAccountInfoView+Style.swift */; };
 		84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BC704A289F1338008A9758 /* ExpirationTimeViewModel.swift */; };
+		84BCC7162924AE0000354DE0 /* EvmRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BCC7152924AE0000354DE0 /* EvmRemoteSubscriptionService.swift */; };
+		84BCC7182924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BCC7172924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift */; };
+		84BCC71A2924B53500354DE0 /* EvmRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BCC7192924B53500354DE0 /* EvmRemoteSubscription.swift */; };
+		84BCC71C2924B69D00354DE0 /* ERC20SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */; };
 		84BD388D28A25CB800A9918E /* UILabel+ExpirationTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BD388C28A25CB800A9918E /* UILabel+ExpirationTimer.swift */; };
 		84BE207825E7D62100B4748C /* ActiveEraInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BE207725E7D62100B4748C /* ActiveEraInfo.swift */; };
 		84BE209E25E85CCA00B4748C /* ServiceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */; };
@@ -4790,6 +4794,10 @@
 		84BC7046289EFFFA008A9758 /* ChainWalletDisplayAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainWalletDisplayAddress.swift; sourceTree = "<group>"; };
 		84BC7048289F10AE008A9758 /* WalletAccountInfoView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletAccountInfoView+Style.swift"; sourceTree = "<group>"; };
 		84BC704A289F1338008A9758 /* ExpirationTimeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationTimeViewModel.swift; sourceTree = "<group>"; };
+		84BCC7152924AE0000354DE0 /* EvmRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmRemoteSubscriptionService.swift; sourceTree = "<group>"; };
+		84BCC7172924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmRemoteSubscriptionRequest.swift; sourceTree = "<group>"; };
+		84BCC7192924B53500354DE0 /* EvmRemoteSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmRemoteSubscription.swift; sourceTree = "<group>"; };
+		84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20SubscriptionManager.swift; sourceTree = "<group>"; };
 		84BD388C28A25CB800A9918E /* UILabel+ExpirationTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+ExpirationTimer.swift"; sourceTree = "<group>"; };
 		84BE207725E7D62100B4748C /* ActiveEraInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveEraInfo.swift; sourceTree = "<group>"; };
 		84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCoordinator.swift; sourceTree = "<group>"; };
@@ -6984,28 +6992,8 @@
 		841AAC2B26F7311200F0A25E /* RemoteSubscription */ = {
 			isa = PBXGroup;
 			children = (
-				841AAC2C26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift */,
-				84963D6B26F91810003FE8E4 /* RemoteSubscriptionService.swift */,
-				84963D6D26F91826003FE8E4 /* RemoteSubscriptionRequests.swift */,
-				84963D6F26F92F18003FE8E4 /* WalletRemoteSubscriptionService.swift */,
-				8406B5AA26FBD9EB00635B61 /* AccountInfoUpdatingService.swift */,
-				849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */,
-				845C40782702571200BFA50B /* StakingRemoteSubscriptionService.swift */,
-				84786E0F25FA20D30089DFF7 /* StakingAccountResolver.swift */,
-				84786E2325FBA2A50089DFF7 /* StakingAccountSubscription.swift */,
-				845C407A27027AA000BFA50B /* SubscriptionStorageKeys.swift */,
-				845C407C2702812E00BFA50B /* StakingAccountUpdatingService.swift */,
-				841E2E4D2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift */,
-				841E2E4F27381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift */,
-				84B73AD9279D265A0071AE16 /* AssetsSubscriptionHandlingFactory.swift */,
-				84F18D4B27A1874000CA7554 /* TokenSubscriptionFactory.swift */,
-				84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */,
-				848DAEF6282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift */,
-				841E553B282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift */,
-				849E07F12849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift */,
-				849E07F3284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift */,
-				842643BA2878572D0031B5B5 /* TuringStakingRemoteSubscriptionService.swift */,
-				884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */,
+				84BCC7142924ADDC00354DE0 /* Evm */,
+				84BCC7132924ADB200354DE0 /* Substrate */,
 			);
 			path = RemoteSubscription;
 			sourceTree = "<group>";
@@ -11351,6 +11339,46 @@
 			path = QRCreation;
 			sourceTree = "<group>";
 		};
+		84BCC7132924ADB200354DE0 /* Substrate */ = {
+			isa = PBXGroup;
+			children = (
+				841AAC2C26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift */,
+				84963D6B26F91810003FE8E4 /* RemoteSubscriptionService.swift */,
+				84963D6D26F91826003FE8E4 /* RemoteSubscriptionRequests.swift */,
+				84963D6F26F92F18003FE8E4 /* WalletRemoteSubscriptionService.swift */,
+				8406B5AA26FBD9EB00635B61 /* AccountInfoUpdatingService.swift */,
+				849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */,
+				845C40782702571200BFA50B /* StakingRemoteSubscriptionService.swift */,
+				84786E0F25FA20D30089DFF7 /* StakingAccountResolver.swift */,
+				84786E2325FBA2A50089DFF7 /* StakingAccountSubscription.swift */,
+				845C407A27027AA000BFA50B /* SubscriptionStorageKeys.swift */,
+				845C407C2702812E00BFA50B /* StakingAccountUpdatingService.swift */,
+				841E2E4D2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift */,
+				841E2E4F27381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift */,
+				84B73AD9279D265A0071AE16 /* AssetsSubscriptionHandlingFactory.swift */,
+				84F18D4B27A1874000CA7554 /* TokenSubscriptionFactory.swift */,
+				84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */,
+				848DAEF6282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift */,
+				841E553B282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift */,
+				849E07F12849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift */,
+				849E07F3284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift */,
+				842643BA2878572D0031B5B5 /* TuringStakingRemoteSubscriptionService.swift */,
+				884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */,
+			);
+			path = Substrate;
+			sourceTree = "<group>";
+		};
+		84BCC7142924ADDC00354DE0 /* Evm */ = {
+			isa = PBXGroup;
+			children = (
+				84BCC7152924AE0000354DE0 /* EvmRemoteSubscriptionService.swift */,
+				84BCC7172924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift */,
+				84BCC7192924B53500354DE0 /* EvmRemoteSubscription.swift */,
+				84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */,
+			);
+			path = Evm;
+			sourceTree = "<group>";
+		};
 		84BD388B28A25C9400A9918E /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -15125,6 +15153,7 @@
 				849244922514EDE800477C1B /* SelectableViewModel.swift in Sources */,
 				84C5ADDD2813248B006D7388 /* WalletDisplayAddress.swift in Sources */,
 				844DAADF28ABCBF6008E11DA /* LedgerTransport.swift in Sources */,
+				84BCC71A2924B53500354DE0 /* EvmRemoteSubscription.swift in Sources */,
 				8466781E27ED982C007935D3 /* PhishingAddressValidatorFactory.swift in Sources */,
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
 				84CFF1E826526FBC00DB7CF7 /* StakingBondMoreViewFactory.swift in Sources */,
@@ -15818,6 +15847,7 @@
 				8490145624A9404E008F705E /* AttributedStringDecorator.swift in Sources */,
 				D9046DBC27453D5C00C29F2E /* ParallelContributionResponse.swift in Sources */,
 				8455AB4528F7F05400974E88 /* ReferendumStatusViewModelFactory.swift in Sources */,
+				84BCC7162924AE0000354DE0 /* EvmRemoteSubscriptionService.swift in Sources */,
 				8499FED227BFA39300712589 /* DataChangesDiffCalculator.swift in Sources */,
 				887AFC8C28BCB314002A0422 /* PolkadotIconDetailsView.swift in Sources */,
 				84CEAAF526D7ADF20021B881 /* KeystoreMigrator.swift in Sources */,
@@ -16098,6 +16128,7 @@
 				84D17ED828053E3200F7BAFF /* DAppFavoriteMapper.swift in Sources */,
 				8493D0DF26FE7D7400A28008 /* ChainRepositoryFactory.swift in Sources */,
 				8411707C285B1214006F4DFB /* XcmTransfers.swift in Sources */,
+				84BCC7182924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift in Sources */,
 				84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */,
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,
@@ -16855,6 +16886,7 @@
 				0C2AA829B5CB89B39E0FA95E /* CrowdloanContributionConfirmProtocols.swift in Sources */,
 				506F0D372BCC8302E513637C /* CrowdloanContributionConfirmWireframe.swift in Sources */,
 				D1C6EABB48DC3EE254E5A095 /* CrowdloanContributionConfirmPresenter.swift in Sources */,
+				84BCC71C2924B69D00354DE0 /* ERC20SubscriptionManager.swift in Sources */,
 				843A2C7126A85B5B00266F53 /* GenericTitleValueView.swift in Sources */,
 				847F2D4F27AA695F00AFD476 /* AssetListGroupModel.swift in Sources */,
 				8499FED827BFCABD00712589 /* NftModel+Identifier.swift in Sources */,
