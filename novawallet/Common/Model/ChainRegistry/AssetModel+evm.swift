@@ -33,9 +33,7 @@ extension AssetModel {
 
 extension Array where Element == RemoteEvmToken {
     func chainAssets() -> [ChainModel.Id: Set<AssetModel>] {
-        var result = [ChainModel.Id: Set<AssetModel>]()
-
-        for token in self {
+        reduce(into: [ChainModel.Id: Set<AssetModel>]()) { result, token in
             for instance in token.instances {
                 guard let asset = AssetModel(evmToken: token, evmInstance: instance) else {
                     continue
@@ -45,7 +43,5 @@ extension Array where Element == RemoteEvmToken {
                 result[instance.chainId] = assets
             }
         }
-
-        return result
     }
 }

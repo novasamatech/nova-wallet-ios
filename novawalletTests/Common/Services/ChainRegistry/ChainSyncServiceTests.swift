@@ -3,8 +3,6 @@ import XCTest
 import RobinHood
 import Cuckoo
 
-extension URL: Matchable {}
-
 class ChainSyncServiceTests: XCTestCase {
     let chainURL = URL(string: "https://github.com")!
     let evmAssetURL = URL(string: "https://google.com")!
