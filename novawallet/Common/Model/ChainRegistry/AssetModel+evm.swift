@@ -33,15 +33,19 @@ extension AssetModel {
 
 extension Array where Element == RemoteEvmToken {
     func chainAssets() -> [ChainModel.Id: Set<AssetModel>] {
-        reduce(into: [ChainModel.Id: Set<AssetModel>]()) { result, token in
-            for instance in token.instances {
+        let chainAssets = flatMap { token in
+            token.instances.compactMap { instance -> (chainId: ChainModel.Id, asset: AssetModel)? in
                 guard let asset = AssetModel(evmToken: token, evmInstance: instance) else {
-                    continue
+                    return nil
                 }
-                var assets = result[instance.chainId] ?? Set<AssetModel>()
-                assets.insert(asset)
-                result[instance.chainId] = assets
+                return (chainId: instance.chainId, asset: asset)
             }
+        }
+
+        return chainAssets.reduce(into: [ChainModel.Id: Set<AssetModel>]()) { result, chainAsset in
+            var assets = result[chainAsset.chainId] ?? Set<AssetModel>()
+            assets.insert(chainAsset.asset)
+            result[chainAsset.chainId] = assets
         }
     }
 }
