@@ -172,12 +172,12 @@ class ChainSyncServiceTests: XCTestCase {
         let chainWithEvmTokens = remoteItems[0]
         let otherChainWithEvmTokens = remoteItems[1]
         let chainWithoutEvmTokens = remoteItems[2]
-        let usdt = RemoteEvmToken.createUSDT(chainId1: chainWithEvmTokens.chainId,
-                                             chainId2: otherChainWithEvmTokens.chainId)
-        let usdChainAssets = [usdt].chainAssets()
+        let evmToken = ChainModelGenerator.generateEvmToken(chainId1: chainWithEvmTokens.chainId,
+                                                            chainId2: otherChainWithEvmTokens.chainId)
+        let usdChainAssets = [evmToken].chainAssets()
         
         let chainsData = try JSONEncoder().encode(remoteItems)
-        let evmTokensData = try JSONEncoder().encode([usdt])
+        let evmTokensData = try JSONEncoder().encode([evmToken])
         
         let expectedResult = [
             ChainModel(remoteModel: chainWithEvmTokens,
@@ -223,21 +223,4 @@ class ChainSyncServiceTests: XCTestCase {
         XCTAssertEqual(chainService.isSyncing, false)
         XCTAssertEqual(Set(localItems), Set(expectedResult))
     }
-}
-
-extension RemoteEvmToken {
-    static func createUSDT(chainId1: ChainModel.Id, chainId2: ChainModel.Id) -> RemoteEvmToken {
-        RemoteEvmToken(symbol: "USDT",
-                       precision: 6,
-                       name: "Tether USD",
-                       priceId: "tether",
-                       icon: nil,
-                       instances: [
-                        .init(chainId: chainId1,
-                              contractAddress: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73"),
-                        .init(chainId: chainId2,
-                              contractAddress: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C")
-                       ])
-    }
-    
 }

@@ -73,10 +73,11 @@ final class ChainSyncService {
 
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
+            let decoder = JSONDecoder()
             let remoteData = try remoteFetchOperation.extractNoCancellableResultData()
-            let remoteItems = try JSONDecoder().decode([RemoteChainModel].self, from: remoteData)
+            let remoteItems = try decoder.decode([RemoteChainModel].self, from: remoteData)
             let evmRemoteData = try evmRemoteFetchOperation.extractNoCancellableResultData()
-            let evmRemoteItems = try JSONDecoder().decode([RemoteEvmToken].self, from: evmRemoteData)
+            let evmRemoteItems = try decoder.decode([RemoteEvmToken].self, from: evmRemoteData)
             let remoteEvmTokens = evmRemoteItems.chainAssets()
 
             let remoteChains = remoteItems.enumerated().map { index, chain in
