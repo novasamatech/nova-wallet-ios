@@ -6,5 +6,5 @@ enum EvmRemoteSubscriptionRequest {
 
 struct ERC20BalanceSubscriptionRequest {
     let holder: AccountAddress
-    let contracts: Set<AccountAddress>
+    let contracts: Set<EvmAssetContractId>
 }
