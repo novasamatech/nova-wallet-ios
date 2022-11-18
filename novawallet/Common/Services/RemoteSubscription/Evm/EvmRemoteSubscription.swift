@@ -1,3 +1,5 @@
 import Foundation
 
-protocol EvmRemoteSubscriptionProtocol {}
+protocol EvmRemoteSubscriptionProtocol {
+    func start() throws
+}
