@@ -4,6 +4,7 @@ protocol WalletRemoteEvmSubscriptionServiceProtocol {
     func attachERC20Balance(
         for accountId: AccountId,
         chain: ChainModel,
+        transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol?,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID?
@@ -26,6 +27,7 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
     func attachERC20Balance(
         for accountId: AccountId,
         chain: ChainModel,
+        transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol?,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
@@ -56,7 +58,17 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
         }
 
         do {
-            let request = ERC20BalanceSubscriptionRequest(holder: holder, contracts: Set(assetContracts))
+            let transactionHistoryUpdater = transactionHistoryUpdaterFactory?.createTransactionHistoryUpdater(
+                for: accountId,
+                assetContracts: Set(assetContracts)
+            )
+
+            let request = ERC20BalanceSubscriptionRequest(
+                holder: holder,
+                contracts: Set(assetContracts),
+                transactionHistoryUpdater: transactionHistoryUpdater
+            )
+
             return try attachToSubscription(
                 on: chain.chainId,
                 request: .erc20Balace(request),
