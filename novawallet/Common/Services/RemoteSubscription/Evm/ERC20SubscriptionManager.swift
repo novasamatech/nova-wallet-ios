@@ -52,7 +52,7 @@ final class ERC20SubscriptionManager {
 
         handleTransaction(for: eventLog)
 
-        if eventLog.blockHash != processingBlockHash {
+        guard eventLog.blockHash != processingBlockHash else {
             // we are already updating balance for current block
             return
         }
@@ -83,6 +83,8 @@ final class ERC20SubscriptionManager {
             }
 
             syncService?.setup()
+
+            logger?.debug("Start updating balance")
         } catch {
             processingBlockHash = nil
             logger?.error("Can't create sync service: \(error)")
