@@ -201,11 +201,6 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     }
 
     override func performSyncUp() {
-        guard assetContracts.isEmpty else {
-            logger?.warning("No contracts provided for subscription")
-            return
-        }
-
         fetchBalances(for: holder, assetContracts: assetContracts)
     }
 

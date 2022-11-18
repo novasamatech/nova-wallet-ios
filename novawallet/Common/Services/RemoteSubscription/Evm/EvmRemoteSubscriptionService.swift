@@ -14,7 +14,6 @@ class EvmRemoteSubscriptionService {
 
     let chainRegistry: ChainRegistryProtocol
     let serviceFactory: EvmBalanceUpdateServiceFactoryProtocol
-    let operationManager: OperationManagerProtocol
     let logger: LoggerProtocol
 
     private let mutex = NSLock()
@@ -24,12 +23,10 @@ class EvmRemoteSubscriptionService {
     init(
         chainRegistry: ChainRegistryProtocol,
         serviceFactory: EvmBalanceUpdateServiceFactoryProtocol,
-        operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.serviceFactory = serviceFactory
-        self.operationManager = operationManager
         self.logger = logger
     }
 
@@ -77,5 +74,30 @@ class EvmRemoteSubscriptionService {
         subscriptions[cacheKey] = Active(subscriptionIds: [subscriptionId], container: container)
 
         return subscriptionId
+    }
+
+    func detachFromSubscription(
+        _ cacheKey: String,
+        subscriptionId: UUID,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let active = subscriptions[cacheKey] {
+            active.subscriptionIds.remove(subscriptionId)
+
+            if active.subscriptionIds.isEmpty {
+                subscriptions[cacheKey] = nil
+            }
+
+            callbackClosureIfProvided(closure, queue: queue ?? .main, result: .success(()))
+        } else {
+            callbackClosureIfProvided(closure, queue: queue ?? .main, result: .success(()))
+        }
     }
 }
