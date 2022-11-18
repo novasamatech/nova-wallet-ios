@@ -97,10 +97,17 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let evmTransactionHistoryUpdaterFactory = EvmTransactionHistoryUpdaterFactory(
+            storageFacade: substrateStorageFacade,
+            eventCenter: EventCenter.shared,
+            operationQueue: assetsOperationQueue
+        )
+
         let evmAssetsService = EvmAssetBalanceUpdatingService(
             selectedAccount: walletSettings.value,
             chainRegistry: chainRegistry,
             remoteSubscriptionService: evmWalletRemoteSubscription,
+            transactionHistoryUpdaterFactory: evmTransactionHistoryUpdaterFactory,
             logger: logger
         )
 

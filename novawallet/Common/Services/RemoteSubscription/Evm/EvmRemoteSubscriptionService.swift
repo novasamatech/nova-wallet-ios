@@ -13,7 +13,7 @@ class EvmRemoteSubscriptionService {
     }
 
     let chainRegistry: ChainRegistryProtocol
-    let serviceFactory: EvmBalanceUpdateServiceFactoryProtocol
+    let balanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
     let logger: LoggerProtocol
 
     private let mutex = NSLock()
@@ -22,11 +22,11 @@ class EvmRemoteSubscriptionService {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        serviceFactory: EvmBalanceUpdateServiceFactoryProtocol,
+        balanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
-        self.serviceFactory = serviceFactory
+        self.balanceUpdateServiceFactory = balanceUpdateServiceFactory
         self.logger = logger
     }
 
@@ -64,7 +64,7 @@ class EvmRemoteSubscriptionService {
             container = ERC20SubscriptionManager(
                 chainId: chainId,
                 params: params,
-                serviceFactory: serviceFactory,
+                serviceFactory: balanceUpdateServiceFactory,
                 connection: connection,
                 logger: logger
             )

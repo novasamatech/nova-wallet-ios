@@ -29,7 +29,7 @@ final class WalletServiceFacade {
 
         return WalletRemoteEvmSubscriptionService(
             chainRegistry: chainRegistry,
-            serviceFactory: serviceFactory,
+            balanceUpdateServiceFactory: serviceFactory,
             logger: logger
         )
     }()
