@@ -58,7 +58,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.eventCenter.notify(with: WalletNewTransactionInserted())
+                self?.eventCenter.notify(with: WalletTransactionListUpdated())
                 self?.submitionPresenter?.didCompleteSubmition()
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)

@@ -2265,6 +2265,9 @@
 		84FBECFD292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */; };
 		84FBECFF2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFE2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift */; };
 		84FBED0129277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */; };
+		84FBED0329279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */; };
+		84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */; };
+		84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */; };
 		84FD19FC27A32973008E5E68 /* HistoryRewardContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */; };
 		84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */; };
 		84FD3DAF2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */; };
@@ -2273,7 +2276,7 @@
 		84FD3DB52540ED0900A234E3 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DB42540ED0900A234E3 /* Block.swift */; };
 		84FD3DB72540EF0700A234E3 /* TransactionSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DB62540EF0700A234E3 /* TransactionSubscription.swift */; };
 		84FD3DB92540F70400A234E3 /* TransactionHistoryItem+Extrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DB82540F70400A234E3 /* TransactionHistoryItem+Extrinsic.swift */; };
-		84FD3DBB254104B600A234E3 /* WalletNewTransactionInserted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DBA254104B600A234E3 /* WalletNewTransactionInserted.swift */; };
+		84FD3DBB254104B600A234E3 /* WalletTransactionListUpdated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DBA254104B600A234E3 /* WalletTransactionListUpdated.swift */; };
 		84FEADEE287837E8001DFC26 /* TuringRewardCalculatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FEADED287837E8001DFC26 /* TuringRewardCalculatorService.swift */; };
 		84FEADF228783F55001DFC26 /* BaseParaStakingRewardCalculatoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FEADF128783F55001DFC26 /* BaseParaStakingRewardCalculatoService.swift */; };
 		84FEF3E32807E8000042CBE7 /* DAppBrowserPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FEF3E22807E8000042CBE7 /* DAppBrowserPage.swift */; };
@@ -5284,6 +5287,9 @@
 		84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteEvmSubscriptionService.swift; sourceTree = "<group>"; };
 		84FBECFE2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceBaseUpdatingService.swift; sourceTree = "<group>"; };
 		84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmAssetBalanceUpdatingService.swift; sourceTree = "<group>"; };
+		84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdater.swift; sourceTree = "<group>"; };
+		84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmEventParser.swift; sourceTree = "<group>"; };
+		84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdaterFactory.swift; sourceTree = "<group>"; };
 		84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRewardContext.swift; sourceTree = "<group>"; };
 		84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesWithdrawEvent.swift; sourceTree = "<group>"; };
 		84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionHistoryItem+Wallet.swift"; sourceTree = "<group>"; };
@@ -5292,7 +5298,7 @@
 		84FD3DB42540ED0900A234E3 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		84FD3DB62540EF0700A234E3 /* TransactionSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSubscription.swift; sourceTree = "<group>"; };
 		84FD3DB82540F70400A234E3 /* TransactionHistoryItem+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionHistoryItem+Extrinsic.swift"; sourceTree = "<group>"; };
-		84FD3DBA254104B600A234E3 /* WalletNewTransactionInserted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletNewTransactionInserted.swift; sourceTree = "<group>"; };
+		84FD3DBA254104B600A234E3 /* WalletTransactionListUpdated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletTransactionListUpdated.swift; sourceTree = "<group>"; };
 		84FEADED287837E8001DFC26 /* TuringRewardCalculatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TuringRewardCalculatorService.swift; sourceTree = "<group>"; };
 		84FEADF128783F55001DFC26 /* BaseParaStakingRewardCalculatoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseParaStakingRewardCalculatoService.swift; sourceTree = "<group>"; };
 		84FEF3E22807E8000042CBE7 /* DAppBrowserPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserPage.swift; sourceTree = "<group>"; };
@@ -11412,6 +11418,9 @@
 				84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */,
 				84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */,
 				84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */,
+				84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */,
+				84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */,
+				84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */,
 			);
 			path = Evm;
 			sourceTree = "<group>";
@@ -12212,7 +12221,7 @@
 			children = (
 				84EBC55A24F660F500459D15 /* SelectedAccountChanged.swift */,
 				840882AF2514024800177E20 /* SelectedConnectionChanged.swift */,
-				84FD3DBA254104B600A234E3 /* WalletNewTransactionInserted.swift */,
+				84FD3DBA254104B600A234E3 /* WalletTransactionListUpdated.swift */,
 				84BEE22225646ABF00D05EB3 /* SelectedUsernameChanged.swift */,
 				8488ECDE258CE118004591CC /* PurchaseCompleted.swift */,
 				84F4386525D9B8C600AEDA56 /* TypeRegistryPrepared.swift */,
@@ -14882,6 +14891,7 @@
 				84DA3B1224C6D29100B5E27F /* RuntimeVersion.swift in Sources */,
 				8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */,
 				8445F41628C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift in Sources */,
+				84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */,
 				84A1742428ED3CF70096F943 /* ReferendumLocal.swift in Sources */,
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
 				843910C1253F36F300E3C217 /* BaseStorageChildSubscription.swift in Sources */,
@@ -15319,7 +15329,7 @@
 				842876AB24AE049B00D91AD8 /* SelectionItemViewProtocol.swift in Sources */,
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
 				84796080283B63240084E779 /* LoadableActionView.swift in Sources */,
-				84FD3DBB254104B600A234E3 /* WalletNewTransactionInserted.swift in Sources */,
+				84FD3DBB254104B600A234E3 /* WalletTransactionListUpdated.swift in Sources */,
 				842EBB2928908ADB00B952D8 /* WalletsListTableViewCell.swift in Sources */,
 				8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */,
 				84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */,
@@ -15891,6 +15901,7 @@
 				8461CC8326BC0006007460E4 /* MortalEraOperationFactory.swift in Sources */,
 				8425EA8B25EA7AF200C307C9 /* UnappliedSlashes.swift in Sources */,
 				84EF8D39288FCE8100265346 /* WalletListLocalSubscriptionFactory.swift in Sources */,
+				84FBED0329279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift in Sources */,
 				84893BFE24DA0000008F6A3F /* FieldStatus.swift in Sources */,
 				84F51053263AB440005D15AE /* StakingUnbondSetupLayout.swift in Sources */,
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,
@@ -16877,6 +16888,7 @@
 				9E4E458C92D12B24D5EAD893 /* ControllerAccountInteractor.swift in Sources */,
 				83A98B972B3EA69B357E5002 /* ControllerAccountViewController.swift in Sources */,
 				84329ED22832636F0020BC1C /* RoundCountdown.swift in Sources */,
+				84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */,
 				EB5F587A71CCE1F0F86154CF /* ControllerAccountViewFactory.swift in Sources */,
 				9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */,
 				AE1000F226679886004753B7 /* ChangeTargetsRecommendationWireframe.swift in Sources */,

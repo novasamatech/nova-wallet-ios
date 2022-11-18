@@ -2,14 +2,17 @@ import Foundation
 
 final class EvmAssetBalanceUpdatingService: AssetBalanceBaseUpdatingService {
     let remoteSubscriptionService: WalletRemoteEvmSubscriptionServiceProtocol
+    let transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol
 
     init(
         selectedAccount: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         remoteSubscriptionService: WalletRemoteEvmSubscriptionServiceProtocol,
+        transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.remoteSubscriptionService = remoteSubscriptionService
+        self.transactionHistoryUpdaterFactory = transactionHistoryUpdaterFactory
 
         super.init(selectedAccount: selectedAccount, chainRegistry: chainRegistry, logger: logger)
     }
@@ -31,6 +34,7 @@ final class EvmAssetBalanceUpdatingService: AssetBalanceBaseUpdatingService {
         let optSubscriptionId = remoteSubscriptionService.attachERC20Balance(
             for: accountId,
             chain: chain,
+            transactionHistoryUpdaterFactory: transactionHistoryUpdaterFactory,
             queue: nil,
             closure: nil
         )

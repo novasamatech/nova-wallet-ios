@@ -39,8 +39,8 @@ final class ERC20SubscriptionManager {
         unsubscribe()
     }
 
-    private func handleTransaction(for _: EventLog) {
-        // TODO: implement transaction save to local history
+    private func handleTransaction(for event: EventLog) {
+        params.transactionHistoryUpdater?.processERC20Transfer(event: event)
     }
 
     private func processLog(_ eventLog: EventLog) {
