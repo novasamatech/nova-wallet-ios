@@ -13,6 +13,7 @@ final class ChainSyncService {
     }
 
     let url: URL
+    let evmAssetsURL: URL
     let repository: AnyDataProviderRepository<ChainModel>
     let dataFetchFactory: DataOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
@@ -31,6 +32,7 @@ final class ChainSyncService {
 
     init(
         url: URL,
+        evmAssetsURL: URL,
         dataFetchFactory: DataOperationFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         eventCenter: EventCenterProtocol,
@@ -45,6 +47,7 @@ final class ChainSyncService {
         self.operationQueue = operationQueue
         self.retryStrategy = retryStrategy
         self.logger = logger
+        self.evmAssetsURL = evmAssetsURL
     }
 
     private func performSyncUpIfNeeded() {
@@ -66,13 +69,23 @@ final class ChainSyncService {
 
     private func executeSync() {
         let remoteFetchOperation = dataFetchFactory.fetchData(from: url)
+        let evmRemoteFetchOperation = dataFetchFactory.fetchData(from: evmAssetsURL)
+
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
+            let decoder = JSONDecoder()
             let remoteData = try remoteFetchOperation.extractNoCancellableResultData()
-            let remoteItems = try JSONDecoder().decode([RemoteChainModel].self, from: remoteData)
+            let remoteItems = try decoder.decode([RemoteChainModel].self, from: remoteData)
+            let evmRemoteData = try evmRemoteFetchOperation.extractNoCancellableResultData()
+            let evmRemoteItems = try decoder.decode([RemoteEvmToken].self, from: evmRemoteData)
+            let remoteEvmTokens = evmRemoteItems.chainAssets()
 
             let remoteChains = remoteItems.enumerated().map { index, chain in
-                ChainModel(remoteModel: chain, order: Int64(index))
+                ChainModel(
+                    remoteModel: chain,
+                    additionalAssets: remoteEvmTokens[chain.chainId] ?? .init(),
+                    order: Int64(index)
+                )
             }
 
             let remoteMapping = remoteChains.reduce(into: [ChainModel.Id: ChainModel]()) { mapping, item in
@@ -100,6 +113,7 @@ final class ChainSyncService {
         }
 
         processingOperation.addDependency(remoteFetchOperation)
+        processingOperation.addDependency(evmRemoteFetchOperation)
         processingOperation.addDependency(localFetchOperation)
 
         let localSaveOperation = repository.saveOperation({
@@ -127,7 +141,12 @@ final class ChainSyncService {
         }
 
         operationQueue.addOperations([
-            remoteFetchOperation, localFetchOperation, processingOperation, localSaveOperation, mapOperation
+            remoteFetchOperation,
+            evmRemoteFetchOperation,
+            localFetchOperation,
+            processingOperation,
+            localSaveOperation,
+            mapOperation
         ], waitUntilFinished: false)
     }
 
