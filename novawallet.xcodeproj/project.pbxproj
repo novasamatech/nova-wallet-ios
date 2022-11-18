@@ -896,6 +896,8 @@
 		844CB57626FA064700396E13 /* ChainRegistryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB57526FA064700396E13 /* ChainRegistryError.swift */; };
 		844CB57826FA702700396E13 /* CrowdloansViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB57726FA702700396E13 /* CrowdloansViewInfo.swift */; };
 		844CB57A26FA706C00396E13 /* ChainAssetDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB57926FA706C00396E13 /* ChainAssetDisplayInfo.swift */; };
+		844CED2329260737001A7757 /* EvmQueryMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CED2229260737001A7757 /* EvmQueryMessage.swift */; };
+		844CED2529260B6A001A7757 /* EvmQueryContractMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CED2429260B6A001A7757 /* EvmQueryContractMessageFactory.swift */; };
 		844D229125EE5CD600C022F7 /* DataProviderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D229025EE5CD600C022F7 /* DataProviderStub.swift */; };
 		844D229925EE5E8400C022F7 /* SingleValueProviderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D229825EE5E8400C022F7 /* SingleValueProviderStub.swift */; };
 		844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D229D25EE79EA00C022F7 /* ExtrinsicServiceStub.swift */; };
@@ -2257,6 +2259,9 @@
 		84FBDBE128C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBDBE028C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift */; };
 		84FBDBE328C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBDBE228C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift */; };
 		84FBDBE628C8982B00CC1037 /* ParaStkYieldBoostSetupInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBDBE528C8982B00CC1037 /* ParaStkYieldBoostSetupInteractorError.swift */; };
+		84FBECF62926B38300FBEB83 /* ERC20BalanceUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECF52926B38300FBEB83 /* ERC20BalanceUpdateService.swift */; };
+		84FBECF92927403100FBEB83 /* EvmAssetContractId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECF82927403100FBEB83 /* EvmAssetContractId.swift */; };
+		84FBECFB2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */; };
 		84FD19FC27A32973008E5E68 /* HistoryRewardContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */; };
 		84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */; };
 		84FD3DAF2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */; };
@@ -3893,6 +3898,8 @@
 		844CB57526FA064700396E13 /* ChainRegistryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryError.swift; sourceTree = "<group>"; };
 		844CB57726FA702700396E13 /* CrowdloansViewInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansViewInfo.swift; sourceTree = "<group>"; };
 		844CB57926FA706C00396E13 /* ChainAssetDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAssetDisplayInfo.swift; sourceTree = "<group>"; };
+		844CED2229260737001A7757 /* EvmQueryMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmQueryMessage.swift; sourceTree = "<group>"; };
+		844CED2429260B6A001A7757 /* EvmQueryContractMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmQueryContractMessageFactory.swift; sourceTree = "<group>"; };
 		844D229025EE5CD600C022F7 /* DataProviderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProviderStub.swift; sourceTree = "<group>"; };
 		844D229825EE5E8400C022F7 /* SingleValueProviderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleValueProviderStub.swift; sourceTree = "<group>"; };
 		844D229D25EE79EA00C022F7 /* ExtrinsicServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicServiceStub.swift; sourceTree = "<group>"; };
@@ -5265,6 +5272,9 @@
 		84FBDBE028C884DA00CC1037 /* ParaStkYieldBoostStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStorageSubscriber.swift; sourceTree = "<group>"; };
 		84FBDBE228C884F000CC1037 /* ParaStkYieldBoostStorageSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStorageSubscriptionHandler.swift; sourceTree = "<group>"; };
 		84FBDBE528C8982B00CC1037 /* ParaStkYieldBoostSetupInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostSetupInteractorError.swift; sourceTree = "<group>"; };
+		84FBECF52926B38300FBEB83 /* ERC20BalanceUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20BalanceUpdateService.swift; sourceTree = "<group>"; };
+		84FBECF82927403100FBEB83 /* EvmAssetContractId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmAssetContractId.swift; sourceTree = "<group>"; };
+		84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdateServiceFactory.swift; sourceTree = "<group>"; };
 		84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRewardContext.swift; sourceTree = "<group>"; };
 		84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesWithdrawEvent.swift; sourceTree = "<group>"; };
 		84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionHistoryItem+Wallet.swift"; sourceTree = "<group>"; };
@@ -9442,6 +9452,7 @@
 		849013E024A9287F008F705E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				84FBECF72926B79500FBEB83 /* Evm */,
 				8411706E285B0B1B006F4DFB /* Xcm */,
 				84D1110F26B932300016D962 /* ChainRegistry */,
 				84DAC197268D3DD9002D0DF4 /* SNAddressType.swift */,
@@ -11381,6 +11392,10 @@
 				84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */,
 				8437F7C02924FF6400DB6366 /* EvmSubscriptionMessage.swift */,
 				8437F7C2292506D000DB6366 /* EvmSubscriptionMessageFactory.swift */,
+				844CED2229260737001A7757 /* EvmQueryMessage.swift */,
+				844CED2429260B6A001A7757 /* EvmQueryContractMessageFactory.swift */,
+				84FBECF52926B38300FBEB83 /* ERC20BalanceUpdateService.swift */,
+				84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */,
 			);
 			path = Evm;
 			sourceTree = "<group>";
@@ -12517,6 +12532,14 @@
 				8407716528CE6B2A007DBD24 /* ParaStkYieldBoostConfirmModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		84FBECF72926B79500FBEB83 /* Evm */ = {
+			isa = PBXGroup;
+			children = (
+				84FBECF82927403100FBEB83 /* EvmAssetContractId.swift */,
+			);
+			path = Evm;
 			sourceTree = "<group>";
 		};
 		84FEADEF28783EB1001DFC26 /* Parachain */ = {
@@ -14894,6 +14917,7 @@
 				F4F2297C260DC05600ACFDB8 /* StakingRewardTokenUsdViewModel.swift in Sources */,
 				844DBC6B274E3D6B009F8351 /* AccountImportKeystoreView.swift in Sources */,
 				847F2D4627A9DB8E00AFD476 /* MultigradientView.swift in Sources */,
+				844CED2329260737001A7757 /* EvmQueryMessage.swift in Sources */,
 				842876A524AE049B00D91AD8 /* SelectableTitleListViewModel.swift in Sources */,
 				847C96302553426D002D288F /* ExportGenericViewModel.swift in Sources */,
 				845B08012918406A005785D3 /* Gov2ActionOperationFactory.swift in Sources */,
@@ -14984,6 +15008,7 @@
 				8444407128AA57D600446D22 /* LedgerApplication.swift in Sources */,
 				8490146D24A9487A008F705E /* ErrorPresentable+AlertText.swift in Sources */,
 				8460E71C284D41E7002896E9 /* ParaStkUnstakePresenter+Protocol.swift in Sources */,
+				84FBECF92927403100FBEB83 /* EvmAssetContractId.swift in Sources */,
 				842EBB2F28909A7900B952D8 /* RoundedIconTitleHeaderView.swift in Sources */,
 				8472979A260B3095009B86D0 /* InitBondSelectValidatorsStartWireframe.swift in Sources */,
 				84B73AD6279B4E0B0071AE16 /* AssetDetails.swift in Sources */,
@@ -15046,6 +15071,7 @@
 				84786E1A25FA6A470089DFF7 /* StashItem.swift in Sources */,
 				848FFE9025E6CF4300652AA5 /* StorageKeyEncodingOperation.swift in Sources */,
 				8443FDB6255540570092893D /* ExportMnemonicData.swift in Sources */,
+				84FBECFB2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift in Sources */,
 				8471825F2846A8E2002C5720 /* ActionManageTableViewCell.swift in Sources */,
 				84893C0724DA890F008F6A3F /* CommonError.swift in Sources */,
 				84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */,
@@ -15938,10 +15964,12 @@
 				84DA03D82759362100E8B326 /* ChainAccountViewModel.swift in Sources */,
 				84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */,
 				84F1A0712869DA51007DB053 /* AssetBalanceExistence.swift in Sources */,
+				84FBECF62926B38300FBEB83 /* ERC20BalanceUpdateService.swift in Sources */,
 				84F1CB3127CE56740095D523 /* NftListStaticViewModel.swift in Sources */,
 				8407715C28CBE25B007DBD24 /* ParaStkYieldBoostSetupPresenter+Schedule.swift in Sources */,
 				848CCB482832EF4400A1FD00 /* GeneralLocalStorageHandler.swift in Sources */,
 				849013D024A9267F008F705E /* R.generated.swift in Sources */,
+				844CED2529260B6A001A7757 /* EvmQueryContractMessageFactory.swift in Sources */,
 				8442003828EAA16600C49C4A /* ReferendumsPresenter.swift in Sources */,
 				84FB9E22285C5D6200B42FC0 /* XcmNetworkId.swift in Sources */,
 				84DC3CE52796768A0038E2ED /* SubqueryHistoryContext.swift in Sources */,

@@ -13,7 +13,7 @@ class EvmRemoteSubscriptionService {
     }
 
     let chainRegistry: ChainRegistryProtocol
-    let repository: AnyDataProviderRepository<AssetBalance>
+    let serviceFactory: EvmBalanceUpdateServiceFactoryProtocol
     let operationManager: OperationManagerProtocol
     let logger: LoggerProtocol
 
@@ -23,12 +23,12 @@ class EvmRemoteSubscriptionService {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        repository: AnyDataProviderRepository<AssetBalance>,
+        serviceFactory: EvmBalanceUpdateServiceFactoryProtocol,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
-        self.repository = repository
+        self.serviceFactory = serviceFactory
         self.operationManager = operationManager
         self.logger = logger
     }
@@ -39,7 +39,7 @@ class EvmRemoteSubscriptionService {
         cacheKey: String,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
-    ) -> UUID {
+    ) throws -> UUID {
         mutex.lock()
 
         defer {
@@ -57,20 +57,21 @@ class EvmRemoteSubscriptionService {
         }
 
         guard let connection = chainRegistry.getConnection(for: chainId) else {
-            callbackClosureIfProvided(
-                closure,
-                queue: queue,
-                result: .failure(ChainRegistryError.connectionUnavailable)
-            )
-
-            return subscriptionId
+            throw ChainRegistryError.connectionUnavailable
         }
 
         let container: EvmRemoteSubscriptionProtocol
 
         switch request {
         case let .erc20Balace(params):
-            container = ERC20SubscriptionManager(params: params, connection: connection)
+            container = ERC20SubscriptionManager(
+                chainId: chainId,
+                params: params,
+                serviceFactory: serviceFactory,
+                connection: connection,
+                logger: logger
+            )
+            try container.start()
         }
 
         subscriptions[cacheKey] = Active(subscriptionIds: [subscriptionId], container: container)
