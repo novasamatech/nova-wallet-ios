@@ -12,17 +12,20 @@ final class ServiceCoordinator {
     let walletSettings: SelectedWalletSettings
     let accountInfoService: AccountInfoUpdatingServiceProtocol
     let assetsService: AssetsUpdatingServiceProtocol
+    let evmAssetsService: AssetsUpdatingServiceProtocol
     let githubPhishingService: ApplicationServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
         accountInfoService: AccountInfoUpdatingServiceProtocol,
         assetsService: AssetsUpdatingServiceProtocol,
+        evmAssetsService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
         self.assetsService = assetsService
+        self.evmAssetsService = evmAssetsService
         self.githubPhishingService = githubPhishingService
     }
 }
@@ -32,6 +35,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         if let seletedMetaAccount = walletSettings.value {
             accountInfoService.update(selectedMetaAccount: seletedMetaAccount)
             assetsService.update(selectedMetaAccount: seletedMetaAccount)
+            evmAssetsService.update(selectedMetaAccount: seletedMetaAccount)
         }
     }
 
@@ -39,12 +43,14 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         githubPhishingService.setup()
         accountInfoService.setup()
         assetsService.setup()
+        evmAssetsService.setup()
     }
 
     func throttle() {
         githubPhishingService.throttle()
         accountInfoService.throttle()
         assetsService.throttle()
+        evmAssetsService.throttle()
     }
 }
 
@@ -62,6 +68,7 @@ extension ServiceCoordinator {
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
         let walletRemoteSubscription = WalletServiceFacade.sharedRemoteSubscriptionService
+        let evmWalletRemoteSubscription = WalletServiceFacade.sharedEvmRemoteSubscriptionService
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -90,10 +97,18 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let evmAssetsService = EvmAssetBalanceUpdatingService(
+            selectedAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
+            remoteSubscriptionService: evmWalletRemoteSubscription,
+            logger: logger
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
             assetsService: assetsService,
+            evmAssetsService: evmAssetsService,
             githubPhishingService: githubPhishingAPIService
         )
     }

@@ -81,6 +81,8 @@ final class ERC20SubscriptionManager {
                 self?.processingBlockHash = nil
                 self?.syncService = nil
             }
+
+            syncService?.setup()
         } catch {
             processingBlockHash = nil
             logger?.error("Can't create sync service: \(error)")
@@ -137,7 +139,7 @@ final class ERC20SubscriptionManager {
     }
 
     private func subscribe() throws {
-        guard params.contracts.isEmpty else {
+        guard !params.contracts.isEmpty else {
             logger?.warning("No contracts provided for subscription")
             return
         }
@@ -151,6 +153,8 @@ final class ERC20SubscriptionManager {
             self?.syncService = nil
             self?.performSubscription()
         }
+
+        syncService?.setup()
     }
 }
 
