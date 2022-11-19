@@ -6,7 +6,6 @@ open class TriangularedBlurView: UIView {
     private(set) var blurView: UIVisualEffectView?
     private(set) var blurMaskView: TriangularedView?
     private(set) var overlayView: TriangularedView!
-
     override public init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -33,7 +32,7 @@ open class TriangularedBlurView: UIView {
         }
     }
 
-    var blurStyle: UIBlurEffect.Style = .dark {
+    var blurStyle: UIBlurEffect.Style = .light {
         didSet {
             removeBlurView()
             addBlurView()
@@ -70,6 +69,7 @@ open class TriangularedBlurView: UIView {
         if blurView == nil {
             let blur = UIBlurEffect(style: blurStyle)
             let blurView = UIVisualEffectView(effect: blur)
+            blurView.alpha = 0.22
             insertSubview(blurView, at: 0)
 
             self.blurView = blurView
@@ -79,7 +79,7 @@ open class TriangularedBlurView: UIView {
             let blurMaskView = TriangularedView()
             blurMaskView.cornerCut = cornerCut
             blurMaskView.shadowOpacity = 0.0
-            blurMaskView.fillColor = .black
+            blurMaskView.fillColor = R.color.colorBlockBackgroundSolid()!
 
             blurView?.mask = blurMaskView
 
