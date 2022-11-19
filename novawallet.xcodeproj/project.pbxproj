@@ -12037,7 +12037,6 @@
 				84D6D7F927A7EC810094FC33 /* AssetListAssetCell.swift */,
 				84D6D7FB27A7F4B40094FC33 /* AssetListNetworkView.swift */,
 				84D6D7FD27A7F4CD0094FC33 /* AssetListChainView.swift */,
-				848F8B2A2864824200204BC4 /* AssetListChainControlView.swift */,
 				84AEEE6927A9204C005EBA77 /* AssetListSettingsCell.swift */,
 				84AEEE6B27A92AEF005EBA77 /* AssetListFlowLayout.swift */,
 				847F2D4127A96D9200AFD476 /* TokenGroupDecorationView.swift */,
@@ -12179,6 +12178,7 @@
 				88AA0FB728B60E6A00931800 /* YourWalletsControlView.swift */,
 				8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */,
 				88F7715F28BEA589008C028A /* YourWalletsIconDetailsView.swift */,
+				848F8B2A2864824200204BC4 /* AssetListChainControlView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
