@@ -13,6 +13,7 @@ final class EvmTransactionHistoryUpdater {
     let eventCenter: EventCenterProtocol
     let accountId: AccountId
     let assetContracts: Set<EvmAssetContractId>
+    let logger: LoggerProtocol
 
     private lazy var parser = EvmEventParser()
 
@@ -21,13 +22,15 @@ final class EvmTransactionHistoryUpdater {
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
         accountId: AccountId,
-        assetContracts: Set<EvmAssetContractId>
+        assetContracts: Set<EvmAssetContractId>,
+        logger: LoggerProtocol
     ) {
         self.repository = repository
         self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.accountId = accountId
         self.assetContracts = assetContracts
+        self.logger = logger
     }
 
     private func insertOrUpdateTransaction(for event: EventLog) {
@@ -39,23 +42,22 @@ final class EvmTransactionHistoryUpdater {
         }
 
         guard let assetContract = optAssetContract else {
+            logger.error("Can't find evm asset for contract \(event.address)")
             return
         }
 
         guard let transferEvent = parser.parseERC20Transfer(from: event) else {
+            logger.error("Can't parse ERC20 transfer event: \(event)")
             return
         }
 
-        let callPath = CallCodingPath(
-            moduleName: contract.toHex(includePrefix: true),
-            callName: EvmSubscriptionMessageFactory.erc20Transfer
-        )
+        logger.debug("Saving new ERC20 transaction \(event.transactionHash.toHex(includePrefix: true))")
 
         let historyItem = TransactionHistoryItem(
             chainId: assetContract.chainAssetId.chainId,
             assetId: assetContract.chainAssetId.assetId,
-            sender: transferEvent.sender.toHex(),
-            receiver: transferEvent.receiver.toHex(),
+            sender: transferEvent.sender,
+            receiver: transferEvent.receiver,
             amountInPlank: String(transferEvent.amount),
             status: .success,
             txHash: event.transactionHash.toHex(),
@@ -63,7 +65,7 @@ final class EvmTransactionHistoryUpdater {
             fee: nil,
             blockNumber: UInt64(event.blockNumber),
             txIndex: nil,
-            callPath: callPath,
+            callPath: CallCodingPath.erc20Tranfer,
             call: nil
         )
 
@@ -85,6 +87,8 @@ final class EvmTransactionHistoryUpdater {
     }
 
     private func removeTransaction(for event: EventLog) {
+        logger.debug("Removing ERC20 transaction \(event.transactionHash.toHex(includePrefix: true))")
+
         let saveOperation = repository.saveOperation({
             []
         }, {

@@ -15,15 +15,13 @@ enum EvmSubscriptionMessageFactoryError: Error {
 }
 
 final class EvmSubscriptionMessageFactory: EvmSubscriptionMessageFactoryProtocol {
-    static let erc20Transfer = "Transfer"
-
     func erc20(
         for holder: AccountAddress,
         contracts: Set<AccountAddress>
     ) throws -> EvmSubscriptionMessage.ERC20Transfer {
         let erc20Abi = try EthereumContract(Web3.Utils.erc20ABI)
 
-        guard let event = erc20Abi.events[Self.erc20Transfer] else {
+        guard let event = erc20Abi.events[ERC20TransferEvent.name] else {
             throw EvmSubscriptionMessageFactoryError.trasferEventNotFound
         }
 

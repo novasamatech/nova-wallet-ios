@@ -1012,6 +1012,8 @@
 		845CB6EF26276104005F798B /* SubscanQueryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845CB6EE26276104005F798B /* SubscanQueryService.swift */; };
 		845CB6FA26276326005F798B /* LongrunOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845CB6F926276326005F798B /* LongrunOperation.swift */; };
 		845E49832636C87B002F8C22 /* ActionManageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845E49822636C87B002F8C22 /* ActionManageViewModel.swift */; };
+		845F49ED2928F31100BD6D11 /* ChainModel+Evm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F49EC2928F31100BD6D11 /* ChainModel+Evm.swift */; };
+		845F49EF292901D200BD6D11 /* CallCodingPath+Evm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F49EE292901D200BD6D11 /* CallCodingPath+Evm.swift */; };
 		845FC93426B09EDB0021EC48 /* RoundedButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845FC93326B09EDB0021EC48 /* RoundedButton+Style.swift */; };
 		846042C02666E2C800CFFCFC /* KaruraResultData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846042BF2666E2C800CFFCFC /* KaruraResultData.swift */; };
 		8460519425546E7100A1F0B4 /* Chain+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8460519325546E7100A1F0B4 /* Chain+ViewModel.swift */; };
@@ -4025,6 +4027,8 @@
 		845CB6EE26276104005F798B /* SubscanQueryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanQueryService.swift; sourceTree = "<group>"; };
 		845CB6F926276326005F798B /* LongrunOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongrunOperation.swift; sourceTree = "<group>"; };
 		845E49822636C87B002F8C22 /* ActionManageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionManageViewModel.swift; sourceTree = "<group>"; };
+		845F49EC2928F31100BD6D11 /* ChainModel+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Evm.swift"; sourceTree = "<group>"; };
+		845F49EE292901D200BD6D11 /* CallCodingPath+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallCodingPath+Evm.swift"; sourceTree = "<group>"; };
 		845FC93326B09EDB0021EC48 /* RoundedButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedButton+Style.swift"; sourceTree = "<group>"; };
 		846042BF2666E2C800CFFCFC /* KaruraResultData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaruraResultData.swift; sourceTree = "<group>"; };
 		8460519325546E7100A1F0B4 /* Chain+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chain+ViewModel.swift"; sourceTree = "<group>"; };
@@ -12565,6 +12569,8 @@
 			isa = PBXGroup;
 			children = (
 				84FBECF82927403100FBEB83 /* EvmAssetContractId.swift */,
+				845F49EC2928F31100BD6D11 /* ChainModel+Evm.swift */,
+				845F49EE292901D200BD6D11 /* CallCodingPath+Evm.swift */,
 			);
 			path = Evm;
 			sourceTree = "<group>";
@@ -15099,6 +15105,7 @@
 				84786E1A25FA6A470089DFF7 /* StashItem.swift in Sources */,
 				848FFE9025E6CF4300652AA5 /* StorageKeyEncodingOperation.swift in Sources */,
 				8443FDB6255540570092893D /* ExportMnemonicData.swift in Sources */,
+				845F49EF292901D200BD6D11 /* CallCodingPath+Evm.swift in Sources */,
 				84FBECFB2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift in Sources */,
 				8471825F2846A8E2002C5720 /* ActionManageTableViewCell.swift in Sources */,
 				84893C0724DA890F008F6A3F /* CommonError.swift in Sources */,
@@ -16199,6 +16206,7 @@
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,
 				84FB1F792527065A00E0242B /* HistoryConstants.swift in Sources */,
+				845F49ED2928F31100BD6D11 /* ChainModel+Evm.swift in Sources */,
 				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
 				84F18D4C27A1874000CA7554 /* TokenSubscriptionFactory.swift in Sources */,
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,

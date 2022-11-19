@@ -27,7 +27,7 @@ final class EvmAssetBalanceUpdatingService: AssetBalanceBaseUpdatingService {
             return nil
         }
 
-        guard let evmAsset = chain.assets.first(where: { $0.type == "evm" }) else {
+        guard let evmAsset = chain.assets.first(where: { $0.isEvm }) else {
             return nil
         }
 

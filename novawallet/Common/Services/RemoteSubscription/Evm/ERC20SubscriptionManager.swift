@@ -10,6 +10,7 @@ final class ERC20SubscriptionManager {
     let connection: JSONRPCEngine
     let logger: LoggerProtocol?
     let serviceFactory: EvmBalanceUpdateServiceFactoryProtocol
+    let eventCenter: EventCenterProtocol
 
     private var syncService: SyncServiceProtocol?
 
@@ -26,12 +27,14 @@ final class ERC20SubscriptionManager {
         params: ERC20BalanceSubscriptionRequest,
         serviceFactory: EvmBalanceUpdateServiceFactoryProtocol,
         connection: JSONRPCEngine,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol?
     ) {
         self.chainId = chainId
         self.params = params
         self.serviceFactory = serviceFactory
         self.connection = connection
+        self.eventCenter = eventCenter
         self.logger = logger
     }
 
@@ -41,6 +44,28 @@ final class ERC20SubscriptionManager {
 
     private func handleTransaction(for event: EventLog) {
         params.transactionHistoryUpdater?.processERC20Transfer(event: event)
+    }
+
+    private func notifyBalanceUpdate(for log: EventLog) {
+        let optAssetContract = params.contracts.first {
+            let addressData = try? $0.contract.toEthereumAccountId()
+            return addressData == log.address.addressData
+        }
+
+        guard
+            let assetContract = optAssetContract,
+            let accountId = try? params.holder.toEthereumAccountId() else {
+            return
+        }
+
+        let event = AssetBalanceChanged(
+            chainAssetId: assetContract.chainAssetId,
+            accountId: accountId,
+            changes: nil,
+            block: log.blockHash
+        )
+
+        eventCenter.notify(with: event)
     }
 
     private func processLog(_ eventLog: EventLog) {
@@ -80,6 +105,8 @@ final class ERC20SubscriptionManager {
 
                 self?.processingBlockHash = nil
                 self?.syncService = nil
+
+                self?.notifyBalanceUpdate(for: eventLog)
             }
 
             syncService?.setup()
