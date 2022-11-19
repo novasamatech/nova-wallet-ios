@@ -3,8 +3,11 @@ import BigInt
 import Core
 
 struct ERC20TransferEvent {
-    let sender: AccountId
-    let receiver: AccountId
+    static let tokenType = "ERC20"
+    static let name = "Transfer"
+
+    let sender: AccountAddress
+    let receiver: AccountAddress
     let amount: BigUInt
 }
 
@@ -19,8 +22,8 @@ final class EvmEventParser {
         let (optAmount, _) = ABIDecoder.decodeSingleType(type: .uint(bits: 256), data: event.data)
 
         guard
-            let sender = (optSender as? EthereumAddress)?.addressData,
-            let receiver = (optReceiver as? EthereumAddress)?.addressData,
+            let sender = try? (optSender as? EthereumAddress)?.addressData.toAddress(using: .ethereum),
+            let receiver = try? (optReceiver as? EthereumAddress)?.addressData.toAddress(using: .ethereum),
             let amount = optAmount as? BigUInt else {
             return nil
         }

@@ -11,15 +11,18 @@ final class EvmTransactionHistoryUpdaterFactory {
     let storageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
+    let logger: LoggerProtocol
 
     init(
         storageFacade: StorageFacadeProtocol,
         eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.storageFacade = storageFacade
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 }
 
@@ -35,7 +38,8 @@ extension EvmTransactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFacto
             operationQueue: operationQueue,
             eventCenter: eventCenter,
             accountId: accountId,
-            assetContracts: assetContracts
+            assetContracts: assetContracts,
+            logger: logger
         )
     }
 }

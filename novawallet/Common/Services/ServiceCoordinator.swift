@@ -100,7 +100,8 @@ extension ServiceCoordinator {
         let evmTransactionHistoryUpdaterFactory = EvmTransactionHistoryUpdaterFactory(
             storageFacade: substrateStorageFacade,
             eventCenter: EventCenter.shared,
-            operationQueue: assetsOperationQueue
+            operationQueue: assetsOperationQueue,
+            logger: logger
         )
 
         let evmAssetsService = EvmAssetBalanceUpdatingService(

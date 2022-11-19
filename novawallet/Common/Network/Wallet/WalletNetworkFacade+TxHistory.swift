@@ -14,25 +14,29 @@ extension WalletNetworkFacade {
 
         let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
 
-        if let baseUrl = chain.externalApi?.history?.url {
-            do {
-                let asset = chainAsset.asset
-                let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
-                let historyAssetId = try assetMapper.historyAssetId()
+        if !chainAsset.asset.isEvm {
+            if let baseUrl = chain.externalApi?.history?.url {
+                do {
+                    let asset = chainAsset.asset
+                    let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
+                    let historyAssetId = try assetMapper.historyAssetId()
 
-                maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(
-                    url: baseUrl,
-                    filter: filter,
-                    assetId: historyAssetId
+                    maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(
+                        url: baseUrl,
+                        filter: filter,
+                        assetId: historyAssetId
+                    )
+                } catch {
+                    maybeRemoteHistoryFactory = nil
+                }
+            } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
+                maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
+                    baseURL: fallbackUrl,
+                    walletFilter: filter
                 )
-            } catch {
+            } else {
                 maybeRemoteHistoryFactory = nil
             }
-        } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
-            maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
-                baseURL: fallbackUrl,
-                walletFilter: filter
-            )
         } else {
             maybeRemoteHistoryFactory = nil
         }
@@ -267,9 +271,9 @@ extension WalletNetworkFacade {
             let items = try fetchOperation.extractNoCancellableResultData()
 
             return items.filter { item in
-                if item.callPath.isTransfer, !filter.contains(.transfers) {
+                if item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.transfers) {
                     return false
-                } else if !item.callPath.isTransfer, !filter.contains(.extrinsics) {
+                } else if !item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.extrinsics) {
                     return false
                 } else {
                     return true
