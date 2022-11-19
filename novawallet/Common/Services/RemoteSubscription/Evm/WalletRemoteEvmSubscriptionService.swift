@@ -39,16 +39,14 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
             return nil
         }
 
-        // TODO: update when asset type is added
-
         let assetContracts: [EvmAssetContractId] = chain.assets.compactMap { asset in
-            guard asset.type == "evm", let contract = asset.typeExtras?.stringValue else {
+            guard let contractAddress = asset.evmContractAddress else {
                 return nil
             }
 
             return EvmAssetContractId(
                 chainAssetId: .init(chainId: chain.chainId, assetId: asset.assetId),
-                contract: contract
+                contract: contractAddress
             )
         }
 

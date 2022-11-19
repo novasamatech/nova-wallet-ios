@@ -30,6 +30,7 @@ final class WalletServiceFacade {
         return WalletRemoteEvmSubscriptionService(
             chainRegistry: chainRegistry,
             balanceUpdateServiceFactory: serviceFactory,
+            eventCenter: EventCenter.shared,
             logger: logger
         )
     }()

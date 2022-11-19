@@ -14,6 +14,7 @@ class EvmRemoteSubscriptionService {
 
     let chainRegistry: ChainRegistryProtocol
     let balanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
+    let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
     private let mutex = NSLock()
@@ -23,10 +24,12 @@ class EvmRemoteSubscriptionService {
     init(
         chainRegistry: ChainRegistryProtocol,
         balanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol,
+        eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.balanceUpdateServiceFactory = balanceUpdateServiceFactory
+        self.eventCenter = eventCenter
         self.logger = logger
     }
 
@@ -66,6 +69,7 @@ class EvmRemoteSubscriptionService {
                 params: params,
                 serviceFactory: balanceUpdateServiceFactory,
                 connection: connection,
+                eventCenter: eventCenter,
                 logger: logger
             )
             try container.start()
