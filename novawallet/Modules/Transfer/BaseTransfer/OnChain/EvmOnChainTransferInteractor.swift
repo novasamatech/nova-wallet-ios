@@ -37,6 +37,7 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
     private func provideMinBalance() {
         // we don't have existential deposit for evm tokens
         presenter?.didReceiveSendingAssetExistence(.init(minBalance: 0, isSelfSufficient: true))
+        presenter?.didReceiveUtilityAssetMinBalance(0)
     }
 
     func addingTransferCommand(

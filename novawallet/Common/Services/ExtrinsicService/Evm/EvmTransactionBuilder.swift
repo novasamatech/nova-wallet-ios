@@ -6,7 +6,7 @@ protocol EvmTransactionBuilderProtocol: AnyObject {
     func toAddress(_ address: AccountAddress) -> EvmTransactionBuilderProtocol
     func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilderProtocol
     func usingGasLimit(_ gasLimit: BigUInt) -> EvmTransactionBuilderProtocol
-    func usingNonce(_ nonce: UInt) -> EvmTransactionBuilderProtocol
+    func usingNonce(_ nonce: BigUInt) -> EvmTransactionBuilderProtocol
     func sendingValue(_ value: BigUInt) -> EvmTransactionBuilderProtocol
     func usingTransactionData(_ data: Data) -> EvmTransactionBuilderProtocol
     func buildTransaction() -> EthereumTransaction
@@ -38,22 +38,22 @@ final class EvmTransactionBuilder: EvmTransactionBuilderProtocol {
     }
 
     func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilderProtocol {
-        transaction = transaction.replacing(gasPrice: String(gasPrice))
+        transaction = transaction.replacing(gasPrice: gasPrice.toHexString())
         return self
     }
 
     func usingGasLimit(_ gasLimit: BigUInt) -> EvmTransactionBuilderProtocol {
-        transaction = transaction.replacing(gas: String(gasLimit))
+        transaction = transaction.replacing(gas: gasLimit.toHexString())
         return self
     }
 
-    func usingNonce(_ nonce: UInt) -> EvmTransactionBuilderProtocol {
-        transaction = transaction.replacing(nonce: String(nonce))
+    func usingNonce(_ nonce: BigUInt) -> EvmTransactionBuilderProtocol {
+        transaction = transaction.replacing(nonce: nonce.toHexString())
         return self
     }
 
     func sendingValue(_ value: BigUInt) -> EvmTransactionBuilderProtocol {
-        transaction = transaction.replacing(value: String(value))
+        transaction = transaction.replacing(value: value.toHexString())
         return self
     }
 
