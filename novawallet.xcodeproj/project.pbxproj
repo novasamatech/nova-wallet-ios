@@ -1931,7 +1931,6 @@
 		84CFE441292B8CDA00CDDD7C /* EvmOnChainTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CFE440292B8CDA00CDDD7C /* EvmOnChainTransferSetupInteractor.swift */; };
 		84CFE443292B8F3E00CDDD7C /* TransferEvmOnChainConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CFE442292B8F3E00CDDD7C /* TransferEvmOnChainConfirmInteractor.swift */; };
 		84CFE448292B9CB100CDDD7C /* OnChainTransferBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CFE447292B9CB100CDDD7C /* OnChainTransferBaseInteractor.swift */; };
-		84CFE44A292BAECB00CDDD7C /* TransferOnChainConfirmInteractorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CFE449292BAECB00CDDD7C /* TransferOnChainConfirmInteractorProtocol.swift */; };
 		84CFF1E326526FBC00DB7CF7 /* StakingBondMoreProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CFF1CF26526FBC00DB7CF7 /* StakingBondMoreProtocols.swift */; };
 		84CFF1E426526FBC00DB7CF7 /* StakingBondMorePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CFF1D026526FBC00DB7CF7 /* StakingBondMorePresenter.swift */; };
 		84CFF1E526526FBC00DB7CF7 /* StakingBondMoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CFF1D126526FBC00DB7CF7 /* StakingBondMoreViewController.swift */; };
@@ -4965,7 +4964,6 @@
 		84CFE440292B8CDA00CDDD7C /* EvmOnChainTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmOnChainTransferSetupInteractor.swift; sourceTree = "<group>"; };
 		84CFE442292B8F3E00CDDD7C /* TransferEvmOnChainConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferEvmOnChainConfirmInteractor.swift; sourceTree = "<group>"; };
 		84CFE447292B9CB100CDDD7C /* OnChainTransferBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnChainTransferBaseInteractor.swift; sourceTree = "<group>"; };
-		84CFE449292BAECB00CDDD7C /* TransferOnChainConfirmInteractorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferOnChainConfirmInteractorProtocol.swift; sourceTree = "<group>"; };
 		84CFF1CF26526FBC00DB7CF7 /* StakingBondMoreProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingBondMoreProtocols.swift; sourceTree = "<group>"; };
 		84CFF1D026526FBC00DB7CF7 /* StakingBondMorePresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingBondMorePresenter.swift; sourceTree = "<group>"; };
 		84CFF1D126526FBC00DB7CF7 /* StakingBondMoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StakingBondMoreViewController.swift; sourceTree = "<group>"; };
@@ -12351,7 +12349,6 @@
 				D385A8FCB0E6F3F6B6872F01 /* TransferOnChainConfirmPresenter.swift */,
 				ED5CED3C58CD433B19978EC4 /* TransferOnChainConfirmInteractor.swift */,
 				84CFE442292B8F3E00CDDD7C /* TransferEvmOnChainConfirmInteractor.swift */,
-				84CFE449292BAECB00CDDD7C /* TransferOnChainConfirmInteractorProtocol.swift */,
 			);
 			path = OnChain;
 			sourceTree = "<group>";
@@ -15241,7 +15238,6 @@
 				843910D6253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift in Sources */,
 				849842E626587573006BBB9F /* MultilineTableViewCell.swift in Sources */,
 				84BC330026315D7B003C3FF9 /* ExtrinsicConfirmViewModel.swift in Sources */,
-				84CFE44A292BAECB00CDDD7C /* TransferOnChainConfirmInteractorProtocol.swift in Sources */,
 				84F3B27A27F4187300D64CF5 /* PhishingSitesSyncService.swift in Sources */,
 				AEA0C8A6267B6B2600F9666F /* SelectedValidatorListWireframe.swift in Sources */,
 				84963D7026F92F18003FE8E4 /* WalletRemoteSubscriptionService.swift in Sources */,
