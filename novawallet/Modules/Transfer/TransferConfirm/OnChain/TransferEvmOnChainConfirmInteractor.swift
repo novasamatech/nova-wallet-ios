@@ -2,7 +2,7 @@ import UIKit
 import BigInt
 import RobinHood
 
-final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
+final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let eventCenter: EventCenterProtocol
@@ -15,16 +15,13 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
-        runtimeService: RuntimeCodingServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
+        feeProxy: EvmTransactionFeeProxyProtocol,
+        extrinsicService: EvmTransactionServiceProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
         eventCenter: EventCenterProtocol,
-        walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        substrateStorageFacade: StorageFacadeProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -36,13 +33,10 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            runtimeService: runtimeService,
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
-            walletRemoteWrapper: walletRemoteWrapper,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            substrateStorageFacade: substrateStorageFacade,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -67,14 +61,16 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
     }
 }
 
-extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorProtocol {
+extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorProtocol {
     func submit(amount: OnChainTransferAmount<BigUInt>, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
-            let accountId = try recepient.toAccountId(using: chain.chainFormat)
+            guard let contractAddress = contractAddress else {
+                return
+            }
 
             var callCodingPath: CallCodingPath?
 
-            let extrinsicClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+            let extrinsicClosure: EvmTransactionBuilderClosure = { [weak self] builder in
                 guard let strongSelf = self else {
                     throw BaseOperationError.unexpectedDependentResult
                 }
@@ -82,7 +78,8 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorProt
                 let (newBuilder, codingPath) = try strongSelf.addingTransferCommand(
                     to: builder,
                     amount: amount,
-                    recepient: accountId
+                    recepient: recepient,
+                    contract: contractAddress
                 )
 
                 callCodingPath = codingPath
@@ -95,32 +92,31 @@ extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorProt
             extrinsicService.submit(
                 extrinsicClosure,
                 signer: signingWrapper,
-                runningIn: .main,
-                completion: { [weak self] result in
-                    switch result {
-                    case let .success(txHash):
-                        if
-                            let callCodingPath = callCodingPath,
-                            let txHashData = try? Data(hexString: txHash) {
-                            let details = PersistTransferDetails(
-                                sender: sender,
-                                receiver: recepient,
-                                amount: amount.value,
-                                txHash: txHashData,
-                                callPath: callCodingPath,
-                                fee: lastFee
-                            )
+                runningIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(txHash):
+                    if
+                        let callCodingPath = callCodingPath,
+                        let txHashData = try? Data(hexString: txHash) {
+                        let details = PersistTransferDetails(
+                            sender: sender,
+                            receiver: recepient,
+                            amount: amount.value,
+                            txHash: txHashData,
+                            callPath: callCodingPath,
+                            fee: lastFee
+                        )
 
-                            self?.persistExtrinsicAndComplete(details: details)
-                        } else {
-                            self?.presenter?.didCompleteSetup()
-                        }
-
-                    case let .failure(error):
-                        self?.presenter?.didReceiveError(error)
+                        self?.persistExtrinsicAndComplete(details: details)
+                    } else {
+                        self?.presenter?.didCompleteSetup()
                     }
+
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
                 }
-            )
+            }
         } catch {
             presenter?.didReceiveError(error)
         }
