@@ -8,7 +8,7 @@ extension EvmTransactionBuilderProtocol {
         to recepient: AccountAddress,
         contract: AccountAddress,
         amount: BigUInt
-    ) throws -> EvmTransactionBuilding {
+    ) throws -> EvmTransactionBuilderProtocol {
         guard
             let contractAddress = EthereumAddress(contract),
             let recepientAddress = EthereumAddress(recepient) else {
