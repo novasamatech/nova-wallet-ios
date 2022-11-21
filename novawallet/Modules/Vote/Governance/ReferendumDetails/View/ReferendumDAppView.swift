@@ -4,11 +4,7 @@ final class ReferendumDAppView: UIView {
     let iconImageView: DAppIconView = .create {
         $0.contentInsets = Constants.iconInsets
         $0.backgroundView.cornerRadius = 12
-        $0.backgroundView.strokeWidth = 0.5
-        $0.backgroundView.strokeColor = R.color.colorWhite16()!
-        $0.backgroundView.highlightedStrokeColor = R.color.colorWhite16()!
-        $0.backgroundView.fillColor = R.color.colorWhite8()!
-        $0.backgroundView.highlightedFillColor = R.color.colorWhite8()!
+        $0.backgroundView.apply(style: .container)
     }
 
     let titleView = MultiValueView()

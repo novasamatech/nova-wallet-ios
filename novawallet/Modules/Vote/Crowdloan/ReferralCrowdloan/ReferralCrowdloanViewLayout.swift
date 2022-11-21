@@ -17,7 +17,7 @@ final class ReferralCrowdloanViewLayout: UIView {
 
     let applyAppBonusView: BorderedContainerView = {
         let view = BorderedContainerView()
-        view.strokeColor = R.color.colorDarkGray()!
+        view.strokeColor = R.color.colorDivider()!
         view.borderType = .bottom
         view.strokeWidth = 1.0
         return view
@@ -26,7 +26,7 @@ final class ReferralCrowdloanViewLayout: UIView {
     let applyAppBonusLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 

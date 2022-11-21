@@ -11,7 +11,7 @@ final class TitleValueSelectionView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 

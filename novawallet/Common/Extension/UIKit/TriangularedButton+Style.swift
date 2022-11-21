@@ -28,12 +28,12 @@ extension TriangularedButton {
 
     func applyEnabledStyle() {
         triangularedView?.shadowOpacity = 0.0
-        triangularedView?.fillColor = R.color.colorAccent()!
-        triangularedView?.highlightedFillColor = R.color.colorAccent()!
+        triangularedView?.fillColor = R.color.colorButtonBackgroundPrimary()!
+        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundPrimary()!
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 
-        imageWithTitleView?.titleColor = R.color.colorWhite()!
+        imageWithTitleView?.titleColor = R.color.colorButtonText()!
 
         changesContentOpacityWhenHighlighted = true
     }
