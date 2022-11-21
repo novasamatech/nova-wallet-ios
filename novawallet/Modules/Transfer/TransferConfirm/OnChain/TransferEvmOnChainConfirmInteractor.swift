@@ -61,7 +61,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     }
 }
 
-extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorProtocol {
+extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorInputProtocol {
     func submit(amount: OnChainTransferAmount<BigUInt>, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
             guard let contractAddress = contractAddress else {

@@ -67,11 +67,11 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 let gasLimitString = try gasEstimationOperation.extractNoCancellableResultData()
                 let gasPriceString = try gasPriceOperation.extractNoCancellableResultData()
 
-                guard let gasLimit = BigUInt(gasLimitString) else {
+                guard let gasLimit = BigUInt.fromHexString(gasLimitString) else {
                     throw EvmTransactionServiceError.invalidGasLimit(gasLimitString)
                 }
 
-                guard let gasPrice = BigUInt(gasPriceString) else {
+                guard let gasPrice = BigUInt.fromHexString(gasPriceString) else {
                     throw EvmTransactionServiceError.invalidGasPrice(gasPriceString)
                 }
 
@@ -122,15 +122,15 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 let gasPriceString = try gasPriceOperation.extractNoCancellableResultData()
                 let nonceString = try nonceOperation.extractNoCancellableResultData()
 
-                guard let gasLimit = BigUInt(gasLimitString) else {
+                guard let gasLimit = BigUInt.fromHexString(gasLimitString) else {
                     throw EvmTransactionServiceError.invalidGasLimit(gasLimitString)
                 }
 
-                guard let gasPrice = BigUInt(gasPriceString) else {
+                guard let gasPrice = BigUInt.fromHexString(gasPriceString) else {
                     throw EvmTransactionServiceError.invalidGasPrice(gasLimitString)
                 }
 
-                guard let nonce = UInt(nonceString) else {
+                guard let nonce = BigUInt.fromHexString(nonceString) else {
                     throw EvmTransactionServiceError.invalidNonce(nonceString)
                 }
 
