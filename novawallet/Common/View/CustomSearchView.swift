@@ -6,6 +6,8 @@ final class CustomSearchView: UIView {
     let blurBackgroundView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 0.0
+        view.blurStyle = .dark
+        view.blurAlpha = 0.9
         return view
     }()
 
@@ -14,7 +16,7 @@ final class CustomSearchView: UIView {
     let cancelButton: RoundedButton = {
         let item = RoundedButton()
         item.applyIconStyle()
-        item.imageWithTitleView?.titleColor = R.color.colorNovaBlue()
+        item.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
         item.imageWithTitleView?.titleFont = .regularSubheadline
         item.contentInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
         return item

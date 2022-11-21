@@ -19,7 +19,6 @@ final class ReferendumInfoView: UIView {
         $0.iconDetailsView.detailsLabel.apply(style: .track)
         $0.backgroundView.apply(style: .referendum)
         $0.iconDetailsView.detailsLabel.numberOfLines = 1
-        $0.backgroundView.cornerRadius = 7
     }
 
     let numberLabel: BorderedLabelView = .create {
@@ -27,7 +26,6 @@ final class ReferendumInfoView: UIView {
         $0.contentInsets = .init(top: 4, left: 6, bottom: 4, right: 8)
         $0.backgroundView.apply(style: .referendum)
         $0.titleLabel.numberOfLines = 1
-        $0.backgroundView.cornerRadius = 7
     }
 
     private var trackImageViewModel: ImageViewModelProtocol?
@@ -173,45 +171,41 @@ extension ReferendumInfoView {
 
 extension IconDetailsView.Style {
     static let timeView = IconDetailsView.Style(
-        tintColor: R.color.colorWhite64()!,
+        tintColor: R.color.colorTextSecondary()!,
         font: .caption1
     )
     static let activeTimeView = IconDetailsView.Style(
-        tintColor: R.color.colorDarkYellow()!,
+        tintColor: R.color.colorTextWarning()!,
         font: .caption1
     )
 }
 
 private extension UILabel.Style {
     static let positiveStatusLabel = UILabel.Style(
-        textColor: R.color.colorGreen15CF37(),
+        textColor: R.color.colorTextPositive(),
         font: .semiBoldCaps1
     )
     static let neutralStatusLabel = UILabel.Style(
-        textColor: R.color.colorWhite64(),
+        textColor: R.color.colorTextSecondary(),
         font: .semiBoldCaps1
     )
     static let negativeStatusLabel = UILabel.Style(
-        textColor: R.color.colorRedFF3A69(),
+        textColor: R.color.colorTextNegative(),
         font: .semiBoldCaps1
     )
     static let title = UILabel.Style(
-        textColor: .white,
+        textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline
     )
 }
 
 extension UILabel.Style {
     static let track = UILabel.Style(
-        textColor: R.color.colorWhite64(),
+        textColor: R.color.colorChipText(),
         font: .semiBoldCaps1
     )
 }
 
 extension RoundedView.Style {
-    static let referendum = RoundedView.Style(
-        fillColor: R.color.colorWhite8()!,
-        highlightedFillColor: R.color.colorAccentSelected()!,
-        rounding: .init(radius: 8, corners: .allCorners)
-    )
+    static let referendum = RoundedView.Style.roundedChips(radius: 7)
 }

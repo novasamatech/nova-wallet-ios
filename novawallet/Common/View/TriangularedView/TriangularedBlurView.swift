@@ -40,6 +40,14 @@ open class TriangularedBlurView: UIView {
         }
     }
 
+    var blurAlpha: CGFloat = 0.22 {
+        didSet {
+            removeBlurView()
+            addBlurView()
+            setNeedsLayout()
+        }
+    }
+
     open func configure() {
         backgroundColor = .clear
 
@@ -69,7 +77,7 @@ open class TriangularedBlurView: UIView {
         if blurView == nil {
             let blur = UIBlurEffect(style: blurStyle)
             let blurView = UIVisualEffectView(effect: blur)
-            blurView.alpha = 0.22
+            blurView.alpha = blurAlpha
             insertSubview(blurView, at: 0)
 
             self.blurView = blurView

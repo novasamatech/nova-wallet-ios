@@ -31,9 +31,9 @@ final class ReferendumsUnlocksView: GenericTitleValueView<
     private func configure() {
         titleView.setHorizontalAndSpacing(8.0)
 
-        titleLabel.apply(style: .regularSubhedlineWhite)
+        titleLabel.apply(style: .regularSubhedlinePrimary)
 
-        locksLabel.apply(style: .footnoteWhite64)
+        locksLabel.apply(style: .footnoteSecondary)
         locksLabel.numberOfLines = 1
 
         unlocksLabel.apply(style: .unlockStyle)

@@ -7,8 +7,8 @@ extension RoundedView.Style {
         strokeWidth: 0,
         strokeColor: .clear,
         highlightedStrokeColor: .clear,
-        fillColor: R.color.colorWhite8()!,
-        highlightedFillColor: R.color.colorAccentSelected()!,
+        fillColor: R.color.colorBlockBackground()!,
+        highlightedFillColor: R.color.colorCellBackgroundPressed()!,
         rounding: .init(radius: 12, corners: .allCorners)
     )
     static let cellWithoutHighlighting = RoundedView.Style(
@@ -16,8 +16,8 @@ extension RoundedView.Style {
         strokeWidth: 0,
         strokeColor: .clear,
         highlightedStrokeColor: .clear,
-        fillColor: R.color.colorWhite8()!,
-        highlightedFillColor: R.color.colorWhite8()!,
+        fillColor: R.color.colorBlockBackground()!,
+        highlightedFillColor: R.color.colorBlockBackground()!,
         rounding: .init(radius: 12, corners: .allCorners)
     )
 }

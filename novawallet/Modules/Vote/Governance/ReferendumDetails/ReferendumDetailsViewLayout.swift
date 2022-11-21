@@ -137,7 +137,7 @@ final class ReferendumDetailsViewLayout: UIView {
 
     private func createHeader(with text: String) -> StackTableHeaderCell {
         let headerView = StackTableHeaderCell()
-        headerView.titleLabel.apply(style: .footnoteWhite64)
+        headerView.titleLabel.apply(style: .footnoteSecondary)
         headerView.titleLabel.text = text
         return headerView
     }
