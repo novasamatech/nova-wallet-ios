@@ -2,15 +2,15 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-protocol EvmTransactionBuilding: AnyObject {
-    func toAddress(_ address: AccountAddress) -> EvmTransactionBuilding
-    func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilding
-    func usingGasLimit(_ gasLimit: BigUInt) -> EvmTransactionBuilding
-    func usingNonce(_ nonce: UInt) -> EvmTransactionBuilding
-    func sendingValue(_ value: BigUInt) -> EvmTransactionBuilding
-    func usingTransactionData(_ data: Data) -> EvmTransactionBuilding
+protocol EvmTransactionBuilderProtocol: AnyObject {
+    func toAddress(_ address: AccountAddress) -> EvmTransactionBuilderProtocol
+    func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilderProtocol
+    func usingGasLimit(_ gasLimit: BigUInt) -> EvmTransactionBuilderProtocol
+    func usingNonce(_ nonce: UInt) -> EvmTransactionBuilderProtocol
+    func sendingValue(_ value: BigUInt) -> EvmTransactionBuilderProtocol
+    func usingTransactionData(_ data: Data) -> EvmTransactionBuilderProtocol
     func buildTransaction() -> EthereumTransaction
-    func signing(using closure: (Data) throws -> Data) throws -> EvmTransactionBuilding
+    func signing(using closure: (Data) throws -> Data) throws -> EvmTransactionBuilderProtocol
     func build() throws -> Data
 }
 
@@ -19,7 +19,7 @@ enum EvmTransactionBuilderError: Error {
     case invalidSignature(String)
 }
 
-final class EvmTransactionBuilder: EvmTransactionBuilding {
+final class EvmTransactionBuilder: EvmTransactionBuilderProtocol {
     let chainId: String
 
     private var transaction: EthereumTransaction
@@ -32,32 +32,32 @@ final class EvmTransactionBuilder: EvmTransactionBuilding {
         self.chainId = chainId
     }
 
-    func toAddress(_ address: AccountAddress) -> EvmTransactionBuilding {
+    func toAddress(_ address: AccountAddress) -> EvmTransactionBuilderProtocol {
         transaction = transaction.replacing(recepient: address)
         return self
     }
 
-    func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilding {
+    func usingGasPrice(_ gasPrice: BigUInt) -> EvmTransactionBuilderProtocol {
         transaction = transaction.replacing(gasPrice: String(gasPrice))
         return self
     }
 
-    func usingGasLimit(_ gasLimit: BigUInt) -> EvmTransactionBuilding {
+    func usingGasLimit(_ gasLimit: BigUInt) -> EvmTransactionBuilderProtocol {
         transaction = transaction.replacing(gas: String(gasLimit))
         return self
     }
 
-    func usingNonce(_ nonce: UInt) -> EvmTransactionBuilding {
+    func usingNonce(_ nonce: UInt) -> EvmTransactionBuilderProtocol {
         transaction = transaction.replacing(nonce: String(nonce))
         return self
     }
 
-    func sendingValue(_ value: BigUInt) -> EvmTransactionBuilding {
+    func sendingValue(_ value: BigUInt) -> EvmTransactionBuilderProtocol {
         transaction = transaction.replacing(value: String(value))
         return self
     }
 
-    func usingTransactionData(_ data: Data) -> EvmTransactionBuilding {
+    func usingTransactionData(_ data: Data) -> EvmTransactionBuilderProtocol {
         transaction = transaction.replacing(data: data)
         return self
     }
@@ -66,7 +66,7 @@ final class EvmTransactionBuilder: EvmTransactionBuilding {
         transaction
     }
 
-    func signing(using closure: (Data) throws -> Data) throws -> EvmTransactionBuilding {
+    func signing(using closure: (Data) throws -> Data) throws -> EvmTransactionBuilderProtocol {
         let signingData = try serializer.serialize(
             transaction: transaction,
             chainId: chainId,
