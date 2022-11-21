@@ -7,7 +7,7 @@ typealias EvmFeeTransactionResult = Result<BigUInt, Error>
 typealias EvmEstimateFeeClosure = (EvmFeeTransactionResult) -> Void
 typealias EvmSubmitTransactionResult = Result<String, Error>
 typealias EvmTransactionSubmitClosure = (EvmSubmitTransactionResult) -> Void
-typealias EvmTransactionBuilderClosure = (EvmTransactionBuilding) throws -> EvmTransactionBuilding
+typealias EvmTransactionBuilderClosure = (EvmTransactionBuilderProtocol) throws -> EvmTransactionBuilderProtocol
 
 protocol EvmTransactionServiceProtocol {
     func estimateFee(

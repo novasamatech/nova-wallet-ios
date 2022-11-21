@@ -3,7 +3,7 @@ import BigInt
 import web3swift
 import Core
 
-extension EvmTransactionBuilding {
+extension EvmTransactionBuilderProtocol {
     func erc20Transfer(
         to recepient: AccountAddress,
         contract: AccountAddress,
