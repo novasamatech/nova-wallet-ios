@@ -2,8 +2,8 @@ import Foundation
 import BigInt
 
 protocol XcmExtrinsicFeeProxyDelegate: AnyObject {
-    func didReceiveOriginFee(result: XcmTrasferFeeResult, for identifier: ExtrinsicFeeId)
-    func didReceiveCrossChainFee(result: XcmTrasferFeeResult, for identifier: ExtrinsicFeeId)
+    func didReceiveOriginFee(result: XcmTrasferFeeResult, for identifier: TransactionFeeId)
+    func didReceiveCrossChainFee(result: XcmTrasferFeeResult, for identifier: TransactionFeeId)
 }
 
 protocol XcmExtrinsicFeeProxyProtocol: AnyObject {
@@ -13,14 +13,14 @@ protocol XcmExtrinsicFeeProxyProtocol: AnyObject {
         using service: XcmTransferServiceProtocol,
         xcmTransferRequest: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
-        reuseIdentifier: ExtrinsicFeeId
+        reuseIdentifier: TransactionFeeId
     )
 
     func estimateCrossChainFee(
         using service: XcmTransferServiceProtocol,
         xcmTransferRequest: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
-        reuseIdentifier: ExtrinsicFeeId
+        reuseIdentifier: TransactionFeeId
     )
 }
 
@@ -30,13 +30,13 @@ final class XcmExtrinsicFeeProxy {
         case loaded(result: Result<FeeWithWeight, Error>)
     }
 
-    private var feeStore: [ExtrinsicFeeId: State] = [:]
+    private var feeStore: [TransactionFeeId: State] = [:]
 
     weak var delegate: XcmExtrinsicFeeProxyDelegate?
 
     private func handle(
         result: Result<FeeWithWeight, Error>,
-        for identifier: ExtrinsicFeeId,
+        for identifier: TransactionFeeId,
         origin: Bool
     ) {
         switch result {
@@ -59,7 +59,7 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
         using service: XcmTransferServiceProtocol,
         xcmTransferRequest: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
-        reuseIdentifier: ExtrinsicFeeId
+        reuseIdentifier: TransactionFeeId
     ) {
         if let state = feeStore[reuseIdentifier] {
             if case let .loaded(result) = state {
@@ -84,7 +84,7 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
         using service: XcmTransferServiceProtocol,
         xcmTransferRequest: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
-        reuseIdentifier: ExtrinsicFeeId
+        reuseIdentifier: TransactionFeeId
     ) {
         if let state = feeStore[reuseIdentifier] {
             if case let .loaded(result) = state {

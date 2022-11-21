@@ -1,9 +1,7 @@
 import Foundation
 
-typealias ExtrinsicFeeId = String
-
 protocol ExtrinsicFeeProxyDelegate: AnyObject {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for identifier: ExtrinsicFeeId)
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for identifier: TransactionFeeId)
 }
 
 protocol ExtrinsicFeeProxyProtocol: AnyObject {
@@ -11,28 +9,16 @@ protocol ExtrinsicFeeProxyProtocol: AnyObject {
 
     func estimateFee(
         using service: ExtrinsicServiceProtocol,
-        reuseIdentifier: ExtrinsicFeeId,
+        reuseIdentifier: TransactionFeeId,
         setupBy closure: @escaping ExtrinsicBuilderClosure
     )
 }
 
-final class ExtrinsicFeeProxy {
-    enum State {
-        case loading
-        case loaded(result: Result<RuntimeDispatchInfo, Error>)
-    }
-
-    private var feeStore: [ExtrinsicFeeId: State] = [:]
-
+final class ExtrinsicFeeProxy: TransactionFeeProxy<RuntimeDispatchInfo> {
     weak var delegate: ExtrinsicFeeProxyDelegate?
 
-    private func handle(result: Result<RuntimeDispatchInfo, Error>, for identifier: ExtrinsicFeeId) {
-        switch result {
-        case .success:
-            feeStore[identifier] = .loaded(result: result)
-        case .failure:
-            feeStore[identifier] = nil
-        }
+    private func handle(result: Result<RuntimeDispatchInfo, Error>, for identifier: TransactionFeeId) {
+        update(result: result, for: identifier)
 
         delegate?.didReceiveFee(result: result, for: identifier)
     }
@@ -41,10 +27,10 @@ final class ExtrinsicFeeProxy {
 extension ExtrinsicFeeProxy: ExtrinsicFeeProxyProtocol {
     func estimateFee(
         using service: ExtrinsicServiceProtocol,
-        reuseIdentifier: ExtrinsicFeeId,
+        reuseIdentifier: TransactionFeeId,
         setupBy closure: @escaping ExtrinsicBuilderClosure
     ) {
-        if let state = feeStore[reuseIdentifier] {
+        if let state = getCachedState(for: reuseIdentifier) {
             if case let .loaded(result) = state {
                 delegate?.didReceiveFee(result: result, for: reuseIdentifier)
             }
@@ -52,7 +38,7 @@ extension ExtrinsicFeeProxy: ExtrinsicFeeProxyProtocol {
             return
         }
 
-        feeStore[reuseIdentifier] = .loading
+        setCachedState(.loading, for: reuseIdentifier)
 
         service.estimateFee(closure, runningIn: .main) { [weak self] result in
             self?.handle(result: result, for: reuseIdentifier)

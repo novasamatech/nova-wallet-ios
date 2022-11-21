@@ -599,7 +599,7 @@ extension OnChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
 extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(
         result: Result<RuntimeDispatchInfo, Error>,
-        for _: ExtrinsicFeeId
+        for _: TransactionFeeId
     ) {
         switch result {
         case let .success(info):
