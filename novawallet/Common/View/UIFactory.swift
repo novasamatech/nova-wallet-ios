@@ -129,12 +129,12 @@ final class UIFactory: UIFactoryProtocol {
         if !filled {
             view.fillColor = .clear
             view.highlightedFillColor = .clear
-            view.strokeColor = R.color.colorStrokeGray()!
-            view.highlightedStrokeColor = R.color.colorStrokeGray()!
+            view.strokeColor = R.color.colorNoKeyContainerBorder()!
+            view.highlightedStrokeColor = R.color.colorNoKeyContainerBorder()!
             view.borderWidth = 1.0
         } else {
-            view.fillColor = R.color.colorDarkGray()!
-            view.highlightedFillColor = R.color.colorDarkGray()!
+            view.fillColor = R.color.colorContainerBackground()!
+            view.highlightedFillColor = R.color.colorContainerBackground()!
             view.strokeColor = .clear
             view.highlightedStrokeColor = .clear
             view.borderWidth = 0.0
@@ -147,9 +147,9 @@ final class UIFactory: UIFactoryProtocol {
             view.iconRadius = UIConstants.triangularedIconSmallRadius
         }
 
-        view.titleLabel.textColor = R.color.colorLightGray()!
+        view.titleLabel.textColor = R.color.colorTextSecondary()!
         view.titleLabel.font = UIFont.p2Paragraph
-        view.subtitleLabel?.textColor = R.color.colorWhite()!
+        view.subtitleLabel?.textColor = R.color.colorTextPrimary()!
         view.subtitleLabel?.font = UIFont.p1Paragraph
         view.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 8.0, right: 16.0)
 
@@ -290,8 +290,8 @@ final class UIFactory: UIFactoryProtocol {
         let amountInputView = AmountInputView()
 
         if !filled {
-            amountInputView.triangularedBackgroundView?.strokeColor = R.color.colorWhite()!
-            amountInputView.triangularedBackgroundView?.highlightedStrokeColor = R.color.colorWhite()!
+            amountInputView.triangularedBackgroundView?.strokeColor = R.color.colorNoKeyContainerBorder()!
+            amountInputView.triangularedBackgroundView?.highlightedStrokeColor = R.color.colorActiveBorder()!
             amountInputView.triangularedBackgroundView?.strokeWidth = 1.0
             amountInputView.triangularedBackgroundView?.fillColor = .clear
             amountInputView.triangularedBackgroundView?.highlightedFillColor = .clear
@@ -301,17 +301,17 @@ final class UIFactory: UIFactoryProtocol {
             amountInputView.triangularedBackgroundView?.highlightedFillColor = R.color.colorDarkGray()!
         }
 
-        amountInputView.titleLabel.textColor = R.color.colorLightGray()
+        amountInputView.titleLabel.textColor = R.color.colorTextSecondary()
         amountInputView.titleLabel.font = .p2Paragraph
-        amountInputView.priceLabel.textColor = R.color.colorLightGray()
+        amountInputView.priceLabel.textColor = R.color.colorTextSecondary()
         amountInputView.priceLabel.font = .p2Paragraph
-        amountInputView.symbolLabel.textColor = R.color.colorWhite()
+        amountInputView.symbolLabel.textColor = R.color.colorTextPrimary()
         amountInputView.symbolLabel.font = .h4Title
-        amountInputView.balanceLabel.textColor = R.color.colorLightGray()
+        amountInputView.balanceLabel.textColor = R.color.colorTextSecondary()
         amountInputView.balanceLabel.font = .p2Paragraph
         amountInputView.textField.font = .h4Title
-        amountInputView.textField.textColor = R.color.colorWhite()
-        amountInputView.textField.tintColor = R.color.colorWhite()
+        amountInputView.textField.textColor = R.color.colorTextPrimary()
+        amountInputView.textField.tintColor = R.color.colorTextPrimary()
         amountInputView.verticalSpacing = 2.0
         amountInputView.iconRadius = 12.0
         amountInputView.contentInsets = UIEdgeInsets(
@@ -324,7 +324,7 @@ final class UIFactory: UIFactoryProtocol {
         amountInputView.textField.attributedPlaceholder = NSAttributedString(
             string: "0",
             attributes: [
-                .foregroundColor: R.color.colorWhite()!.withAlphaComponent(0.5),
+                .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.h4Title
             ]
         )
@@ -416,7 +416,7 @@ final class UIFactory: UIFactoryProtocol {
             view.actionImage = R.image.iconSmallArrowDown()
         }
 
-        view.highlightedFillColor = R.color.colorHighlightedAccent()!
+        view.highlightedFillColor = R.color.colorIconPressed()!
         view.borderWidth = 1
         return view
     }
@@ -525,14 +525,12 @@ final class UIFactory: UIFactoryProtocol {
     func createChainAssetSelectionView() -> ChainAssetSelectionControl {
         let view = ChainAssetSelectionControl()
         view.fillColor = .clear
-        view.highlightedFillColor = R.color.colorHighlightedAccent()!
-        view.titleLabel.textColor = R.color.colorWhite()
+        view.highlightedFillColor = R.color.colorCellBackgroundPressed()!
+        view.titleLabel.textColor = R.color.colorTextPrimary()
         view.titleLabel.font = .p1Paragraph
-        view.subtitleLabel?.textColor = R.color.colorLightGray()
+        view.subtitleLabel?.textColor = R.color.colorTextSecondary()
         view.subtitleLabel?.font = .p2Paragraph
-        view.iconBackgroundView.fillColor = R.color.colorBlack24()!
-        view.iconBackgroundView.strokeColor = R.color.colorWhite16()!
-        view.iconBackgroundView.strokeWidth = 0.5
+        view.iconBackgroundView.apply(style: .assetContainer)
         view.actionImage = R.image.iconMore()
         view.contentInsets = UIEdgeInsets(top: 13.0, left: 19.0, bottom: 13.0, right: 19.0)
         view.titleAdditionalTopMargin = -5

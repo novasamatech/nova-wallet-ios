@@ -101,7 +101,9 @@ final class AssetListNftsCell: UICollectionViewCell {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
         if numberOfImagesToCreate > 0 {
-            let newMediaViews = (0 ..< numberOfImagesToCreate).map { _ in createMediaView() }
+            let newMediaViews = (0 ..< numberOfImagesToCreate).map { number in
+                createMediaView(isLast: number == 0)
+            }
             mediaViews = updatingMediaViewList(mediaViews, appending: newMediaViews)
         } else if numberOfImagesToCreate < 0 {
             let viewsToClear = mediaViews.suffix(-numberOfImagesToCreate)
@@ -124,9 +126,9 @@ final class AssetListNftsCell: UICollectionViewCell {
         }
     }
 
-    private func createMediaView() -> NftMediaView {
+    private func createMediaView(isLast: Bool) -> NftMediaView {
         let mediaView = NftMediaView()
-        mediaView.apply(style: .nft)
+        mediaView.apply(style: isLast ? .lastNft : .nft)
         mediaView.contentInsets = .zero
 
         return mediaView

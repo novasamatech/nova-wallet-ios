@@ -20,7 +20,7 @@ class TitleAmountView: UIView {
         view.backgroundColor = .clear
         view.borderType = .bottom
         view.strokeWidth = 1.0
-        view.strokeColor = R.color.colorDarkGray()!
+        view.strokeColor = R.color.colorDivider()!
         return view
     }()
 
@@ -54,11 +54,11 @@ class TitleAmountView: UIView {
     }
 
     var style = ViewStyle(
-        titleColor: R.color.colorLightGray()!,
+        titleColor: R.color.colorTextSecondary()!,
         titleFont: .p1Paragraph,
-        tokenColor: R.color.colorWhite()!,
+        tokenColor: R.color.colorTextPrimary()!,
         tokenFont: .p1Paragraph,
-        fiatColor: R.color.colorGray()!,
+        fiatColor: R.color.colorTextSecondary()!,
         fiatFont: .p2Paragraph
     ) {
         didSet {

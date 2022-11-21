@@ -3,7 +3,7 @@ import SoraUI
 final class AssetIconView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
-        view.apply(style: .container)
+        view.apply(style: .assetContainer)
         return view
     }()
 
