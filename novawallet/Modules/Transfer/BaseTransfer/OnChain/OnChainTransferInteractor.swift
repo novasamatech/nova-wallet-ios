@@ -3,28 +3,15 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-class OnChainTransferInteractor: RuntimeConstantFetching {
-    weak var presenter: OnChainTransferSetupInteractorOutputProtocol?
-
-    let selectedAccount: ChainAccountResponse
-    let chain: ChainModel
-    let asset: AssetModel
+class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantFetching {
     let runtimeService: RuntimeCodingServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
-    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let substrateStorageFacade: StorageFacadeProtocol
-    let operationQueue: OperationQueue
 
     private lazy var callFactory = SubstrateCallFactory()
     private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
-
-    private var sendingAssetProvider: StreamableProvider<AssetBalance>?
-    private var utilityAssetProvider: StreamableProvider<AssetBalance>?
-    private var sendingAssetPriceProvider: AnySingleValueProvider<PriceData>?
-    private var utilityAssetPriceProvider: AnySingleValueProvider<PriceData>?
 
     private var setupCall: CancellableCall?
 
@@ -38,8 +25,6 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
     private var recepientSendingAssetProvider: StreamableProvider<AssetBalance>?
     private var recepientUtilityAssetProvider: StreamableProvider<AssetBalance>?
-
-    var isUtilityTransfer: Bool { chain.utilityAssets().first?.assetId == asset.assetId }
 
     private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
         let storage: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
@@ -61,17 +46,21 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
-        self.selectedAccount = selectedAccount
-        self.chain = chain
-        self.asset = asset
         self.runtimeService = runtimeService
         self.feeProxy = feeProxy
         self.extrinsicService = extrinsicService
         self.walletRemoteWrapper = walletRemoteWrapper
-        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.substrateStorageFacade = substrateStorageFacade
-        self.operationQueue = operationQueue
+
+        super.init(
+            selectedAccount: selectedAccount,
+            chain: chain,
+            asset: asset,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            operationQueue: operationQueue
+        )
+
         self.currencyManager = currencyManager
     }
 
@@ -153,54 +142,6 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         provideMinBalance()
 
         presenter?.didCompleteSetup()
-    }
-
-    private func setupSendingAssetBalanceProvider() {
-        sendingAssetProvider = subscribeToAssetBalanceProvider(
-            for: selectedAccount.accountId,
-            chainId: chain.chainId,
-            assetId: asset.assetId
-        )
-    }
-
-    private func setupUtilityAssetBalanceProviderIfNeeded() {
-        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
-            utilityAssetProvider = subscribeToAssetBalanceProvider(
-                for: selectedAccount.accountId,
-                chainId: chain.chainId,
-                assetId: utilityAsset.assetId
-            )
-        }
-    }
-
-    private func setupSendingAssetPriceProviderIfNeeded() {
-        if let priceId = asset.priceId {
-            let options = DataProviderObserverOptions(
-                alwaysNotifyOnRefresh: false,
-                waitsInProgressSyncOnAdd: false
-            )
-
-            sendingAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
-        } else {
-            presenter?.didReceiveSendingAssetPrice(nil)
-        }
-    }
-
-    private func setupUtilityAssetPriceProviderIfNeeded() {
-        guard !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first else {
-            return
-        }
-
-        if let priceId = utilityAsset.priceId {
-            let options = DataProviderObserverOptions(
-                alwaysNotifyOnRefresh: false,
-                waitsInProgressSyncOnAdd: false
-            )
-
-            utilityAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
-        } else {
-            presenter?.didReceiveUtilityAssetPrice(nil)
-        }
     }
 
     private func provideMinBalance() {
@@ -480,6 +421,38 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         recepientUtilityAssetProvider?.removeObserver(self)
         recepientUtilityAssetProvider = nil
     }
+
+    override func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) {
+        switch result {
+        case let .success(optBalance):
+            let balance = optBalance ??
+                AssetBalance.createZero(
+                    for: ChainAssetId(chainId: chainId, assetId: assetId),
+                    accountId: accountId
+                )
+
+            if accountId == selectedAccount.accountId {
+                if asset.assetId == assetId {
+                    presenter?.didReceiveSendingAssetSenderBalance(balance)
+                } else if chain.utilityAssets().first?.assetId == assetId {
+                    presenter?.didReceiveUtilityAssetSenderBalance(balance)
+                }
+            } else if accountId == recepientAccountId {
+                if asset.assetId == assetId {
+                    presenter?.didReceiveSendingAssetRecepientBalance(balance)
+                } else if chain.utilityAssets().first?.assetId == assetId {
+                    presenter?.didReceiveUtilityAssetRecepientBalance(balance)
+                }
+            }
+        case .failure:
+            presenter?.didReceiveError(CommonError.databaseSubscription)
+        }
+    }
 }
 
 extension OnChainTransferInteractor {
@@ -547,55 +520,6 @@ extension OnChainTransferInteractor {
     }
 }
 
-extension OnChainTransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
-    ) {
-        switch result {
-        case let .success(optBalance):
-            let balance = optBalance ??
-                AssetBalance.createZero(
-                    for: ChainAssetId(chainId: chainId, assetId: assetId),
-                    accountId: accountId
-                )
-
-            if accountId == selectedAccount.accountId {
-                if asset.assetId == assetId {
-                    presenter?.didReceiveSendingAssetSenderBalance(balance)
-                } else if chain.utilityAssets().first?.assetId == assetId {
-                    presenter?.didReceiveUtilityAssetSenderBalance(balance)
-                }
-            } else if accountId == recepientAccountId {
-                if asset.assetId == assetId {
-                    presenter?.didReceiveSendingAssetRecepientBalance(balance)
-                } else if chain.utilityAssets().first?.assetId == assetId {
-                    presenter?.didReceiveUtilityAssetRecepientBalance(balance)
-                }
-            }
-        case .failure:
-            presenter?.didReceiveError(CommonError.databaseSubscription)
-        }
-    }
-}
-
-extension OnChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        switch result {
-        case let .success(priceData):
-            if asset.priceId == priceId {
-                presenter?.didReceiveSendingAssetPrice(priceData)
-            } else if chain.utilityAssets().first?.priceId == priceId {
-                presenter?.didReceiveUtilityAssetPrice(priceData)
-            }
-        case .failure:
-            presenter?.didReceiveError(CommonError.databaseSubscription)
-        }
-    }
-}
-
 extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(
         result: Result<RuntimeDispatchInfo, Error>,
@@ -608,16 +532,5 @@ extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
         case let .failure(error):
             presenter?.didReceiveFee(result: .failure(error))
         }
-    }
-}
-
-extension OnChainTransferInteractor: SelectedCurrencyDepending {
-    func applyCurrency() {
-        guard presenter != nil else {
-            return
-        }
-
-        setupSendingAssetPriceProviderIfNeeded()
-        setupUtilityAssetPriceProviderIfNeeded()
     }
 }

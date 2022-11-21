@@ -34,20 +34,17 @@ final class EvmTransactionService {
     let accountId: AccountId
     let operationFactory: EthereumOperationFactoryProtocol
     let chain: ChainModel
-    let connection: JSONRPCEngine
     let operationQueue: OperationQueue
 
     init(
         accountId: AccountId,
         operationFactory: EthereumOperationFactoryProtocol,
         chain: ChainModel,
-        connection: JSONRPCEngine,
         operationQueue: OperationQueue
     ) {
         self.accountId = accountId
         self.operationFactory = operationFactory
         self.chain = chain
-        self.connection = connection
         self.operationQueue = operationQueue
     }
 }
