@@ -3,6 +3,8 @@ import SubstrateSdk
 import BigInt
 
 extension Democracy {
+    typealias Proposal = SupportPallet.Bounded<RuntimeCall<JSON>>
+
     struct Tally: Decodable {
         /// The number of aye votes, expressed in terms of post-conviction lock-vote.
         @StringCodable var ayes: BigUInt
@@ -17,9 +19,21 @@ extension Democracy {
     struct OngoingStatus: Decodable {
         @StringCodable var end: BlockNumber
         @StringCodable var delay: BlockNumber
-        @SupportPallet.HashOrBoundedCallWrapper var proposalHash: SupportPallet.Bounded<RuntimeCall<JSON>>
+
+        //
+        let proposalHash: BytesCodable?
+        let proposal: Proposal?
+
         let threshold: Democracy.VoteThreshold
         let tally: Tally
+
+        var universalProposal: Proposal? {
+            if let proposalHash = proposalHash {
+                return .legacy(hash: proposalHash.wrappedValue)
+            } else {
+                return proposal
+            }
+        }
     }
 
     struct FinishedStatus: Decodable {
