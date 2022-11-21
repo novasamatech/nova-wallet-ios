@@ -1658,6 +1658,12 @@
 		84A58FD428A05820003F6ABF /* HardwareSigningError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD328A05820003F6ABF /* HardwareSigningError.swift */; };
 		84A58FD728A10691003F6ABF /* ParitySignerMessageOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */; };
 		84A58FD928A10ABD003F6ABF /* MultipartQrOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */; };
+		84A5915A292AA83500BCCF8F /* EvmWebSocketOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A59159292AA83500BCCF8F /* EvmWebSocketOperationFactory.swift */; };
+		84A5915C292B390800BCCF8F /* EvmTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A5915B292B390800BCCF8F /* EvmTransactionBuilder.swift */; };
+		84A5915E292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A5915D292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift */; };
+		84A59160292B468300BCCF8F /* EvmTransactionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A5915F292B468300BCCF8F /* EvmTransactionService.swift */; };
+		84A59162292B590100BCCF8F /* EvmTransactionFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A59161292B590100BCCF8F /* EvmTransactionFeeProxy.swift */; };
+		84A59164292B593E00BCCF8F /* TransactionFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A59163292B593E00BCCF8F /* TransactionFeeProxy.swift */; };
 		84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */; };
 		84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */; };
 		84A6AB5E290AA7DF001B57B2 /* ReferendumFullDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6AB5D290AA7DF001B57B2 /* ReferendumFullDetailsViewModel.swift */; };
@@ -4680,6 +4686,12 @@
 		84A58FD328A05820003F6ABF /* HardwareSigningError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareSigningError.swift; sourceTree = "<group>"; };
 		84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParitySignerMessageOperationFactory.swift; sourceTree = "<group>"; };
 		84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartQrOperationFactory.swift; sourceTree = "<group>"; };
+		84A59159292AA83500BCCF8F /* EvmWebSocketOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmWebSocketOperationFactory.swift; sourceTree = "<group>"; };
+		84A5915B292B390800BCCF8F /* EvmTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionBuilder.swift; sourceTree = "<group>"; };
+		84A5915D292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EvmTransactionBuilder+Transfer.swift"; sourceTree = "<group>"; };
+		84A5915F292B468300BCCF8F /* EvmTransactionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionService.swift; sourceTree = "<group>"; };
+		84A59161292B590100BCCF8F /* EvmTransactionFeeProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionFeeProxy.swift; sourceTree = "<group>"; };
+		84A59163292B593E00BCCF8F /* TransactionFeeProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionFeeProxy.swift; sourceTree = "<group>"; };
 		84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallCodingPath.swift; sourceTree = "<group>"; };
 		84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeMetadata+Internal.swift"; sourceTree = "<group>"; };
 		84A6AB5D290AA7DF001B57B2 /* ReferendumFullDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsViewModel.swift; sourceTree = "<group>"; };
@@ -8260,17 +8272,9 @@
 		845BB8B625E4464D00E5FCDC /* ExtrinsicService */ = {
 			isa = PBXGroup;
 			children = (
-				8461CC8626BC1F1F007460E4 /* ExtrinsicOperationFactory.swift */,
-				845BB8B725E4465F00E5FCDC /* ExtrinsicService.swift */,
-				F47F640A263BFEF800FF67E9 /* ExtrinsicServiceFactory.swift */,
-				84DD5F25263D72C400425ACF /* ExtrinsicFeeProxy.swift */,
-				8461CC7E26BBFEEA007460E4 /* ExtrinsicEraOperationFactory.swift */,
-				8461CC8026BBFF70007460E4 /* ImmortalEraOperationFactory.swift */,
-				8461CC8226BC0006007460E4 /* MortalEraOperationFactory.swift */,
-				844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */,
-				84468A102867BCD400BCBE00 /* XcmTransferService+Protocol.swift */,
-				84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */,
-				842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */,
+				84A59158292AA65500BCCF8F /* Substrate */,
+				84A59157292AA64E00BCCF8F /* Evm */,
+				84A59163292B593E00BCCF8F /* TransactionFeeProxy.swift */,
 			);
 			path = ExtrinsicService;
 			sourceTree = "<group>";
@@ -10582,6 +10586,36 @@
 				84A58FD628A10691003F6ABF /* ParitySignerMessageOperationFactory.swift */,
 			);
 			path = Operation;
+			sourceTree = "<group>";
+		};
+		84A59157292AA64E00BCCF8F /* Evm */ = {
+			isa = PBXGroup;
+			children = (
+				84A59159292AA83500BCCF8F /* EvmWebSocketOperationFactory.swift */,
+				84A5915B292B390800BCCF8F /* EvmTransactionBuilder.swift */,
+				84A5915D292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift */,
+				84A5915F292B468300BCCF8F /* EvmTransactionService.swift */,
+				84A59161292B590100BCCF8F /* EvmTransactionFeeProxy.swift */,
+			);
+			path = Evm;
+			sourceTree = "<group>";
+		};
+		84A59158292AA65500BCCF8F /* Substrate */ = {
+			isa = PBXGroup;
+			children = (
+				8461CC8626BC1F1F007460E4 /* ExtrinsicOperationFactory.swift */,
+				845BB8B725E4465F00E5FCDC /* ExtrinsicService.swift */,
+				F47F640A263BFEF800FF67E9 /* ExtrinsicServiceFactory.swift */,
+				84DD5F25263D72C400425ACF /* ExtrinsicFeeProxy.swift */,
+				8461CC7E26BBFEEA007460E4 /* ExtrinsicEraOperationFactory.swift */,
+				8461CC8026BBFF70007460E4 /* ImmortalEraOperationFactory.swift */,
+				8461CC8226BC0006007460E4 /* MortalEraOperationFactory.swift */,
+				844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */,
+				84468A102867BCD400BCBE00 /* XcmTransferService+Protocol.swift */,
+				84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */,
+				842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */,
+			);
+			path = Substrate;
 			sourceTree = "<group>";
 		};
 		84A6AB5C290AA7C8001B57B2 /* ViewModel */ = {
@@ -14997,6 +15031,7 @@
 				84D2F1B12775999F0040C680 /* DAppParsedExtrinsic.swift in Sources */,
 				84364D5E252FD09100281F9A /* AssetDetailsViewModel.swift in Sources */,
 				84AE7AAB27D373A200495267 /* StackInfoTableCell.swift in Sources */,
+				84A59160292B468300BCCF8F /* EvmTransactionService.swift in Sources */,
 				845BB8C925E45D1500E5FCDC /* BondCall.swift in Sources */,
 				84466B3328B65B5B00FA1E0D /* MetaAccountModel+Identicon.swift in Sources */,
 				F40966B926B297D6008CD244 /* AnalyticsRewardsViewModel.swift in Sources */,
@@ -15380,6 +15415,7 @@
 				88F19DE028D8D0F600F6E459 /* LoadableViewModelState+Addition.swift in Sources */,
 				84DF21AB25363C9F005454AE /* Chain+Info.swift in Sources */,
 				84A3B8A22836DA2600DE2669 /* LastAccountIdKeyWrapper.swift in Sources */,
+				84A59164292B593E00BCCF8F /* TransactionFeeProxy.swift in Sources */,
 				84243095265B1888003E07EC /* CrowdloanMetadata.swift in Sources */,
 				84CFF1ED26526FBC00DB7CF7 /* StakingBondMoreConfirmationWireframe.swift in Sources */,
 				847119D5262EF95A00716580 /* PayoutInfoFactoryProtocol.swift in Sources */,
@@ -16038,6 +16074,7 @@
 				840B3D70289A575A00DA1DA9 /* ParitySignerScanProtocols.swift in Sources */,
 				8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */,
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
+				84A5915C292B390800BCCF8F /* EvmTransactionBuilder.swift in Sources */,
 				8490152B24ABD0A2008F705E /* WalletCommonConfigurator.swift in Sources */,
 				842A738627DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift in Sources */,
 				8489A6DA27FDC49D0040C066 /* StakingUnbondingsView.swift in Sources */,
@@ -16474,6 +16511,7 @@
 				849C0671276516F900394C82 /* BaseOperation+Cancellable.swift in Sources */,
 				84E1CD0C260DCD23001E81B5 /* SwitchAccount+AccountConfirmWireframe.swift in Sources */,
 				AE6F7FDF2685E812002BBC3E /* ValidatorListFilterPresenter.swift in Sources */,
+				84A5915A292AA83500BCCF8F /* EvmWebSocketOperationFactory.swift in Sources */,
 				8430AAF626023087005B1066 /* NominatorState.swift in Sources */,
 				842A735E27DB2EC4006EE1EA /* OperationDetailsModel.swift in Sources */,
 				844DAADD28ABC5E2008E11DA /* LedgerDevice.swift in Sources */,
@@ -17275,6 +17313,7 @@
 				52326E49B049C54434C95132 /* ParaStkCollatorsSearchWireframe.swift in Sources */,
 				84117078285B1050006F4DFB /* XcmAssetTransfer.swift in Sources */,
 				8428229E289BCAAB00163031 /* SwitchAccount+ParitySignerWelcomeWireframe.swift in Sources */,
+				84A59162292B590100BCCF8F /* EvmTransactionFeeProxy.swift in Sources */,
 				84EBFCF0285E84C30006327E /* XcmMultiassetFilter.swift in Sources */,
 				BFC8C5A2C95D6EDF97D73732 /* ParaStkCollatorsSearchPresenter.swift in Sources */,
 				25993E2E536DE682E1DFC9AD /* ParaStkCollatorsSearchInteractor.swift in Sources */,
@@ -17453,6 +17492,7 @@
 				75DAB313623E900EC475E215 /* LedgerTxConfirmViewFactory.swift in Sources */,
 				44D9F74D7851B874F2045E7E /* LedgerInstructionsProtocols.swift in Sources */,
 				84715783291132B400D7D003 /* GovernanceUnlockTableViewCell.swift in Sources */,
+				84A5915E292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift in Sources */,
 				CD4240B756F20C338A8B3589 /* LedgerInstructionsWireframe.swift in Sources */,
 				91A1286763617DE022BD495F /* LedgerInstructionsPresenter.swift in Sources */,
 				529B87AC9E500CC2A503A859 /* LedgerInstructionsViewController.swift in Sources */,
