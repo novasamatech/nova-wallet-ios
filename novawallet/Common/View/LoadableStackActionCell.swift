@@ -27,7 +27,7 @@ extension LoadableStackActionCell {
 
 extension LoadableStackActionCell where TitleView: UILabel {
     func applyDefaultTitleStyle() {
-        rowContentView.titleView.textColor = R.color.colorWhite()
+        rowContentView.titleView.textColor = R.color.colorTextPrimary()
         rowContentView.titleView.font = .regularSubheadline
     }
 }

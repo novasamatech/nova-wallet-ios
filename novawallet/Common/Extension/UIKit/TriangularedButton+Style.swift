@@ -40,24 +40,24 @@ extension TriangularedButton {
 
     func applySecondaryEnabledStyle() {
         triangularedView?.shadowOpacity = 0.0
-        triangularedView?.fillColor = R.color.colorWhite16()!
-        triangularedView?.highlightedFillColor = R.color.colorWhite16()!
+        triangularedView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 
-        imageWithTitleView?.titleColor = R.color.colorWhite()!
+        imageWithTitleView?.titleColor = R.color.colorButtonText()!
 
         changesContentOpacityWhenHighlighted = true
     }
 
     func applyDisabledStyle() {
         triangularedView?.shadowOpacity = 0.0
-        triangularedView?.fillColor = R.color.colorDarkGray()!
-        triangularedView?.highlightedFillColor = R.color.colorDarkGray()!
+        triangularedView?.fillColor = R.color.colorButtonBackgroundInactive()!
+        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundInactive()!
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 
-        imageWithTitleView?.titleColor = R.color.colorStrokeGray()
+        imageWithTitleView?.titleColor = R.color.colorButtonTextInactive()!
 
         contentOpacityWhenDisabled = 1.0
     }

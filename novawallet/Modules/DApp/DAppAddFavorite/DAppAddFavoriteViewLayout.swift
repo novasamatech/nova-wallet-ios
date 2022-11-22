@@ -22,7 +22,7 @@ final class DAppAddFavoriteViewLayout: UIView {
 
     let saveButton: UIBarButtonItem = {
         let button = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        button.tintColor = R.color.colorNovaBlue()!
+        button.tintColor = R.color.colorButtonTextAccent()
 
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.regularBody
@@ -44,7 +44,7 @@ final class DAppAddFavoriteViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()
@@ -56,7 +56,7 @@ final class DAppAddFavoriteViewLayout: UIView {
 
     let addressLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()
@@ -71,7 +71,7 @@ final class DAppAddFavoriteViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

@@ -24,7 +24,7 @@ final class AccountImportSeedView: AccountImportBaseView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h2Title
         label.numberOfLines = 0
         return label
@@ -34,14 +34,14 @@ final class AccountImportSeedView: AccountImportBaseView {
 
     let seedTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         return label
     }()
 
     let seedHintLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorStrokeGray()
+        label.textColor = R.color.colorHintText()
         label.font = .p2Paragraph
         return label
     }()
@@ -49,8 +49,8 @@ final class AccountImportSeedView: AccountImportBaseView {
     let seedTextView: UITextView = {
         let view = UITextView()
         view.font = .p1Paragraph
-        view.textColor = R.color.colorWhite()
-        view.tintColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
+        view.tintColor = R.color.colorTextPrimary()
         view.backgroundColor = .clear
         view.isScrollEnabled = false
         view.showsVerticalScrollIndicator = false
@@ -65,7 +65,7 @@ final class AccountImportSeedView: AccountImportBaseView {
     let usernameHintLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorHintText()
         label.numberOfLines = 0
         return label
     }()

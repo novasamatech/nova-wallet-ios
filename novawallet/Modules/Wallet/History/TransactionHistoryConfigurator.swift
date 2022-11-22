@@ -6,15 +6,15 @@ final class TransactionHistoryConfigurator {
     private lazy var transactionCellStyle: TransactionCellStyleProtocol = {
         let title = WalletTextStyle(
             font: .semiBoldBody,
-            color: R.color.colorWhite()!
+            color: R.color.colorTextPrimary()
         )
         let amount = WalletTextStyle(
             font: .p1Paragraph,
-            color: R.color.colorWhite()!
+            color: R.color.colorTextPrimary()!
         )
         let style = WalletTransactionStatusStyle(
             icon: nil,
-            color: R.color.colorWhite()!
+            color: R.color.colorTextPrimary()!
         )
         let container = WalletTransactionStatusStyleContainer(
             approved: style,
@@ -35,7 +35,7 @@ final class TransactionHistoryConfigurator {
     private lazy var headerStyle: TransactionHeaderStyleProtocol = {
         let title = WalletTextStyle(
             font: .semiBoldCaps2,
-            color: R.color.colorTransparentText()!
+            color: R.color.colorTextSecondary()!
         )
         return TransactionHeaderStyle(
             background: .clear,
