@@ -23,7 +23,7 @@ final class StackNetworkFeeCell: RowView<NetworkFeeView> {
         rowContentView.style = NetworkFeeView.ViewStyle(
             titleColor: R.color.colorTextSecondary()!,
             titleFont: .regularFootnote,
-            tokenColor: R.color.colorTextPrimary!,
+            tokenColor: R.color.colorTextPrimary()!,
             tokenFont: .regularFootnote,
             fiatColor: R.color.colorTextSecondary()!,
             fiatFont: .caption1
