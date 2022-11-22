@@ -14,18 +14,58 @@ final class Gov1OperationFactory {
         let block: BlockNumber
     }
 
+    typealias SchedulerKeysClosure = () throws -> [SchedulerTaskName]
+
     struct SchedulerTaskName: Encodable {
+        static let taskNameSize = 32
+
+        enum EncodingScheme {
+            case legacy
+            case migrating
+            case actual
+        }
+
         let index: Referenda.ReferendumIndex
+        let encodingScheme: EncodingScheme
+
+        init(index: Referenda.ReferendumIndex, encodingScheme: EncodingScheme = .actual) {
+            self.index = index
+            self.encodingScheme = encodingScheme
+        }
 
         func encode(to encoder: Encoder) throws {
             let scaleEncoder = ScaleEncoder()
             Democracy.lockId.data(using: .utf8).map { scaleEncoder.appendRaw(data: $0) }
             try index.encode(scaleEncoder: scaleEncoder)
 
-            let data = scaleEncoder.encode()
+            let encodedData = scaleEncoder.encode()
+            let keyData: Data
+
+            switch encodingScheme {
+            case .legacy:
+                keyData = encodedData
+            case .migrating:
+                keyData = try encodedData.blake2b32()
+            case .actual:
+                keyData = try hash(data: encodedData, ifExceeds: Self.taskNameSize)
+            }
 
             var container = encoder.singleValueContainer()
-            try container.encode(BytesCodable(wrappedValue: data))
+            try container.encode(BytesCodable(wrappedValue: keyData))
+        }
+
+        private func hash(data: Data, ifExceeds size: Int) throws -> Data {
+            if data.count <= size {
+                return data.fillRightWithZeros(ifLess: size)
+            } else {
+                let hashedData = try data.blake2b32()
+
+                if hashedData.count <= size {
+                    return hashedData.fillRightWithZeros(ifLess: size)
+                } else {
+                    return hashedData.prefix(size)
+                }
+            }
         }
     }
 
@@ -37,20 +77,46 @@ final class Gov1OperationFactory {
         self.operationQueue = operationQueue
     }
 
-    func createEnacmentTimeFetchWrapper(
+    private func prepareSchedulerKeysClosure(
         dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: Democracy.ReferendumInfo]>,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        blockHash: Data?
-    ) -> CompoundOperationWrapper<[ReferendumIdLocal: BlockNumber]> {
-        let keysClosure: () throws -> [SchedulerTaskName] = {
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        storagePath: StorageCodingPath
+    ) -> SchedulerKeysClosure {
+        {
             let referendums = try referendumOperation.extractNoCancellableResultData()
 
-            return referendums.compactMap { keyValue in
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let metadata = codingFactory.metadata
+
+            let shouldUseLegacyEncoding: Bool = metadata.isMapStorageKeyOfType(storagePath) { key in
+                // legacy keys are composed of unbounded byte array
+                codingFactory.isBytesArrayType(key)
+            }
+
+            let keys: [[SchedulerTaskName]] = referendums.compactMap { keyValue in
                 switch keyValue.value {
                 case let .finished(status):
                     if status.approved {
-                        return SchedulerTaskName(index: keyValue.key.referendumIndex)
+                        if shouldUseLegacyEncoding {
+                            let key = SchedulerTaskName(
+                                index: keyValue.key.referendumIndex,
+                                encodingScheme: .legacy
+                            )
+
+                            return [key]
+                        } else {
+                            let key1 = SchedulerTaskName(
+                                index: keyValue.key.referendumIndex,
+                                encodingScheme: .actual
+                            )
+
+                            let key2 = SchedulerTaskName(
+                                index: keyValue.key.referendumIndex,
+                                encodingScheme: .migrating
+                            )
+
+                            return [key1, key2]
+                        }
                     } else {
                         return nil
                     }
@@ -58,16 +124,33 @@ final class Gov1OperationFactory {
                     return nil
                 }
             }
-        }
 
+            return keys.flatMap { $0 }
+        }
+    }
+
+    func createEnacmentTimeFetchWrapper(
+        dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: Democracy.ReferendumInfo]>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<[ReferendumIdLocal: BlockNumber]> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let storagePath = OnChainScheduler.lookupTaskPath
+
+        let keysClosure = prepareSchedulerKeysClosure(
+            dependingOn: referendumOperation,
+            codingFactoryOperation: codingFactoryOperation,
+            storagePath: storagePath
+        )
 
         let enactmentWrapper: CompoundOperationWrapper<[StorageResponse<OnChainScheduler.TaskAddress>]> =
             requestFactory.queryItems(
                 engine: connection,
                 keyParams: keysClosure,
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: OnChainScheduler.lookupTaskPath,
+                storagePath: storagePath,
                 at: blockHash
             )
 
