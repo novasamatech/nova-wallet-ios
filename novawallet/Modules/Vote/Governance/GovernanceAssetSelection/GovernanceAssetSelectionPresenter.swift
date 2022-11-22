@@ -56,15 +56,30 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
     }
 
     override func updateView() {
-        // show gov2 options first
+        // show gov2 options first but not testnets
         availableOptions = assets.reduce(into: [Option]()) { accum, chainAsset in
-            if chainAsset.chain.hasGovernanceV2 {
+            if chainAsset.chain.hasGovernanceV2, !chainAsset.chain.isTestnet {
                 accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV2))
             }
         }
 
+        // then show gov1 options
         availableOptions = assets.reduce(into: availableOptions) { accum, chainAsset in
-            if chainAsset.chain.hasGovernanceV1 {
+            if chainAsset.chain.hasGovernanceV1, !chainAsset.chain.isTestnet {
+                accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV1))
+            }
+        }
+
+        // then show gov2 testnets
+        availableOptions = assets.reduce(into: availableOptions) { accum, chainAsset in
+            if chainAsset.chain.hasGovernanceV2, chainAsset.chain.isTestnet {
+                accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV2))
+            }
+        }
+
+        // finally show gov1 testnets
+        availableOptions = assets.reduce(into: availableOptions) { accum, chainAsset in
+            if chainAsset.chain.hasGovernanceV1, chainAsset.chain.isTestnet {
                 accum.append(.init(chainAsset: chainAsset, governanceType: .governanceV1))
             }
         }
