@@ -4,7 +4,7 @@ import UIKit
 final class DAppsAuthSettingsWalletCell: UITableViewCell {
     let infoLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.numberOfLines = 0
         return label

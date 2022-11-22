@@ -61,7 +61,7 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
 
         navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationBar.shadowImage = UIImage()
-        navigationBar.tintColor = R.color.colorWhite()!
+        navigationBar.tintColor = R.color.colorTextPrimary()!
         navigationBar.delegate = self
     }
 
@@ -86,7 +86,7 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
 
         cancelButton.trailingAnchor.constraint(equalTo: pinView.trailingAnchor).isActive = true
 
-        cancelButton.setTitleColor(R.color.colorWhite()!, for: .normal)
+        cancelButton.setTitleColor(R.color.colorIconPrimary()!, for: .normal)
         cancelButton.titleLabel?.font = UIFont.p1Paragraph
 
         cancelButton.addTarget(
@@ -119,20 +119,20 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
         pinView.mode = mode
         pinView.delegate = self
 
-        pinView.numpadView?.accessoryIcon = pinView.numpadView?.accessoryIcon?.tinted(with: R.color.colorWhite()!)
-        pinView.numpadView?.backspaceIcon = pinView.numpadView?.backspaceIcon?.tinted(with: R.color.colorWhite()!)
+        pinView.numpadView?.accessoryIcon = pinView.numpadView?.accessoryIcon?.tinted(with: R.color.colorIconPrimary()!)
+        pinView.numpadView?.backspaceIcon = pinView.numpadView?.backspaceIcon?.tinted(with: R.color.colorIconPrimary()!)
 
         let additionalButtonStyle = NumpadButtonStyle(
             fillColor: .clear,
-            highlightedFillColor: R.color.colorAccentSelected()!
+            highlightedFillColor: R.color.colorCellBackgroundPressed()!
         )
 
         pinView.numpadView?.backspaceButtonStyle = additionalButtonStyle
         pinView.numpadView?.accessoryButtonStyle = additionalButtonStyle
 
         pinView.securedCharacterFieldsView?.style = SecuredCharacterFieldsView.Style(
-            normalFillColor: R.color.colorWhite16()!,
-            highlightedFillColor: R.color.colorAccent()!,
+            normalFillColor: R.color.colorButtonBackgroundSecondary()!,
+            highlightedFillColor: R.color.colorCellBackgroundPressed()!,
             normalStrokeColor: .clear,
             highlightedStrokeColor: .clear,
             strokeWidth: 0.0,

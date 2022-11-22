@@ -15,7 +15,7 @@ final class LinkView: IconDetailsGenericView<RoundedButton> {
     }
 
     private func configureStyle() {
-        let blueColor = R.color.colorNovaBlue()!
+        let blueColor = R.color.colorButtonTextAccent()!
 
         mode = .iconDetails
         imageView.image = R.image.iconInfoFilled()?.tinted(with: blueColor)

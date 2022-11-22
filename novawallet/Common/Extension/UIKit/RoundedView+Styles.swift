@@ -28,8 +28,8 @@ extension RoundedView {
         strokeWidth = 0.0
         strokeColor = .clear
         highlightedStrokeColor = .clear
-        fillColor = R.color.colorWhite8()!
-        highlightedFillColor = R.color.colorAccentSelected()!
+        fillColor = R.color.colorBlockBackground()!
+        highlightedFillColor = R.color.colorCellBackgroundPressed()!
     }
 
     func applyFilledBackgroundStyle() {

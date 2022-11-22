@@ -7,7 +7,7 @@ final class AccountCreateViewLayout: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .h2Title
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.numberOfLines = 0
         return label
     }()
@@ -15,7 +15,7 @@ final class AccountCreateViewLayout: UIView {
     let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()
@@ -23,7 +23,7 @@ final class AccountCreateViewLayout: UIView {
     let captionLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()
@@ -33,7 +33,7 @@ final class AccountCreateViewLayout: UIView {
     let mnemonicFieldTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -55,7 +55,7 @@ final class AccountCreateViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
     }
 

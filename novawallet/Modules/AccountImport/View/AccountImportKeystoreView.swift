@@ -26,7 +26,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h2Title
         label.numberOfLines = 0
         return label
@@ -35,7 +35,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
     let uploadWarningView: IconDetailsView = {
         let view = IconDetailsView()
         view.imageView.image = R.image.iconWarning()
-        view.detailsLabel.textColor = R.color.colorLightGray()
+        view.detailsLabel.textColor = R.color.colorTextSecondary()
         view.detailsLabel.font = .p1Paragraph
         return view
     }()
@@ -78,7 +78,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
     let usernameHintLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorHintText()
         label.numberOfLines = 0
         return label
     }()

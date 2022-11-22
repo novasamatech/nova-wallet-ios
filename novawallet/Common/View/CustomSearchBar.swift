@@ -4,7 +4,7 @@ import SoraUI
 final class CustomSearchBar: UIView {
     let textFieldBackgroundView: RoundedView = {
         let view = RoundedView()
-        view.apply(style: .textField)
+        view.apply(style: .searchBarTextField)
         return view
     }()
 

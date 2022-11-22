@@ -26,7 +26,7 @@ final class AccountTableViewCell: UITableViewCell {
         super.awakeFromNib()
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()
         self.selectedBackgroundView = selectedBackgroundView
 
         iconView.fillColor = .clear

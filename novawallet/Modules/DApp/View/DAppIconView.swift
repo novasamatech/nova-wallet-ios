@@ -4,12 +4,7 @@ import SoraUI
 final class DAppIconView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
-        view.shadowOpacity = 0
-        view.fillColor = R.color.colorWhite8()!
-        view.highlightedFillColor = R.color.colorWhite8()!
-        view.strokeWidth = 0.5
-        view.strokeColor = R.color.colorWhite16()!
-        view.highlightedStrokeColor = R.color.colorWhite16()!
+        view.apply(style: .container)
         return view
     }()
 
