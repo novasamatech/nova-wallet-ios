@@ -120,3 +120,10 @@ extension IconDetailsView: Highlightable {
         detailsLabel.set(highlighted: highlighted, animated: animated)
     }
 }
+
+extension IconDetailsView {
+    func bind(viewModel: TitleIconViewModel?) {
+        imageView.image = viewModel?.icon
+        detailsLabel.text = viewModel?.title
+    }
+}
