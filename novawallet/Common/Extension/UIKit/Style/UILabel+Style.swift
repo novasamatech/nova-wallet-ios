@@ -40,7 +40,7 @@ extension UILabel.Style {
         textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline
     )
-    
+
     static let rowLink = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .p2Paragraph

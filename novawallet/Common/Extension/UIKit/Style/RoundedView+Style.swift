@@ -117,3 +117,40 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorInputBackground()!
     )
 }
+
+extension RoundedView.Style {
+    static let roundedLightCell = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0,
+        strokeColor: .clear,
+        highlightedStrokeColor: .clear,
+        fillColor: R.color.colorBlockBackground()!,
+        highlightedFillColor: R.color.colorCellBackgroundPressed()!,
+        rounding: .init(radius: 12, corners: .allCorners)
+    )
+    static let cellWithoutHighlighting = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0,
+        strokeColor: .clear,
+        highlightedStrokeColor: .clear,
+        fillColor: R.color.colorBlockBackground()!,
+        highlightedFillColor: R.color.colorBlockBackground()!,
+        rounding: .init(radius: 12, corners: .allCorners)
+    )
+}
+
+extension ShadowShapeView {
+    struct Style {
+        let shadowOpacity: Float?
+        let shadowColor: UIColor?
+        let shadowRadius: CGFloat?
+        let shadowOffset: CGSize?
+    }
+
+    func apply(style: Style) {
+        style.shadowOpacity.map { shadowOpacity = $0 }
+        style.shadowColor.map { shadowColor = $0 }
+        style.shadowRadius.map { shadowRadius = $0 }
+        style.shadowOffset.map { shadowOffset = $0 }
+    }
+}
