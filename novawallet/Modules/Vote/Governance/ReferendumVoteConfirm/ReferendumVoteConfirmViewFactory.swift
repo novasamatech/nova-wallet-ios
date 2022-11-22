@@ -6,7 +6,8 @@ import SoraFoundation
 struct ReferendumVoteConfirmViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        newVote: ReferendumNewVote
+        newVote: ReferendumNewVote,
+        initData: ReferendumVotingInitData
     ) -> ReferendumVoteConfirmViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
@@ -48,6 +49,7 @@ struct ReferendumVoteConfirmViewFactory {
         )
 
         let presenter = ReferendumVoteConfirmPresenter(
+            initData: initData,
             vote: newVote,
             chain: chain,
             selectedAccount: selectedAccount,
@@ -88,7 +90,8 @@ struct ReferendumVoteConfirmViewFactory {
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
             let extrinsicFactory = state.createExtrinsicFactory(for: chain),
-            let blockTimeService = state.blockTimeService
+            let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory()
         else {
             return nil
         }
@@ -122,6 +125,7 @@ struct ReferendumVoteConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,

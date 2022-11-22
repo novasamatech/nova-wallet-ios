@@ -32,18 +32,11 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showReferendumDetails(
-        from view: ControllerBackedProtocol?,
-        referendum: ReferendumLocal,
-        accountVotes: ReferendumAccountVoteLocal?,
-        metadata: ReferendumMetadataLocal?
-    ) {
+    func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData) {
         guard
             let detailsView = ReferendumDetailsViewFactory.createView(
                 for: state,
-                referendum: referendum,
-                accountVotes: accountVotes,
-                metadata: metadata
+                initData: initData
             ) else {
             return
         }
@@ -53,8 +46,8 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
         view?.controller.navigationController?.pushViewController(detailsView.controller, animated: true)
     }
 
-    func showUnlocksDetails(from view: ControllerBackedProtocol?) {
-        guard let unlocksView = GovernanceUnlockSetupViewFactory.createView(for: state) else {
+    func showUnlocksDetails(from view: ControllerBackedProtocol?, initData: GovernanceUnlockInitData) {
+        guard let unlocksView = GovernanceUnlockSetupViewFactory.createView(for: state, initData: initData) else {
             return
         }
 

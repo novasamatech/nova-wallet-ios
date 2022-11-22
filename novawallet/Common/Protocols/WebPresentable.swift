@@ -13,6 +13,11 @@ protocol WebPresentable: AnyObject {
 
 extension WebPresentable {
     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle) {
+        let supportedSafariScheme = ["https", "http"]
+        guard let scheme = url.scheme, supportedSafariScheme.contains(scheme) else {
+            return
+        }
+
         let webController = WebViewFactory.createWebViewController(for: url, style: style)
         view.controller.present(webController, animated: true, completion: nil)
     }

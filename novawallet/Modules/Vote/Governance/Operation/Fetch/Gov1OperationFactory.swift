@@ -14,12 +14,83 @@ final class Gov1OperationFactory {
         let block: BlockNumber
     }
 
+    struct SchedulerTaskName: Encodable {
+        let index: Referenda.ReferendumIndex
+
+        func encode(to encoder: Encoder) throws {
+            let scaleEncoder = ScaleEncoder()
+            Democracy.lockId.data(using: .utf8).map { scaleEncoder.appendRaw(data: $0) }
+            try index.encode(scaleEncoder: scaleEncoder)
+
+            let data = scaleEncoder.encode()
+
+            var container = encoder.singleValueContainer()
+            try container.encode(BytesCodable(wrappedValue: data))
+        }
+    }
+
     let requestFactory: StorageRequestFactoryProtocol
     let operationQueue: OperationQueue
 
     init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
         self.requestFactory = requestFactory
         self.operationQueue = operationQueue
+    }
+
+    func createEnacmentTimeFetchWrapper(
+        dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: Democracy.ReferendumInfo]>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<[ReferendumIdLocal: BlockNumber]> {
+        let keysClosure: () throws -> [SchedulerTaskName] = {
+            let referendums = try referendumOperation.extractNoCancellableResultData()
+
+            return referendums.compactMap { keyValue in
+                switch keyValue.value {
+                case let .finished(status):
+                    if status.approved {
+                        return SchedulerTaskName(index: keyValue.key.referendumIndex)
+                    } else {
+                        return nil
+                    }
+                default:
+                    return nil
+                }
+            }
+        }
+
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let enactmentWrapper: CompoundOperationWrapper<[StorageResponse<OnChainScheduler.TaskAddress>]> =
+            requestFactory.queryItems(
+                engine: connection,
+                keyParams: keysClosure,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: OnChainScheduler.lookupTaskPath,
+                at: blockHash
+            )
+
+        enactmentWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mapOperation = ClosureOperation<[ReferendumIdLocal: BlockNumber]> {
+            let keys = try keysClosure()
+            let results = try enactmentWrapper.targetOperation.extractNoCancellableResultData()
+
+            return zip(keys, results).reduce(into: [ReferendumIdLocal: BlockNumber]()) { accum, keyResult in
+                guard let when = keyResult.1.value?.when else {
+                    return
+                }
+
+                accum[ReferendumIdLocal(keyResult.0.index)] = when
+            }
+        }
+
+        mapOperation.addDependency(enactmentWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + enactmentWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     func createAdditionalInfoWrapper(
@@ -88,11 +159,13 @@ final class Gov1OperationFactory {
 
     func createReferendumMapOperation(
         dependingOn referendumOperation: BaseOperation<[ReferendumIndexKey: Democracy.ReferendumInfo]>,
-        additionalInfoOperation: BaseOperation<AdditionalInfo>
+        additionalInfoOperation: BaseOperation<AdditionalInfo>,
+        enactmentsOperation: BaseOperation<[ReferendumIdLocal: BlockNumber]>
     ) -> BaseOperation<[ReferendumLocal]> {
         ClosureOperation<[ReferendumLocal]> {
             let remoteReferendums = try referendumOperation.extractNoCancellableResultData()
             let additionalInfo = try additionalInfoOperation.extractNoCancellableResultData()
+            let enacmentBlocks = try enactmentsOperation.extractNoCancellableResultData()
 
             let mappingFactory = Gov1LocalMappingFactory()
 
@@ -103,7 +176,8 @@ final class Gov1OperationFactory {
                 return mappingFactory.mapRemote(
                     referendum: remoteReferendum,
                     index: Referenda.ReferendumIndex(referendumIndex),
-                    additionalInfo: additionalInfo
+                    additionalInfo: additionalInfo,
+                    enactmentBlock: enacmentBlocks[referendumIndex]
                 )
             }
         }

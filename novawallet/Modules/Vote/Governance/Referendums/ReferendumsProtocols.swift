@@ -46,12 +46,7 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         selectedChainAssetId: ChainAssetId?
     )
 
-    func showReferendumDetails(
-        from view: ControllerBackedProtocol?,
-        referendum: ReferendumLocal,
-        accountVotes: ReferendumAccountVoteLocal?,
-        metadata: ReferendumMetadataLocal?
-    )
+    func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
 
-    func showUnlocksDetails(from view: ControllerBackedProtocol?)
+    func showUnlocksDetails(from view: ControllerBackedProtocol?, initData: GovernanceUnlockInitData)
 }
