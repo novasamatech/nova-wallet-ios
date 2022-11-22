@@ -81,7 +81,7 @@ extension Referenda.Curve {
         case .steppedDecreasing:
             return R.string.localizable.govSteppedDecreasing(preferredLanguages: locale.rLanguages)
         case .unknown:
-            return R.string.localizable.govUnknown(preferredLanguages: locale.rLanguages)
+            return R.string.localizable.commonUnknown(preferredLanguages: locale.rLanguages)
         }
     }
 }
@@ -98,7 +98,7 @@ extension Democracy.VoteThreshold {
             return R.string.localizable.govVoteTresholdFunctionSuperMajorityApprove(
                 preferredLanguages: locale.rLanguages)
         case .unknown:
-            return R.string.localizable.govUnknown(
+            return R.string.localizable.commonUnknown(
                 preferredLanguages: locale.rLanguages)
         }
     }

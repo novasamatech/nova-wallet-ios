@@ -185,22 +185,34 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     private func provideBlockTime() {
-        guard blockTimeCancellable == nil, let blockTimeService = governanceState.blockTimeService else {
+        guard
+            blockTimeCancellable == nil,
+            let blockTimeService = governanceState.blockTimeService,
+            let blockTimeFactory = governanceState.createBlockTimeOperationFactory(),
+            let chain = governanceState.settings.value else {
             return
         }
 
-        let blockTimeOperation = blockTimeService.createEstimatedBlockTimeOperation()
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            presenter?.didReceiveError(.blockTimeFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
 
-        blockTimeOperation.completionBlock = { [weak self] in
+        let blockTimeWrapper = blockTimeFactory.createBlockTimeOperation(
+            from: runtimeProvider,
+            blockTimeEstimationService: blockTimeService
+        )
+
+        blockTimeWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard self?.blockTimeCancellable === blockTimeOperation else {
+                guard self?.blockTimeCancellable === blockTimeWrapper else {
                     return
                 }
 
                 self?.blockTimeCancellable = nil
 
                 do {
-                    let blockTime = try blockTimeOperation.extractNoCancellableResultData().blockTime
+                    let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
 
                     self?.presenter?.didReceiveBlockTime(blockTime)
                 } catch {
@@ -209,9 +221,9 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
             }
         }
 
-        blockTimeCancellable = blockTimeOperation
+        blockTimeCancellable = blockTimeWrapper
 
-        operationQueue.addOperation(blockTimeOperation)
+        operationQueue.addOperations(blockTimeWrapper.allOperations, waitUntilFinished: false)
     }
 
     private func provideReferendumsIfNeeded() {
@@ -477,5 +489,6 @@ extension ReferendumsInteractor: SelectedCurrencyDepending {
 extension ReferendumsInteractor: ApplicationHandlerDelegate {
     func didReceiveDidEnterBackground(notification _: Notification) {
         clearCancellable()
+        governanceState.subscriptionFactory?.cancelCancellable()
     }
 }

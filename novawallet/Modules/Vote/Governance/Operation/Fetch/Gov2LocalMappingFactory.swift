@@ -29,7 +29,11 @@ final class Gov2LocalMappingFactory {
             supportFunction: supportFunction
         )
 
-        let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
+        let localTrack = GovernanceTrackLocal(
+            trackId: status.track,
+            name: track.name,
+            totalTracksCount: additionalInfo.tracks.count
+        )
 
         let deposit = deposit(from: status.submissionDeposit, decision: status.decisionDeposit)
 
@@ -75,7 +79,11 @@ final class Gov2LocalMappingFactory {
             supportFunction: supportFunction
         )
 
-        let localTrack = GovernanceTrackLocal(trackId: status.track, name: track.name)
+        let localTrack = GovernanceTrackLocal(
+            trackId: status.track,
+            name: track.name,
+            totalTracksCount: additionalInfo.tracks.count
+        )
 
         let inQueuePosition: ReferendumStateLocal.InQueuePosition?
 
