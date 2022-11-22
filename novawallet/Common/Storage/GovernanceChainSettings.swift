@@ -2,7 +2,16 @@ import Foundation
 import SoraKeystore
 import RobinHood
 
-final class GovernanceChainSettings: PersistentValueSettings<ChainModel> {
+struct GovernanceSelectedOption: Equatable {
+    let chain: ChainModel
+    let type: GovernanceType
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.chain.chainId == rhs.chain.chainId && lhs.type == rhs.type
+    }
+}
+
+final class GovernanceChainSettings: PersistentValueSettings<GovernanceSelectedOption> {
     let chainRegistry: ChainRegistryProtocol
     let settings: SettingsManagerProtocol
 
@@ -14,8 +23,11 @@ final class GovernanceChainSettings: PersistentValueSettings<ChainModel> {
         self.settings = settings
     }
 
-    override func performSetup(completionClosure: @escaping (Result<ChainModel?, Error>) -> Void) {
+    override func performSetup(
+        completionClosure: @escaping (Result<GovernanceSelectedOption?, Error>) -> Void
+    ) {
         let maybeChainId = settings.governanceChainId
+        let maybeGovernanceType = settings.governanceType
 
         var completed: Bool = false
         let mutex = NSLock()
@@ -42,37 +54,69 @@ final class GovernanceChainSettings: PersistentValueSettings<ChainModel> {
 
             completed = true
 
-            strongSelf.completeSetup(for: chains, currentChainId: maybeChainId, completionClosure: completionClosure)
+            strongSelf.completeSetup(
+                for: chains,
+                currentChainId: maybeChainId,
+                currentGovernanceType: maybeGovernanceType,
+                completionClosure: completionClosure
+            )
         }
     }
 
     override func performSave(
-        value: ChainModel,
-        completionClosure: @escaping (Result<ChainModel, Error>
+        value: GovernanceSelectedOption,
+        completionClosure: @escaping (Result<GovernanceSelectedOption, Error>
         ) -> Void
     ) {
-        settings.governanceChainId = value.chainId
+        settings.governanceChainId = value.chain.chainId
+        settings.governanceType = value.type
         completionClosure(.success(value))
     }
 
     private func completeSetup(
         for chains: [ChainModel],
         currentChainId: ChainModel.Id?,
-        completionClosure: @escaping (Result<ChainModel?, Error>) -> Void
+        currentGovernanceType: GovernanceType?,
+        completionClosure: @escaping (Result<GovernanceSelectedOption?, Error>) -> Void
     ) {
-        let selectedChain: ChainModel?
+        let selectedOption: GovernanceSelectedOption?
 
-        if let chain = chains.first(where: { $0.chainId == currentChainId }) {
-            selectedChain = chain
+        if
+            let chain = chains.first(where: { $0.chainId == currentChainId }),
+            chain.hasGovernance {
+            if
+                let currentGovernanceType = currentGovernanceType,
+                currentGovernanceType.compatible(with: chain) {
+                selectedOption = .init(chain: chain, type: currentGovernanceType)
+            } else {
+                selectedOption = createSelectedOption(for: chain)
+            }
         } else if let firstChain = chains.first(where: { $0.hasGovernance }) {
-            settings.governanceChainId = firstChain.chainId
-            selectedChain = firstChain
+            selectedOption = createSelectedOption(for: firstChain)
         } else {
-            selectedChain = nil
+            selectedOption = nil
+        }
+
+        if let chainId = selectedOption?.chain.chainId, chainId != currentChainId {
+            settings.governanceChainId = chainId
+        }
+
+        if let type = selectedOption?.type, type != currentGovernanceType {
+            settings.governanceType = type
         }
 
         chainRegistry.chainsUnsubscribe(self)
 
-        completionClosure(.success(selectedChain))
+        completionClosure(.success(selectedOption))
+    }
+
+    private func createSelectedOption(for chain: ChainModel) -> GovernanceSelectedOption? {
+        if chain.hasGovernanceV2 {
+            return .init(chain: chain, type: .governanceV2)
+        } else if chain.hasGovernanceV1 {
+            return .init(chain: chain, type: .governanceV1)
+        } else {
+            return nil
+        }
     }
 }

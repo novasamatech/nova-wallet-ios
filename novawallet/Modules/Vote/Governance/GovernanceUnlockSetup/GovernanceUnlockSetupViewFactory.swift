@@ -8,7 +8,7 @@ struct GovernanceUnlockSetupViewFactory {
     ) -> GovernanceUnlockSetupViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
-            let assetInfo = state.settings.value?.utilityAssetDisplayInfo(),
+            let assetInfo = state.settings.value?.chain.utilityAssetDisplayInfo(),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -43,7 +43,7 @@ struct GovernanceUnlockSetupViewFactory {
     private static func createInteractor(for state: GovernanceSharedState) -> GovernanceUnlockSetupInteractor? {
         guard
             let wallet = SelectedWalletSettings.shared.value,
-            let chain = state.settings.value,
+            let chain = state.settings.value?.chain,
             let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
             let currencyManager = CurrencyManager.shared else {
             return nil
