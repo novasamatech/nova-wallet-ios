@@ -245,4 +245,5 @@ enum ReferendumStateLocal {
 struct GovernanceTrackLocal {
     let trackId: UInt16
     let name: String
+    let totalTracksCount: Int
 }

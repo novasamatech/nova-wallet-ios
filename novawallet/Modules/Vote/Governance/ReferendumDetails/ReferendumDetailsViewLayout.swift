@@ -68,7 +68,7 @@ final class ReferendumDetailsViewLayout: UIView {
     func setDApps(models: [ReferendumDAppView.Model]?, locale: Locale) -> [ReferendumDAppCellView] {
         dAppsTableView.clear()
 
-        if let models = models {
+        if let models = models, !models.isEmpty {
             dAppsTableView.isHidden = false
 
             let title = R.string.localizable.commonUseDapp(

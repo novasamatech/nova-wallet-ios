@@ -3,7 +3,7 @@ import RobinHood
 import SoraFoundation
 
 final class CrowdloanListInteractor: RuntimeConstantFetching {
-    weak var presenter: CrowdloanListInteractorOutputProtocol!
+    weak var presenter: CrowdloanListInteractorOutputProtocol?
 
     let selectedMetaAccount: MetaAccountModel
     let crowdloanState: CrowdloanSharedState
@@ -108,12 +108,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         clearOnchainContributionRequest(true)
 
         guard !crowdloans.isEmpty else {
-            presenter.didReceiveContributions(result: .success([:]))
+            presenter?.didReceiveContributions(result: .success([:]))
             return
         }
 
         guard let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) else {
-            presenter.didReceiveContributions(result: .success([:]))
+            presenter?.didReceiveContributions(result: .success([:]))
             return
         }
 
@@ -143,14 +143,14 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
                 do {
                     let contributions = try contributionsOperation.extractNoCancellableResultData().toDict()
-                    self?.presenter.didReceiveContributions(result: .success(contributions))
+                    self?.presenter?.didReceiveContributions(result: .success(contributions))
                 } catch {
                     if
                         let encodingError = error as? StorageKeyEncodingOperationError,
                         encodingError == .invalidStoragePath {
-                        self?.presenter.didReceiveContributions(result: .success([:]))
+                        self?.presenter?.didReceiveContributions(result: .success([:]))
                     } else {
-                        self?.presenter.didReceiveContributions(result: .failure(error))
+                        self?.presenter?.didReceiveContributions(result: .failure(error))
                     }
                 }
             }
@@ -179,7 +179,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         clearLeaseInfoRequest(true)
 
         guard !crowdloans.isEmpty else {
-            presenter.didReceiveLeaseInfo(result: .success([:]))
+            presenter?.didReceiveLeaseInfo(result: .success([:]))
             return
         }
 
@@ -199,14 +199,14 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
                 do {
                     let leaseInfo = try queryWrapper.targetOperation.extractNoCancellableResultData().toMap()
-                    self?.presenter.didReceiveLeaseInfo(result: .success(leaseInfo))
+                    self?.presenter?.didReceiveLeaseInfo(result: .success(leaseInfo))
                 } catch {
                     if
                         let encodingError = error as? StorageKeyEncodingOperationError,
                         encodingError == .invalidStoragePath {
-                        self?.presenter.didReceiveLeaseInfo(result: .success([:]))
+                        self?.presenter?.didReceiveLeaseInfo(result: .success([:]))
                     } else {
-                        self?.presenter.didReceiveLeaseInfo(result: .failure(error))
+                        self?.presenter?.didReceiveLeaseInfo(result: .failure(error))
                     }
                 }
             }
@@ -219,16 +219,16 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     }
 
     private func notifyCrowdolansFetchWithError(error: Error) {
-        presenter.didReceiveCrowdloans(result: .failure(error))
-        presenter.didReceiveContributions(result: .failure(error))
-        presenter.didReceiveLeaseInfo(result: .failure(error))
+        presenter?.didReceiveCrowdloans(result: .failure(error))
+        presenter?.didReceiveContributions(result: .failure(error))
+        presenter?.didReceiveLeaseInfo(result: .failure(error))
     }
 
     private func subscribeToDisplayInfo(for chain: ChainModel) {
         displayInfoProvider = nil
 
         guard let crowdloanUrl = chain.externalApi?.crowdloans?.url else {
-            presenter.didReceiveDisplayInfo(result: .success([:]))
+            presenter?.didReceiveDisplayInfo(result: .success([:]))
             return
         }
 
@@ -236,12 +236,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
         let updateClosure: ([DataProviderChange<CrowdloanDisplayInfoList>]) -> Void = { [weak self] changes in
             if let result = changes.reduceToLastChange() {
-                self?.presenter.didReceiveDisplayInfo(result: .success(result.toMap()))
+                self?.presenter?.didReceiveDisplayInfo(result: .success(result.toMap()))
             }
         }
 
         let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.presenter.didReceiveDisplayInfo(result: .failure(error))
+            self?.presenter?.didReceiveDisplayInfo(result: .failure(error))
         }
 
         let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: true, waitsInProgressSyncOnAdd: false)
@@ -266,9 +266,9 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func provideConstants(for chain: ChainModel) {
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             let error = ChainRegistryError.runtimeMetadaUnavailable
-            presenter.didReceiveBlockDuration(result: .failure(error))
-            presenter.didReceiveLeasingPeriod(result: .failure(error))
-            presenter.didReceiveLeasingOffset(result: .failure(error))
+            presenter?.didReceiveBlockDuration(result: .failure(error))
+            presenter?.didReceiveLeasingPeriod(result: .failure(error))
+            presenter?.didReceiveLeasingOffset(result: .failure(error))
             return
         }
 
@@ -277,7 +277,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             runtimeCodingService: runtimeService,
             operationManager: operationManager
         ) { [weak self] (result: Result<BlockTime, Error>) in
-            self?.presenter.didReceiveBlockDuration(result: result)
+            self?.presenter?.didReceiveBlockDuration(result: result)
         }
 
         fetchConstant(
@@ -285,7 +285,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             runtimeCodingService: runtimeService,
             operationManager: operationManager
         ) { [weak self] (result: Result<LeasingPeriod, Error>) in
-            self?.presenter.didReceiveLeasingPeriod(result: result)
+            self?.presenter?.didReceiveLeasingPeriod(result: result)
         }
 
         fetchConstant(
@@ -293,7 +293,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             runtimeCodingService: runtimeService,
             operationManager: operationManager
         ) { [weak self] (result: Result<LeasingOffset, Error>) in
-            self?.presenter.didReceiveLeasingOffset(result: result)
+            self?.presenter?.didReceiveLeasingOffset(result: result)
         }
     }
 
@@ -305,21 +305,21 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         if let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
-            presenter.didReceivePriceData(result: nil)
+            presenter?.didReceivePriceData(result: nil)
         }
     }
 }
 
 extension CrowdloanListInteractor {
     func setup(with accountId: AccountId?, chain: ChainModel) {
-        presenter.didReceiveSelectedChain(result: .success(chain))
+        presenter?.didReceiveSelectedChain(result: .success(chain))
 
         if let accountId = accountId {
             subscribeToAccountInfo(for: accountId, chain: chain)
             subscribeToExternalContributions(for: accountId, chain: chain)
         } else {
-            presenter.didReceiveAccountInfo(result: .success(nil))
-            presenter.didReceiveExternalContributions(result: .success([]))
+            presenter?.didReceiveAccountInfo(result: .success(nil))
+            presenter?.didReceiveExternalContributions(result: .success([]))
         }
 
         subscribePrice()
@@ -429,14 +429,14 @@ extension CrowdloanListInteractor {
                         connection: connection,
                         runtimeService: runtimeService
                     )
-                    self?.presenter.didReceiveCrowdloans(result: .success(crowdloans))
+                    self?.presenter?.didReceiveCrowdloans(result: .success(crowdloans))
                 } catch {
                     if
                         let encodingError = error as? StorageKeyEncodingOperationError,
                         encodingError == .invalidStoragePath {
-                        self?.presenter.didReceiveCrowdloans(result: .success([]))
-                        self?.presenter.didReceiveContributions(result: .success([:]))
-                        self?.presenter.didReceiveLeaseInfo(result: .success([:]))
+                        self?.presenter?.didReceiveCrowdloans(result: .success([]))
+                        self?.presenter?.didReceiveContributions(result: .success([:]))
+                        self?.presenter?.didReceiveLeaseInfo(result: .success([:]))
                     } else {
                         self?.notifyCrowdolansFetchWithError(error: error)
                     }
@@ -450,7 +450,7 @@ extension CrowdloanListInteractor {
 
 extension CrowdloanListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        presenter.didReceivePriceData(result: result)
+        presenter?.didReceivePriceData(result: result)
     }
 }
 

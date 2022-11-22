@@ -7,7 +7,11 @@ final class Gov1LocalMappingFactory {
         index: Referenda.ReferendumIndex,
         additionalInfo: Gov1OperationFactory.AdditionalInfo
     ) -> ReferendumLocal {
-        let track = GovernanceTrackLocal(trackId: Gov1OperationFactory.trackId, name: Gov1OperationFactory.trackName)
+        let track = GovernanceTrackLocal(
+            trackId: Gov1OperationFactory.trackId,
+            name: Gov1OperationFactory.trackName,
+            totalTracksCount: 1
+        )
 
         let submitted = referendum.end - additionalInfo.votingPeriod
 
@@ -36,15 +40,13 @@ final class Gov1LocalMappingFactory {
     private func mapFinished(
         referendum: Democracy.FinishedStatus,
         index: Referenda.ReferendumIndex,
-        additionalInfo: Gov1OperationFactory.AdditionalInfo
+        enactmentBlock: BlockNumber?
     ) -> ReferendumLocal {
         if referendum.approved {
-            let whenEnactment = referendum.end + additionalInfo.enactmentPeriod
-
-            if additionalInfo.block < whenEnactment {
+            if let enactmentBlock = enactmentBlock {
                 let approved = ReferendumStateLocal.Approved(
                     since: referendum.end,
-                    whenEnactment: whenEnactment,
+                    whenEnactment: enactmentBlock,
                     deposit: nil
                 )
 
@@ -66,13 +68,18 @@ extension Gov1LocalMappingFactory {
     func mapRemote(
         referendum: Democracy.ReferendumInfo,
         index: Referenda.ReferendumIndex,
-        additionalInfo: Gov1OperationFactory.AdditionalInfo
+        additionalInfo: Gov1OperationFactory.AdditionalInfo,
+        enactmentBlock: BlockNumber?
     ) -> ReferendumLocal? {
         switch referendum {
         case let .ongoing(status):
             return mapOngoing(referendum: status, index: index, additionalInfo: additionalInfo)
         case let .finished(status):
-            return mapFinished(referendum: status, index: index, additionalInfo: additionalInfo)
+            return mapFinished(
+                referendum: status,
+                index: index,
+                enactmentBlock: enactmentBlock
+            )
         case .unknown:
             return nil
         }

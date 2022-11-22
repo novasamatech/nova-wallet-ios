@@ -5,9 +5,7 @@ import SoraFoundation
 struct GovernanceUnlockConfirmViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
-        schedule: GovernanceUnlockSchedule,
-        blockNumber: BlockNumber
+        initData: GovernanceUnlockConfirmInitData
     ) -> GovernanceUnlockConfirmViewProtocol? {
         guard
             let wallet = SelectedWalletSettings.shared.value,
@@ -46,9 +44,7 @@ struct GovernanceUnlockConfirmViewFactory {
             wireframe: wireframe,
             chain: chain,
             selectedAccount: selectedAccount,
-            votingResult: votingResult,
-            schedule: schedule,
-            blockNumber: blockNumber,
+            initData: initData,
             balanceViewModelFactory: balanceViewModelFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
@@ -80,6 +76,7 @@ struct GovernanceUnlockConfirmViewFactory {
             let lockStateFactory = state.locksOperationFactory,
             let extrinsicFactory = state.createExtrinsicFactory(for: chain),
             let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory(),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -109,6 +106,7 @@ struct GovernanceUnlockConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue,

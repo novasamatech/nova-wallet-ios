@@ -23,6 +23,7 @@ final class ReferendumDetailsPresenter {
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
+    private var votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
     private var price: PriceData?
@@ -37,12 +38,10 @@ final class ReferendumDetailsPresenter {
     private var statusViewModel: StatusTimeViewModel?
 
     init(
-        referendum: ReferendumLocal,
         chain: ChainModel,
         wallet: MetaAccountModel,
         accountManagementFilter: AccountManagementFilterProtocol,
-        accountVotes: ReferendumAccountVoteLocal?,
-        metadata: ReferendumMetadataLocal?,
+        initData: ReferendumDetailsInitData,
         interactor: ReferendumDetailsInteractorInputProtocol,
         wireframe: ReferendumDetailsWireframeProtocol,
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
@@ -68,9 +67,12 @@ final class ReferendumDetailsPresenter {
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
-        self.referendum = referendum
-        self.accountVotes = accountVotes
-        referendumMetadata = metadata
+        referendum = initData.referendum
+        accountVotes = initData.accountVotes
+        votingDistribution = initData.votesResult
+        blockNumber = initData.blockNumber
+        blockTime = initData.blockTime
+        referendumMetadata = initData.metadata
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -85,8 +87,16 @@ final class ReferendumDetailsPresenter {
             from: referendum.index as NSNumber
         )
 
-        let trackViewModel = referendum.track.map {
-            ReferendumTrackType.createViewModel(from: $0.name, chain: chain, locale: selectedLocale)
+        // display track name only if there is more than 1 track in the network
+        let trackViewModel: ReferendumInfoView.Track?
+        if let track = referendum.track, track.totalTracksCount > 1 {
+            trackViewModel = ReferendumTrackType.createViewModel(
+                from: track.name,
+                chain: chain,
+                locale: selectedLocale
+            )
+        } else {
+            trackViewModel = nil
         }
 
         let viewModel = TrackTagsView.Model(titleIcon: trackViewModel, referendumNumber: referendumIndex)
@@ -346,8 +356,16 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
         }
 
         if wallet.fetch(for: chain.accountRequest()) != nil {
-            wireframe.showVote(from: view, referendum: referendum)
-        } else if accountManagementFilter.accountManagementSupports(wallet: wallet, for: chain) {
+            let initData = ReferendumVotingInitData(
+                votesResult: nil,
+                blockNumber: blockNumber,
+                blockTime: blockTime,
+                referendum: referendum,
+                lockDiff: nil
+            )
+
+            wireframe.showVote(from: view, referendum: referendum, initData: initData)
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
             let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
                 chain.name,
                 preferredLanguages: selectedLocale.rLanguages
@@ -425,6 +443,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             from: view,
             referendum: referendum,
             actionDetails: actionDetails,
+            metadata: referendumMetadata,
             identities: identities ?? [:]
         )
     }
@@ -460,8 +479,12 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?) {
+    func didReceiveAccountVotes(
+        _ votes: ReferendumAccountVoteLocal?,
+        votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    ) {
         accountVotes = votes
+        self.votingDistribution = votingDistribution
 
         provideYourVote()
     }

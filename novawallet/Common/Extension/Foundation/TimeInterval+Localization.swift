@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 extension TimeInterval {
     func localizedDaysHours(for locale: Locale) -> String {
@@ -35,6 +36,26 @@ extension TimeInterval {
         }
 
         return localizedDaysHours(for: locale)
+    }
+
+    func localizedFractionDays(for locale: Locale, shouldAnnotate: Bool) -> String {
+        let days = fractionDaysFromSeconds
+        let formatter = NumberFormatter.decimalFormatter(precision: 1, rounding: .down)
+        formatter.locale = locale
+        let optDaysString = formatter.stringFromDecimal(days)
+
+        if shouldAnnotate {
+            if let daysString = optDaysString {
+                return R.string.localizable.commonDaysFractionFormat(
+                    daysString,
+                    preferredLanguages: locale.rLanguages
+                )
+            } else {
+                return ""
+            }
+        } else {
+            return optDaysString ?? ""
+        }
     }
 
     func localizedDaysOrTime(for locale: Locale) -> String? {
