@@ -215,7 +215,7 @@ final class UIFactory: UIFactoryProtocol {
         let view = BorderedContainerView()
         view.borderType = .bottom
         view.strokeWidth = UIConstants.separatorHeight
-        view.strokeColor = R.color.colorDarkGray()!
+        view.strokeColor = R.color.colorDivider()!
         return view
     }
 
@@ -465,11 +465,11 @@ final class UIFactory: UIFactoryProtocol {
         view.borderType = []
 
         view.style = NetworkFeeView.ViewStyle(
-            titleColor: R.color.colorTransparentText()!,
+            titleColor: R.color.colorTextSecondary()!,
             titleFont: .regularFootnote,
-            tokenColor: R.color.colorWhite()!,
+            tokenColor: R.color.colorTextPrimary()!,
             tokenFont: .regularFootnote,
-            fiatColor: R.color.colorTransparentText()!,
+            fiatColor: R.color.colorTextSecondary()!,
             fiatFont: .caption1
         )
 
@@ -547,11 +547,11 @@ final class UIFactory: UIFactoryProtocol {
         if filled {
             view.strokeColor = .clear
             view.highlightedStrokeColor = .clear
-            view.fillColor = R.color.colorDarkGray()!
-            view.highlightedFillColor = R.color.colorDarkGray()!
+            view.fillColor = R.color.colorInputBackground()!
+            view.highlightedFillColor = R.color.colorInputBackground()!
         } else {
-            view.strokeColor = R.color.colorTransparentText()!
-            view.highlightedStrokeColor = R.color.colorTransparentText()!
+            view.strokeColor = R.color.colorContainerBorder()!
+            view.highlightedStrokeColor = R.color.colorContainerBorder()!
             view.fillColor = .clear
             view.highlightedFillColor = .clear
         }
@@ -567,10 +567,10 @@ final class UIFactory: UIFactoryProtocol {
         textField.titleFont = .p2Paragraph
         textField.placeholderFont = .p1Paragraph
         textField.textFont = .p1Paragraph
-        textField.titleColor = R.color.colorLightGray()!
-        textField.placeholderColor = R.color.colorLightGray()!
-        textField.textColor = R.color.colorWhite()
-        textField.cursorColor = R.color.colorWhite()!
+        textField.titleColor = R.color.colorTextSecondary()!
+        textField.placeholderColor = R.color.colorTextSecondary()!
+        textField.textColor = R.color.colorTextPrimary()
+        textField.cursorColor = R.color.colorTextPrimary()!
         return textField
     }
 

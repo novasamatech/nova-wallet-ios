@@ -23,18 +23,17 @@ final class HistoryItemTableViewCell: UITableViewCell {
     let iconView: AssetIconView = {
         let view = AssetIconView()
         view.backgroundView.cornerRadius = Constants.iconSize.height / 2.0
-        view.backgroundView.fillColor = R.color.colorWhite16()!
-        view.backgroundView.highlightedFillColor = R.color.colorWhite16()!
-        view.backgroundView.strokeColor = R.color.colorWhite8()!
+        view.backgroundView.fillColor = R.color.colorContainerBackground()!
+        view.backgroundView.highlightedFillColor = R.color.colorContainerBackground()!
         view.contentInsets = Constants.imageInsets
-        view.imageView.tintColor = R.color.colorTransparentText()
+        view.imageView.tintColor = R.color.colorIconSecondary()
         return view
     }()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.lineBreakMode = .byTruncatingMiddle
         return label
     }()
@@ -42,7 +41,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite48()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -55,7 +54,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
     private let timeLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite48()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -78,7 +77,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
         backgroundColor = .clear
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()
 
         setupLayout()
     }

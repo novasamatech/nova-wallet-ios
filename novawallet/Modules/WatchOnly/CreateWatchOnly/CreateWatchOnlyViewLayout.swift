@@ -10,14 +10,14 @@ final class CreateWatchOnlyViewLayout: UIView {
     static func createSectionTitleLabel() -> UILabel {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }
 
     static func createHintLabel() -> UILabel {
         let label = UILabel()
         label.font = .caption1
-        label.textColor = R.color.colorWhite48()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }
@@ -38,14 +38,14 @@ final class CreateWatchOnlyViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .boldTitle2
         return label
     }()
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.numberOfLines = 0
         return label
@@ -125,8 +125,8 @@ final class CreateWatchOnlyViewLayout: UIView {
         button.imageWithTitleView?.titleFont = .regularFootnote
         button.roundedBackgroundView?.shadowOpacity = 0.0
         button.roundedBackgroundView?.strokeWidth = 0.0
-        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
         button.roundedBackgroundView?.cornerRadius = 10.0
         button.changesContentOpacityWhenHighlighted = true
         button.contentInsets = UIEdgeInsets(top: 0.0, left: 12.0, bottom: 0.0, right: 12.0)
