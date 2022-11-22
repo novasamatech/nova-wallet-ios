@@ -11,7 +11,7 @@ struct ReferendumFullDetailsViewFactory {
         identities: [AccountAddress: AccountIdentity]
     ) -> ReferendumFullDetailsViewProtocol? {
         guard
-            let chain = state.settings.value,
+            let chain = state.settings.value?.chain,
             let currencyManager = CurrencyManager.shared,
             let assetInfo = chain.utilityAssetDisplayInfo() else {
             return nil
