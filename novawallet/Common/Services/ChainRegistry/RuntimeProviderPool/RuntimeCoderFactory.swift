@@ -65,6 +65,8 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
 
         if let aliasNode = node as? AliasNode {
             return getTypeNode(for: aliasNode.underlyingTypeName)
+        } else if let proxyNode = node as? ProxyNode {
+            return getTypeNode(for: proxyNode.typeName)
         } else {
             return node
         }
