@@ -6,7 +6,7 @@ final class TransactionHistoryConfigurator {
     private lazy var transactionCellStyle: TransactionCellStyleProtocol = {
         let title = WalletTextStyle(
             font: .semiBoldBody,
-            color: R.color.colorTextPrimary()
+            color: R.color.colorTextPrimary()!
         )
         let amount = WalletTextStyle(
             font: .p1Paragraph,
