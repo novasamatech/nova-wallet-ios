@@ -12,6 +12,7 @@ protocol RuntimeCoderFactoryProtocol {
 
     func hasType(for name: String) -> Bool
     func getTypeNode(for name: String) -> Node?
+    func getCall(for codingPath: CallCodingPath) -> CallMetadata?
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
@@ -70,5 +71,9 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
         } else {
             return node
         }
+    }
+
+    func getCall(for codingPath: CallCodingPath) -> CallMetadata? {
+        metadata.getCall(from: codingPath.moduleName, with: codingPath.callName)
     }
 }
