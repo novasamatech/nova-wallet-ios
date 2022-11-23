@@ -39,7 +39,7 @@ final class XcmTransferService {
 
             let moduleResolutionOperation = ClosureOperation<String> {
                 let metadata = try coderFactoryOperation.extractNoCancellableResultData().metadata
-                guard let moduleName = Xcm.ExecuteCall.possibleModuleNames.first(
+                guard let moduleName = Xcm.possibleModuleNames.first(
                     where: { metadata.getModuleIndex($0) != nil }
                 ) else {
                     throw XcmTransferServiceError.noXcmPalletFound
@@ -113,13 +113,22 @@ final class XcmTransferService {
             let optChainAccount = wallet.fetch(for: chain.accountRequest())
             let operationFactory = try createOperationFactory(for: chain, chainAccount: optChainAccount)
 
+            let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
             let wrapper = operationFactory.estimateFeeOperation { builder in
                 let moduleName = try moduleWrapper.targetOperation.extractNoCancellableResultData()
-                let call = Xcm.ExecuteCall(message: message, maxWeight: maxWeight)
-                return try builder.adding(call: call.runtimeCall(for: moduleName))
+                let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+                return try Xcm.appendExecuteCall(
+                    for: message,
+                    maxWeight: maxWeight,
+                    module: moduleName,
+                    codingFactory: codingFactory,
+                    builder: builder
+                )
             }
 
             wrapper.addDependency(wrapper: moduleWrapper)
+            wrapper.addDependency(operations: [coderFactoryOperation])
 
             let mapperOperation = ClosureOperation<FeeWithWeight> {
                 let response = try wrapper.targetOperation.extractNoCancellableResultData()
@@ -133,7 +142,8 @@ final class XcmTransferService {
 
             mapperOperation.addDependency(wrapper.targetOperation)
 
-            let dependencies = moduleWrapper.allOperations + wrapper.allOperations
+            let dependencies = [coderFactoryOperation] + moduleWrapper.allOperations +
+                wrapper.allOperations
 
             return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: dependencies)
         } catch {
