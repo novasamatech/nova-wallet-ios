@@ -101,14 +101,15 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorContainerBackground()!
     )
 
-    static func selectableContainer(radius _: CGFloat) -> RoundedView.Style {
+    static func selectableContainer(radius: CGFloat) -> RoundedView.Style {
         RoundedView.Style(
             shadowOpacity: 0,
             strokeWidth: 1,
             strokeColor: R.color.colorContainerBorder(),
             highlightedStrokeColor: R.color.colorContainerBorder(),
             fillColor: R.color.colorContainerBackground()!,
-            highlightedFillColor: R.color.colorCellBackgroundPressed()!
+            highlightedFillColor: R.color.colorCellBackgroundPressed()!,
+            rounding: .init(radius: radius, corners: .allCorners)
         )
     }
 

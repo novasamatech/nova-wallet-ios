@@ -12,7 +12,7 @@ final class ParaStkStakeSetupViewLayout: UIView {
     let collatorTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 

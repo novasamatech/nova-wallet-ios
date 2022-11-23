@@ -4,14 +4,15 @@ final class AssetsManageViewLayout: UIView {
     let controlTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let switchControl: UISwitch = {
         let view = UISwitch()
-        view.onTintColor = R.color.colorAccent()
-        view.thumbTintColor = R.color.colorWhite()
+        view.tintColor = R.color.colorSwitchBackground()
+        view.onTintColor = R.color.colorIndicatorActive()
+        view.thumbTintColor = R.color.colorIconPrimary()
         return view
     }()
 

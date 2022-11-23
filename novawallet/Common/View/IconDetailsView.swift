@@ -15,7 +15,7 @@ class IconDetailsView: UIView {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = UIFont.p2Paragraph
         label.numberOfLines = 0
         return label
