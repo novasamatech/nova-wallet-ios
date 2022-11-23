@@ -88,34 +88,34 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     private func continueSetup() {
         applicationHandler.delegate = self
 
-        guard let chain = governanceState.settings.value else {
+        guard let option = governanceState.settings.value else {
             presenter?.didReceiveError(.settingsLoadFailed)
             return
         }
 
-        let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
+        let accountResponse = selectedMetaAccount.fetch(for: option.chain.accountRequest())
 
-        setup(with: accountResponse?.accountId, chain: chain)
+        setup(with: accountResponse?.accountId, option: option)
     }
 
-    private func setup(with accountId: AccountId?, chain: ChainModel) {
-        presenter?.didReceiveSelectedChain(chain)
+    private func setup(with accountId: AccountId?, option: GovernanceSelectedOption) {
+        presenter?.didReceiveSelectedOption(option)
 
         if let accountId = accountId {
-            subscribeToAssetBalance(for: accountId, chain: chain)
+            subscribeToAssetBalance(for: accountId, chain: option.chain)
         } else {
             presenter?.didReceiveAssetBalance(nil)
         }
 
-        subscribeToAssetPrice(for: chain)
+        subscribeToAssetPrice(for: option.chain)
 
-        setupBlockTimeService(for: chain)
+        setupBlockTimeService(for: option.chain)
         provideBlockTime()
 
-        setupSubscriptionFactory(for: chain)
+        setupSubscriptionFactory(for: option)
 
-        subscribeToBlockNumber(for: chain)
-        subscribeToMetadata(for: chain)
+        subscribeToBlockNumber(for: option.chain)
+        subscribeToMetadata(for: option)
 
         if let accountId = accountId {
             subscribeAccountVotes(for: accountId)
@@ -136,8 +136,8 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         }
     }
 
-    private func setupSubscriptionFactory(for chain: ChainModel) {
-        governanceState.replaceGovernanceFactory(for: chain)
+    private func setupSubscriptionFactory(for option: GovernanceSelectedOption) {
+        governanceState.replaceGovernanceFactory(for: option)
     }
 
     private func subscribeToBlockNumber(for chain: ChainModel) {
@@ -168,20 +168,21 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
-    private func subscribeToMetadata(for chain: ChainModel) {
-        metadataProvider = subscribeGovernanceMetadata(for: chain)
+    private func subscribeToMetadata(for option: GovernanceSelectedOption) {
+        metadataProvider = subscribeGovernanceMetadata(for: option)
 
         if metadataProvider == nil {
             presenter?.didReceiveReferendumsMetadata([])
         }
     }
 
-    private func handleChainChange(for newChain: ChainModel) {
+    private func handleOptionChange(for newOption: GovernanceSelectedOption) {
         clear()
 
-        let accountResponse = selectedMetaAccount.fetch(for: newChain.accountRequest())
+        let chain = newOption.chain
+        let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
 
-        setup(with: accountResponse?.accountId, chain: newChain)
+        setup(with: accountResponse?.accountId, option: newOption)
     }
 
     private func provideBlockTime() {
@@ -189,7 +190,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
             blockTimeCancellable == nil,
             let blockTimeService = governanceState.blockTimeService,
             let blockTimeFactory = governanceState.createBlockTimeOperationFactory(),
-            let chain = governanceState.settings.value else {
+            let chain = governanceState.settings.value?.chain else {
             return
         }
 
@@ -231,7 +232,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
             return
         }
 
-        guard let chain = governanceState.settings.value else {
+        guard let chain = governanceState.settings.value?.chain else {
             presenter?.didReceiveError(.referendumsFetchFailed(PersistentValueSettingsError.missingValue))
             return
         }
@@ -316,21 +317,22 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
         blockNumberSubscription?.removeObserver(self)
         blockNumberSubscription = nil
 
-        if let chain = governanceState.settings.value {
+        if let option = governanceState.settings.value {
+            let chain = option.chain
             let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
 
-            setup(with: accountResponse?.accountId, chain: chain)
+            setup(with: accountResponse?.accountId, option: option)
         }
     }
 
-    func saveSelected(chainModel: ChainModel) {
-        if chainModel.chainId != governanceState.settings.value?.chainId {
+    func saveSelected(option: GovernanceSelectedOption) {
+        if option != governanceState.settings.value {
             clear()
 
-            governanceState.settings.save(value: chainModel, runningCompletionIn: .main) { [weak self] result in
+            governanceState.settings.save(value: option, runningCompletionIn: .main) { [weak self] result in
                 switch result {
-                case let .success(chain):
-                    self?.handleChainChange(for: chain)
+                case let .success(option):
+                    self?.handleOptionChange(for: option)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(.chainSaveFailed(error))
                 }
@@ -339,7 +341,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     }
 
     func becomeOnline() {
-        if let chain = governanceState.settings.value {
+        if let chain = governanceState.settings.value?.chain {
             subscribeToBlockNumber(for: chain)
         }
     }
@@ -359,7 +361,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     }
 
     func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?) {
-        if let chain = governanceState.settings.value {
+        if let chain = governanceState.settings.value?.chain {
             clear(cancellable: &unlockScheduleCancellable)
 
             guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -419,9 +421,9 @@ extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataL
 
     func handleGovernanceMetadataPreview(
         result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
-        chain: ChainModel
+        option: GovernanceSelectedOption
     ) {
-        guard let currentChain = governanceState.settings.value, currentChain.chainId == chain.chainId else {
+        guard let currentOption = governanceState.settings.value, currentOption == option else {
             return
         }
 
@@ -463,7 +465,7 @@ extension ReferendumsInteractor: PriceLocalSubscriptionHandler, PriceLocalStorag
 
 extension ReferendumsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId: ChainModel.Id) {
-        guard let chain = governanceState.settings.value, chain.chainId == chainId else {
+        guard let chain = governanceState.settings.value?.chain, chain.chainId == chainId else {
             return
         }
 
@@ -480,7 +482,7 @@ extension ReferendumsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStor
 
 extension ReferendumsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if presenter != nil, let chain = governanceState.settings.value {
+        if presenter != nil, let chain = governanceState.settings.value?.chain {
             subscribeToAssetPrice(for: chain)
         }
     }

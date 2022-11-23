@@ -9,7 +9,10 @@ protocol RuntimeCoderFactoryProtocol {
     func createEncoder() -> DynamicScaleEncoding
     func createDecoder(from data: Data) throws -> DynamicScaleDecoding
     func createRuntimeJsonContext() -> RuntimeJsonContext
+
     func hasType(for name: String) -> Bool
+    func getTypeNode(for name: String) -> Node?
+    func getCall(for codingPath: CallCodingPath) -> CallMetadata?
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
@@ -56,5 +59,21 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
 
     func hasType(for name: String) -> Bool {
         catalog.node(for: name, version: UInt64(specVersion)) != nil
+    }
+
+    func getTypeNode(for name: String) -> Node? {
+        let node = catalog.node(for: name, version: UInt64(specVersion))
+
+        if let aliasNode = node as? AliasNode {
+            return getTypeNode(for: aliasNode.underlyingTypeName)
+        } else if let proxyNode = node as? ProxyNode {
+            return getTypeNode(for: proxyNode.typeName)
+        } else {
+            return node
+        }
+    }
+
+    func getCall(for codingPath: CallCodingPath) -> CallMetadata? {
+        metadata.getCall(from: codingPath.moduleName, with: codingPath.callName)
     }
 }
