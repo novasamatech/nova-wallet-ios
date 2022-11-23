@@ -9,7 +9,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private(set) var actionDetails: ReferendumActionLocal?
 
     let selectedAccount: ChainAccountResponse?
-    let chain: ChainModel
+    let option: GovernanceSelectedOption
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
@@ -32,10 +32,14 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private var blockTimeCancellable: CancellableCall?
     private var dAppsCancellable: CancellableCall?
 
+    var chain: ChainModel {
+        option.chain
+    }
+
     init(
         referendum: ReferendumLocal,
         selectedAccount: ChainAccountResponse?,
-        chain: ChainModel,
+        option: GovernanceSelectedOption,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
@@ -52,7 +56,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     ) {
         self.referendum = referendum
         self.selectedAccount = selectedAccount
-        self.chain = chain
+        self.option = option
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
@@ -285,7 +289,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
 
         makeAccountBasedSubscriptions()
 
-        metadataProvider = subscribeGovernanceMetadata(for: chain, referendumId: referendum.index)
+        metadataProvider = subscribeGovernanceMetadata(for: option, referendumId: referendum.index)
 
         if metadataProvider == nil {
             presenter?.didReceiveMetadata(nil)
@@ -359,7 +363,7 @@ extension ReferendumDetailsInteractor: PriceLocalSubscriptionHandler, PriceLocal
 extension ReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
     func handleGovernanceMetadataDetails(
         result: Result<ReferendumMetadataLocal?, Error>,
-        chain _: ChainModel,
+        option _: GovernanceSelectedOption,
         referendumId _: ReferendumIdLocal
     ) {
         switch result {

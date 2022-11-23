@@ -6,7 +6,7 @@ protocol AssetSelectionPresenterProtocol: SelectionListPresenterProtocol {
     func setup()
 }
 
-protocol AssetSelectionWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol AssetSelectionWireframeProtocol: AssetSelectionBaseWireframeProtocol {
     func complete(on view: AssetSelectionViewProtocol, selecting chainAsset: ChainAsset)
 }
 

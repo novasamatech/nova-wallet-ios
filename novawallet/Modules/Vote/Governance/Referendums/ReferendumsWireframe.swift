@@ -9,18 +9,14 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: AssetSelectionDelegate,
-        selectedChainAssetId: ChainAssetId?
+        delegate: GovernanceAssetSelectionDelegate,
+        chainId: ChainModel.Id?,
+        governanceType: GovernanceType?
     ) {
-        let assetFilter: (ChainAsset) -> Bool = { chainAsset in
-            chainAsset.chain.hasGovernance && chainAsset.asset.isUtility
-        }
-
-        guard let selectionView = AssetSelectionViewFactory.createView(
-            delegate: delegate,
-            selectedChainAssetId: selectedChainAssetId,
-            balanceSlice: \.freeInPlank,
-            assetFilter: assetFilter
+        guard let selectionView = GovernanceAssetSelectionViewFactory.createView(
+            for: delegate,
+            chainId: chainId,
+            governanceType: governanceType
         ) else {
             return
         }
