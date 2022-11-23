@@ -11,7 +11,7 @@ struct ReferendumVotersViewFactory {
     ) -> ReferendumVotersViewProtocol? {
         guard
             let interactor = createInteractor(for: state, referendum: referendum),
-            let chain = state.settings.value
+            let chain = state.settings.value?.chain
         else {
             return nil
         }
@@ -52,7 +52,7 @@ struct ReferendumVotersViewFactory {
         for state: GovernanceSharedState,
         referendum: ReferendumLocal
     ) -> ReferendumVotersInteractor? {
-        guard let chain = state.settings.value else {
+        guard let chain = state.settings.value?.chain else {
             return nil
         }
 

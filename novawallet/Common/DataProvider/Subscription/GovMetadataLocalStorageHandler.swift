@@ -4,12 +4,12 @@ import RobinHood
 protocol GovMetadataLocalStorageHandler: AnyObject {
     func handleGovernanceMetadataPreview(
         result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
-        chain: ChainModel
+        option: GovernanceSelectedOption
     )
 
     func handleGovernanceMetadataDetails(
         result: Result<ReferendumMetadataLocal?, Error>,
-        chain: ChainModel,
+        option: GovernanceSelectedOption,
         referendumId: ReferendumIdLocal
     )
 }
@@ -17,12 +17,12 @@ protocol GovMetadataLocalStorageHandler: AnyObject {
 extension GovMetadataLocalStorageHandler {
     func handleGovernanceMetadataPreview(
         result _: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
-        chain _: ChainModel
+        option _: GovernanceSelectedOption
     ) {}
 
     func handleGovernanceMetadataDetails(
         result _: Result<ReferendumMetadataLocal?, Error>,
-        chain _: ChainModel,
+        option _: GovernanceSelectedOption,
         referendumId _: ReferendumIdLocal
     ) {}
 }
