@@ -20,8 +20,10 @@ extension Democracy {
         @StringCodable var end: BlockNumber
         @StringCodable var delay: BlockNumber
 
-        //
+        /// legacy proposal hash for backward compatability
         let proposalHash: BytesCodable?
+
+        /// actual proposal
         let proposal: Proposal?
 
         let threshold: Democracy.VoteThreshold
