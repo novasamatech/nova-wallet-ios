@@ -194,10 +194,10 @@ final class AccountImportKeystoreView: AccountImportBaseView {
 
     private func updateUploadView() {
         if let viewModel = sourceViewModel, !viewModel.inputHandler.normalizedValue.isEmpty {
-            uploadView.subtitleLabel?.textColor = R.color.colorWhite()
+            uploadView.subtitleLabel?.textColor = R.color.colorTextPrimary()
             uploadView.subtitle = viewModel.inputHandler.normalizedValue
         } else {
-            uploadView.subtitleLabel?.textColor = R.color.colorLightGray()
+            uploadView.subtitleLabel?.textColor = R.color.colorTextSecondary()
 
             uploadView.subtitle = R.string.localizable.recoverJsonHint(preferredLanguages: locale?.rLanguages)
         }

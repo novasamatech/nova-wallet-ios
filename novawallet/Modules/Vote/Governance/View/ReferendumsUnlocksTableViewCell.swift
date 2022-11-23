@@ -39,7 +39,7 @@ final class ReferendumsUnlocksView: GenericTitleValueView<
         unlocksLabel.apply(style: .unlockStyle)
         unlocksLabel.numberOfLines = 1
 
-        titleView.sView.backgroundView.fillColor = R.color.colorWhite16()!
+        titleView.sView.backgroundView.fillColor = R.color.colorChipsBackground()!
         titleView.sView.iconDetailsView.iconWidth = 12
         titleView.sView.iconDetailsView.spacing = 4
         titleView.sView.contentInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)

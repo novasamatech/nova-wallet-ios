@@ -159,9 +159,9 @@ final class UIFactory: UIFactoryProtocol {
     func createExpandableActionControl() -> ExpandableActionControl {
         let view = ExpandableActionControl()
         view.layoutType = .flexible
-        view.titleLabel.textColor = R.color.colorWhite()
+        view.titleLabel.textColor = R.color.colorTextPrimary()
         view.titleLabel.font = UIFont.p1Paragraph
-        view.plusIndicator.strokeColor = R.color.colorWhite()!
+        view.plusIndicator.strokeColor = R.color.colorTextPrimary()!
 
         return view
     }
@@ -180,7 +180,7 @@ final class UIFactory: UIFactoryProtocol {
         }
 
         view.contentView.indexTitleColorInColumn = R.color.colorGray()!
-        view.contentView.wordTitleColorInColumn = R.color.colorWhite()!
+        view.contentView.wordTitleColorInColumn = R.color.colorTextPrimary()!
 
         view.contentView.indexFontInColumn = .p0Digits
         view.contentView.wordFontInColumn = .p0Paragraph
@@ -198,7 +198,7 @@ final class UIFactory: UIFactoryProtocol {
 
         view.titleLabel.textColor = R.color.colorLightGray()!
         view.titleLabel.font = UIFont.p2Paragraph
-        view.subtitleLabel?.textColor = R.color.colorWhite()!
+        view.subtitleLabel?.textColor = R.color.colorTextPrimary()!
         view.subtitleLabel?.font = UIFont.p1Paragraph
         view.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 8.0, right: 16.0)
 
@@ -351,7 +351,7 @@ final class UIFactory: UIFactoryProtocol {
         )
 
         let actionAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!,
+            .foregroundColor: R.color.colorTextPrimary()!,
             .font: UIFont.p1Paragraph
         ]
 
@@ -393,7 +393,7 @@ final class UIFactory: UIFactoryProtocol {
         )
 
         let doneAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!,
+            .foregroundColor: R.color.colorTextPrimary()!,
             .font: UIFont.h5Title
         ]
 
@@ -424,7 +424,7 @@ final class UIFactory: UIFactoryProtocol {
     func createIdentityView(isSingleTitle: Bool) -> DetailsTriangularedView {
         let view = DetailsTriangularedView()
 
-        view.titleLabel.textColor = R.color.colorWhite()!
+        view.titleLabel.textColor = R.color.colorTextPrimary()!
         view.titleLabel.font = UIFont.p1Paragraph
 
         if isSingleTitle {
@@ -584,7 +584,7 @@ final class UIFactory: UIFactoryProtocol {
         view.shadowOpacity = 0.0
         view.actionControl.contentView.titleLabel.textColor = R.color.colorLightGray()
         view.actionControl.contentView.titleLabel.font = .p2Paragraph
-        view.actionControl.contentView.subtitleLabelView.textColor = R.color.colorWhite()
+        view.actionControl.contentView.subtitleLabelView.textColor = R.color.colorTextPrimary()
         view.actionControl.contentView.subtitleLabelView.font = .p1Paragraph
         view.actionControl.layoutType = .flexible
         return view

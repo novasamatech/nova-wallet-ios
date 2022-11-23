@@ -23,14 +23,14 @@ final class SelectValidatorsViewLayout: UIView {
 
     let customValidatorsCell: StackTableCell = {
         let view = StackTableCell()
-        view.titleLabel.textColor = R.color.colorWhite()
+        view.titleLabel.textColor = R.color.colorTextPrimary()
         view.titleLabel.font = .regularSubheadline
-        view.detailsLabel.textColor = R.color.colorTransparentText()
+        view.detailsLabel.textColor = R.color.colorTextSecondary()
         view.detailsLabel.font = .regularSubheadline
         view.rowContentView.valueView.spacing = 8.0
         view.rowContentView.valueView.mode = .detailsIcon
         view.iconImageView.image = R.image.iconSmallArrow()?.tinted(
-            with: R.color.colorTransparentText()!
+            with: R.color.colorIconSecondary()!
         )
         view.preferredHeight = 52.0
         view.isUserInteractionEnabled = true
@@ -45,7 +45,7 @@ final class SelectValidatorsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

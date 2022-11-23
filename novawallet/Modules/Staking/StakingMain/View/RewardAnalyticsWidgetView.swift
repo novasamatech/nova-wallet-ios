@@ -8,7 +8,7 @@ final class RewardAnalyticsWidgetView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -17,21 +17,21 @@ final class RewardAnalyticsWidgetView: UIView {
     private let sevenDaysRewardsLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     private let periodLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()?.withAlphaComponent(0.64)
+        label.textColor = R.color.colorTextPrimary()?.withAlphaComponent(0.64)
         return label
     }()
 
     private let tokenAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -106,7 +106,7 @@ final class RewardAnalyticsWidgetView: UIView {
             make.edges.equalToSuperview()
         }
 
-        let separatorView = UIView.createSeparator(color: R.color.colorWhite()?.withAlphaComponent(0.24))
+        let separatorView = UIView.createSeparator(color: R.color.colorDivider()!)
 
         labelsContainerView = .vStack(
             spacing: 8,

@@ -31,7 +31,7 @@ final class FWXAxisChartLegendView: UIView {
         let label = UILabel()
         label.text = text
         label.font = .systemFont(ofSize: 9, weight: .semibold)
-        label.textColor = R.color.colorStrokeGray()!
+        label.textColor = R.color.colorTextSecondary()!
         return label
     }
 }

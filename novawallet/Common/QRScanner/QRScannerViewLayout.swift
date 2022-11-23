@@ -20,7 +20,7 @@ class QRScannerViewLayout: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldBody
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.numberOfLines = 2
         label.textAlignment = .center
         return label
@@ -29,7 +29,7 @@ class QRScannerViewLayout: UIView {
     let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldBody
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.numberOfLines = 0
         label.textAlignment = .center
         return label
@@ -40,7 +40,7 @@ class QRScannerViewLayout: UIView {
     init(settings: QRScannerViewSettings, frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         configure(with: settings)
         setupLayout(with: settings)

@@ -14,7 +14,7 @@ final class InlineAlertView: UIView {
         view.mode = .iconDetails
         view.detailsLabel.numberOfLines = 0
         view.iconWidth = 16.0
-        view.detailsLabel.textColor = R.color.colorWhite()
+        view.detailsLabel.textColor = R.color.colorTextPrimary()
         view.detailsLabel.font = .caption1
         view.spacing = 12.0
         return view

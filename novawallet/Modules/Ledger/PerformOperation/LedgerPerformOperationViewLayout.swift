@@ -13,7 +13,7 @@ final class LedgerPerformOperationViewLayout: UIView {
 
     let activityIndicator: UIActivityIndicatorView = .create { view in
         view.style = .medium
-        view.tintColor = R.color.colorWhite()
+        view.tintColor = R.color.colorIconPrimary()
         view.hidesWhenStopped = true
     }
 

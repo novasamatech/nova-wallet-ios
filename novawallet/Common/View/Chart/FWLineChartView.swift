@@ -117,7 +117,7 @@ extension FWLineChartView: FWChartViewProtocol {
         dataSet.fill = LinearGradientFill(gradient: linearGradient, angle: 90)
         dataSet.fillAlpha = 1.0
         dataSet.drawFilledEnabled = true
-        dataSet.highlightColor = R.color.colorGreen()!
+        dataSet.highlightColor = R.color.colorTextPositive()!
         dataSet.highlightLineWidth = 0.5
         dataSet.highlightLineDashLengths = [1, 3]
         dataSet.drawHorizontalHighlightIndicatorEnabled = false

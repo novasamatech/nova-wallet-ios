@@ -4,7 +4,7 @@ import SoraUI
 final class ValidatorSearchViewLayout: UIView {
     private let searchContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = R.color.colorBlack()!
+        view.backgroundColor = R.color.colorBlurNavigationBackground()
         return view
     }()
 
@@ -12,7 +12,7 @@ final class ValidatorSearchViewLayout: UIView {
         let view = RoundedView()
         view.roundingCorners = .allCorners
         view.cornerRadius = 8
-        view.fillColor = R.color.colorAlmostBlack()!
+        view.fillColor = R.color.colorInputBackground()!
         return view
     }()
 
@@ -32,21 +32,20 @@ final class ValidatorSearchViewLayout: UIView {
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
-        tableView.backgroundColor = R.color.colorBlack()
-        tableView.separatorColor = R.color.colorDarkGray()
+        tableView.backgroundColor = R.color.colorSecondaryScreenBackground()
         return tableView
     }()
 
     let emptyStateContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = R.color.colorBlack()
+        view.backgroundColor = R.color.colorSecondaryScreenBackground()
         return view
     }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

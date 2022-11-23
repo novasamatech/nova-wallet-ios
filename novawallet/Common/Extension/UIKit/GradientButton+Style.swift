@@ -14,7 +14,7 @@ extension GradientButton {
         gradientBackgroundView?.startPoint = CGPoint(x: 0.0, y: 0.5)
         gradientBackgroundView?.endPoint = CGPoint(x: 1.0, y: 0.5)
 
-        imageWithTitleView?.titleColor = R.color.colorWhite()
+        imageWithTitleView?.titleColor = R.color.colorTextPrimary()
 
         changesContentOpacityWhenHighlighted = true
     }

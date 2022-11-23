@@ -37,7 +37,7 @@ final class VoteRowView: RowView<
 
     private func configureStyle() {
         preferredHeight = 44.0
-        roundedBackgroundView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        roundedBackgroundView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         borderView.borderType = .none
 
         rowContentView.titleView.setHorizontalAndSpacing(16.0)
@@ -89,5 +89,8 @@ extension VoteRowView {
 }
 
 extension UILabel.Style {
-    static let rowTitle = UILabel.Style(textColor: R.color.colorWhite(), font: .regularFootnote)
+    static let rowTitle = UILabel.Style(
+        textColor: R.color.colorPrimaryText(),
+        font: .regularFootnote
+    )
 }

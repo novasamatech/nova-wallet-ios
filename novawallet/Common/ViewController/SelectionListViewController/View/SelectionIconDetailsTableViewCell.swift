@@ -4,7 +4,7 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
     let checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = R.image.iconCheckmark()
-        imageView.tintColor = R.color.colorWhite()
+        imageView.tintColor = R.color.colorIconPrimary()
         return imageView
     }()
 
@@ -12,14 +12,14 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .p1Paragraph
         return label
     }()
 
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         return label
     }()
@@ -39,7 +39,7 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
         backgroundColor = .clear
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()!
 
         setupLayout()
     }

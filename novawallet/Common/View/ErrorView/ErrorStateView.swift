@@ -13,7 +13,7 @@ class ErrorStateView: UIView {
     let errorDescriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.textAlignment = .center
         label.numberOfLines = 0
         return label

@@ -13,7 +13,7 @@ class WalletManageViewLayout: WalletsListViewLayout {
         button.style = .plain
 
         let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorNovaBlue()!,
+            .foregroundColor: R.color.colorButtonTextAccent()!,
             .font: UIFont.regularBody
         ]
 

@@ -98,7 +98,7 @@ extension DAppAuthConfirmViewController: DAppAuthConfirmViewProtocol {
 
         let walletImageView = rootView.walletView.rowContentView.valueView.imageView
         walletImageView.image = viewModel.walletIcon?.imageWithFillColor(
-            R.color.colorWhite()!,
+            R.color.colorIconPrimary()!,
             size: DAppOperationConfirmViewLayout.listImageSize,
             contentScale: UIScreen.main.scale
         )

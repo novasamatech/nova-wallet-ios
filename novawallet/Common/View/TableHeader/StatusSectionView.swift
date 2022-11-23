@@ -18,7 +18,7 @@ class StatusSectionView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
 
         backgroundView = UIView()
-        backgroundView?.backgroundColor = R.color.colorBlack()
+        backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }
