@@ -32,7 +32,7 @@ final class StakingUnbondingItemView: GenericTitleValueView<UILabel, IconDetails
             let icon = R.image.iconPending()?.tinted(with: R.color.colorWhite48()!)
             valueView.imageView.image = icon
         } else {
-            valueView.detailsLabel.textColor = R.color.colorGreen()
+            valueView.detailsLabel.textColor = R.color.colorTextPositive()
             valueView.detailsLabel.text = R.string.localizable.walletBalanceRedeemable(
                 preferredLanguages: locale.rLanguages
             )

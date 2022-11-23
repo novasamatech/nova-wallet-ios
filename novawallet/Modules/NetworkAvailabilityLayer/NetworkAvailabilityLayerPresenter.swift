@@ -14,7 +14,7 @@ final class NetworkAvailabilityLayerPresenter {
 
     var availableStyle: ApplicationStatusStyle {
         ApplicationStatusStyle(
-            backgroundColor: R.color.colorGreen()!,
+            backgroundColor: R.color.colorTextPositive()!,
             titleColor: UIColor.white,
             titleFont: UIFont.h6Title
         )

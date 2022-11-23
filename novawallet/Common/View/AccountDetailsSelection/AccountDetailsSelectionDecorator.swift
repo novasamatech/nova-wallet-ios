@@ -39,7 +39,7 @@ struct AccountDetailsYieldBoostDecorator: AccountDetailsSelectionDecorator {
         let attributedString = NSMutableAttributedString(
             string: title,
             attributes: [
-                .foregroundColor: R.color.colorGreen()!
+                .foregroundColor: R.color.colorTextPositive()!
             ]
         )
 
