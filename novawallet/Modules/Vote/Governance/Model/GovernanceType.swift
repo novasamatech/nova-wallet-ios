@@ -11,6 +11,10 @@ enum GovernanceType: String, Equatable {
 
         let assetTitle = asset.name ?? chain.name
 
+        guard chain.hasGovernanceV1, chain.hasGovernanceV2 else {
+            return assetTitle
+        }
+
         switch self {
         case .governanceV1:
             return assetTitle + " " + "Governance v1"
