@@ -72,7 +72,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
 
         switch viewModel.status {
         case .completed:
-            detailsLabel.textColor = R.color.colorGreen()
+            detailsLabel.textColor = R.color.colorTextPositive()
             detailsLabel.text = R.string.localizable.transactionStatusCompleted(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
@@ -85,7 +85,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
             iconView.image = R.image.iconPending()?.withRenderingMode(.alwaysTemplate)
                 .tinted(with: R.color.colorIconSecondary()!)
         case .failed:
-            detailsLabel.textColor = R.color.colorRed()
+            detailsLabel.textColor = R.color.colorTextNegative()
             detailsLabel.text = R.string.localizable.transactionStatusFailed(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()

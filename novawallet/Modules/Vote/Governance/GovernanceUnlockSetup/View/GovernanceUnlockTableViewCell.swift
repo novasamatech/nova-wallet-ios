@@ -33,7 +33,7 @@ final class GovernanceUnlockTableViewCell: UITableViewCell {
             detailsLabel.text = time
         case .now:
             lockView.valueView.hidesIcon = true
-            detailsLabel.textColor = R.color.colorGreen()
+            detailsLabel.textColor = R.color.colorTextPositive()
             detailsLabel.text = R.string.localizable.commonUnlockable(preferredLanguages: locale.rLanguages)
         }
     }
