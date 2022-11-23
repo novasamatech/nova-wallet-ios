@@ -197,7 +197,7 @@ extension NSPredicate {
     static func assetBalance(for chainId: ChainModel.Id, accountId: AccountId) -> NSPredicate {
         let chainPredicate = NSPredicate(
             format: "%K == %@",
-            #keyPath(CDReferendumMetadata.chainId),
+            #keyPath(CDAssetBalance.chainId),
             chainId
         )
 
