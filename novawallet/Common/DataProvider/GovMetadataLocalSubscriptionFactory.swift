@@ -5,11 +5,11 @@ typealias ReferendumMetadataMapping = [ReferendumIdLocal: ReferendumMetadataLoca
 
 protocol GovMetadataLocalSubscriptionFactoryProtocol: AnyObject {
     func getMetadataProvider(
-        for chain: ChainModel
+        for option: GovernanceSelectedOption
     ) -> StreamableProvider<ReferendumMetadataLocal>?
 
     func getMetadataProvider(
-        for chain: ChainModel,
+        for option: GovernanceSelectedOption,
         referendumId: ReferendumIdLocal
     ) -> StreamableProvider<ReferendumMetadataLocal>?
 }
@@ -44,13 +44,16 @@ final class GovMetadataLocalSubscriptionFactory {
 
 extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
     func getMetadataProvider(
-        for chain: ChainModel
+        for option: GovernanceSelectedOption
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
         guard
-            let governanceApi = chain.externalApi?.governance,
+            case .governanceV1 = option.type,
+            let governanceApi = option.chain.externalApi?.governance,
             let apiType = GovernanceOffchainApi(rawValue: governanceApi.type) else {
             return nil
         }
+
+        let chain = option.chain
 
         let chainId = chain.chainId
         let url = governanceApi.url
@@ -103,16 +106,17 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
     }
 
     func getMetadataProvider(
-        for chain: ChainModel,
+        for option: GovernanceSelectedOption,
         referendumId: ReferendumIdLocal
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
         guard
-            let governanceApi = chain.externalApi?.governance,
+            case .governanceV1 = option.type,
+            let governanceApi = option.chain.externalApi?.governance,
             let apiType = GovernanceOffchainApi(rawValue: governanceApi.type) else {
             return nil
         }
 
-        let chainId = chain.chainId
+        let chainId = option.chain.chainId
         let url = governanceApi.url
 
         let identifier = "gov-metadata-details" + chainId + String(referendumId)

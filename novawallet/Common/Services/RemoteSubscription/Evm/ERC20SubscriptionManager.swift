@@ -145,6 +145,7 @@ final class ERC20SubscriptionManager {
             outgoingSubscriptionId = try connection.subscribe(
                 EvmSubscriptionMessage.subscribeMethod,
                 params: messageParams.outgoingFilter,
+                unsubscribeMethod: EvmSubscriptionMessage.unsubscribeMethod,
                 updateClosure: updateClosure,
                 failureClosure: failureClosure
             )
