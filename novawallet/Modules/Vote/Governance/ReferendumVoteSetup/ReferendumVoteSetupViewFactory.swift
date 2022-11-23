@@ -60,13 +60,16 @@ struct ReferendumVoteSetupViewFactory {
         state: GovernanceSharedState
     ) -> ReferendumVoteSetupPresenter? {
         guard
-            let chain = state.settings.value,
-            let assetDisplayInfo = chain.utilityAssetDisplayInfo(),
-            let currencyManager = CurrencyManager.shared,
-            let votingLockId = state.governanceId(for: chain)
+            let option = state.settings.value,
+            let assetDisplayInfo = option.chain.utilityAssetDisplayInfo(),
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
+
+        let chain = option.chain
+
+        let votingLockId = state.governanceId(for: option)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
@@ -107,17 +110,23 @@ struct ReferendumVoteSetupViewFactory {
     ) -> ReferendumVoteSetupInteractor? {
         let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
 
+        guard let option = state.settings.value else {
+            return nil
+        }
+
+        let chain = option.chain
+
         guard
-            let chain = state.settings.value,
             let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
-            let extrinsicFactory = state.createExtrinsicFactory(for: chain),
             let blockTimeService = state.blockTimeService,
             let blockTimeFactory = state.createBlockTimeOperationFactory()
         else {
             return nil
         }
+
+        let extrinsicFactory = state.createExtrinsicFactory(for: option)
 
         guard
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
