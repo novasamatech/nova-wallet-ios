@@ -26,8 +26,10 @@ final class ParaStkSelectCollatorsViewLayout: UIView {
 
     let filterButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(R.image.iconFilterActive()?.tinted(with: R.color.colorIconPrimary()!,
-                        for: .normal)
+        button.setImage(
+            R.image.iconFilterActive()?.tinted(with: R.color.colorIconPrimary()!),
+            for: .normal
+        )
         return button
     }()
 
