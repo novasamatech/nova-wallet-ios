@@ -24,6 +24,17 @@ extension MultiValueView.Style {
         )
     )
 
+    static let row = MultiValueView.Style(
+        topLabel: .init(
+            textColor: R.color.colorTextSecondary(),
+            font: .regularFootnote
+        ),
+        bottomLabel: .init(
+            textColor: R.color.colorTextSecondary(),
+            font: .caption1
+        )
+    )
+
     static let contributionRow = MultiValueView.Style(
         topLabel: .init(
             textColor: R.color.colorTextPrimary(),
