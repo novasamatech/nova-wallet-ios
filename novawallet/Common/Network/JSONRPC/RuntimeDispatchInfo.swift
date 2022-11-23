@@ -67,7 +67,7 @@ struct RemoteRuntimeDispatchInfo: Decodable {
 
         fee = try container.decode(StringScaleMapper<BigUInt>.self, forKey: .fee).value
 
-        if let remoteWeight = try? container.decode(BlockchainWeight.WeightV2.self, forKey: .weight) {
+        if let remoteWeight = try? container.decode(BlockchainWeight.WeightV1P5.self, forKey: .weight) {
             weight = remoteWeight.refTime
         } else {
             weight = try container.decode(BlockchainWeight.WeightV1.self, forKey: .weight).value

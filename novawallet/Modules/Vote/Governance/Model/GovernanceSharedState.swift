@@ -59,18 +59,19 @@ final class GovernanceSharedState {
         blockTimeService = newService
     }
 
-    func replaceGovernanceFactory(for chain: ChainModel?) {
+    func replaceGovernanceFactory(for option: GovernanceSelectedOption?) {
         subscriptionFactory = nil
         referendumsOperationFactory = nil
         locksOperationFactory = nil
 
-        guard let chain = chain else {
+        guard let option = option else {
             return
         }
 
-        let chainId = chain.chainId
+        let chainId = option.chain.chainId
 
-        if chain.hasGovernanceV2 {
+        switch option.type {
+        case .governanceV2:
             let operationFactory = Gov2OperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
@@ -89,7 +90,7 @@ final class GovernanceSharedState {
                 requestFactory: requestFactory,
                 unlocksCalculator: GovUnlocksCalculator()
             )
-        } else if chain.hasGovernanceV1 {
+        case .governanceV1:
             let operationFactory = Gov1OperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
@@ -111,23 +112,27 @@ final class GovernanceSharedState {
         }
     }
 
-    func createExtrinsicFactory(for chain: ChainModel) -> GovernanceExtrinsicFactoryProtocol? {
-        if chain.hasGovernanceV2 {
+    func createExtrinsicFactory(
+        for option: GovernanceSelectedOption
+    ) -> GovernanceExtrinsicFactoryProtocol {
+        switch option.type {
+        case .governanceV2:
             return Gov2ExtrinsicFactory()
-        } else if chain.hasGovernanceV1 {
+        case .governanceV1:
             return Gov1ExtrinsicFactory()
-        } else {
-            return nil
         }
     }
 
-    func createActionsDetailsFactory(for chain: ChainModel) -> ReferendumActionOperationFactoryProtocol? {
-        if chain.hasGovernanceV2 {
+    func createActionsDetailsFactory(
+        for option: GovernanceSelectedOption
+    ) -> ReferendumActionOperationFactoryProtocol {
+        switch option.type {
+        case .governanceV2:
             return Gov2ActionOperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
             )
-        } else if chain.hasGovernanceV1 {
+        case .governanceV1:
             let gov2ActionsFactory = Gov2ActionOperationFactory(
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
@@ -138,23 +143,20 @@ final class GovernanceSharedState {
                 requestFactory: requestFactory,
                 operationQueue: operationQueue
             )
-        } else {
-            return nil
         }
     }
 
-    func governanceId(for chain: ChainModel) -> String? {
-        if chain.hasGovernanceV2 {
+    func governanceId(for option: GovernanceSelectedOption) -> String {
+        switch option.type {
+        case .governanceV2:
             return ConvictionVoting.lockId
-        } else if chain.hasGovernanceV1 {
+        case .governanceV1:
             return Democracy.lockId
-        } else {
-            return nil
         }
     }
 
     func createBlockTimeOperationFactory() -> BlockTimeOperationFactoryProtocol? {
-        guard let chain = settings.value else {
+        guard let chain = settings.value?.chain else {
             return nil
         }
 
