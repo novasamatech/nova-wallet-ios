@@ -194,6 +194,24 @@ extension NSPredicate {
         ])
     }
 
+    static func assetBalance(for chainId: ChainModel.Id, accountId: AccountId) -> NSPredicate {
+        let chainPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainId),
+            chainId
+        )
+
+        let accountPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainAccountId),
+            accountId.toHex()
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainPredicate
+        ])
+    }
+
     static func assetBalance(
         for accountId: AccountId
     ) -> NSPredicate {
