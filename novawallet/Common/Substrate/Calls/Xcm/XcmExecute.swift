@@ -6,7 +6,7 @@ extension Xcm {
     static var possibleModuleNames: [String] { ["XcmPallet", "PolkadotXcm"] }
     static var executeCallName: String { "execute" }
 
-    struct ExecuteCallV1: Codable {
+    struct ExecuteCall<M: Codable>: Codable {
         // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case message
@@ -14,24 +14,9 @@ extension Xcm {
         }
 
         let message: Xcm.Message
-        @StringCodable var maxWeight: BigUInt
+        let maxWeight: M
 
-        func runtimeCall(for moduleName: String) -> RuntimeCall<ExecuteCallV1> {
-            RuntimeCall(moduleName: moduleName, callName: Xcm.executeCallName, args: self)
-        }
-    }
-
-    struct ExecuteCallV2: Codable {
-        // swiftlint:disable:next nesting
-        enum CodingKeys: String, CodingKey {
-            case message
-            case maxWeight = "max_weight"
-        }
-
-        let message: Xcm.Message
-        let maxWeight: BlockchainWeight.WeightV2
-
-        func runtimeCall(for moduleName: String) -> RuntimeCall<ExecuteCallV2> {
+        func runtimeCall(for moduleName: String) -> RuntimeCall<Self> {
             RuntimeCall(moduleName: moduleName, callName: Xcm.executeCallName, args: self)
         }
     }
@@ -44,22 +29,42 @@ extension Xcm {
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         let path = CallCodingPath(moduleName: module, callName: Xcm.executeCallName)
-        let isV1 = codingFactory.getCall(for: path)?.isArgumentTypeOf(
-            ExecuteCallV1.CodingKeys.maxWeight.rawValue
-        ) { argumentType in
+
+        guard let callType = codingFactory.getCall(for: path) else {
+            return builder
+        }
+
+        let paramName = ExecuteCall<BigUInt>.CodingKeys.maxWeight.rawValue
+
+        // v1 require only uint64 weight
+        let isV1 = callType.isArgumentTypeOf(paramName) { argumentType in
             codingFactory.isUInt64Type(argumentType)
-        } ?? true
+        }
 
         if isV1 {
-            let call = ExecuteCallV1(message: message, maxWeight: maxWeight)
+            let call = ExecuteCall(message: message, maxWeight: StringScaleMapper(value: maxWeight))
             return try builder.adding(call: call.runtimeCall(for: module))
         } else {
-            let call = ExecuteCallV2(
-                message: message,
-                maxWeight: .init(refTime: maxWeight, proofSize: 0)
-            )
+            // verision 1.5 contains only 1 field and v2 contains 2 fields
+            let isV1P5 = callType.isArgumentTypeOf(paramName) { argumentType in
+                codingFactory.isStructHasFieldsCount(argumentType, count: 1)
+            }
 
-            return try builder.adding(call: call.runtimeCall(for: module))
+            if isV1P5 {
+                let call = ExecuteCall(
+                    message: message,
+                    maxWeight: BlockchainWeight.WeightV1P5(refTime: UInt64(maxWeight))
+                )
+
+                return try builder.adding(call: call.runtimeCall(for: module))
+            } else {
+                let call = ExecuteCall(
+                    message: message,
+                    maxWeight: BlockchainWeight.WeightV2(refTime: maxWeight, proofSize: 0)
+                )
+
+                return try builder.adding(call: call.runtimeCall(for: module))
+            }
         }
     }
 }
