@@ -15,7 +15,7 @@ final class ReferendumsPresenter {
     let logger: LoggerProtocol
 
     private var freeBalance: BigUInt?
-    private var chain: ChainModel?
+    private var selectedOption: GovernanceSelectedOption?
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
@@ -27,6 +27,14 @@ final class ReferendumsPresenter {
     private var maxStatusTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
     private var timeModels: [UInt: StatusTimeViewModel?]?
+
+    private var chain: ChainModel? {
+        selectedOption?.chain
+    }
+
+    private var governanceType: GovernanceType? {
+        selectedOption?.type
+    }
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
@@ -73,12 +81,16 @@ final class ReferendumsPresenter {
     }
 
     private func provideChainBalance() {
-        guard let chain = chain, let asset = chain.utilityAsset() else {
+        guard
+            let chain = chain,
+            let governanceType = governanceType,
+            let asset = chain.utilityAsset() else {
             return
         }
 
         let viewModel = chainBalanceFactory.createViewModel(
-            from: ChainAsset(chain: chain, asset: asset),
+            from: governanceType.title(for: chain),
+            chainAsset: ChainAsset(chain: chain, asset: asset),
             balanceInPlank: freeBalance,
             locale: selectedLocale
         )
@@ -268,16 +280,11 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
     }
 
     func selectChain() {
-        guard let chain = chain, let asset = chain.utilityAsset() else {
-            return
-        }
-
-        let chainAssetId = ChainAsset(chain: chain, asset: asset).chainAssetId
-
         wireframe.selectChain(
             from: view,
             delegate: self,
-            selectedChainAssetId: chainAssetId
+            chainId: chain?.chainId,
+            governanceType: governanceType
         )
     }
 }
@@ -328,8 +335,8 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         refreshUnlockSchedule()
     }
 
-    func didReceiveSelectedChain(_ chain: ChainModel) {
-        self.chain = chain
+    func didReceiveSelectedOption(_ option: GovernanceSelectedOption) {
+        selectedOption = option
 
         provideChainBalance()
         updateReferendumsView()
@@ -360,8 +367,8 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
             }
         case .chainSaveFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                if let chain = self?.chain {
-                    self?.interactor.saveSelected(chainModel: chain)
+                if let option = self?.selectedOption {
+                    self?.interactor.saveSelected(option: option)
                 }
             }
         case .referendumsFetchFailed:
@@ -385,18 +392,21 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     }
 }
 
-extension ReferendumsPresenter: AssetSelectionDelegate {
-    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
-        if chain?.chainId == chainAsset.chain.chainId {
+extension ReferendumsPresenter: GovernanceAssetSelectionDelegate {
+    func governanceAssetSelection(
+        view _: AssetSelectionViewProtocol,
+        didCompleteWith option: GovernanceSelectedOption
+    ) {
+        if selectedOption == option {
             return
         }
 
-        chain = chainAsset.chain
+        selectedOption = option
 
         clearOnAssetSwitch()
         provideChainBalance()
 
-        interactor.saveSelected(chainModel: chainAsset.chain)
+        interactor.saveSelected(option: option)
     }
 }
 
