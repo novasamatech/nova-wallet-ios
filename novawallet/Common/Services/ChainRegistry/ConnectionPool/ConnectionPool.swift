@@ -135,6 +135,12 @@ extension ConnectionPool: WebSocketEngineDelegate {
 
 extension ConnectionPool: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         connections.values.forEach { wrapper in
             guard let connection = wrapper.target as? ChainConnection else {
                 return
@@ -145,6 +151,12 @@ extension ConnectionPool: ApplicationHandlerDelegate {
     }
 
     func didReceiveDidEnterBackground(notification _: Notification) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         connections.values.forEach { wrapper in
             guard let connection = wrapper.target as? ChainConnection else {
                 return
