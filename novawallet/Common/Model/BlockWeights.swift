@@ -5,7 +5,7 @@ import BigInt
 enum BlockchainWeight {
     typealias WeightV1 = StringScaleMapper<UInt64>
 
-    struct WeightV1P5: Decodable {
+    struct WeightV1P5: Codable {
         @StringCodable var refTime: UInt64
     }
 

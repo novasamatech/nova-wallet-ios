@@ -13,4 +13,12 @@ extension RuntimeCoderFactoryProtocol {
     func isUInt64Type(_ type: String) -> Bool {
         getTypeNode(for: type) is U64Node
     }
+
+    func isStructHasFieldsCount(_ type: String, count: Int) -> Bool {
+        guard let structNode = getTypeNode(for: type) as? StructNode else {
+            return false
+        }
+
+        return structNode.typeMapping.count == count
+    }
 }
