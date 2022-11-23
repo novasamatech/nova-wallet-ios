@@ -20,7 +20,7 @@ extension TriangularedButton {
         triangularedView?.highlightedStrokeColor = R.color.colorDarkGray()!
         triangularedView?.strokeWidth = 2.0
 
-        imageWithTitleView?.titleColor = R.color.colorWhite()!
+        imageWithTitleView?.titleColor = R.color.colorTextPrimary()!
         imageWithTitleView?.titleFont = UIFont.h5Title
 
         changesContentOpacityWhenHighlighted = true
@@ -64,12 +64,12 @@ extension TriangularedButton {
 
     func applyTranslucentDisabledStyle() {
         triangularedView?.shadowOpacity = 0.0
-        triangularedView?.fillColor = R.color.colorWhite8()!
-        triangularedView?.highlightedFillColor = R.color.colorWhite8()!
+        triangularedView?.fillColor = R.color.colorButtonBackgroundInactive()!
+        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundInactive()!
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 
-        imageWithTitleView?.titleColor = R.color.colorWhite32()!
+        imageWithTitleView?.titleColor = R.color.colorButtonTextInactive()!
 
         contentOpacityWhenDisabled = 1.0
     }

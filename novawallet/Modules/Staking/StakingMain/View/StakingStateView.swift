@@ -21,17 +21,17 @@ class StakingStateView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
     let stakeAmountView: MultiValueView = {
         let view = MultiValueView()
         view.valueTop.font = .boldTitle1
-        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.textAlignment = .center
         view.valueBottom.font = .regularBody
-        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.textAlignment = .center
         view.spacing = 6.0
         view.isUserInteractionEnabled = false

@@ -6,8 +6,8 @@ class AccountInputView: BackgroundedContentControl {
     let textField: UITextField = {
         let textField = UITextField()
         textField.font = .regularSubheadline
-        textField.textColor = R.color.colorWhite()
-        textField.tintColor = R.color.colorWhite()
+        textField.textColor = R.color.colorTextPrimary()
+        textField.tintColor = R.color.colorTextPrimary()
         textField.clearButtonMode = .never
 
         var attributes = textField.defaultTextAttributes

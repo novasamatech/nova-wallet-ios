@@ -12,7 +12,7 @@ final class MoonbeamTermsViewLayout: UIView {
         let label = UILabel()
         label.font = .p1Paragraph
         label.numberOfLines = 0
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -47,7 +47,7 @@ final class MoonbeamTermsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
         applyLocalization()
     }

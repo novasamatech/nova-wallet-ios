@@ -12,7 +12,7 @@ final class StakingUnbondingItemView: GenericTitleValueView<UILabel, IconDetails
     }
 
     private func configureStyle() {
-        titleView.textColor = R.color.colorWhite()!
+        titleView.textColor = R.color.colorTextPrimary()!
         titleView.font = .regularSubheadline
 
         valueView.mode = .detailsIcon
@@ -23,7 +23,7 @@ final class StakingUnbondingItemView: GenericTitleValueView<UILabel, IconDetails
         titleView.text = title
 
         if let timeLeft = timeLeft {
-            valueView.detailsLabel.textColor = R.color.colorTransparentText()
+            valueView.detailsLabel.textColor = R.color.colorTextSecondary()
             valueView.detailsLabel.text = timeLeft
 
             valueView.spacing = 4.0

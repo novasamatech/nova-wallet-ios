@@ -207,7 +207,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
         let percentsText = NSAttributedString(
             string: secondLine,
             attributes: [
-                NSAttributedString.Key.foregroundColor: R.color.colorWhite()!,
+                NSAttributedString.Key.foregroundColor: R.color.colorTextPrimary()!,
                 NSAttributedString.Key.font: UIFont.h2Title,
                 NSAttributedString.Key.paragraphStyle: paragraphStyle
             ]
@@ -216,7 +216,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
         let erasRangeText = NSAttributedString(
             string: thirdLine,
             attributes: [
-                NSAttributedString.Key.foregroundColor: R.color.colorLightGray()!,
+                NSAttributedString.Key.foregroundColor: R.color.colorHintText()!,
                 NSAttributedString.Key.font: UIFont.h5Title,
                 NSAttributedString.Key.paragraphStyle: paragraphStyle
             ]
@@ -269,7 +269,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
     func chartCenterText(validator: AnalyticsValidatorItemViewModel) -> NSAttributedString {
         createChartCenterText(
             firstLine: validator.validatorName,
-            firstLineColor: R.color.colorLightGray()!,
+            firstLineColor: R.color.colorHintText()!,
             secondLine: validator.mainValueText,
             thirdLine: validator.secondaryValueText
         )
@@ -284,7 +284,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
         return createChartCenterText(
             firstLine: R.string.localizable
                 .stakingAnalyticsStakingWasInactive(preferredLanguages: locale.rLanguages),
-            firstLineColor: R.color.colorGray()!,
+            firstLineColor: R.color.colorHintText()!,
             secondLine: percentageString,
             thirdLine: R.string.localizable.stakingAnalyticsValidatorsErasCounter(
                 format: inactiveSegment.eraCount,

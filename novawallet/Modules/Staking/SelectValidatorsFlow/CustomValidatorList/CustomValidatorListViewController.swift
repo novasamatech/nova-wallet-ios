@@ -103,11 +103,11 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
         rootView.fillRestButton.isEnabled = isEnabled
 
         if isEnabled {
-            rootView.fillRestButton.roundedBackgroundView?.fillColor = R.color.colorAccent()!
-            rootView.fillRestButton.imageWithTitleView?.titleColor = R.color.colorWhite()!
+            rootView.fillRestButton.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundPrimary()!
+            rootView.fillRestButton.imageWithTitleView?.titleColor = R.color.colorButtonText()!
         } else {
-            rootView.fillRestButton.roundedBackgroundView?.fillColor = R.color.color0x1D1D20()!
-            rootView.fillRestButton.imageWithTitleView?.titleColor = R.color.colorWhite48()!
+            rootView.fillRestButton.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundInactive()!
+            rootView.fillRestButton.imageWithTitleView?.titleColor = R.color.colorButtonTextInactive()!
         }
     }
 

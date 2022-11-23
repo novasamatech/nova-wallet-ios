@@ -26,7 +26,7 @@ final class StakingUnbondingsView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 

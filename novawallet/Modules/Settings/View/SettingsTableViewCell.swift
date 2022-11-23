@@ -44,7 +44,7 @@ final class SettingsTableViewCell: UITableViewCell {
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        roundView.fillColor = highlighted ? R.color.colorAccentSelected()! : R.color.color0x1D1D20()!
+        roundView.fillColor = highlighted ? R.color.colorCellBackgroundPressed()! : R.color.colorBlockBackground()!
     }
 
     private func setupLayout() {

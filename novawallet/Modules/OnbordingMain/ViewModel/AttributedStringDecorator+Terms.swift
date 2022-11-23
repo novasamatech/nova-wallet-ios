@@ -11,7 +11,7 @@ extension CompoundAttributedStringDecorator {
         let rangeDecorator = RangeAttributedStringDecorator(attributes: attributes)
 
         let highlightAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!,
+            .foregroundColor: R.color.colorTextPrimary()!,
             .font: UIFont.regularFootnote
         ]
 

@@ -24,7 +24,7 @@ final class ImagePlaceholderView: RoundedView {
     private func configureStyle() {
         applyFilledBackgroundStyle()
 
-        fillColor = R.color.colorWhite16()!
+        fillColor = R.color.colorContainerBackground()!
         cornerRadius = 8.0
     }
 

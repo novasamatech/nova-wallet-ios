@@ -4,13 +4,13 @@ final class ListLoadingView: UIView {
     let activityIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView()
         view.style = .medium
-        view.tintColor = R.color.colorWhite()
+        view.tintColor = R.color.colorIconPrimary()
         return view
     }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.textAlignment = .center
         return label

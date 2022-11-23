@@ -34,7 +34,7 @@ final class AnalyticsMagentaButton<T: AnalyticsMagentaButtonModel>: RoundedButto
 
         contentInsets = UIEdgeInsets(top: 5.5, left: 12, bottom: 5.5, right: 12)
 
-        imageWithTitleView?.titleColor = R.color.colorTransparentText()
+        imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         imageWithTitleView?.highlightedTitleColor = .white
         imageWithTitleView?.titleFont = .capsTitle
     }

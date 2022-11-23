@@ -21,7 +21,7 @@ final class GlowingView: UIView {
         }
     }
 
-    var outerFillColor: UIColor = R.color.colorWhite16()! {
+    var outerFillColor: UIColor = R.color.colorChipsBackground()! {
         didSet {
             applyOuterColor()
         }

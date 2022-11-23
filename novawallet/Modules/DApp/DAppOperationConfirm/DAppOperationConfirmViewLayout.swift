@@ -35,12 +35,12 @@ final class DAppOperationConfirmViewLayout: UIView, AdaptiveDesignable {
 
     let networkFeeView: NetworkFeeView = {
         let view = NetworkFeeView()
-        view.titleLabel.textColor = R.color.colorTransparentText()
+        view.titleLabel.textColor = R.color.colorTextSecondary()
         view.titleLabel.font = .regularFootnote
-        view.tokenLabel.textColor = R.color.colorWhite()
+        view.tokenLabel.textColor = R.color.colorTextPrimary()
         view.tokenLabel.font = .regularFootnote
         view.borderView.strokeWidth = 0.5
-        view.borderView.strokeColor = R.color.colorWhite16()!
+        view.borderView.strokeColor = R.color.colorContainerBorder()!
         return view
     }()
 

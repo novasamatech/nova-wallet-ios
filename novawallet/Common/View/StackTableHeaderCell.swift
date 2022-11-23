@@ -21,7 +21,7 @@ final class StackTableHeaderCell: RowView<UILabel>, StackTableViewCellProtocol {
     }
 
     private func configure() {
-        titleLabel.textColor = R.color.colorWhite()
+        titleLabel.textColor = R.color.colorTextPrimary()
         titleLabel.font = .regularSubheadline
         titleLabel.textAlignment = .left
 

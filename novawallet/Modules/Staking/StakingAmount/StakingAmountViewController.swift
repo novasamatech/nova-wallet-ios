@@ -130,9 +130,9 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         let textColor: UIColor?
 
         if hasAmount {
-            textColor = R.color.colorWhite()
+            textColor = R.color.colorTextPrimary()
         } else {
-            textColor = R.color.colorTransparentText()
+            textColor = R.color.colorTextSecondary()
         }
 
         rootView.restakeOptionView.amountLabel.textColor = textColor

@@ -39,7 +39,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
         applyLocalization()
@@ -102,7 +102,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
 
     func bind(confirmationViewModel: CrowdloanContributeConfirmViewModel) {
         let icon = confirmationViewModel.senderIcon.imageWithFillColor(
-            R.color.colorWhite()!,
+            R.color.colorTextPrimary()!,
             size: UIConstants.smallAddressIconSize,
             contentScale: UIScreen.main.scale
         )

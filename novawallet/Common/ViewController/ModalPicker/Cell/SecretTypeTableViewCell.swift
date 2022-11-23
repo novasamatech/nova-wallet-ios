@@ -14,7 +14,7 @@ final class SecretTypeTableViewCell: IconWithTitleSubtitleTableViewCell {
             right: UIConstants.horizontalInset
         )
 
-        titleLabel.textColor = R.color.colorWhite()
+        titleLabel.textColor = R.color.colorTextPrimary()
         titleLabel.font = UIFont.p1Paragraph
 
         subtitleLabel.textColor = R.color.colorGray()
