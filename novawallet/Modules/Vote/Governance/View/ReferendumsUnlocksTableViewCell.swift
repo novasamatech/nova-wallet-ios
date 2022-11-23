@@ -57,7 +57,7 @@ final class ReferendumsUnlocksView: GenericTitleValueView<
 
 private extension UILabel.Style {
     static var unlockStyle: UILabel.Style {
-        .init(textColor: R.color.colorGreen()!, font: .caption1)
+        .init(textColor: R.color.colorTextPositive()!, font: .caption1)
     }
 }
 

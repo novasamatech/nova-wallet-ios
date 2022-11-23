@@ -194,10 +194,10 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         switch assetViewModel.priceChangeViewModel {
         case let .goingUp(displayString):
             priceChangeLabel.text = displayString
-            priceChangeLabel.textColor = R.color.colorGreen()!
+            priceChangeLabel.textColor = R.color.colorTextPositive()!
         case let .goingDown(displayString):
             priceChangeLabel.text = displayString
-            priceChangeLabel.textColor = R.color.colorRed()!
+            priceChangeLabel.textColor = R.color.colorTextNegative()!
         }
     }
 
