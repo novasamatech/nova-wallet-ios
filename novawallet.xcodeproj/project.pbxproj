@@ -2291,6 +2291,7 @@
 		84FBED0329279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */; };
 		84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */; };
 		84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */; };
+		84FCCD98292E3610002D2D3D /* JSONRPCError+Evm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FCCD97292E3610002D2D3D /* JSONRPCError+Evm.swift */; };
 		84FD19FC27A32973008E5E68 /* HistoryRewardContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */; };
 		84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */; };
 		84FD3DAF2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */; };
@@ -5336,6 +5337,7 @@
 		84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdater.swift; sourceTree = "<group>"; };
 		84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmEventParser.swift; sourceTree = "<group>"; };
 		84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdaterFactory.swift; sourceTree = "<group>"; };
+		84FCCD97292E3610002D2D3D /* JSONRPCError+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONRPCError+Evm.swift"; sourceTree = "<group>"; };
 		84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRewardContext.swift; sourceTree = "<group>"; };
 		84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesWithdrawEvent.swift; sourceTree = "<group>"; };
 		84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionHistoryItem+Wallet.swift"; sourceTree = "<group>"; };
@@ -10644,6 +10646,7 @@
 				84A5915D292B3C3D00BCCF8F /* EvmTransactionBuilder+Transfer.swift */,
 				84A5915F292B468300BCCF8F /* EvmTransactionService.swift */,
 				84A59161292B590100BCCF8F /* EvmTransactionFeeProxy.swift */,
+				84FCCD97292E3610002D2D3D /* JSONRPCError+Evm.swift */,
 			);
 			path = Evm;
 			sourceTree = "<group>";
@@ -15429,6 +15432,7 @@
 				841221A028F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift in Sources */,
 				84100F3626A6069200A5054E /* IconTitleValueView.swift in Sources */,
 				88B560BC28F80DCB00A5EB59 /* VoteRowView.swift in Sources */,
+				84FCCD98292E3610002D2D3D /* JSONRPCError+Evm.swift in Sources */,
 				842876AB24AE049B00D91AD8 /* SelectionItemViewProtocol.swift in Sources */,
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
 				84796080283B63240084E779 /* LoadableActionView.swift in Sources */,

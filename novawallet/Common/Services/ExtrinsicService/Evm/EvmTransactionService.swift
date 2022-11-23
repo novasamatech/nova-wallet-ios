@@ -31,6 +31,8 @@ enum EvmTransactionServiceError: Error {
 }
 
 final class EvmTransactionService {
+    static let defaultRevertedFeeGasLimit: BigUInt = 9_000_000
+
     let accountId: AccountId
     let operationFactory: EthereumOperationFactoryProtocol
     let chain: ChainModel
@@ -47,6 +49,30 @@ final class EvmTransactionService {
         self.chain = chain
         self.operationQueue = operationQueue
     }
+
+    private func createGasLimitOrDefaultWrapper(
+        for transaction: EthereumTransaction
+    ) -> CompoundOperationWrapper<BigUInt> {
+        let gasEstimationOperation = operationFactory.createGasLimitOperation(for: transaction)
+
+        let mappingOperation = ClosureOperation<BigUInt> {
+            do {
+                let gasLimitString = try gasEstimationOperation.extractNoCancellableResultData()
+
+                guard let gasLimit = BigUInt.fromHexString(gasLimitString) else {
+                    throw EvmTransactionServiceError.invalidGasLimit(gasLimitString)
+                }
+
+                return gasLimit
+            } catch let error as JSONRPCError where error.isEvmContractReverted {
+                return Self.defaultRevertedFeeGasLimit
+            }
+        }
+
+        mappingOperation.addDependency(gasEstimationOperation)
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [gasEstimationOperation])
+    }
 }
 
 extension EvmTransactionService: EvmTransactionServiceProtocol {
@@ -60,16 +86,12 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             let builder = EvmTransactionBuilder(address: address, chainId: chain.evmChainId)
             let transaction = (try closure(builder)).buildTransaction()
 
-            let gasEstimationOperation = operationFactory.createGasLimitOperation(for: transaction)
+            let gasEstimationWrapper = createGasLimitOrDefaultWrapper(for: transaction)
             let gasPriceOperation = operationFactory.createGasPriceOperation()
 
             let mapOperation = ClosureOperation<BigUInt> {
-                let gasLimitString = try gasEstimationOperation.extractNoCancellableResultData()
+                let gasLimit = try gasEstimationWrapper.targetOperation.extractNoCancellableResultData()
                 let gasPriceString = try gasPriceOperation.extractNoCancellableResultData()
-
-                guard let gasLimit = BigUInt.fromHexString(gasLimitString) else {
-                    throw EvmTransactionServiceError.invalidGasLimit(gasLimitString)
-                }
 
                 guard let gasPrice = BigUInt.fromHexString(gasPriceString) else {
                     throw EvmTransactionServiceError.invalidGasPrice(gasPriceString)
@@ -78,7 +100,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 return gasLimit * gasPrice
             }
 
-            mapOperation.addDependency(gasEstimationOperation)
+            mapOperation.addDependency(gasEstimationWrapper.targetOperation)
             mapOperation.addDependency(gasPriceOperation)
 
             mapOperation.completionBlock = {
@@ -92,7 +114,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
                 }
             }
 
-            let operations = [gasEstimationOperation, gasPriceOperation, mapOperation]
+            let operations = gasEstimationWrapper.allOperations + [gasPriceOperation, mapOperation]
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
