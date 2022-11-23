@@ -149,7 +149,7 @@ extension AssetTransactionData {
         let selectedAssetId = chainAsset.asset.assetId
 
         let isTransfer = (selectedAssetId == item.assetId || selectedAssetId != utilityAsset.assetId) &&
-            item.callPath.isTransfer
+            item.callPath.isSubstrateOrEvmTransfer
 
         if isTransfer {
             return createLocalTransfer(

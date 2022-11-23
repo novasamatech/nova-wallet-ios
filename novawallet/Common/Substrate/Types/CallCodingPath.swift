@@ -6,6 +6,10 @@ struct CallCodingPath: Equatable, Codable {
 }
 
 extension CallCodingPath {
+    var isSubstrateOrEvmTransfer: Bool {
+        isTransfer || isERC20Transfer
+    }
+
     var isTransfer: Bool {
         isBalancesTransfer || isAssetsTransfer || isTokensTransfer
     }

@@ -14,4 +14,24 @@ final class WalletServiceFacade {
             logger: Logger.shared
         )
     }()
+
+    static let sharedEvmRemoteSubscriptionService: WalletRemoteEvmSubscriptionServiceProtocol = {
+        let assetsOperationQueue = OperationManagerFacade.assetsQueue
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let logger = Logger.shared
+
+        let serviceFactory = EvmBalanceUpdateServiceFactory(
+            storageFacade: SubstrateDataStorageFacade.shared,
+            chainRegistry: chainRegistry,
+            operationQueue: assetsOperationQueue,
+            logger: logger
+        )
+
+        return WalletRemoteEvmSubscriptionService(
+            chainRegistry: chainRegistry,
+            balanceUpdateServiceFactory: serviceFactory,
+            eventCenter: EventCenter.shared,
+            logger: logger
+        )
+    }()
 }
