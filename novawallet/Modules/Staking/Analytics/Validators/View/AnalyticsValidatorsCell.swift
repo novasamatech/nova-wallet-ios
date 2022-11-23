@@ -13,14 +13,14 @@ final class AnalyticsValidatorsCell: UITableViewCell {
     let iconView: PolkadotIconView = {
         let view = PolkadotIconView()
         view.backgroundColor = .clear
-        view.fillColor = R.color.colorWhite()!
+        view.fillColor = R.color.colorTextPrimary()!
         return view
     }()
 
     let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 

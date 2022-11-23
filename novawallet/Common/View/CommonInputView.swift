@@ -16,9 +16,9 @@ class CommonInputView: UIView {
         let field = AnimatedTextField()
         field.placeholderFont = .p1Paragraph
         field.placeholderColor = R.color.colorGray()!
-        field.textColor = R.color.colorWhite()!
+        field.textColor = R.color.colorTextPrimary()!
         field.textFont = .p1Paragraph
-        field.cursorColor = R.color.colorWhite()!
+        field.cursorColor = R.color.colorTextPrimary()!
         return field
     }()
 

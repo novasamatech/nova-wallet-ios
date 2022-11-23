@@ -22,7 +22,7 @@ final class CustomValidatorListViewLayout: UIView {
 
     private let stackContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = R.color.colorBlack()
+        view.backgroundColor = R.color.colorSecondaryScreenBackground()
         return view
     }()
 
@@ -72,7 +72,7 @@ final class CustomValidatorListViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

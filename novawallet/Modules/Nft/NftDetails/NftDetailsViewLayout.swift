@@ -38,7 +38,7 @@ final class NftDetailsViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .boldTitle1
         label.numberOfLines = 0
         return label
@@ -46,7 +46,7 @@ final class NftDetailsViewLayout: UIView {
 
     let subtitleView: BorderedLabelView = {
         let view = BorderedLabelView()
-        view.titleLabel.textColor = R.color.colorTransparentText()!
+        view.titleLabel.textColor = R.color.colorTextSecondary()!
         view.titleLabel.font = .semiBoldSmall
         view.contentInsets = UIEdgeInsets(top: 1, left: 6.0, bottom: 2.0, right: 6.0)
         view.backgroundView.cornerRadius = 4.0
@@ -55,7 +55,7 @@ final class NftDetailsViewLayout: UIView {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularSubheadline
         label.numberOfLines = 0
         return label
@@ -84,7 +84,7 @@ final class NftDetailsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

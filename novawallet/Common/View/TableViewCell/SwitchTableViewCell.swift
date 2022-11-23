@@ -8,7 +8,7 @@ protocol SwitchTableViewCellDelegate: AnyObject {
 class SwitchTableViewCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularFootnote
         return label
     }()
@@ -70,7 +70,7 @@ class SwitchTableViewCell: UITableViewCell {
 final class TitleSubtitleSwitchTableViewCell: SwitchTableViewCell {
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .caption1
         return label
     }()

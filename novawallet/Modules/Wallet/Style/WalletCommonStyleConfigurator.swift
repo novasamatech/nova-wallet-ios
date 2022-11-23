@@ -44,7 +44,7 @@ struct WalletCommonStyleConfigurator {
 extension WalletCommonStyleConfigurator {
     func configure(builder: WalletStyleBuilderProtocol) {
         builder
-            .with(background: R.color.colorBlack()!)
+            .with(background: R.color.colorBlockBackground()!)
             .with(navigationBarStyle: navigationBarStyle)
             .with(header1: UIFont.h1Title)
             .with(header2: UIFont.h2Title)

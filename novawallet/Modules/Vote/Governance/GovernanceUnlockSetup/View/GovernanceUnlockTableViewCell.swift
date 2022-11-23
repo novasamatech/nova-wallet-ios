@@ -29,7 +29,7 @@ final class GovernanceUnlockTableViewCell: UITableViewCell {
         switch claimState {
         case let .afterPeriod(time):
             lockView.valueView.hidesIcon = false
-            detailsLabel.textColor = R.color.colorTransparentText()
+            detailsLabel.textColor = R.color.colorTextSecondary()
             detailsLabel.text = time
         case .now:
             lockView.valueView.hidesIcon = true

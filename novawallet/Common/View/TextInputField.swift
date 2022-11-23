@@ -6,8 +6,8 @@ class TextInputField: BackgroundedContentControl {
     let textField: UITextField = {
         let textField = UITextField()
         textField.font = .regularSubheadline
-        textField.textColor = R.color.colorWhite()
-        textField.tintColor = R.color.colorWhite()
+        textField.textColor = R.color.colorTextPrimary()
+        textField.tintColor = R.color.colorTextPrimary()
         textField.returnKeyType = .done
 
         return textField

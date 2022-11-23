@@ -222,7 +222,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
             guard
                 let depositorAddress = try? model.fundInfo.depositor.toAddress(using: chainAsset.chain),
                 let icon = try? iconGenerator.generateFromAddress(depositorAddress).imageWithFillColor(
-                    R.color.colorWhite()!,
+                    R.color.colorIconPrimary()!,
                     size: UIConstants.normalAddressIconSize,
                     contentScale: UIScreen.main.scale
                 )

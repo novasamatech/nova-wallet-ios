@@ -153,7 +153,7 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
         let wordAttributedStr = NSAttributedString(
             string: "  \(word)",
             attributes: [
-                .foregroundColor: R.color.colorWhite()!,
+                .foregroundColor: R.color.colorTextPrimary()!,
                 .font: UIFont.p2Paragraph
             ]
         )
@@ -167,7 +167,7 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
         NSAttributedString(
             string: word,
             attributes: [
-                .foregroundColor: R.color.colorWhite()!,
+                .foregroundColor: R.color.colorTextPrimary()!,
                 .font: UIFont.p2Paragraph
             ]
         )
@@ -372,7 +372,7 @@ extension AccountConfirmViewController {
             shapeLayer?.lineDashPhase = 0.0
             shapeView.fillColor = .clear
             shapeView.strokeWidth = 1.0
-            shapeView.strokeColor = R.color.colorWhite16()!
+            shapeView.strokeColor = R.color.colorContainerBorder()!
 
             button.superview?.insertSubview(shapeView, belowSubview: button)
 

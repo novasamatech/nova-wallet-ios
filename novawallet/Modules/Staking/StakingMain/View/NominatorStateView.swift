@@ -84,9 +84,9 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
     }
 
     private func presentActiveStatus() {
-        statusView.glowingView.outerFillColor = R.color.colorGreen24()!
-        statusView.glowingView.innerFillColor = R.color.colorGreen()!
-        statusView.detailsLabel.textColor = R.color.colorGreen()!
+        statusView.glowingView.outerFillColor = R.color.colorTextPositive()!.withAlphaComponent(0.4)
+        statusView.glowingView.innerFillColor = R.color.colorTextPositive()!
+        statusView.detailsLabel.textColor = R.color.colorTextPositive()!
 
         statusView.detailsLabel.text = R.string.localizable.stakingNominatorStatusActive(
             preferredLanguages: locale.rLanguages
@@ -94,9 +94,9 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
     }
 
     private func presentInactiveStatus() {
-        statusView.glowingView.outerFillColor = R.color.colorRed40()!
-        statusView.glowingView.innerFillColor = R.color.colorRed()!
-        statusView.detailsLabel.textColor = R.color.colorWhite80()!
+        statusView.glowingView.outerFillColor = R.color.colorTextNegative()!.withAlphaComponent(0.4)
+        statusView.glowingView.innerFillColor = R.color.colorTextNegative()!
+        statusView.detailsLabel.textColor = R.color.colorTextNegative()!
 
         statusView.detailsLabel.text = R.string.localizable.stakingNominatorStatusInactive(
             preferredLanguages: locale.rLanguages
@@ -104,9 +104,9 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
     }
 
     private func presentWaitingStatus(remainingTime: TimeInterval?) {
-        statusView.glowingView.outerFillColor = R.color.colorWhite16()!
-        statusView.glowingView.innerFillColor = R.color.colorWhite48()!
-        statusView.detailsLabel.textColor = R.color.colorWhite80()!
+        statusView.glowingView.outerFillColor = R.color.colorTextSecondary()!.withAlphaComponent(0.4)
+        statusView.glowingView.innerFillColor = R.color.colorTextSecondary()!
+        statusView.detailsLabel.textColor = R.color.colorTextSecondary()!
 
         if let remainingTime = remainingTime {
             let time = (try? timeFormatter.string(from: remainingTime)) ?? ""

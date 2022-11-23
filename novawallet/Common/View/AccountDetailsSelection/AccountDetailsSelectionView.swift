@@ -14,7 +14,7 @@ final class AccountDetailsGenericSelectionView<D: AccountDetailsSelectionDecorat
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
@@ -24,7 +24,7 @@ final class AccountDetailsGenericSelectionView<D: AccountDetailsSelectionDecorat
 
     let disclosureIndicatorView: UIView = {
         let imageView = UIImageView()
-        let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTransparentText()!)
+        let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
         imageView.image = icon
         imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -96,7 +96,7 @@ final class AccountDetailsGenericSelectionView<D: AccountDetailsSelectionDecorat
             titleLabel.text = viewModel.displayAddress.address
         }
 
-        titleLabel.textColor = enabled ? R.color.colorWhite()! : R.color.colorWhite32()!
+        titleLabel.textColor = enabled ? R.color.colorTextPrimary()! : R.color.colorIconInactive()!
         iconView.alpha = enabled ? 1.0 : 0.5
 
         if let details = viewModel.details {

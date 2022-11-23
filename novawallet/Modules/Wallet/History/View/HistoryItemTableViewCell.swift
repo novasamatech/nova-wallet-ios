@@ -178,7 +178,7 @@ extension HistoryItemTableViewCell: WalletViewProtocol {
                 amountLabel.textColor = R.color.colorGreen()!
             case .outgoing, .slash, .extrinsic:
                 amountLabel.text = "- \(itemViewModel.amount)"
-                amountLabel.textColor = R.color.colorWhite()!
+                amountLabel.textColor = R.color.colorTextPrimary()!
             }
 
             switch itemViewModel.type {
@@ -205,17 +205,17 @@ extension HistoryItemTableViewCell: WalletViewProtocol {
             case .rejected:
                 addStatusViewIfNeeded()
                 statusImageView?.image = R.image.iconErrorFilled()
-                amountLabel.textColor = R.color.colorTransparentText()
+                amountLabel.textColor = R.color.colorTextSecondary()
             case .pending:
                 addStatusViewIfNeeded()
                 statusImageView?.image = R.image.iconPending()
-                amountLabel.textColor = R.color.colorWhite()
+                amountLabel.textColor = R.color.colorTextPrimary()
             }
 
             let settings = ImageViewModelSettings(
                 targetSize: Constants.displayImageSize,
                 cornerRadius: nil,
-                tintColor: R.color.colorTransparentText()
+                tintColor: R.color.colorIconSecondary()
             )
 
             iconView.bind(viewModel: itemViewModel.imageViewModel, settings: settings)

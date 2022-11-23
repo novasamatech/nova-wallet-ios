@@ -5,22 +5,22 @@ extension RoundedView {
     func applyDisabledBackgroundStyle() {
         strokeColor = .clear
         highlightedStrokeColor = .clear
-        fillColor = R.color.colorDarkGray()!
-        highlightedFillColor = R.color.colorDarkGray()!
+        fillColor = R.color.colorContainerBackground()!
+        highlightedFillColor = R.color.colorContainerBackground()!
     }
 
     func applyEnabledBackgroundStyle() {
-        strokeColor = R.color.colorTransparentText()!
-        highlightedStrokeColor = R.color.colorTransparentText()!
+        strokeColor = R.color.colorContainerBorder()!
+        highlightedStrokeColor = R.color.colorContainerBorder()!
         fillColor = .clear
         highlightedFillColor = .clear
     }
 
     func applyControlBackgroundStyle() {
-        strokeColor = R.color.colorTransparentText()!
+        strokeColor = R.color.colorContainerBorder()!
         highlightedStrokeColor = .clear
         fillColor = .clear
-        highlightedFillColor = R.color.colorAccentSelected()!
+        highlightedFillColor = R.color.colorCellBackgroundPressed()!
     }
 
     func applyCellBackgroundStyle() {

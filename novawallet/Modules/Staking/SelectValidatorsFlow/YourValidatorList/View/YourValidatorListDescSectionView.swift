@@ -6,7 +6,7 @@ class YourValidatorListDescSectionView: UITableViewHeaderFooterView {
     let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()!
+        label.textColor = R.color.colorTextSecondary()!
         label.numberOfLines = 0
         return label
     }()
@@ -23,7 +23,7 @@ class YourValidatorListDescSectionView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
 
         backgroundView = UIView()
-        backgroundView?.backgroundColor = R.color.colorBlack()
+        backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

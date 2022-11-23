@@ -102,7 +102,7 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
 
     func displayMnemonic() {
         UIView.transition(with: rootView.mnemonicFieldContentLabel, duration: 0.25, options: .transitionCrossDissolve) {
-            self.rootView.mnemonicFieldContentLabel.textColor = R.color.colorWhite()!
+            self.rootView.mnemonicFieldContentLabel.textColor = R.color.colorTextPrimary()!
         }
 
         rootView.proceedButton.isEnabled = true

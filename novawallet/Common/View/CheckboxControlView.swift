@@ -24,7 +24,7 @@ final class CheckboxControlView: ControlView<UIView, IconDetailsView> {
         controlContentView.iconWidth = 24.0
         controlContentView.spacing = 12.0
 
-        controlContentView.detailsLabel.textColor = R.color.colorTransparentText()
+        controlContentView.detailsLabel.textColor = R.color.colorTextSecondary()
         controlContentView.detailsLabel.font = .regularFootnote
 
         controlContentView.stackView.alignment = .top

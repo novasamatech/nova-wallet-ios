@@ -26,8 +26,8 @@ extension WebPresentable {
 enum WebViewFactory {
     static func createWebViewController(for url: URL, style: WebPresentableStyle) -> UIViewController {
         let webController = SFSafariViewController(url: url)
-        webController.preferredControlTintColor = R.color.colorWhite()!
-        webController.preferredBarTintColor = R.color.colorAlmostBlack()!
+        webController.preferredControlTintColor = R.color.colorIconPrimary()
+        webController.preferredBarTintColor = R.color.colorDAppBlurNavigationBackground()
 
         switch style {
         case .modal:
