@@ -4,7 +4,7 @@ import SoraUI
 final class VoteTableHeaderView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h1Title
         return label
     }()
@@ -12,18 +12,18 @@ final class VoteTableHeaderView: UIView {
     let walletSwitch = WalletSwitchControl()
 
     let votingTypeSwitch: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = R.color.colorBlack48()!
-        view.selectionColor = R.color.colorWhite16()!
+        view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
+        view.selectionColor = R.color.colorSegmentedTabActive()!
         view.titleFont = .regularFootnote
-        view.selectedTitleColor = R.color.colorWhite()!
-        view.titleColor = R.color.colorTransparentText()!
+        view.selectedTitleColor = R.color.colorTextPrimary()!
+        view.titleColor = R.color.colorTextSecondary()!
     }
 
     let chainSelectionView: DetailsTriangularedView = {
         let view = UIFactory.default.createChainAssetSelectionView()
         view.borderWidth = 0.0
         view.actionImage = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
-        view.actionView.tintColor = R.color.colorWhite48()
+        view.actionView.tintColor = R.color.colorIconSecondary()!
         return view
     }()
 

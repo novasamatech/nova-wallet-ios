@@ -4,7 +4,7 @@ final class CrowdloanRewardDestinationView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .h3Title
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 

@@ -157,7 +157,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
         if let viewModel = viewModel {
             let jsonView: GenericMultiValueView<BlurredView<UITextView>> = .create {
-                $0.valueTop.apply(style: .caption1White64)
+                $0.valueTop.apply(style: .caption1Secondary)
                 $0.valueTop.textAlignment = .left
                 $0.spacing = 12.0
 
@@ -186,7 +186,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
         jsonView?.removeFromSuperview()
 
         let jsonView: GenericMultiValueView<BlurredView<ImageWithTitleView>> = .create {
-            $0.valueTop.apply(style: .caption1White64)
+            $0.valueTop.apply(style: .caption1Secondary)
             $0.valueTop.textAlignment = .left
             $0.spacing = 12.0
 

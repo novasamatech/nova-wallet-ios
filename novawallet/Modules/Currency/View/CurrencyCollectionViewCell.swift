@@ -17,7 +17,7 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
     }
 
     private let titleLabel: UILabel = .create {
-        $0.textColor = Colors.colorWhite100()
+        $0.textColor = Colors.colorWhite()
         $0.font = .regularSubheadline
         $0.numberOfLines = 0
     }
