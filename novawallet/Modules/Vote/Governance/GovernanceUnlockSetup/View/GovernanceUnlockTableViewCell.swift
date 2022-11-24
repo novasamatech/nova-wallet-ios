@@ -41,7 +41,7 @@ final class GovernanceUnlockTableViewCell: UITableViewCell {
     private func applyStyle() {
         backgroundColor = .clear
 
-        amountLabel.apply(style: .regularSubhedlineWhite)
+        amountLabel.apply(style: .regularSubhedlinePrimary)
 
         detailsLabel.font = .caption1
         detailsLabel.numberOfLines = 1

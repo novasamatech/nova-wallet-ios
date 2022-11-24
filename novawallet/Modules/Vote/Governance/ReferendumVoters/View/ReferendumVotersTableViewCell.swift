@@ -80,11 +80,11 @@ final class ReferendumVotersTableViewCell: UITableViewCell {
         baseView.valueView.stackView.alignment = .fill
 
         nameLabel.numberOfLines = 1
-        nameLabel.apply(style: UILabel.Style(textColor: R.color.colorWhite()!, font: .regularFootnote))
-        indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+        nameLabel.apply(style: .footnotePrimary)
+        indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
 
-        votesLabel.apply(style: UILabel.Style(textColor: R.color.colorWhite()!, font: .regularFootnote))
-        detailsLabel.apply(style: UILabel.Style(textColor: R.color.colorTransparentText()!, font: .caption1))
+        votesLabel.apply(style: .footnotePrimary)
+        detailsLabel.apply(style: .caption1Secondary)
 
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()

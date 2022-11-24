@@ -4,15 +4,13 @@ import SoraUI
 final class TitleMultiValueView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
-        label.font = .regularFootnote
+        label.apply(style: .footnotePrimary)
         return label
     }()
 
     let valueTop: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .regularFootnote
+        label.apply(style: .footnotePrimary)
         return label
     }()
 
@@ -31,7 +29,7 @@ final class TitleMultiValueView: UIView {
         view.backgroundColor = .clear
         view.borderType = .bottom
         view.strokeWidth = 0.5
-        view.strokeColor = R.color.colorWhite8()!
+        view.strokeColor = R.color.colorDivider()!
         return view
     }()
 
@@ -59,7 +57,7 @@ final class TitleMultiValueView: UIView {
 
     private func setupBottomLabel() -> UILabel {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .caption1
 
         privateValueBottom = label
