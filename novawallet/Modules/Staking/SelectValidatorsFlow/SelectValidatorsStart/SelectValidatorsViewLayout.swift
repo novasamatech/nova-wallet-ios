@@ -35,7 +35,7 @@ final class SelectValidatorsViewLayout: UIView {
         view.preferredHeight = 52.0
         view.isUserInteractionEnabled = true
 
-        view.roundedBackgroundView.fillColor = R.color.colorWhite8()!
+        view.roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
         view.roundedBackgroundView.roundingCorners = .allCorners
         view.roundedBackgroundView.cornerRadius = 12.0
 

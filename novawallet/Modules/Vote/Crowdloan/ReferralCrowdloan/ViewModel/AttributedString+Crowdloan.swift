@@ -3,7 +3,7 @@ import UIKit
 extension NSAttributedString {
     static func crowdloanTerms(for locale: Locale?) -> NSAttributedString {
         let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorLightGray()!,
+            .foregroundColor: R.color.colorTextSecondary()!,
             .font: UIFont.p2Paragraph
         ]
 

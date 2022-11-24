@@ -33,7 +33,7 @@ final class ParaStkUnstakeViewLayout: UIView {
 
     let transferableView = TitleAmountView.dark()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
 
     let hintListView = HintListView()
 

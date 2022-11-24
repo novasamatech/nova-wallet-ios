@@ -22,7 +22,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         let view = UIFactory.default.createChainAssetSelectionView()
         view.borderWidth = 0.0
         view.actionImage = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
-        view.actionView.tintColor = R.color.colorWhite48()
+        view.actionView.tintColor = R.color.colorIconSecondary()
         return view
     }()
 

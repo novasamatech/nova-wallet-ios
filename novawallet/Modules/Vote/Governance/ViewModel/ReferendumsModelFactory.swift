@@ -381,7 +381,7 @@ final class ReferendumsModelFactory {
         let isCompleted = supportAndVotes.supportFraction >= supportThreshold
 
         let image = isCompleted ?
-            R.image.iconCheckmark()?.tinted(with: R.color.colorGreen15CF37()!) :
+            R.image.iconCheckmark()?.tinted(with: R.color.colorIconPositive()!) :
             R.image.iconClose()?.tinted(with: R.color.colorIconNegative()!)
 
         let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: chainAsset.displayInfo)

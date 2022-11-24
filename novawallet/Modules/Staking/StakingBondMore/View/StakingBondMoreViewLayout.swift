@@ -13,7 +13,7 @@ final class StakingBondMoreViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
 
     let hintView: IconDetailsView = .hint()
 

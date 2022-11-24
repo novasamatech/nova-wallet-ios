@@ -27,7 +27,7 @@ final class StackUrlCell: RoundedView {
     let borderView: BorderedContainerView = {
         let view = BorderedContainerView()
         view.strokeWidth = UIConstants.separatorHeight
-        view.strokeColor = R.color.colorWhite8()!
+        view.strokeColor = R.color.colorDivider()!
         return view
     }()
 

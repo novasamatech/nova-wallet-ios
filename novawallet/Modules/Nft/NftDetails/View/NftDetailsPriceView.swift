@@ -49,7 +49,7 @@ final class NftDetailsPriceView: RoundedView {
         applyFilledBackgroundStyle()
 
         cornerRadius = 12.0
-        fillColor = R.color.colorBlockBackground()
+        fillColor = R.color.colorBlockBackground()!
     }
 
     private func setupLayout() {

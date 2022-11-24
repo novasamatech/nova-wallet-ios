@@ -202,7 +202,7 @@ class AccountInputView: BackgroundedContentControl {
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [
-                .foregroundColor: R.color.colorWhite32()!,
+                .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.regularSubheadline
             ]
         )
@@ -292,12 +292,8 @@ class AccountInputView: BackgroundedContentControl {
         if backgroundView == nil {
             let roundedView = RoundedView()
             roundedView.isUserInteractionEnabled = false
-            roundedView.shadowOpacity = 0.0
-            roundedView.strokeColor = R.color.colorAccent()!
-            roundedView.fillColor = R.color.colorWhite8()!
-            roundedView.highlightedFillColor = R.color.colorWhite8()!
+            roundedView.apply(style: .textField)
             roundedView.strokeWidth = 0.0
-            roundedView.cornerRadius = 12.0
 
             backgroundView = roundedView
         }

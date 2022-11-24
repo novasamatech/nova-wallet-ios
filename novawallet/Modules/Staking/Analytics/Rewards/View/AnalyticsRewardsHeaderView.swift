@@ -18,7 +18,7 @@ final class AnalyticsRewardsHeaderView: UIView, AnalyticsRewardsHeaderViewProtoc
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .h2Title
-        label.textColor = R.color.colorStrokeGray()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 

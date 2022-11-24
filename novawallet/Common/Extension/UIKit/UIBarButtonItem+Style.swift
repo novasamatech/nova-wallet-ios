@@ -18,7 +18,7 @@ extension UIBarButtonItem {
         setTitleTextAttributes(highlightedTextAttributes, for: .highlighted)
 
         let disabledTextAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite24() as Any,
+            .foregroundColor: R.color.colorButtonTextInactive()!,
             .font: font
         ]
 

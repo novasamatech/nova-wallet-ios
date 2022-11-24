@@ -22,9 +22,9 @@ final class AlertsView: UIView {
 
         view.detailsLabel.numberOfLines = 1
         view.detailsLabel.font = .regularSubheadline
-        view.detailsLabel.textColor = R.color.colorYellow()
+        view.detailsLabel.textColor = R.color.colorTextWarning()
 
-        let icon = R.image.iconWarning()?.tinted(with: R.color.colorYellow()!)
+        let icon = R.image.iconWarning()?.tinted(with: R.color.colorIconWarning()!)
         view.imageView.image = icon
 
         return view
@@ -103,7 +103,6 @@ final class AlertsView: UIView {
             for alert in alerts {
                 let alertView = AlertItemView(stakingAlert: alert, locale: locale)
                 let rowView = RowView(contentView: alertView)
-                rowView.borderView.strokeColor = R.color.colorBlurSeparator()!
                 rowView.borderView.borderType = .none
 
                 rowView.contentInsets = UIEdgeInsets(
@@ -149,7 +148,7 @@ private class AlertItemView: UIView {
 
     let accessoryView: UIView = {
         let view = UIImageView()
-        view.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorWhite48()!)
+        view.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
         return view
     }()
 

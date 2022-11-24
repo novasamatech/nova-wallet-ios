@@ -17,7 +17,7 @@ final class StakingUnbondSetupLayout: UIView {
     let transferrableView = TitleAmountView.dark()
 
     let networkFeeView: NetworkFeeView = {
-        let view = UIFactory.default.createNetwork26FeeView()
+        let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         return view
     }()

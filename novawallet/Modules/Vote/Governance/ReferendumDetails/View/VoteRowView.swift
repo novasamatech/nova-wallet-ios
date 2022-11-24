@@ -90,7 +90,7 @@ extension VoteRowView {
 
 extension UILabel.Style {
     static let rowTitle = UILabel.Style(
-        textColor: R.color.colorPrimaryText(),
+        textColor: R.color.colorTextPrimary(),
         font: .regularFootnote
     )
 }
