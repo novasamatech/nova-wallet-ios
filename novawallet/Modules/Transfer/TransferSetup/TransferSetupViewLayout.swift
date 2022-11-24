@@ -37,7 +37,7 @@ final class TransferSetupViewLayout: UIView {
     }()
 
     let originFeeView: NetworkFeeView = {
-        let view = UIFactory.default.createNetwork26FeeView()
+        let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         return view
     }()
@@ -66,7 +66,7 @@ final class TransferSetupViewLayout: UIView {
             return
         }
 
-        let view = UIFactory.default.createNetwork26FeeView()
+        let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         view.title = LocalizableResource { locale in
             R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)

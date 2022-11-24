@@ -27,7 +27,7 @@ final class MoonbeamTermsViewLayout: UIView {
         let label = UILabel()
         label.isUserInteractionEnabled = true
         label.font = .p1Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 2
         return label
     }()

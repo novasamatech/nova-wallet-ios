@@ -17,10 +17,10 @@ extension SegmentedSliderView.ThumbStyle {
         width: 3,
         height: nil,
         shadow: .init(
-            color: R.color.colorBlack72()!,
+            color: R.color.colorVotesToPassIndicatorShadow()!,
             opacity: 1,
             offset: .zero,
-            radius: 8
+            radius: 4
         )
     )
 }

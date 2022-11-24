@@ -44,15 +44,15 @@ final class CustomValidatorListViewLayout: UIView {
 
     let clearButton: RoundedButton = {
         let button = createRoundedButton()
-        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundInactive()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundInactive()!
         return button
     }()
 
     let deselectButton: RoundedButton = {
         let button = createRoundedButton()
-        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundInactive()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundInactive()!
         return button
     }()
 

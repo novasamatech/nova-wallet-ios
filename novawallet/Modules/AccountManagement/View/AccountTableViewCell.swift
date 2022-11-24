@@ -83,7 +83,7 @@ final class AccountTableViewCell: UITableViewCell {
             selectionStyle = .default
 
             infoButton.imageWithTitleView?.iconImage = R.image.iconMore()?.tinted(
-                with: R.color.colorWhite32()!
+                with: R.color.colorIconSecondary()!
             )
 
             infoButtonWidth.constant = Constants.actionButtonWidth

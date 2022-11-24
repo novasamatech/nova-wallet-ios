@@ -17,7 +17,7 @@ final class PayoutTimeViewModelFactory: PayoutTimeViewModelFactoryProtocol {
 
     init(
         timeFormatter: TimeFormatterProtocol,
-        normalTimelefColor: UIColor = R.color.colorWhite48()!,
+        normalTimelefColor: UIColor = R.color.colorTextSecondary()!,
         deadlineTimelefColor: UIColor = R.color.colorTextNegative()!
     ) {
         self.timeFormatter = timeFormatter

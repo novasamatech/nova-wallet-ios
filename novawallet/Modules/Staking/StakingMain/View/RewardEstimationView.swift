@@ -59,7 +59,7 @@ final class RewardEstimationView: LocalizableView {
         let button = RoundedButton()
         button.applyIconStyle()
         button.imageWithTitleView?.iconImage = R.image.iconInfo()?.withRenderingMode(.alwaysTemplate)
-        button.tintColor = R.color.colorWhite48()!
+        button.tintColor = R.color.colorIconSecondary()!
         return button
     }()
 

@@ -34,7 +34,7 @@ final class StakingBalanceUnbondingItemView: UIView {
     let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 

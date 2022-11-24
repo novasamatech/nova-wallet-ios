@@ -4,8 +4,8 @@ import SoraUI
 extension RoundedButton {
     func applyAccessoryStyle() {
         roundedBackgroundView?.shadowOpacity = 0.0
-        roundedBackgroundView?.fillColor = R.color.colorWhite8()!
-        roundedBackgroundView?.highlightedFillColor = R.color.colorWhite8()!
+        roundedBackgroundView?.fillColor = R.color.colorIconSecondary()!
+        roundedBackgroundView?.highlightedFillColor = R.color.colorIconSecondary()!
         roundedBackgroundView?.strokeColor = .clear
         roundedBackgroundView?.highlightedStrokeColor = .clear
 
@@ -41,10 +41,10 @@ extension RoundedButton {
     }
 
     func applyEnabledSecondaryStyle() {
-        imageWithTitleView?.titleColor = R.color.colorTextPrimary()!
+        imageWithTitleView?.titleColor = R.color.colorButtonText()!
     }
 
     func applyDisabledSecondaryStyle() {
-        imageWithTitleView?.titleColor = R.color.colorWhite48()!
+        imageWithTitleView?.titleColor = R.color.colorButtonTextInactive()!
     }
 }

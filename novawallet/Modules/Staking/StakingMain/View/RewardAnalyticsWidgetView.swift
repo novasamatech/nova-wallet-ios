@@ -38,7 +38,7 @@ final class RewardAnalyticsWidgetView: UIView {
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -53,7 +53,7 @@ final class RewardAnalyticsWidgetView: UIView {
     let backgroundButton: TriangularedButton = {
         let button = TriangularedButton()
         button.triangularedView?.fillColor = .clear
-        button.triangularedView?.highlightedFillColor = R.color.colorHighlightedAccent()!
+        button.triangularedView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         button.triangularedView?.shadowOpacity = 0.0
         return button
     }()

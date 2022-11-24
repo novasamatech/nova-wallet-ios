@@ -35,7 +35,7 @@ final class NetworkInfoView: UIView {
 
     let titleControl: ActionTitleControl = {
         let control = ActionTitleControl()
-        control.imageView.image = R.image.iconArrowUp()?.tinted(with: R.color.colorWhite48()!)
+        control.imageView.image = R.image.iconArrowUp()?.tinted(with: R.color.colorIconSecondary()!)
         control.identityIconAngle = CGFloat.pi
         control.activationIconAngle = 0.0
         control.titleLabel.textColor = R.color.colorTextPrimary()

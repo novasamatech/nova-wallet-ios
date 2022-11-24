@@ -62,9 +62,6 @@ protocol UIFactoryProtocol {
     ) -> UIToolbar
 
     func createAccountView(for mode: AccountViewMode, filled: Bool) -> DetailsTriangularedView
-    func createIdentityView(isSingleTitle: Bool) -> DetailsTriangularedView
-
-    func createNetworkFeeView() -> NetworkFeeView
 
     func createNetworkFeeConfirmView() -> NetworkFeeConfirmView
 
@@ -174,12 +171,12 @@ final class UIFactory: UIFactoryProtocol {
         }
 
         if let title = title {
-            view.titleLabel.textColor = R.color.colorLightGray()!
+            view.titleLabel.textColor = R.color.colorTextPrimary()!
             view.titleLabel.font = UIFont.p1Paragraph
             view.titleLabel.text = title
         }
 
-        view.contentView.indexTitleColorInColumn = R.color.colorGray()!
+        view.contentView.indexTitleColorInColumn = R.color.colorTextSecondary()!
         view.contentView.wordTitleColorInColumn = R.color.colorTextPrimary()!
 
         view.contentView.indexFontInColumn = .p0Digits
@@ -190,13 +187,13 @@ final class UIFactory: UIFactoryProtocol {
 
     func createMultilinedTriangularedView() -> MultilineTriangularedView {
         let view = MultilineTriangularedView()
-        view.backgroundView.fillColor = R.color.colorDarkGray()!
-        view.backgroundView.highlightedFillColor = R.color.colorDarkGray()!
+        view.backgroundView.fillColor = R.color.colorBlockBackground()!
+        view.backgroundView.highlightedFillColor = R.color.colorBlockBackground()!
         view.backgroundView.strokeColor = .clear
         view.backgroundView.highlightedStrokeColor = .clear
         view.backgroundView.strokeWidth = 0.0
 
-        view.titleLabel.textColor = R.color.colorLightGray()!
+        view.titleLabel.textColor = R.color.colorTextPrimary()!
         view.titleLabel.font = UIFont.p2Paragraph
         view.subtitleLabel?.textColor = R.color.colorTextPrimary()!
         view.subtitleLabel?.font = UIFont.p1Paragraph
@@ -207,7 +204,7 @@ final class UIFactory: UIFactoryProtocol {
 
     func createSeparatorView() -> UIView {
         let view = UIView()
-        view.backgroundColor = R.color.colorDarkGray()!
+        view.backgroundColor = R.color.colorDivider()!
         return view
     }
 
@@ -297,8 +294,8 @@ final class UIFactory: UIFactoryProtocol {
             amountInputView.triangularedBackgroundView?.highlightedFillColor = .clear
         } else {
             amountInputView.triangularedBackgroundView?.strokeWidth = 0.0
-            amountInputView.triangularedBackgroundView?.fillColor = R.color.colorDarkGray()!
-            amountInputView.triangularedBackgroundView?.highlightedFillColor = R.color.colorDarkGray()!
+            amountInputView.triangularedBackgroundView?.fillColor = R.color.colorInputBackground()!
+            amountInputView.triangularedBackgroundView?.highlightedFillColor = R.color.colorInputBackground()!
         }
 
         amountInputView.titleLabel.textColor = R.color.colorTextSecondary()
@@ -343,7 +340,7 @@ final class UIFactory: UIFactoryProtocol {
     ) -> UIToolbar {
         toolBar.isTranslucent = false
 
-        let background = UIImage.background(from: R.color.colorAlmostBlack()!)
+        let background = UIImage.background(from: .clear)
         toolBar.setBackgroundImage(
             background,
             forToolbarPosition: .any,
@@ -421,46 +418,7 @@ final class UIFactory: UIFactoryProtocol {
         return view
     }
 
-    func createIdentityView(isSingleTitle: Bool) -> DetailsTriangularedView {
-        let view = DetailsTriangularedView()
-
-        view.titleLabel.textColor = R.color.colorTextPrimary()!
-        view.titleLabel.font = UIFont.p1Paragraph
-
-        if isSingleTitle {
-            view.layout = .singleTitle
-            view.titleLabel.lineBreakMode = .byTruncatingMiddle
-        } else {
-            view.layout = .largeIconTitleSubtitle
-
-            view.subtitleLabel?.textColor = R.color.colorLightGray()!
-            view.subtitleLabel?.font = UIFont.p2Paragraph
-
-            view.titleLabel.lineBreakMode = .byTruncatingTail
-            view.subtitleLabel?.lineBreakMode = .byTruncatingMiddle
-        }
-
-        view.actionImage = R.image.iconMore()
-
-        view.iconRadius = 16.0
-
-        view.fillColor = .clear
-        view.highlightedFillColor = R.color.colorHighlightedAccent()!
-        view.strokeColor = R.color.colorStrokeGray()!
-        view.highlightedStrokeColor = R.color.colorStrokeGray()!
-        view.borderWidth = 1.0
-
-        view.contentInsets = UIEdgeInsets(top: 8.0, left: 11.0, bottom: 8.0, right: 16.0)
-
-        return view
-    }
-
     func createNetworkFeeView() -> NetworkFeeView {
-        NetworkFeeView()
-    }
-
-    // TODO: Rename when fully move to this method
-    func createNetwork26FeeView() -> NetworkFeeView {
         let view = NetworkFeeView()
         view.borderType = []
 
@@ -514,7 +472,7 @@ final class UIFactory: UIFactoryProtocol {
 
     func createInfoIndicatingView() -> ImageWithTitleView {
         let view = ImageWithTitleView()
-        view.titleColor = R.color.colorLightGray()
+        view.titleColor = R.color.colorTextSecondary()
         view.titleFont = .p1Paragraph
         view.layoutType = .horizontalLabelFirst
         view.spacingBetweenLabelAndIcon = 5.0
@@ -578,11 +536,11 @@ final class UIFactory: UIFactoryProtocol {
         let view = BorderedSubtitleActionView()
         view.fillColor = .clear
         view.highlightedFillColor = R.color.colorAccentSelected()!
-        view.strokeColor = R.color.colorGray()!
+        view.strokeColor = R.color.colorContainerBorder()!
         view.highlightedStrokeColor = .clear
         view.strokeWidth = 1.0
         view.shadowOpacity = 0.0
-        view.actionControl.contentView.titleLabel.textColor = R.color.colorLightGray()
+        view.actionControl.contentView.titleLabel.textColor = R.color.colorButtonBackgroundSecondary()
         view.actionControl.contentView.titleLabel.font = .p2Paragraph
         view.actionControl.contentView.subtitleLabelView.textColor = R.color.colorTextPrimary()
         view.actionControl.contentView.subtitleLabelView.font = .p1Paragraph

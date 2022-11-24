@@ -140,9 +140,9 @@ extension FWBarChartView: FWChartViewProtocol {
                 return R.color.colorAccent()!
             } else {
                 if chartDataContainsSelectedBar {
-                    return R.color.colorAlmostBlack()!
+                    return R.color.colorChipsBackground()!
                 } else {
-                    return chartData.filled ? R.color.colorAccent()! : R.color.colorGray()!
+                    return chartData.filled ? R.color.colorButtonTextAccent()! : R.color.colorTextSecondary()!
                 }
             }
         }

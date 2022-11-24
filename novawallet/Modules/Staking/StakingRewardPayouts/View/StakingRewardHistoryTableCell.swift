@@ -34,7 +34,7 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite48()
+        label.textColor = R.color.colorTextSecondary()
         label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         return label
     }()

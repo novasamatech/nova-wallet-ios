@@ -130,7 +130,7 @@ struct ModalInfoFactory {
         viewController.allowsSelection = false
         viewController.hasCloseItem = false
         viewController.separatorStyle = .singleLine
-        viewController.separatorColor = R.color.colorWhite24()
+        viewController.separatorColor = R.color.colorDivider()
 
         viewController.localizedTitle = LocalizableResource { locale in
             R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
