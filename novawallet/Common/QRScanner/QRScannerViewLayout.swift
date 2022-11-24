@@ -7,7 +7,7 @@ class QRScannerViewLayout: UIView {
         view.cornerRadius = 24.0
         view.windowSize = CGSize(width: 221.0, height: 221.0)
         view.windowPosition = CGPoint(x: 0.5, y: 0.47)
-        view.fillColor = R.color.colorDimBackground()
+        view.fillColor = R.color.colorDimBackground()!
         return view
     }()
 

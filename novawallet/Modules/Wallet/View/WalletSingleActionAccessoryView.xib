@@ -62,11 +62,6 @@
             <point key="canvasLocation" x="139" y="133"/>
         </view>
     </objects>
-    <designables>
-        <designable name="Y5f-Er-AXF">
-            <size key="intrinsicContentSize" width="50.5" height="34"/>
-        </designable>
-    </designables>
     <resources>
         <namedColor name="colorButtonBackgroundPrimary">
             <color red="0.12200000137090683" green="0.47099998593330383" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
