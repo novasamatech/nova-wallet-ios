@@ -40,8 +40,7 @@ class StakingStateView: UIView {
 
     let statusView: StakingStatusView = {
         let view = StakingStatusView()
-        view.backgroundView.fillColor = R.color.colorWhite8()!
-        view.backgroundView.highlightedFillColor = R.color.colorWhite8()!
+        view.backgroundView.apply(style: .chips)
         view.isUserInteractionEnabled = false
         return view
     }()

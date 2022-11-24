@@ -7,14 +7,14 @@ extension ModalSheetPresentationStyle {
         let indicatorSize = CGSize(width: 32.0, height: 3.0)
         let headerStyle = ModalSheetPresentationHeaderStyle(
             preferredHeight: 20.0,
-            backgroundColor: R.color.colorBlockBackground()!,
+            backgroundColor: R.color.colorChipsBackground()!,
             cornerRadius: 16.0,
             indicatorVerticalOffset: 4.0,
             indicatorSize: indicatorSize,
-            indicatorColor: R.color.colorWhite32()!
+            indicatorColor: R.color.colorIconChip()!
         )
         let style = ModalSheetPresentationStyle(
-            backdropColor: R.color.colorScrim()!,
+            backdropColor: R.color.colorBottomSheetBackground()!,
             headerStyle: headerStyle
         )
         return style

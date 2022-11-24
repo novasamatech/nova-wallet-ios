@@ -228,7 +228,7 @@ extension ValidatorSearchViewController: EmptyStateDataSource {
                 .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
         }
 
-        emptyView.titleColor = R.color.colorLightGray()!
+        emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .p2Paragraph
         return emptyView
     }

@@ -20,7 +20,7 @@ final class StakingAmountLayout: UIView {
 
     let aboutLinkView = LinkCellView()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
 
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()

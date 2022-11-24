@@ -29,7 +29,7 @@ final class StakingUnbondingItemView: GenericTitleValueView<UILabel, IconDetails
             valueView.spacing = 4.0
             valueView.iconWidth = 16.0
 
-            let icon = R.image.iconPending()?.tinted(with: R.color.colorWhite48()!)
+            let icon = R.image.iconPending()?.tinted(with: R.color.colorIconSecondary()!)
             valueView.imageView.image = icon
         } else {
             valueView.detailsLabel.textColor = R.color.colorTextPositive()

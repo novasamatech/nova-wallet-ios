@@ -36,7 +36,7 @@ final class AnalyticsValidatorsCell: UITableViewCell {
     let progressDescriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .p3Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -136,7 +136,7 @@ final class AnalyticsValidatorsCell: UITableViewCell {
     private func setupBackground() {
         backgroundColor = .clear
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()
     }
 
     func bind(viewModel: AnalyticsValidatorItemViewModel) {

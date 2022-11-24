@@ -47,7 +47,7 @@ class CustomValidatorCell: UITableViewCell {
 
     let infoButton: UIButton = {
         let button = UIButton()
-        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite40()!)
+        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         button.setImage(icon, for: .normal)
         return button
     }()

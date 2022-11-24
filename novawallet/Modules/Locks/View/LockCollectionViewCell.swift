@@ -7,7 +7,7 @@ final class LockCollectionViewCell: UICollectionViewCell {
     )
     private let titleLabel: UILabel = .create {
         $0.font = .regularFootnote
-        $0.textColor = R.color.colorWhite64()
+        $0.textColor = R.color.colorTextSecondary()
     }
 
     private let valueLabel: MultiValueView = .create {

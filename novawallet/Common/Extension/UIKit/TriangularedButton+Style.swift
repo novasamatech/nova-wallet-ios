@@ -16,8 +16,8 @@ extension TriangularedButton {
         triangularedView?.shadowOpacity = 0.0
         triangularedView?.fillColor = .clear
         triangularedView?.highlightedFillColor = .clear
-        triangularedView?.strokeColor = R.color.colorDarkGray()!
-        triangularedView?.highlightedStrokeColor = R.color.colorDarkGray()!
+        triangularedView?.strokeColor = R.color.colorIconSecondary()!
+        triangularedView?.highlightedStrokeColor = R.color.colorIconSecondary()!
         triangularedView?.strokeWidth = 2.0
 
         imageWithTitleView?.titleColor = R.color.colorTextPrimary()!

@@ -37,7 +37,7 @@ class SelectedValidatorCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite40()!)
+        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return imageView
@@ -65,7 +65,7 @@ class SelectedValidatorCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()!
     }
 
     private func setupLayout() {

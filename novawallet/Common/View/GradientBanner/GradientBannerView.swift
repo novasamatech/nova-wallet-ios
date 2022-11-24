@@ -205,7 +205,7 @@ class GradientBannerView: UIView {
 
         let loadingView = RoundedView()
         loadingView.applyFilledBackgroundStyle()
-        loadingView.fillColor = R.color.colorWhite8()!
+        loadingView.fillColor = R.color.colorDimBackground()!
 
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.tintColor = R.color.colorIndicatorShimmering()

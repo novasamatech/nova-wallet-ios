@@ -194,7 +194,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
             emptyStateView.layoutType = .verticalImageFirst
             emptyStateView.iconImage = R.image.iconEmptySearch()!
             emptyStateView.titleFont = .regularFootnote
-            emptyStateView.titleColor = R.color.colorWhite64()!
+            emptyStateView.titleColor = R.color.colorTextSecondary()!
             emptyStateView.spacingBetweenLabelAndIcon = 0
 
             $0.valueBottom.contentInsets = .zero

@@ -44,7 +44,7 @@ class YourValidatorTableCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         return imageView
     }()
 
@@ -98,7 +98,7 @@ class YourValidatorTableCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()!
 
         setupLayout()
     }

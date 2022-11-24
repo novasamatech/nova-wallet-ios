@@ -11,7 +11,7 @@ final class StakingPayoutRewardTableCell: StakingPayoutBaseTableCell {
     let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
