@@ -73,7 +73,7 @@ final class VoteTableHeaderView: UIView {
             make.height.equalTo(40.0)
         }
 
-        let chainBlur = TriangularedBlurView()
+        let chainBlur = BlockBackgroundView()
         addSubview(chainBlur)
         chainBlur.snp.makeConstraints { make in
             make.top.equalTo(votingTypeSwitch.snp.bottom).offset(8)

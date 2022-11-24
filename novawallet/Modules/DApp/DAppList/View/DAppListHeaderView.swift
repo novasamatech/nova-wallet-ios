@@ -38,8 +38,8 @@ final class DAppListHeaderView: UICollectionViewCell {
         return label
     }()
 
-    let searchView: ControlView<TriangularedBlurView, IconDetailsView> = {
-        let backgroundView = TriangularedBlurView()
+    let searchView: ControlView<BlockBackgroundView, IconDetailsView> = {
+        let backgroundView = BlockBackgroundView()
         backgroundView.overlayView?.highlightedFillColor = R.color.colorAccentSelected()!
 
         let contentView = IconDetailsView()

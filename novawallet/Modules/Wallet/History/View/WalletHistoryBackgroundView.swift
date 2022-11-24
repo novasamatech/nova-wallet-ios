@@ -1,7 +1,7 @@
 import Foundation
 import CommonWallet
 
-final class WalletHistoryBackgroundView: TriangularedBlurView {
+final class WalletHistoryBackgroundView: BlurBackgroundView {
     let minimizedSideLength: CGFloat = 12.0
 }
 

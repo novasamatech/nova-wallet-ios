@@ -1,8 +1,8 @@
 import UIKit
 
 final class AssetListEmptyCell: UICollectionViewCell {
-    let backgroundBlurView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundBlurView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12.0
         return view
     }()

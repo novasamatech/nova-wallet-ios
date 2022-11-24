@@ -4,8 +4,8 @@ import SoraUI
 final class CrowdloanTableViewCell: UITableViewCell {
     var skeletonView: SkrullableView?
 
-    private let backgroundBlurView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    private let backgroundBlurView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.isUserInteractionEnabled = false
         return view
     }()

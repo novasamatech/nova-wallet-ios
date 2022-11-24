@@ -2,8 +2,8 @@ import UIKit
 import SoraUI
 
 @IBDesignable
-open class TriangularedBlurView: UIView {
-    private(set) var blurMaskView: TriangularedView?
+open class BlockBackgroundView: UIView {
+    private(set) var contentView: TriangularedView?
     private(set) var overlayView: TriangularedView?
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -19,31 +19,15 @@ open class TriangularedBlurView: UIView {
 
     var sideLength: CGFloat = 10.0 {
         didSet {
-            blurMaskView?.sideLength = sideLength
+            contentView?.sideLength = sideLength
             overlayView?.sideLength = sideLength
         }
     }
 
     var cornerCut: UIRectCorner = .allCorners {
         didSet {
-            blurMaskView?.cornerCut = cornerCut
+            contentView?.cornerCut = cornerCut
             overlayView?.cornerCut = cornerCut
-        }
-    }
-
-    var blurStyle: UIBlurEffect.Style = .light {
-        didSet {
-            removeBlurView()
-            addBlurView()
-            setNeedsLayout()
-        }
-    }
-
-    var blurAlpha: CGFloat = 0.22 {
-        didSet {
-            removeBlurView()
-            addBlurView()
-            setNeedsLayout()
         }
     }
 
@@ -68,13 +52,8 @@ open class TriangularedBlurView: UIView {
         }
     }
 
-    private func removeBlurView() {
-        blurMaskView?.removeFromSuperview()
-        blurMaskView = nil
-    }
-
     private func addBlurView() {
-        if blurMaskView == nil {
+        if contentView == nil {
             let blurMaskView = TriangularedView()
             blurMaskView.cornerCut = cornerCut
             blurMaskView.shadowOpacity = 0.0
@@ -82,19 +61,19 @@ open class TriangularedBlurView: UIView {
 
             insertSubview(blurMaskView, at: 0)
 
-            self.blurMaskView = blurMaskView
+            contentView = blurMaskView
         }
     }
 
     override open func layoutSubviews() {
         super.layoutSubviews()
 
-        blurMaskView?.frame = CGRect(origin: .zero, size: bounds.size)
+        contentView?.frame = CGRect(origin: .zero, size: bounds.size)
         overlayView?.frame = bounds
     }
 }
 
-extension TriangularedBlurView: Highlightable {
+extension BlockBackgroundView: Highlightable {
     public func set(highlighted: Bool, animated: Bool) {
         overlayView?.set(highlighted: highlighted, animated: animated)
     }

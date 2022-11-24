@@ -2,7 +2,7 @@ import UIKit
 
 class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UIView {
     let view: TContentView = .init()
-    let backgroundBlurView = TriangularedBlurView()
+    let backgroundBlurView = BlockBackgroundView()
 
     var shouldApplyHighlighting: Bool = false
 

@@ -1,6 +1,6 @@
 import UIKit
 
-extension TriangularedBlurView {
+extension BlockBackgroundView {
     @IBInspectable
     private var _cornerCut: UInt {
         get {
@@ -9,19 +9,6 @@ extension TriangularedBlurView {
 
         set {
             cornerCut = UIRectCorner(rawValue: newValue)
-        }
-    }
-
-    @IBInspectable
-    private var _blurStyle: Int {
-        get {
-            blurStyle.rawValue
-        }
-
-        set {
-            if let newBlur = UIBlurEffect.Style(rawValue: newValue) {
-                blurStyle = newBlur
-            }
         }
     }
 
