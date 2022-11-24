@@ -119,8 +119,8 @@ extension DotsView {
 extension DotsView.Style {
     static let defaultStyle = DotsView.Style(
         lineWidth: 1,
-        connectingColor: R.color.colorNovaBlue()!,
-        dashedColor: R.color.colorWhite24()!,
+        connectingColor: R.color.colorIconAccent()!,
+        dashedColor: R.color.colorIconInactive()!,
         dotRadius: 6,
         pointSpacing: 36,
         lineSpacing: 6,

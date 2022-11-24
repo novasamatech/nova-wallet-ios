@@ -17,10 +17,10 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         view.mode = .detailsIcon
 
         view.detailsLabel.numberOfLines = 1
-        view.detailsLabel.textColor = R.color.colorTransparentText()
+        view.detailsLabel.textColor = R.color.colorTextSecondary()
         view.detailsLabel.font = .regularSubheadline
 
-        view.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+        view.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
 
         view.iconWidth = 16.0
         view.spacing = 4.0
@@ -30,19 +30,20 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
 
     let amountLabel: UILabel = {
         let view = UILabel()
-        view.textColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
         view.font = .boldLargeTitle
         view.textAlignment = .center
         return view
     }()
 
     let locksView: BorderedIconLabelView = .create {
-        let color = R.color.colorWhite64()!
+        let color = R.color.colorChipText()!
         $0.iconDetailsView.imageView.image = R.image.iconBrowserSecurity()?.withTintColor(color)
         $0.iconDetailsView.detailsLabel.font = .regularFootnote
         $0.iconDetailsView.detailsLabel.textColor = color
         $0.iconDetailsView.spacing = 4.0
         $0.contentInsets = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+        $0.backgroundView.apply(style: .chips)
         $0.isHidden = true
     }
 

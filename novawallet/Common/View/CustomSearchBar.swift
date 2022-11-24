@@ -4,19 +4,16 @@ import SoraUI
 final class CustomSearchBar: UIView {
     let textFieldBackgroundView: RoundedView = {
         let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite8()!
-        view.highlightedFillColor = R.color.colorWhite8()!
-
+        view.apply(style: .textField)
         return view
     }()
 
     let textField: UITextField = {
         let view = UITextField()
-        view.textColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
         view.font = .regularFootnote
         view.background = UIImage()
-        view.tintColor = R.color.colorWhite()
+        view.tintColor = R.color.colorTextPrimary()
         view.returnKeyType = .go
         view.clearButtonMode = .whileEditing
         view.autocapitalizationType = .none

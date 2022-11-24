@@ -12,28 +12,28 @@ final class AssetListAssetCell: UICollectionViewCell {
     let assetLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldBody
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
     let priceChangeLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = .clear
         return label
     }()
 
     let balanceLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldBody
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.textAlignment = .right
         return label
     }()
@@ -41,7 +41,7 @@ final class AssetListAssetCell: UICollectionViewCell {
     let balanceValueLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.textAlignment = .right
         return label
     }()
@@ -53,7 +53,7 @@ final class AssetListAssetCell: UICollectionViewCell {
 
         let selectedBackgroundView = RoundedView()
         selectedBackgroundView.applyFilledBackgroundStyle()
-        selectedBackgroundView.fillColor = R.color.colorAccentSelected()!
+        selectedBackgroundView.fillColor = R.color.colorCellBackgroundPressed()!
         selectedBackgroundView.cornerRadius = 0.0
 
         let rowView = RowView(contentView: selectedBackgroundView)
@@ -114,10 +114,10 @@ final class AssetListAssetCell: UICollectionViewCell {
         switch priceChangeViewModel {
         case let .increase(value):
             priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorGreen()
+            priceChangeLabel.textColor = R.color.colorTextPositive()
         case let .decrease(value):
             priceChangeLabel.text = value
-            priceChangeLabel.textColor = R.color.colorRed()
+            priceChangeLabel.textColor = R.color.colorTextNegative()
         }
     }
 
