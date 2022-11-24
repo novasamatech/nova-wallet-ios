@@ -131,8 +131,8 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
         pinView.numpadView?.accessoryButtonStyle = additionalButtonStyle
 
         pinView.securedCharacterFieldsView?.style = SecuredCharacterFieldsView.Style(
-            normalFillColor: R.color.colorButtonBackgroundSecondary()!,
-            highlightedFillColor: R.color.colorCellBackgroundPressed()!,
+            normalFillColor: R.color.colorIndicatorInactive()!,
+            highlightedFillColor: R.color.colorIndicatorActive()!,
             normalStrokeColor: .clear,
             highlightedStrokeColor: .clear,
             strokeWidth: 0.0,

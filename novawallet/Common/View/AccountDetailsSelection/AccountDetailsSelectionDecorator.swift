@@ -6,7 +6,7 @@ protocol AccountDetailsSelectionDecorator {
 
 struct AccountDetailsBalanceDecorator: AccountDetailsSelectionDecorator {
     static func decorate(viewModel: TitleWithSubtitleViewModel, enabled: Bool) -> NSAttributedString {
-        let titleColor = enabled ? R.color.colorTextSecondary()! : R.color.colorWhite32()!
+        let titleColor = R.color.colorTextSecondary()!
 
         let attributedString = NSMutableAttributedString(
             string: viewModel.title,
@@ -15,7 +15,7 @@ struct AccountDetailsBalanceDecorator: AccountDetailsSelectionDecorator {
             ]
         )
 
-        let subtitleColor = enabled ? R.color.colorTextPrimary()! : R.color.colorWhite32()!
+        let subtitleColor = enabled ? R.color.colorTextPrimary()! : R.color.colorTextSecondary()!
 
         let subtitleAttributedString = NSAttributedString(
             string: " " + viewModel.subtitle,
