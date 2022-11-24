@@ -15,7 +15,7 @@ extension WalletNetworkFacade {
         let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
 
         if !chainAsset.asset.isEvm {
-            if let baseUrl = chain.externalApi?.history?.url {
+            if let baseUrl = chain.externalApi?.history?.first(where: { $0.assetType == nil })?.url {
                 do {
                     let asset = chainAsset.asset
                     let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)

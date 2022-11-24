@@ -632,6 +632,7 @@
 		842A738A27DE14B3006EE1EA /* TransactionLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */; };
 		842A738C27DE576C006EE1EA /* NovaTintImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738B27DE576C006EE1EA /* NovaTintImageProcessor.swift */; };
 		842A738E27DEF592006EE1EA /* AssetTransactionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738D27DEF591006EE1EA /* AssetTransactionGenerator.swift */; };
+		842AEB81292F34B600C61B0C /* RemoteChainExternalApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842AEB80292F34B600C61B0C /* RemoteChainExternalApi.swift */; };
 		842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B17FA28648FDC0014CC57 /* ChainAssetViewModelFactory.swift */; };
 		842B17FD2864980B0014CC57 /* NetworkSelectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B17FC2864980B0014CC57 /* NetworkSelectionTableViewCell.swift */; };
 		842B17FF28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B17FE28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift */; };
@@ -3662,6 +3663,8 @@
 		842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionLocalStorageHandler.swift; sourceTree = "<group>"; };
 		842A738B27DE576C006EE1EA /* NovaTintImageProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaTintImageProcessor.swift; sourceTree = "<group>"; };
 		842A738D27DEF591006EE1EA /* AssetTransactionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTransactionGenerator.swift; sourceTree = "<group>"; };
+		842AEB7F292E48E700C61B0C /* SubstrateDataModel6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel6.xcdatamodel; sourceTree = "<group>"; };
+		842AEB80292F34B600C61B0C /* RemoteChainExternalApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainExternalApi.swift; sourceTree = "<group>"; };
 		842B17FA28648FDC0014CC57 /* ChainAssetViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAssetViewModelFactory.swift; sourceTree = "<group>"; };
 		842B17FC2864980B0014CC57 /* NetworkSelectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionTableViewCell.swift; sourceTree = "<group>"; };
 		842B17FE28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainDestinationSelectionState.swift; sourceTree = "<group>"; };
@@ -11867,6 +11870,7 @@
 				84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */,
 				889F7F3C2923737B0024CB1E /* RemoteEvmToken.swift */,
 				889F7F3A292373560024CB1E /* AssetModel+Evm.swift */,
+				842AEB80292F34B600C61B0C /* RemoteChainExternalApi.swift */,
 			);
 			path = ChainRegistry;
 			sourceTree = "<group>";
@@ -16983,6 +16987,7 @@
 				F0C3DB0CEE1975626B0014A8 /* StakingUnbondConfirmInteractor.swift in Sources */,
 				849FA21628A26CB500F83EAA /* CountdownTimerMediator.swift in Sources */,
 				D3B48F82A875E301D749AC0B /* StakingUnbondConfirmViewController.swift in Sources */,
+				842AEB81292F34B600C61B0C /* RemoteChainExternalApi.swift in Sources */,
 				8472C5AE265CF9C500E2481B /* StakingRewardDestConfirmViewModel.swift in Sources */,
 				842A736227DB3032006EE1EA /* OperationExtrinsicModel.swift in Sources */,
 				843E9B2827C83985009C143A /* AssetListNftsCell.swift in Sources */,
@@ -18478,13 +18483,14 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				842AEB7F292E48E700C61B0C /* SubstrateDataModel6.xcdatamodel */,
 				8493FF36291A3D4C00F09F1B /* SubstrateDataModel5.xcdatamodel */,
 				845B08112918E343005785D3 /* SubstrateDataModel4.xcdatamodel */,
 				84D8754628EB726E004065BD /* SubstrateDataModel3.xcdatamodel */,
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 8493FF36291A3D4C00F09F1B /* SubstrateDataModel5.xcdatamodel */;
+			currentVersion = 842AEB7F292E48E700C61B0C /* SubstrateDataModel6.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
