@@ -12,7 +12,7 @@ struct RemoteChainModel: Equatable, Codable, Hashable {
     let types: ChainModel.TypesSettings?
     let icon: URL
     let options: [String]?
-    let externalApi: ChainModel.ExternalApiSet?
+    let externalApi: RemoteChainExternalApiSet?
     let explorers: [ChainModel.Explorer]?
     let additional: JSON?
 }
