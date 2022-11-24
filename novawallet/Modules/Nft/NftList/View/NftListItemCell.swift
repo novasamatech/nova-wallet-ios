@@ -11,7 +11,7 @@ class NftListItemCell: UICollectionViewCell {
     let blurBackgroundView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
-        view.overlayView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        view.overlayView?.highlightedFillColor = R.color.colorHighlightedAccent()!
         return view
     }()
 

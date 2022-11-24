@@ -123,7 +123,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        backgroundBlurView.overlayView.fillColor = highlighted ?
+        backgroundBlurView.overlayView?.fillColor = highlighted ?
             R.color.colorCellBackgroundPressed()!
             : .clear
     }

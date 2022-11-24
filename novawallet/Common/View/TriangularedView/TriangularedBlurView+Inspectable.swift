@@ -28,12 +28,12 @@ extension TriangularedBlurView {
     @IBInspectable
     private var _overlayFillColor: UIColor {
         get {
-            overlayView.fillColor
+            overlayView?.fillColor ?? UIColor.black
         }
 
         set {
-            overlayView.fillColor = newValue
-            overlayView.highlightedFillColor = newValue
+            overlayView?.fillColor = newValue
+            overlayView?.highlightedFillColor = newValue
         }
     }
 }

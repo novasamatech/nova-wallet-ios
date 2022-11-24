@@ -13,7 +13,7 @@ final class AssetListNftsCell: UICollectionViewCell {
     let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
-        view.overlayView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
+        view.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         return view
     }()
 

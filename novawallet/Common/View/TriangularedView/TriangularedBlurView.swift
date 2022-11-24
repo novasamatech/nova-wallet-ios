@@ -3,9 +3,8 @@ import SoraUI
 
 @IBDesignable
 open class TriangularedBlurView: UIView {
-    private(set) var blurView: UIVisualEffectView?
     private(set) var blurMaskView: TriangularedView?
-    private(set) var overlayView: TriangularedView!
+    private(set) var overlayView: TriangularedView?
     override public init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -21,14 +20,14 @@ open class TriangularedBlurView: UIView {
     var sideLength: CGFloat = 10.0 {
         didSet {
             blurMaskView?.sideLength = sideLength
-            overlayView.sideLength = sideLength
+            overlayView?.sideLength = sideLength
         }
     }
 
     var cornerCut: UIRectCorner = .allCorners {
         didSet {
             blurMaskView?.cornerCut = cornerCut
-            overlayView.cornerCut = cornerCut
+            overlayView?.cornerCut = cornerCut
         }
     }
 
@@ -57,39 +56,31 @@ open class TriangularedBlurView: UIView {
 
     private func addOverlayView() {
         if overlayView == nil {
-            overlayView = TriangularedView()
+            let overlayView = TriangularedView()
             overlayView.cornerCut = cornerCut
             overlayView.sideLength = sideLength
             overlayView.shadowOpacity = 0.0
             overlayView.fillColor = .clear
             overlayView.highlightedFillColor = .clear
             addSubview(overlayView)
+
+            self.overlayView = overlayView
         }
     }
 
     private func removeBlurView() {
-        blurView?.removeFromSuperview()
-        blurView = nil
+        blurMaskView?.removeFromSuperview()
         blurMaskView = nil
     }
 
     private func addBlurView() {
-        if blurView == nil {
-            let blur = UIBlurEffect(style: blurStyle)
-            let blurView = UIVisualEffectView(effect: blur)
-            blurView.alpha = blurAlpha
-            insertSubview(blurView, at: 0)
-
-            self.blurView = blurView
-        }
-
         if blurMaskView == nil {
             let blurMaskView = TriangularedView()
             blurMaskView.cornerCut = cornerCut
             blurMaskView.shadowOpacity = 0.0
-            blurMaskView.fillColor = R.color.colorBlockBackgroundSolid()!
+            blurMaskView.fillColor = R.color.colorBlockBackground()!
 
-            blurView?.mask = blurMaskView
+            insertSubview(blurMaskView, at: 0)
 
             self.blurMaskView = blurMaskView
         }
@@ -99,13 +90,12 @@ open class TriangularedBlurView: UIView {
         super.layoutSubviews()
 
         blurMaskView?.frame = CGRect(origin: .zero, size: bounds.size)
-        blurView?.frame = bounds
-        overlayView.frame = bounds
+        overlayView?.frame = bounds
     }
 }
 
 extension TriangularedBlurView: Highlightable {
     public func set(highlighted: Bool, animated: Bool) {
-        overlayView.set(highlighted: highlighted, animated: animated)
+        overlayView?.set(highlighted: highlighted, animated: animated)
     }
 }
