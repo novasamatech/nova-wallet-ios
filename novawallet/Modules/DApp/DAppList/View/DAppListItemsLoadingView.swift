@@ -4,7 +4,7 @@ import SoraUI
 final class DAppListItemsLoadingView: UICollectionViewCell {
     static let preferredHeight: CGFloat = 274.0
 
-    let listBackgroundView = TriangularedBlurView()
+    let listBackgroundView = BlockBackgroundView()
 
     private var skeletonView: SkrullableView?
 

@@ -10,10 +10,10 @@ final class AssetListNftsCell: UICollectionViewCell {
         static let mediaTrailing: CGFloat = 8.0
     }
 
-    let backgroundBlurView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundBlurView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12.0
-        view.overlayView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
+        view.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         return view
     }()
 

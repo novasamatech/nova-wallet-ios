@@ -8,8 +8,8 @@ protocol AlertsViewDelegate: AnyObject {
 final class AlertsView: UIView {
     weak var delegate: AlertsViewDelegate?
 
-    private let backgroundView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    private let backgroundView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12
         return view
     }()

@@ -138,7 +138,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private func setupAssetSelectionView() {
         assetSelectionContainerView.translatesAutoresizingMaskIntoConstraints = false
 
-        let backgroundView = TriangularedBlurView()
+        let backgroundView = BlockBackgroundView()
         assetSelectionContainerView.addSubview(backgroundView)
         assetSelectionContainerView.addSubview(assetSelectionView)
 

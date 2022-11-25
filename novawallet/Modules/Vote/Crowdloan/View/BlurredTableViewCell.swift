@@ -2,7 +2,7 @@ import UIKit
 
 class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UIView {
     let view: TContentView = .init()
-    let backgroundBlurView = TriangularedBlurView()
+    let backgroundBlurView = BlockBackgroundView()
 
     var shouldApplyHighlighting: Bool = false
 
@@ -29,7 +29,7 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        backgroundBlurView.overlayView.fillColor = shouldApplyHighlighting && highlighted ?
+        backgroundBlurView.overlayView?.fillColor = shouldApplyHighlighting && highlighted ?
             R.color.colorAccentSelected()!
             : .clear
     }
