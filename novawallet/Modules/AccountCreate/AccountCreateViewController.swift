@@ -42,7 +42,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
 
     private func setupNavigationItem() {
         let advancedBarButtonItem = UIBarButtonItem(
-            image: R.image.iconOptions(),
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
             style: .plain,
             target: self,
             action: #selector(openAdvanced)
