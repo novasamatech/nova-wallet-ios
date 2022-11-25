@@ -65,8 +65,8 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in make.edges.equalToSuperview() }
 
-        let logoHorizontalInset: CGFloat = 45
-        let logoBottomMultiplier: CGFloat = 0.48
+        let logoHorizontalInset: CGFloat = 40
+        let logoBottomMultiplier: CGFloat = 0.5
 
         addSubview(logo)
         logo.snp.makeConstraints { make in
@@ -85,13 +85,9 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
 
         let bottomOffset = 16.0
         let buttonsBaseWidth = 335.0
-        let buttonsWidth: CGFloat
 
-        if isAdaptiveWidthDecreased {
-            buttonsWidth = buttonsBaseWidth * designScaleRatio.width
-        } else {
-            buttonsWidth = buttonsBaseWidth
-        }
+        let buttonWidthMultiplier = isAdaptiveWidthDecreased ? designScaleRatio.width : 1.0
+        let buttonsWidth: CGFloat = buttonsBaseWidth * buttonWidthMultiplier
 
         addSubview(watchOnlyButton)
         watchOnlyButton.snp.makeConstraints { make in
