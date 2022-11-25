@@ -1846,6 +1846,8 @@
 		84C3F78C26020DE800D47501 /* StakingStateMachineProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3F78B26020DE800D47501 /* StakingStateMachineProtocols.swift */; };
 		84C41F3628EDADE000DB1CD3 /* ReferendaTrackInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C41F3528EDADE000DB1CD3 /* ReferendaTrackInfo.swift */; };
 		84C41F3828EDB80700DB1CD3 /* ReferendaCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C41F3728EDB80700DB1CD3 /* ReferendaCurve.swift */; };
+		84C479BF29309062003DF82B /* GovernanceV2PolkassemblyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C479BE29309062003DF82B /* GovernanceV2PolkassemblyOperationFactory.swift */; };
+		84C479C129309E58003DF82B /* PolkassemblyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C479C029309E58003DF82B /* PolkassemblyOperationFactory.swift */; };
 		84C4C2D7255D2B780045B582 /* PinChangeWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4C2D6255D2B780045B582 /* PinChangeWireframe.swift */; };
 		84C4C2F9255DB9510045B582 /* PinChangeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4C2F8255DB9510045B582 /* PinChangeInteractor.swift */; };
 		84C515FB26D84F8C000DBA45 /* AccountImportWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C515FA26D84F8C000DBA45 /* AccountImportWrapper.swift */; };
@@ -1877,7 +1879,7 @@
 		84C7DA5425EE2DF000F8C318 /* StakingErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7DA5325EE2DF000F8C318 /* StakingErrorPresentable.swift */; };
 		84C91FAA261E724F002796B9 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C91FA9261E724F002796B9 /* SwitchTableViewCell.swift */; };
 		84C91FAF261E7CDD002796B9 /* WalletHistoryFilterEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C91FAE261E7CDD002796B9 /* WalletHistoryFilterEditor.swift */; };
-		84C9CF3B291AE328002BF328 /* PolkassemblyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CF3A291AE328002BF328 /* PolkassemblyOperationFactory.swift */; };
+		84C9CF3B291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CF3A291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift */; };
 		84C9CF3D291AF1B1002BF328 /* GovernanceOffchainApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CF3C291AF1B1002BF328 /* GovernanceOffchainApi.swift */; };
 		84C9CF3F291AF4B2002BF328 /* ReferendumMetadataDetailsProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C9CF3E291AF4B2002BF328 /* ReferendumMetadataDetailsProviderSource.swift */; };
 		84CA68CF26BD6872003B9453 /* RuntimeSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CA68CE26BD6872003B9453 /* RuntimeSyncService.swift */; };
@@ -4858,6 +4860,8 @@
 		84C3F78B26020DE800D47501 /* StakingStateMachineProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateMachineProtocols.swift; sourceTree = "<group>"; };
 		84C41F3528EDADE000DB1CD3 /* ReferendaTrackInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendaTrackInfo.swift; sourceTree = "<group>"; };
 		84C41F3728EDB80700DB1CD3 /* ReferendaCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendaCurve.swift; sourceTree = "<group>"; };
+		84C479BE29309062003DF82B /* GovernanceV2PolkassemblyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceV2PolkassemblyOperationFactory.swift; sourceTree = "<group>"; };
+		84C479C029309E58003DF82B /* PolkassemblyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkassemblyOperationFactory.swift; sourceTree = "<group>"; };
 		84C4C2D6255D2B780045B582 /* PinChangeWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinChangeWireframe.swift; sourceTree = "<group>"; };
 		84C4C2F8255DB9510045B582 /* PinChangeInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinChangeInteractor.swift; sourceTree = "<group>"; };
 		84C515FA26D84F8C000DBA45 /* AccountImportWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportWrapper.swift; sourceTree = "<group>"; };
@@ -4889,7 +4893,7 @@
 		84C7DA5325EE2DF000F8C318 /* StakingErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingErrorPresentable.swift; sourceTree = "<group>"; };
 		84C91FA9261E724F002796B9 /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
 		84C91FAE261E7CDD002796B9 /* WalletHistoryFilterEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterEditor.swift; sourceTree = "<group>"; };
-		84C9CF3A291AE328002BF328 /* PolkassemblyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkassemblyOperationFactory.swift; sourceTree = "<group>"; };
+		84C9CF3A291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceV1PolkassemblyOperationFactory.swift; sourceTree = "<group>"; };
 		84C9CF3C291AF1B1002BF328 /* GovernanceOffchainApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceOffchainApi.swift; sourceTree = "<group>"; };
 		84C9CF3E291AF4B2002BF328 /* ReferendumMetadataDetailsProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumMetadataDetailsProviderSource.swift; sourceTree = "<group>"; };
 		84CA68CE26BD6872003B9453 /* RuntimeSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeSyncService.swift; sourceTree = "<group>"; };
@@ -11564,7 +11568,9 @@
 		84C9CF39291AE30F002BF328 /* Polkassembly */ = {
 			isa = PBXGroup;
 			children = (
-				84C9CF3A291AE328002BF328 /* PolkassemblyOperationFactory.swift */,
+				84C479C029309E58003DF82B /* PolkassemblyOperationFactory.swift */,
+				84C9CF3A291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift */,
+				84C479BE29309062003DF82B /* GovernanceV2PolkassemblyOperationFactory.swift */,
 			);
 			path = Polkassembly;
 			sourceTree = "<group>";
@@ -15294,6 +15300,7 @@
 				848DE76826D64F7F0045CD29 /* UserStorageVersion.swift in Sources */,
 				84DB9E982640A49E00F23DD3 /* StakingRedeemViewModelFactory.swift in Sources */,
 				84ACEBF2261E664900AAE665 /* WalletHistoryFilterViewModel.swift in Sources */,
+				84C479BF29309062003DF82B /* GovernanceV2PolkassemblyOperationFactory.swift in Sources */,
 				AEE5FAFD26415DE2002B8FDC /* StakingRebondSetupViewController.swift in Sources */,
 				F47F5A7A2626E91A009BCFF4 /* StakingRewardHistoryViewModel.swift in Sources */,
 				AE7129B4260872ED000AA3F5 /* EraStakersInfoChanged.swift in Sources */,
@@ -16836,6 +16843,7 @@
 				885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */,
 				8442002F28E9AEFB00C49C4A /* VoteWireframe.swift in Sources */,
 				841E553C282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift in Sources */,
+				84C479C129309E58003DF82B /* PolkassemblyOperationFactory.swift in Sources */,
 				84300B2C26C10C9B00D64514 /* ConnectionStateReporting.swift in Sources */,
 				9E4E458C92D12B24D5EAD893 /* ControllerAccountInteractor.swift in Sources */,
 				83A98B972B3EA69B357E5002 /* ControllerAccountViewController.swift in Sources */,
@@ -16843,7 +16851,7 @@
 				EB5F587A71CCE1F0F86154CF /* ControllerAccountViewFactory.swift in Sources */,
 				9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */,
 				AE1000F226679886004753B7 /* ChangeTargetsRecommendationWireframe.swift in Sources */,
-				84C9CF3B291AE328002BF328 /* PolkassemblyOperationFactory.swift in Sources */,
+				84C9CF3B291AE328002BF328 /* GovernanceV1PolkassemblyOperationFactory.swift in Sources */,
 				D886425A55425810AD070AB5 /* ControllerAccountConfirmationWireframe.swift in Sources */,
 				84D17EDE28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift in Sources */,
 				84E2589F2892B5AF00DC8A51 /* WalletSwitchPresentable.swift in Sources */,
