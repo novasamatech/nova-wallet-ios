@@ -3,7 +3,7 @@ import SoraUI
 import SoraFoundation
 
 final class RewardAnalyticsWidgetView: UIView {
-    private let backgroundView: UIView = TriangularedBlurView()
+    private let backgroundView: UIView = BlockBackgroundView()
 
     private let titleLabel: UILabel = {
         let label = UILabel()

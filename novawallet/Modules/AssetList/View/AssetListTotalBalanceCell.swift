@@ -6,8 +6,8 @@ final class AssetListTotalBalanceCell: UICollectionViewCell {
         static let bottomInset: CGFloat = 20.0
     }
 
-    let backgroundBlurView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundBlurView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12.0
         return view
     }()

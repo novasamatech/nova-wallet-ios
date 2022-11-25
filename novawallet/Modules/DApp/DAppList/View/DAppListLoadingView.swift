@@ -4,7 +4,7 @@ import SoraUI
 final class DAppListLoadingView: UICollectionViewCell {
     static let preferredHeight: CGFloat = 266.0
 
-    let listBackgroundView = TriangularedBlurView()
+    let listBackgroundView = BlockBackgroundView()
     let allView: RoundedButton = {
         let view = RoundedButton()
         view.imageWithTitleView?.titleFont = .regularFootnote
