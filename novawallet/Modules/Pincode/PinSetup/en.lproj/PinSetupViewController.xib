@@ -51,7 +51,7 @@
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h4R-Mn-FG7">
                     <rect key="frame" x="50" y="43" width="275" height="0.0"/>
                     <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="19"/>
-                    <color key="textColor" name="colorWhite"/>
+                    <color key="textColor" name="colorTextPrimary"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter pin code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dqY-VK-ps1">
@@ -171,9 +171,6 @@
         </namedColor>
         <namedColor name="colorTextPrimary">
             <color red="1" green="1" blue="1" alpha="0.87999999523162842" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="colorWhite">
-            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

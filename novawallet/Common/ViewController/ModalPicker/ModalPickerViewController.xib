@@ -6,7 +6,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -27,13 +26,13 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ruq-rw-p1b" customClass="BorderedContainerView" customModule="SoraUI">
                     <rect key="frame" x="0.0" y="1" width="414" height="40"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XwS-f7-PDQ" customClass="ImageWithTitleView" customModule="SoraUI">
+                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XwS-f7-PDQ" customClass="ImageWithTitleView" customModule="SoraUI">
                             <rect key="frame" x="16" y="1" width="129.33333333333334" height="20"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose network"/>
                                 <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
-                                    <color key="value" name="colorWhite"/>
+                                    <color key="value" name="colorTextPrimary"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-SemiBold"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
@@ -45,7 +44,7 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <color key="backgroundColor" name="colorBottomSheetBackground"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="Iah-rR-u2h"/>
                         <constraint firstItem="XwS-f7-PDQ" firstAttribute="top" secondItem="ruq-rw-p1b" secondAttribute="top" constant="1" id="MdZ-Hx-8ep"/>
@@ -60,16 +59,16 @@
                             <real key="value" value="0.0"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="fillColor">
-                            <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="value" name="colorBottomSheetBackground"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="highlightedFillColor">
-                            <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="value" name="colorBottomSheetBackground"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="strokeColor">
-                            <color key="value" name="colorDarkGray"/>
+                            <color key="value" name="colorBottomSheetBackground"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="highlightedStrokeColor">
-                            <color key="value" name="colorDarkGray"/>
+                            <color key="value" name="colorBottomSheetBackground"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="strokeWidth">
                             <real key="value" value="1"/>
@@ -86,7 +85,7 @@
                 </tableView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <color key="backgroundColor" name="color0x1D1D20"/>
+            <color key="backgroundColor" name="colorBottomSheetBackground"/>
             <constraints>
                 <constraint firstItem="4YV-hB-WfP" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="JFJ-K5-WUg"/>
                 <constraint firstItem="ruq-rw-p1b" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="1" id="Mqd-AH-Wrk"/>
@@ -99,23 +98,12 @@
             <point key="canvasLocation" x="139" y="153"/>
         </view>
     </objects>
-    <designables>
-        <designable name="XwS-f7-PDQ">
-            <size key="intrinsicContentSize" width="129.33333333333334" height="20"/>
-        </designable>
-    </designables>
     <resources>
-        <namedColor name="color0x1D1D20">
-            <color red="0.11372549019607843" green="0.11372549019607843" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="colorBottomSheetBackground">
+            <color red="0.094117647058823528" green="0.098039215686274508" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="colorDarkGray">
-            <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="colorTextPrimary">
+            <color red="1" green="1" blue="1" alpha="0.87999999523162842" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="colorWhite">
-            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

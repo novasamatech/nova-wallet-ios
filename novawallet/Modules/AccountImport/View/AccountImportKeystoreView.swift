@@ -47,7 +47,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         )
 
         view.actionImage = R.image.iconUpload()
-        view.highlightedFillColor = R.color.colorAccentSelected()!
+        view.highlightedFillColor = R.color.colorCellBackgroundPressed()!
 
         return view
     }()
@@ -78,7 +78,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
     let usernameHintLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorHintText()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()

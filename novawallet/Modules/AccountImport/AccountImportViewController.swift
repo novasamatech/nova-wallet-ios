@@ -88,7 +88,7 @@ final class AccountImportViewController: UIViewController {
         }
 
         let buttonItem = UIBarButtonItem(
-            image: R.image.iconOptions(),
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
             style: .plain,
             target: self,
             action: #selector(actionAdvancedSettings)
