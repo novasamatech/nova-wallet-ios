@@ -30,7 +30,6 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private var identitiesCancellable: CancellableCall?
     private var actionDetailsCancellable: CancellableCall?
     private var blockTimeCancellable: CancellableCall?
-    private var dAppsCancellable: CancellableCall?
 
     var chain: ChainModel {
         option.chain
@@ -76,7 +75,6 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         clear(cancellable: &identitiesCancellable)
         clear(cancellable: &actionDetailsCancellable)
         clear(cancellable: &blockTimeCancellable)
-        clear(cancellable: &dAppsCancellable)
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
 
@@ -135,8 +133,9 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func handleDAppsUpdate(_ updatedDApps: GovernanceDAppList) {
-        let dApps = updatedDApps.first(where: { $0.chainId == chain.chainId })?.dapps ?? []
-        presenter?.didReceiveDApps(dApps)
+        let chainDApps = updatedDApps.first(where: { $0.chainId == chain.chainId })?.dapps ?? []
+        let versionDApps = chainDApps.filter { $0.supports(governanceType: option.type) }
+        presenter?.didReceiveDApps(versionDApps)
     }
 
     private func subscribeDApps() {
