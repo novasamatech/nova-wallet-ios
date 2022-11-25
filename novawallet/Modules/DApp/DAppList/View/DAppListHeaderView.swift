@@ -40,7 +40,7 @@ final class DAppListHeaderView: UICollectionViewCell {
 
     let searchView: ControlView<BlockBackgroundView, IconDetailsView> = {
         let backgroundView = BlockBackgroundView()
-        backgroundView.overlayView?.highlightedFillColor = R.color.colorAccentSelected()!
+        backgroundView.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
 
         let contentView = IconDetailsView()
         contentView.imageView.image = R.image.iconSearch()?.withRenderingMode(.alwaysTemplate)

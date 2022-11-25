@@ -58,7 +58,7 @@ class AccountInputView: BackgroundedContentControl {
         let button = RoundedButton()
         button.applyAccessoryStyle()
 
-        let icon = R.image.iconTransferScan()?.tinted(with: R.color.colorAccent()!)
+        let icon = R.image.iconTransferScan()?.tinted(with: R.color.colorIconAccent()!)
         button.imageWithTitleView?.iconImage = icon
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         button.contentInsets = UIEdgeInsets(top: 6.0, left: 8.0, bottom: 6.0, right: 8.0)

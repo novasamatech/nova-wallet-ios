@@ -22,7 +22,7 @@ final class DAppSearchQueryTableViewCell: UITableViewCell {
         backgroundColor = .clear
 
         let selectedView = UIView()
-        selectedView.backgroundColor = R.color.colorAccentSelected()
+        selectedView.backgroundColor = R.color.colorCellBackgroundPressed()
         selectedBackgroundView = selectedView
 
         setupLayout()

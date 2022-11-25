@@ -103,10 +103,10 @@ extension FWLineChartView: FWChartViewProtocol {
         dataSet.drawIconsEnabled = false
         dataSet.drawValuesEnabled = false
         dataSet.drawCirclesEnabled = false
-        dataSet.colors = [R.color.colorAccent()!]
+        dataSet.colors = [R.color.colorIconAccent()!]
         let gradientColors = [
-            R.color.colorAccent()!.cgColor,
-            R.color.colorAccent()!.withAlphaComponent(0.48).cgColor
+            R.color.colorIconAccent()!.cgColor,
+            R.color.colorIconAccent()!.withAlphaComponent(0.48).cgColor
         ] as CFArray
         let colorLocations: [CGFloat] = [1.0, 0.0]
         let linearGradient = CGGradient(

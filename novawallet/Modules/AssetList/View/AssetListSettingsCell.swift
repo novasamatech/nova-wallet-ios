@@ -16,7 +16,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
         button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorAccentSelected()!
+            R.color.colorCellBackgroundPressed()!
         return button
     }()
 
@@ -28,7 +28,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
         button.triangularedBlurView?.overlayView?.highlightedFillColor =
-            R.color.colorAccentSelected()!
+            R.color.colorCellBackgroundPressed()!
         return button
     }()
 

@@ -9,7 +9,7 @@ extension RoundedButton {
         roundedBackgroundView?.strokeColor = .clear
         roundedBackgroundView?.highlightedStrokeColor = .clear
 
-        imageWithTitleView?.titleColor = R.color.colorAccent()!
+        imageWithTitleView?.titleColor = R.color.colorIconAccent()!
 
         changesContentOpacityWhenHighlighted = true
     }

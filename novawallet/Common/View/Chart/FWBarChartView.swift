@@ -132,12 +132,12 @@ extension FWBarChartView: FWChartViewProtocol {
         setNeedsLayout()
 
         let set = BarChartDataSet(entries: dataEntries)
-        set.highlightColor = R.color.colorAccent()!
+        set.highlightColor = R.color.colorIconAccent()!
         set.drawIconsEnabled = false
         set.drawValuesEnabled = false
         set.colors = data.amounts.map { chartData in
             if chartData.selected {
-                return R.color.colorAccent()!
+                return R.color.colorIconAccent()!
             } else {
                 if chartDataContainsSelectedBar {
                     return R.color.colorChipsBackground()!

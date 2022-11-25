@@ -26,13 +26,13 @@
                             <color key="value" name="colorButtonBackgroundPrimary"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedFillColor">
-                            <color key="value" name="colorHighlightedAccent"/>
+                            <color key="value" name="colorCellBackgroundPressed"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
-                            <color key="value" name="colorWhite"/>
+                            <color key="value" name="colorTextPrimary"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedTitleColor">
-                            <color key="value" name="colorWhite"/>
+                            <color key="value" name="colorTextPrimary"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Next"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
@@ -66,14 +66,14 @@
         <namedColor name="colorButtonBackgroundPrimary">
             <color red="0.12200000137090683" green="0.47099998593330383" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="colorHighlightedAccent">
-            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="colorCellBackgroundPressed">
+            <color red="0.12156862745098039" green="0.47058823529411764" blue="1" alpha="0.15999999642372131" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorSecondaryScreenBackground">
             <color red="0.031372549019607843" green="0.035294117647058823" blue="0.054901960784313725" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="colorWhite">
-            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="colorTextPrimary">
+            <color red="1" green="1" blue="1" alpha="0.87999999523162842" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

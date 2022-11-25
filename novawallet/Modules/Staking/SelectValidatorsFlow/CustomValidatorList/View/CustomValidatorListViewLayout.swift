@@ -37,8 +37,8 @@ final class CustomValidatorListViewLayout: UIView {
 
     let fillRestButton: RoundedButton = {
         let button = createRoundedButton()
-        button.roundedBackgroundView?.fillColor = R.color.colorAccent()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorAccent()!
+        button.roundedBackgroundView?.fillColor = R.color.colorIconAccent()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorIconAccent()!
         return button
     }()
 

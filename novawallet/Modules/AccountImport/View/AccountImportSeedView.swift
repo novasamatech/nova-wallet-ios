@@ -41,7 +41,7 @@ final class AccountImportSeedView: AccountImportBaseView {
 
     let seedHintLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorHintText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         return label
     }()
@@ -65,7 +65,7 @@ final class AccountImportSeedView: AccountImportBaseView {
     let usernameHintLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorHintText()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()

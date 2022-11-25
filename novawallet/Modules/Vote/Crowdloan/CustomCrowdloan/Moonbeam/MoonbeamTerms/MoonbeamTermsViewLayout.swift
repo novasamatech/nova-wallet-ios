@@ -19,7 +19,7 @@ final class MoonbeamTermsViewLayout: UIView {
     let termsSwitchView: UISwitch = {
         let switchView = UISwitch()
         switchView.isOn = false
-        switchView.onTintColor = R.color.colorAccent()
+        switchView.onTintColor = R.color.colorIconAccent()
         return switchView
     }()
 
