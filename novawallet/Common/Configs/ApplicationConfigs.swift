@@ -22,6 +22,7 @@ protocol ApplicationConfigProtocol {
     var chainListURL: URL { get }
     var xcmTransfersURL: URL { get }
     var dAppsListURL: URL { get }
+    var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
     var learnControllerAccountURL: URL { get }
@@ -140,6 +141,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps_dev.json")!
+        #endif
+    }
+
+    var governanceDAppsListURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/dapps.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/dapps_dev.json")!
         #endif
     }
 

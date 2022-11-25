@@ -1,6 +1,6 @@
 import UIKit
 
-struct TitleIconViewModel {
+struct TitleIconViewModel: Equatable {
     let title: String
     let icon: UIImage?
 }
