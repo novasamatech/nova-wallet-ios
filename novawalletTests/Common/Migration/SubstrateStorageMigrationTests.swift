@@ -15,6 +15,7 @@ final class SubstrateStorageMigrationTests: XCTestCase {
     let databaseName = SubstrateStorageParams.databaseName
     let modelDirectory = SubstrateStorageParams.modelDirectory
     var storeURL: URL { databaseDirectoryURL.appendingPathComponent(databaseName) }
+    let oldMapper = ChainModelMapperV2V5()
     let mapper = ChainModelMapper()
 
     override func setUpWithError() throws {
@@ -30,14 +31,14 @@ final class SubstrateStorageMigrationTests: XCTestCase {
         try removeDirectory(at: databaseDirectoryURL)
     }
 
-    func testMigrationVersion1ToVersion2() {
+    func testMigrationVersion4ToVersion5() {
         let timeout: TimeInterval = 5
         let generatedChains = generateChainsWithTimeout(timeout)
         XCTAssertGreaterThan(generatedChains.count, 0)
         
         let migrator = SubstrateStorageMigrator(storeURL: storeURL,
                                                 modelDirectory: modelDirectory,
-                                                model: .version2,
+                                                model: .version5,
                                                 fileManager: FileManager.default)
         
         XCTAssertTrue(migrator.requiresMigration(), "Migration is not required")
@@ -94,7 +95,7 @@ final class SubstrateStorageMigrationTests: XCTestCase {
     
     private func generateChains(completion: @escaping (Result<[ChainModel], Error>) -> Void) {
         let chains = ChainModelGenerator.generate(count: 5)
-        let dbService = createCoreDataService(for: .version1)
+        let dbService = createCoreDataService(for: .version4)
         
         dbService.performAsync { [unowned self] (context, error) in
             if let error = error {
@@ -115,9 +116,9 @@ final class SubstrateStorageMigrationTests: XCTestCase {
                         throw TestError.unexpectedEntity
                     }
                     
-                    try mapper.populate(entity: newChain,
-                                        from: $0,
-                                        using: context)
+                    try oldMapper.populate(entity: newChain,
+                                           from: $0,
+                                           using: context)
                     
                 }
                 
@@ -131,7 +132,7 @@ final class SubstrateStorageMigrationTests: XCTestCase {
     }
     
     private func fetchChains(completion: @escaping (Result<[ChainModel], Error>) -> Void) {
-        let dbService = createCoreDataService(for: .version2)
+        let dbService = createCoreDataService(for: .version5)
         
         dbService.performAsync { [unowned self] (context, error) in
             if let error = error {
