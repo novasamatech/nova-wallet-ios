@@ -535,16 +535,17 @@ final class UIFactory: UIFactoryProtocol {
     func createBorderSubtitleActionView() -> BorderedSubtitleActionView {
         let view = BorderedSubtitleActionView()
         view.fillColor = .clear
-        view.highlightedFillColor = R.color.colorAccentSelected()!
+        view.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         view.strokeColor = R.color.colorContainerBorder()!
         view.highlightedStrokeColor = .clear
         view.strokeWidth = 1.0
         view.shadowOpacity = 0.0
-        view.actionControl.contentView.titleLabel.textColor = R.color.colorButtonBackgroundSecondary()
+        view.actionControl.contentView.titleLabel.textColor = R.color.colorTextSecondary()
         view.actionControl.contentView.titleLabel.font = .p2Paragraph
         view.actionControl.contentView.subtitleLabelView.textColor = R.color.colorTextPrimary()
         view.actionControl.contentView.subtitleLabelView.font = .p1Paragraph
         view.actionControl.layoutType = .flexible
+        view.actionControl.tintColor = R.color.colorIconSecondary()!
         return view
     }
 }

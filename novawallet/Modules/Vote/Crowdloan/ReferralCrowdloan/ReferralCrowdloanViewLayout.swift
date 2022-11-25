@@ -40,7 +40,7 @@ final class ReferralCrowdloanViewLayout: UIView {
 
     let termsSwitchView: UISwitch = {
         let switchView = UISwitch()
-        switchView.onTintColor = R.color.colorAccent()
+        switchView.onTintColor = R.color.colorIconAccent()
         return switchView
     }()
 

@@ -74,7 +74,7 @@ final class AccountImportMnemonicView: AccountImportBaseView {
 
     let hintLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorHintText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         label.numberOfLines = 0
         return label

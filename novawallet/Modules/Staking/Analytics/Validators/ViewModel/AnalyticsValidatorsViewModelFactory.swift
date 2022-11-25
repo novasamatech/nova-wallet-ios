@@ -188,7 +188,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
 
     private func createChartCenterText(
         firstLine: String,
-        firstLineColor: UIColor = R.color.colorAccent()!,
+        firstLineColor: UIColor = R.color.colorIconAccent()!,
         secondLine: String,
         thirdLine: String
     ) -> NSAttributedString {
