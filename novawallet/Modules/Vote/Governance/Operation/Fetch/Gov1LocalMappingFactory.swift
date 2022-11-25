@@ -25,7 +25,7 @@ final class Gov1LocalMappingFactory {
 
         let state = ReferendumStateLocal.Deciding(
             track: track,
-            proposal: referendum.proposalHash,
+            proposal: referendum.universalProposal,
             voting: .threshold(voting),
             submitted: submitted,
             since: submitted,
