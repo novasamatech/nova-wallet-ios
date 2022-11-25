@@ -18,6 +18,7 @@ final class ReferendumDetailsPresenter {
     let wallet: MetaAccountModel
 
     let chain: ChainModel
+    let governanceType: GovernanceType
     let logger: LoggerProtocol
 
     private var referendum: ReferendumLocal
@@ -39,6 +40,7 @@ final class ReferendumDetailsPresenter {
 
     init(
         chain: ChainModel,
+        governanceType: GovernanceType,
         wallet: MetaAccountModel,
         accountManagementFilter: AccountManagementFilterProtocol,
         initData: ReferendumDetailsInitData,
@@ -58,6 +60,7 @@ final class ReferendumDetailsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.wallet = wallet
+        self.governanceType = governanceType
         self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
         self.referendumStringsFactory = referendumStringsFactory
@@ -417,7 +420,7 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func opeDApp(at index: Int) {
         guard
             let dApp = dApps?[index],
-            let url = try? dApp.extractFullUrl(for: referendum.index) else {
+            let url = try? dApp.extractFullUrl(for: referendum.index, governanceType: governanceType) else {
             return
         }
 
