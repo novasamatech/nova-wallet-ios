@@ -52,6 +52,16 @@ open class BlurBackgroundView: UIView {
         }
     }
 
+    var borderType: BorderType {
+        get {
+            borderView?.borderType ?? []
+        }
+
+        set {
+            borderView?.borderType = newValue
+        }
+    }
+
     open func configure() {
         backgroundColor = .clear
 
@@ -95,8 +105,20 @@ open class BlurBackgroundView: UIView {
     override open func layoutSubviews() {
         super.layoutSubviews()
 
-        let size = CGSize(width: bounds.width, height: bounds.height - borderWidth)
-        blurMaskView?.frame = CGRect(origin: .zero, size: size)
+        let yOffset = borderType.contains(.top) ? borderWidth : 0
+        var heightOffset: CGFloat = 0
+
+        if borderType.contains(.top) {
+            heightOffset += borderWidth
+        }
+
+        if borderType.contains(.bottom) {
+            heightOffset += borderWidth
+        }
+
+        let size = CGSize(width: bounds.width, height: bounds.height - heightOffset)
+        let origin = CGPoint(x: 0.0, y: yOffset)
+        blurMaskView?.frame = CGRect(origin: origin, size: size)
         blurView?.frame = bounds
         borderView?.frame = bounds
     }

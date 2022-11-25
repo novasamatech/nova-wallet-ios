@@ -44,6 +44,7 @@ final class DAppBrowserViewLayout: UIView {
     let toolbarBackgroundView: BlurBackgroundView = {
         let view = BlurBackgroundView()
         view.sideLength = 0.0
+        view.borderType = []
         return view
     }()
 
