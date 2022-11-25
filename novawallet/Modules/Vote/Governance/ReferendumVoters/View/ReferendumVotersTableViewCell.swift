@@ -87,7 +87,7 @@ final class ReferendumVotersTableViewCell: UITableViewCell {
         detailsLabel.apply(style: .caption1Secondary)
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()
         self.selectedBackgroundView = selectedBackgroundView
     }
 

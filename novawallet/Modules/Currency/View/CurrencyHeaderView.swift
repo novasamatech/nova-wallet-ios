@@ -3,7 +3,7 @@ import UIKit
 final class CurrencyHeaderView: UICollectionReusableView {
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite64()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()

@@ -47,12 +47,12 @@ extension FWPieChartView: FWPieChartViewProtocol {
         set.drawValuesEnabled = false
         set.sliceSpace = 4
 
-        set.colors = segmentValues.map { _ in R.color.colorAccent()! }
+        set.colors = segmentValues.map { _ in R.color.colorIconAccent()! }
 
         let data = PieChartData(dataSet: set)
         if let inactiveSegmentValue = inactiveSegmentValue {
             set.append(PieChartDataEntry(value: inactiveSegmentValue, data: entries.count))
-            set.colors.append(R.color.colorDarkGray()!)
+            set.colors.append(R.color.colorTextSecondary()!)
             set.selectionShift = 10
         }
 

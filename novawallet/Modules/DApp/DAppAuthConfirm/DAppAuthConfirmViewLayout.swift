@@ -16,7 +16,7 @@ final class DAppAuthConfirmViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .semiBoldTitle3
         label.textAlignment = .center
         label.numberOfLines = 3
@@ -25,7 +25,7 @@ final class DAppAuthConfirmViewLayout: UIView {
 
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.numberOfLines = 2
         label.textAlignment = .center
@@ -34,20 +34,20 @@ final class DAppAuthConfirmViewLayout: UIView {
 
     let walletView: RowView<GenericTitleValueView<UILabel, IconDetailsView>> = {
         let titleLabel = UILabel()
-        titleLabel.textColor = R.color.colorTransparentText()
+        titleLabel.textColor = R.color.colorTextSecondary()
         titleLabel.font = .regularFootnote
 
         let valueView = IconDetailsView()
         valueView.iconWidth = 24.0
         valueView.mode = .iconDetails
         valueView.spacing = 8.0
-        valueView.detailsLabel.textColor = R.color.colorWhite()
+        valueView.detailsLabel.textColor = R.color.colorTextPrimary()
         valueView.detailsLabel.font = .regularFootnote
         valueView.detailsLabel.numberOfLines = 1
 
         let titleView = GenericTitleValueView(titleView: titleLabel, valueView: valueView)
         let rowView = RowView(contentView: titleView, preferredHeight: 48.0)
-        rowView.borderView.strokeColor = R.color.colorWhite16()!
+        rowView.borderView.strokeColor = R.color.colorDivider()!
         rowView.borderView.strokeWidth = 0.5
         rowView.isUserInteractionEnabled = false
         rowView.contentInsets = .zero
@@ -56,9 +56,9 @@ final class DAppAuthConfirmViewLayout: UIView {
 
     let dappView: TitleValueView = {
         let view = TitleValueView()
-        view.titleLabel.textColor = R.color.colorTransparentText()
+        view.titleLabel.textColor = R.color.colorTextSecondary()
         view.titleLabel.font = .regularFootnote
-        view.valueLabel.textColor = R.color.colorWhite()
+        view.valueLabel.textColor = R.color.colorTextPrimary()
         view.valueLabel.font = .regularFootnote
         view.borderView.borderType = .none
         view.valueLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -81,7 +81,7 @@ final class DAppAuthConfirmViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.color0x1D1D20()
+        backgroundColor = R.color.colorBottomSheetBackground()
 
         setupLayout()
     }

@@ -5,14 +5,14 @@ final class ActionLoadingView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
         view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.color0x1D1D20()!
+        view.fillColor = R.color.colorDimBackground()!
         view.cornerRadius = 12.0
         return view
     }()
 
     let activityIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView()
-        view.tintColor = R.color.colorWhite()
+        view.tintColor = R.color.colorIndicatorShimmering()
         view.hidesWhenStopped = true
         return view
     }()

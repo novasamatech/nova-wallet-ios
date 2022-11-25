@@ -12,8 +12,8 @@ final class ModalPickerActionTableViewCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorNovaBlue()
-        label.highlightedTextColor = R.color.colorNovaBlue()?.withAlphaComponent(0.5)
+        label.textColor = R.color.colorIconAccent()
+        label.highlightedTextColor = R.color.colorIconAccent()?.withAlphaComponent(0.5)
         return label
     }()
 
@@ -32,8 +32,8 @@ final class ModalPickerActionTableViewCell: UITableViewCell {
     }
 
     func bind(viewModel: IconWithTitleViewModel) {
-        iconView.image = viewModel.icon?.tinted(with: R.color.colorNovaBlue()!)
-        iconView.highlightedImage = viewModel.icon?.tinted(with: R.color.colorNovaBlue()!.withAlphaComponent(0.5))
+        iconView.image = viewModel.icon?.tinted(with: R.color.colorIconAccent()!)
+        iconView.highlightedImage = viewModel.icon?.tinted(with: R.color.colorIconAccent()!.withAlphaComponent(0.5))
 
         titleLabel.text = viewModel.title
     }

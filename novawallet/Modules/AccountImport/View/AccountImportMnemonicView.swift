@@ -25,7 +25,7 @@ final class AccountImportMnemonicView: AccountImportBaseView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h2Title
         label.numberOfLines = 0
         return label
@@ -33,7 +33,7 @@ final class AccountImportMnemonicView: AccountImportBaseView {
 
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p1Paragraph
         label.numberOfLines = 0
         return label
@@ -46,7 +46,7 @@ final class AccountImportMnemonicView: AccountImportBaseView {
     let usernameHintLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()
@@ -55,7 +55,7 @@ final class AccountImportMnemonicView: AccountImportBaseView {
 
     let mnemonicTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         return label
     }()
@@ -63,8 +63,8 @@ final class AccountImportMnemonicView: AccountImportBaseView {
     let mnemonicTextView: UITextView = {
         let view = UITextView()
         view.font = .p1Paragraph
-        view.textColor = R.color.colorWhite()
-        view.tintColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
+        view.tintColor = R.color.colorTextPrimary()
         view.backgroundColor = .clear
         view.isScrollEnabled = false
         view.showsVerticalScrollIndicator = false
@@ -74,7 +74,7 @@ final class AccountImportMnemonicView: AccountImportBaseView {
 
     let hintLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         label.numberOfLines = 0
         return label

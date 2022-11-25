@@ -28,11 +28,9 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
     let multiValueView: MultiValueView = {
         let view = MultiValueView()
         view.valueTop.textAlignment = .left
-        view.valueTop.font = .regularSubheadline
-        view.valueTop.textColor = R.color.colorWhite()!
         view.valueBottom.textAlignment = .left
-        view.valueBottom.font = .regularFootnote
-        view.valueBottom.textColor = R.color.colorTransparentText()!
+        view.valueTop.apply(style: .regularSubhedlinePrimary)
+        view.valueBottom.apply(style: .footnoteSecondary)
         view.spacing = 3.0
         return view
     }()

@@ -8,21 +8,21 @@ final class NftListItemWithPriceCell: NftListItemCell {
         let view = BorderedContainerView()
         view.borderType = .top
         view.strokeWidth = 1.0
-        view.strokeColor = R.color.colorWhite8()!
+        view.strokeColor = R.color.colorDivider()!
         return view
     }()
 
     let tokensLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldFootnote
-        label.textColor = R.color.colorWhite()!
+        label.textColor = R.color.colorTextPrimary()!
         return label
     }()
 
     let fiatLabel: UILabel = {
         let label = UILabel()
         label.font = .caption1
-        label.textColor = R.color.colorTransparentText()!
+        label.textColor = R.color.colorTextSecondary()!
         return label
     }()
 
@@ -40,7 +40,7 @@ final class NftListItemWithPriceCell: NftListItemCell {
 
     private func applyPrice(_ viewModel: BalanceViewModelProtocol?) {
         if let viewModel = viewModel {
-            tokensLabel.textColor = R.color.colorWhite()!
+            tokensLabel.textColor = R.color.colorTextPrimary()!
             tokensLabel.text = viewModel.amount
 
             if let fiatPrice = viewModel.price {
@@ -50,7 +50,7 @@ final class NftListItemWithPriceCell: NftListItemCell {
             }
 
         } else {
-            tokensLabel.textColor = R.color.colorWhite48()!
+            tokensLabel.textColor = R.color.colorTextSecondary()!
             tokensLabel.text = R.string.localizable.nftListNotListed(preferredLanguages: locale.rLanguages)
 
             fiatLabel.text = ""

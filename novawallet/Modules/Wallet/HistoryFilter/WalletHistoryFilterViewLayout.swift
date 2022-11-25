@@ -6,7 +6,7 @@ final class WalletHistoryFilterViewLayout: UIView {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .clear
-        tableView.separatorColor = R.color.colorWhite16()
+        tableView.separatorColor = R.color.colorDivider()!
         return tableView
     }()
 
@@ -28,7 +28,7 @@ final class WalletHistoryFilterViewLayout: UIView {
     }
 
     private func configure() {
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
     }
 
     private func setupLayout() {

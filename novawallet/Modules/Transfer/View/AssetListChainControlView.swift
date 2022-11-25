@@ -4,10 +4,7 @@ import SoraUI
 final class AssetListChainControlView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
-        view.cornerRadius = 7.0
+        view.apply(style: .roundedChips(radius: 7))
         return view
     }()
 
@@ -18,7 +15,7 @@ final class AssetListChainControlView: UIView {
 
     let actionControl: ActionTitleControl = {
         let view = ActionTitleControl()
-        let color = R.color.colorNovaBlue()!
+        let color = R.color.colorButtonTextAccent()!
         view.imageView.image = R.image.iconLinkChevron()?.tinted(with: color)
         view.identityIconAngle = CGFloat.pi / 2.0
         view.activationIconAngle = -CGFloat.pi / 2.0

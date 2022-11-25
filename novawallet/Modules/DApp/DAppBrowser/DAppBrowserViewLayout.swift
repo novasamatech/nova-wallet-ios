@@ -14,25 +14,25 @@ final class DAppBrowserViewLayout: UIView {
 
     let closeBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconClose()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorWhite()
+        item.tintColor = R.color.colorIconPrimary()!
         return item
     }()
 
     let refreshBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconRefresh()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorWhite()
+        item.tintColor = R.color.colorIconPrimary()
         return item
     }()
 
     let goBackBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconBrowserBack()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorWhite()
+        item.tintColor = R.color.colorIconPrimary()
         return item
     }()
 
     let goForwardBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconBrowserForward()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorWhite()
+        item.tintColor = R.color.colorIconPrimary()
         return item
     }()
 
@@ -69,7 +69,7 @@ final class DAppBrowserViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

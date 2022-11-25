@@ -21,7 +21,7 @@ final class NetworkFeeConfirmView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorAlmostBlack()
+        backgroundColor = R.color.colorBottomSheetBackground()
         applyLocalization()
         setupLayout()
     }

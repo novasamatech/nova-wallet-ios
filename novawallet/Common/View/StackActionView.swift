@@ -6,7 +6,7 @@ final class StackActionView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -26,7 +26,7 @@ final class StackActionView: UIView {
 
     let disclosureIndicatorView: UIImageView = {
         let imageView = UIImageView()
-        let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTransparentText()!)
+        let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
         imageView.image = icon
         return imageView
     }()
@@ -45,7 +45,7 @@ final class StackActionView: UIView {
     private func setupDetailsView() -> BorderedLabelView {
         let view = BorderedLabelView()
         view.titleLabel.font = .semiBoldFootnote
-        view.titleLabel.textColor = R.color.colorTransparentText()!
+        view.titleLabel.textColor = R.color.colorTextSecondary()!
         view.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
 
         internalDetailsView = view
