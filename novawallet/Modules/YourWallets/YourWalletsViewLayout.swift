@@ -8,5 +8,6 @@ final class YourWalletsViewLayout: GenericCollectionViewLayout<UILabel> {
 
     override init(frame _: CGRect = .zero) {
         super.init(header: titleLabel)
+        backgroundColor = R.color.colorBottomSheetBackground()
     }
 }
