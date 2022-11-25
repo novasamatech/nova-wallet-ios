@@ -23,8 +23,8 @@ final class DAppListHeaderView: UICollectionViewCell {
     let decorationTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextPrimary()
-        label.font = .h2Title
-        label.textAlignment = .center
+        label.font = .semiBoldTitle3
+        label.textAlignment = .left
         label.numberOfLines = 0
         return label
     }()
@@ -32,8 +32,8 @@ final class DAppListHeaderView: UICollectionViewCell {
     let decorationSubtitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextSecondary()
-        label.font = .p2Paragraph
-        label.textAlignment = .center
+        label.font = .caption1
+        label.textAlignment = .left
         label.numberOfLines = 0
         return label
     }()
@@ -126,7 +126,7 @@ final class DAppListHeaderView: UICollectionViewCell {
         decorationView.addSubview(decorationTitleLabel)
         decorationTitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(24.0)
+            make.top.equalToSuperview().inset(20.0)
         }
 
         decorationView.addSubview(decorationSubtitleLabel)
