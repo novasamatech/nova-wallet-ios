@@ -7,20 +7,20 @@ protocol GovMetadataLocalStorageSubscriber: AnyObject {
     var govMetadataLocalSubscriptionHandler: GovMetadataLocalStorageHandler { get }
 
     func subscribeGovernanceMetadata(
-        for chain: ChainModel
+        for option: GovernanceSelectedOption
     ) -> StreamableProvider<ReferendumMetadataLocal>?
 
     func subscribeGovernanceMetadata(
-        for chain: ChainModel,
+        for option: GovernanceSelectedOption,
         referendumId: ReferendumIdLocal
     ) -> StreamableProvider<ReferendumMetadataLocal>?
 }
 
 extension GovMetadataLocalStorageSubscriber {
     func subscribeGovernanceMetadata(
-        for chain: ChainModel
+        for option: GovernanceSelectedOption
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
-        guard let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(for: chain) else {
+        guard let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(for: option) else {
             return nil
         }
 
@@ -28,7 +28,7 @@ extension GovMetadataLocalStorageSubscriber {
         updateClosure = { [weak self] changes in
             self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataPreview(
                 result: .success(changes),
-                chain: chain
+                option: option
             )
             return
         }
@@ -36,7 +36,7 @@ extension GovMetadataLocalStorageSubscriber {
         let failureClosure: (Error) -> Void = { [weak self] error in
             self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataPreview(
                 result: .failure(error),
-                chain: chain
+                option: option
             )
             return
         }
@@ -60,12 +60,12 @@ extension GovMetadataLocalStorageSubscriber {
     }
 
     func subscribeGovernanceMetadata(
-        for chain: ChainModel,
+        for option: GovernanceSelectedOption,
         referendumId: ReferendumIdLocal
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
         guard
             let provider = govMetadataLocalSubscriptionFactory.getMetadataProvider(
-                for: chain,
+                for: option,
                 referendumId: referendumId
             ) else {
             return nil
@@ -77,7 +77,7 @@ extension GovMetadataLocalStorageSubscriber {
 
             self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataDetails(
                 result: .success(item),
-                chain: chain,
+                option: option,
                 referendumId: referendumId
             )
             return
@@ -86,7 +86,7 @@ extension GovMetadataLocalStorageSubscriber {
         let failureClosure: (Error) -> Void = { [weak self] error in
             self?.govMetadataLocalSubscriptionHandler.handleGovernanceMetadataDetails(
                 result: .failure(error),
-                chain: chain,
+                option: option,
                 referendumId: referendumId
             )
             return
