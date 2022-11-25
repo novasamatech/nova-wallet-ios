@@ -14,6 +14,15 @@ enum ReferendumMetadataStatus: String {
     case executed = "Executed"
 }
 
+enum ReferendumMetadataStatusV2: String {
+    case ongoing = "Ongoing"
+    case approved = "Approved"
+    case rejected = "Rejected"
+    case cancelled = "Cancelled"
+    case timedOut = "TimedOut"
+    case killed = "Killed"
+}
+
 struct ReferendumMetadataLocal: Equatable {
     struct TimelineItem: Equatable, Codable {
         let block: BlockNumber
@@ -39,6 +48,22 @@ extension ReferendumMetadataLocal: Identifiable {
 
     var identifier: String {
         Self.identifier(from: chainId, referendumId: referendumId)
+    }
+}
+
+extension ReferendumMetadataLocal.TimelineItem {
+    var isStarted: Bool {
+        status == ReferendumMetadataStatus.started.rawValue ||
+            status == ReferendumMetadataStatusV2.ongoing.rawValue
+    }
+
+    var isApproved: Bool {
+        status == ReferendumMetadataStatus.passed.rawValue ||
+            status == ReferendumMetadataStatusV2.approved.rawValue
+    }
+
+    var isExecuted: Bool {
+        status == ReferendumMetadataStatus.executed.rawValue
     }
 }
 
