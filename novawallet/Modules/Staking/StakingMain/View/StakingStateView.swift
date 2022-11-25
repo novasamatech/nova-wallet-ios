@@ -16,7 +16,7 @@ struct StakingStateSkeletonOptions: OptionSet {
 }
 
 class StakingStateView: UIView {
-    let backgroundView: UIView = TriangularedBlurView()
+    let backgroundView: UIView = BlockBackgroundView()
 
     let titleLabel: UILabel = {
         let label = UILabel()
