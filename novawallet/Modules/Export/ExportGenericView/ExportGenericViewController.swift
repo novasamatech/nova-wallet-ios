@@ -91,7 +91,7 @@ final class ExportGenericViewController: UIViewController, ImportantViewProtocol
         }
 
         let advancedItem = UIBarButtonItem(
-            image: R.image.iconOptions(),
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
             style: .plain,
             target: self,
             action: #selector(actionAdvancedSettings)

@@ -236,7 +236,7 @@ class TextInputView: BackgroundedContentControl {
 
     @objc private func actionEditingBeginEnd() {
         if textField.isFirstResponder {
-            roundedBackgroundView?.strokeWidth = 0.5
+            roundedBackgroundView?.strokeWidth = 1
         } else {
             roundedBackgroundView?.strokeWidth = 0.0
         }
