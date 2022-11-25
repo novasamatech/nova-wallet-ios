@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina6_0" orientation="portrait" appearance="light"/>
+    <device id="retina3_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
@@ -13,43 +13,32 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="novabg-splash" translatesAutoresizingMaskIntoConstraints="NO" id="uNk-tt-Coo">
-                                <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nova-star" translatesAutoresizingMaskIntoConstraints="NO" id="eBa-Mk-uzt">
-                                <rect key="frame" x="92.666666666666686" y="137" width="205" height="289"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="eBa-Mk-uzt">
+                                <rect key="frame" x="40" y="-101" width="240" height="341"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="289" id="6Lu-uL-Z1m"/>
-                                    <constraint firstAttribute="width" constant="205" id="Nfa-Jw-TXM"/>
-                                </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Developed by" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MDk-JH-F6U">
-                                <rect key="frame" x="142.66666666666666" y="606" width="105" height="20"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.20000000000000001" green="0.25882352941176467" blue="0.51764705882352935" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="novasama-logo" translatesAutoresizingMaskIntoConstraints="NO" id="TfZ-m5-71O" userLabel="copyright">
-                                <rect key="frame" x="133" y="640" width="124" height="26"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="imageDevelopedBy" translatesAutoresizingMaskIntoConstraints="NO" id="LRG-h8-PO8">
+                                <rect key="frame" x="98" y="340" width="124" height="60"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.094117647060000004" green="0.094117647060000004" blue="0.094117647060000004" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="uNk-tt-Coo" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailing" id="1kr-VF-oxV"/>
-                            <constraint firstItem="TfZ-m5-71O" firstAttribute="top" secondItem="MDk-JH-F6U" secondAttribute="bottom" constant="14" id="580-gx-DDT"/>
-                            <constraint firstItem="MDk-JH-F6U" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="7sK-Uy-vis"/>
-                            <constraint firstItem="TfZ-m5-71O" firstAttribute="bottom" relation="lessThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="bottom" priority="699" constant="-32" id="Msp-GH-PKS"/>
-                            <constraint firstItem="MDk-JH-F6U" firstAttribute="top" secondItem="eBa-Mk-uzt" secondAttribute="bottom" priority="740" constant="180" id="TMv-T3-GAf"/>
-                            <constraint firstItem="TfZ-m5-71O" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="bWE-m7-i9C"/>
-                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="e3N-fi-1cm"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" multiplier="2/3" id="fnl-tY-MFb"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="jSf-Xs-KKb"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="uNk-tt-Coo" secondAttribute="trailing" id="1kr-VF-oxV"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="4vO-7S-VKd"/>
+                            <constraint firstItem="LRG-h8-PO8" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="A7N-Qr-Paw"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="LRG-h8-PO8" secondAttribute="bottom" constant="80" id="TJx-Yu-6gc"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="trailing" constant="-40" id="YY2-9j-2Bq"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" multiplier="0.5" id="bIo-JQ-8xD"/>
+                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="e3N-fi-1cm"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="40" id="jT4-bh-2Kg"/>
                             <constraint firstAttribute="bottom" secondItem="uNk-tt-Coo" secondAttribute="bottom" id="m2l-xc-ZRp"/>
                             <constraint firstItem="uNk-tt-Coo" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="tA1-r1-8ya"/>
                         </constraints>
@@ -57,12 +46,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="52.173913043478265" y="375"/>
+            <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
     <resources>
-        <image name="nova-star" width="325" height="341"/>
+        <image name="imageDevelopedBy" width="124" height="60"/>
+        <image name="logo" width="325" height="341"/>
         <image name="novabg-splash" width="375" height="812"/>
-        <image name="novasama-logo" width="124" height="26"/>
     </resources>
 </document>

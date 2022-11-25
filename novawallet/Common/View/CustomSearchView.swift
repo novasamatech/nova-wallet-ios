@@ -3,11 +3,9 @@ import UIKit
 import SoraUI
 
 final class CustomSearchView: UIView {
-    let blurBackgroundView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let blurBackgroundView: BlurBackgroundView = {
+        let view = BlurBackgroundView()
         view.sideLength = 0.0
-        view.blurStyle = .dark
-        view.blurAlpha = 0.9
         return view
     }()
 

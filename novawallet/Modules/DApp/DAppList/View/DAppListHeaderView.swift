@@ -4,7 +4,7 @@ import SoraUI
 final class DAppListHeaderView: UICollectionViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
+        label.textColor = R.color.colorWhite()
         label.font = .h1Title
         return label
     }()
@@ -22,7 +22,7 @@ final class DAppListHeaderView: UICollectionViewCell {
 
     let decorationTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
+        label.textColor = R.color.colorWhite()
         label.font = .h2Title
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -31,21 +31,21 @@ final class DAppListHeaderView: UICollectionViewCell {
 
     let decorationSubtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
+        label.textColor = R.color.colorTransparentText()
         label.font = .p2Paragraph
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
     }()
 
-    let searchView: ControlView<TriangularedBlurView, IconDetailsView> = {
-        let backgroundView = TriangularedBlurView()
-        backgroundView.overlayView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
+    let searchView: ControlView<BlockBackgroundView, IconDetailsView> = {
+        let backgroundView = BlockBackgroundView()
+        backgroundView.overlayView?.highlightedFillColor = R.color.colorAccentSelected()!
 
         let contentView = IconDetailsView()
         contentView.imageView.image = R.image.iconSearch()?.withRenderingMode(.alwaysTemplate)
-        contentView.tintColor = R.color.colorIconSecondary()
-        contentView.detailsLabel.textColor = R.color.colorHintText()
+        contentView.tintColor = R.color.colorWhite48()
+        contentView.detailsLabel.textColor = R.color.colorWhite48()
         contentView.detailsLabel.font = .p1Paragraph
         contentView.detailsLabel.numberOfLines = 0
 
