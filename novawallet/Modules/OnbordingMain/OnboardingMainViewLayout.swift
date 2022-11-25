@@ -61,23 +61,18 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // swiftlint:disable:next function_body_length
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in make.edges.equalToSuperview() }
 
-        let logoCenterMultiplier: CGFloat
-
-        if isAdaptiveHeightDecreased {
-            logoCenterMultiplier = 0.64 * designScaleRatio.height
-        } else {
-            logoCenterMultiplier = 0.64
-        }
+        let logoHorizontalInset: CGFloat = 40
+        let logoBottomMultiplier: CGFloat = 0.5
 
         addSubview(logo)
         logo.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(91.0)
-            make.centerY.equalToSuperview().multipliedBy(logoCenterMultiplier)
+            make.leading.greaterThanOrEqualToSuperview().offset(logoHorizontalInset)
+            make.trailing.lessThanOrEqualToSuperview().offset(-logoHorizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).multipliedBy(logoBottomMultiplier)
         }
 
         logo.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -89,15 +84,10 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
         }
 
         let bottomOffset = 16.0
-        let topOffset = 24.0
         let buttonsBaseWidth = 335.0
-        let buttonsWidth: CGFloat
 
-        if isAdaptiveWidthDecreased {
-            buttonsWidth = buttonsBaseWidth * designScaleRatio.width
-        } else {
-            buttonsWidth = buttonsBaseWidth
-        }
+        let buttonWidthMultiplier = isAdaptiveWidthDecreased ? designScaleRatio.width : 1.0
+        let buttonsWidth: CGFloat = buttonsBaseWidth * buttonWidthMultiplier
 
         addSubview(watchOnlyButton)
         watchOnlyButton.snp.makeConstraints { make in
@@ -123,7 +113,6 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
         addSubview(createButton)
         createButton.snp.makeConstraints { make in
             make.bottom.equalTo(importButton.snp.top).offset(-10.0)
-            make.top.greaterThanOrEqualTo(logo.snp.bottom).offset(topOffset)
             make.centerX.equalToSuperview()
             make.width.equalTo(buttonsWidth)
         }

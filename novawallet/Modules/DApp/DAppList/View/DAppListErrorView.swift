@@ -3,7 +3,7 @@ import UIKit
 final class DAppListErrorView: UICollectionViewCell {
     static let preferredHeight: CGFloat = 200.0
 
-    let listBackgroundView = TriangularedBlurView()
+    let listBackgroundView = BlockBackgroundView()
     let errorView = ErrorStateView()
 
     var selectedLocale: Locale {
