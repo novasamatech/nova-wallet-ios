@@ -18,5 +18,6 @@ final class LocksViewLayout: GenericCollectionViewLayout<GenericTitleValueView<U
             absoluteHeaderHeight: 48
         )
         super.init(header: .init(titleView: titleLabel, valueView: valueLabel), settings: settings)
+        backgroundColor = R.color.colorBottomSheetBackground()
     }
 }
