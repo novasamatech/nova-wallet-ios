@@ -12,7 +12,7 @@ final class ParaStkStakeSetupViewLayout: UIView {
     let collatorTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -37,7 +37,7 @@ final class ParaStkStakeSetupViewLayout: UIView {
 
     let minStakeView = TitleAmountView.dark()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
 
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -48,7 +48,7 @@ final class ParaStkStakeSetupViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

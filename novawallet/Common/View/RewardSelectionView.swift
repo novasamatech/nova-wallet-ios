@@ -6,28 +6,28 @@ class RewardSelectionView: BackgroundedContentControl {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let incomeLabel: UILabel = {
         let label = UILabel()
         label.font = .caption1
-        label.textColor = R.color.colorGreen()
+        label.textColor = R.color.colorTextPositive()
         return label
     }()
 
     let amountLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldCaps1
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .caption1
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -53,8 +53,8 @@ class RewardSelectionView: BackgroundedContentControl {
         let triangularedView = TriangularedView()
         triangularedView.isUserInteractionEnabled = false
         triangularedView.shadowOpacity = 0.0
-        triangularedView.fillColor = R.color.colorWhite8()!
-        triangularedView.highlightedFillColor = R.color.colorWhite8()!
+        triangularedView.fillColor = R.color.colorBlockBackground()!
+        triangularedView.highlightedFillColor = R.color.colorBlockBackground()!
         triangularedView.strokeColor = .clear
         triangularedView.highlightedStrokeColor = .clear
 

@@ -123,7 +123,7 @@ class AnalyticsRewardsBaseViewController<
     private func setupEmptyView(_ emptyView: EmptyStateView, title: String) {
         emptyView.image = R.image.iconEmptyHistory()
         emptyView.title = title
-        emptyView.titleColor = R.color.colorLightGray()!
+        emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .p2Paragraph
     }
 }

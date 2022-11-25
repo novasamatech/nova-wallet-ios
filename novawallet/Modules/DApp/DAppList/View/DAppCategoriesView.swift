@@ -129,13 +129,12 @@ final class DAppCategoriesView: UICollectionViewCell {
     }
 
     private func setSelectedStyle(for button: RoundedButton) {
-        button.imageWithTitleView?.titleColor = R.color.colorWhite()!
-        button.roundedBackgroundView?.fillColor = R.color.colorWhite16()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorWhite16()!
+        button.imageWithTitleView?.titleColor = R.color.colorTextPrimary()!
+        button.roundedBackgroundView?.apply(style: .chips)
     }
 
     private func setNormalStyle(for button: RoundedButton) {
-        button.imageWithTitleView?.titleColor = R.color.colorTransparentText()!
+        button.imageWithTitleView?.titleColor = R.color.colorTextSecondary()!
         button.roundedBackgroundView?.fillColor = .clear
         button.roundedBackgroundView?.highlightedFillColor = .clear
     }

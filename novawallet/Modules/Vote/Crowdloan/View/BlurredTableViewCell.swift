@@ -30,7 +30,7 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
         super.setHighlighted(highlighted, animated: animated)
 
         backgroundBlurView.overlayView?.fillColor = shouldApplyHighlighting && highlighted ?
-            R.color.colorAccentSelected()!
+            R.color.colorCellBackgroundPressed()!
             : .clear
     }
 

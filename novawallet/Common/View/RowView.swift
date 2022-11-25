@@ -98,7 +98,7 @@ class RowView<T: UIView>: BackgroundedContentControl {
         shapeView.strokeWidth = 0.0
         shapeView.isUserInteractionEnabled = false
         shapeView.fillColor = .clear
-        shapeView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        shapeView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         shapeView.cornerRadius = 0.0
         shapeView.roundingCorners = []
         backgroundView = shapeView

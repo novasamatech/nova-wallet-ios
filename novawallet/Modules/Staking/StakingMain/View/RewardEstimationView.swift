@@ -16,35 +16,35 @@ final class RewardEstimationView: LocalizableView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularSubheadline
         return label
     }()
 
     let monthlyTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()
 
     let monthlyValueLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorGreen()
+        label.textColor = R.color.colorTextPositive()
         label.font = .title2
         return label
     }()
 
     let yearlyTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()
 
     let yearlyValueLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorGreen()
+        label.textColor = R.color.colorTextPositive()
         label.font = .title2
         return label
     }()
@@ -59,7 +59,7 @@ final class RewardEstimationView: LocalizableView {
         let button = RoundedButton()
         button.applyIconStyle()
         button.imageWithTitleView?.iconImage = R.image.iconInfo()?.withRenderingMode(.alwaysTemplate)
-        button.tintColor = R.color.colorWhite48()!
+        button.tintColor = R.color.colorIconSecondary()!
         return button
     }()
 

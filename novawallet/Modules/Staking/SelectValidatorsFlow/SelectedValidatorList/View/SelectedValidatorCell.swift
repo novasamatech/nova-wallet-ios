@@ -12,7 +12,7 @@ class SelectedValidatorCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
@@ -22,7 +22,7 @@ class SelectedValidatorCell: UITableViewCell {
         let label = UILabel()
         label.font = .regularFootnote
         label.textAlignment = .right
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -37,7 +37,7 @@ class SelectedValidatorCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite40()!)
+        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return imageView
@@ -65,7 +65,7 @@ class SelectedValidatorCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()!
     }
 
     private func setupLayout() {

@@ -31,10 +31,10 @@ final class LocksHeaderView: UICollectionReusableView {
 
     private func setup() {
         view.titleView.imageView.contentMode = .center
-        view.titleView.imageView.tintColor = .white
+        view.titleView.imageView.tintColor = R.color.colorIconPrimary()!
         view.titleView.detailsView.titleView.font = .regularSubheadline
         view.titleView.detailsView.valueView.titleView.contentInsets = .init(top: 2, left: 8, bottom: 3, right: 8)
-        view.titleView.detailsView.valueView.titleView.titleLabel.textColor = R.color.colorWhite80()
+        view.titleView.detailsView.valueView.titleView.titleLabel.textColor = R.color.colorChipText()
         view.valueView.font = .regularSubheadline
     }
 

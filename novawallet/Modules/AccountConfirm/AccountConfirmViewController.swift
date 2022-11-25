@@ -126,8 +126,8 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
         button.controlBackgroundView?.shadowOpacity = 0.0
         button.controlBackgroundView?.fillColor = .clear
         button.controlBackgroundView?.highlightedFillColor = .clear
-        button.controlBackgroundView?.strokeColor = R.color.colorWhite24()!
-        button.controlBackgroundView?.highlightedStrokeColor = R.color.colorWhite24()!
+        button.controlBackgroundView?.strokeColor = R.color.colorMnemonicBorderActive()!
+        button.controlBackgroundView?.highlightedStrokeColor = R.color.colorMnemonicBorderActive()!
         button.controlBackgroundView?.strokeWidth = 1.0
         button.controlBackgroundView?.cornerRadius = Constants.cornerRadius
         button.changesContentOpacityWhenHighlighted = true
@@ -145,7 +145,7 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
         let buttonTitleStr = NSMutableAttributedString(
             string: "\(index)",
             attributes: [
-                .foregroundColor: R.color.colorWhite48()!,
+                .foregroundColor: R.color.colorTextSecondary()!,
                 .font: UIFont.p2Paragraph
             ]
         )
@@ -153,7 +153,7 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
         let wordAttributedStr = NSAttributedString(
             string: "  \(word)",
             attributes: [
-                .foregroundColor: R.color.colorWhite()!,
+                .foregroundColor: R.color.colorTextPrimary()!,
                 .font: UIFont.p2Paragraph
             ]
         )
@@ -167,7 +167,7 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
         NSAttributedString(
             string: word,
             attributes: [
-                .foregroundColor: R.color.colorWhite()!,
+                .foregroundColor: R.color.colorTextPrimary()!,
                 .font: UIFont.p2Paragraph
             ]
         )
@@ -372,7 +372,7 @@ extension AccountConfirmViewController {
             shapeLayer?.lineDashPhase = 0.0
             shapeView.fillColor = .clear
             shapeView.strokeWidth = 1.0
-            shapeView.strokeColor = R.color.colorWhite16()!
+            shapeView.strokeColor = R.color.colorContainerBorder()!
 
             button.superview?.insertSubview(shapeView, belowSubview: button)
 

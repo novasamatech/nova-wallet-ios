@@ -6,7 +6,7 @@ class YourValidatorListStatusSectionView: YourValidatorListDescSectionView {
     let statusView: IconDetailsView = {
         let view = IconDetailsView()
         view.detailsLabel.font = .semiBoldBody
-        view.detailsLabel.textColor = R.color.colorWhite()
+        view.detailsLabel.textColor = R.color.colorTextPrimary()
         view.detailsLabel.numberOfLines = 0
         view.mode = .iconDetails
         view.spacing = 8.0

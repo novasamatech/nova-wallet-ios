@@ -101,6 +101,24 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorContainerBackground()!
     )
 
+    static func selectableContainer(radius: CGFloat) -> RoundedView.Style {
+        RoundedView.Style(
+            shadowOpacity: 0,
+            strokeWidth: 1,
+            strokeColor: R.color.colorContainerBorder(),
+            highlightedStrokeColor: R.color.colorContainerBorder(),
+            fillColor: R.color.colorContainerBackground()!,
+            highlightedFillColor: R.color.colorCellBackgroundPressed()!,
+            rounding: .init(radius: radius, corners: .allCorners)
+        )
+    }
+
+    static func roundedContainer(radius: CGFloat) -> RoundedView.Style {
+        var containerStyle = RoundedView.Style.container
+        containerStyle.rounding = .init(radius: radius, corners: .allCorners)
+        return containerStyle
+    }
+
     static let assetContainer = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0.5,
@@ -110,11 +128,21 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorTokenContainerBackground()!
     )
 
-    static let textField = RoundedView.Style(
+    static let searchBarTextField = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0,
         fillColor: R.color.colorInputBackground()!,
         highlightedFillColor: R.color.colorInputBackground()!
+    )
+
+    static let textField = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 1,
+        strokeColor: R.color.colorInputBackground(),
+        highlightedStrokeColor: R.color.colorActiveBorder(),
+        fillColor: R.color.colorInputBackground()!,
+        highlightedFillColor: R.color.colorInputBackground()!,
+        rounding: .init(radius: 12, corners: .allCorners)
     )
 }
 
