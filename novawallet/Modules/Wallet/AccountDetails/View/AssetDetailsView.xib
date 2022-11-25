@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -111,15 +111,12 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="toe-8Q-kTb">
                     <rect key="frame" x="16" y="38" width="343" height="204"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1il-4U-1mN" customClass="TriangularedBlurView" customModule="novawallet" customModuleProvider="target">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1il-4U-1mN" customClass="BlockBackgroundView" customModule="novawallet" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="343" height="204"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_cornerCut">
                                     <integer key="value" value="15"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="_blurStyle">
-                                    <integer key="value" value="5"/>
                                 </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                         </view>
@@ -397,7 +394,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5WV-bu-ZuX">
                     <rect key="frame" x="16" y="254" width="343" height="80"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kJm-Iu-UQl" customClass="TriangularedBlurView" customModule="novawallet" customModuleProvider="target">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kJm-Iu-UQl" customClass="BlockBackgroundView" customModule="novawallet" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="343" height="80"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
@@ -617,7 +614,7 @@
             <color red="1" green="1" blue="1" alpha="0.23999999463558197" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorGreen">
-            <color red="0.0" green="1" blue="0.098039215686274508" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.082352941176470587" green="0.81176470588235294" blue="0.21568627450980393" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorHighlightedAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>

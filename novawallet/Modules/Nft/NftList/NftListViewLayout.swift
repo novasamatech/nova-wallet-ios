@@ -9,7 +9,7 @@ final class NftListViewLayout: UIView {
     let backgroundView = MultigradientView.background
 
     let navBarBlurView: UIView = {
-        let blurView = TriangularedBlurView()
+        let blurView = BlurBackgroundView()
         blurView.cornerCut = []
         return blurView
     }()

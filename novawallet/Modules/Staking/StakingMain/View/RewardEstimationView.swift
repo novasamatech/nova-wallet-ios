@@ -9,8 +9,8 @@ protocol RewardEstimationViewDelegate: AnyObject {
 }
 
 final class RewardEstimationView: LocalizableView {
-    let backgroundView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         return view
     }()
 

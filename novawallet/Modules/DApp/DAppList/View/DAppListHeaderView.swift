@@ -38,9 +38,9 @@ final class DAppListHeaderView: UICollectionViewCell {
         return label
     }()
 
-    let searchView: ControlView<TriangularedBlurView, IconDetailsView> = {
-        let backgroundView = TriangularedBlurView()
-        backgroundView.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
+    let searchView: ControlView<BlockBackgroundView, IconDetailsView> = {
+        let backgroundView = BlockBackgroundView()
+        backgroundView.overlayView?.highlightedFillColor = R.color.colorAccentSelected()!
 
         let contentView = IconDetailsView()
         contentView.imageView.image = R.image.iconSearch()?.withRenderingMode(.alwaysTemplate)
