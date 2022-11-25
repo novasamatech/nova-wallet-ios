@@ -17,7 +17,7 @@ final class WalletAccountView: UIView {
     let walletLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -25,7 +25,7 @@ final class WalletAccountView: UIView {
     let addressLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.lineBreakMode = .byTruncatingMiddle
         return label
     }()

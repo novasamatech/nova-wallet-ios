@@ -18,13 +18,13 @@ class RadioButton<Model>: RoundedButton {
     private func setupColors() {
         roundedBackgroundView?.cornerRadius = 12
         roundedBackgroundView?.shadowOpacity = 0.0
-        roundedBackgroundView?.fillColor = R.color.colorWhite()!.withAlphaComponent(0.16)
-        roundedBackgroundView?.highlightedFillColor = R.color.colorWhite()!.withAlphaComponent(0.16)
+        roundedBackgroundView?.fillColor = R.color.colorIconPrimary()!.withAlphaComponent(0.16)
+        roundedBackgroundView?.highlightedFillColor = R.color.colorIconPrimary()!.withAlphaComponent(0.16)
 
         contentInsets = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
 
-        imageWithTitleView?.titleColor = R.color.colorWhite()
-        imageWithTitleView?.highlightedTitleColor = R.color.colorWhite()
+        imageWithTitleView?.titleColor = R.color.colorIconPrimary()
+        imageWithTitleView?.highlightedTitleColor = R.color.colorIconPrimary()
         imageWithTitleView?.titleFont = .p0Paragraph
         imageWithTitleView?.layoutType = .horizontalImageFirst
         imageWithTitleView?.iconImage = R.image.iconRadioButtonUnselected()

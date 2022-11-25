@@ -30,11 +30,11 @@ final class MainTabBarViewController: UITabBarController {
         appearance.shadowImage = UIImage()
 
         let normalAttributes = [
-            NSAttributedString.Key.foregroundColor: R.color.colorWhite48()!,
+            NSAttributedString.Key.foregroundColor: R.color.colorIconNavbarInactive()!,
             NSAttributedString.Key.font: UIFont.caption2
         ]
         let selectedAttributes = [
-            NSAttributedString.Key.foregroundColor: R.color.colorNovaBlue()!,
+            NSAttributedString.Key.foregroundColor: R.color.colorIconAccent()!,
             NSAttributedString.Key.font: UIFont.caption2
         ]
 

@@ -33,7 +33,7 @@ class CollatorSelectionCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
@@ -55,7 +55,7 @@ class CollatorSelectionCell: UITableViewCell {
 
     let infoButton: UIButton = {
         let button = UIButton()
-        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite40()!)
+        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         button.setImage(icon, for: .normal)
         return button
     }()
@@ -98,9 +98,9 @@ class CollatorSelectionCell: UITableViewCell {
 
         switch type {
         case .accentOnSorting:
-            sortingByView.valueTop.textColor = R.color.colorGreen()
+            sortingByView.valueTop.textColor = R.color.colorTextPositive()
         case .accentOnDetails:
-            sortingByView.valueTop.textColor = R.color.colorWhite()
+            sortingByView.valueTop.textColor = R.color.colorTextPrimary()
         }
 
         sortingByView.valueTop.text = viewModel.sortedByTitle
@@ -121,7 +121,7 @@ class CollatorSelectionCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()
 
         infoButton.addTarget(self, action: #selector(tapInfoButton), for: .touchUpInside)
     }
@@ -174,15 +174,15 @@ class CollatorSelectionCell: UITableViewCell {
         let attributedString = NSMutableAttributedString(
             string: title,
             attributes: [
-                .foregroundColor: R.color.colorTransparentText()!
+                .foregroundColor: R.color.colorTextSecondary()!
             ]
         )
 
         switch displayType {
         case .accentOnDetails:
-            subtitleColor = R.color.colorGreen()!
+            subtitleColor = R.color.colorTextPositive()!
         case .accentOnSorting:
-            subtitleColor = R.color.colorWhite()!
+            subtitleColor = R.color.colorTextPrimary()!
         }
 
         let subtitleAttributedString = NSAttributedString(

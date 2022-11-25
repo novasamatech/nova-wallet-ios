@@ -6,8 +6,8 @@ class AccountInputView: BackgroundedContentControl {
     let textField: UITextField = {
         let textField = UITextField()
         textField.font = .regularSubheadline
-        textField.textColor = R.color.colorWhite()
-        textField.tintColor = R.color.colorWhite()
+        textField.textColor = R.color.colorTextPrimary()
+        textField.tintColor = R.color.colorTextPrimary()
         textField.clearButtonMode = .never
 
         var attributes = textField.defaultTextAttributes
@@ -58,7 +58,7 @@ class AccountInputView: BackgroundedContentControl {
         let button = RoundedButton()
         button.applyAccessoryStyle()
 
-        let icon = R.image.iconTransferScan()?.tinted(with: R.color.colorAccent()!)
+        let icon = R.image.iconTransferScan()?.tinted(with: R.color.colorIconAccent()!)
         button.imageWithTitleView?.iconImage = icon
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         button.contentInsets = UIEdgeInsets(top: 6.0, left: 8.0, bottom: 6.0, right: 8.0)
@@ -202,7 +202,7 @@ class AccountInputView: BackgroundedContentControl {
         textField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [
-                .foregroundColor: R.color.colorWhite32()!,
+                .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.regularSubheadline
             ]
         )
@@ -292,12 +292,8 @@ class AccountInputView: BackgroundedContentControl {
         if backgroundView == nil {
             let roundedView = RoundedView()
             roundedView.isUserInteractionEnabled = false
-            roundedView.shadowOpacity = 0.0
-            roundedView.strokeColor = R.color.colorAccent()!
-            roundedView.fillColor = R.color.colorWhite8()!
-            roundedView.highlightedFillColor = R.color.colorWhite8()!
+            roundedView.apply(style: .textField)
             roundedView.strokeWidth = 0.0
-            roundedView.cornerRadius = 12.0
 
             backgroundView = roundedView
         }

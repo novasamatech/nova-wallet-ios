@@ -15,12 +15,12 @@ extension MultiValueView {
         view.stackView.spacing = 8.0
 
         view.valueTop.numberOfLines = 0
-        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.font = .boldTitle2
         view.valueTop.textAlignment = .left
 
         view.valueBottom.numberOfLines = 0
-        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.font = .regularFootnote
         view.valueBottom.textAlignment = .left
 

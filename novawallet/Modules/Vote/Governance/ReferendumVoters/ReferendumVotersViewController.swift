@@ -129,7 +129,7 @@ extension ReferendumVotersViewController: EmptyStateDataSource {
         let emptyView = EmptyStateView()
         emptyView.image = R.image.iconEmptyHistory()
         emptyView.title = R.string.localizable.govVotersEmpty(preferredLanguages: selectedLocale.rLanguages)
-        emptyView.titleColor = R.color.colorTransparentText()!
+        emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView
     }

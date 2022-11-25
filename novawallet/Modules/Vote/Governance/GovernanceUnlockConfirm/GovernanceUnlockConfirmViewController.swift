@@ -110,7 +110,7 @@ extension GovernanceUnlockConfirmViewController: GovernanceUnlockConfirmViewProt
             let amountString = NSMutableAttributedString(
                 string: viewModel.amount,
                 attributes: [
-                    .foregroundColor: R.color.colorWhite()!,
+                    .foregroundColor: R.color.colorTextPrimary()!,
                     .font: UIFont.caption1
                 ]
             )
@@ -125,7 +125,7 @@ extension GovernanceUnlockConfirmViewController: GovernanceUnlockConfirmViewProt
                     preferredLanguages: selectedLocale.rLanguages
                 ),
                 attributes: [
-                    .foregroundColor: R.color.colorTransparentText()!,
+                    .foregroundColor: R.color.colorTextSecondary()!,
                     .font: UIFont.caption1
                 ]
             )

@@ -4,7 +4,7 @@ import SoraUI
 final class QRDisplayView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
-        view.fillColor = R.color.colorWhite()!
+        view.fillColor = .white
         view.cornerRadius = 24.0
         return view
     }()

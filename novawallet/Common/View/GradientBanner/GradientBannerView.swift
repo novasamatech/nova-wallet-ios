@@ -7,9 +7,9 @@ class GradientBannerView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
         view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorBlack()!
+        view.fillColor = R.color.colorSecondaryScreenBackground()!
         view.strokeWidth = 1.0
-        view.strokeColor = R.color.colorWhite8()!
+        view.strokeColor = R.color.colorContainerBorder()!
         view.cornerRadius = 12.0
         return view
     }()
@@ -205,10 +205,10 @@ class GradientBannerView: UIView {
 
         let loadingView = RoundedView()
         loadingView.applyFilledBackgroundStyle()
-        loadingView.fillColor = R.color.colorWhite8()!
+        loadingView.fillColor = R.color.colorDimBackground()!
 
         let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.tintColor = R.color.colorTransparentText()
+        activityIndicator.tintColor = R.color.colorIndicatorShimmering()
         loadingView.addSubview(activityIndicator)
 
         activityIndicator.snp.makeConstraints { make in
