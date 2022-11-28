@@ -41,13 +41,13 @@ struct ChainModel: Equatable, Codable, Hashable {
 
     struct ExternalApiSet: Codable, Hashable {
         let staking: ExternalApi?
-        let history: [TransactionHistoryApi]?
+        let history: Set<TransactionHistoryApi>?
         let crowdloans: ExternalApi?
         let governance: ExternalApi?
 
         init(
             staking: ExternalApi?,
-            history: [TransactionHistoryApi]?,
+            history: Set<TransactionHistoryApi>?,
             crowdloans: ExternalApi?,
             governance: ExternalApi?
         ) {
@@ -62,8 +62,14 @@ struct ChainModel: Equatable, Codable, Hashable {
             crowdloans = remoteModel.crowdloans
             governance = remoteModel.governance
 
-            history = remoteModel.history?.map {
+            let optHistoryApis = remoteModel.history?.map {
                 TransactionHistoryApi(remoteModel: $0)
+            }
+
+            if let historyApis = optHistoryApis {
+                history = Set(historyApis)
+            } else {
+                history = nil
             }
         }
     }
