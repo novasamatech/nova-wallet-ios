@@ -66,6 +66,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.closeBarItem.action = #selector(actionClose)
 
         rootView.webView.uiDelegate = self
+        rootView.webView.navigationDelegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
@@ -291,6 +292,63 @@ extension DAppBrowserViewController: WKUIDelegate {
         )
 
         alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
+
+        present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension DAppBrowserViewController: WKNavigationDelegate {
+    func webView(
+        _: WKWebView,
+        decidePolicyFor _: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
+        decisionHandler(.allow)
+    }
+
+    func webView(
+        _: WKWebView,
+        didReceive _: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        let alertController = UIAlertController(
+            title: "Authentication", message: nil,
+            preferredStyle: .alert
+        )
+
+        alertController.addTextField { textField in
+            textField.placeholder = "username"
+        }
+
+        alertController.addTextField { textField in
+            textField.placeholder = "password"
+        }
+
+        let languages = selectedLocale.rLanguages
+        let confirmTitle = R.string.localizable.commonConfirmTitle(
+            preferredLanguages: languages
+        )
+
+        alertController.addAction(UIAlertAction(title: confirmTitle, style: .default, handler: { _ in
+            let username = alertController.textFields?.first?.text ?? ""
+            let password = alertController.textFields?.last?.text ?? ""
+
+            let credentials = URLCredential(
+                user: username,
+                password: password,
+                persistence: .permanent
+            )
+
+            completionHandler(.useCredential, credentials)
+        }))
+
+        let cancelTitle = R.string.localizable.commonCancel(
+            preferredLanguages: languages
+        )
+
+        alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: { _ in
+            completionHandler(.cancelAuthenticationChallenge, nil)
+        }))
 
         present(alertController, animated: true, completion: nil)
     }
