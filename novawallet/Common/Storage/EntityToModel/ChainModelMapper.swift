@@ -256,9 +256,10 @@ final class ChainModelMapper {
         }
 
         if staking != nil || history != nil || crowdloans != nil || governance != nil {
+            let historySet = history.map { Set($0) }
             return ChainModel.ExternalApiSet(
                 staking: staking,
-                history: history,
+                history: historySet,
                 crowdloans: crowdloans,
                 governance: governance
             )
