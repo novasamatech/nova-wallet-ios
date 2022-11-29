@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "Nova DApp Browser.pdf",
-      "idiom" : "universal"
+      "filename" : "Nova DApp Browser.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "Nova DApp Browser@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "Nova DApp Browser@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

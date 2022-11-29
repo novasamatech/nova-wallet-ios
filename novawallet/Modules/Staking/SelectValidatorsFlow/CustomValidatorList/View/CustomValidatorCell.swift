@@ -164,9 +164,11 @@ class CustomValidatorCell: UITableViewCell {
         if let auxDetailsText = viewModel.auxDetails {
             detailsLabel.text = viewModel.details
             detailsAuxLabel.text = auxDetailsText
+            detailsAuxLabel.textColor = R.color.colorTextSecondary()
             detailsLabel.isHidden = false
         } else {
             detailsAuxLabel.text = viewModel.details
+            detailsAuxLabel.textColor = R.color.colorTextPositive()
             detailsLabel.isHidden = true
         }
 
@@ -213,5 +215,7 @@ class CustomValidatorCell: UITableViewCell {
         if shouldShowError {
             statusStackView.addArrangedSubview(UIImageView(image: R.image.iconErrorFilled()))
         }
+        
+        statusStackView.layoutIfNeeded()
     }
 }
