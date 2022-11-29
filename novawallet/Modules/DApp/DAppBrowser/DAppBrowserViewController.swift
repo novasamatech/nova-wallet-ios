@@ -300,15 +300,7 @@ extension DAppBrowserViewController: WKUIDelegate {
 extension DAppBrowserViewController: WKNavigationDelegate {
     func webView(
         _: WKWebView,
-        decidePolicyFor _: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
-        decisionHandler(.allow)
-    }
-
-    func webView(
-        _: WKWebView,
-        didReceive _: URLAuthenticationChallenge,
+        didReceive challenge: URLAuthenticationChallenge,
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
         let alertController = UIAlertController(
@@ -336,8 +328,10 @@ extension DAppBrowserViewController: WKNavigationDelegate {
             let credentials = URLCredential(
                 user: username,
                 password: password,
-                persistence: .permanent
+                persistence: .forSession
             )
+
+            challenge.sender?.use(credentials, for: challenge)
 
             completionHandler(.useCredential, credentials)
         }))
