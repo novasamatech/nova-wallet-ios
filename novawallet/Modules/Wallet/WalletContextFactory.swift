@@ -91,18 +91,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let localStorageRequestFactory = LocalStorageRequestFactory()
 
-        let nodeOperationFactory = WalletNetworkOperationFactory(
-            metaAccount: metaAccount,
-            chains: chainsById,
-            accountSettings: accountSettings,
-            chainRegistry: chainRegistry,
-            requestFactory: requestFactory,
-            chainStorage: chainStorage,
-            localStorageRequestFactory: localStorageRequestFactory,
-            keystore: Keychain()
-        )
-
-        let subscanOperationFactory = SubscanOperationFactory()
         let coingeckoOperationFactory = CoingeckoOperationFactory()
 
         let accountsRepository = AccountRepositoryFactory(storageFacade: userFacade).createManagedMetaAccountRepository(
@@ -112,11 +100,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateFacade)
 
-        let contactOperationFactory = WalletContactOperationFactory(
-            storageFacade: substrateFacade,
-            targetAddress: address
-        )
-
         let assetBalanceRepository = repositoryFactory.createAssetBalanceRepository()
 
         let networkFacade = WalletNetworkFacade(
@@ -125,14 +108,11 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             chains: chainsById,
             chainRegistry: chainRegistry,
             storageFacade: substrateFacade,
-            nodeOperationFactory: nodeOperationFactory,
-            subscanOperationFactory: subscanOperationFactory,
             coingeckoOperationFactory: coingeckoOperationFactory,
             totalPriceId: priceAsset.identifier,
             totalPriceAssetInfo: priceAssetInfo,
             chainStorage: chainStorage,
             repositoryFactory: repositoryFactory,
-            contactsOperationFactory: contactOperationFactory,
             accountsRepository: accountsRepository,
             assetBalanceRepository: assetBalanceRepository,
             currencyManager: currencyManager

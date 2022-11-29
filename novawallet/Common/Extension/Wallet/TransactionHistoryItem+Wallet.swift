@@ -62,6 +62,105 @@ extension TransactionHistoryItem {
         )
     }
 
+    private static func encodeStatemineTransfer(
+        _ receiver: AccountId,
+        amount: BigUInt,
+        asset: AssetModel,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) throws -> (Data, CallCodingPath) {
+        guard let typeExtras = try asset.typeExtras?.map(
+            to: StatemineAssetExtras.self,
+            with: coderFactory.createRuntimeJsonContext().toRawContext()
+        ) else {
+            throw CommonError.undefined
+        }
+
+        let callPath = CallCodingPath.assetsTransfer(for: typeExtras.palletName)
+        let callArgs = AssetsTransfer(
+            assetId: typeExtras.assetId,
+            target: .accoundId(receiver),
+            amount: amount
+        )
+
+        let call = RuntimeCall(
+            moduleName: callPath.moduleName,
+            callName: callPath.callName,
+            args: callArgs
+        )
+
+        let encodedCall = try JSONEncoder.scaleCompatible(
+            with: coderFactory.createRuntimeJsonContext().toRawContext()
+        ).encode(call)
+
+        return (encodedCall, callPath)
+    }
+
+    private static func encodeOrmlTransfer(
+        _ receiver: AccountId,
+        amount: BigUInt,
+        asset: AssetModel,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) throws -> (Data, CallCodingPath) {
+        guard let typeExtras = try asset.typeExtras?.map(
+            to: OrmlTokenExtras.self,
+            with: coderFactory.createRuntimeJsonContext().toRawContext()
+        ) else {
+            throw CommonError.undefined
+        }
+
+        let callPath: CallCodingPath
+        if coderFactory.metadata.getCall(
+            from: CallCodingPath.tokensTransfer.moduleName,
+            with: CallCodingPath.tokensTransfer.callName
+        ) != nil {
+            callPath = CallCodingPath.tokensTransfer
+        } else {
+            callPath = CallCodingPath.currenciesTransfer
+        }
+
+        let currencyIdData = try Data(hexString: typeExtras.currencyIdScale)
+        let decoder = try coderFactory.createDecoder(from: currencyIdData)
+        let currencyId = try decoder.read(type: typeExtras.currencyIdType)
+
+        let callArgs = OrmlTokenTransfer(
+            dest: .accoundId(receiver),
+            currencyId: currencyId,
+            amount: amount
+        )
+
+        let call = RuntimeCall(
+            moduleName: callPath.moduleName,
+            callName: callPath.callName,
+            args: callArgs
+        )
+
+        let encodedCall = try JSONEncoder.scaleCompatible(
+            with: coderFactory.createRuntimeJsonContext().toRawContext()
+        ).encode(call)
+
+        return (encodedCall, callPath)
+    }
+
+    private static func encodeNativeTransfer(
+        _ receiver: AccountId,
+        amount: BigUInt,
+        asset _: AssetModel,
+        coderFactory: RuntimeCoderFactoryProtocol
+    ) throws -> (Data, CallCodingPath) {
+        let callPath = CallCodingPath.transfer
+        let callArgs = TransferCall(dest: .accoundId(receiver), value: amount)
+        let call = RuntimeCall<TransferCall>(
+            moduleName: callPath.moduleName,
+            callName: callPath.callName,
+            args: callArgs
+        )
+        let encodedCall = try JSONEncoder.scaleCompatible(
+            with: coderFactory.createRuntimeJsonContext().toRawContext()
+        ).encode(call)
+
+        return (encodedCall, callPath)
+    }
+
     private static func encodeCallForReceiver(
         _ receiver: AccountId,
         amount: BigUInt,
@@ -71,85 +170,29 @@ extension TransactionHistoryItem {
         if let rawType = asset.type, let assetType = AssetType(rawValue: rawType) {
             switch assetType {
             case .statemine:
-                guard let typeExtras = try asset.typeExtras?.map(
-                    to: StatemineAssetExtras.self,
-                    with: coderFactory.createRuntimeJsonContext().toRawContext()
-                ) else {
-                    throw CommonError.undefined
-                }
-
-                let callPath = CallCodingPath.assetsTransfer(for: typeExtras.palletName)
-                let callArgs = AssetsTransfer(
-                    assetId: typeExtras.assetId,
-                    target: .accoundId(receiver),
-                    amount: amount
+                return try encodeStatemineTransfer(
+                    receiver,
+                    amount: amount,
+                    asset: asset,
+                    coderFactory: coderFactory
                 )
-
-                let call = RuntimeCall(
-                    moduleName: callPath.moduleName,
-                    callName: callPath.callName,
-                    args: callArgs
-                )
-
-                let encodedCall = try JSONEncoder.scaleCompatible(
-                    with: coderFactory.createRuntimeJsonContext().toRawContext()
-                ).encode(call)
-
-                return (encodedCall, callPath)
-
             case .orml:
-                guard let typeExtras = try asset.typeExtras?.map(
-                    to: OrmlTokenExtras.self,
-                    with: coderFactory.createRuntimeJsonContext().toRawContext()
-                ) else {
-                    throw CommonError.undefined
-                }
-
-                let callPath: CallCodingPath
-                if coderFactory.metadata.getCall(
-                    from: CallCodingPath.tokensTransfer.moduleName,
-                    with: CallCodingPath.tokensTransfer.callName
-                ) != nil {
-                    callPath = CallCodingPath.tokensTransfer
-                } else {
-                    callPath = CallCodingPath.currenciesTransfer
-                }
-
-                let currencyIdData = try Data(hexString: typeExtras.currencyIdScale)
-                let decoder = try coderFactory.createDecoder(from: currencyIdData)
-                let currencyId = try decoder.read(type: typeExtras.currencyIdType)
-
-                let callArgs = OrmlTokenTransfer(
-                    dest: .accoundId(receiver),
-                    currencyId: currencyId,
-                    amount: amount
+                return try encodeOrmlTransfer(
+                    receiver,
+                    amount: amount,
+                    asset: asset,
+                    coderFactory: coderFactory
                 )
-
-                let call = RuntimeCall(
-                    moduleName: callPath.moduleName,
-                    callName: callPath.callName,
-                    args: callArgs
-                )
-
-                let encodedCall = try JSONEncoder.scaleCompatible(
-                    with: coderFactory.createRuntimeJsonContext().toRawContext()
-                ).encode(call)
-
-                return (encodedCall, callPath)
+            case .evm:
+                return (Data(), CallCodingPath.erc20Tranfer)
             }
         } else {
-            let callPath = CallCodingPath.transfer
-            let callArgs = TransferCall(dest: .accoundId(receiver), value: amount)
-            let call = RuntimeCall<TransferCall>(
-                moduleName: callPath.moduleName,
-                callName: callPath.callName,
-                args: callArgs
+            return try encodeNativeTransfer(
+                receiver,
+                amount: amount,
+                asset: asset,
+                coderFactory: coderFactory
             )
-            let encodedCall = try JSONEncoder.scaleCompatible(
-                with: coderFactory.createRuntimeJsonContext().toRawContext()
-            ).encode(call)
-
-            return (encodedCall, callPath)
         }
     }
 }
