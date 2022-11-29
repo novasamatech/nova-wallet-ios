@@ -7,7 +7,7 @@ final class ValidatorSearchViewLayout: UIView {
         view.searchBar.textField.autocorrectionType = .no
         view.searchBar.textField.autocapitalizationType = .none
         view.cancelButton.isHidden = true
-        view.cancelButton.contentInsets = .zero
+        view.cancelButton.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 16)
         return view
     }()
 
@@ -17,6 +17,8 @@ final class ValidatorSearchViewLayout: UIView {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = R.color.colorSecondaryScreenBackground()
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 44
         return tableView
     }()
 

@@ -125,7 +125,7 @@ class CustomValidatorCell: UITableViewCell {
 
         contentView.addSubview(statusStackView)
         statusStackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
+            make.centerY.equalToSuperview()
             make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(4)
         }
 
@@ -215,7 +215,5 @@ class CustomValidatorCell: UITableViewCell {
         if shouldShowError {
             statusStackView.addArrangedSubview(UIImageView(image: R.image.iconErrorFilled()))
         }
-        
-        statusStackView.layoutIfNeeded()
     }
 }
