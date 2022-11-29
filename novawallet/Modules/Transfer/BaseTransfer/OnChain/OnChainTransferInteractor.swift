@@ -319,6 +319,9 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
                 recepient: recepient,
                 canTransferAll: canTransferAll
             )
+        case .erc20:
+            // we have a separate flow for erc20
+            return (builder, nil)
         }
     }
 

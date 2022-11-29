@@ -19,3 +19,9 @@ struct AssetModel: Equatable, Codable, Hashable {
 
     var isUtility: Bool { assetId == 0 }
 }
+
+extension AssetModel {
+    var decimalPrecision: Int16 {
+        Int16(bitPattern: precision)
+    }
+}

@@ -12,34 +12,10 @@ extension WalletNetworkFacade {
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
         let chain = chainAsset.chain
 
-        let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
-
-        if !chainAsset.asset.isEvm {
-            if let baseUrl = chain.externalApi?.history?.first(where: { $0.assetType == nil })?.url {
-                do {
-                    let asset = chainAsset.asset
-                    let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
-                    let historyAssetId = try assetMapper.historyAssetId()
-
-                    maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(
-                        url: baseUrl,
-                        filter: filter,
-                        assetId: historyAssetId
-                    )
-                } catch {
-                    maybeRemoteHistoryFactory = nil
-                }
-            } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
-                maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
-                    baseURL: fallbackUrl,
-                    walletFilter: filter
-                )
-            } else {
-                maybeRemoteHistoryFactory = nil
-            }
-        } else {
-            maybeRemoteHistoryFactory = nil
-        }
+        let maybeRemoteHistoryFactory = AssetHistoryFacade().createOperationFactory(
+            for: chainAsset,
+            filter: filter
+        )
 
         if let remoteFactory = maybeRemoteHistoryFactory {
             return createRemoteUtilityAssetHistory(
@@ -222,7 +198,8 @@ extension WalletNetworkFacade {
                     item.createTransactionForAddress(
                         address,
                         assetId: chainAsset.chainAssetId.walletId,
-                        chainAssetInfo: chainAsset.chainAssetInfo
+                        chainAsset: chainAsset,
+                        utilityAsset: utilityAsset
                     )
                 }
 

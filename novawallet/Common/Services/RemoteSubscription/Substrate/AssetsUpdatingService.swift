@@ -110,10 +110,10 @@ final class AssetsUpdatingService {
             return nil
         }
 
-        let transactionSubscription = try? createTransactionSubscription(for: accountId, chain: chain)
-
         switch assetType {
         case .statemine:
+            let transactionSubscription = try? createTransactionSubscription(for: accountId, chain: chain)
+
             return createStatemineSubscription(
                 for: asset,
                 accountId: accountId,
@@ -121,12 +121,16 @@ final class AssetsUpdatingService {
                 transactionSubscription: transactionSubscription
             )
         case .orml:
+            let transactionSubscription = try? createTransactionSubscription(for: accountId, chain: chain)
+
             return createOrmlTokenSubscription(
                 for: asset,
                 accountId: accountId,
                 chainId: chain.chainId,
                 transactionSubscription: transactionSubscription
             )
+        case .evm:
+            return nil
         }
     }
 
@@ -260,6 +264,8 @@ final class AssetsUpdatingService {
                     queue: nil,
                     closure: nil
                 )
+            case .evm:
+                break
             }
         }
     }

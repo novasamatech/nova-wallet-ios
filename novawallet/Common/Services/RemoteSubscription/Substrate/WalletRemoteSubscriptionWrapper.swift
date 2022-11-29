@@ -161,6 +161,9 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
             )
+        case .erc20:
+            // not supported
+            return nil
         }
     }
 
@@ -198,6 +201,8 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
+        case .erc20:
+            return
         }
     }
 }

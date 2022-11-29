@@ -75,7 +75,8 @@ enum TransactionHistoryMergeItem {
             return item.createTransactionForAddress(
                 address,
                 assetId: chainAsset.chainAssetId.walletId,
-                chainAssetInfo: chainAsset.chainAssetInfo
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         }
     }
