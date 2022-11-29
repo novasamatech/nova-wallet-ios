@@ -31,7 +31,7 @@ class TextInputView: BackgroundedContentControl {
         let button = RoundedButton()
         button.applyIconStyle()
 
-        let icon = R.image.iconClearField()!.withRenderingMode(.alwaysOriginal)
+        let icon = R.image.iconClearField()?.tinted(with: R.color.colorIconSecondary()!)
         button.imageWithTitleView?.iconImage = icon
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         button.contentInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)

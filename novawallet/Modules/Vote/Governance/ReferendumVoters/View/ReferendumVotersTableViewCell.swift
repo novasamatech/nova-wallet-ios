@@ -80,7 +80,7 @@ final class ReferendumVotersTableViewCell: UITableViewCell {
         baseView.valueView.stackView.alignment = .fill
 
         nameLabel.numberOfLines = 1
-        nameLabel.apply(style: .footnotePrimary)
+        nameLabel.apply(style: .footnoteSecondary)
         indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
 
         votesLabel.apply(style: .footnotePrimary)
