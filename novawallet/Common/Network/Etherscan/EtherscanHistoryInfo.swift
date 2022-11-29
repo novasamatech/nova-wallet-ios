@@ -7,5 +7,5 @@ struct EtherscanHistoryInfo: Encodable {
     let offset: Int
     let module: String = "account"
     let action: String = "tokentx"
-    let sort: String = "asc"
+    let sort: String = "desc"
 }
