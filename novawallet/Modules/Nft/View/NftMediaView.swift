@@ -61,7 +61,7 @@ final class NftMediaView: RoundedView {
         viewModel: NftMediaViewModelProtocol,
         targetSize: CGSize? = nil,
         cornerRadius: CGFloat? = nil,
-        styles: [NftMediaViewState: RoundedView.Style] = [.normal: .nft]
+        styles: [NftMediaViewState: RoundedView.Style] = [:]
     ) {
         let isAspectFit = contentView.contentMode == .scaleAspectFit
         let newSettings = NftMediaDisplaySettings(
