@@ -20,7 +20,7 @@ final class TransferSetupViewLayout: UIView {
 
     let recepientTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()
@@ -37,7 +37,7 @@ final class TransferSetupViewLayout: UIView {
     }()
 
     let originFeeView: NetworkFeeView = {
-        let view = UIFactory.default.createNetwork26FeeView()
+        let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         return view
     }()
@@ -51,7 +51,7 @@ final class TransferSetupViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }
@@ -66,7 +66,7 @@ final class TransferSetupViewLayout: UIView {
             return
         }
 
-        let view = UIFactory.default.createNetwork26FeeView()
+        let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         view.title = LocalizableResource { locale in
             R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)

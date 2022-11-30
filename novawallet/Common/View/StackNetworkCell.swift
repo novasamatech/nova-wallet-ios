@@ -5,7 +5,7 @@ class StackNetworkCell: RowView<GenericTitleValueView<UILabel, UIStackView>> {
 
     var nameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()!
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularFootnote
         return label
     }()
@@ -47,11 +47,11 @@ class StackNetworkCell: RowView<GenericTitleValueView<UILabel, UIStackView>> {
     }
 
     private func configureStyle() {
-        titleLabel.textColor = R.color.colorTransparentText()
+        titleLabel.textColor = R.color.colorTextSecondary()
         titleLabel.font = .regularFootnote
 
         preferredHeight = 44.0
-        borderView.strokeColor = R.color.colorWhite8()!
+        borderView.strokeColor = R.color.colorDivider()!
 
         isUserInteractionEnabled = false
 

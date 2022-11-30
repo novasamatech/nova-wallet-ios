@@ -10,7 +10,7 @@ final class AcalaContributionSetupViewLayout: CrowdloanContributionSetupViewLayo
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorNovaBlue()
+        label.textColor = R.color.colorButtonTextAccent()
         label.numberOfLines = 0
         return label
     }()
@@ -40,13 +40,13 @@ final class AcalaContributionSetupViewLayout: CrowdloanContributionSetupViewLayo
         let iconView = UIImageView()
         let iconimage = R.image.iconInfoFilled()!.withRenderingMode(.alwaysTemplate)
         iconView.image = iconimage
-        iconView.tintColor = R.color.colorNovaBlue()!
+        iconView.tintColor = R.color.colorButtonTextAccent()!
         iconView.contentMode = .scaleAspectFit
 
         let arrowIconView = UIImageView()
         let arrowImage = R.image.iconSmallArrow()!.withRenderingMode(.alwaysTemplate)
         arrowIconView.image = arrowImage
-        arrowIconView.tintColor = R.color.colorNovaBlue()!
+        arrowIconView.tintColor = R.color.colorButtonTextAccent()!
 
         let content = UIView.hStack(alignment: .center, spacing: 4, [iconView, titleLabel, arrowIconView])
         content.setCustomSpacing(8, after: iconView)

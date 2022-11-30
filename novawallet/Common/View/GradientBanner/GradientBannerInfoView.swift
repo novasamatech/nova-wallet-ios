@@ -5,7 +5,7 @@ final class GradientBannerInfoView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldTitle3
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.numberOfLines = 0
         return label
     }()
@@ -13,7 +13,7 @@ final class GradientBannerInfoView: UIView {
     let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .caption1
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()

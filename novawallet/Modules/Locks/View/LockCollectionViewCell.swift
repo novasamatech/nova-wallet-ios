@@ -7,14 +7,11 @@ final class LockCollectionViewCell: UICollectionViewCell {
     )
     private let titleLabel: UILabel = .create {
         $0.font = .regularFootnote
-        $0.textColor = R.color.colorWhite64()
+        $0.textColor = R.color.colorTextSecondary()
     }
 
     private let valueLabel: MultiValueView = .create {
-        $0.valueTop.font = .regularFootnote
-        $0.valueBottom.font = .caption1
-        $0.valueTop.textColor = R.color.colorWhite64()
-        $0.valueBottom.textColor = R.color.colorWhite64()
+        $0.apply(style: .rowContrasted)
     }
 
     override init(frame: CGRect) {

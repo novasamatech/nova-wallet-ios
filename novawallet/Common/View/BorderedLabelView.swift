@@ -4,7 +4,7 @@ import SoraUI
 final class BorderedLabelView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .semiBoldFootnote
         return label
     }()
@@ -12,8 +12,8 @@ final class BorderedLabelView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
         view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
+        view.fillColor = R.color.colorChipsBackground()!
+        view.highlightedFillColor = R.color.colorChipsBackground()!
         view.cornerRadius = 6.0
         return view
     }()

@@ -23,7 +23,7 @@ class CustomValidatorCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
@@ -33,7 +33,7 @@ class CustomValidatorCell: UITableViewCell {
         let label = UILabel()
         label.font = .regularFootnote
         label.textAlignment = .right
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -41,13 +41,13 @@ class CustomValidatorCell: UITableViewCell {
         let label = UILabel()
         label.font = .caption1
         label.textAlignment = .right
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
     let infoButton: UIButton = {
         let button = UIButton()
-        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite40()!)
+        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         button.setImage(icon, for: .normal)
         return button
     }()
@@ -125,7 +125,7 @@ class CustomValidatorCell: UITableViewCell {
 
         contentView.addSubview(statusStackView)
         statusStackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
+            make.centerY.equalToSuperview()
             make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(4)
         }
 
@@ -164,9 +164,11 @@ class CustomValidatorCell: UITableViewCell {
         if let auxDetailsText = viewModel.auxDetails {
             detailsLabel.text = viewModel.details
             detailsAuxLabel.text = auxDetailsText
+            detailsAuxLabel.textColor = R.color.colorTextSecondary()
             detailsLabel.isHidden = false
         } else {
             detailsAuxLabel.text = viewModel.details
+            detailsAuxLabel.textColor = R.color.colorTextPositive()
             detailsLabel.isHidden = true
         }
 

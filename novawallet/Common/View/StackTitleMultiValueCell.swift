@@ -35,7 +35,7 @@ final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsV
         if canSelect {
             isUserInteractionEnabled = true
             rowContentView.titleView.imageView.image = R.image.iconInfoFilled()?.tinted(
-                with: R.color.colorTransparentText()!
+                with: R.color.colorIconSecondary()!
             )
         } else {
             isUserInteractionEnabled = false
@@ -44,18 +44,18 @@ final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsV
     }
 
     private func configure() {
-        titleLabel.textColor = R.color.colorTransparentText()
+        titleLabel.textColor = R.color.colorTextSecondary()
         titleLabel.font = .regularFootnote
 
         rowContentView.titleView.mode = .detailsIcon
         rowContentView.titleView.spacing = 4.0
 
-        topValueLabel.textColor = R.color.colorWhite()
+        topValueLabel.textColor = R.color.colorTextPrimary()
         topValueLabel.font = .regularFootnote
-        bottomValueLabel.textColor = R.color.colorTransparentText()
+        bottomValueLabel.textColor = R.color.colorTextSecondary()
         bottomValueLabel.font = .caption1
 
-        borderView.strokeColor = R.color.colorWhite8()!
+        borderView.strokeColor = R.color.colorDivider()!
 
         updateSelection()
     }

@@ -28,7 +28,7 @@ final class WalletAccountInfoView: RowView<GenericTitleValueView<UIView, UIImage
 
     private func configureStyle() {
         roundedBackgroundView.applyFilledBackgroundStyle()
-        roundedBackgroundView.fillColor = R.color.colorWhite8()!
+        roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
         roundedBackgroundView.roundingCorners = .allCorners
         roundedBackgroundView.cornerRadius = 12.0
         borderView.borderType = []

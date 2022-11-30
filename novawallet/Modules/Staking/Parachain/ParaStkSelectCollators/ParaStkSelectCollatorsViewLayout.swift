@@ -17,20 +17,26 @@ final class ParaStkSelectCollatorsViewLayout: UIView {
 
     let searchButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(R.image.iconSearchWhite(), for: .normal)
+        button.setImage(
+            R.image.iconSearchWhite()?.tinted(with: R.color.colorIconPrimary()!),
+            for: .normal
+        )
         return button
     }()
 
     let filterButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(R.image.iconFilterActive(), for: .normal)
+        button.setImage(
+            R.image.iconFilterActive()?.tinted(with: R.color.colorIconPrimary()!),
+            for: .normal
+        )
         return button
     }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

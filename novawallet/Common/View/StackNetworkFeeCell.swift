@@ -15,17 +15,17 @@ final class StackNetworkFeeCell: RowView<NetworkFeeView> {
         preferredHeight = 44
         rowContentView.requiresFlexibleHeight()
 
-        borderView.strokeColor = R.color.colorWhite8()!
+        borderView.strokeColor = R.color.colorDivider()!
 
         isUserInteractionEnabled = false
 
         rowContentView.borderType = []
         rowContentView.style = NetworkFeeView.ViewStyle(
-            titleColor: R.color.colorTransparentText()!,
+            titleColor: R.color.colorTextSecondary()!,
             titleFont: .regularFootnote,
-            tokenColor: R.color.colorWhite()!,
+            tokenColor: R.color.colorTextPrimary()!,
             tokenFont: .regularFootnote,
-            fiatColor: R.color.colorTransparentText()!,
+            fiatColor: R.color.colorTextSecondary()!,
             fiatFont: .caption1
         )
     }

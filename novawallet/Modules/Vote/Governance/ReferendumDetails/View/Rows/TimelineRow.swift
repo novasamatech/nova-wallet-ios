@@ -4,10 +4,7 @@ import SoraUI
 final class TimelineRow: RoundedView, BindableView {
     typealias TModel = [ReferendumTimelineView.Model]
 
-    let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorTransparentText()
-        $0.font = .regularFootnote
-    }
+    let titleLabel = UILabel(style: .footnoteSecondary)
 
     let contentView = ReferendumTimelineView()
 

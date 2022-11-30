@@ -147,7 +147,7 @@ final class StackTableView: RoundedView {
     private func configureStyle() {
         applyFilledBackgroundStyle()
 
-        fillColor = R.color.colorWhite8()!
+        fillColor = R.color.colorBlockBackground()!
         cornerRadius = 12.0
     }
 

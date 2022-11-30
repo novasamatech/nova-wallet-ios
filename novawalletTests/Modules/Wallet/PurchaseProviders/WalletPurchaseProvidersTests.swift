@@ -68,18 +68,18 @@ class WalletPurchaseProvidersTests: XCTestCase {
         let apiKey = "pk_test_DMRuyL6Nf1qc9OzjPBmCFBeCGkFwiZs0"
         let secretKey = "1"
         let redirectUrl = config.purchaseRedirect
-        let colorCode = R.color.colorAccent()!.hexRGB
+        let colorCode = R.color.colorTextPrimary()!.hexRGB
 
         // swiftlint:disable next long_string
         let query = "apiKey=\(apiKey)&currencyCode=\(asset.symbol)&walletAddress=\(address)&showWalletAddressForm=true&colorCode=\(colorCode)&redirectURL=\(redirectUrl)"
             .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""
 
-        let expectedUrl = "https://buy.moonpay.com/?\(query)&signature=oXX0CUdPjd5XrjoogHBbDAucVipQuB7DgtsyqwutFTQ%3D"
+        let expectedUrl = "https://buy.moonpay.com/?\(query)&signature=Rt62TSqGDyDNIccMk2ovsx6St2dXSJyl2vkQjvaUVqE%3D"
 
         let secretKeyData = Data(secretKey.utf8)
 
         let provider = MoonpayProviderFactory().createProvider(with: secretKeyData, apiKey: apiKey)
-            .with(colorCode: R.color.colorAccent()!.hexRGB)
+            .with(colorCode: colorCode)
             .with(callbackUrl: config.purchaseRedirect)
 
         // when
