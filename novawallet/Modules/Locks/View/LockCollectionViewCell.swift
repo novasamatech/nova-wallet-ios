@@ -11,7 +11,7 @@ final class LockCollectionViewCell: UICollectionViewCell {
     }
 
     private let valueLabel: MultiValueView = .create {
-        $0.apply(style: .row)
+        $0.apply(style: .rowContrasted)
     }
 
     override init(frame: CGRect) {

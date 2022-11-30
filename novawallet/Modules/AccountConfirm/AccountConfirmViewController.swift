@@ -231,12 +231,13 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
             action: #selector(actionRetry)
         )
         navigationItem.rightBarButtonItem = infoItem
+        navigationItem.rightBarButtonItem?.tintColor = R.color.colorButtonTextAccent()!
     }
 
     private func createSkipButton() {
         let skipButton = TriangularedButton()
         skipButton.translatesAutoresizingMaskIntoConstraints = false
-        skipButton.applyAccessoryStyle()
+        skipButton.applySecondaryDefaultStyle()
         buttonsView.addSubview(skipButton)
 
         skipButton.addTarget(
@@ -372,7 +373,7 @@ extension AccountConfirmViewController {
             shapeLayer?.lineDashPhase = 0.0
             shapeView.fillColor = .clear
             shapeView.strokeWidth = 1.0
-            shapeView.strokeColor = R.color.colorContainerBorder()!
+            shapeView.strokeColor = R.color.colorMnemonicBorderInActive()!
 
             button.superview?.insertSubview(shapeView, belowSubview: button)
 

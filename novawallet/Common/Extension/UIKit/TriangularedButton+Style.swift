@@ -3,12 +3,12 @@ import SoraUI
 
 extension TriangularedButton {
     func applyDefaultStyle() {
-        imageWithTitleView?.titleFont = UIFont.h5Title
+        imageWithTitleView?.titleFont = .semiBoldSubheadline
         applyEnabledStyle()
     }
 
     func applySecondaryDefaultStyle() {
-        imageWithTitleView?.titleFont = UIFont.h5Title
+        imageWithTitleView?.titleFont = .semiBoldSubheadline
         applySecondaryEnabledStyle()
     }
 

@@ -170,6 +170,14 @@
             <point key="canvasLocation" x="139" y="133"/>
         </view>
     </objects>
+    <designables>
+        <designable name="02i-Et-cAL">
+            <size key="intrinsicContentSize" width="16" height="16"/>
+        </designable>
+        <designable name="Mbj-JZ-Ope">
+            <size key="intrinsicContentSize" width="16" height="16"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="colorCellBackgroundPressed">
             <color red="0.12156862745098039" green="0.47058823529411764" blue="1" alpha="0.15999999642372131" colorSpace="custom" customColorSpace="sRGB"/>
