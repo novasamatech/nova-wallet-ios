@@ -11,12 +11,18 @@ final class MercuryoProvider: PurchaseProviderProtocol {
         static let debug = Configuration(
             baseUrl: "https://sandbox-exchange.mrcr.io",
             widgetId: "fde83da2-2a4c-4af9-a2ca-30aead5d65a0",
-            secret: "uYMcyWX3Eq"
+            secret: MercuryoKeys.testSecretKey
+        )
+
+        static let production = Configuration(
+            baseUrl: "https://exchange.mercuryo.io",
+            widgetId: "07c3ca04-f4a8-4d68-a192-83a1794ba705",
+            secret: MercuryoKeys.secretKey
         )
     }
 
     #if F_RELEASE
-        let configuration: Configuration = .debug
+        let configuration: Configuration = .production
     #else
         let configuration: Configuration = .debug
     #endif

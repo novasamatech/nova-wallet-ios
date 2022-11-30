@@ -1,10 +1,10 @@
 import Foundation
 
-enum MoonPayKeys {
+enum MercuryoKeys {
     static var secretKey: String =
-        MoonPayKeys.variable(named: "MOONPAY_PRODUCTION_SECRET") ?? MoonPayCIKeys.secretKey
+        MercuryoKeys.variable(named: "MERCURYO_PRODUCTION_SECRET") ?? MercuryoCIKeys.secretKey
     static var testSecretKey: String =
-        MoonPayKeys.variable(named: "MOONPAY_TEST_SECRET") ?? MoonPayCIKeys.testSecretKey
+        MercuryoKeys.variable(named: "MERCURYO_TEST_SECRET") ?? MercuryoCIKeys.testSecretKey
 
     static func variable(named name: String) -> String? {
         let processInfo = ProcessInfo.processInfo
