@@ -13,7 +13,7 @@ class ChainAccountTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorHighlightedAccent()
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()
         self.selectedBackgroundView = selectedBackgroundView
 
         setupLayout()

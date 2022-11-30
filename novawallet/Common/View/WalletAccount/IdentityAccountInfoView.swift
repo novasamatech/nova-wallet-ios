@@ -22,7 +22,7 @@ final class IdentityAccountInfoView: RowView<GenericTitleValueView<UIView, UIIma
 
     private func configureStyle() {
         roundedBackgroundView.applyFilledBackgroundStyle()
-        roundedBackgroundView.fillColor = R.color.colorWhite8()!
+        roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
         roundedBackgroundView.roundingCorners = .allCorners
         roundedBackgroundView.cornerRadius = 12.0
         borderView.borderType = []

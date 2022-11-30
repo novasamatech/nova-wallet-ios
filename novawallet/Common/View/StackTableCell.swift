@@ -45,19 +45,19 @@ class StackTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
     }
 
     private func configureStyle() {
-        titleLabel.textColor = R.color.colorTransparentText()
+        titleLabel.textColor = R.color.colorTextSecondary()
         titleLabel.font = .regularFootnote
 
         let valueView = rowContentView.valueView
         valueView.mode = .iconDetails
-        detailsLabel.textColor = R.color.colorWhite()
+        detailsLabel.textColor = R.color.colorTextPrimary()
         detailsLabel.font = .regularFootnote
         detailsLabel.numberOfLines = 1
         valueView.spacing = 8.0
         valueView.iconWidth = 20.0
 
         preferredHeight = 44.0
-        borderView.strokeColor = R.color.colorWhite8()!
+        borderView.strokeColor = R.color.colorDivider()!
 
         isUserInteractionEnabled = false
 

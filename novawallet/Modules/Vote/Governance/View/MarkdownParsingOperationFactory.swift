@@ -21,32 +21,32 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
 
         let parser = CDMarkdownParser(
             font: CDFont.systemFont(ofSize: 15),
-            fontColor: R.color.colorTransparentText()!,
+            fontColor: R.color.colorTextSecondary()!,
             paragraphStyle: textParagraphStyle,
             imageDetectionEnabled: imageDetectionEnabled
         )
 
-        parser.bold.color = R.color.colorTransparentText()!
+        parser.bold.color = R.color.colorTextSecondary()!
         parser.bold.backgroundColor = nil
-        parser.header.color = R.color.colorWhite()!
+        parser.header.color = R.color.colorTextPrimary()!
         parser.header.backgroundColor = nil
-        parser.list.color = R.color.colorTransparentText()!
+        parser.list.color = R.color.colorTextSecondary()!
         parser.list.backgroundColor = nil
-        parser.quote.color = R.color.colorTransparentText()
+        parser.quote.color = R.color.colorTextSecondary()
         parser.quote.backgroundColor = nil
-        parser.link.color = R.color.colorNovaBlue()!
+        parser.link.color = R.color.colorButtonTextAccent()!
         parser.link.backgroundColor = nil
-        parser.automaticLink.color = R.color.colorNovaBlue()!
+        parser.automaticLink.color = R.color.colorButtonTextAccent()!
         parser.automaticLink.backgroundColor = nil
-        parser.italic.color = R.color.colorTransparentText()!
+        parser.italic.color = R.color.colorTextSecondary()!
         parser.italic.backgroundColor = nil
         let codeParagraphStyle = NSMutableParagraphStyle()
         parser.code.font = UIFont.systemFont(ofSize: 15)
-        parser.code.color = R.color.colorWhite()!
+        parser.code.color = R.color.colorTextPrimary()!
         parser.code.backgroundColor = UIColor(white: 20.0 / 256.0, alpha: 1.0)
         parser.code.paragraphStyle = codeParagraphStyle
         parser.syntax.font = UIFont.systemFont(ofSize: 15)
-        parser.syntax.color = R.color.colorWhite()!
+        parser.syntax.color = R.color.colorTextPrimary()!
         parser.syntax.backgroundColor = UIColor(white: 20.0 / 256.0, alpha: 1.0)
 
         // library uses only width internally and adjusts the height of the image

@@ -83,9 +83,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let commonIconImage = R.image.iconTabWallet()
         let selectedIconImage = R.image.iconTabWalletFilled()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorWhite()!)?
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorNovaBlue()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
             .withRenderingMode(.alwaysOriginal)
 
         viewController.tabBarItem = createTabBarItem(
@@ -118,9 +118,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let commonIconImage = R.image.iconTabStaking()
         let selectedIconImage = R.image.iconTabStakingFilled()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorWhite()!)?
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorNovaBlue()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
             .withRenderingMode(.alwaysOriginal)
 
         viewController.tabBarItem = createTabBarItem(
@@ -154,9 +154,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let commonIconImage = R.image.iconTabSettings()
         let selectedIconImage = R.image.iconTabSettingsFilled()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorWhite()!)?
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorNovaBlue()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
             .withRenderingMode(.alwaysOriginal)
 
         navigationController.tabBarItem = createTabBarItem(
@@ -188,9 +188,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let commonIconImage = R.image.iconTabVote()
         let selectedIconImage = R.image.iconTabVoteFilled()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorWhite()!)?
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorNovaBlue()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
             .withRenderingMode(.alwaysOriginal)
 
         navigationController.tabBarItem = createTabBarItem(
@@ -222,9 +222,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let commonIconImage = R.image.iconTabDApps()
         let selectedIconImage = R.image.iconTabDAppsFilled()
 
-        let commonIcon = commonIconImage?.tinted(with: R.color.colorWhite()!)?
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorIconPrimary()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorNovaBlue()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorIconAccent()!)?
             .withRenderingMode(.alwaysOriginal)
 
         navigationController.tabBarItem = createTabBarItem(

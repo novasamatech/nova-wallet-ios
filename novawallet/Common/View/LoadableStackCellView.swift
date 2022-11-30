@@ -5,12 +5,12 @@ final class LoadableStackActionView<TitleView: UIView>: UIView {
 
     let activityIndicator: UIActivityIndicatorView = .create { view in
         view.style = .medium
-        view.tintColor = R.color.colorWhite()
+        view.tintColor = R.color.colorIconPrimary()
         view.hidesWhenStopped = true
     }
 
     let disclosureIndicatorView: UIImageView = .create { imageView in
-        imageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorTransparentText()!)
+        imageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
     }
 
     override init(frame: CGRect) {

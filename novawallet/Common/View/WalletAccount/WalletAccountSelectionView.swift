@@ -4,7 +4,7 @@ import UIKit
 final class WalletAccountSelectionView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()

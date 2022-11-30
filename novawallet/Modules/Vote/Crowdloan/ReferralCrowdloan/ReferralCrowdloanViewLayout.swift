@@ -17,7 +17,7 @@ final class ReferralCrowdloanViewLayout: UIView {
 
     let applyAppBonusView: BorderedContainerView = {
         let view = BorderedContainerView()
-        view.strokeColor = R.color.colorDarkGray()!
+        view.strokeColor = R.color.colorDivider()!
         view.borderType = .bottom
         view.strokeWidth = 1.0
         return view
@@ -26,15 +26,13 @@ final class ReferralCrowdloanViewLayout: UIView {
     let applyAppBonusLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
-    let applyAppBonusButton: GradientButton = {
-        let button = GradientButton()
+    let applyAppBonusButton: TriangularedButton = {
+        let button = TriangularedButton()
         button.applyDefaultStyle()
-        button.gradientBackgroundView?.cornerRadius = Constants.applyAppButtonHeight / 2.0
-        button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
         return button
     }()
 
@@ -42,7 +40,7 @@ final class ReferralCrowdloanViewLayout: UIView {
 
     let termsSwitchView: UISwitch = {
         let switchView = UISwitch()
-        switchView.onTintColor = R.color.colorAccent()
+        switchView.onTintColor = R.color.colorIconAccent()
         return switchView
     }()
 

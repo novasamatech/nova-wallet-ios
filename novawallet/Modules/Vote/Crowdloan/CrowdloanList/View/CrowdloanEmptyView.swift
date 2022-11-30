@@ -13,7 +13,7 @@ final class CrowdloanEmptyView: UIView {
         $0.numberOfLines = 0
         $0.textAlignment = .center
         $0.backgroundColor = .clear
-        $0.textColor = R.color.colorWhite64()
+        $0.textColor = R.color.colorTextSecondary()
         $0.font = .p2Paragraph
     }
 

@@ -8,7 +8,7 @@ struct ModalAlertFactory {
         contentView.title = title
         contentView.spacingBetweenLabelAndIcon = 8.0
         contentView.layoutType = .verticalImageFirst
-        contentView.titleColor = R.color.colorWhite()!
+        contentView.titleColor = R.color.colorTextPrimary()!
         contentView.titleFont = UIFont.p2Paragraph
 
         let contentWidth = contentView.intrinsicContentSize.width + 24.0
@@ -22,7 +22,7 @@ struct ModalAlertFactory {
         )
 
         let style = ModalAlertPresentationStyle(
-            backgroundColor: R.color.color0x1D1D20()!,
+            backgroundColor: R.color.colorBottomSheetBackground()!,
             backdropColor: .clear,
             cornerRadius: 8.0
         )
@@ -46,7 +46,7 @@ struct ModalAlertFactory {
     ) -> UIViewController {
         let contentView = AlertImageWithTitleView()
         contentView.verticalSpacing = 8.0
-        contentView.titleLabel.textColor = R.color.colorWhite()
+        contentView.titleLabel.textColor = R.color.colorTextPrimary()
         contentView.titleLabel.font = UIFont.p2Paragraph
         contentView.titleLabel.text = title
         contentView.titleLabel.textAlignment = .center
@@ -59,7 +59,7 @@ struct ModalAlertFactory {
         controller.view = contentView
 
         let style = ModalAlertPresentationStyle(
-            backgroundColor: R.color.color0x1D1D20()!,
+            backgroundColor: R.color.colorBottomSheetBackground()!,
             backdropColor: .clear,
             cornerRadius: 8.0
         )

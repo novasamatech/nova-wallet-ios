@@ -10,7 +10,7 @@ final class RequestedAmountRow: RowView<GenericMultiValueView<MultiValueView>> {
         super.init(frame: frame)
 
         preferredHeight = 102
-        rowContentView.valueTop.apply(style: .footnoteWhite64)
+        rowContentView.valueTop.apply(style: .footnoteSecondary)
         rowContentView.valueTop.textAlignment = .left
         rowContentView.valueBottom.apply(style: .accentAmount)
         rowContentView.valueBottom.valueTop.textAlignment = .left

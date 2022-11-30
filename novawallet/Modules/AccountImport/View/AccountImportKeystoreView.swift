@@ -26,7 +26,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h2Title
         label.numberOfLines = 0
         return label
@@ -35,7 +35,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
     let uploadWarningView: IconDetailsView = {
         let view = IconDetailsView()
         view.imageView.image = R.image.iconWarning()
-        view.detailsLabel.textColor = R.color.colorLightGray()
+        view.detailsLabel.textColor = R.color.colorTextSecondary()
         view.detailsLabel.font = .p1Paragraph
         return view
     }()
@@ -47,7 +47,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         )
 
         view.actionImage = R.image.iconUpload()
-        view.highlightedFillColor = R.color.colorAccentSelected()!
+        view.highlightedFillColor = R.color.colorCellBackgroundPressed()!
 
         return view
     }()
@@ -78,7 +78,7 @@ final class AccountImportKeystoreView: AccountImportBaseView {
     let usernameHintLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()
@@ -194,10 +194,10 @@ final class AccountImportKeystoreView: AccountImportBaseView {
 
     private func updateUploadView() {
         if let viewModel = sourceViewModel, !viewModel.inputHandler.normalizedValue.isEmpty {
-            uploadView.subtitleLabel?.textColor = R.color.colorWhite()
+            uploadView.subtitleLabel?.textColor = R.color.colorTextPrimary()
             uploadView.subtitle = viewModel.inputHandler.normalizedValue
         } else {
-            uploadView.subtitleLabel?.textColor = R.color.colorLightGray()
+            uploadView.subtitleLabel?.textColor = R.color.colorTextSecondary()
 
             uploadView.subtitle = R.string.localizable.recoverJsonHint(preferredLanguages: locale?.rLanguages)
         }

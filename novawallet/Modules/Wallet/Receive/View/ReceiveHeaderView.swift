@@ -9,7 +9,7 @@ final class ReceiveHeaderView: UIView, AdaptiveDesignable {
     let infoLabel: UILabel = {
         let label = UILabel()
         label.font = .p0Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.textAlignment = .center
         label.numberOfLines = 0
         return label

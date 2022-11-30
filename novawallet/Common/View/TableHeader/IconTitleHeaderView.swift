@@ -4,7 +4,7 @@ import SoraUI
 final class IconTitleHeaderView: UITableViewHeaderFooterView {
     let titleView: IconDetailsView = {
         let view = IconDetailsView()
-        view.detailsLabel.textColor = R.color.colorWhite()
+        view.detailsLabel.textColor = R.color.colorTextPrimary()
         view.detailsLabel.font = .semiBoldBody
         view.spacing = 0.0
         return view

@@ -10,7 +10,7 @@ class CrowdloanContributionSetupViewLayout: UIView {
 
     let contributionTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()!
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h4Title
         return label
     }()
@@ -21,7 +21,7 @@ class CrowdloanContributionSetupViewLayout: UIView {
 
     let rewardDestinationTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()!
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h4Title
         return label
     }()
@@ -57,7 +57,7 @@ class CrowdloanContributionSetupViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
         applyLocalization()

@@ -6,8 +6,8 @@ class TextInputView: BackgroundedContentControl {
     let textField: UITextField = {
         let textField = UITextField()
         textField.font = .regularSubheadline
-        textField.textColor = R.color.colorWhite()
-        textField.tintColor = R.color.colorWhite()
+        textField.textColor = R.color.colorTextPrimary()
+        textField.tintColor = R.color.colorTextPrimary()
         textField.clearButtonMode = .never
 
         var attributes = textField.defaultTextAttributes
@@ -31,7 +31,7 @@ class TextInputView: BackgroundedContentControl {
         let button = RoundedButton()
         button.applyIconStyle()
 
-        let icon = R.image.iconClearField()!.withRenderingMode(.alwaysOriginal)
+        let icon = R.image.iconClearField()?.tinted(with: R.color.colorIconSecondary()!)
         button.imageWithTitleView?.iconImage = icon
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         button.contentInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
@@ -162,12 +162,8 @@ class TextInputView: BackgroundedContentControl {
         if backgroundView == nil {
             let roundedView = RoundedView()
             roundedView.isUserInteractionEnabled = false
-            roundedView.shadowOpacity = 0.0
-            roundedView.strokeColor = R.color.colorAccent()!
-            roundedView.fillColor = R.color.colorWhite8()!
-            roundedView.highlightedFillColor = R.color.colorWhite8()!
+            roundedView.apply(style: .textField)
             roundedView.strokeWidth = 0.0
-            roundedView.cornerRadius = 12.0
 
             backgroundView = roundedView
         }
@@ -240,7 +236,7 @@ class TextInputView: BackgroundedContentControl {
 
     @objc private func actionEditingBeginEnd() {
         if textField.isFirstResponder {
-            roundedBackgroundView?.strokeWidth = 0.5
+            roundedBackgroundView?.strokeWidth = 1
         } else {
             roundedBackgroundView?.strokeWidth = 0.0
         }

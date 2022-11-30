@@ -22,7 +22,7 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
 
     let collatorTitleLabel: UILabel = .create {
         $0.font = .semiBoldBody
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
         $0.numberOfLines = 0
     }
 
@@ -35,7 +35,7 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
 
     let rewardComparisonTitleLabel: UILabel = .create {
         $0.font = .semiBoldBody
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
         $0.numberOfLines = 0
     }
 
@@ -44,7 +44,7 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
 
     let thresholdDetailsLabel: UILabel = .create {
         $0.font = .semiBoldBody
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
         $0.numberOfLines = 0
     }
 
@@ -53,7 +53,7 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
     let amountInputView = NewAmountInputView()
 
     let networkFeeView: NetworkFeeView = {
-        let view = UIFactory.default.createNetwork26FeeView()
+        let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         return view
     }()
@@ -66,7 +66,7 @@ final class ParaStkYieldBoostSetupViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

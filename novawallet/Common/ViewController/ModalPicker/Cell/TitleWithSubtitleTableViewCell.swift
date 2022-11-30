@@ -21,7 +21,7 @@ class TitleWithSubtitleTableViewCell: UITableViewCell, ModalPickerCellProtocol {
         super.awakeFromNib()
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
+        selectedBackgroundView.backgroundColor = R.color.colorBottomSheetBackground()!
         self.selectedBackgroundView = selectedBackgroundView
     }
 

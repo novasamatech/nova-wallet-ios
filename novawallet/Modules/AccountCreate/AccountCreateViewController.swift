@@ -42,7 +42,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
 
     private func setupNavigationItem() {
         let advancedBarButtonItem = UIBarButtonItem(
-            image: R.image.iconOptions(),
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
             style: .plain,
             target: self,
             action: #selector(openAdvanced)
@@ -102,7 +102,7 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
 
     func displayMnemonic() {
         UIView.transition(with: rootView.mnemonicFieldContentLabel, duration: 0.25, options: .transitionCrossDissolve) {
-            self.rootView.mnemonicFieldContentLabel.textColor = R.color.colorWhite()!
+            self.rootView.mnemonicFieldContentLabel.textColor = R.color.colorTextPrimary()!
         }
 
         rootView.proceedButton.isEnabled = true

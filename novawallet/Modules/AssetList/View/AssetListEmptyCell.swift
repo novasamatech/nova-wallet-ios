@@ -1,8 +1,8 @@
 import UIKit
 
 final class AssetListEmptyCell: UICollectionViewCell {
-    let backgroundBlurView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundBlurView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12.0
         return view
     }()
@@ -11,13 +11,13 @@ final class AssetListEmptyCell: UICollectionViewCell {
         let view = UIImageView()
         view.image = R.image.iconLoadingError()?
             .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorWhite32()!)
+            .tinted(with: R.color.colorIconSecondary()!)
         return view
     }()
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.numberOfLines = 0
         label.textAlignment = .center
