@@ -12,9 +12,9 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: sinoru/actions-setup-xcode@v2
         with:
-          xcode-version: 14.1
+          xcode-version: '14.1'
 
       - name: Checkout
         uses: actions/checkout@v2
