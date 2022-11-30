@@ -73,6 +73,7 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
             make.leading.greaterThanOrEqualToSuperview().offset(logoHorizontalInset)
             make.trailing.lessThanOrEqualToSuperview().offset(-logoHorizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).multipliedBy(logoBottomMultiplier)
+            make.centerX.equalToSuperview()
         }
 
         logo.setContentCompressionResistancePriority(.defaultLow, for: .vertical)

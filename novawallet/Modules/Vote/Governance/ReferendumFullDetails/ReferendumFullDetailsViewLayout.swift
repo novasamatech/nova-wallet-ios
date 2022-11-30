@@ -168,6 +168,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 textView.isScrollEnabled = false
                 textView.backgroundColor = .clear
                 textView.textAlignment = .left
+                textView.textColor = R.color.colorTextSecondary()
 
                 $0.valueBottom.contentInsets = .zero
                 $0.valueBottom.innerInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)

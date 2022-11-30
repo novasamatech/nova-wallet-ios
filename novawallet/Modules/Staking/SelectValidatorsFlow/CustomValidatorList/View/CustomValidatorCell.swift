@@ -125,7 +125,7 @@ class CustomValidatorCell: UITableViewCell {
 
         contentView.addSubview(statusStackView)
         statusStackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
+            make.centerY.equalToSuperview()
             make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(4)
         }
 
@@ -164,9 +164,11 @@ class CustomValidatorCell: UITableViewCell {
         if let auxDetailsText = viewModel.auxDetails {
             detailsLabel.text = viewModel.details
             detailsAuxLabel.text = auxDetailsText
+            detailsAuxLabel.textColor = R.color.colorTextSecondary()
             detailsLabel.isHidden = false
         } else {
             detailsAuxLabel.text = viewModel.details
+            detailsAuxLabel.textColor = R.color.colorTextPositive()
             detailsLabel.isHidden = true
         }
 
