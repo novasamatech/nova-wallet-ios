@@ -73,25 +73,25 @@ extension NSPredicate {
     static func filterTransactionsBy(transactionId: String) -> NSPredicate {
         NSPredicate(
             format: "%K == %@",
-            #keyPath(CDTransactionHistoryItem.identifier),
+            #keyPath(CDTransactionItem.identifier),
             transactionId
         )
     }
 
     static func filterTransactionsBySender(address: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.sender), address)
+        NSPredicate(format: "%K == %@", #keyPath(CDTransactionItem.sender), address)
     }
 
     static func filterTransactionsByReceiver(address: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.receiver), address)
+        NSPredicate(format: "%K == %@", #keyPath(CDTransactionItem.receiver), address)
     }
 
     static func filterTransactionsByChainId(_ chainId: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.chainId), chainId)
+        NSPredicate(format: "%K == %@", #keyPath(CDTransactionItem.chainId), chainId)
     }
 
     static func filterTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
-        NSPredicate(format: "%K == %d", #keyPath(CDTransactionHistoryItem.assetId), assetId)
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.assetId), assetId)
     }
 
     static func filterContactsByTarget(address: String) -> NSPredicate {

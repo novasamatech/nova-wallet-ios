@@ -52,6 +52,7 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         details: PersistTransferDetails
     ) {
         persistExtrinsicService.saveTransfer(
+            source: .substrate,
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             details: details,
             runningIn: .main
