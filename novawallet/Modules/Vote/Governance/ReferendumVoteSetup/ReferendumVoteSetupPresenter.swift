@@ -33,6 +33,7 @@ final class ReferendumVoteSetupPresenter {
     init(
         chain: ChainModel,
         referendumIndex: ReferendumIdLocal,
+        initData: ReferendumVotingInitData,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumFormatter: LocalizableResource<NumberFormatter>,
@@ -45,6 +46,11 @@ final class ReferendumVoteSetupPresenter {
         logger: LoggerProtocol
     ) {
         self.chain = chain
+        votesResult = initData.votesResult
+        blockNumber = initData.blockNumber
+        blockTime = initData.blockTime
+        referendum = initData.referendum
+        lockDiff = initData.lockDiff
         self.referendumIndex = referendumIndex
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -314,7 +320,15 @@ final class ReferendumVoteSetupPresenter {
                 return
             }
 
-            self?.wireframe.showConfirmation(from: self?.view, vote: newVote)
+            let initData = ReferendumVotingInitData(
+                votesResult: self?.votesResult,
+                blockNumber: self?.blockNumber,
+                blockTime: self?.blockTime,
+                referendum: self?.referendum,
+                lockDiff: self?.lockDiff
+            )
+
+            self?.wireframe.showConfirmation(from: self?.view, vote: newVote, initData: initData)
         }
     }
 

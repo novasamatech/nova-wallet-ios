@@ -12,7 +12,7 @@ final class StakingUnbondingItemView: GenericTitleValueView<UILabel, IconDetails
     }
 
     private func configureStyle() {
-        titleView.textColor = R.color.colorWhite()!
+        titleView.textColor = R.color.colorTextPrimary()!
         titleView.font = .regularSubheadline
 
         valueView.mode = .detailsIcon
@@ -23,16 +23,16 @@ final class StakingUnbondingItemView: GenericTitleValueView<UILabel, IconDetails
         titleView.text = title
 
         if let timeLeft = timeLeft {
-            valueView.detailsLabel.textColor = R.color.colorTransparentText()
+            valueView.detailsLabel.textColor = R.color.colorTextSecondary()
             valueView.detailsLabel.text = timeLeft
 
             valueView.spacing = 4.0
             valueView.iconWidth = 16.0
 
-            let icon = R.image.iconPending()?.tinted(with: R.color.colorWhite48()!)
+            let icon = R.image.iconPending()?.tinted(with: R.color.colorIconSecondary()!)
             valueView.imageView.image = icon
         } else {
-            valueView.detailsLabel.textColor = R.color.colorGreen()
+            valueView.detailsLabel.textColor = R.color.colorTextPositive()
             valueView.detailsLabel.text = R.string.localizable.walletBalanceRedeemable(
                 preferredLanguages: locale.rLanguages
             )

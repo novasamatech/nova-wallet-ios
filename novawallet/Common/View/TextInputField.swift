@@ -6,8 +6,8 @@ class TextInputField: BackgroundedContentControl {
     let textField: UITextField = {
         let textField = UITextField()
         textField.font = .regularSubheadline
-        textField.textColor = R.color.colorWhite()
-        textField.tintColor = R.color.colorWhite()
+        textField.textColor = R.color.colorTextPrimary()
+        textField.tintColor = R.color.colorTextPrimary()
         textField.returnKeyType = .done
 
         return textField
@@ -102,12 +102,8 @@ class TextInputField: BackgroundedContentControl {
         if backgroundView == nil {
             let roundedView = RoundedView()
             roundedView.isUserInteractionEnabled = false
-            roundedView.shadowOpacity = 0.0
-            roundedView.strokeColor = R.color.colorAccent()!
-            roundedView.fillColor = R.color.colorWhite8()!
-            roundedView.highlightedFillColor = R.color.colorWhite8()!
+            roundedView.apply(style: .textField)
             roundedView.strokeWidth = 0.0
-            roundedView.cornerRadius = 12.0
 
             backgroundView = roundedView
         }

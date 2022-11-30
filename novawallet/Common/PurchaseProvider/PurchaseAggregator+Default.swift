@@ -19,7 +19,7 @@ extension PurchaseAggregator {
         return PurchaseAggregator(providers: purchaseProviders)
             .with(appName: config.purchaseAppName)
             .with(logoUrl: config.logoURL)
-            .with(colorCode: R.color.colorAccent()!.hexRGB)
+            .with(colorCode: R.color.colorIconAccent()!.hexRGB)
             .with(callbackUrl: config.purchaseRedirect)
     }
 }

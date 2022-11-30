@@ -4,21 +4,21 @@ import SoraUI
 final class NftDetailsPriceView: RoundedView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularSubheadline
         return label
     }()
 
     let tokenLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .boldTitle2
         return label
     }()
 
     let priceLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularSubheadline
         return label
     }()
@@ -49,7 +49,7 @@ final class NftDetailsPriceView: RoundedView {
         applyFilledBackgroundStyle()
 
         cornerRadius = 12.0
-        fillColor = R.color.colorWhite8()!
+        fillColor = R.color.colorBottomSheetBackground()!
     }
 
     private func setupLayout() {

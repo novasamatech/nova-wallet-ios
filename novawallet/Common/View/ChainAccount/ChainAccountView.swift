@@ -16,7 +16,7 @@ final class ChainAccountView: UIView {
     let networkLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -87,7 +87,7 @@ final class ChainAccountView: UIView {
         let view = IconDetailsGenericView<UILabel>()
         view.spacing = 4.0
         view.iconWidth = 16.0
-        view.detailsView.textColor = R.color.colorTransparentText()
+        view.detailsView.textColor = R.color.colorTextSecondary()
         view.detailsView.font = .regularFootnote
         view.detailsView.lineBreakMode = .byTruncatingMiddle
 

@@ -5,21 +5,29 @@ import SoraFoundation
 struct GovernanceUnlockConfirmViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>,
-        schedule: GovernanceUnlockSchedule,
-        blockNumber: BlockNumber
+        initData: GovernanceUnlockConfirmInitData
     ) -> GovernanceUnlockConfirmViewProtocol? {
+        guard let option = state.settings.value else {
+            return nil
+        }
+
+        let chain = option.chain
+
         guard
             let wallet = SelectedWalletSettings.shared.value,
-            let chain = state.settings.value,
             let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
-            let interactor = createInteractor(for: state, chain: chain, selectedAccount: selectedAccount),
+            let interactor = createInteractor(
+                for: state,
+                option: option,
+                selectedAccount: selectedAccount
+            ),
             let assetInfo = chain.utilityAssetDisplayInfo(),
-            let currencyManager = CurrencyManager.shared,
-            let votingLockId = state.governanceId(for: chain)
+            let currencyManager = CurrencyManager.shared
         else {
             return nil
         }
+
+        let votingLockId = state.governanceId(for: option)
 
         let wireframe = GovernanceUnlockConfirmWireframe()
 
@@ -46,9 +54,7 @@ struct GovernanceUnlockConfirmViewFactory {
             wireframe: wireframe,
             chain: chain,
             selectedAccount: selectedAccount,
-            votingResult: votingResult,
-            schedule: schedule,
-            blockNumber: blockNumber,
+            initData: initData,
             balanceViewModelFactory: balanceViewModelFactory,
             lockChangeViewModelFactory: lockChangeViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
@@ -70,19 +76,23 @@ struct GovernanceUnlockConfirmViewFactory {
 
     private static func createInteractor(
         for state: GovernanceSharedState,
-        chain: ChainModel,
+        option: GovernanceSelectedOption,
         selectedAccount: MetaChainAccountResponse
     ) -> GovernanceUnlockConfirmInteractor? {
+        let chain = option.chain
+
         guard
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
-            let extrinsicFactory = state.createExtrinsicFactory(for: chain),
             let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory(),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
+
+        let extrinsicFactory = state.createExtrinsicFactory(for: option)
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -109,6 +119,7 @@ struct GovernanceUnlockConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue,

@@ -4,9 +4,7 @@ import SoraUI
 final class AssetListChainView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
+        view.apply(style: .chips)
         view.cornerRadius = 7.0
         return view
     }()
@@ -18,7 +16,7 @@ final class AssetListChainView: UIView {
 
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite80()
+        label.textColor = R.color.colorChipText()
         label.font = .semiBoldCaps1
         return label
     }()

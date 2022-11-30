@@ -3,8 +3,6 @@ import SoraFoundation
 import SubstrateSdk
 
 final class ReferendumDetailsPresenter {
-    static let readMoreThreshold = 180
-
     weak var view: ReferendumDetailsViewProtocol?
     let wireframe: ReferendumDetailsWireframeProtocol
     let interactor: ReferendumDetailsInteractorInputProtocol
@@ -16,13 +14,17 @@ final class ReferendumDetailsPresenter {
     let referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
+    let accountManagementFilter: AccountManagementFilterProtocol
+    let wallet: MetaAccountModel
 
     let chain: ChainModel
+    let governanceType: GovernanceType
     let logger: LoggerProtocol
 
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
+    private var votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
     private var price: PriceData?
@@ -37,10 +39,11 @@ final class ReferendumDetailsPresenter {
     private var statusViewModel: StatusTimeViewModel?
 
     init(
-        referendum: ReferendumLocal,
         chain: ChainModel,
-        accountVotes: ReferendumAccountVoteLocal?,
-        metadata: ReferendumMetadataLocal?,
+        governanceType: GovernanceType,
+        wallet: MetaAccountModel,
+        accountManagementFilter: AccountManagementFilterProtocol,
+        initData: ReferendumDetailsInitData,
         interactor: ReferendumDetailsInteractorInputProtocol,
         wireframe: ReferendumDetailsWireframeProtocol,
         referendumViewModelFactory: ReferendumsModelFactoryProtocol,
@@ -56,6 +59,9 @@ final class ReferendumDetailsPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.wallet = wallet
+        self.governanceType = governanceType
+        self.accountManagementFilter = accountManagementFilter
         self.referendumViewModelFactory = referendumViewModelFactory
         self.referendumStringsFactory = referendumStringsFactory
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -64,9 +70,12 @@ final class ReferendumDetailsPresenter {
         self.referendumMetadataViewModelFactory = referendumMetadataViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
-        self.referendum = referendum
-        self.accountVotes = accountVotes
-        referendumMetadata = metadata
+        referendum = initData.referendum
+        accountVotes = initData.accountVotes
+        votingDistribution = initData.votesResult
+        blockNumber = initData.blockNumber
+        blockTime = initData.blockTime
+        referendumMetadata = initData.metadata
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -81,8 +90,16 @@ final class ReferendumDetailsPresenter {
             from: referendum.index as NSNumber
         )
 
-        let trackViewModel = referendum.track.map {
-            ReferendumTrackType.createViewModel(from: $0.name, chain: chain, locale: selectedLocale)
+        // display track name only if there is more than 1 track in the network
+        let trackViewModel: ReferendumInfoView.Track?
+        if let track = referendum.track, track.totalTracksCount > 1 {
+            trackViewModel = ReferendumTrackType.createViewModel(
+                from: track.name,
+                chain: chain,
+                locale: selectedLocale
+            )
+        } else {
+            trackViewModel = nil
         }
 
         let viewModel = TrackTagsView.Model(titleIcon: trackViewModel, referendumNumber: referendumIndex)
@@ -107,7 +124,6 @@ final class ReferendumDetailsPresenter {
         let detailsViewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
             for: referendum,
             metadata: referendumMetadata,
-            readMoreThreshold: Self.readMoreThreshold,
             locale: selectedLocale
         )
 
@@ -338,7 +354,46 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     }
 
     func vote() {
-        wireframe.showVote(from: view, referendum: referendum)
+        guard let view = view else {
+            return
+        }
+
+        if wallet.fetch(for: chain.accountRequest()) != nil {
+            let initData = ReferendumVotingInitData(
+                votesResult: nil,
+                blockNumber: blockNumber,
+                blockTime: blockTime,
+                referendum: referendum,
+                lockDiff: nil
+            )
+
+            wireframe.showVote(from: view, referendum: referendum, initData: initData)
+        } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
+            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
+                chain.name,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.presentAddAccount(
+                from: view,
+                chainName: chain.name,
+                message: message,
+                locale: selectedLocale
+            ) { [weak self] in
+                guard let wallet = self?.wallet else {
+                    return
+                }
+
+                self?.wireframe.showWalletDetails(from: self?.view, wallet: wallet)
+            }
+        } else {
+            wireframe.presentNoAccountSupport(
+                from: view,
+                walletType: wallet.type,
+                chainName: chain.name,
+                locale: selectedLocale
+            )
+        }
     }
 
     func showProposerDetails() {
@@ -365,14 +420,22 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func opeDApp(at index: Int) {
         guard
             let dApp = dApps?[index],
-            let url = try? dApp.extractFullUrl(for: referendum.index) else {
+            let url = try? dApp.extractFullUrl(for: referendum.index, governanceType: governanceType) else {
             return
         }
 
         wireframe.showDApp(from: view, url: url)
     }
 
-    func readFullDescription() {}
+    func readFullDescription() {
+        let viewModel = referendumMetadataViewModelFactory.createDetailsViewModel(
+            for: referendum,
+            metadata: referendumMetadata,
+            locale: selectedLocale
+        )
+
+        wireframe.showFullDescription(from: view, title: viewModel.title, description: viewModel.description)
+    }
 
     func openFullDetails() {
         guard let actionDetails = actionDetails else {
@@ -383,8 +446,17 @@ extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
             from: view,
             referendum: referendum,
             actionDetails: actionDetails,
+            metadata: referendumMetadata,
             identities: identities ?? [:]
         )
+    }
+
+    func openURL(_ url: URL) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.showWeb(url: url, from: view, style: .automatic)
     }
 }
 
@@ -410,8 +482,12 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
         refreshIdentities()
     }
 
-    func didReceiveAccountVotes(_ votes: ReferendumAccountVoteLocal?) {
+    func didReceiveAccountVotes(
+        _ votes: ReferendumAccountVoteLocal?,
+        votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    ) {
         accountVotes = votes
+        self.votingDistribution = votingDistribution
 
         provideYourVote()
     }

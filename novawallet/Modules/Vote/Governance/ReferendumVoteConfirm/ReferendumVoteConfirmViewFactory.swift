@@ -4,10 +4,18 @@ import SubstrateSdk
 import SoraFoundation
 
 struct ReferendumVoteConfirmViewFactory {
+    // swiftlint:disable:next function_body_length
     static func createView(
         for state: GovernanceSharedState,
-        newVote: ReferendumNewVote
+        newVote: ReferendumNewVote,
+        initData: ReferendumVotingInitData
     ) -> ReferendumVoteConfirmViewProtocol? {
+        guard let option = state.settings.value else {
+            return nil
+        }
+
+        let chain = option.chain
+
         guard
             let currencyManager = CurrencyManager.shared,
             let interactor = createInteractor(
@@ -15,15 +23,15 @@ struct ReferendumVoteConfirmViewFactory {
                 referendum: newVote.index,
                 currencyManager: currencyManager
             ),
-            let chain = state.settings.value,
             let assetDisplayInfo = chain.utilityAsset()?.displayInfo(with: chain.icon),
             let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
                 for: chain.accountRequest()
-            ),
-            let votingLockId = state.governanceId(for: chain)
+            )
         else {
             return nil
         }
+
+        let votingLockId = state.governanceId(for: option)
 
         let wireframe = ReferendumVoteConfirmWireframe()
 
@@ -48,6 +56,7 @@ struct ReferendumVoteConfirmViewFactory {
         )
 
         let presenter = ReferendumVoteConfirmPresenter(
+            initData: initData,
             vote: newVote,
             chain: chain,
             selectedAccount: selectedAccount,
@@ -82,16 +91,23 @@ struct ReferendumVoteConfirmViewFactory {
     ) -> ReferendumVoteConfirmInteractor? {
         let wallet: MetaAccountModel? = SelectedWalletSettings.shared.value
 
+        guard let option = state.settings.value else {
+            return nil
+        }
+
+        let chain = option.chain
+
         guard
-            let chain = state.settings.value,
             let selectedAccount = wallet?.fetchMetaChainAccount(for: chain.accountRequest()),
             let subscriptionFactory = state.subscriptionFactory,
             let lockStateFactory = state.locksOperationFactory,
-            let extrinsicFactory = state.createExtrinsicFactory(for: chain),
-            let blockTimeService = state.blockTimeService
+            let blockTimeService = state.blockTimeService,
+            let blockTimeFactory = state.createBlockTimeOperationFactory()
         else {
             return nil
         }
+
+        let extrinsicFactory = state.createExtrinsicFactory(for: option)
 
         guard
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
@@ -122,6 +138,7 @@ struct ReferendumVoteConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeFactory,
             connection: connection,
             runtimeProvider: runtimeProvider,
             currencyManager: currencyManager,

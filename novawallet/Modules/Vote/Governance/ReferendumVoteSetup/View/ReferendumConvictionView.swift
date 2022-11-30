@@ -4,25 +4,21 @@ import SoraUI
 
 final class ReferendumConvictionView: UIView {
     let backgroundView: RoundedView = .create { view in
-        view.applyCellBackgroundStyle()
-        view.cornerRadius = 12.0
+        view.apply(style: .roundedLightCell)
     }
 
-    let titleLabel: UILabel = .create { view in
-        view.font = .regularFootnote
-        view.textColor = R.color.colorTransparentText()
-    }
+    let titleLabel = UILabel(style: .footnoteSecondary)
 
     let slider: DiscreteGradientSlider = .create { view in
         view.applyConvictionDefaultStyle()
     }
 
     let separatorView: UIView = .create { view in
-        view.backgroundColor = R.color.colorWhite8()
+        view.backgroundColor = R.color.colorDivider()
     }
 
     let votesView: UILabel = .create { view in
-        view.textColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
         view.font = .boldTitle2
         view.textAlignment = .center
     }

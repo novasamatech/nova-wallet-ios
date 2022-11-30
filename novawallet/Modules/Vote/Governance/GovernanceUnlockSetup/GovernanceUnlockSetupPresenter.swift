@@ -20,6 +20,7 @@ final class GovernanceUnlockSetupPresenter {
     private var countdownTimer: CountdownTimer?
 
     init(
+        initData: GovernanceUnlockInitData,
         interactor: GovernanceUnlockSetupInteractorInputProtocol,
         wireframe: GovernanceUnlockSetupWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -27,6 +28,10 @@ final class GovernanceUnlockSetupPresenter {
         logger: LoggerProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
+        votingResult = initData.votingResult
+        unlockSchedule = initData.unlockSchedule
+        blockTime = initData.blockTime
+        blockNumber = initData.blockNumber
         self.interactor = interactor
         self.wireframe = wireframe
         self.balanceViewModelFactory = balanceViewModelFactory
@@ -251,12 +256,13 @@ extension GovernanceUnlockSetupPresenter: GovernanceUnlockSetupPresenterProtocol
             return
         }
 
-        wireframe.showConfirm(
-            from: view,
+        let initData = GovernanceUnlockConfirmInitData(
             votingResult: votingResult,
-            schedule: unlockSchedule,
+            unlockSchedule: unlockSchedule,
             blockNumber: blockNumber
         )
+
+        wireframe.showConfirm(from: view, initData: initData)
     }
 }
 

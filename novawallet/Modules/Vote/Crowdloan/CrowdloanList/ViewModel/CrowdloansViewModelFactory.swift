@@ -91,7 +91,7 @@ final class CrowdloansViewModelFactory {
                 return RemoteImageViewModel(url: url)
             } else {
                 let icon = try? iconGenerator.generateFromAddress(depositorAddress).imageWithFillColor(
-                    R.color.colorWhite()!,
+                    R.color.colorTextPrimary()!,
                     size: UIConstants.normalAddressIconSize,
                     contentScale: UIScreen.main.scale
                 )

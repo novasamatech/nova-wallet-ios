@@ -13,6 +13,11 @@ protocol WebPresentable: AnyObject {
 
 extension WebPresentable {
     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle) {
+        let supportedSafariScheme = ["https", "http"]
+        guard let scheme = url.scheme, supportedSafariScheme.contains(scheme) else {
+            return
+        }
+
         let webController = WebViewFactory.createWebViewController(for: url, style: style)
         view.controller.present(webController, animated: true, completion: nil)
     }
@@ -21,8 +26,8 @@ extension WebPresentable {
 enum WebViewFactory {
     static func createWebViewController(for url: URL, style: WebPresentableStyle) -> UIViewController {
         let webController = SFSafariViewController(url: url)
-        webController.preferredControlTintColor = R.color.colorWhite()!
-        webController.preferredBarTintColor = R.color.colorAlmostBlack()!
+        webController.preferredControlTintColor = R.color.colorIconPrimary()
+        webController.preferredBarTintColor = R.color.colorDAppBlurNavigationBackground()
 
         switch style {
         case .modal:

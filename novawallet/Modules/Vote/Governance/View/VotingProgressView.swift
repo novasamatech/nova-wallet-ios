@@ -98,7 +98,7 @@ extension VotingProgressView: BindableView {
 
 extension UILabel.Style {
     static let referendaTimeView = UILabel.Style(
-        textColor: R.color.colorWhite64(),
+        textColor: R.color.colorTextSecondary(),
         font: .caption1
     )
 }

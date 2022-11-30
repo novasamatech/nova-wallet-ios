@@ -169,11 +169,7 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
-        let track = ReferendumTrackType.createViewModel(
-            from: model.track.name,
-            chain: params.chainInfo.chain,
-            locale: locale
-        )
+        let track = createTrackViewModel(from: model.track, params: params, locale: locale)
 
         let referendumNumber = localizedIndexFormatter.value(for: locale).string(
             from: NSNumber(value: params.referendum.index)
@@ -238,6 +234,19 @@ final class ReferendumsModelFactory {
         )
     }
 
+    private func createTrackViewModel(
+        from track: GovernanceTrackLocal,
+        params: StatusParams,
+        locale: Locale
+    ) -> ReferendumInfoView.Track? {
+        // display track name if more than 1 track in the network
+        guard track.totalTracksCount > 1 else {
+            return nil
+        }
+
+        return ReferendumTrackType.createViewModel(from: track.name, chain: params.chainInfo.chain, locale: locale)
+    }
+
     private func provideDecidingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Deciding,
         params: StatusParams,
@@ -280,11 +289,7 @@ final class ReferendumsModelFactory {
             locale: locale
         )
 
-        let track = ReferendumTrackType.createViewModel(
-            from: model.track.name,
-            chain: params.chainInfo.chain,
-            locale: locale
-        )
+        let track = createTrackViewModel(from: model.track, params: params, locale: locale)
 
         let indexFormatter = localizedIndexFormatter.value(for: locale)
         let referendumNumber = indexFormatter.string(from: NSNumber(value: params.referendum.index))
@@ -376,8 +381,8 @@ final class ReferendumsModelFactory {
         let isCompleted = supportAndVotes.supportFraction >= supportThreshold
 
         let image = isCompleted ?
-            R.image.iconCheckmark()?.tinted(with: R.color.colorGreen15CF37()!) :
-            R.image.iconClose()?.tinted(with: R.color.colorRedFF3A69()!)
+            R.image.iconCheckmark()?.tinted(with: R.color.colorIconPositive()!) :
+            R.image.iconClose()?.tinted(with: R.color.colorIconNegative()!)
 
         let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: chainAsset.displayInfo)
         let amountFormatter = assetBalanceFormatterFactory.createDisplayFormatter(for: chainAsset.displayInfo)
@@ -529,12 +534,13 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             referendum.state.completed ? completed.append(viewModel) : active.append(viewModel)
         }
         var sections: [ReferendumsSection] = []
-        if !active.isEmpty {
+        if !active.isEmpty || completed.isEmpty {
+            // still add empty section to display empty state
             let title = Strings.governanceReferendumsActive(preferredLanguages: input.locale.rLanguages)
             sections.append(.active(.loaded(value: title), active))
         }
         if !completed.isEmpty {
-            let title = Strings.governanceReferendumsCompleted(preferredLanguages: input.locale.rLanguages)
+            let title = Strings.commonCompleted(preferredLanguages: input.locale.rLanguages)
             sections.append(.completed(.loaded(value: title), completed))
         }
         return sections

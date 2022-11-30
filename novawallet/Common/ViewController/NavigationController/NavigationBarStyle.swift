@@ -15,7 +15,7 @@ extension NavigationBarStyle {
     static var defaultStyle: NavigationBarStyle {
         var titleTextAttributes = [NSAttributedString.Key: Any]()
 
-        titleTextAttributes[.foregroundColor] = R.color.colorWhite()!
+        titleTextAttributes[.foregroundColor] = R.color.colorTextPrimary()!
 
         titleTextAttributes[.font] = UIFont.h3Title
 
@@ -23,7 +23,7 @@ extension NavigationBarStyle {
             background: UIImage(),
             shadow: nil,
             shadowColor: nil,
-            tintColor: R.color.colorWhite()!,
+            tintColor: R.color.colorTextPrimary()!,
             backImage: R.image.iconBack(),
             backgroundEffect: nil,
             titleAttributes: titleTextAttributes

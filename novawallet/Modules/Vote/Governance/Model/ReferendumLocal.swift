@@ -154,7 +154,7 @@ enum ReferendumStateLocal {
 
     struct Deciding {
         let track: GovernanceTrackLocal
-        let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
+        let proposal: Democracy.Proposal?
         let voting: Voting
         let submitted: BlockNumber
         let since: BlockNumber
@@ -245,4 +245,5 @@ enum ReferendumStateLocal {
 struct GovernanceTrackLocal {
     let trackId: UInt16
     let name: String
+    let totalTracksCount: Int
 }

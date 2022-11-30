@@ -34,7 +34,7 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .semiBoldBody
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -45,7 +45,7 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
 
     let timerLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.textAlignment = .center
         return label
@@ -74,7 +74,7 @@ final class ParitySignerTxQrViewLayout: UIView, AdaptiveDesignable {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

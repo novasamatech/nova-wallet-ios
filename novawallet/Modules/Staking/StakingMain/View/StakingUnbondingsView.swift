@@ -9,8 +9,8 @@ protocol StakingUnbondingsViewDelegate: AnyObject {
 final class StakingUnbondingsView: UIView {
     weak var delegate: StakingUnbondingsViewDelegate?
 
-    let backgroundView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12.0
         return view
     }()
@@ -26,7 +26,7 @@ final class StakingUnbondingsView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 

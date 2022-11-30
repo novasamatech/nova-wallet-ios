@@ -95,10 +95,7 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
     }
 
     private func applyCommonStyle(to backgroundView: RoundedView) {
-        backgroundView.fillColor = R.color.colorWhite16()!
-        backgroundView.highlightedFillColor = R.color.colorWhite16()!
-        backgroundView.strokeColor = R.color.colorWhite8()!
-        backgroundView.highlightedStrokeColor = R.color.colorWhite8()!
+        backgroundView.apply(style: .chips)
     }
 
     private func configure() {

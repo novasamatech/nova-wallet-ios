@@ -18,7 +18,7 @@ final class ChainAddressDetailsViewLayout: UIView {
 
     let addressLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.numberOfLines = 0
         label.textAlignment = .center
@@ -28,7 +28,7 @@ final class ChainAddressDetailsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.color0x1D1D20()
+        backgroundColor = R.color.colorBottomSheetBackground()
 
         setupLayout()
     }
@@ -44,7 +44,7 @@ final class ChainAddressDetailsViewLayout: UIView {
         switch indicator {
         case .navigation:
             cell.rowContentView.disclosureIndicatorView.image = R.image.iconSmallArrow()?.tinted(
-                with: R.color.colorTransparentText()!
+                with: R.color.colorIconSecondary()!
             )
         case .none:
             cell.rowContentView.disclosureIndicatorView.image = nil

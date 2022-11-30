@@ -2,7 +2,7 @@ import UIKit
 
 extension CompoundAttributedStringDecorator {
     static func legal(for locale: Locale?) -> AttributedStringDecoratorProtocol {
-        let textColor = R.color.colorWhite48()!
+        let textColor = R.color.colorTextSecondary()!
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: textColor,
             .font: UIFont.regularFootnote
@@ -11,7 +11,7 @@ extension CompoundAttributedStringDecorator {
         let rangeDecorator = RangeAttributedStringDecorator(attributes: attributes)
 
         let highlightAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!,
+            .foregroundColor: R.color.colorTextPrimary()!,
             .font: UIFont.regularFootnote
         ]
 

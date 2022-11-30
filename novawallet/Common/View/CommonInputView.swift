@@ -6,8 +6,8 @@ class CommonInputView: UIView {
         let view = TriangularedView()
         view.fillColor = .clear
         view.highlightedFillColor = .clear
-        view.strokeColor = R.color.colorDarkGray()!
-        view.highlightedStrokeColor = R.color.colorDarkGray()!
+        view.strokeColor = R.color.colorBlockBackground()!
+        view.highlightedStrokeColor = R.color.colorBlockBackground()!
         view.strokeWidth = 1.0
         return view
     }()
@@ -15,10 +15,10 @@ class CommonInputView: UIView {
     let animatedInputField: AnimatedTextField = {
         let field = AnimatedTextField()
         field.placeholderFont = .p1Paragraph
-        field.placeholderColor = R.color.colorGray()!
-        field.textColor = R.color.colorWhite()!
+        field.placeholderColor = R.color.colorHintText()!
+        field.textColor = R.color.colorTextPrimary()!
         field.textFont = .p1Paragraph
-        field.cursorColor = R.color.colorWhite()!
+        field.cursorColor = R.color.colorTextPrimary()!
         return field
     }()
 

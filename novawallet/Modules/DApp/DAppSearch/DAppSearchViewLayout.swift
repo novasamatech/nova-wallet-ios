@@ -14,14 +14,14 @@ final class DAppSearchViewLayout: UIView {
 
     let cancelBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem()
-        item.tintColor = R.color.colorNovaBlue()
+        item.tintColor = R.color.colorIconAccent()
         return item
     }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

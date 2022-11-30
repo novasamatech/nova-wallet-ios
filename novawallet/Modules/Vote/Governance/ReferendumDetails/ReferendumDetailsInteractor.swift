@@ -8,13 +8,14 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private(set) var referendum: ReferendumLocal
     private(set) var actionDetails: ReferendumActionLocal?
 
-    let selectedAccount: ChainAccountResponse
-    let chain: ChainModel
+    let selectedAccount: ChainAccountResponse?
+    let option: GovernanceSelectedOption
     let actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeProviderProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
+    let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let referendumsSubscriptionFactory: GovernanceSubscriptionFactoryProtocol
@@ -29,16 +30,20 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     private var identitiesCancellable: CancellableCall?
     private var actionDetailsCancellable: CancellableCall?
     private var blockTimeCancellable: CancellableCall?
-    private var dAppsCancellable: CancellableCall?
+
+    var chain: ChainModel {
+        option.chain
+    }
 
     init(
         referendum: ReferendumLocal,
-        selectedAccount: ChainAccountResponse,
-        chain: ChainModel,
+        selectedAccount: ChainAccountResponse?,
+        option: GovernanceSelectedOption,
         actionDetailsOperationFactory: ReferendumActionOperationFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
+        blockTimeFactory: BlockTimeOperationFactoryProtocol,
         identityOperationFactory: IdentityOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -50,7 +55,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     ) {
         self.referendum = referendum
         self.selectedAccount = selectedAccount
-        self.chain = chain
+        self.option = option
         self.actionDetailsOperationFactory = actionDetailsOperationFactory
         self.connection = connection
         self.runtimeProvider = runtimeProvider
@@ -58,6 +63,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
+        self.blockTimeFactory = blockTimeFactory
         self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.dAppsProvider = dAppsProvider
@@ -69,10 +75,12 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         clear(cancellable: &identitiesCancellable)
         clear(cancellable: &actionDetailsCancellable)
         clear(cancellable: &blockTimeCancellable)
-        clear(cancellable: &dAppsCancellable)
 
         referendumsSubscriptionFactory.unsubscribeFromReferendum(self, referendumIndex: referendum.index)
-        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
+
+        if let accountId = selectedAccount?.accountId {
+            referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: accountId)
+        }
     }
 
     private func subscribeReferendum() {
@@ -97,16 +105,24 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func subscribeAccountVotes() {
-        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
+        guard let accountId = selectedAccount?.accountId else {
+            presenter?.didReceiveAccountVotes(nil, votingDistribution: nil)
+            return
+        }
+
+        referendumsSubscriptionFactory.unsubscribeFromAccountVotes(self, accountId: accountId)
 
         referendumsSubscriptionFactory.subscribeToAccountVotes(
             self,
-            accountId: selectedAccount.accountId
+            accountId: accountId
         ) { [weak self] result in
             switch result {
             case let .success(votesResult):
                 if let votes = votesResult.value?.votes.votes, let referendumId = self?.referendum.index {
-                    self?.presenter?.didReceiveAccountVotes(votes[referendumId])
+                    self?.presenter?.didReceiveAccountVotes(
+                        votes[referendumId],
+                        votingDistribution: votesResult
+                    )
                 }
             case let .failure(error):
                 self?.presenter?.didReceiveError(.accountVotesFailed(error))
@@ -117,8 +133,9 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     }
 
     private func handleDAppsUpdate(_ updatedDApps: GovernanceDAppList) {
-        let dApps = updatedDApps.first(where: { $0.chainId == chain.chainId })?.dapps ?? []
-        presenter?.didReceiveDApps(dApps)
+        let chainDApps = updatedDApps.first(where: { $0.chainId == chain.chainId })?.dapps ?? []
+        let versionDApps = chainDApps.filter { $0.supports(governanceType: option.type) }
+        presenter?.didReceiveDApps(versionDApps)
     }
 
     private func subscribeDApps() {
@@ -194,28 +211,31 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
             return
         }
 
-        let operation = blockTimeService.createEstimatedBlockTimeOperation()
+        let wrapper = blockTimeFactory.createBlockTimeOperation(
+            from: runtimeProvider,
+            blockTimeEstimationService: blockTimeService
+        )
 
-        operation.completionBlock = { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard operation === self?.blockTimeCancellable else {
+                guard wrapper === self?.blockTimeCancellable else {
                     return
                 }
 
                 self?.blockTimeCancellable = nil
 
                 do {
-                    let blockTimeModel = try operation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveBlockTime(blockTimeModel.blockTime)
+                    let blockTimeModel = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveBlockTime(blockTimeModel)
                 } catch {
                     self?.presenter?.didReceiveError(.blockTimeFailed(error))
                 }
             }
         }
 
-        blockTimeCancellable = operation
+        blockTimeCancellable = wrapper
 
-        operationQueue.addOperation(operation)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func updateActionDetails() {
@@ -253,6 +273,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    private func makeAccountBasedSubscriptions() {
+        subscribeAccountVotes()
+    }
+
     private func makeSubscriptions() {
         if let priceId = chain.utilityAsset()?.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
@@ -261,9 +285,10 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
 
         subscribeReferendum()
-        subscribeAccountVotes()
 
-        metadataProvider = subscribeGovernanceMetadata(for: chain, referendumId: referendum.index)
+        makeAccountBasedSubscriptions()
+
+        metadataProvider = subscribeGovernanceMetadata(for: option, referendumId: referendum.index)
 
         if metadataProvider == nil {
             presenter?.didReceiveMetadata(nil)
@@ -337,7 +362,7 @@ extension ReferendumDetailsInteractor: PriceLocalSubscriptionHandler, PriceLocal
 extension ReferendumDetailsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
     func handleGovernanceMetadataDetails(
         result: Result<ReferendumMetadataLocal?, Error>,
-        chain _: ChainModel,
+        option _: GovernanceSelectedOption,
         referendumId _: ReferendumIdLocal
     ) {
         switch result {

@@ -7,7 +7,7 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
         applicationHandler.delegate = self
 
         guard let chain = crowdloanState.settings.value else {
-            presenter.didReceiveSelectedChain(result: .failure(
+            presenter?.didReceiveSelectedChain(result: .failure(
                 PersistentValueSettingsError.missingValue
             ))
             return
@@ -34,7 +34,7 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
 
     func refresh() {
         guard let chain = crowdloanState.settings.value else {
-            presenter.didReceiveSelectedChain(result: .failure(
+            presenter?.didReceiveSelectedChain(result: .failure(
                 PersistentValueSettingsError.missingValue
             ))
             return
@@ -52,7 +52,7 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
                 case .success:
                     self?.handleSelectionChange(to: chainModel)
                 case let .failure(error):
-                    self?.presenter.didReceiveSelectedChain(result: .failure(error))
+                    self?.presenter?.didReceiveSelectedChain(result: .failure(error))
                 }
             }
         }
@@ -84,7 +84,7 @@ extension CrowdloanListInteractor: CrowdloanLocalStorageSubscriber, CrowdloanLoc
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId: ChainModel.Id) {
         if let chain = crowdloanState.settings.value, chain.chainId == chainId {
             provideCrowdloans(for: chain)
-            presenter.didReceiveBlockNumber(result: result)
+            presenter?.didReceiveBlockNumber(result: result)
         }
     }
 }
@@ -97,7 +97,7 @@ extension CrowdloanListInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
     ) {
         if let chain = crowdloanState.settings.value, chain.chainId == chainId {
             logger?.debug("Did receive balance for accountId: \(accountId.toHex()))")
-            presenter.didReceiveAccountInfo(result: result)
+            presenter?.didReceiveAccountInfo(result: result)
         }
     }
 }
@@ -114,9 +114,9 @@ extension CrowdloanListInteractor: CrowdloanOffchainSubscriber, CrowdloanOffchai
     ) {
         switch result {
         case let .success(maybeContributions):
-            presenter.didReceiveExternalContributions(result: .success(maybeContributions ?? []))
+            presenter?.didReceiveExternalContributions(result: .success(maybeContributions ?? []))
         case let .failure(error):
-            presenter.didReceiveExternalContributions(result: .failure(error))
+            presenter?.didReceiveExternalContributions(result: .failure(error))
         }
     }
 }

@@ -17,7 +17,7 @@ protocol ReferendumsPresenterProtocol: AnyObject {
 
 protocol ReferendumsInteractorInputProtocol: AnyObject {
     func setup()
-    func saveSelected(chainModel: ChainModel)
+    func saveSelected(option: GovernanceSelectedOption)
     func becomeOnline()
     func putOffline()
     func refresh()
@@ -30,7 +30,7 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>])
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
-    func didReceiveSelectedChain(_ chain: ChainModel)
+    func didReceiveSelectedOption(_ option: GovernanceSelectedOption)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
@@ -42,16 +42,12 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject {
 protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: AssetSelectionDelegate,
-        selectedChainAssetId: ChainAssetId?
+        delegate: GovernanceAssetSelectionDelegate,
+        chainId: ChainModel.Id?,
+        governanceType: GovernanceType?
     )
 
-    func showReferendumDetails(
-        from view: ControllerBackedProtocol?,
-        referendum: ReferendumLocal,
-        accountVotes: ReferendumAccountVoteLocal?,
-        metadata: ReferendumMetadataLocal?
-    )
+    func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
 
-    func showUnlocksDetails(from view: ControllerBackedProtocol?)
+    func showUnlocksDetails(from view: ControllerBackedProtocol?, initData: GovernanceUnlockInitData)
 }

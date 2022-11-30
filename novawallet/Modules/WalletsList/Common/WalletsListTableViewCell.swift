@@ -10,10 +10,10 @@ class WalletsListTableViewCell: UITableViewCell {
 
     let infoView: MultiValueView = {
         let view = MultiValueView()
-        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.font = .regularSubheadline
         view.valueTop.textAlignment = .left
-        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.font = .regularFootnote
         view.valueBottom.textAlignment = .left
         view.spacing = 2.0
@@ -34,7 +34,7 @@ class WalletsListTableViewCell: UITableViewCell {
         backgroundColor = .clear
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = R.color.colorHighlightedAccent()
+        backgroundView.backgroundColor = R.color.colorCellBackgroundPressed()
         selectedBackgroundView = backgroundView
 
         setupLayout()
