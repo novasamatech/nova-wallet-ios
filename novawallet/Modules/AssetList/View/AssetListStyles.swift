@@ -1,10 +1,10 @@
 import SoraUI
 
 extension RoundedView.Style {
-    static let nft = RoundedView.Style(
+    static let shadowedNft = RoundedView.Style(
         shadow: .init(
             shadowOpacity: 1,
-            shadowColor: UIColor.black.withAlphaComponent(0.56),
+            shadowColor: R.color.colorNftStackShadow()!,
             shadowRadius: 4,
             shadowOffset: .init(width: 4, height: 0)
         ),
@@ -14,7 +14,7 @@ extension RoundedView.Style {
         rounding: .init(radius: 8, corners: .allCorners)
     )
 
-    static let lastNft = RoundedView.Style(
+    static let nft = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0,
         fillColor: .clear,
