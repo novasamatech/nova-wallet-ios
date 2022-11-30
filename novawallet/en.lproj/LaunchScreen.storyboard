@@ -31,14 +31,14 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.094117647060000004" green="0.094117647060000004" blue="0.094117647060000004" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="uNk-tt-Coo" secondAttribute="trailing" id="1kr-VF-oxV"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="4vO-7S-VKd"/>
-                            <constraint firstItem="LRG-h8-PO8" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="A7N-Qr-Paw"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="LRG-h8-PO8" secondAttribute="bottom" constant="80" id="TJx-Yu-6gc"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="trailing" constant="-40" id="YY2-9j-2Bq"/>
+                            <constraint firstAttribute="trailing" secondItem="uNk-tt-Coo" secondAttribute="trailing" id="1kr-VF-oxV"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="4vO-7S-VKd"/>
+                            <constraint firstItem="LRG-h8-PO8" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="A7N-Qr-Paw"/>
+                            <constraint firstAttribute="bottom" secondItem="LRG-h8-PO8" secondAttribute="bottom" constant="114" id="TJx-Yu-6gc"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="trailing" constant="-40" id="YY2-9j-2Bq"/>
                             <constraint firstItem="eBa-Mk-uzt" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" multiplier="0.5" id="bIo-JQ-8xD"/>
-                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="e3N-fi-1cm"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="40" id="jT4-bh-2Kg"/>
+                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="e3N-fi-1cm"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="40" id="jT4-bh-2Kg"/>
                             <constraint firstAttribute="bottom" secondItem="uNk-tt-Coo" secondAttribute="bottom" id="m2l-xc-ZRp"/>
                             <constraint firstItem="uNk-tt-Coo" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="tA1-r1-8ya"/>
                         </constraints>
