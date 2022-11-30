@@ -60,7 +60,7 @@ final class EvmTransactionHistoryUpdater {
             receiver: transferEvent.receiver,
             amountInPlank: String(transferEvent.amount),
             status: .success,
-            txHash: event.transactionHash.toHex(),
+            txHash: event.transactionHash.toHex(includePrefix: true),
             timestamp: Int64(Date().timeIntervalSince1970),
             fee: nil,
             blockNumber: UInt64(event.blockNumber),
