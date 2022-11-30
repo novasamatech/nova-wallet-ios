@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 extension RoundedView {
-    struct Style {
+    struct Style: Equatable {
         var shadow: ShadowShapeView.Style?
         var strokeWidth: CGFloat?
         var strokeColor: UIColor?
@@ -11,7 +11,7 @@ extension RoundedView {
         var highlightedFillColor: UIColor
         var rounding: Rounding?
 
-        struct Rounding {
+        struct Rounding: Equatable {
             let radius: CGFloat
             let corners: UIRectCorner
         }
@@ -168,7 +168,7 @@ extension RoundedView.Style {
 }
 
 extension ShadowShapeView {
-    struct Style {
+    struct Style: Equatable {
         let shadowOpacity: Float?
         let shadowColor: UIColor?
         let shadowRadius: CGFloat?

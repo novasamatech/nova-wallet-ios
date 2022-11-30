@@ -57,13 +57,19 @@ final class NftMediaView: RoundedView {
         }
     }
 
-    func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize? = nil, cornerRadius: CGFloat? = nil) {
+    func bind(
+        viewModel: NftMediaViewModelProtocol,
+        targetSize: CGSize? = nil,
+        cornerRadius: CGFloat? = nil,
+        styles: [NftMediaViewState: RoundedView.Style]
+    ) {
         let isAspectFit = contentView.contentMode == .scaleAspectFit
         let newSettings = NftMediaDisplaySettings(
             targetSize: targetSize,
             cornerRadius: cornerRadius,
             animated: true,
-            isAspectFit: isAspectFit
+            isAspectFit: isAspectFit,
+            styles: styles
         )
 
         if
@@ -111,28 +117,35 @@ final class NftMediaView: RoundedView {
 
         removePlaceholderView()
         startSkeletonIfNeeded()
+        mediaSettings.styles[.loading].map(apply)
 
         viewModel?.loadMedia(
             on: contentView,
             displaySettings: mediaSettings
         ) { [weak self] isResolved, optionalError in
-            self?.lastError = optionalError
+            guard let self = self else {
+                return
+            }
+            self.lastError = optionalError
 
             if optionalError == nil {
-                self?.stopSkeletonIfNeeded()
+                self.stopSkeletonIfNeeded()
 
-                if isResolved, let strongSelf = self {
-                    strongSelf.delegate?.nftMediaDidLoad(strongSelf)
+                if isResolved {
+                    self.delegate?.nftMediaDidLoad(self)
+                    if let style = mediaSettings.styles[.normal] {
+                        self.apply(style: style)
+                    }
                 }
             }
 
             if !isResolved {
-                self?.stopSkeletonIfNeeded()
-                self?.setupPlaceholderView()
-
-                if let strongSelf = self {
-                    strongSelf.delegate?.nftMediaDidPlaceholderFallback(strongSelf)
+                self.stopSkeletonIfNeeded()
+                self.setupPlaceholderView()
+                if let style = mediaSettings.styles[.placeholder] {
+                    self.apply(style: style)
                 }
+                self.delegate?.nftMediaDidPlaceholderFallback(self)
             }
         }
     }

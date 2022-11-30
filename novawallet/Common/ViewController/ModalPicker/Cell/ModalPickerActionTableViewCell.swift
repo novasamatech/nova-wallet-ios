@@ -22,6 +22,7 @@ final class ModalPickerActionTableViewCell: UITableViewCell {
 
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = .clear
+        backgroundColor = .clear
 
         setupLayout()
     }
