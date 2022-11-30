@@ -63,6 +63,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
         let chainAssetId = ChainAssetId(chainId: originChainAsset.chain.chainId, assetId: utilityAsset.assetId)
 
         persistExtrinsicService.saveExtrinsic(
+            source: .substrate,
             chainAssetId: chainAssetId,
             details: details,
             runningIn: .main

@@ -2,10 +2,11 @@ import Foundation
 import RobinHood
 import CoreData
 
-extension CDTransactionHistoryItem: CoreDataCodable {
+extension CDTransactionItem: CoreDataCodable {
     public func populate(from decoder: Decoder, using _: NSManagedObjectContext) throws {
         let container = try decoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
+        source = try container.decode(TransactionHistoryItemSource.self, forKey: .source).rawValue
         chainId = try container.decode(String.self, forKey: .chainId)
         assetId = try container.decode(Int32.self, forKey: .assetId)
         identifier = try container.decode(String.self, forKey: .txHash)
@@ -41,6 +42,7 @@ extension CDTransactionHistoryItem: CoreDataCodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
+        try container.encodeIfPresent(TransactionHistoryItemSource(rawValue: source), forKey: .source)
         try container.encodeIfPresent(chainId, forKey: .chainId)
         try container.encode(assetId, forKey: .assetId)
         try container.encodeIfPresent(identifier, forKey: .txHash)

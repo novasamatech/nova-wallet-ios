@@ -26,13 +26,15 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createCustomAssetTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id,
-        assetId: UInt32
+        assetId: UInt32,
+        source: TransactionHistoryItemSource?
     ) -> AnyDataProviderRepository<TransactionHistoryItem>
 
     func createUtilityAssetTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id,
-        assetId: UInt32
+        assetId: UInt32,
+        source: TransactionHistoryItemSource?
     ) -> AnyDataProviderRepository<TransactionHistoryItem>
 
     func createPhishingSitesRepository() -> AnyDataProviderRepository<PhishingSite>
@@ -109,7 +111,7 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     }
 
     func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem> {
-        let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+        let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionItem> =
             storageFacade.createRepository()
         return AnyDataProviderRepository(repository)
     }
@@ -123,7 +125,8 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     func createCustomAssetTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id,
-        assetId: UInt32
+        assetId: UInt32,
+        source: TransactionHistoryItemSource?
     ) -> AnyDataProviderRepository<TransactionHistoryItem> {
         let txFilter = NSPredicate.filterTransactionsBy(
             address: address,
@@ -149,7 +152,8 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     func createUtilityAssetTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id,
-        assetId: UInt32
+        assetId: UInt32,
+        source: TransactionHistoryItemSource?
     ) -> AnyDataProviderRepository<TransactionHistoryItem> {
         let txFilter = NSPredicate.filterUtilityAssetTransactionsBy(
             address: address,
@@ -170,10 +174,10 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         for filter: NSPredicate
     ) -> AnyDataProviderRepository<TransactionHistoryItem> {
         let sortDescriptor = NSSortDescriptor(
-            key: #keyPath(CDTransactionHistoryItem.timestamp),
+            key: #keyPath(CDTransactionItem.timestamp),
             ascending: false
         )
-        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionItem> =
             storageFacade.createRepository(filter: filter, sortDescriptors: [sortDescriptor])
         return AnyDataProviderRepository(txStorage)
     }
