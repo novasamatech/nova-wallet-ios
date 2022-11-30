@@ -24,7 +24,7 @@ final class MercuryoProvider: PurchaseProviderProtocol {
     #if F_RELEASE
         let configuration: Configuration = .production
     #else
-        let configuration: Configuration = .debug
+        let configuration: Configuration = .production // we don't have test server setup yet
     #endif
 
     private var callbackUrl: URL?
