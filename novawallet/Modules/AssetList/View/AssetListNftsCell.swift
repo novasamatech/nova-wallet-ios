@@ -108,7 +108,6 @@ final class AssetListNftsCell: UICollectionViewCell {
         } else if numberOfImagesToCreate < 0 {
             let viewsToClear = mediaViews.suffix(-numberOfImagesToCreate)
             viewsToClear.forEach {
-                $0.delegate = nil
                 $0.removeFromSuperview()
             }
 
@@ -121,19 +120,23 @@ final class AssetListNftsCell: UICollectionViewCell {
         )
 
         mediaViewModels.reversed().enumerated().forEach { index, viewModel in
+            let isLastNftView = index == 0
             mediaViews[index].bind(
                 viewModel: viewModel,
                 targetSize: imageSize,
-                cornerRadius: Constants.mediaCornerRadius
+                cornerRadius: Constants.mediaCornerRadius,
+                styles: [
+                    .loading: .nft,
+                    .normal: isLastNftView ? .nft : .shadowedNft,
+                    .placeholder: isLastNftView ? .nft : .shadowedNft
+                ]
             )
         }
     }
 
     private func createMediaView() -> NftMediaView {
         let mediaView = NftMediaView()
-        mediaView.apply(style: .nft)
         mediaView.contentInsets = .zero
-        mediaView.delegate = self
 
         return mediaView
     }
@@ -193,14 +196,5 @@ final class AssetListNftsCell: UICollectionViewCell {
             make.top.bottom.equalToSuperview().inset(2.0)
             make.leading.trailing.equalToSuperview().inset(8.0)
         }
-    }
-}
-
-extension AssetListNftsCell: NftMediaViewDelegate {
-    func nftMediaDidPlaceholderFallback(_: NftMediaView) {}
-
-    func nftMediaDidLoad(_ view: NftMediaView) {
-        let isLastNftView = view == mediaViews.first
-        view.apply(style: isLastNftView ? .nft : .shadowedNft)
     }
 }
