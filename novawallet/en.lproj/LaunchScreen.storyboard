@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina3_5" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,32 +13,32 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="novabg-splash" translatesAutoresizingMaskIntoConstraints="NO" id="uNk-tt-Coo">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="eBa-Mk-uzt">
-                                <rect key="frame" x="40" y="-101" width="240" height="341"/>
+                                <rect key="frame" x="40" y="68" width="313" height="341"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="imageDevelopedBy" translatesAutoresizingMaskIntoConstraints="NO" id="LRG-h8-PO8">
-                                <rect key="frame" x="98" y="340" width="124" height="60"/>
+                                <rect key="frame" x="134.66666666666666" y="678" width="123.99999999999997" height="60"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.094117647060000004" green="0.094117647060000004" blue="0.094117647060000004" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="uNk-tt-Coo" secondAttribute="trailing" id="1kr-VF-oxV"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="4vO-7S-VKd"/>
-                            <constraint firstItem="LRG-h8-PO8" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="A7N-Qr-Paw"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="LRG-h8-PO8" secondAttribute="bottom" constant="80" id="TJx-Yu-6gc"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="trailing" constant="-40" id="YY2-9j-2Bq"/>
+                            <constraint firstAttribute="trailing" secondItem="uNk-tt-Coo" secondAttribute="trailing" id="1kr-VF-oxV"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="4vO-7S-VKd"/>
+                            <constraint firstItem="LRG-h8-PO8" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="A7N-Qr-Paw"/>
+                            <constraint firstAttribute="bottom" secondItem="LRG-h8-PO8" secondAttribute="bottom" constant="114" id="TJx-Yu-6gc"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="trailing" constant="-40" id="YY2-9j-2Bq"/>
                             <constraint firstItem="eBa-Mk-uzt" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" multiplier="0.5" id="bIo-JQ-8xD"/>
-                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="e3N-fi-1cm"/>
-                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="40" id="jT4-bh-2Kg"/>
+                            <constraint firstItem="uNk-tt-Coo" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="e3N-fi-1cm"/>
+                            <constraint firstItem="eBa-Mk-uzt" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="40" id="jT4-bh-2Kg"/>
                             <constraint firstAttribute="bottom" secondItem="uNk-tt-Coo" secondAttribute="bottom" id="m2l-xc-ZRp"/>
                             <constraint firstItem="uNk-tt-Coo" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="tA1-r1-8ya"/>
                         </constraints>

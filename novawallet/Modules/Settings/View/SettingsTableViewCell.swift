@@ -13,7 +13,7 @@ final class SettingsTableViewCell: UITableViewCell {
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p1Paragraph
         return label
     }()
@@ -48,7 +48,7 @@ final class SettingsTableViewCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        let arrowIcon = UIImageView(image: R.image.iconChevronRight())
+        let arrowIcon = UIImageView(image: R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!))
         let content = UIView.hStack(alignment: .center, spacing: 12, [
             iconImageView, titleLabel, UIView(), subtitleLabel, arrowIcon
         ])

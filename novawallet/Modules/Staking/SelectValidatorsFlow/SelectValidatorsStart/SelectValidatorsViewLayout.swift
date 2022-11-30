@@ -23,7 +23,7 @@ final class SelectValidatorsViewLayout: UIView {
 
     let customValidatorsCell: StackTableCell = {
         let view = StackTableCell()
-        view.titleLabel.textColor = R.color.colorTextPrimary()
+        view.titleLabel.textColor = R.color.colorButtonTextAccent()
         view.titleLabel.font = .regularSubheadline
         view.detailsLabel.textColor = R.color.colorTextSecondary()
         view.detailsLabel.font = .regularSubheadline

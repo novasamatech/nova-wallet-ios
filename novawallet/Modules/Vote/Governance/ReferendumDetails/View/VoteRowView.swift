@@ -49,7 +49,7 @@ final class VoteRowView: RowView<
         rowContentView.valueView.iconWidth = 16.0
 
         titleLabel.apply(style: .rowTitle)
-        detailsLabel.apply(style: .rowTitle)
+        detailsLabel.apply(style: .footnoteSecondary)
     }
 }
 

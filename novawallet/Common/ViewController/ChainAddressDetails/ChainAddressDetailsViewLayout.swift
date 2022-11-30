@@ -28,7 +28,7 @@ final class ChainAddressDetailsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlockBackground()
+        backgroundColor = R.color.colorBottomSheetBackground()
 
         setupLayout()
     }
