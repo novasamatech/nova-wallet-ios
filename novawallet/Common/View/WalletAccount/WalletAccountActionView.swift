@@ -101,7 +101,7 @@ final class WalletAccountActionView: BaseActionControl {
         isUserInteractionEnabled = shouldEnableAction
 
         imageIndicator.image = shouldEnableAction ? R.image.iconSmallArrowDown()?.tinted(
-            with: R.color.colorWhite48()!
+            with: R.color.colorIconSecondary()!
         ) : nil
     }
 }

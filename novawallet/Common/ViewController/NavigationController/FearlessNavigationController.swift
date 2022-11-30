@@ -32,7 +32,7 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
     private func setup() {
         delegate = self
 
-        view.backgroundColor = R.color.colorBlack()
+        view.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         applyBarStyle()
     }

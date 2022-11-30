@@ -5,11 +5,9 @@ extension AssetIconView {
     static func defaultView(with icon: UIImage?, iconSize: CGSize, insets: UIEdgeInsets) -> AssetIconView {
         let view = AssetIconView()
         view.backgroundView.cornerRadius = iconSize.height / 2.0
-        view.backgroundView.fillColor = R.color.colorWhite16()!
-        view.backgroundView.highlightedFillColor = R.color.colorWhite16()!
-        view.backgroundView.strokeColor = R.color.colorWhite8()!
+        view.backgroundView.apply(style: .assetContainer)
         view.contentInsets = insets
-        view.imageView.tintColor = R.color.colorTransparentText()
+        view.imageView.tintColor = R.color.colorIconSecondary()
 
         if let icon = icon?.withRenderingMode(.alwaysOriginal) {
             let viewModel = StaticImageViewModel(image: icon)

@@ -17,7 +17,7 @@ final class OperationDetailsViewLayout: UIView {
 
     let timeLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()
@@ -33,11 +33,9 @@ final class OperationDetailsViewLayout: UIView {
     let iconView: AssetIconView = {
         let view = AssetIconView()
         view.backgroundView.cornerRadius = Constants.iconSize.height / 2.0
-        view.backgroundView.fillColor = R.color.colorWhite16()!
-        view.backgroundView.highlightedFillColor = R.color.colorWhite16()!
-        view.backgroundView.strokeColor = R.color.colorWhite8()!
+        view.backgroundView.apply(style: .container)
         view.contentInsets = Constants.imageInsets
-        view.imageView.tintColor = R.color.colorTransparentText()
+        view.imageView.tintColor = R.color.colorIconSecondary()
         return view
     }()
 
@@ -64,7 +62,7 @@ final class OperationDetailsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

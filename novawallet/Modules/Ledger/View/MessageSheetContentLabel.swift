@@ -8,7 +8,7 @@ final class MessageSheetContentLabel: UILabel, MessageSheetContentProtocol {
         super.init(frame: frame)
 
         font = .regularFootnote
-        textColor = R.color.colorTransparentText()
+        textColor = R.color.colorTextSecondary()
         textAlignment = .center
         numberOfLines = 0
     }

@@ -4,21 +4,21 @@ final class AnalyticsRewardsHeaderView: UIView, AnalyticsRewardsHeaderViewProtoc
     let selectedPeriodLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     private let tokenAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .h1Title
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .h2Title
-        label.textColor = R.color.colorStrokeGray()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -36,7 +36,7 @@ final class AnalyticsRewardsHeaderView: UIView, AnalyticsRewardsHeaderViewProtoc
     private let historyTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .p0Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 

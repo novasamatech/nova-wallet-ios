@@ -22,7 +22,7 @@ final class CustomValidatorListViewLayout: UIView {
 
     private let stackContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = R.color.colorBlack()
+        view.backgroundColor = R.color.colorSecondaryScreenBackground()
         return view
     }()
 
@@ -37,22 +37,22 @@ final class CustomValidatorListViewLayout: UIView {
 
     let fillRestButton: RoundedButton = {
         let button = createRoundedButton()
-        button.roundedBackgroundView?.fillColor = R.color.colorAccent()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorAccent()!
+        button.roundedBackgroundView?.fillColor = R.color.colorIconAccent()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorIconAccent()!
         return button
     }()
 
     let clearButton: RoundedButton = {
         let button = createRoundedButton()
-        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundInactive()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundInactive()!
         return button
     }()
 
     let deselectButton: RoundedButton = {
         let button = createRoundedButton()
-        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundInactive()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundInactive()!
         return button
     }()
 
@@ -72,7 +72,7 @@ final class CustomValidatorListViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

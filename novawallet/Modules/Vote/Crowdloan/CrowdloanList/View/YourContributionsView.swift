@@ -13,26 +13,26 @@ final class YourContributionsView: UIView {
     }
 
     let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorWhite64()
+        $0.textColor = R.color.colorTextSecondary()
         $0.font = .p1Paragraph
         $0.numberOfLines = 1
     }
 
     let counterLabel: BorderedLabelView = .create {
         $0.titleLabel.textAlignment = .center
-        $0.titleLabel.textColor = R.color.colorWhite80()
+        $0.titleLabel.textColor = R.color.colorChipText()
         $0.titleLabel.font = .semiBoldFootnote
         $0.contentInsets = Constants.counterLabelContentInsets
     }
 
     let amountLabel: UILabel = .create {
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
         $0.font = .boldTitle1
         $0.textAlignment = .center
     }
 
     let amountDetailsLabel: UILabel = .create {
-        $0.textColor = R.color.colorWhite64()
+        $0.textColor = R.color.colorTextSecondary()
         $0.font = .regularBody
         $0.textAlignment = .center
     }
@@ -40,7 +40,7 @@ final class YourContributionsView: UIView {
     let navigationImageView: UIImageView = .create {
         $0.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
         $0.contentMode = .center
-        $0.tintColor = R.color.colorWhite48()
+        $0.tintColor = R.color.colorIconSecondary()
     }
 
     private var style: Style = .navigation

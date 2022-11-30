@@ -6,21 +6,21 @@ final class SettingsTableViewCell: UITableViewCell {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .p1Paragraph
         return label
     }()
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p1Paragraph
         return label
     }()
 
     let roundView: RoundedView = {
         let view = RoundedView()
-        view.fillColor = R.color.color0x1D1D20()!
+        view.fillColor = R.color.colorBlockBackground()!
         view.cornerRadius = 10
         view.shadowOpacity = 0.0
         return view
@@ -44,11 +44,11 @@ final class SettingsTableViewCell: UITableViewCell {
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        roundView.fillColor = highlighted ? R.color.colorAccentSelected()! : R.color.color0x1D1D20()!
+        roundView.fillColor = highlighted ? R.color.colorCellBackgroundPressed()! : R.color.colorBlockBackground()!
     }
 
     private func setupLayout() {
-        let arrowIcon = UIImageView(image: R.image.iconChevronRight())
+        let arrowIcon = UIImageView(image: R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!))
         let content = UIView.hStack(alignment: .center, spacing: 12, [
             iconImageView, titleLabel, UIView(), subtitleLabel, arrowIcon
         ])

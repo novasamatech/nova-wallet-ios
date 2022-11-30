@@ -31,25 +31,20 @@ final class DAppItemView: UICollectionViewCell {
     let iconImageView: DAppIconView = {
         let view = DAppIconView()
         view.contentInsets = Constants.iconInsets
-        view.backgroundView.cornerRadius = 12.0
-        view.backgroundView.strokeWidth = 0.5
-        view.backgroundView.strokeColor = R.color.colorWhite16()!
-        view.backgroundView.highlightedStrokeColor = R.color.colorWhite16()!
-        view.backgroundView.fillColor = R.color.colorWhite8()!
-        view.backgroundView.highlightedFillColor = R.color.colorWhite8()!
+        view.backgroundView.apply(style: .roundedContainer(radius: 12))
         return view
     }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularSubheadline
         return label
     }()
 
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .caption1
         return label
     }()
@@ -64,7 +59,7 @@ final class DAppItemView: UICollectionViewCell {
             right: UIConstants.horizontalInset
         )
 
-        selectionView.rowContentView.backgroundColor = R.color.colorAccentSelected()
+        selectionView.rowContentView.backgroundColor = R.color.colorCellBackgroundPressed()
         selectionView.borderView.borderType = []
 
         return selectionView

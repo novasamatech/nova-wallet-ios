@@ -18,8 +18,8 @@ extension LoadableStackActionCell {
         cell.contentInsets = UIEdgeInsets(top: 0.0, left: 12.0, bottom: 0.0, right: 12.0)
         cell.roundedBackgroundView.cornerRadius = 12.0
         cell.roundedBackgroundView.roundingCorners = .allCorners
-        cell.roundedBackgroundView.fillColor = R.color.colorWhite8()!
-        cell.roundedBackgroundView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        cell.roundedBackgroundView.fillColor = R.color.colorContainerBackground()!
+        cell.roundedBackgroundView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         cell.borderView.borderType = []
         return cell
     }
@@ -27,7 +27,7 @@ extension LoadableStackActionCell {
 
 extension LoadableStackActionCell where TitleView: UILabel {
     func applyDefaultTitleStyle() {
-        rowContentView.titleView.textColor = R.color.colorWhite()
+        rowContentView.titleView.textColor = R.color.colorTextPrimary()
         rowContentView.titleView.font = .regularSubheadline
     }
 }

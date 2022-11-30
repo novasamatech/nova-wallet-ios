@@ -14,12 +14,12 @@ final class RawChainView: BorderedIconLabelView {
         iconDetailsView.iconWidth = 16.0
         iconDetailsView.spacing = 3.0
 
-        iconDetailsView.detailsLabel.textColor = R.color.colorTransparentText()!
+        iconDetailsView.detailsLabel.textColor = R.color.colorTextSecondary()!
         iconDetailsView.detailsLabel.font = .semiBoldCaps2
 
         contentInsets = UIEdgeInsets(top: 0.0, left: 3.0, bottom: 0.0, right: 6.0)
 
-        backgroundView.fillColor = R.color.colorWhite16()!
+        backgroundView.fillColor = R.color.colorContainerBackground()!
         backgroundView.cornerRadius = 3.0
     }
 
@@ -32,7 +32,7 @@ final class RawChainView: BorderedIconLabelView {
         let settings = ImageViewModelSettings(
             targetSize: CGSize(width: iconSize, height: iconSize),
             cornerRadius: nil,
-            tintColor: R.color.colorTransparentText()!
+            tintColor: R.color.colorIconSecondary()!
         )
 
         iconViewModel?.loadImage(on: iconDetailsView.imageView, settings: settings, animated: true)

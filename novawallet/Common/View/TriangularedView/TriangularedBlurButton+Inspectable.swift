@@ -199,27 +199,14 @@ extension TriangularedBlurButton {
     }
 
     @IBInspectable
-    private var _blurStyle: Int {
-        get {
-            triangularedBlurView?.blurStyle.rawValue ?? 0
-        }
-
-        set {
-            if let newBlur = UIBlurEffect.Style(rawValue: newValue) {
-                triangularedBlurView?.blurStyle = newBlur
-            }
-        }
-    }
-
-    @IBInspectable
     private var _overlayFillColor: UIColor {
         get {
-            triangularedBlurView?.overlayView.fillColor ?? UIColor.black
+            triangularedBlurView?.overlayView?.fillColor ?? UIColor.black
         }
 
         set {
-            triangularedBlurView?.overlayView.fillColor = newValue
-            triangularedBlurView?.overlayView.highlightedFillColor = newValue
+            triangularedBlurView?.overlayView?.fillColor = newValue
+            triangularedBlurView?.overlayView?.highlightedFillColor = newValue
         }
     }
 }

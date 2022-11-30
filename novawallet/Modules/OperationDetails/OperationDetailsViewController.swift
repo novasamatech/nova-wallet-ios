@@ -49,7 +49,7 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         let settings = ImageViewModelSettings(
             targetSize: OperationDetailsViewLayout.Constants.imageSize,
             cornerRadius: nil,
-            tintColor: R.color.colorTransparentText()
+            tintColor: R.color.colorIconSecondary()
         )
 
         rootView.iconView.bind(viewModel: viewModel.iconViewModel, settings: settings)
@@ -58,9 +58,9 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
     private func applyAmount(from viewModel: OperationDetailsViewModel) {
         switch viewModel.status {
         case .completed:
-            rootView.amountLabel.textColor = R.color.colorWhite()
+            rootView.amountLabel.textColor = R.color.colorTextPrimary()
         case .pending, .failed:
-            rootView.amountLabel.textColor = R.color.colorTransparentText()
+            rootView.amountLabel.textColor = R.color.colorTextSecondary()
         }
 
         rootView.amountLabel.text = viewModel.amount
@@ -72,20 +72,20 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
 
         switch viewModel.status {
         case .completed:
-            detailsLabel.textColor = R.color.colorGreen()
+            detailsLabel.textColor = R.color.colorTextPositive()
             detailsLabel.text = R.string.localizable.transactionStatusCompleted(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
             iconView.image = R.image.iconAlgoItem()
         case .pending:
-            detailsLabel.textColor = R.color.colorTransparentText()
+            detailsLabel.textColor = R.color.colorTextSecondary()
             detailsLabel.text = R.string.localizable.transactionStatusPending(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()
             iconView.image = R.image.iconPending()?.withRenderingMode(.alwaysTemplate)
-                .tinted(with: R.color.colorTransparentText()!)
+                .tinted(with: R.color.colorIconSecondary()!)
         case .failed:
-            detailsLabel.textColor = R.color.colorRed()
+            detailsLabel.textColor = R.color.colorTextNegative()
             detailsLabel.text = R.string.localizable.transactionStatusFailed(
                 preferredLanguages: selectedLocale.rLanguages
             ).uppercased()

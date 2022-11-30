@@ -64,8 +64,8 @@ final class ReferendumTimelineView: UIView {
                 view.spacing = Constants.titleSubtitleSpacing
                 view.valueTop.text = status.title
                 view.valueTop.textAlignment = .left
-                view.valueTop.apply(style: UILabel.Style.timelineTitle)
-                view.valueBottom.apply(style: UILabel.Style.timelineNeutralSubtitle)
+                view.valueTop.apply(style: .timelineTitle)
+                view.valueBottom.apply(style: .timelineNeutralSubtitle)
                 view.valueBottom.textAlignment = .left
                 view.valueBottom.text = date
                 return view
@@ -74,13 +74,13 @@ final class ReferendumTimelineView: UIView {
                 view.spacing = Constants.titleSubtitleSpacing
                 view.valueTop.text = status.title
                 view.valueTop.textAlignment = .left
-                view.valueTop.apply(style: UILabel.Style.timelineTitle)
+                view.valueTop.apply(style: .timelineTitle)
                 view.valueBottom.detailsLabel.numberOfLines = 1
 
                 if model.isUrgent {
-                    view.valueBottom.detailsLabel.apply(style: UILabel.Style.timelineUrgentSubtitle)
+                    view.valueBottom.detailsLabel.apply(style: .timelineUrgentSubtitle)
                 } else {
-                    view.valueBottom.detailsLabel.apply(style: UILabel.Style.timelineNeutralSubtitle)
+                    view.valueBottom.detailsLabel.apply(style: .timelineNeutralSubtitle)
                 }
 
                 view.valueBottom.spacing = 5
@@ -137,14 +137,14 @@ extension ReferendumTimelineView: BindableView {
 
 private extension UILabel.Style {
     static var timelineTitle: UILabel.Style {
-        .init(textColor: R.color.colorWhite()!, font: .regularFootnote)
+        .init(textColor: R.color.colorTextPrimary()!, font: .regularFootnote)
     }
 
     static var timelineNeutralSubtitle: UILabel.Style {
-        .init(textColor: R.color.colorTransparentText()!, font: .caption1)
+        .init(textColor: R.color.colorTextSecondary()!, font: .caption1)
     }
 
     static var timelineUrgentSubtitle: UILabel.Style {
-        .init(textColor: R.color.colorDarkYellow()!, font: .caption1)
+        .init(textColor: R.color.colorTextWarning()!, font: .caption1)
     }
 }

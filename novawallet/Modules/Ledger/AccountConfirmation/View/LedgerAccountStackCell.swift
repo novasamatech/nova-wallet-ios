@@ -29,12 +29,12 @@ final class LedgerAccountStackCell: RowView<GenericTitleValueView<IconDetailsGen
     private func configure() {
         borderView.borderType = []
 
-        addressLabel.textColor = R.color.colorWhite()
+        addressLabel.textColor = R.color.colorTextPrimary()
         addressLabel.font = .regularSubheadline
         addressLabel.lineBreakMode = .byTruncatingMiddle
         addressLabel.textAlignment = .left
 
-        amountLabel.textColor = R.color.colorTransparentText()
+        amountLabel.textColor = R.color.colorTextSecondary()
         amountLabel.font = .regularFootnote
         amountLabel.textAlignment = .left
 
@@ -42,7 +42,7 @@ final class LedgerAccountStackCell: RowView<GenericTitleValueView<IconDetailsGen
         rowContentView.titleView.spacing = 12.0
         rowContentView.titleView.iconWidth = 32.0
 
-        indicatorView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorWhite48()!)
+        indicatorView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
     }
 
     func bind(viewModel: LedgerAccountViewModel) {

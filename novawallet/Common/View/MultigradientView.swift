@@ -1,6 +1,13 @@
 import UIKit
 
 class MultigradientView: UIView {
+    enum GradientType {
+        case linear
+        case radial
+    }
+
+    private var gradientLayer: CAGradientLayer? { layer as? CAGradientLayer }
+
     var cornerRadius: CGFloat = 0.0 {
         didSet {
             setNeedsLayout()
@@ -28,6 +35,27 @@ class MultigradientView: UIView {
     var locations: [Float]? {
         didSet {
             applyLocations()
+        }
+    }
+
+    var gradientType: GradientType {
+        get {
+            let type = gradientLayer?.type ?? .axial
+            switch type {
+            case .radial:
+                return .radial
+            default:
+                return .linear
+            }
+        }
+
+        set {
+            switch newValue {
+            case .radial:
+                gradientLayer?.type = .radial
+            case .linear:
+                gradientLayer?.type = .axial
+            }
         }
     }
 

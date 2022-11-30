@@ -13,7 +13,7 @@ final class LedgerPerformOperationViewLayout: UIView {
 
     let activityIndicator: UIActivityIndicatorView = .create { view in
         view.style = .medium
-        view.tintColor = R.color.colorWhite()
+        view.tintColor = R.color.colorIconPrimary()
         view.hidesWhenStopped = true
     }
 
@@ -22,7 +22,7 @@ final class LedgerPerformOperationViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }
