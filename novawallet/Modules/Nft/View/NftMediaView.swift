@@ -61,7 +61,7 @@ final class NftMediaView: RoundedView {
         viewModel: NftMediaViewModelProtocol,
         targetSize: CGSize? = nil,
         cornerRadius: CGFloat? = nil,
-        styles: [NftMediaViewState: RoundedView.Style]
+        styles: [NftMediaViewState: RoundedView.Style] = [.normal: .nft]
     ) {
         let isAspectFit = contentView.contentMode == .scaleAspectFit
         let newSettings = NftMediaDisplaySettings(
@@ -117,7 +117,10 @@ final class NftMediaView: RoundedView {
 
         removePlaceholderView()
         startSkeletonIfNeeded()
-        mediaSettings.styles[.loading].map(apply)
+        apply(
+            style: mediaSettings.styles[.loading],
+            defaultStyle: mediaSettings.styles[.normal]
+        )
 
         viewModel?.loadMedia(
             on: contentView,
@@ -142,11 +145,20 @@ final class NftMediaView: RoundedView {
             if !isResolved {
                 self.stopSkeletonIfNeeded()
                 self.setupPlaceholderView()
-                if let style = mediaSettings.styles[.placeholder] {
-                    self.apply(style: style)
-                }
+                self.apply(
+                    style: mediaSettings.styles[.placeholder],
+                    defaultStyle: mediaSettings.styles[.normal]
+                )
                 self.delegate?.nftMediaDidPlaceholderFallback(self)
             }
+        }
+    }
+
+    private func apply(style: RoundedView.Style?, defaultStyle: RoundedView.Style?) {
+        if let style = style {
+            apply(style: style)
+        } else if let defaultStyle = defaultStyle {
+            apply(style: defaultStyle)
         }
     }
 
