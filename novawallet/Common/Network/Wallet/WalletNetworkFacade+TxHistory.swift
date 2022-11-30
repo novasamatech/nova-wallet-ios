@@ -72,7 +72,7 @@ extension WalletNetworkFacade {
         )
 
         if pagination.context == nil {
-            let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
+            let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage, chainAsset: chainAsset)
 
             wrapper.addDependency(wrapper: remoteHistoryWrapper)
 
@@ -145,7 +145,7 @@ extension WalletNetworkFacade {
             )
         }
 
-        let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
+        let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage, chainAsset: chainAsset)
 
         let mapOperation = ClosureOperation<AssetTransactionPageData?> {
             let transactions = try wrapper.targetOperation.extractNoCancellableResultData()
@@ -240,7 +240,8 @@ extension WalletNetworkFacade {
 
     func createLocalFetchWrapper(
         for filter: WalletHistoryFilter,
-        txStorage: AnyDataProviderRepository<TransactionHistoryItem>
+        txStorage: AnyDataProviderRepository<TransactionHistoryItem>,
+        chainAsset: ChainAsset
     ) -> CompoundOperationWrapper<[TransactionHistoryItem]> {
         let fetchOperation = txStorage.fetchAllOperation(with: RepositoryFetchOptions())
 
@@ -248,7 +249,10 @@ extension WalletNetworkFacade {
             let items = try fetchOperation.extractNoCancellableResultData()
 
             return items.filter { item in
-                if item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.transfers) {
+                if item.callPath.isERC20Transfer, chainAsset.isUtilityAsset {
+                    // don't display evm asset operations for utility asset
+                    return false
+                } else if item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.transfers) {
                     return false
                 } else if !item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.extrinsics) {
                     return false
