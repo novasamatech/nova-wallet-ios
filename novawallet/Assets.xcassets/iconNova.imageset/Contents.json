@@ -1,15 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "iconStar32.pdf",
+      "filename" : "nova-logo-11.pdf",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "template-rendering-intent" : "original"
   }
 }
