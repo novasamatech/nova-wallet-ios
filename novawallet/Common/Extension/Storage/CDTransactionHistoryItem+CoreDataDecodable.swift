@@ -6,10 +6,15 @@ extension CDTransactionItem: CoreDataCodable {
     public func populate(from decoder: Decoder, using _: NSManagedObjectContext) throws {
         let container = try decoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
-        source = try container.decode(TransactionHistoryItemSource.self, forKey: .source).rawValue
+        let sourceValue = try container.decode(TransactionHistoryItemSource.self, forKey: .source)
+        source = sourceValue.rawValue
         chainId = try container.decode(String.self, forKey: .chainId)
         assetId = try container.decode(Int32.self, forKey: .assetId)
-        identifier = try container.decode(String.self, forKey: .txHash)
+
+        let hash = try container.decode(String.self, forKey: .txHash)
+        txHash = hash
+        identifier = TransactionHistoryItem.createIdentifier(from: hash, source: sourceValue)
+
         sender = try container.decode(String.self, forKey: .sender)
         receiver = try container.decodeIfPresent(String.self, forKey: .receiver)
         amountInPlank = try container.decodeIfPresent(String.self, forKey: .amountInPlank)
@@ -45,7 +50,7 @@ extension CDTransactionItem: CoreDataCodable {
         try container.encodeIfPresent(TransactionHistoryItemSource(rawValue: source), forKey: .source)
         try container.encodeIfPresent(chainId, forKey: .chainId)
         try container.encode(assetId, forKey: .assetId)
-        try container.encodeIfPresent(identifier, forKey: .txHash)
+        try container.encodeIfPresent(txHash, forKey: .txHash)
         try container.encodeIfPresent(sender, forKey: .sender)
         try container.encodeIfPresent(receiver, forKey: .receiver)
         try container.encodeIfPresent(amountInPlank, forKey: .amountInPlank)

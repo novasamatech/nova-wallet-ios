@@ -131,7 +131,8 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         let txFilter = NSPredicate.filterTransactionsBy(
             address: address,
             chainId: chainId,
-            assetId: assetId
+            assetId: assetId,
+            source: source
         )
 
         return createTxRepository(for: txFilter)
@@ -158,7 +159,8 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         let txFilter = NSPredicate.filterUtilityAssetTransactionsBy(
             address: address,
             chainId: chainId,
-            utilityAssetId: assetId
+            utilityAssetId: assetId,
+            source: source
         )
 
         return createTxRepository(for: txFilter)
