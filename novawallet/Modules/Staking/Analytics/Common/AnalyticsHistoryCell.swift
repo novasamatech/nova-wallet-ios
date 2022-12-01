@@ -24,11 +24,11 @@ final class AnalyticsHistoryCell: UITableViewCell {
     private func setupBackground() {
         backgroundColor = .clear
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()
     }
 
     private func configureColors() {
-        historyView.daysLeftLabel.textColor = R.color.colorStrokeGray()
-        historyView.usdAmountLabel.textColor = R.color.colorStrokeGray()
+        historyView.daysLeftLabel.textColor = R.color.colorTextSecondary()
+        historyView.usdAmountLabel.textColor = R.color.colorTextSecondary()
     }
 }

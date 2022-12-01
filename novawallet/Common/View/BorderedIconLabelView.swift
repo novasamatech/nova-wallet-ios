@@ -10,9 +10,7 @@ class BorderedIconLabelView: UIView {
 
     let backgroundView: RoundedView = {
         let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
+        view.apply(style: .chips)
         view.cornerRadius = 6.0
         return view
     }()

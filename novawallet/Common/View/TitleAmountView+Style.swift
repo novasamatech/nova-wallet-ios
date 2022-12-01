@@ -7,11 +7,11 @@ extension TitleAmountView {
         view.verticalOffset = 13.0
 
         view.style = NetworkFeeView.ViewStyle(
-            titleColor: R.color.colorTransparentText()!,
+            titleColor: R.color.colorTextSecondary()!,
             titleFont: .regularFootnote,
-            tokenColor: R.color.colorWhite()!,
+            tokenColor: R.color.colorTextPrimary()!,
             tokenFont: .regularFootnote,
-            fiatColor: R.color.colorTransparentText()!,
+            fiatColor: R.color.colorTextSecondary()!,
             fiatFont: .caption1
         )
 

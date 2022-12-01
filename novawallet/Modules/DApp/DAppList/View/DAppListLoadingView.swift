@@ -4,16 +4,15 @@ import SoraUI
 final class DAppListLoadingView: UICollectionViewCell {
     static let preferredHeight: CGFloat = 266.0
 
-    let listBackgroundView = TriangularedBlurView()
+    let listBackgroundView = BlockBackgroundView()
     let allView: RoundedButton = {
         let view = RoundedButton()
         view.imageWithTitleView?.titleFont = .regularFootnote
         view.roundedBackgroundView?.shadowOpacity = 0.0
         view.roundedBackgroundView?.strokeWidth = 0.0
         view.contentInsets = UIEdgeInsets(top: 9.0, left: 9.0, bottom: 9.0, right: 9.0)
-        view.imageWithTitleView?.titleColor = R.color.colorWhite()!
-        view.roundedBackgroundView?.fillColor = R.color.colorWhite16()!
-        view.roundedBackgroundView?.highlightedFillColor = R.color.colorWhite16()!
+        view.imageWithTitleView?.titleColor = R.color.colorTextPrimary()!
+        view.roundedBackgroundView?.apply(style: .chips)
         view.isUserInteractionEnabled = true
         return view
     }()

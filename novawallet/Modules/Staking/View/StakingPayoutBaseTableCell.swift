@@ -4,7 +4,7 @@ class StakingPayoutBaseTableCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 

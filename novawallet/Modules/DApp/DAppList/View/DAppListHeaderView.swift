@@ -4,7 +4,7 @@ import SoraUI
 final class DAppListHeaderView: UICollectionViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h1Title
         return label
     }()
@@ -22,30 +22,30 @@ final class DAppListHeaderView: UICollectionViewCell {
 
     let decorationTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .h2Title
-        label.textAlignment = .center
+        label.textColor = R.color.colorTextPrimary()
+        label.font = .semiBoldTitle3
+        label.textAlignment = .left
         label.numberOfLines = 0
         return label
     }()
 
     let decorationSubtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
-        label.font = .p2Paragraph
-        label.textAlignment = .center
+        label.textColor = R.color.colorTextSecondary()
+        label.font = .caption1
+        label.textAlignment = .left
         label.numberOfLines = 0
         return label
     }()
 
-    let searchView: ControlView<TriangularedBlurView, IconDetailsView> = {
-        let backgroundView = TriangularedBlurView()
-        backgroundView.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
+    let searchView: ControlView<BlockBackgroundView, IconDetailsView> = {
+        let backgroundView = BlockBackgroundView()
+        backgroundView.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
 
         let contentView = IconDetailsView()
         contentView.imageView.image = R.image.iconSearch()?.withRenderingMode(.alwaysTemplate)
-        contentView.tintColor = R.color.colorWhite48()
-        contentView.detailsLabel.textColor = R.color.colorWhite48()
+        contentView.tintColor = R.color.colorTextPrimary()
+        contentView.detailsLabel.textColor = R.color.colorIconSecondary()
         contentView.detailsLabel.font = .p1Paragraph
         contentView.detailsLabel.numberOfLines = 0
 
@@ -126,7 +126,7 @@ final class DAppListHeaderView: UICollectionViewCell {
         decorationView.addSubview(decorationTitleLabel)
         decorationTitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(24.0)
+            make.top.equalToSuperview().inset(20.0)
         }
 
         decorationView.addSubview(decorationSubtitleLabel)

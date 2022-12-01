@@ -17,13 +17,13 @@ final class LearnMoreView: BackgroundedContentControl {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let arrowIconView: UIView = {
         let imageView = UIImageView(image: R.image.iconAboutArrow())
-        imageView.tintColor = .white
+        imageView.tintColor = R.color.colorIconPrimary()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -40,7 +40,7 @@ final class LearnMoreView: BackgroundedContentControl {
         let shapeView = ShapeView()
         shapeView.isUserInteractionEnabled = false
         shapeView.fillColor = .clear
-        shapeView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        shapeView.highlightedFillColor = R.color.colorButtonTextAccent()!
         backgroundView = shapeView
 
         setupLayout()

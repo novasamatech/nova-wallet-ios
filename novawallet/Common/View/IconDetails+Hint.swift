@@ -6,7 +6,7 @@ extension IconDetailsView {
         view.iconWidth = 16.0
         view.stackView.alignment = .top
         view.detailsLabel.font = .caption1
-        view.detailsLabel.textColor = R.color.colorTransparentText()
+        view.detailsLabel.textColor = R.color.colorTextSecondary()
         view.imageView.image = R.image.iconStarGray16()
         return view
     }

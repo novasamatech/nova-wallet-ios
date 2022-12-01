@@ -4,8 +4,8 @@ import SoraUI
 final class CrowdloanTableViewCell: UITableViewCell {
     var skeletonView: SkrullableView?
 
-    private let backgroundBlurView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    private let backgroundBlurView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.isUserInteractionEnabled = false
         return view
     }()
@@ -25,21 +25,21 @@ final class CrowdloanTableViewCell: UITableViewCell {
     let detailsLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         return label
     }()
 
     let progressLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .p2Paragraph
         return label
     }()
 
     let progressBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = R.color.colorBlurSeparator()
+        view.backgroundColor = R.color.colorProgressBarBackground()
         view.layer.cornerRadius = 2
         return view
     }()
@@ -47,7 +47,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
     let progressView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 2
-        view.backgroundColor = R.color.colorCoral()
+        view.backgroundColor = R.color.colorProgressBarIndicator()
         return view
     }()
 
@@ -55,14 +55,14 @@ final class CrowdloanTableViewCell: UITableViewCell {
 
     let percentsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .p2Paragraph
         return label
     }()
 
     let timeLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p3Paragraph
         label.textAlignment = .right
         return label
@@ -72,7 +72,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .center
-        imageView.tintColor = R.color.colorWhite48()
+        imageView.tintColor = R.color.colorIconSecondary()
         return imageView
     }()
 
@@ -123,8 +123,8 @@ final class CrowdloanTableViewCell: UITableViewCell {
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        backgroundBlurView.overlayView.fillColor = highlighted ?
-            R.color.colorAccentSelected()!
+        backgroundBlurView.overlayView?.fillColor = highlighted ?
+            R.color.colorCellBackgroundPressed()!
             : .clear
     }
 
@@ -200,20 +200,20 @@ final class CrowdloanTableViewCell: UITableViewCell {
 
         if model.isCompleted {
             timeLabel.text = nil
-            percentsLabel.textColor = R.color.colorTransparentText()
+            percentsLabel.textColor = R.color.colorTextSecondary()
             navigationImageView.isHidden = true
-            progressView.backgroundColor = R.color.colorTransparentText()
-            progressLabel.textColor = R.color.colorTransparentText()
-            titleLabel.textColor = R.color.colorTransparentText()
-            iconImageView.tintColor = R.color.colorTransparentText()!
+            progressView.backgroundColor = R.color.colorProgressBarBackground()
+            progressLabel.textColor = R.color.colorTextSecondary()
+            titleLabel.textColor = R.color.colorTextSecondary()
+            iconImageView.tintColor = R.color.colorIconInactive()!
         } else {
             timeLabel.text = model.timeleft
-            percentsLabel.textColor = R.color.colorCoral()
+            percentsLabel.textColor = R.color.colorProgressBarText()
             navigationImageView.isHidden = false
-            progressView.backgroundColor = R.color.colorCoral()
-            progressLabel.textColor = R.color.colorWhite()
-            titleLabel.textColor = R.color.colorWhite()
-            iconImageView.tintColor = R.color.colorWhite()!
+            progressView.backgroundColor = R.color.colorProgressBarIndicator()
+            progressLabel.textColor = R.color.colorTextSecondary()
+            titleLabel.textColor = R.color.colorTextPrimary()
+            iconImageView.tintColor = R.color.colorIconSecondary()
         }
     }
 }

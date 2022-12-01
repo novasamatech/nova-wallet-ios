@@ -2,19 +2,23 @@ import UIKit
 
 extension MultigradientView {
     static var background: MultigradientView {
-        let view = MultigradientView()
+        createBackground(for: .init(x: 0.5, y: 0.13), radius: .init(x: 2.22, y: 0.87))
+    }
 
-        view.startPoint = CGPoint(x: 0.5, y: 0.0)
-        view.endPoint = CGPoint(x: 0.5, y: 1.0)
+    private static func createBackground(for center: CGPoint, radius: CGPoint) -> MultigradientView {
+        let view = MultigradientView()
+        view.gradientType = .radial
+
+        view.startPoint = center
+        view.endPoint = radius
+
+        view.locations = [0.0, 0.46, 1.0]
 
         view.colors = [
-            UIColor(hex: "#6703A0")!,
-            UIColor(hex: "#490C75")!,
-            UIColor(hex: "#183A91")!,
-            UIColor(hex: "#104677")!
+            R.color.colorGradientBlockBackgroundFirstPart()!,
+            R.color.colorGradientBlockBackgroundSecondPart()!,
+            R.color.colorGradientBlockBackgroundThirdPart()!
         ]
-
-        view.locations = [0.0, 0.2304, 0.4826, 1.0]
 
         return view
     }

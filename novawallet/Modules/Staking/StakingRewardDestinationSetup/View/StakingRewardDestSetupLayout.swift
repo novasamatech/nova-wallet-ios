@@ -14,7 +14,7 @@ final class StakingRewardDestSetupLayout: UIView {
     let payoutOptionView = RewardSelectionView()
     let accountView = WalletAccountSelectionView()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
     let actionButton: TriangularedButton = UIFactory.default.createMainActionButton()
     let learnMoreView = LinkCellView()
 
@@ -29,7 +29,7 @@ final class StakingRewardDestSetupLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()!
+        backgroundColor = R.color.colorSecondaryScreenBackground()!
 
         setupLayout()
         setupPayoutAccountShown(false)

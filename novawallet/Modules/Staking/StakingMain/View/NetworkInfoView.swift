@@ -15,8 +15,8 @@ final class NetworkInfoView: UIView {
         static let stackViewBottomInset: CGFloat = 4.0
     }
 
-    let backgroundView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         return view
     }()
 
@@ -35,10 +35,10 @@ final class NetworkInfoView: UIView {
 
     let titleControl: ActionTitleControl = {
         let control = ActionTitleControl()
-        control.imageView.image = R.image.iconArrowUp()?.tinted(with: R.color.colorWhite48()!)
+        control.imageView.image = R.image.iconArrowUp()?.tinted(with: R.color.colorIconSecondary()!)
         control.identityIconAngle = CGFloat.pi
         control.activationIconAngle = 0.0
-        control.titleLabel.textColor = R.color.colorWhite()
+        control.titleLabel.textColor = R.color.colorTextPrimary()
         control.titleLabel.font = .regularSubheadline
         control.layoutType = .flexible
         control.contentInsets = Constants.contentMargins
@@ -279,8 +279,8 @@ final class NetworkInfoView: UIView {
                 strongSelf.applyExpansionState()
 
                 let animation = CABasicAnimation()
-                animation.toValue = strongSelf.backgroundView.blurMaskView?.shapePath
-                strongSelf.backgroundView.blurMaskView?.layer
+                animation.toValue = strongSelf.backgroundView.contentView?.shapePath
+                strongSelf.backgroundView.contentView?.layer
                     .add(animation, forKey: #keyPath(CAShapeLayer.path))
 
                 strongSelf.delegate?.animateAlongsideWithInfo(view: strongSelf)

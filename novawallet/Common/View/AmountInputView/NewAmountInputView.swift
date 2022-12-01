@@ -6,7 +6,7 @@ class NewAmountInputView: BackgroundedContentControl {
     let priceLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.textAlignment = .right
         return label
     }()
@@ -14,21 +14,21 @@ class NewAmountInputView: BackgroundedContentControl {
     let symbolLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldBody
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let textField: UITextField = {
         let textField = UITextField()
         textField.font = .title2
-        textField.textColor = R.color.colorWhite()
-        textField.tintColor = R.color.colorWhite()
+        textField.textColor = R.color.colorTextPrimary()
+        textField.tintColor = R.color.colorTextPrimary()
         textField.textAlignment = .right
 
         textField.attributedPlaceholder = NSAttributedString(
             string: "0",
             attributes: [
-                .foregroundColor: R.color.colorWhite()!.withAlphaComponent(0.5),
+                .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.title2
             ]
         )
@@ -215,14 +215,8 @@ class NewAmountInputView: BackgroundedContentControl {
     private func configureBackgroundViewIfNeeded() {
         if backgroundView == nil {
             let roundedView = RoundedView()
+            roundedView.apply(style: .textField)
             roundedView.isUserInteractionEnabled = false
-            roundedView.shadowOpacity = 0.0
-            roundedView.strokeColor = R.color.colorAccent()!
-            roundedView.fillColor = R.color.colorWhite8()!
-            roundedView.highlightedFillColor = R.color.colorWhite8()!
-            roundedView.strokeWidth = 0.0
-            roundedView.cornerRadius = 12.0
-
             backgroundView = roundedView
         }
     }

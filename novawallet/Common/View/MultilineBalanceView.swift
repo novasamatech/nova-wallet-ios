@@ -3,7 +3,7 @@ import UIKit
 class MultilineBalanceView: UIView {
     let amountLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .largeTitle
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -13,7 +13,7 @@ class MultilineBalanceView: UIView {
 
     let priceLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularBody
         label.textAlignment = .center
         return label

@@ -4,14 +4,14 @@ import SoraUI
 final class TitleValueView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = UIFont.p1Paragraph
         return label
     }()
 
     let valueLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = UIFont.p1Paragraph
         return label
     }()
@@ -21,7 +21,7 @@ final class TitleValueView: UIView {
         view.backgroundColor = .clear
         view.borderType = .bottom
         view.strokeWidth = 1.0
-        view.strokeColor = R.color.colorDarkGray()!
+        view.strokeColor = R.color.colorDivider()!
         return view
     }()
 

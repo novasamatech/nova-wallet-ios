@@ -3,7 +3,7 @@ import UIKit
 final class SettingsTableHeaderView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h1Title
         return label
     }()
@@ -15,10 +15,10 @@ final class SettingsTableHeaderView: UIView {
         detailsView.iconRadius = UIConstants.normalAddressIconSize.height / 2.0
         detailsView.titleLabel.lineBreakMode = .byTruncatingTail
         detailsView.titleLabel.font = .regularSubheadline
-        detailsView.titleLabel.textColor = R.color.colorWhite()
-        detailsView.actionImage = R.image.iconInfo()?.tinted(with: R.color.colorWhite48()!)
-        detailsView.highlightedFillColor = R.color.colorHighlightedAccent()!
-        detailsView.strokeColor = R.color.colorWhite32()!
+        detailsView.titleLabel.textColor = R.color.colorTextPrimary()
+        detailsView.actionImage = R.image.iconInfo()?.tinted(with: R.color.colorIconSecondary()!)
+        detailsView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
+        detailsView.strokeColor = R.color.colorContainerBorder()!
         detailsView.borderWidth = 1
         detailsView.horizontalSpacing = 12.0
         return detailsView

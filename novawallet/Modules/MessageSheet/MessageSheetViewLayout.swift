@@ -10,7 +10,7 @@ final class MessageSheetViewLayout<
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .semiBoldTitle3
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -19,7 +19,7 @@ final class MessageSheetViewLayout<
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -33,7 +33,7 @@ final class MessageSheetViewLayout<
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.color0x1D1D20()
+        backgroundColor = R.color.colorBottomSheetBackground()
 
         setupLayout()
     }

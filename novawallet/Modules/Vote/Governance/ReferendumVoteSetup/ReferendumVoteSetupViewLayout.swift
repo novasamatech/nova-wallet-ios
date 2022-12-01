@@ -12,21 +12,21 @@ final class ReferendumVoteSetupViewLayout: UIView {
     let ayeButton: TriangularedButton = {
         let button = TriangularedButton()
         button.applyDefaultStyle()
-        button.triangularedView?.fillColor = R.color.colorGreen()!
-        button.triangularedView?.highlightedFillColor = R.color.colorGreen()!
+        button.triangularedView?.fillColor = R.color.colorButtonBackgroundApprove()!
+        button.triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundApprove()!
         return button
     }()
 
     let nayButton: TriangularedButton = {
         let button = TriangularedButton()
         button.applyDefaultStyle()
-        button.triangularedView?.fillColor = R.color.colorRed()!
-        button.triangularedView?.highlightedFillColor = R.color.colorRed()!
+        button.triangularedView?.fillColor = R.color.colorButtonBackgroundReject()!
+        button.triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundReject()!
         return button
     }()
 
     let titleLabel: UILabel = .create { view in
-        view.textColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
         view.font = .boldTitle2
         view.numberOfLines = 0
     }
@@ -71,7 +71,7 @@ final class ReferendumVoteSetupViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }
