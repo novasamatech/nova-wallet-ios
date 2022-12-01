@@ -25,7 +25,7 @@ extension EtherscanHistoryElement: WalletRemoteHistoryItemProtocol {
     }
 
     var localIdentifier: String {
-        hash
+        TransactionHistoryItem.createIdentifier(from: hash, source: .evm)
     }
 
     var itemBlockNumber: UInt64 {

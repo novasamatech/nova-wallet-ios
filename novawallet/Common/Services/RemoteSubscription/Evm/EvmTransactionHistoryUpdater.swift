@@ -54,7 +54,7 @@ final class EvmTransactionHistoryUpdater {
         logger.debug("Saving new ERC20 transaction \(event.transactionHash.toHex(includePrefix: true))")
 
         let historyItem = TransactionHistoryItem(
-            source: TransactionHistoryItemSource.evm,
+            source: .evm,
             chainId: assetContract.chainAssetId.chainId,
             assetId: assetContract.chainAssetId.assetId,
             sender: transferEvent.sender,

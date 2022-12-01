@@ -4,7 +4,7 @@ import CoreData
 enum SubstrateStorageParams {
     static let databaseName = "SubstrateDataModel.sqlite"
     static let modelDirectory: String = "SubstrateDataModel.momd"
-    static let modelVersion: SubstrateStorageVersion = .version6
+    static let modelVersion: SubstrateStorageVersion = .version7
 
     static let storageDirectoryURL: URL = {
         let baseURL = FileManager.default.urls(
