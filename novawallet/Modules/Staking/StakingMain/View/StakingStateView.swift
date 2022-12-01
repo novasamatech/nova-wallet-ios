@@ -16,22 +16,22 @@ struct StakingStateSkeletonOptions: OptionSet {
 }
 
 class StakingStateView: UIView {
-    let backgroundView: UIView = TriangularedBlurView()
+    let backgroundView: UIView = BlockBackgroundView()
 
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
     let stakeAmountView: MultiValueView = {
         let view = MultiValueView()
         view.valueTop.font = .boldTitle1
-        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.textAlignment = .center
         view.valueBottom.font = .regularBody
-        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.textAlignment = .center
         view.spacing = 6.0
         view.isUserInteractionEnabled = false
@@ -40,8 +40,7 @@ class StakingStateView: UIView {
 
     let statusView: StakingStatusView = {
         let view = StakingStatusView()
-        view.backgroundView.fillColor = R.color.colorWhite8()!
-        view.backgroundView.highlightedFillColor = R.color.colorWhite8()!
+        view.backgroundView.apply(style: .chips)
         view.isUserInteractionEnabled = false
         return view
     }()

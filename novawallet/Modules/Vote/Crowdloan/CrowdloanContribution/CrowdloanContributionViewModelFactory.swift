@@ -241,7 +241,7 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         let icon: UIImage? = {
             guard let accountId = try? address.toAccountId() else { return nil }
             return try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
-                R.color.colorWhite()!,
+                R.color.colorTextPrimary()!,
                 size: UIConstants.normalAddressIconSize,
                 contentScale: UIScreen.main.scale
             )

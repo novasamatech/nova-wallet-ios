@@ -8,7 +8,7 @@ final class PolkadotIconDetailsView: UIView {
     }
 
     let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorWhite64()
+        $0.textColor = R.color.colorTextSecondary()
         $0.font = .regularFootnote
         $0.numberOfLines = 0
     }

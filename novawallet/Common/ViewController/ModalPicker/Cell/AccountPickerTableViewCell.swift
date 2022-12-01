@@ -27,7 +27,7 @@ final class AccountPickerTableViewCell: UITableViewCell, ModalPickerCellProtocol
         backgroundColor = .clear
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()!
         self.selectedBackgroundView = selectedBackgroundView
 
         setupLayout()

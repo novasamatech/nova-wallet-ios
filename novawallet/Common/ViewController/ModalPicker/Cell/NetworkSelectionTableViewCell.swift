@@ -27,7 +27,7 @@ final class NetworkSelectionTableViewCell: UITableViewCell, ModalPickerCellProto
         backgroundColor = .clear
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()!
         self.selectedBackgroundView = selectedBackgroundView
 
         setupLayout()

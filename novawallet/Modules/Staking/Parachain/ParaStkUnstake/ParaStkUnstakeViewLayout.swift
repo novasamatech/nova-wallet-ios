@@ -12,7 +12,7 @@ final class ParaStkUnstakeViewLayout: UIView {
     let collatorTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -33,7 +33,7 @@ final class ParaStkUnstakeViewLayout: UIView {
 
     let transferableView = TitleAmountView.dark()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
 
     let hintListView = HintListView()
 
@@ -46,7 +46,7 @@ final class ParaStkUnstakeViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

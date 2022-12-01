@@ -3,7 +3,7 @@ import UIKit
 final class SettingsTableFooterView: UITableViewHeaderFooterView {
     let appNameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         return label
     }()
@@ -22,7 +22,7 @@ final class SettingsTableFooterView: UITableViewHeaderFooterView {
     }
 
     private func setupLayout() {
-        let logoIcon = UIImageView(image: R.image.iconStarGray32())
+        let logoIcon = UIImageView(image: R.image.iconNova()!)
         let content = UIView.vStack(alignment: .center, spacing: 8, [logoIcon, appNameLabel])
         logoIcon.snp.makeConstraints { $0.size.equalTo(32) }
 

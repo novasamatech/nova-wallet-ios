@@ -17,7 +17,7 @@ final class AccountExportPasswordViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h2Title
         label.numberOfLines = 0
         return label
@@ -25,7 +25,7 @@ final class AccountExportPasswordViewLayout: UIView {
 
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p1Paragraph
         label.numberOfLines = 0
         return label
@@ -78,7 +78,7 @@ final class AccountExportPasswordViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

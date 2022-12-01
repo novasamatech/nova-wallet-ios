@@ -1,7 +1,7 @@
 import UIKit
 
 final class TokenGroupDecorationView: UICollectionReusableView {
-    let backgroundView = TriangularedBlurView()
+    let backgroundView = BlockBackgroundView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

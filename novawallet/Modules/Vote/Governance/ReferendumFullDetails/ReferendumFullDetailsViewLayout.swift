@@ -157,7 +157,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
 
         if let viewModel = viewModel {
             let jsonView: GenericMultiValueView<BlurredView<UITextView>> = .create {
-                $0.valueTop.apply(style: .caption1White64)
+                $0.valueTop.apply(style: .caption1Secondary)
                 $0.valueTop.textAlignment = .left
                 $0.spacing = 12.0
 
@@ -168,6 +168,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
                 textView.isScrollEnabled = false
                 textView.backgroundColor = .clear
                 textView.textAlignment = .left
+                textView.textColor = R.color.colorTextSecondary()
 
                 $0.valueBottom.contentInsets = .zero
                 $0.valueBottom.innerInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
@@ -186,7 +187,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
         jsonView?.removeFromSuperview()
 
         let jsonView: GenericMultiValueView<BlurredView<ImageWithTitleView>> = .create {
-            $0.valueTop.apply(style: .caption1White64)
+            $0.valueTop.apply(style: .caption1Secondary)
             $0.valueTop.textAlignment = .left
             $0.spacing = 12.0
 
@@ -194,7 +195,7 @@ final class ReferendumFullDetailsViewLayout: UIView {
             emptyStateView.layoutType = .verticalImageFirst
             emptyStateView.iconImage = R.image.iconEmptySearch()!
             emptyStateView.titleFont = .regularFootnote
-            emptyStateView.titleColor = R.color.colorWhite64()!
+            emptyStateView.titleColor = R.color.colorTextSecondary()!
             emptyStateView.spacingBetweenLabelAndIcon = 0
 
             $0.valueBottom.contentInsets = .zero

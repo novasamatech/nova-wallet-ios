@@ -5,7 +5,7 @@ final class AssetListNetworkView: UICollectionReusableView {
 
     let valueLabel: UILabel = {
         let view = UILabel()
-        view.textColor = R.color.colorTransparentText()
+        view.textColor = R.color.colorTextSecondary()
         view.font = .regularFootnote
         view.textAlignment = .right
         return view

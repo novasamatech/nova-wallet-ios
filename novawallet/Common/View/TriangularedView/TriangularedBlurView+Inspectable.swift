@@ -1,6 +1,6 @@
 import UIKit
 
-extension TriangularedBlurView {
+extension BlockBackgroundView {
     @IBInspectable
     private var _cornerCut: UInt {
         get {
@@ -13,27 +13,14 @@ extension TriangularedBlurView {
     }
 
     @IBInspectable
-    private var _blurStyle: Int {
-        get {
-            blurStyle.rawValue
-        }
-
-        set {
-            if let newBlur = UIBlurEffect.Style(rawValue: newValue) {
-                blurStyle = newBlur
-            }
-        }
-    }
-
-    @IBInspectable
     private var _overlayFillColor: UIColor {
         get {
-            overlayView.fillColor
+            overlayView?.fillColor ?? UIColor.black
         }
 
         set {
-            overlayView.fillColor = newValue
-            overlayView.highlightedFillColor = newValue
+            overlayView?.fillColor = newValue
+            overlayView?.highlightedFillColor = newValue
         }
     }
 }

@@ -4,7 +4,7 @@ class CustomValidatorListHeaderView: UITableViewHeaderFooterView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldCaps2
-        label.textColor = R.color.colorWhite80()
+        label.textColor = R.color.colorTextSecondary()
         label.lineBreakMode = .byTruncatingHead
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
@@ -14,7 +14,7 @@ class CustomValidatorListHeaderView: UITableViewHeaderFooterView {
         let label = UILabel()
         label.font = .semiBoldCaps2
         label.textAlignment = .right
-        label.textColor = R.color.colorWhite80()
+        label.textColor = R.color.colorTextSecondary()
         label.lineBreakMode = .byTruncatingTail
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return label
@@ -24,7 +24,7 @@ class CustomValidatorListHeaderView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
 
         backgroundView = UIView()
-        backgroundView?.backgroundColor = R.color.colorBlack()
+        backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

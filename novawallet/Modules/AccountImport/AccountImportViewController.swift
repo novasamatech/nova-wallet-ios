@@ -43,7 +43,7 @@ final class AccountImportViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = R.color.colorBlack()
+        view.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLocalization()
 
@@ -88,7 +88,7 @@ final class AccountImportViewController: UIViewController {
         }
 
         let buttonItem = UIBarButtonItem(
-            image: R.image.iconOptions(),
+            image: R.image.iconOptions()?.tinted(with: R.color.colorIconChip()!),
             style: .plain,
             target: self,
             action: #selector(actionAdvancedSettings)

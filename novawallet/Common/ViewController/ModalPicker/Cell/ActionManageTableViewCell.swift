@@ -18,7 +18,7 @@ final class ActionManageTableViewCell: UITableViewCell, ModalPickerCellProtocol 
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorHighlightedAccent()
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()
         self.selectedBackgroundView = selectedBackgroundView
 
         backgroundColor = .clear

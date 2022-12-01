@@ -5,7 +5,7 @@ class MultiValueView: GenericMultiValueView<UILabel> {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        valueBottom.textColor = R.color.colorGray()
+        valueBottom.textColor = R.color.colorTextSecondary()
         valueBottom.font = .p2Paragraph
         valueBottom.textAlignment = .right
     }

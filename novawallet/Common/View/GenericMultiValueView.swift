@@ -56,7 +56,7 @@ class GenericPairValueView<FView: UIView, SView: UIView>: UIView {
 class GenericMultiValueView<BottomView: UIView>: UIView {
     let valueTop: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .p1Paragraph
         label.textAlignment = .right
         return label
