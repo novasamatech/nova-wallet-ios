@@ -46,9 +46,16 @@ final class EtherscanOperationFactory {
         }
 
         let resultFactory = AnyNetworkResultFactory<WalletRemoteHistoryData> { data in
-            let items = try JSONDecoder().decode(EtherscanResponse.self, from: data)
+            let items = try JSONDecoder().decode(EtherscanResponse.self, from: data).result
 
-            let historyData = WalletRemoteHistoryData(historyItems: items.result, context: [:])
+            let isComplete = items.count < info.offset
+            let context = EtherscanHistoryContext(
+                page: info.page,
+                isComplete: isComplete,
+                defaultOffset: info.offset
+            )
+
+            let historyData = WalletRemoteHistoryData(historyItems: items, context: context.toContext())
 
             return historyData
         }
@@ -76,10 +83,18 @@ extension EtherscanOperationFactory: WalletRemoteHistoryFactoryProtocol {
             return CompoundOperationWrapper.createWithResult(historyData)
         }
 
+        let page: Int
+
+        if let currentPage = context.page {
+            page = currentPage + 1
+        } else {
+            page = 0
+        }
+
         let info = EtherscanHistoryInfo(
             address: address,
             contractaddress: contractAddress,
-            page: context.page ?? 0,
+            page: page,
             offset: context.defaultOffset
         )
 
