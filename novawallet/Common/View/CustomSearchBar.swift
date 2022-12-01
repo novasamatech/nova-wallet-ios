@@ -17,7 +17,12 @@ final class CustomSearchBar: UIView {
         view.returnKeyType = .go
         view.clearButtonMode = .whileEditing
         view.autocapitalizationType = .none
-
+        let searchButton = RoundedButton()
+        searchButton.applyIconStyle()
+        searchButton.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 6)
+        searchButton.imageWithTitleView?.iconImage = R.image.iconSearch()?.tinted(with: R.color.colorIconSecondary()!)
+        view.leftViewMode = .always
+        view.leftView = searchButton
         return view
     }()
 
