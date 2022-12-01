@@ -4,19 +4,19 @@ extension UILabel {
     func bindQr(viewModel: ExpirationTimeViewModel, locale: Locale) {
         switch viewModel {
         case let .normal(time):
-            textColor = R.color.colorWhite()
+            textColor = R.color.colorTextPrimary()
             text = R.string.localizable.commonQrCodeValidFormat(
                 time,
                 preferredLanguages: locale.rLanguages
             )
         case let .expiring(time):
-            textColor = R.color.colorRed()
+            textColor = R.color.colorTextNegative()
             text = R.string.localizable.commonQrCodeValidFormat(
                 time,
                 preferredLanguages: locale.rLanguages
             )
         case .expired:
-            textColor = R.color.colorRed()
+            textColor = R.color.colorTextNegative()
             text = R.string.localizable.commonQrCodeExpired(
                 preferredLanguages: locale.rLanguages
             )
@@ -26,19 +26,19 @@ extension UILabel {
     func bindTransaction(viewModel: ExpirationTimeViewModel, locale: Locale) {
         switch viewModel {
         case let .normal(time):
-            textColor = R.color.colorTransparentText()
+            textColor = R.color.colorTextSecondary()
             text = R.string.localizable.commonTransactionValidFormat(
                 time,
                 preferredLanguages: locale.rLanguages
             )
         case let .expiring(time):
-            textColor = R.color.colorRed()
+            textColor = R.color.colorTextNegative()
             text = R.string.localizable.commonTransactionValidFormat(
                 time,
                 preferredLanguages: locale.rLanguages
             )
         case .expired:
-            textColor = R.color.colorRed()
+            textColor = R.color.colorTextNegative()
             text = R.string.localizable.commonTransactionExpired(
                 preferredLanguages: locale.rLanguages
             )

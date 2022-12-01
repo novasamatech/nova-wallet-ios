@@ -6,15 +6,15 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
     let votingProgressView = VotingProgressView()
     let ayeVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorGreen15CF37()!,
-            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
+            color: R.color.colorIconPositive()!,
+            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!))!
         ))
     }
 
     let nayVotesView: VoteRowView = .create {
         $0.apply(style: .init(
-            color: R.color.colorRedFF3A69()!,
-            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!))!
+            color: R.color.colorIconNegative()!,
+            accessoryImage: (R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!))!
         ))
     }
 
@@ -25,10 +25,7 @@ final class ReferendumVotingStatusDetailsView: RoundedView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        applyFilledBackgroundStyle()
-
-        fillColor = R.color.colorWhite8()!
-        cornerRadius = 12.0
+        apply(style: .cellWithoutHighlighting)
 
         setupLayout()
     }

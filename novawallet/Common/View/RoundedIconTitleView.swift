@@ -5,7 +5,7 @@ import SoraUI
 final class RoundedIconTitleView: UIView {
     let titleView: IconDetailsView = {
         let view = IconDetailsView()
-        view.detailsLabel.textColor = R.color.colorWhite80()
+        view.detailsLabel.textColor = R.color.colorTextSecondary()
         view.detailsLabel.font = .semiBoldCaps1
         view.detailsLabel.numberOfLines = 1
         view.mode = .iconDetails
@@ -30,8 +30,8 @@ final class RoundedIconTitleView: UIView {
     let roundedBackgroundView: RoundedView = {
         let view = RoundedView()
         view.shadowOpacity = 0.0
-        view.fillColor = R.color.colorWhite24()!
-        view.highlightedFillColor = R.color.colorWhite24()!
+        view.fillColor = R.color.colorContainerBorder()!
+        view.highlightedFillColor = R.color.colorContainerBorder()!
         view.cornerRadius = 7.0
         return view
     }()

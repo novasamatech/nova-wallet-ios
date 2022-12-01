@@ -12,14 +12,14 @@ final class MoonbeamTermsViewLayout: UIView {
         let label = UILabel()
         label.font = .p1Paragraph
         label.numberOfLines = 0
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
     let termsSwitchView: UISwitch = {
         let switchView = UISwitch()
         switchView.isOn = false
-        switchView.onTintColor = R.color.colorAccent()
+        switchView.onTintColor = R.color.colorIconAccent()
         return switchView
     }()
 
@@ -27,7 +27,7 @@ final class MoonbeamTermsViewLayout: UIView {
         let label = UILabel()
         label.isUserInteractionEnabled = true
         label.font = .p1Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 2
         return label
     }()
@@ -47,7 +47,7 @@ final class MoonbeamTermsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
         applyLocalization()
     }

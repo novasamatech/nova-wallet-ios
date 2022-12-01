@@ -3,12 +3,12 @@ import UIKit
 final class AboutCrowdloansView: UIView {
     let aboutLabel: UILabel = .create {
         $0.font = .p1Paragraph
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
     }
 
     let descriptionLabel: UILabel = .create {
         $0.font = .p2Paragraph
-        $0.textColor = R.color.colorTransparentText()
+        $0.textColor = R.color.colorTextSecondary()
         $0.lineBreakMode = .byWordWrapping
         $0.numberOfLines = 0
     }

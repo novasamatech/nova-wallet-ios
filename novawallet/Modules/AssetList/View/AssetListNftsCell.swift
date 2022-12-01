@@ -3,39 +3,37 @@ import SoraUI
 
 final class AssetListNftsCell: UICollectionViewCell {
     private enum Constants {
-        static let mediaSize = CGSize(width: 34.0, height: 34.0)
-        static let mediaStrokeSize: CGFloat = 2.0
+        static let mediaSize = CGSize(width: 32.0, height: 32.0)
+        static let mediaStrokeSize: CGFloat = 0.0
         static let mediaCornerRadius: CGFloat = 8.0
         static let mediaSpacing: CGFloat = 20.0
         static let mediaTrailing: CGFloat = 8.0
     }
 
-    let backgroundBlurView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let backgroundBlurView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12.0
-        view.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
+        view.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         return view
     }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularSubheadline
         return label
     }()
 
     let counterLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorChipText()
         label.font = .semiBoldFootnote
         return label
     }()
 
     let counterBackgroundView: RoundedView = {
         let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
+        view.apply(style: .chips)
         view.cornerRadius = 6.0
         return view
     }()
@@ -44,7 +42,7 @@ final class AssetListNftsCell: UICollectionViewCell {
         let imageView = UIImageView()
         let image = R.image.iconSmallArrow()?
             .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorWhite48()!)
+            .tinted(with: R.color.colorIconSecondary()!)
         imageView.image = image
         return imageView
     }()
@@ -103,11 +101,15 @@ final class AssetListNftsCell: UICollectionViewCell {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
         if numberOfImagesToCreate > 0 {
-            let newMediaViews = (0 ..< numberOfImagesToCreate).map { _ in createMediaView() }
+            let newMediaViews = (0 ..< numberOfImagesToCreate).map { _ in
+                createMediaView()
+            }
             mediaViews = updatingMediaViewList(mediaViews, appending: newMediaViews)
         } else if numberOfImagesToCreate < 0 {
             let viewsToClear = mediaViews.suffix(-numberOfImagesToCreate)
-            viewsToClear.forEach { $0.removeFromSuperview() }
+            viewsToClear.forEach {
+                $0.removeFromSuperview()
+            }
 
             mediaViews = Array(mediaViews.prefix(mediaViewModels.count))
         }
@@ -118,27 +120,23 @@ final class AssetListNftsCell: UICollectionViewCell {
         )
 
         mediaViewModels.reversed().enumerated().forEach { index, viewModel in
+            let isLastNftView = index == 0
             mediaViews[index].bind(
                 viewModel: viewModel,
                 targetSize: imageSize,
-                cornerRadius: Constants.mediaCornerRadius
+                cornerRadius: Constants.mediaCornerRadius,
+                styles: [
+                    .loading: .nft,
+                    .normal: isLastNftView ? .nft : .shadowedNft,
+                    .placeholder: isLastNftView ? .nft : .shadowedNft
+                ]
             )
         }
     }
 
     private func createMediaView() -> NftMediaView {
         let mediaView = NftMediaView()
-        mediaView.applyFilledBackgroundStyle()
-        mediaView.fillColor = R.color.colorBlack()!
-        mediaView.highlightedFillColor = R.color.colorBlack()!
-        mediaView.cornerRadius = Constants.mediaCornerRadius
-
-        mediaView.contentInsets = UIEdgeInsets(
-            top: Constants.mediaStrokeSize,
-            left: Constants.mediaStrokeSize,
-            bottom: Constants.mediaStrokeSize,
-            right: Constants.mediaStrokeSize
-        )
+        mediaView.contentInsets = .zero
 
         return mediaView
     }

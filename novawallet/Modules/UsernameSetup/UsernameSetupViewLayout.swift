@@ -6,7 +6,7 @@ final class UsernameSetupViewLayout: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .boldTitle2
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.numberOfLines = 0
         return label
     }()
@@ -14,7 +14,7 @@ final class UsernameSetupViewLayout: UIView {
     let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()
@@ -22,7 +22,7 @@ final class UsernameSetupViewLayout: UIView {
     let captionLabel: UILabel = {
         let label = UILabel()
         label.font = .caption1
-        label.textColor = R.color.colorWhite48()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()
@@ -30,7 +30,7 @@ final class UsernameSetupViewLayout: UIView {
     let walletNameTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -45,7 +45,7 @@ final class UsernameSetupViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
     }
 

@@ -35,7 +35,7 @@ final class ParitySignerWelcomeViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         let highlitingAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!
+            .foregroundColor: R.color.colorTextPrimary()!
         ]
 
         let languages = selectedLocale.rLanguages

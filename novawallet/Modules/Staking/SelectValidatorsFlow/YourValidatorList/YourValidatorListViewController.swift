@@ -244,7 +244,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        headerView.statusView.detailsLabel.textColor = R.color.colorWhite()
+        headerView.statusView.detailsLabel.textColor = R.color.colorTextPrimary()
 
         headerView.bind(icon: icon, title: title)
         headerView.bind(description: description)
@@ -283,7 +283,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        headerView.statusView.detailsLabel.textColor = R.color.colorTransparentText()
+        headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
         headerView.bind(icon: icon, title: title)
         headerView.bind(description: description)
@@ -312,7 +312,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        headerView.statusView.detailsLabel.textColor = R.color.colorTransparentText()
+        headerView.statusView.detailsLabel.textColor = R.color.colorTextSecondary()
 
         headerView.bind(icon: icon, title: title)
         headerView.bind(description: description)

@@ -26,7 +26,7 @@ final class RoundedIconTitleHeaderView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = R.color.colorBlack()
+        backgroundView.backgroundColor = R.color.colorSecondaryScreenBackground()
         self.backgroundView = backgroundView
 
         contentView.addSubview(view)

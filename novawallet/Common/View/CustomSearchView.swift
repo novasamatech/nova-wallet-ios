@@ -3,8 +3,8 @@ import UIKit
 import SoraUI
 
 final class CustomSearchView: UIView {
-    let blurBackgroundView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let blurBackgroundView: BlurBackgroundView = {
+        let view = BlurBackgroundView()
         view.sideLength = 0.0
         return view
     }()
@@ -14,7 +14,7 @@ final class CustomSearchView: UIView {
     let cancelButton: RoundedButton = {
         let item = RoundedButton()
         item.applyIconStyle()
-        item.imageWithTitleView?.titleColor = R.color.colorNovaBlue()
+        item.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
         item.imageWithTitleView?.titleFont = .regularSubheadline
         item.contentInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
         return item

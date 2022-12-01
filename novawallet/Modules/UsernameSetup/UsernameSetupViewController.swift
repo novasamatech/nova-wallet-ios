@@ -96,7 +96,7 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
         let placeholder = NSAttributedString(
             string: walletNickname,
             attributes: [
-                .foregroundColor: R.color.colorWhite32()!,
+                .foregroundColor: R.color.colorHintText()!,
                 .font: UIFont.regularSubheadline
             ]
         )

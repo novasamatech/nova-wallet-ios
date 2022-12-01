@@ -23,7 +23,7 @@ final class StakingMainViewLayout: UIView {
     let headerLabel: UILabel = {
         let label = UILabel()
         label.font = .boldLargeTitle
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 

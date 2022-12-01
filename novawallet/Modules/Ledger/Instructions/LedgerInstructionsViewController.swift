@@ -47,7 +47,7 @@ final class LedgerInstructionsViewController: UIViewController, ViewHolder {
         rootView.actionButton.invalidateLayout()
 
         let highlitingAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!
+            .foregroundColor: R.color.colorTextPrimary()!
         ]
 
         let step1Decorator = HighlightingAttributedStringDecorator(

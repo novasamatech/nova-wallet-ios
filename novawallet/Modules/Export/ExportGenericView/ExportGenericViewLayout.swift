@@ -17,7 +17,7 @@ final class ExportGenericViewLayout: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .h2Title
         label.numberOfLines = 0
         return label
@@ -25,7 +25,7 @@ final class ExportGenericViewLayout: UIView {
 
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p1Paragraph
         label.numberOfLines = 0
         return label
@@ -35,14 +35,14 @@ final class ExportGenericViewLayout: UIView {
 
     let sourceTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .p2Paragraph
         return label
     }()
 
     let sourceDetailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .p1Paragraph
         label.numberOfLines = 0
         return label
@@ -50,7 +50,7 @@ final class ExportGenericViewLayout: UIView {
 
     let sourceHintLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorStrokeGray()
+        label.textColor = R.color.colorHintText()
         label.font = .p2Paragraph
         return label
     }()
@@ -58,7 +58,7 @@ final class ExportGenericViewLayout: UIView {
     let hintLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorHintText()
         label.numberOfLines = 0
         return label
     }()
@@ -68,7 +68,7 @@ final class ExportGenericViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

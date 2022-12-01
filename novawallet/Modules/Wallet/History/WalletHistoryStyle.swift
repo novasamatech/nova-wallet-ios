@@ -7,7 +7,7 @@ extension HistoryViewStyle {
         let cornerRadius: CGFloat = 12.0
         let titleStyle = WalletTextStyle(
             font: .semiBoldBody,
-            color: .white
+            color: R.color.colorTextPrimary()!
         )
 
         return HistoryViewStyle(
@@ -21,7 +21,7 @@ extension HistoryViewStyle {
             shouldInsertFullscreenShadow: false,
             shadow: nil,
             separatorStyle: nil,
-            pageLoadingIndicatorColor: R.color.colorTransparentText()
+            pageLoadingIndicatorColor: R.color.colorIconSecondary()!
         )
     }
 }

@@ -42,11 +42,11 @@ final class ButtonLargeControl: ControlView<RoundedView, IconDetailsGenericView<
         controlContentView.iconWidth = 24.0
         controlContentView.spacing = 12.0
 
-        titleLabel.textColor = R.color.colorWhite()
+        titleLabel.textColor = R.color.colorTextPrimary()
         titleLabel.font = .semiBoldSubheadline
         titleLabel.textAlignment = .left
 
-        detailsLabel.textColor = R.color.colorTransparentText()
+        detailsLabel.textColor = R.color.colorTextSecondary()
         detailsLabel.font = .caption1
         detailsLabel.textAlignment = .left
 
@@ -60,11 +60,11 @@ final class ButtonLargeControl: ControlView<RoundedView, IconDetailsGenericView<
     private func applyStyle() {
         switch style {
         case .primary:
-            controlBackgroundView.fillColor = R.color.colorNovaBlue()!
-            controlBackgroundView.highlightedFillColor = R.color.colorNovaBlue()!
+            controlBackgroundView.fillColor = R.color.colorButtonBackgroundPrimary()!
+            controlBackgroundView.highlightedFillColor = R.color.colorButtonBackgroundPrimary()!
         case .secondary:
-            controlBackgroundView.fillColor = R.color.colorWhite16()!
-            controlBackgroundView.highlightedFillColor = R.color.colorWhite16()!
+            controlBackgroundView.fillColor = R.color.colorButtonBackgroundSecondary()!
+            controlBackgroundView.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
         }
     }
 }

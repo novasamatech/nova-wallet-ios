@@ -14,7 +14,7 @@ final class InlineAlertView: UIView {
         view.mode = .iconDetails
         view.detailsLabel.numberOfLines = 0
         view.iconWidth = 16.0
-        view.detailsLabel.textColor = R.color.colorWhite()
+        view.detailsLabel.textColor = R.color.colorTextPrimary()
         view.detailsLabel.font = .caption1
         view.spacing = 12.0
         return view
@@ -50,7 +50,7 @@ final class InlineAlertView: UIView {
 extension InlineAlertView {
     static func warning() -> InlineAlertView {
         let view = InlineAlertView()
-        view.backgroundView.fillColor = R.color.colorYellow16()!
+        view.backgroundView.fillColor = R.color.colorWarningBlockBackground()!
         view.contentView.imageView.image = R.image.iconWarning()
         view.contentView.stackView.alignment = .top
         return view
@@ -58,7 +58,7 @@ extension InlineAlertView {
 
     static func error() -> InlineAlertView {
         let view = InlineAlertView()
-        view.backgroundView.fillColor = R.color.colorRed12()!
+        view.backgroundView.fillColor = R.color.colorErrorBlockBackground()!
         view.contentView.imageView.image = R.image.iconSlash()!
         view.contentView.stackView.alignment = .top
         return view

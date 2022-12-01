@@ -6,12 +6,12 @@ final class VoteStatusSectionView: UITableViewHeaderFooterView {
     private var viewModel: LoadableViewModelState<Model>?
 
     let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
         $0.font = .h3Title
     }
 
     let countView: BorderedLabelView = .create {
-        $0.titleLabel.textColor = R.color.colorWhite80()
+        $0.titleLabel.textColor = R.color.colorChipText()
         $0.titleLabel.font = .semiBoldFootnote
         $0.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
     }

@@ -15,7 +15,7 @@ final class UnknownAddressView: UIView {
     let addressLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.lineBreakMode = .byTruncatingMiddle
         return label
     }()

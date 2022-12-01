@@ -9,7 +9,7 @@ final class NftListViewLayout: UIView {
     let backgroundView = MultigradientView.background
 
     let navBarBlurView: UIView = {
-        let blurView = TriangularedBlurView()
+        let blurView = BlurBackgroundView()
         blurView.cornerCut = []
         return blurView
     }()
@@ -28,7 +28,7 @@ final class NftListViewLayout: UIView {
 
     let counterView: BorderedLabelView = {
         let view = BorderedLabelView()
-        view.titleLabel.textColor = R.color.colorWhite()!
+        view.titleLabel.textColor = R.color.colorTextPrimary()!
         view.titleLabel.font = .regularFootnote
         view.contentInsets = UIEdgeInsets(top: 2.0, left: 8.0, bottom: 2.0, right: 8.0)
         view.backgroundView.cornerRadius = 6.0

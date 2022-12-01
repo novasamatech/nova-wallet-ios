@@ -5,9 +5,9 @@ final class AnalyticsContainerViewLayout: UIView {
     let segmentedControl: PlainSegmentedControl = {
         let segmentedControl = PlainSegmentedControl()
         segmentedControl.selectionWidth = 1
-        segmentedControl.titleColor = R.color.colorGray()!
-        segmentedControl.selectionColor = R.color.colorWhite()!
-        segmentedControl.selectedTitleColor = R.color.colorWhite()!
+        segmentedControl.titleColor = R.color.colorTextSecondary()!
+        segmentedControl.selectionColor = R.color.colorIconPrimary()!
+        segmentedControl.selectedTitleColor = R.color.colorIconPrimary()!
         segmentedControl.titleFont = .p1Paragraph
         return segmentedControl
     }()
@@ -22,7 +22,7 @@ final class AnalyticsContainerViewLayout: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
     }
 
