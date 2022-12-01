@@ -5,7 +5,7 @@ import Core
 import SubstrateSdk
 import BigInt
 
-typealias ERC20BalanceUpdateServiceCompletionClosure = () -> Void
+typealias ERC20UpdateServiceCompletionClosure = () -> Void
 
 final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     let holder: AccountAddress
@@ -15,7 +15,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let blockNumber: Core.BlockNumber
     let queryMessageFactory: EvmQueryContractMessageFactoryProtocol
-    let completion: ERC20BalanceUpdateServiceCompletionClosure?
+    let completion: ERC20UpdateServiceCompletionClosure?
 
     @Atomic(defaultValue: nil) private var queryId: UInt16?
     @Atomic(defaultValue: nil) private var cancellable: CancellableCall?
@@ -29,7 +29,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
         blockNumber: Core.BlockNumber,
         queryMessageFactory: EvmQueryContractMessageFactoryProtocol,
         logger: LoggerProtocol?,
-        completion: ERC20BalanceUpdateServiceCompletionClosure?
+        completion: ERC20UpdateServiceCompletionClosure?
     ) {
         self.holder = holder
         self.assetContracts = assetContracts

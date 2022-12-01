@@ -117,7 +117,7 @@ extension ParaStkYieldBoostScheduleInteractor: ParaStkYieldBoostScheduleInteract
 }
 
 extension ParaStkYieldBoostScheduleInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
         switch result {
         case let .success(feeInfo):
             presenter?.didReceiveScheduleAutocompound(feeInfo: feeInfo)

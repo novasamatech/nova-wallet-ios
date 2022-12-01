@@ -12,4 +12,8 @@ extension BigUInt {
             return BigUInt(hex, radix: 16)
         }
     }
+
+    func toHexString() -> String {
+        serialize().toHex(includePrefix: true)
+    }
 }
