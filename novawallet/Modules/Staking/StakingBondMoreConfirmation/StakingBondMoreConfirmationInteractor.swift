@@ -188,7 +188,7 @@ extension StakingBondMoreConfirmationInteractor: WalletLocalStorageSubscriber, W
 }
 
 extension StakingBondMoreConfirmationInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
         presenter.didReceiveFee(result: result)
     }
 }

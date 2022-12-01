@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 extension AssetModel {
     var isEvm: Bool {
@@ -22,5 +23,9 @@ extension ChainModel {
 
     var hasEvmAsset: Bool {
         assets.contains { $0.isEvm }
+    }
+
+    var evmChainId: String {
+        BigUInt(addressPrefix).serialize().toHex(includePrefix: true)
     }
 }
