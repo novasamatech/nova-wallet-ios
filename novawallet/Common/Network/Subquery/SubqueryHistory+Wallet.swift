@@ -7,7 +7,11 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         identifier
     }
 
-    var localIdentifier: String { extrinsicHash ?? identifier }
+    var localIdentifier: String {
+        let localId = extrinsicHash ?? identifier
+
+        return TransactionHistoryItem.createIdentifier(from: localId, source: .substrate)
+    }
 
     var itemBlockNumber: UInt64 {
         blockNumber

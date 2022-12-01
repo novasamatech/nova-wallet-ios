@@ -48,7 +48,11 @@ struct TransactionHistoryItem: Codable {
 }
 
 extension TransactionHistoryItem: Identifiable {
-    var identifier: String { txHash + " - " + String(source.rawValue) }
+    var identifier: String { Self.createIdentifier(from: txHash, source: source) }
+
+    static func createIdentifier(from txHash: String, source: TransactionHistoryItemSource) -> String {
+        txHash + " - " + String(source.rawValue)
+    }
 }
 
 extension TransactionHistoryItem {
