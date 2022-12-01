@@ -10,7 +10,7 @@ final class FWBarChartView: BarChartView {
 
     private let averageAmountLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorGreen()
+        label.textColor = R.color.colorTextPositive()
         label.font = .systemFont(ofSize: 9, weight: .semibold)
         label.numberOfLines = 2
         return label
@@ -20,7 +20,7 @@ final class FWBarChartView: BarChartView {
     private let averageLineLayer: CAShapeLayer = {
         let shapeLayer = CAShapeLayer()
         shapeLayer.fillColor = UIColor.clear.cgColor
-        shapeLayer.strokeColor = R.color.colorGreen()!.cgColor
+        shapeLayer.strokeColor = R.color.colorTextPositive()!.cgColor
         shapeLayer.lineWidth = 1
         shapeLayer.lineJoin = CAShapeLayerLineJoin.round
         shapeLayer.lineDashPattern = [3, 3]
@@ -132,17 +132,17 @@ extension FWBarChartView: FWChartViewProtocol {
         setNeedsLayout()
 
         let set = BarChartDataSet(entries: dataEntries)
-        set.highlightColor = R.color.colorAccent()!
+        set.highlightColor = R.color.colorIconAccent()!
         set.drawIconsEnabled = false
         set.drawValuesEnabled = false
         set.colors = data.amounts.map { chartData in
             if chartData.selected {
-                return R.color.colorAccent()!
+                return R.color.colorIconAccent()!
             } else {
                 if chartDataContainsSelectedBar {
-                    return R.color.colorAlmostBlack()!
+                    return R.color.colorChipsBackground()!
                 } else {
-                    return chartData.filled ? R.color.colorAccent()! : R.color.colorGray()!
+                    return chartData.filled ? R.color.colorButtonTextAccent()! : R.color.colorTextSecondary()!
                 }
             }
         }

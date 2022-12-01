@@ -39,7 +39,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
         applyLocalization()
@@ -102,7 +102,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
 
     func bind(confirmationViewModel: CrowdloanContributeConfirmViewModel) {
         let icon = confirmationViewModel.senderIcon.imageWithFillColor(
-            R.color.colorWhite()!,
+            R.color.colorTextPrimary()!,
             size: UIConstants.smallAddressIconSize,
             contentScale: UIScreen.main.scale
         )
@@ -246,7 +246,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
 
         let view = TitleValueView()
         view.titleLabel.text = R.string.localizable.commonBonus(preferredLanguages: locale.rLanguages)
-        view.valueLabel.textColor = R.color.colorAccent()
+        view.valueLabel.textColor = R.color.colorIconAccent()
 
         contentView.stackView.insertArrangedSubview(view, at: lastIndex + 1)
         view.snp.makeConstraints { make in

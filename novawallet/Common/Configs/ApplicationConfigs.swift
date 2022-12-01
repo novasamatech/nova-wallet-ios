@@ -154,9 +154,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var governanceDAppsListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/dapps.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/v2/dapps.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/dapps_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/governance/v2/dapps_dev.json")!
         #endif
     }
 

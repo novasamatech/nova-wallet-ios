@@ -7,7 +7,7 @@ final class RadioSelectorView: UIView {
         }
     }
 
-    var outerColor: UIColor = R.color.colorAccent()! {
+    var outerColor: UIColor = R.color.colorButtonBackgroundPrimary()! {
         didSet {
             if selected {
                 setNeedsDisplay()
@@ -23,7 +23,7 @@ final class RadioSelectorView: UIView {
         }
     }
 
-    var innerColor: UIColor = R.color.colorBlack()! {
+    var innerColor: UIColor = .black {
         didSet {
             if selected {
                 setNeedsDisplay()
@@ -31,7 +31,7 @@ final class RadioSelectorView: UIView {
         }
     }
 
-    var strokeColor: UIColor = R.color.colorWhite24()! {
+    var strokeColor: UIColor = R.color.colorRadioBorder()! {
         didSet {
             if !selected {
                 setNeedsDisplay()

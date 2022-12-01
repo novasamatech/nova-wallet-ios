@@ -4,9 +4,9 @@ final class ProcessStepView: UIView {
     let stepNumberView: BorderedLabelView = {
         let view = BorderedLabelView()
         view.backgroundView.applyFilledBackgroundStyle()
-        view.backgroundView.fillColor = R.color.colorWhite16()!
+        view.backgroundView.fillColor = R.color.colorChipsBackground()!
         view.backgroundView.cornerRadius = 16.0
-        view.titleLabel.textColor = R.color.colorTransparentText()
+        view.titleLabel.textColor = R.color.colorTextSecondary()
         view.titleLabel.font = .regularBody
         view.titleLabel.textAlignment = .center
         return view
@@ -15,7 +15,7 @@ final class ProcessStepView: UIView {
     let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .regularBody
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.numberOfLines = 0
         return label
     }()

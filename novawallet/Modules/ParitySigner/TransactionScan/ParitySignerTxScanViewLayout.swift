@@ -3,7 +3,7 @@ import UIKit
 final class ParitySignerTxScanViewLayout: QRScannerViewLayout {
     let timerLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.textAlignment = .center
         return label

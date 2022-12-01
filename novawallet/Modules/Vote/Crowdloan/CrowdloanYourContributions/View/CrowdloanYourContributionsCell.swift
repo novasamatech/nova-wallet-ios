@@ -13,26 +13,21 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
 
     private let nameDetailsView: MultiValueView = {
         let view = MultiValueView()
-        view.valueTop.textColor = R.color.colorWhite()
-        view.valueTop.font = .regularSubheadline
+        view.apply(style: .contributionRow)
         view.valueTop.textAlignment = .left
-        view.valueBottom.textColor = R.color.colorTransparentText()
-        view.valueBottom.font = .caption1
         view.valueBottom.textAlignment = .left
         return view
     }()
 
     private let contributedAmountView: MultiValueView = {
         let view = MultiValueView()
-        view.valueTop.textColor = R.color.colorWhite()
-        view.valueTop.font = .regularSubheadline
-        view.valueBottom.textColor = R.color.colorTransparentText()
-        view.valueBottom.font = .caption1
+        view.apply(style: .contributionRow)
         return view
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
         setupLayout()
     }
 

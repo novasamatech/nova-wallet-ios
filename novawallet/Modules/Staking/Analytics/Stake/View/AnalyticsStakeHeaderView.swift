@@ -4,21 +4,21 @@ final class AnalyticsStakeHeaderView: UIView, AnalyticsRewardsHeaderViewProtocol
     let selectedPeriodLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     private let tokenAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .h1Title
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .h2Title
-        label.textColor = R.color.colorStrokeGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -29,7 +29,7 @@ final class AnalyticsStakeHeaderView: UIView, AnalyticsRewardsHeaderViewProtocol
     private let historyTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .p0Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -58,7 +58,7 @@ final class AnalyticsStakeHeaderView: UIView, AnalyticsRewardsHeaderViewProtocol
             alignment: .center,
             [selectedPeriodLabel, tokenAmountLabel, usdAmountLabel]
         )
-        let separator = UIView.createSeparator(color: R.color.colorDarkGray())
+        let separator = UIView.createSeparator(color: R.color.colorDivider())
         let statsStack = UIView.vStack(
             spacing: 24,
             [

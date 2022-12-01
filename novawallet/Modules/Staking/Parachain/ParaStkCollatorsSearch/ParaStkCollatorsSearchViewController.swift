@@ -164,7 +164,7 @@ extension ParaStkCollatorsSearchViewController: EmptyStateDataSource {
                 .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
         }
 
-        emptyView.titleColor = R.color.colorTransparentText()!
+        emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView
     }

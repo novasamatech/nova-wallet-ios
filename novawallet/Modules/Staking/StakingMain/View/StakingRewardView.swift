@@ -27,17 +27,17 @@ final class StakingRewardView: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularSubheadline
         return label
     }()
 
     let rewardView: MultiValueView = {
         let view = MultiValueView()
-        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.textAlignment = .left
         view.valueTop.font = .boldTitle2
-        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.textAlignment = .left
         view.valueBottom.font = .regularSubheadline
         view.spacing = 4.0
