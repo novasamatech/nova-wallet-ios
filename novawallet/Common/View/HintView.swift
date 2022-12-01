@@ -3,7 +3,7 @@ import UIKit
 final class HintView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorHintText()
         label.font = .p2Paragraph
         label.numberOfLines = 0
         return label
@@ -11,7 +11,7 @@ final class HintView: UIView {
 
     let iconView: UIImageView = {
         let view = UIImageView(image: R.image.iconInfoFilled()?.withRenderingMode(.alwaysTemplate))
-        view.tintColor = R.color.colorGray()
+        view.tintColor = R.color.colorIconInactive()
         return view
     }()
 

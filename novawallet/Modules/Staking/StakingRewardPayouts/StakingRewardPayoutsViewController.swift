@@ -201,7 +201,7 @@ extension StakingRewardPayoutsViewController: EmptyStateDataSource {
             emptyView.title = R.string.localizable.stakingRewardPayoutsEmptyRewards_2_2_0(
                 preferredLanguages: selectedLocale.rLanguages
             )
-            emptyView.titleColor = R.color.colorTransparentText()!
+            emptyView.titleColor = R.color.colorTextSecondary()!
             emptyView.titleFont = .regularFootnote
             return emptyView
         case .loading:

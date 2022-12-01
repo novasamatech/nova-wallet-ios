@@ -224,7 +224,7 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
 
         if let title = sectionTitles[itemSectionIndex] {
             let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-            headerView.titleView.detailsLabel.textColor = R.color.colorTransparentText()
+            headerView.titleView.detailsLabel.textColor = R.color.colorTextSecondary()
             headerView.titleView.detailsLabel.font = .regularFootnote
 
             headerView.bind(title: title.value(for: selectedLocale), icon: nil)

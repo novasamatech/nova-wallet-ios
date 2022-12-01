@@ -3,14 +3,14 @@ import UIKit
 final class TitleHorizontalMultiValueView: GenericTitleValueView<UILabel, UIStackView> {
     let detailsTitleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         return label
     }()
 
     let detailsValueLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularFootnote
         return label
     }()
@@ -26,7 +26,7 @@ final class TitleHorizontalMultiValueView: GenericTitleValueView<UILabel, UIStac
     }
 
     private func configureStyle() {
-        titleView.textColor = R.color.colorTransparentText()
+        titleView.textColor = R.color.colorTextSecondary()
         titleView.font = .regularFootnote
 
         valueView.spacing = 4.0

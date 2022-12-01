@@ -14,7 +14,7 @@ final class StakingBalanceUnbondingItemView: UIView {
         let label = UILabel()
         label.font = .p1Paragraph
         label.lineBreakMode = .byTruncatingMiddle
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -27,14 +27,14 @@ final class StakingBalanceUnbondingItemView: UIView {
     let tokenAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 

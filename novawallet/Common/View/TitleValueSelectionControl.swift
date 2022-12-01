@@ -11,20 +11,20 @@ final class TitleValueSelectionView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let detailsLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorAccent()
+        label.textColor = R.color.colorIconAccent()
         return label
     }()
 
     let arrowIconView: UIImageView = {
         let imageView = UIImageView(image: R.image.iconSmallArrow())
-        imageView.tintColor = .white
+        imageView.tintColor = R.color.colorIconSecondary()!
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()

@@ -51,12 +51,16 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             details: details,
             runningIn: .main
         ) { [weak self] result in
+            guard let self = self else {
+                return
+            }
+
             switch result {
             case .success:
-                self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.submitionPresenter?.didCompleteSubmition()
+                self.eventCenter.notify(with: WalletTransactionListUpdated())
+                self.submitionPresenter?.didCompleteSubmition()
             case let .failure(error):
-                self?.presenter?.didReceiveError(error)
+                self.presenter?.didReceiveError(error)
             }
         }
     }
@@ -72,11 +76,11 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
             var callCodingPath: CallCodingPath?
 
             let extrinsicClosure: EvmTransactionBuilderClosure = { [weak self] builder in
-                guard let strongSelf = self else {
+                guard let self = self else {
                     throw BaseOperationError.unexpectedDependentResult
                 }
 
-                let (newBuilder, codingPath) = try strongSelf.addingTransferCommand(
+                let (newBuilder, codingPath) = try self.addingTransferCommand(
                     to: builder,
                     amount: amount,
                     recepient: recepient,

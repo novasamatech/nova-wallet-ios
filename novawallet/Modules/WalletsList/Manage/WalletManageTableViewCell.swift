@@ -6,7 +6,7 @@ final class WalletManageTableViewCell: WalletsListTableViewCell {
 
     let disclosureIndicatorView: UIImageView = {
         let imageView = UIImageView()
-        let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTransparentText()!)
+        let icon = R.image.iconSmallArrow()?.tinted(with: R.color.colorTextSecondary()!)
         imageView.image = icon
         imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -25,7 +25,7 @@ final class WalletManageTableViewCell: WalletsListTableViewCell {
         }
 
         if reordering {
-            recolorReorderControl(R.color.colorWhite()!)
+            recolorReorderControl(R.color.colorIconPrimary()!)
         }
     }
 

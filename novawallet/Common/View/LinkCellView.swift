@@ -15,7 +15,7 @@ final class LinkCellView: GenericTitleValueView<UILabel, LinkView> {
     }
 
     private func configureStyle() {
-        titleView.textColor = R.color.colorTransparentText()!
+        titleView.textColor = R.color.colorTextSecondary()!
         titleView.font = .regularFootnote
     }
 }
