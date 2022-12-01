@@ -96,7 +96,8 @@ extension NftImageViewModel: ImageViewModelProtocol {
             targetSize: settings.targetSize,
             cornerRadius: settings.cornerRadius,
             animated: animated,
-            isAspectFit: false
+            isAspectFit: false,
+            styles: [:]
         )
 
         loadMedia(on: imageView, displaySettings: displaySettings, completion: nil)
