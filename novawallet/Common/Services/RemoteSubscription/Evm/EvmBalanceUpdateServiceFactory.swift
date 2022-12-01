@@ -9,7 +9,7 @@ protocol EvmBalanceUpdateServiceFactoryProtocol {
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
         blockNumber: Core.BlockNumber,
-        completionClosure: ERC20BalanceUpdateServiceCompletionClosure?
+        completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
 }
 
@@ -38,7 +38,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         chainId: ChainModel.Id,
         assetContracts: Set<EvmAssetContractId>,
         blockNumber: Core.BlockNumber,
-        completionClosure: ERC20BalanceUpdateServiceCompletionClosure?
+        completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable

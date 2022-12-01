@@ -64,4 +64,40 @@ extension EthereumTransaction {
             nonce: nonce
         )
     }
+
+    func replacing(recepient: String?) -> EthereumTransaction {
+        EthereumTransaction(
+            from: from,
+            to: recepient,
+            gas: gas,
+            gasPrice: gasPrice,
+            value: value,
+            data: data,
+            nonce: nonce
+        )
+    }
+
+    func replacing(data: Data?) -> EthereumTransaction {
+        EthereumTransaction(
+            from: from,
+            to: to,
+            gas: gas,
+            gasPrice: gasPrice,
+            value: value,
+            data: data?.toHex(includePrefix: true),
+            nonce: nonce
+        )
+    }
+
+    func replacing(value: String?) -> EthereumTransaction {
+        EthereumTransaction(
+            from: from,
+            to: to,
+            gas: gas,
+            gasPrice: gasPrice,
+            value: value,
+            data: data,
+            nonce: nonce
+        )
+    }
 }
