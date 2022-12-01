@@ -185,9 +185,7 @@ extension WalletNetworkFacade {
         address: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
         ClosureOperation {
-            // ignore remote transactions if not received
-            let optRemoteTransactions = try? remoteOperation?.extractNoCancellableResultData().historyItems
-            let remoteTransactions = optRemoteTransactions ?? []
+            let remoteTransactions = try remoteOperation?.extractNoCancellableResultData().historyItems ?? []
 
             if let localTransactions = try localOperation?.extractNoCancellableResultData(),
                !localTransactions.isEmpty {
