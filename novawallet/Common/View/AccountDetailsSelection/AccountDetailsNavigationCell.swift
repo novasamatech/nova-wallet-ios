@@ -17,7 +17,7 @@ final class AccountDetailsGenericNavigationCell<D: AccountDetailsSelectionDecora
         backgroundColor = .clear
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorAccentSelected()
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()
 
         setupLayout()
     }

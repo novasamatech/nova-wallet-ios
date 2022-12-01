@@ -13,7 +13,7 @@ final class StakingBondMoreViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
 
     let hintView: IconDetailsView = .hint()
 
@@ -26,7 +26,7 @@ final class StakingBondMoreViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
     }
 

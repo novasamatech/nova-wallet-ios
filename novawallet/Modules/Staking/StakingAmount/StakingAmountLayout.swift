@@ -20,7 +20,7 @@ final class StakingAmountLayout: UIView {
 
     let aboutLinkView = LinkCellView()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let networkFeeView = UIFactory.default.createNetworkFeeView()
 
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -31,7 +31,7 @@ final class StakingAmountLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

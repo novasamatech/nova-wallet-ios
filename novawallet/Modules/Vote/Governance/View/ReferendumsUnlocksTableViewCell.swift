@@ -31,33 +31,33 @@ final class ReferendumsUnlocksView: GenericTitleValueView<
     private func configure() {
         titleView.setHorizontalAndSpacing(8.0)
 
-        titleLabel.apply(style: .regularSubhedlineWhite)
+        titleLabel.apply(style: .regularSubhedlinePrimary)
 
-        locksLabel.apply(style: .footnoteWhite64)
+        locksLabel.apply(style: .footnoteSecondary)
         locksLabel.numberOfLines = 1
 
         unlocksLabel.apply(style: .unlockStyle)
         unlocksLabel.numberOfLines = 1
 
-        titleView.sView.backgroundView.fillColor = R.color.colorWhite16()!
+        titleView.sView.backgroundView.fillColor = R.color.colorChipsBackground()!
         titleView.sView.iconDetailsView.iconWidth = 12
         titleView.sView.iconDetailsView.spacing = 4
         titleView.sView.contentInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
         titleView.sView.backgroundView.cornerRadius = 6
         titleView.sView.iconDetailsView.imageView.image = R.image.iconBrowserSecurity()?.tinted(
-            with: R.color.colorWhite64()!
+            with: R.color.colorIconChip()!
         )
 
         valueView.mode = .detailsIcon
         valueView.spacing = 4
         valueView.iconWidth = 24
-        valueView.imageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorWhite48()!)
+        valueView.imageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
     }
 }
 
 private extension UILabel.Style {
     static var unlockStyle: UILabel.Style {
-        .init(textColor: R.color.colorGreen()!, font: .caption1)
+        .init(textColor: R.color.colorTextPositive()!, font: .caption1)
     }
 }
 

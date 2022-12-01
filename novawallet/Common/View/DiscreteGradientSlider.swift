@@ -41,7 +41,7 @@ class DiscreteGradientSlider: UIControl {
         }
     }
 
-    var dotColor: UIColor = R.color.colorDarkGray()! {
+    var dotColor: UIColor = R.color.colorVotingSliderIndicatorInactive()! {
         didSet {
             updateDotsStyle(dots)
         }

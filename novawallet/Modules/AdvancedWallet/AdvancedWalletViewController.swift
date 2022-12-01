@@ -269,7 +269,7 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
                 string: viewModel.placeholder,
                 attributes: [
                     .font: UIFont.p1Paragraph,
-                    .foregroundColor: R.color.colorDarkGray()!
+                    .foregroundColor: R.color.colorHintText()!
                 ]
             )
             rootView.substrateTextField.text = viewModel.inputHandler.value
@@ -291,7 +291,7 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
                 string: viewModel.placeholder,
                 attributes: [
                     .font: UIFont.p1Paragraph,
-                    .foregroundColor: R.color.colorDarkGray()!
+                    .foregroundColor: R.color.colorHintText()!
                 ]
             )
             rootView.ethereumTextField.text = viewModel.inputHandler.value

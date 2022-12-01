@@ -98,7 +98,7 @@ extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
 
         let walletImageView = rootView.walletView.rowContentView.valueView.imageView
         walletImageView.image = confimationViewModel.walletIcon?.imageWithFillColor(
-            R.color.colorWhite()!,
+            R.color.colorIconPrimary()!,
             size: DAppOperationConfirmViewLayout.listImageSize,
             contentScale: UIScreen.main.scale
         )
@@ -107,7 +107,7 @@ extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
 
         let addressImageView = rootView.accountAddressView.rowContentView.valueView.imageView
         addressImageView.image = confimationViewModel.addressIcon?.imageWithFillColor(
-            R.color.colorWhite()!,
+            R.color.colorIconPrimary()!,
             size: DAppOperationConfirmViewLayout.listImageSize,
             contentScale: UIScreen.main.scale
         )

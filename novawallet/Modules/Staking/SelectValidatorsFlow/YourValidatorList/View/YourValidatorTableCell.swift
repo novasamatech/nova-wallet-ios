@@ -12,7 +12,7 @@ class YourValidatorTableCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite()!
+        label.textColor = R.color.colorTextPrimary()!
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return label
@@ -44,13 +44,13 @@ class YourValidatorTableCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         return imageView
     }()
 
     let apyLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .regularFootnote
         label.textAlignment = .right
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -98,7 +98,7 @@ class YourValidatorTableCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()!
 
         setupLayout()
     }
@@ -162,14 +162,14 @@ class YourValidatorTableCell: UITableViewCell {
             details.append(
                 NSAttributedString(
                     string: prefixString,
-                    attributes: [.foregroundColor: R.color.colorTransparentText()!]
+                    attributes: [.foregroundColor: R.color.colorTextSecondary()!]
                 )
             )
 
             details.append(
                 NSAttributedString(
                     string: amount,
-                    attributes: [.foregroundColor: R.color.colorWhite()!]
+                    attributes: [.foregroundColor: R.color.colorTextPrimary()!]
                 )
             )
 

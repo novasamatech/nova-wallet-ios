@@ -15,8 +15,8 @@ class TriangularedBlurButton: BackgroundedContentControl {
     }
 
     /// Returns blured backround view with cut corners
-    var triangularedBlurView: TriangularedBlurView? {
-        self.backgroundView as? TriangularedBlurView
+    var triangularedBlurView: BlockBackgroundView? {
+        self.backgroundView as? BlockBackgroundView
     }
 
     // MARK: Overriden initializers
@@ -45,7 +45,7 @@ class TriangularedBlurButton: BackgroundedContentControl {
         backgroundColor = UIColor.clear
 
         if backgroundView == nil {
-            backgroundView = TriangularedBlurView()
+            backgroundView = BlockBackgroundView()
             backgroundView?.isUserInteractionEnabled = false
         }
 

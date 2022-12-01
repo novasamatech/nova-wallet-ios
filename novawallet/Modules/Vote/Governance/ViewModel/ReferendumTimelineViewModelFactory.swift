@@ -238,7 +238,7 @@ final class ReferendumTimelineViewModelFactory {
         locale: Locale
     ) -> [ReferendumTimelineView.Model] {
         let approvedBlock = metadata?.timeline?.first(
-            where: { $0.status == ReferendumMetadataStatus.passed.rawValue }
+            where: { $0.isApproved }
         )?.block
 
         let approved = createApproved(
@@ -249,7 +249,7 @@ final class ReferendumTimelineViewModelFactory {
         )
 
         let executedBlock = metadata?.timeline?.first(
-            where: { $0.status == ReferendumMetadataStatus.executed.rawValue }
+            where: { $0.isExecuted }
         )?.block
 
         let executedTitle = R.string.localizable.governanceReferendumsStatusExecuted(
@@ -369,7 +369,7 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
 
         if createdAt == nil {
             createdAt = metadata?.timeline?.first(
-                where: { $0.status == ReferendumMetadataStatus.started.rawValue }
+                where: { $0.isStarted }
             )?.block
         }
 

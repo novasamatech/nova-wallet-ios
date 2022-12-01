@@ -1,7 +1,7 @@
 import UIKit
 
 final class YourVotesView: UIView {
-    let topLine = createSeparator(color: R.color.colorWhite8())
+    let topLine = createSeparator(color: R.color.colorDivider()!)
     let ayeView: YourVoteView = .create {
         $0.apply(style: .aye)
     }
@@ -154,15 +154,15 @@ extension YourVoteView.Style {
 
 extension UILabel.Style {
     static let ayeType = UILabel.Style(
-        textColor: R.color.colorGreen15CF37()!,
+        textColor: R.color.colorTextPositive(),
         font: .semiBoldCaps1
     )
     static let nayType = UILabel.Style(
-        textColor: R.color.colorRedFF3A69(),
+        textColor: R.color.colorTextNegative(),
         font: .semiBoldCaps1
     )
     static let votes = UILabel.Style(
-        textColor: R.color.colorWhite64(),
+        textColor: R.color.colorTextSecondary(),
         font: .caption1
     )
 }

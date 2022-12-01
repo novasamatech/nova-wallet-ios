@@ -13,7 +13,7 @@ class ErrorStateView: UIView {
     let errorDescriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -21,7 +21,7 @@ class ErrorStateView: UIView {
 
     let retryButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(R.color.colorAccent(), for: .normal)
+        button.setTitleColor(R.color.colorIconAccent(), for: .normal)
         return button
     }()
 

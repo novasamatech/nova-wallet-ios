@@ -1,12 +1,14 @@
 import UIKit
 import RobinHood
 import Kingfisher
+import SoraUI
 
 struct NftMediaDisplaySettings: Equatable {
     let targetSize: CGSize?
     let cornerRadius: CGFloat?
     let animated: Bool
     let isAspectFit: Bool
+    let styles: [NftMediaViewState: RoundedView.Style]
 }
 
 protocol NftMediaViewModelProtocol {
@@ -99,4 +101,10 @@ extension NftMediaViewModel: NftMediaViewModelProtocol {
         remoteImageViewModel?.cancel(on: imageView)
         remoteImageViewModel = nil
     }
+}
+
+enum NftMediaViewState: Hashable {
+    case loading
+    case normal
+    case placeholder
 }

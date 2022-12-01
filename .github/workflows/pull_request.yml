@@ -9,12 +9,12 @@ on:
 jobs:
   build:
     name: Build and Test default scheme using any available iPhone simulator
-    runs-on: macos-latest
+    runs-on: macos-12
 
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: sinoru/actions-setup-xcode@v2
         with:
-          xcode-version: latest-stable
+          xcode-version: '14.1'
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -46,8 +46,8 @@ jobs:
           scheme: ${{ 'default' }}
           platform: ${{ 'iOS Simulator' }}
           device: ${{ 'iPhone 11' }}
-          MOONPAY_PRODUCTION_SECRET: ${{ secrets.MOONPAY_PRODUCTION_SECRET }}
-          MOONPAY_TEST_SECRET: ${{ secrets.MOONPAY_TEST_SECRET }}
+          MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
+          MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
           SUBSCAN_API_KEY: ${{ secrets.SUBSCAN_API_KEY }}
           ACALA_AUTH_TOKEN: ${{ secrets.ACALA_AUTH_TOKEN }}
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}

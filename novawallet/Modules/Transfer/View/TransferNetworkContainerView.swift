@@ -41,7 +41,7 @@ final class TransferNetworkContainerView: UIView {
 
     private static func createLabel() -> UILabel {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .boldTitle2
         return label
     }

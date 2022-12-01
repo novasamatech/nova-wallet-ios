@@ -11,7 +11,7 @@ final class ReferendumFullDescriptionViewLayout: UIView {
     }()
 
     let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
         $0.font = .boldTitle1
         $0.numberOfLines = 0
     }
@@ -27,7 +27,7 @@ final class ReferendumFullDescriptionViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

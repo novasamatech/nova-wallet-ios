@@ -24,7 +24,7 @@ class GenericCollectionViewLayout<THeaderView: UIView>: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.color0x1D1D20()
+        backgroundColor = R.color.colorBlockBackground()
         setupLayout()
     }
 
@@ -34,7 +34,7 @@ class GenericCollectionViewLayout<THeaderView: UIView>: UIView {
         self.header = header
         self.settings = settings
 
-        backgroundColor = R.color.color0x1D1D20()
+        backgroundColor = R.color.colorBlockBackground()
         setupLayout()
     }
 

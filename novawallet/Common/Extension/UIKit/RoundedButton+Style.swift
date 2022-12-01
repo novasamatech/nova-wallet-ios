@@ -4,12 +4,12 @@ import SoraUI
 extension RoundedButton {
     func applyAccessoryStyle() {
         roundedBackgroundView?.shadowOpacity = 0.0
-        roundedBackgroundView?.fillColor = R.color.colorWhite8()!
-        roundedBackgroundView?.highlightedFillColor = R.color.colorWhite8()!
+        roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
         roundedBackgroundView?.strokeColor = .clear
         roundedBackgroundView?.highlightedStrokeColor = .clear
 
-        imageWithTitleView?.titleColor = R.color.colorAccent()!
+        imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()!
 
         changesContentOpacityWhenHighlighted = true
     }
@@ -26,8 +26,8 @@ extension RoundedButton {
 
     func applySecondaryStyle() {
         roundedBackgroundView?.shadowOpacity = 0.0
-        roundedBackgroundView?.fillColor = R.color.color0x1D1D20()!
-        roundedBackgroundView?.highlightedFillColor = R.color.color0x1D1D20()!
+        roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
         roundedBackgroundView?.strokeColor = .clear
         roundedBackgroundView?.highlightedStrokeColor = .clear
         roundedBackgroundView?.cornerRadius = 10.0
@@ -41,10 +41,10 @@ extension RoundedButton {
     }
 
     func applyEnabledSecondaryStyle() {
-        imageWithTitleView?.titleColor = R.color.colorWhite()!
+        imageWithTitleView?.titleColor = R.color.colorButtonText()!
     }
 
     func applyDisabledSecondaryStyle() {
-        imageWithTitleView?.titleColor = R.color.colorWhite48()!
+        imageWithTitleView?.titleColor = R.color.colorButtonTextInactive()!
     }
 }
