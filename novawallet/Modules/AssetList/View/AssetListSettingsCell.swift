@@ -22,7 +22,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
 
     let manageButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
-        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
+        button.imageWithTitleView?.iconImage = R.image.iconFilterAssets()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
         button.triangularedBlurView?.overlayView?.highlightedFillColor =

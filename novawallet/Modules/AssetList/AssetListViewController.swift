@@ -236,6 +236,12 @@ extension AssetListViewController: UICollectionViewDataSource {
             for: .touchUpInside
         )
 
+        settingsCell.manageButton.addTarget(
+            self,
+            action: #selector(actionManage),
+            for: .touchUpInside
+        )
+
         settingsCell.searchButton.addTarget(
             self,
             action: #selector(actionSearch),

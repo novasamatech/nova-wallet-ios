@@ -1080,3 +1080,6 @@
 "common.copy" = "Copy";
 "crowdloan.empty.message_v3_9_1" = "Crowdloans information\nwill appear here when they start";
 "common.error.no.data.retrieved_v3_9_1" = "No data retrieved";
+"tokens.manage.title" = "Manage tokens";
+"common.add.token" = "Add token";
+"tokens.manage.search" = "Search by token";
