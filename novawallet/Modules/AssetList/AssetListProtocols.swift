@@ -39,7 +39,8 @@ protocol AssetListInteractorOutputProtocol: AssetListBaseInteractorOutputProtoco
 
 protocol AssetListWireframeProtocol: AnyObject, WalletSwitchPresentable {
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel)
-    func showAssetsManage(from view: AssetListViewProtocol?)
+    func showAssetsSettings(from view: AssetListViewProtocol?)
+    func showTokensManage(from view: AssetListViewProtocol?)
 
     func showAssetsSearch(
         from view: AssetListViewProtocol?,
