@@ -3,7 +3,7 @@ import UIKit
 final class SettingsSectionHeaderView: UITableViewHeaderFooterView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .semiBoldCaps2
         return label
     }()

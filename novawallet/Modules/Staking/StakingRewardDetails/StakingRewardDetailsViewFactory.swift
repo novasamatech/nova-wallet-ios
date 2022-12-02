@@ -29,7 +29,7 @@ final class StakingRewardDetailsViewFactory {
 
         let timeleftFactory = PayoutTimeViewModelFactory(
             timeFormatter: TotalTimeFormatter(),
-            normalTimelefColor: R.color.colorWhite()!
+            normalTimelefColor: R.color.colorTextPrimary()!
         )
 
         let presenter = StakingRewardDetailsPresenter(

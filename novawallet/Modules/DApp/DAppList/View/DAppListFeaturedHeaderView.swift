@@ -6,7 +6,7 @@ final class DAppListFeaturedHeaderView: UICollectionViewCell {
     let titleLabel: UILabel = {
         let view = UILabel()
         view.font = .semiBoldTitle3
-        view.textColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
         return view
     }()
 
@@ -14,11 +14,11 @@ final class DAppListFeaturedHeaderView: UICollectionViewCell {
         let button = TriangularedBlurButton()
         button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()?
             .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorWhite80()!)
+            .tinted(with: R.color.colorIconChip()!)
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
-        button.triangularedBlurView?.overlayView.highlightedFillColor =
-            R.color.colorAccentSelected()!
+        button.triangularedBlurView?.overlayView?.highlightedFillColor =
+            R.color.colorCellBackgroundPressed()!
         return button
     }()
 

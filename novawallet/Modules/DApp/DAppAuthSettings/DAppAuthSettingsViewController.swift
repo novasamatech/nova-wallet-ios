@@ -141,7 +141,7 @@ extension DAppAuthSettingsViewController: EmptyStateDataSource {
         emptyView.title = R.string.localizable.dappAuthorizedEmpty(
             preferredLanguages: selectedLocale.rLanguages
         )
-        emptyView.titleColor = R.color.colorTransparentText()!
+        emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView
     }

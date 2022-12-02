@@ -15,7 +15,7 @@ final class StackTitleValueDiffCell: RowView<TitleValueDiffView>, StackTableView
         rowContentView.applyDefaultStyle()
 
         preferredHeight = 44.0
-        borderView.strokeColor = R.color.colorWhite8()!
+        borderView.strokeColor = R.color.colorDivider()!
 
         isUserInteractionEnabled = false
     }

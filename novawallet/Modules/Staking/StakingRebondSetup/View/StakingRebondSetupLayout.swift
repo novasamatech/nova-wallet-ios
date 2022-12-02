@@ -17,7 +17,7 @@ final class StakingRebondSetupLayout: UIView {
     let transferrableView = TitleAmountView.dark()
 
     let networkFeeView: NetworkFeeView = {
-        let view = UIFactory.default.createNetwork26FeeView()
+        let view = UIFactory.default.createNetworkFeeView()
         view.verticalOffset = 13.0
         return view
     }()
@@ -33,7 +33,7 @@ final class StakingRebondSetupLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()!
+        backgroundColor = R.color.colorSecondaryScreenBackground()!
 
         setupLayout()
     }

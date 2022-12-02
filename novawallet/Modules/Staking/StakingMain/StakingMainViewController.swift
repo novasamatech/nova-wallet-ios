@@ -22,7 +22,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         let view = UIFactory.default.createChainAssetSelectionView()
         view.borderWidth = 0.0
         view.actionImage = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
-        view.actionView.tintColor = R.color.colorWhite48()
+        view.actionView.tintColor = R.color.colorIconSecondary()
         return view
     }()
 
@@ -138,7 +138,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private func setupAssetSelectionView() {
         assetSelectionContainerView.translatesAutoresizingMaskIntoConstraints = false
 
-        let backgroundView = TriangularedBlurView()
+        let backgroundView = BlockBackgroundView()
         assetSelectionContainerView.addSubview(backgroundView)
         assetSelectionContainerView.addSubview(assetSelectionView)
 

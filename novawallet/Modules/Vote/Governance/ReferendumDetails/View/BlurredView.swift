@@ -2,7 +2,7 @@ import UIKit
 
 class BlurredView<TContentView>: UIView where TContentView: UIView {
     let view: TContentView = .init()
-    let backgroundBlurView = TriangularedBlurView()
+    let backgroundBlurView = BlockBackgroundView()
 
     var contentInsets: UIEdgeInsets = .init(top: 0, left: 16, bottom: 0, right: 16) {
         didSet {

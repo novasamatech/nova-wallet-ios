@@ -3,7 +3,7 @@ import UIKit
 final class DAppSearchHeaderView: UITableViewHeaderFooterView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .caption1
         return label
     }()
@@ -12,7 +12,7 @@ final class DAppSearchHeaderView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
 
         let backgroundView = UIView()
-        backgroundView.backgroundColor = R.color.colorBlack()
+        backgroundView.backgroundColor = R.color.colorSecondaryScreenBackground()!
         self.backgroundView = backgroundView
 
         setupLayout()

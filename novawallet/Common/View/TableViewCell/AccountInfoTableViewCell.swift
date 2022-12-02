@@ -10,8 +10,8 @@ final class AccountInfoTableViewCell: UITableViewCell {
         detailsView.titleLabel.lineBreakMode = .byTruncatingMiddle
         detailsView.subtitleLabel?.lineBreakMode = .byTruncatingMiddle
         detailsView.actionImage = R.image.iconMore()
-        detailsView.highlightedFillColor = R.color.colorHighlightedAccent()!
-        detailsView.strokeColor = R.color.colorStrokeGray()!
+        detailsView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
+        detailsView.strokeColor = R.color.colorContainerBorder()!
         detailsView.borderWidth = 1
         return detailsView
     }()

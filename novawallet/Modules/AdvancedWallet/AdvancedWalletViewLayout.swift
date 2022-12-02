@@ -23,15 +23,15 @@ final class AdvancedWalletViewLayout: UIView {
     let substrateTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
     let substrateTextField: UITextField = {
         let view = UITextField()
         view.font = .p1Paragraph
-        view.textColor = R.color.colorWhite()
-        view.tintColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextPrimary()
+        view.tintColor = R.color.colorTextPrimary()
         return view
     }()
 
@@ -41,15 +41,15 @@ final class AdvancedWalletViewLayout: UIView {
     let ethereumTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
     let ethereumTextField: UITextField = {
         let view = UITextField()
         view.font = .p1Paragraph
-        view.textColor = R.color.colorWhite()
-        view.tintColor = R.color.colorWhite()
+        view.textColor = R.color.colorTextSecondary()
+        view.tintColor = R.color.colorTextSecondary()
         return view
     }()
 

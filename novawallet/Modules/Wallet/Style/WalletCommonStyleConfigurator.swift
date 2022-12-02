@@ -6,8 +6,8 @@ struct WalletCommonStyleConfigurator {
         var navigationBarStyle = WalletNavigationBarStyle(
             barColor: .clear,
             shadowColor: .clear,
-            itemTintColor: R.color.colorWhite()!,
-            titleColor: R.color.colorWhite()!,
+            itemTintColor: R.color.colorIconPrimary()!,
+            titleColor: R.color.colorTextPrimary()!,
             titleFont: UIFont.h3Title,
             backButtonImage: R.image.iconBack()
         )
@@ -17,16 +17,16 @@ struct WalletCommonStyleConfigurator {
     let accessoryStyle: WalletAccessoryStyleProtocol = {
         let title = WalletTextStyle(
             font: UIFont.p1Paragraph,
-            color: R.color.colorWhite()!
+            color: R.color.colorTextPrimary()!
         )
 
         let buttonTitle = WalletTextStyle(
             font: UIFont.h5Title,
-            color: R.color.colorWhite()!
+            color: R.color.colorTextPrimary()!
         )
 
         let buttonStyle = WalletRoundedButtonStyle(
-            background: R.color.colorAccent()!,
+            background: R.color.colorButtonBackgroundPrimary()!,
             title: buttonTitle
         )
 
@@ -36,7 +36,7 @@ struct WalletCommonStyleConfigurator {
             title: title,
             action: buttonStyle,
             separator: separator,
-            background: R.color.colorBlack()!
+            background: R.color.colorIconSecondary()!
         )
     }()
 }
@@ -44,7 +44,7 @@ struct WalletCommonStyleConfigurator {
 extension WalletCommonStyleConfigurator {
     func configure(builder: WalletStyleBuilderProtocol) {
         builder
-            .with(background: R.color.colorBlack()!)
+            .with(background: R.color.colorSecondaryScreenBackground()!)
             .with(navigationBarStyle: navigationBarStyle)
             .with(header1: UIFont.h1Title)
             .with(header2: UIFont.h2Title)
@@ -54,7 +54,7 @@ extension WalletCommonStyleConfigurator {
             .with(bodyRegular: UIFont.p1Paragraph)
             .with(small: UIFont.p2Paragraph)
             .with(keyboardIcon: R.image.iconKeyboardOff()!)
-            .with(caretColor: R.color.colorWhite()!)
+            .with(caretColor: R.color.colorIconPrimary()!)
             .with(closeIcon: R.image.iconClose())
             .with(shareIcon: R.image.iconShare())
             .with(accessoryStyle: accessoryStyle)

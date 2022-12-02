@@ -18,7 +18,7 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .boldTitle2
         label.numberOfLines = 0
         return label
@@ -60,7 +60,7 @@ final class LedgerInstructionsViewLayout: UIView, AdaptiveDesignable {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

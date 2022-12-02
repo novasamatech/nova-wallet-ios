@@ -21,20 +21,19 @@ final class ReferendumDetailsTitleView: UIView {
         view.rowContentView.iconWidth = 16.0
         view.rowContentView.spacing = 6
         view.contentInsets = UIEdgeInsets(top: 9, left: 0, bottom: 9, right: 0)
-        view.rowContentView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
+        view.rowContentView.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
 
         let addressView = view.rowContentView.detailsView
         addressView.spacing = 7
         addressView.detailsLabel.numberOfLines = 1
-        addressView.detailsLabel.textColor = R.color.colorTransparentText()
-        addressView.detailsLabel.font = .regularFootnote
+        addressView.detailsLabel.apply(style: .footnoteSecondary)
         addressView.iconWidth = 18.0
     }
 
     private var addressImageViewModel: ImageViewModelProtocol?
 
     let titleLabel: UILabel = .create {
-        $0.textColor = R.color.colorWhite()
+        $0.textColor = R.color.colorTextPrimary()
         $0.font = .boldTitle1
         $0.numberOfLines = 0
     }
@@ -47,7 +46,7 @@ final class ReferendumDetailsTitleView: UIView {
     let moreButton: RoundedButton = .create { button in
         button.applyIconStyle()
 
-        let color = R.color.colorAccent()!
+        let color = R.color.colorButtonTextAccent()!
         button.imageWithTitleView?.titleColor = color
         button.imageWithTitleView?.titleFont = .regularFootnote
 

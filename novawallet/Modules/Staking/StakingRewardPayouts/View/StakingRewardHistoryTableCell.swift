@@ -11,7 +11,7 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
         let label = UILabel()
         label.font = .regularSubheadline
         label.lineBreakMode = .byTruncatingMiddle
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
     }()
@@ -26,7 +26,7 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
     private let tokenAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .regularSubheadline
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         return label
     }()
@@ -34,7 +34,7 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
-        label.textColor = R.color.colorWhite48()
+        label.textColor = R.color.colorTextSecondary()
         label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         return label
     }()
@@ -44,7 +44,7 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
 
         backgroundColor = .clear
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()!
         self.selectedBackgroundView = selectedBackgroundView
         setupLayout()
     }
