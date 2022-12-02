@@ -18,6 +18,8 @@ on:
         options:
         - Staging
         - Dev
+  pull_request:
+
   # release:
   #   types: [published]
 
@@ -100,7 +102,7 @@ jobs:
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }}
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }} -allowProvisioningUpdates -allowProvisioningDeviceRegistration
 
       - name: Export Staging archive
         if: ${{ github.event.inputs.config == 'Staging' }}
@@ -117,34 +119,34 @@ jobs:
           path: export
 
   # wzieba/Firebase-Distribution-Github-Action@v1 doesn't work on macos machine, so we need to upload artifacts on macos, then download them on linux :((
-  distribute-ios:
-    needs: build
-    name: Distribute archive to Firebase
-    runs-on: ubuntu-latest
+  # distribute-ios:
+  #   needs: build
+  #   name: Distribute archive to Firebase
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: novawallet.ipa
-          path: export
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: novawallet.ipa
+  #         path: export
 
-      - name: Upload artifact to Firebase with Dev Id
-        if: ${{ github.event.inputs.config == 'Dev' }}
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
-          groups: ${{ github.event.inputs.userGroup }}
-          file: export/novawallet.ipa
-          releaseNotes: ${{ github.event.head_commit.message }}
+  #     - name: Upload artifact to Firebase with Dev Id
+  #       if: ${{ github.event.inputs.config == 'Dev' }}
+  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #       with:
+  #         appId: ${{ secrets.FIREBASE_APP_ID }}
+  #         token: ${{ secrets.FIREBASE_TOKEN }}
+  #         groups: ${{ github.event.inputs.userGroup }}
+  #         file: export/novawallet.ipa
+  #         releaseNotes: ${{ github.event.head_commit.message }}
 
-      - name: Upload artifact to Firebase with Staging Id
-        if: ${{ github.event.inputs.config == 'Staging' }}
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
-          groups: ${{ github.event.inputs.userGroup }}
-          file: export/novawallet.ipa
-          releaseNotes: ${{ github.event.head_commit.message }}
+  #     - name: Upload artifact to Firebase with Staging Id
+  #       if: ${{ github.event.inputs.config == 'Staging' }}
+  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #       with:
+  #         appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
+  #         token: ${{ secrets.FIREBASE_TOKEN }}
+  #         groups: ${{ github.event.inputs.userGroup }}
+  #         file: export/novawallet.ipa
+  #         releaseNotes: ${{ github.event.head_commit.message }}
