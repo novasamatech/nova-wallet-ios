@@ -84,6 +84,10 @@ final class AssetListViewController: UIViewController, ViewHolder {
     @objc func actionSearch() {
         presenter.presentSearch()
     }
+
+    @objc func actionManage() {
+        
+    }
 }
 
 extension AssetListViewController: UICollectionViewDelegateFlowLayout {
