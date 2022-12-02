@@ -3,12 +3,12 @@ import SoraUI
 import SoraFoundation
 
 final class RewardAnalyticsWidgetView: UIView {
-    private let backgroundView: UIView = TriangularedBlurView()
+    private let backgroundView: UIView = BlockBackgroundView()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
@@ -17,28 +17,28 @@ final class RewardAnalyticsWidgetView: UIView {
     private let sevenDaysRewardsLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     private let periodLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()?.withAlphaComponent(0.64)
+        label.textColor = R.color.colorTextPrimary()?.withAlphaComponent(0.64)
         return label
     }()
 
     private let tokenAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -53,7 +53,7 @@ final class RewardAnalyticsWidgetView: UIView {
     let backgroundButton: TriangularedButton = {
         let button = TriangularedButton()
         button.triangularedView?.fillColor = .clear
-        button.triangularedView?.highlightedFillColor = R.color.colorHighlightedAccent()!
+        button.triangularedView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         button.triangularedView?.shadowOpacity = 0.0
         return button
     }()
@@ -106,7 +106,7 @@ final class RewardAnalyticsWidgetView: UIView {
             make.edges.equalToSuperview()
         }
 
-        let separatorView = UIView.createSeparator(color: R.color.colorWhite()?.withAlphaComponent(0.24))
+        let separatorView = UIView.createSeparator(color: R.color.colorDivider()!)
 
         labelsContainerView = .vStack(
             spacing: 8,

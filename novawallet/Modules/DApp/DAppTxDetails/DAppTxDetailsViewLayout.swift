@@ -12,22 +12,22 @@ final class DAppTxDetailsViewLayout: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
         view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
+        view.fillColor = R.color.colorContainerBackground()!
+        view.highlightedFillColor = R.color.colorContainerBackground()!
         view.cornerRadius = 12.0
         return view
     }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorTextSecondary()
         label.font = .caption1
         return label
     }()
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularFootnote
         label.numberOfLines = 0
         return label
@@ -36,7 +36,7 @@ final class DAppTxDetailsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

@@ -12,8 +12,8 @@ final class PurchaseViewController: SFSafariViewController {
     }
 
     private func configure() {
-        preferredControlTintColor = R.color.colorWhite()!
-        preferredBarTintColor = R.color.colorAlmostBlack()!
+        preferredControlTintColor = R.color.colorIconPrimary()!
+        preferredBarTintColor = R.color.colorBlurNavigationBackground()!
     }
 }
 

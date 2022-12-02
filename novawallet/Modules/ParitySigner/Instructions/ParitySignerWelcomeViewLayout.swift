@@ -18,7 +18,7 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .boldTitle2
         label.numberOfLines = 0
         return label
@@ -47,7 +47,7 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
         let view = IconDetailsView()
         view.imageView.image = R.image.iconAlgoItem()
         view.spacing = 6.0
-        view.detailsLabel.textColor = R.color.colorGreen()
+        view.detailsLabel.textColor = R.color.colorTextPositive()
         view.detailsLabel.font = .regularFootnote
         return view
     }()
@@ -68,7 +68,7 @@ final class ParitySignerWelcomeViewLayout: UIView, AdaptiveDesignable {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

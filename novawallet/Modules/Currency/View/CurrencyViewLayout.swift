@@ -14,7 +14,7 @@ final class CurrencyViewLayout: UIView {
     }
 
     private func setupLayout() {
-        backgroundColor = R.color.colorBlack()
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         addSubview(collectionView)
         collectionView.snp.makeConstraints {

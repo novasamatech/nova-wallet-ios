@@ -3,7 +3,7 @@ import UIKit
 final class MultilineTableViewCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .p1Paragraph
         label.numberOfLines = 0
         return label

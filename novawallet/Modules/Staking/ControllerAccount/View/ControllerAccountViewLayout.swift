@@ -136,10 +136,10 @@ final class ControllerAccountViewLayout: UIView {
 
     private static func createMultivalueView() -> MultiValueView {
         let view = MultiValueView()
-        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.font = .semiBoldBody
         view.valueTop.numberOfLines = 1
-        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.font = .regularFootnote
         view.valueBottom.numberOfLines = 0
         view.valueTop.textAlignment = .left

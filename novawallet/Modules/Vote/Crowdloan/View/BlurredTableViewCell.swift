@@ -2,7 +2,7 @@ import UIKit
 
 class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UIView {
     let view: TContentView = .init()
-    let backgroundBlurView = TriangularedBlurView()
+    let backgroundBlurView = BlockBackgroundView()
 
     var shouldApplyHighlighting: Bool = false
 
@@ -29,8 +29,8 @@ class BlurredTableViewCell<TContentView>: UITableViewCell where TContentView: UI
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        backgroundBlurView.overlayView.fillColor = shouldApplyHighlighting && highlighted ?
-            R.color.colorAccentSelected()!
+        backgroundBlurView.overlayView?.fillColor = shouldApplyHighlighting && highlighted ?
+            R.color.colorCellBackgroundPressed()!
             : .clear
     }
 
@@ -71,21 +71,13 @@ final class YourContributionsTableViewCell: BlurredTableViewCell<YourContributio
 
         view.apply(style: .navigation)
     }
-
-    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        super.setHighlighted(highlighted, animated: animated)
-
-        backgroundBlurView.overlayView.fillColor = highlighted ?
-            R.color.colorAccentSelected()!
-            : .clear
-    }
 }
 
 typealias AboutCrowdloansTableViewCell = BlurredTableViewCell<AboutCrowdloansView>
 
 extension BlurredTableViewCell where TContentView == ErrorStateView {
     func applyStyle() {
-        view.errorDescriptionLabel.textColor = R.color.colorWhite64()
+        view.errorDescriptionLabel.textColor = R.color.colorTextSecondary()
         view.retryButton.titleLabel?.font = .semiBoldSubheadline
         view.stackView.setCustomSpacing(0, after: view.iconImageView)
         view.stackView.setCustomSpacing(8, after: view.errorDescriptionLabel)

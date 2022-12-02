@@ -13,20 +13,20 @@ final class AnalyticsValidatorsCell: UITableViewCell {
     let iconView: PolkadotIconView = {
         let view = PolkadotIconView()
         view.backgroundColor = .clear
-        view.fillColor = R.color.colorWhite()!
+        view.fillColor = R.color.colorTextPrimary()!
         return view
     }()
 
     let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         return label
     }()
 
     let progressView: RoundedView = {
         let view = RoundedView()
-        view.fillColor = R.color.colorAccent()!
+        view.fillColor = R.color.colorIconAccent()!
         return view
     }()
 
@@ -36,7 +36,7 @@ final class AnalyticsValidatorsCell: UITableViewCell {
     let progressDescriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .p3Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorTextSecondary()
         return label
     }()
 
@@ -136,7 +136,7 @@ final class AnalyticsValidatorsCell: UITableViewCell {
     private func setupBackground() {
         backgroundColor = .clear
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()
+        selectedBackgroundView?.backgroundColor = R.color.colorCellBackgroundPressed()
     }
 
     func bind(viewModel: AnalyticsValidatorItemViewModel) {

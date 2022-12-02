@@ -27,7 +27,7 @@ final class StackUrlCell: RoundedView {
     let borderView: BorderedContainerView = {
         let view = BorderedContainerView()
         view.strokeWidth = UIConstants.separatorHeight
-        view.strokeColor = R.color.colorWhite8()!
+        view.strokeColor = R.color.colorDivider()!
         return view
     }()
 
@@ -59,11 +59,11 @@ final class StackUrlCell: RoundedView {
     }
 
     private func configureStyle() {
-        titleLabel.textColor = R.color.colorTransparentText()
+        titleLabel.textColor = R.color.colorTextSecondary()
         titleLabel.font = .regularFootnote
 
         actionButton.applyIconStyle()
-        actionButton.imageWithTitleView?.titleColor = R.color.colorNovaBlue()!
+        actionButton.imageWithTitleView?.titleColor = R.color.colorIconAccent()!
         actionButton.imageWithTitleView?.titleFont = .regularFootnote
         actionButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         actionButton.contentInsets = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 16.0, right: 0.0)

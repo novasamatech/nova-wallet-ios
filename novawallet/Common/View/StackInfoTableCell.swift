@@ -45,12 +45,12 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
     }
 
     private func configureStyle() {
-        titleLabel.textColor = R.color.colorTransparentText()
+        titleLabel.textColor = R.color.colorTextSecondary()
         titleLabel.font = .regularFootnote
 
         let valueView = rowContentView.valueView
         valueView.mode = .iconDetails
-        detailsLabel.textColor = R.color.colorWhite()
+        detailsLabel.textColor = R.color.colorTextPrimary()
         detailsLabel.font = .regularFootnote
         detailsLabel.numberOfLines = 1
         valueView.spacing = 8.0
@@ -62,10 +62,10 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
         accessoryView.spacing = 8.0
         accessoryView.imageView.image = R.image.iconInfoFilled()?
             .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorTransparentText()!)
+            .tinted(with: R.color.colorIconSecondary()!)
 
         preferredHeight = 44.0
-        borderView.strokeColor = R.color.colorWhite8()!
+        borderView.strokeColor = R.color.colorDivider()!
 
         contentInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
 

@@ -21,7 +21,7 @@ final class GlowingView: UIView {
         }
     }
 
-    var outerFillColor: UIColor = R.color.colorWhite16()! {
+    var outerFillColor: UIColor = R.color.colorWaitingStatusBackground()! {
         didSet {
             applyOuterColor()
         }
@@ -33,7 +33,7 @@ final class GlowingView: UIView {
         }
     }
 
-    var innerFillColor: UIColor = R.color.colorWhite24()! {
+    var innerFillColor: UIColor = R.color.colorIconSecondary()! {
         didSet {
             applyInnerColor()
         }

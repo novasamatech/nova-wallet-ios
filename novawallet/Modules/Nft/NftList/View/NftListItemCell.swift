@@ -8,10 +8,10 @@ class NftListItemCell: UICollectionViewCell {
         static let imageHorizontalInset: CGFloat = 6.0
     }
 
-    let blurBackgroundView: TriangularedBlurView = {
-        let view = TriangularedBlurView()
+    let blurBackgroundView: BlockBackgroundView = {
+        let view = BlockBackgroundView()
         view.sideLength = 12.0
-        view.overlayView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        view.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         return view
     }()
 
@@ -27,14 +27,14 @@ class NftListItemCell: UICollectionViewCell {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTextPrimary()
         label.font = .regularSubheadline
         return label
     }()
 
     let subtitleView: BorderedLabelView = {
         let view = BorderedLabelView()
-        view.titleLabel.textColor = R.color.colorTransparentText()!
+        view.titleLabel.textColor = R.color.colorTextSecondary()!
         view.titleLabel.font = .semiBoldSmall
         view.contentInsets = UIEdgeInsets(top: 1, left: 6.0, bottom: 2.0, right: 6.0)
         view.backgroundView.cornerRadius = 4.0
