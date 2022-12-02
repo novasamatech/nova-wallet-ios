@@ -1,6 +1,6 @@
 import Foundation
 
-struct AssetsManageViewModel: Equatable {
+struct AssetsSettingsViewModel: Equatable {
     let hideZeroBalances: Bool
     let canApply: Bool
 }

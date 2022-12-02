@@ -18,6 +18,7 @@ protocol AssetListPresenterProtocol: AnyObject {
     func refresh()
     func presentSettings()
     func presentSearch()
+    func presentAssetsManage()
     func didTapTotalBalance()
 }
 

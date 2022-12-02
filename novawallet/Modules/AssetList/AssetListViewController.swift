@@ -86,7 +86,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }
 
     @objc func actionManage() {
-        
+        presenter.presentAssetsManage()
     }
 }
 
