@@ -50,7 +50,7 @@ jobs:
 
       - name: Set env BUILD_PROVISION_PROFILE_BASE64
         run: |
-          if [[ ${{ github.event.inputs.config }} == 'Staging' ]]; then
+          if [[ Dev == 'Staging' ]]; then
               echo "BUILD_PROVISION_PROFILE_BASE64=${{ secrets.STAGING_PROVISIONING_PROFILE_BASE64 }}" >> "$GITHUB_ENV"
           else
               echo "BUILD_PROVISION_PROFILE_BASE64=${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}" >> "$GITHUB_ENV"
@@ -89,7 +89,7 @@ jobs:
         uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
         with:
           info-plist-path: './novawallet/Info.plist'
-          bundle-short-version-string: ${{ github.event.inputs.appVersion }}
+          bundle-short-version-string: 4.1.0
           bundle-version: ${{github.run_number}}
           print-file: true
 
@@ -102,7 +102,7 @@ jobs:
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration ${{ github.event.inputs.config }} -allowProvisioningUpdates -allowProvisioningDeviceRegistration
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration Dev -allowProvisioningUpdates -allowProvisioningDeviceRegistration
 
       - name: Export Staging archive
         if: ${{ github.event.inputs.config == 'Staging' }}
