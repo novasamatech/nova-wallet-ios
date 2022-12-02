@@ -27,7 +27,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showAssetsManage(from view: AssetListViewProtocol?) {
-        guard let assetsManageView = AssetsManageViewFactory.createView() else {
+        guard let assetsManageView = AssetsSettingsViewFactory.createView() else {
             return
         }
 

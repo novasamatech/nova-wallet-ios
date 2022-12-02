@@ -1,15 +1,15 @@
 import Foundation
 
-final class AssetsManagePresenter {
-    weak var view: AssetsManageViewProtocol?
-    let wireframe: AssetsManageWireframeProtocol
-    let interactor: AssetsManageInteractorInputProtocol
+final class AssetsSettingsPresenter {
+    weak var view: AssetsSettingsViewProtocol?
+    let wireframe: AssetsSettingsWireframeProtocol
+    let interactor: AssetsSettingsInteractorInputProtocol
 
     private var hidesZeroBalances: Bool?
 
     init(
-        interactor: AssetsManageInteractorInputProtocol,
-        wireframe: AssetsManageWireframeProtocol
+        interactor: AssetsSettingsInteractorInputProtocol,
+        wireframe: AssetsSettingsWireframeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
@@ -19,11 +19,11 @@ final class AssetsManagePresenter {
         let canApply = hidesZeroBalances != nil && value != hidesZeroBalances
         hidesZeroBalances = value
 
-        view?.didReceive(viewModel: AssetsManageViewModel(hideZeroBalances: value, canApply: canApply))
+        view?.didReceive(viewModel: AssetsSettingsViewModel(hideZeroBalances: value, canApply: canApply))
     }
 }
 
-extension AssetsManagePresenter: AssetsManagePresenterProtocol {
+extension AssetsSettingsPresenter: AssetsSettingsPresenterProtocol {
     func setup() {
         interactor.setup()
     }
@@ -39,7 +39,7 @@ extension AssetsManagePresenter: AssetsManagePresenterProtocol {
     }
 }
 
-extension AssetsManagePresenter: AssetsManageInteractorOutputProtocol {
+extension AssetsSettingsPresenter: AssetsSettingsInteractorOutputProtocol {
     func didReceive(hideZeroBalances: Bool) {
         changeHideZeroBalances(value: hideZeroBalances)
     }

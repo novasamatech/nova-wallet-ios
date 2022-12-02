@@ -460,6 +460,8 @@ extension AssetListPresenter: AssetListPresenterProtocol {
         wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
     }
 
+    func presentAssetsManage() {}
+
     func didTapTotalBalance() {
         guard
             checkNonZeroLocks(),

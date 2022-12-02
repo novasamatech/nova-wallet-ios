@@ -2,20 +2,20 @@ import Foundation
 import SoraFoundation
 import SoraKeystore
 
-struct AssetsManageViewFactory {
-    static func createView() -> AssetsManageViewProtocol? {
-        let interactor = AssetsManageInteractor(
+struct AssetsSettingsViewFactory {
+    static func createView() -> AssetsSettingsViewProtocol? {
+        let interactor = AssetsSettingsInteractor(
             settingsManager: SettingsManager.shared,
             eventCenter: EventCenter.shared
         )
 
-        let wireframe = AssetsManageWireframe()
+        let wireframe = AssetsSettingsWireframe()
 
         let localizationManager = LocalizationManager.shared
 
-        let presenter = AssetsManagePresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = AssetsSettingsPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = AssetsManageViewController(
+        let view = AssetsSettingsViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )
