@@ -1080,3 +1080,6 @@
 "common.copy" = "Копировать";
 "crowdloan.empty.message_v3_9_1" = "Информация о краудлоунах\nпоявится здесь, когда они начнутся";
 "common.error.no.data.retrieved_v3_9_1" = "Данные не получены";
+"tokens.manage.title" = "Управление токенами";
+"common.add.token" = "Новый токен";
+"tokens.manage.search" = "Поиск по токену";
