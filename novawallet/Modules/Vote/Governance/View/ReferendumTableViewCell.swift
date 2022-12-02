@@ -49,7 +49,7 @@ typealias ReferendumTableViewCell = BlurredTableViewCell<ReferendumView>
 extension ReferendumTableViewCell {
     func applyStyle() {
         shouldApplyHighlighting = true
-        contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
+        contentInsets = .init(top: 4, left: 16, bottom: 4, right: 16)
         innerInsets = .init(top: 16, left: 16, bottom: 16, right: 16)
     }
 }
