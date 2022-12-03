@@ -4,7 +4,12 @@ import SoraFoundation
 final class TokensManageViewController: UIViewController, ViewHolder {
     typealias RootViewType = TokensManageViewLayout
 
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, TokensManageViewModel>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, TokensManageViewModel>
+
     let presenter: TokensManagePresenterProtocol
+
+    private lazy var dataSource = makeDataSource()
 
     init(presenter: TokensManagePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -26,6 +31,7 @@ final class TokensManageViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupTopBar()
+        setupTableView()
         setupLocalization()
 
         presenter.setup()
@@ -36,6 +42,11 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         rootView.addTokenButton.target = self
         rootView.addTokenButton.action = #selector(actionAddToken)
+    }
+
+    private func setupTableView() {
+        rootView.tableView.rowHeight = 56
+        rootView.tableView.registerClassForCell(TokensManageTableViewCell.self)
     }
 
     private func setupLocalization() {
@@ -54,10 +65,57 @@ final class TokensManageViewController: UIViewController, ViewHolder {
         )
     }
 
-    @objc private func actionAddToken() {}
+    private func getViewModel(for cell: TokensManageTableViewCell) -> TokensManageViewModel? {
+        guard
+            let indexPath = rootView.tableView.indexPath(for: cell),
+            let viewModel = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        return viewModel
+    }
+
+    private func makeDataSource() -> DataSource {
+        .init(tableView: rootView.tableView) { [weak self] tableView, _, viewModel in
+            let cell = tableView.dequeueReusableCellWithType(TokensManageTableViewCell.self)
+            cell?.delegate = self
+            cell?.bind(viewModel: viewModel)
+            return cell
+        }
+    }
+
+    @objc private func actionAddToken() {
+        presenter.performAddToken()
+    }
 }
 
-extension TokensManageViewController: TokensManageViewProtocol {}
+extension TokensManageViewController: TokensManageTableViewCellDelegate {
+    func tokensManageCellDidEdit(_ cell: TokensManageTableViewCell) {
+        guard let viewModel = getViewModel(for: cell) else {
+            return
+        }
+
+        presenter.performEdit(for: viewModel)
+    }
+
+    func tokensManageCellDidSwitch(_ cell: TokensManageTableViewCell, isOn: Bool) {
+        guard let viewModel = getViewModel(for: cell) else {
+            return
+        }
+
+        presenter.performSwitch(for: viewModel, isOn: isOn)
+    }
+}
+
+extension TokensManageViewController: TokensManageViewProtocol {
+    func didReceive(viewModels: [TokensManageViewModel]) {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(viewModels)
+
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+}
 
 extension TokensManageViewController: Localizable {
     func applyLocalization() {
