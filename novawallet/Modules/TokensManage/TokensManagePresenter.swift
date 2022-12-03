@@ -16,6 +16,12 @@ final class TokensManagePresenter {
 
 extension TokensManagePresenter: TokensManagePresenterProtocol {
     func setup() {}
+
+    func performAddToken() {}
+
+    func performEdit(for _: TokensManageViewModel) {}
+
+    func performSwitch(for _: TokensManageViewModel, isOn _: Bool) {}
 }
 
 extension TokensManagePresenter: TokensManageInteractorOutputProtocol {}

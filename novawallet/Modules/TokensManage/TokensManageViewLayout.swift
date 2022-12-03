@@ -26,6 +26,10 @@ final class TokensManageViewLayout: UIView {
         return button
     }()
 
+    let tableView: UITableView = .create {
+        $0.backgroundColor = .clear
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -46,6 +50,13 @@ final class TokensManageViewLayout: UIView {
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(TopCustomSearchView.preferredNavigationBarHeight)
+        }
+
+        addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(searchView.snp.bottom)
+            make.bottom.equalToSuperview()
         }
     }
 }
