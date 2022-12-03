@@ -232,3 +232,59 @@ enum ChainOptions: String, Codable {
     case governance
     case governanceV1 = "governance-v1"
 }
+
+extension ChainModel {
+    func adding(asset: AssetModel) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets.union([asset]),
+            nodes: nodes,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApi: externalApi,
+            explorers: explorers,
+            order: order,
+            additional: additional
+        )
+    }
+
+    func byChanging(assets: Set<AssetModel>) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApi: externalApi,
+            explorers: explorers,
+            order: order,
+            additional: additional
+        )
+    }
+
+    func byChanging(name: String) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApi: externalApi,
+            explorers: explorers,
+            order: order,
+            additional: additional
+        )
+    }
+}
