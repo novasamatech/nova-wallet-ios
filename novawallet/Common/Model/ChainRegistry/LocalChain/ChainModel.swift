@@ -131,11 +131,11 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.additional = additional
     }
 
-    init(remoteModel: RemoteChainModel, order: Int64) {
+    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, order: Int64) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
         name = remoteModel.name
-        assets = Set(remoteModel.assets)
+        self.assets = assets
 
         let nodeList = remoteModel.nodes.enumerated().map { index, node in
             ChainNodeModel(remoteModel: node, order: Int16(index))
@@ -231,23 +231,4 @@ enum ChainOptions: String, Codable {
     case crowdloans
     case governance
     case governanceV1 = "governance-v1"
-}
-
-extension ChainModel {
-    init(remoteModel: RemoteChainModel, additionalAssets: Set<AssetModel>, order: Int64) {
-        let chain = ChainModel(remoteModel: remoteModel, order: order)
-        chainId = chain.chainId
-        parentId = chain.parentId
-        name = chain.name
-        assets = chain.assets.union(additionalAssets)
-        nodes = chain.nodes
-        addressPrefix = chain.addressPrefix
-        types = chain.types
-        icon = chain.icon
-        options = chain.options
-        externalApi = chain.externalApi
-        explorers = chain.explorers
-        self.order = chain.order
-        additional = chain.additional
-    }
 }
