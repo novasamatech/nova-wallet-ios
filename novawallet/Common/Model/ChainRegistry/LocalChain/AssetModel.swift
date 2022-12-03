@@ -77,3 +77,22 @@ extension AssetModel {
         Int16(bitPattern: precision)
     }
 }
+
+extension AssetModel {
+    func byChanging(enabled: Bool) -> AssetModel {
+        .init(
+            assetId: assetId,
+            icon: icon,
+            name: name,
+            symbol: symbol,
+            precision: precision,
+            priceId: priceId,
+            staking: staking,
+            type: type,
+            typeExtras: typeExtras,
+            buyProviders: buyProviders,
+            enabled: enabled,
+            source: source
+        )
+    }
+}

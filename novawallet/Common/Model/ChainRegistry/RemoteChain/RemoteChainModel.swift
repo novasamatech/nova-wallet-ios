@@ -16,3 +16,22 @@ struct RemoteChainModel: Equatable, Codable, Hashable {
     let explorers: [ChainModel.Explorer]?
     let additional: JSON?
 }
+
+extension RemoteChainModel {
+    func byChanging(name: String) -> RemoteChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets,
+            nodes: nodes,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApi: externalApi,
+            explorers: explorers,
+            additional: additional
+        )
+    }
+}
