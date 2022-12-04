@@ -16,9 +16,11 @@ final class TokensManageTableViewCell: UITableViewCell {
     let iconView = AssetIconView()
 
     let detailsView: MultiValueView = .create { view in
+        view.valueTop.textAlignment = .left
         view.valueTop.textColor = R.color.colorTextPrimary()
         view.valueTop.font = .semiBoldBody
 
+        view.valueBottom.textAlignment = .left
         view.valueBottom.textColor = R.color.colorTextSecondary()
         view.valueBottom.font = .regularFootnote
 
@@ -38,6 +40,7 @@ final class TokensManageTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         selectionStyle = .none
+        backgroundColor = .clear
 
         setupHandlers()
         setupLayout()
@@ -57,7 +60,11 @@ final class TokensManageTableViewCell: UITableViewCell {
             iconColor = R.color.colorIconSecondary()!
         }
 
-        let imageSettings = ImageViewModelSettings(targetSize: Constants.iconSize, cornerRadius: nil, tintColor: iconColor)
+        let imageSettings = ImageViewModelSettings(
+            targetSize: Constants.iconSize,
+            cornerRadius: nil,
+            tintColor: iconColor
+        )
 
         iconView.bind(viewModel: viewModel.imageViewModel, settings: imageSettings)
 
