@@ -1783,6 +1783,7 @@
 		84BAD21A293B18EC00C55C49 /* RemoteAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD219293B18EC00C55C49 /* RemoteAssetModel.swift */; };
 		84BAD21C293B1BC200C55C49 /* ChainModelConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */; };
 		84BAD220293B574900C55C49 /* MultichainToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD21F293B574900C55C49 /* MultichainToken.swift */; };
+		84BAD222293C655900C55C49 /* TokensManageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD221293C655900C55C49 /* TokensManageViewModelFactory.swift */; };
 		84BAFCD026AF585900871E86 /* SharedArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */; };
 		84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCD126AF5EE700871E86 /* IconDetailsView.swift */; };
 		84BAFCD626AF64CB00871E86 /* SelectValidatorsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCD526AF64CB00871E86 /* SelectValidatorsViewLayout.swift */; };
@@ -4815,6 +4816,7 @@
 		84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainModelConversion.swift; sourceTree = "<group>"; };
 		84BAD21D293B27D900C55C49 /* SubstrateDataModel8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel8.xcdatamodel; sourceTree = "<group>"; };
 		84BAD21F293B574900C55C49 /* MultichainToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultichainToken.swift; sourceTree = "<group>"; };
+		84BAD221293C655900C55C49 /* TokensManageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageViewModelFactory.swift; sourceTree = "<group>"; };
 		84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedArrayTests.swift; sourceTree = "<group>"; };
 		84BAFCD126AF5EE700871E86 /* IconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconDetailsView.swift; sourceTree = "<group>"; };
 		84BAFCD526AF64CB00871E86 /* SelectValidatorsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsViewLayout.swift; sourceTree = "<group>"; };
@@ -9554,6 +9556,7 @@
 				8831F0FF28C65B95009F7682 /* AssetLock.swift */,
 				2AC7BC832731A214001D99B0 /* AssetLocks+Sort.swift */,
 				849D3222291CC43D00D25839 /* MarkdownText.swift */,
+				84BAD21F293B574900C55C49 /* MultichainToken.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -11389,6 +11392,7 @@
 			isa = PBXGroup;
 			children = (
 				84BAD210293A2FB100C55C49 /* TokensManageViewModel.swift */,
+				84BAD221293C655900C55C49 /* TokensManageViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -11424,14 +11428,6 @@
 				84BAD219293B18EC00C55C49 /* RemoteAssetModel.swift */,
 			);
 			path = RemoteChain;
-			sourceTree = "<group>";
-		};
-		84BAD21E293B573300C55C49 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				84BAD21F293B574900C55C49 /* MultichainToken.swift */,
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		84BC703D289DBE48008A9758 /* QRCreation */ = {
@@ -12946,7 +12942,6 @@
 		9D97DD4BC9672502D2E2A625 /* TokensManage */ = {
 			isa = PBXGroup;
 			children = (
-				84BAD21E293B573300C55C49 /* Model */,
 				84BAD20F293A2EA000C55C49 /* ViewModel */,
 				84BAD20E293A2CF200C55C49 /* View */,
 				05AA59AFC801F52B79DDBBCF /* TokensManageProtocols.swift */,
@@ -16603,6 +16598,7 @@
 				842A736D27DB7B5E006EE1EA /* OperationTransferViewModel.swift in Sources */,
 				842B18022864F9950014CC57 /* CrossChainTransferPresenter.swift in Sources */,
 				845B081529190056005785D3 /* Gov1UnlockReferendum.swift in Sources */,
+				84BAD222293C655900C55C49 /* TokensManageViewModelFactory.swift in Sources */,
 				84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */,
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,
 				848F8B1D2863616E00204BC4 /* ChainsStore.swift in Sources */,
