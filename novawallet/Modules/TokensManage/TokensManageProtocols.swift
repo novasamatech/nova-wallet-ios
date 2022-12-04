@@ -6,6 +6,7 @@ protocol TokensManageViewProtocol: ControllerBackedProtocol {
 
 protocol TokensManagePresenterProtocol: AnyObject {
     func setup()
+    func search(query: String)
     func performAddToken()
     func performEdit(for viewModel: TokensManageViewModel)
     func performSwitch(for viewModel: TokensManageViewModel, isOn: Bool)
