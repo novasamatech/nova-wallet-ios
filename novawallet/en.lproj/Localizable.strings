@@ -1083,3 +1083,5 @@
 "tokens.manage.title" = "Manage tokens";
 "common.add.token" = "Add token";
 "tokens.manage.search" = "Search by token";
+"tokens.manage.all.selected" = "All networks";
+"tokens.manage.partial.selected" = "%@ (%@ more)";
