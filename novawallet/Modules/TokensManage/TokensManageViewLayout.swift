@@ -28,6 +28,7 @@ final class TokensManageViewLayout: UIView {
 
     let tableView: UITableView = .create {
         $0.backgroundColor = .clear
+        $0.separatorStyle = .none
     }
 
     override init(frame: CGRect) {
