@@ -31,6 +31,7 @@ final class TokensManageViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupTopBar()
+        setupSearchField()
         setupTableView()
         setupLocalization()
 
@@ -42,6 +43,14 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         rootView.addTokenButton.target = self
         rootView.addTokenButton.action = #selector(actionAddToken)
+    }
+
+    private func setupSearchField() {
+        rootView.searchTextField.addTarget(
+            self,
+            action: #selector(actionSearchEditingChanged),
+            for: .editingChanged
+        )
     }
 
     private func setupTableView() {
@@ -86,6 +95,12 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
     @objc private func actionAddToken() {
         presenter.performAddToken()
+    }
+
+    @objc private func actionSearchEditingChanged() {
+        let query = rootView.searchTextField.text ?? ""
+
+        presenter.search(query: query)
     }
 }
 
