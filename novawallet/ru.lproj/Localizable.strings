@@ -1083,3 +1083,5 @@
 "tokens.manage.title" = "Управление токенами";
 "common.add.token" = "Новый токен";
 "tokens.manage.search" = "Поиск по токену";
+"tokens.manage.all.selected" = "Все сети";
+"tokens.manage.partial.selected" = "%@ (ещё %@)";

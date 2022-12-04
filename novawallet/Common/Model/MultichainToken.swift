@@ -14,11 +14,19 @@ struct MultichainToken {
     var icon: URL? {
         instances.first(where: { $0.icon != nil })?.icon
     }
+
+    var enabled: Bool {
+        instances.contains { $0.enabled }
+    }
+
+    func enabledInstances() -> [Instance] {
+        instances.filter { $0.enabled }
+    }
 }
 
 extension Array where Element == ChainModel {
     func createMultichainTokens() -> [MultichainToken] {
-        let mapping = reduce(into: [String: MultichainToken]()) { (accum, chain) in
+        let mapping = reduce(into: [String: MultichainToken]()) { accum, chain in
             for asset in chain.assets {
                 let instance = MultichainToken.Instance(
                     chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
@@ -41,7 +49,7 @@ extension Array where Element == ChainModel {
             }
         }
 
-        let chainOrders = enumerated().reduce(into: [ChainModel.Id: Int]()) { (accum, chainOrder) in
+        let chainOrders = enumerated().reduce(into: [ChainModel.Id: Int]()) { accum, chainOrder in
             accum[chainOrder.1.chainId] = chainOrder.0
         }
 

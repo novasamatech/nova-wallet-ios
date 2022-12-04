@@ -9,9 +9,20 @@ struct TokensManageViewFactory {
 
         let wireframe = TokensManageWireframe()
 
-        let presenter = TokensManagePresenter(interactor: interactor, wireframe: wireframe)
+        let formatter = NumberFormatter.positiveQuantity.localizableResource()
+        let viewModelFactory = TokensManageViewModelFactory(quantityFormater: formatter)
 
-        let view = TokensManageViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        let presenter = TokensManagePresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared
+        )
+
+        let view = TokensManageViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
