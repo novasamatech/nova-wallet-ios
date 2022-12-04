@@ -1782,6 +1782,7 @@
 		84BAD215293B0E8A00C55C49 /* UITableView+Section.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD214293B0E8A00C55C49 /* UITableView+Section.swift */; };
 		84BAD21A293B18EC00C55C49 /* RemoteAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD219293B18EC00C55C49 /* RemoteAssetModel.swift */; };
 		84BAD21C293B1BC200C55C49 /* ChainModelConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */; };
+		84BAD220293B574900C55C49 /* MultichainToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD21F293B574900C55C49 /* MultichainToken.swift */; };
 		84BAFCD026AF585900871E86 /* SharedArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */; };
 		84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCD126AF5EE700871E86 /* IconDetailsView.swift */; };
 		84BAFCD626AF64CB00871E86 /* SelectValidatorsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCD526AF64CB00871E86 /* SelectValidatorsViewLayout.swift */; };
@@ -4813,6 +4814,7 @@
 		84BAD219293B18EC00C55C49 /* RemoteAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteAssetModel.swift; sourceTree = "<group>"; };
 		84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainModelConversion.swift; sourceTree = "<group>"; };
 		84BAD21D293B27D900C55C49 /* SubstrateDataModel8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel8.xcdatamodel; sourceTree = "<group>"; };
+		84BAD21F293B574900C55C49 /* MultichainToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultichainToken.swift; sourceTree = "<group>"; };
 		84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedArrayTests.swift; sourceTree = "<group>"; };
 		84BAFCD126AF5EE700871E86 /* IconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconDetailsView.swift; sourceTree = "<group>"; };
 		84BAFCD526AF64CB00871E86 /* SelectValidatorsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsViewLayout.swift; sourceTree = "<group>"; };
@@ -11424,6 +11426,14 @@
 			path = RemoteChain;
 			sourceTree = "<group>";
 		};
+		84BAD21E293B573300C55C49 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				84BAD21F293B574900C55C49 /* MultichainToken.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		84BC703D289DBE48008A9758 /* QRCreation */ = {
 			isa = PBXGroup;
 			children = (
@@ -12936,6 +12946,7 @@
 		9D97DD4BC9672502D2E2A625 /* TokensManage */ = {
 			isa = PBXGroup;
 			children = (
+				84BAD21E293B573300C55C49 /* Model */,
 				84BAD20F293A2EA000C55C49 /* ViewModel */,
 				84BAD20E293A2CF200C55C49 /* View */,
 				05AA59AFC801F52B79DDBBCF /* TokensManageProtocols.swift */,
@@ -15013,6 +15024,7 @@
 				F4F65C2E26D8B7F7002EE838 /* FWXAxisChartLegendView.swift in Sources */,
 				846B748F28B41C6B00C39B93 /* ChainAccountTableViewCell.swift in Sources */,
 				8411707F285B15E0006F4DFB /* XcmTransfersSyncService.swift in Sources */,
+				84BAD220293B574900C55C49 /* MultichainToken.swift in Sources */,
 				F4F2297C260DC05600ACFDB8 /* StakingRewardTokenUsdViewModel.swift in Sources */,
 				844DBC6B274E3D6B009F8351 /* AccountImportKeystoreView.swift in Sources */,
 				847F2D4627A9DB8E00AFD476 /* MultigradientView.swift in Sources */,

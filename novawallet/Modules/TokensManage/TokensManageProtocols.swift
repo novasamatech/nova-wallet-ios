@@ -1,3 +1,5 @@
+import RobinHood
+
 protocol TokensManageViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [TokensManageViewModel])
 }
@@ -9,8 +11,13 @@ protocol TokensManagePresenterProtocol: AnyObject {
     func performSwitch(for viewModel: TokensManageViewModel, isOn: Bool)
 }
 
-protocol TokensManageInteractorInputProtocol: AnyObject {}
+protocol TokensManageInteractorInputProtocol: AnyObject {
+    func setup()
+    func save(chains: [ChainModel])
+}
 
-protocol TokensManageInteractorOutputProtocol: AnyObject {}
+protocol TokensManageInteractorOutputProtocol: AnyObject {
+    func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])
+}
 
 protocol TokensManageWireframeProtocol: AnyObject {}
