@@ -11,6 +11,8 @@ final class TokensManagePresenter {
     private(set) var chains: ListDifferenceCalculator<ChainModel>
     private(set) var tokenModels: [MultichainToken] = []
 
+    private var query: String = ""
+
     init(
         interactor: TokensManageInteractorInputProtocol,
         wireframe: TokensManageWireframeProtocol,
@@ -30,8 +32,44 @@ final class TokensManagePresenter {
         self.localizationManager = localizationManager
     }
 
-    func updateView() {
-        let viewModels = tokenModels.map {
+    private func filterTokens(_ tokens: [MultichainToken], for query: String) -> [MultichainToken] {
+        guard !query.isEmpty else {
+            return tokens
+        }
+
+        let allTokensMatching = tokens.compactMap { token in
+            SearchMatch<MultichainToken>.matchString(for: query, recordField: token.symbol, record: token)
+        }
+
+        let allMatchedTokens = allTokensMatching.map(\.item)
+
+        if allTokensMatching.contains(where: { $0.isFull }) {
+            return allMatchedTokens
+        }
+
+        let matchedSymbols = Set(allMatchedTokens.map(\.symbol))
+
+        let allMatchedChains = tokens.filter { token in
+            let hasChainMatch = token.instances.contains { instance in
+                let match = SearchMatch<MultichainToken.Instance>.matchInclusion(
+                    for: query,
+                    recordField: instance.chainName,
+                    record: instance
+                )
+
+                return match != nil
+            }
+
+            return hasChainMatch && !matchedSymbols.contains(token.symbol)
+        }
+
+        return allMatchedTokens + allMatchedChains
+    }
+
+    private func updateView() {
+        let filteredTokens = filterTokens(tokenModels, for: query)
+
+        let viewModels = filteredTokens.map {
             viewModelFactory.createViewModel(from: $0, locale: selectedLocale)
         }
 
@@ -42,6 +80,12 @@ final class TokensManagePresenter {
 extension TokensManagePresenter: TokensManagePresenterProtocol {
     func setup() {
         interactor.setup()
+    }
+
+    func search(query: String) {
+        self.query = query
+
+        updateView()
     }
 
     func performAddToken() {}
@@ -56,6 +100,8 @@ extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
         chains.apply(changes: changes)
 
         tokenModels = chains.allItems.createMultichainTokens()
+
+        updateView()
     }
 }
 
