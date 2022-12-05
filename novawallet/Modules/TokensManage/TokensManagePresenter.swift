@@ -122,7 +122,7 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
         }
 
         tokenModels[tokenIndex] = tokenModels[tokenIndex].byChangingEnabled(enabled)
-        updateView(for: tokenModels[tokenIndex])
+        updateView()
 
         saveChains(for: tokenModels[tokenIndex], enabled: enabled)
     }
