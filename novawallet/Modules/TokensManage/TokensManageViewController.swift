@@ -9,6 +9,8 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
     let presenter: TokensManagePresenterProtocol
 
+    private var items: [String: TokensManageViewModel] = [:]
+
     private lazy var dataSource = makeDataSource()
 
     init(presenter: TokensManagePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
@@ -88,7 +90,9 @@ final class TokensManageViewController: UIViewController, ViewHolder {
         .init(tableView: rootView.tableView) { [weak self] tableView, _, viewModel in
             let cell = tableView.dequeueReusableCellWithType(TokensManageTableViewCell.self)
             cell?.delegate = self
+
             cell?.bind(viewModel: viewModel)
+
             return cell
         }
     }
@@ -124,16 +128,14 @@ extension TokensManageViewController: TokensManageTableViewCellDelegate {
 
 extension TokensManageViewController: TokensManageViewProtocol {
     func didReceive(viewModels: [TokensManageViewModel]) {
+        items = viewModels.reduce(into: [String: TokensManageViewModel]()) {
+            $0[$1.symbol] = $1
+        }
+
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
 
-        dataSource.apply(snapshot, animatingDifferences: false)
-    }
-
-    func didUpdate(viewModel: TokensManageViewModel) {
-        var snapshot = dataSource.snapshot()
-        snapshot.reloadItems([viewModel])
         dataSource.apply(snapshot, animatingDifferences: false)
     }
 }

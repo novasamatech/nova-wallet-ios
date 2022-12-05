@@ -84,7 +84,9 @@ final class TokensManageTableViewCell: UITableViewCell {
 
         detailsView.valueBottom.text = viewModel.subtitle
 
-        switchView.setOn(viewModel.isOn, animated: false)
+        if viewModel.isOn != switchView.isOn {
+            switchView.setOn(viewModel.isOn, animated: false)
+        }
     }
 
     private func setupHandlers() {

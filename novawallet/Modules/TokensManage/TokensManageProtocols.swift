@@ -2,7 +2,6 @@ import RobinHood
 
 protocol TokensManageViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModels: [TokensManageViewModel])
-    func didUpdate(viewModel: TokensManageViewModel)
 }
 
 protocol TokensManagePresenterProtocol: AnyObject {

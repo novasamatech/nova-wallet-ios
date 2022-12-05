@@ -1,6 +1,7 @@
 import Foundation
 
 struct TokensManageViewModel: Hashable {
+    let identifier: Int
     let symbol: String
     let imageViewModel: ImageViewModelProtocol?
     let subtitle: String
@@ -11,6 +12,6 @@ struct TokensManageViewModel: Hashable {
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(symbol)
+        hasher.combine(identifier)
     }
 }
