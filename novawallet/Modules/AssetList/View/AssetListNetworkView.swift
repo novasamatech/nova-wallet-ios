@@ -42,8 +42,9 @@ final class AssetListNetworkView: UICollectionReusableView {
     private func setupLayout() {
         addSubview(chainView)
         chainView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(32.0)
-            make.top.bottom.equalToSuperview().inset(8.0)
+            make.leading.equalToSuperview().inset(28.0)
+            make.top.equalToSuperview().inset(13.0)
+            make.bottom.equalToSuperview().inset(8.0)
         }
 
         addSubview(valueLabel)

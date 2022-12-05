@@ -24,11 +24,11 @@ final class SettingsTableFooterView: UITableViewHeaderFooterView {
     private func setupLayout() {
         let logoIcon = UIImageView(image: R.image.iconNova()!)
         let content = UIView.vStack(alignment: .center, spacing: 8, [logoIcon, appNameLabel])
-        logoIcon.snp.makeConstraints { $0.size.equalTo(32) }
+        logoIcon.snp.makeConstraints { $0.size.equalTo(40) }
 
         contentView.addSubview(content)
         content.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(32)
+            make.top.bottom.equalToSuperview().inset(12)
             make.leading.trailing.equalToSuperview()
         }
     }
