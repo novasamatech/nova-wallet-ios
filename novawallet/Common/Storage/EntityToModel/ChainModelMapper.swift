@@ -159,7 +159,7 @@ final class ChainModelMapper {
         from model: ChainModel,
         context: NSManagedObjectContext
     ) {
-        let apiEntities: [CDTransactionHistoryApi]? = model.externalApi?.history?.map { api in
+        let optApiEntities: [CDTransactionHistoryApi]? = model.externalApi?.history?.map { api in
             let apiEntity: CDTransactionHistoryApi
 
             let maybeExistingEntity = entity.historyApis?.first { entity in
@@ -193,7 +193,11 @@ final class ChainModelMapper {
             }
         }
 
-        entity.historyApis = Set(apiEntities ?? []) as NSSet
+        if let apiEntities = optApiEntities {
+            entity.historyApis = Set(apiEntities) as NSSet
+        } else {
+            entity.historyApis = nil
+        }
     }
 
     private func createExplorers(from chain: CDChain) -> [ChainModel.Explorer]? {
@@ -227,7 +231,7 @@ final class ChainModelMapper {
 
         let history: [ChainModel.TransactionHistoryApi]?
 
-        if let apis = entity.historyApis {
+        if let apis = entity.historyApis, !(apis as Set).isEmpty {
             history = apis.compactMap { anyApi in
                 guard let historyApi = anyApi as? CDTransactionHistoryApi else {
                     return nil
