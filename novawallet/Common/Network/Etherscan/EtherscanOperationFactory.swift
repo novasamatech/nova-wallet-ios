@@ -6,10 +6,12 @@ import SoraFoundation
 final class EtherscanOperationFactory {
     let contractAddress: AccountAddress
     let url: URL
+    let chainId: ChainModel.Id
 
-    init(contractAddress: AccountAddress, url: URL) {
+    init(contractAddress: AccountAddress, url: URL, chainId: ChainModel.Id) {
         self.contractAddress = contractAddress
         self.url = url
+        self.chainId = chainId
     }
 
     private func buildUrl(for info: EtherscanHistoryInfo) -> URL? {
@@ -24,7 +26,8 @@ final class EtherscanOperationFactory {
             URLQueryItem(name: "module", value: info.module),
             URLQueryItem(name: "page", value: String(info.page)),
             URLQueryItem(name: "offset", value: String(info.offset)),
-            URLQueryItem(name: "sort", value: info.sort)
+            URLQueryItem(name: "sort", value: info.sort),
+            URLQueryItem(name: "apikey", value: EtherscanKeys.getApiKey(for: chainId))
         ]
 
         return components.url
