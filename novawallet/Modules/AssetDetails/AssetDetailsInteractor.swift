@@ -88,7 +88,7 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
         case let .failure(error):
             presenter.didReceive(error: .locks(error))
         case let .success(changes):
-            changes.reduce(into: locks) { result, change in
+            locks = changes.reduce(into: locks) { result, change in
                 switch change {
                 case let .insert(lock), let .update(lock):
                     result.addOrReplaceSingle(lock)

@@ -16,7 +16,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         ) else {
             return
         }
-        guard let navigationController = view?.controller.navigationController else {
+        guard let navigationController = view.controller.navigationController else {
             return
         }
 

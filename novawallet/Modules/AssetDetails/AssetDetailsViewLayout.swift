@@ -79,7 +79,7 @@ final class AssetDetailsViewLayout: UIView {
         balanceTableView.addArrangedSubview(lockCell)
     }
 
-    private func set(locale: Locale) {
+    func set(locale: Locale) {
         let languages = locale.rLanguages
 
         headerCell.titleLabel.text = R.string.localizable.walletBalancesWidgetTitle(
