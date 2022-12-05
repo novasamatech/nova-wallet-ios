@@ -48,7 +48,7 @@ jobs:
       - name: Install Cocoapods
         run: |
           pod update
-          pod install
+          pod install --verbose
 
       - name: Set env BUILD_PROVISION_PROFILE_BASE64
         run: |
