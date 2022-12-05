@@ -53,7 +53,11 @@ final class AssetHistoryFacade {
             return nil
         }
 
-        return EtherscanOperationFactory(contractAddress: contractAddress, url: url)
+        return EtherscanOperationFactory(
+            contractAddress: contractAddress,
+            url: url,
+            chainId: chainAsset.chain.chainId
+        )
     }
 }
 
