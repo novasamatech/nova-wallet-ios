@@ -107,7 +107,7 @@ extension NSPredicate {
     }
 
     static func filterTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
-        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.assetId), assetId)
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.assetId), Int32(bitPattern: assetId))
     }
 
     static func filterTransactionsBySource(_ source: TransactionHistoryItemSource) -> NSPredicate {
