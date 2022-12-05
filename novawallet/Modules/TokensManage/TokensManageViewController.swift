@@ -133,7 +133,7 @@ extension TokensManageViewController: TokensManageViewProtocol {
 
     func didUpdate(viewModel: TokensManageViewModel) {
         var snapshot = dataSource.snapshot()
-        snapshot.appendItems([viewModel])
+        snapshot.reloadItems([viewModel])
         dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
