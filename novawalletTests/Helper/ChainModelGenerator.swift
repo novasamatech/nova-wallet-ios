@@ -120,7 +120,7 @@ enum ChainModelGenerator {
                 options.append(.crowdloans)
             }
 
-            let externalApi: ChainModel.ExternalApiSet? = generateExternaApis(
+            let externalApi = generateRemoteExternaApis(
                 for: chainId,
                 hasStaking: hasStaking,
                 hasCrowdloans: hasCrowdloans
@@ -258,6 +258,35 @@ enum ChainModelGenerator {
             type: nil,
             typeExtras: nil,
             buyProviders: buyProviders
+        )
+    }
+
+    private static func generateRemoteExternaApis(
+        for chainId: ChainModel.Id,
+        hasStaking: Bool,
+        hasCrowdloans: Bool
+    ) -> RemoteChainExternalApiSet? {
+        guard let externalApi = generateExternaApis(
+            for: chainId,
+            hasStaking: hasStaking,
+            hasCrowdloans: hasCrowdloans
+        ) else {
+            return nil
+        }
+
+        let remoteHistory = externalApi.history?.map { localHistory in
+            return RemoteTransactionHistoryApi(
+                type: localHistory.serviceType,
+                url: localHistory.url,
+                assetType: localHistory.assetType
+            )
+        }
+
+        return .init(
+            staking: externalApi.staking,
+            history: remoteHistory,
+            crowdloans: externalApi.crowdloans,
+            governance: externalApi.governance
         )
     }
 
