@@ -103,7 +103,7 @@ jobs:
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration Dev CODE_SIGN_STYLE=Manual -allowProvisioningUpdates
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration Dev
 
       - name: Export Staging archive
         if: ${{ github.event.inputs.config == 'Staging' }}
