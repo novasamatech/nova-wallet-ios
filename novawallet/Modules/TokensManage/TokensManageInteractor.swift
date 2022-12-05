@@ -8,6 +8,8 @@ final class TokensManageInteractor {
     let repository: AnyDataProviderRepository<ChainModel>
     let operationQueue: OperationQueue
 
+    private weak var pendingOperation: BaseOperation<Void>?
+
     init(
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
@@ -33,12 +35,50 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
         subscribeChains()
     }
 
-    func save(chains: [ChainModel]) {
+    func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel]) {
+        let chains = Set(chainAssetIds.map(\.chainId))
+
         let saveOperation = repository.saveOperation({
-            chains
+            allChains.compactMap { chain in
+                guard chains.contains(chain.chainId) else {
+                    return nil
+                }
+
+                let newAssets = chain.assets.map { asset in
+                    if chainAssetIds.contains(ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)) {
+                        return asset.byChanging(enabled: enabled)
+                    } else {
+                        return asset
+                    }
+                }
+
+                return chain.byChanging(assets: Set(newAssets))
+            }
         }, {
             []
         })
+
+        if let pendingOperation = pendingOperation {
+            saveOperation.addDependency(pendingOperation)
+
+            saveOperation.configurationBlock = {
+                do {
+                    try pendingOperation.extractNoCancellableResultData()
+                } catch {
+                    saveOperation.cancel()
+                }
+            }
+        }
+
+        pendingOperation = saveOperation
+
+        saveOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                if case .failure = saveOperation.result {
+                    self?.presenter?.didFailChainSave()
+                }
+            }
+        }
 
         operationQueue.addOperation(saveOperation)
     }
