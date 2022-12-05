@@ -1,6 +1,6 @@
 import Foundation
 import BigInt
-import RobinHood
+import SoraFoundation
 
 final class AssetDetailsPresenter {
     weak var view: AssetDetailsViewProtocol?
@@ -10,7 +10,7 @@ final class AssetDetailsPresenter {
     let asset: AssetModel
     private var priceData: PriceData?
     private var balance: AssetBalance?
-    private var locks: [AssetLocks] = []
+    private var locks: [AssetLock] = []
 
     init(
         interactor: AssetDetailsInteractorInputProtocol,
@@ -23,7 +23,7 @@ final class AssetDetailsPresenter {
         self.wireframe = wireframe
         self.asset = asset
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.localizableManager = localizableManager
+        localizationManager = localizableManager
     }
 
     private func createBalanceViewModel(
@@ -57,7 +57,7 @@ final class AssetDetailsPresenter {
         )
 
         let transferableBalance = createBalanceViewModel(
-            from: balance.available,
+            from: balance.transferable,
             precision: asset.precision,
             priceData: priceData
         )
@@ -71,7 +71,7 @@ final class AssetDetailsPresenter {
         view.didReceive(totalBalance: totalBalance)
         view.didReceive(transferableBalance: transferableBalance)
         view.didReceive(lockedBalance: lockedBalance, isSelectable: !locks.isEmpty)
-        view.didReceive(availableOperations: .all)
+        view.didReceive(availableOperations: .send)
     }
 }
 
@@ -87,12 +87,12 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(locks: [AssetLocks]) {
+    func didReceive(locks: [AssetLock]) {
         self.locks = locks
         updateView()
     }
 
-    func didReceive(price: PriceData) {
+    func didReceive(price: PriceData?) {
         priceData = price
         updateView()
     }

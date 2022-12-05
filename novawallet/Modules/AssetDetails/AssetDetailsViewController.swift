@@ -38,7 +38,7 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
     }
 
     func didReceive(transferableBalance: BalanceViewModelProtocol) {
-        rootView.transferableCell.bind(viewModel: transferableBalance)
+        rootView.transferrableCell.bind(viewModel: transferableBalance)
     }
 
     func didReceive(lockedBalance: BalanceViewModelProtocol, isSelectable: Bool) {
@@ -59,12 +59,12 @@ struct Operations: OptionSet {
     static let send = Operations(rawValue: 1 << 0)
     static let receive = Operations(rawValue: 1 << 1)
     static let buy = Operations(rawValue: 1 << 2)
-    static let all = [.send, .receive, .buy]
+    static let all = [Operations.send, Operations.receive, Operations.buy]
 }
 
 extension AssetDetailsViewController: Localizable {
     func applyLocalization() {
-        if rootView.isReady {
+        if isViewLoaded {
             rootView.set(locale: selectedLocale)
         }
     }

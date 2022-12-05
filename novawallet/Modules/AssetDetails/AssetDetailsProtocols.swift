@@ -15,8 +15,8 @@ protocol AssetDetailsInteractorInputProtocol: AnyObject {
 
 protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(balance: AssetBalance?)
-    func didReceive(locks: [AssetLocks])
-    func didReceive(price: PriceData)
+    func didReceive(locks: [AssetLock])
+    func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
 }
 
