@@ -9,7 +9,9 @@ extension CDTransactionItem: CoreDataCodable {
         let sourceValue = try container.decode(TransactionHistoryItemSource.self, forKey: .source)
         source = sourceValue.rawValue
         chainId = try container.decode(String.self, forKey: .chainId)
-        assetId = try container.decode(Int32.self, forKey: .assetId)
+
+        let assetId = try container.decode(UInt32.self, forKey: .assetId)
+        self.assetId = Int32(bitPattern: assetId)
 
         let hash = try container.decode(String.self, forKey: .txHash)
         txHash = hash
@@ -19,6 +21,7 @@ extension CDTransactionItem: CoreDataCodable {
         receiver = try container.decodeIfPresent(String.self, forKey: .receiver)
         amountInPlank = try container.decodeIfPresent(String.self, forKey: .amountInPlank)
         status = try container.decode(Int16.self, forKey: .status)
+
         timestamp = try container.decode(Int64.self, forKey: .timestamp)
 
         if let fee = try container.decodeIfPresent(String.self, forKey: .fee) {
@@ -49,7 +52,7 @@ extension CDTransactionItem: CoreDataCodable {
 
         try container.encodeIfPresent(TransactionHistoryItemSource(rawValue: source), forKey: .source)
         try container.encodeIfPresent(chainId, forKey: .chainId)
-        try container.encode(assetId, forKey: .assetId)
+        try container.encode(UInt32(bitPattern: assetId), forKey: .assetId)
         try container.encodeIfPresent(txHash, forKey: .txHash)
         try container.encodeIfPresent(sender, forKey: .sender)
         try container.encodeIfPresent(receiver, forKey: .receiver)
