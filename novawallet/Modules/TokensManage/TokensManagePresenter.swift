@@ -32,6 +32,12 @@ final class TokensManagePresenter {
         self.localizationManager = localizationManager
     }
 
+    private func reloadTokens() {
+        tokenModels = chains.allItems.createMultichainTokens()
+
+        updateView()
+    }
+
     private func filterTokens(_ tokens: [MultichainToken], for query: String) -> [MultichainToken] {
         guard !query.isEmpty else {
             return tokens
@@ -75,6 +81,16 @@ final class TokensManagePresenter {
 
         view?.didReceive(viewModels: viewModels)
     }
+
+    private func updateView(for model: MultichainToken) {
+        let viewModel = viewModelFactory.createViewModel(from: model, locale: selectedLocale)
+        view?.didUpdate(viewModel: viewModel)
+    }
+
+    private func saveChains(for token: MultichainToken, enabled: Bool) {
+        let chainAssetIds = token.instances.map(\.chainAssetId)
+        interactor.save(chainAssetIds: Set(chainAssetIds), enabled: enabled, allChains: chains.allItems)
+    }
 }
 
 extension TokensManagePresenter: TokensManagePresenterProtocol {
@@ -88,20 +104,39 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
         updateView()
     }
 
-    func performAddToken() {}
+    func performAddToken() {
+        wireframe.showAddToken(from: view)
+    }
 
-    func performEdit(for _: TokensManageViewModel) {}
+    func performEdit(for viewModel: TokensManageViewModel) {
+        guard let token = tokenModels.first(where: { $0.symbol == viewModel.symbol }) else {
+            return
+        }
 
-    func performSwitch(for _: TokensManageViewModel, isOn _: Bool) {}
+        wireframe.showEditToken(from: view, token: token)
+    }
+
+    func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool) {
+        guard let tokenIndex = tokenModels.firstIndex(where: { $0.symbol == viewModel.symbol }) else {
+            return
+        }
+
+        tokenModels[tokenIndex] = tokenModels[tokenIndex].byChangingEnabled(enabled)
+        updateView(for: tokenModels[tokenIndex])
+
+        saveChains(for: tokenModels[tokenIndex], enabled: enabled)
+    }
 }
 
 extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>]) {
         chains.apply(changes: changes)
 
-        tokenModels = chains.allItems.createMultichainTokens()
+        reloadTokens()
+    }
 
-        updateView()
+    func didFailChainSave() {
+        reloadTokens()
     }
 }
 
