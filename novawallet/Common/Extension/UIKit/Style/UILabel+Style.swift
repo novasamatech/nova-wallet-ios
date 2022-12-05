@@ -41,6 +41,11 @@ extension UILabel.Style {
         font: .regularSubheadline
     )
 
+    static let regularSubhedlineSecondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .regularSubheadline
+    )
+
     static let rowLink = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .p2Paragraph
