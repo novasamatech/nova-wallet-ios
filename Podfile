@@ -24,6 +24,7 @@ abstract_target 'novawalletAll' do
   pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.5'
   pod 'CDMarkdownKit', :git => 'https://github.com/nova-wallet/CDMarkdownKit.git', :tag => '2.4.0'
   pod 'web3swift', :git => 'https://github.com/web3swift-team/web3swift.git', :tag => '3.0.6'
+  gem 'cocoapods-pod-sign', '~> 1.3'
   
   target 'novawalletTests' do
     inherit! :search_paths
