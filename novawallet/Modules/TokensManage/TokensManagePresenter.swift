@@ -72,6 +72,14 @@ final class TokensManagePresenter {
         return allMatchedTokens + allMatchedChains
     }
 
+    private func resetView() {
+        // clear first
+        view?.didReceive(viewModels: [])
+
+        // and then recreate the items
+        updateView()
+    }
+
     private func updateView() {
         let filteredTokens = filterTokens(tokenModels, for: query)
 
@@ -80,11 +88,6 @@ final class TokensManagePresenter {
         }
 
         view?.didReceive(viewModels: viewModels)
-    }
-
-    private func updateView(for model: MultichainToken) {
-        let viewModel = viewModelFactory.createViewModel(from: model, locale: selectedLocale)
-        view?.didUpdate(viewModel: viewModel)
     }
 
     private func saveChains(for token: MultichainToken, enabled: Bool) {
@@ -121,9 +124,6 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
             return
         }
 
-        tokenModels[tokenIndex] = tokenModels[tokenIndex].byChangingEnabled(enabled)
-        updateView()
-
         saveChains(for: tokenModels[tokenIndex], enabled: enabled)
     }
 }
@@ -136,7 +136,7 @@ extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
     }
 
     func didFailChainSave() {
-        reloadTokens()
+        resetView()
     }
 }
 
