@@ -118,7 +118,7 @@ extension TokensManageViewController: TokensManageTableViewCellDelegate {
             return
         }
 
-        presenter.performSwitch(for: viewModel, isOn: isOn)
+        presenter.performSwitch(for: viewModel, enabled: isOn)
     }
 }
 
@@ -128,6 +128,12 @@ extension TokensManageViewController: TokensManageViewProtocol {
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
 
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+
+    func didUpdate(viewModel: TokensManageViewModel) {
+        var snapshot = dataSource.snapshot()
+        snapshot.appendItems([viewModel])
         dataSource.apply(snapshot, animatingDifferences: false)
     }
 }

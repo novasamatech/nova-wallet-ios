@@ -8,12 +8,22 @@ protocol TokensManageTableViewCellDelegate: AnyObject {
 
 final class TokensManageTableViewCell: UITableViewCell {
     private enum Constants {
-        static let iconSize = CGSize(width: 40, height: 40)
+        static let iconBackgroundSize = CGSize(width: 40, height: 40)
+        static let iconInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        static var iconSize: CGSize {
+            CGSize(
+                width: iconBackgroundSize.width - iconInsets.left - iconInsets.right,
+                height: iconBackgroundSize.height - iconInsets.top - iconInsets.bottom
+            )
+        }
     }
 
     weak var delegate: TokensManageTableViewCellDelegate?
 
-    let iconView = AssetIconView()
+    let iconView: AssetIconView = .create {
+        $0.backgroundView.apply(style: .assetContainer)
+        $0.backgroundView.cornerRadius = Constants.iconBackgroundSize.height / 2.0
+    }
 
     let detailsView: MultiValueView = .create { view in
         view.valueTop.textAlignment = .left
@@ -97,7 +107,7 @@ final class TokensManageTableViewCell: UITableViewCell {
         iconView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalToSuperview()
-            make.size.equalTo(Constants.iconSize)
+            make.size.equalTo(Constants.iconBackgroundSize)
         }
 
         contentView.addSubview(switchView)

@@ -24,10 +24,31 @@ struct MultichainToken {
     }
 }
 
+extension MultichainToken.Instance {
+    func byChangingEnabled(_ enabled: Bool) -> MultichainToken.Instance {
+        .init(chainAssetId: chainAssetId, chainName: chainName, enabled: enabled, icon: icon)
+    }
+}
+
+extension MultichainToken {
+    func byChangingEnabled(_ enabled: Bool, for chainAssetId: ChainAssetId? = nil) -> MultichainToken {
+        let newInstances = instances.map { instance in
+            if chainAssetId == nil || chainAssetId == instance.chainAssetId {
+                return instance.byChangingEnabled(enabled)
+            } else {
+                return instance
+            }
+        }
+
+        return .init(symbol: symbol, instances: newInstances)
+    }
+}
+
 extension Array where Element == ChainModel {
     func createMultichainTokens() -> [MultichainToken] {
         let mapping = reduce(into: [String: MultichainToken]()) { accum, chain in
-            for asset in chain.assets {
+            let assets = chain.assets.sorted { $0.assetId < $1.assetId }
+            for asset in assets {
                 let instance = MultichainToken.Instance(
                     chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
                     chainName: chain.name,
@@ -55,15 +76,19 @@ extension Array where Element == ChainModel {
 
         return mapping.values.sorted { token1, token2 in
             guard
-                let chainId1 = token1.instances.first?.chainAssetId.chainId,
-                let chainId2 = token2.instances.first?.chainAssetId.chainId else {
+                let chainAssetId1 = token1.instances.first?.chainAssetId,
+                let chainAssetId2 = token2.instances.first?.chainAssetId else {
                 return true
             }
 
-            let order1 = chainOrders[chainId1] ?? Int.max
-            let order2 = chainOrders[chainId2] ?? Int.max
+            let order1 = chainOrders[chainAssetId1.chainId] ?? Int.max
+            let order2 = chainOrders[chainAssetId2.chainId] ?? Int.max
 
-            return order1 < order2
+            if order1 != order2 {
+                return order1 < order2
+            } else {
+                return chainAssetId1.assetId < chainAssetId2.assetId
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ final class TokensManageViewModelFactory {
     ) -> String {
         let enabledInstances = token.enabledInstances()
 
-        if token.instances.count == enabledInstances.count {
+        if enabledInstances.isEmpty || token.instances.count == enabledInstances.count {
             return R.string.localizable.tokensManageAllSelected(preferredLanguages: locale.rLanguages)
         } else if let instance = enabledInstances.first {
             if enabledInstances.count > 1 {
