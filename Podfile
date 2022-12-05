@@ -50,13 +50,19 @@ end
 post_install do |installer|
   dev_team = ""
   project = installer.aggregate_targets[0].user_project
+  project.targets.each do |target|
+      target.build_configurations.each do |config|
+          if dev_team.empty? and !config.build_settings['DEVELOPMENT_TEAM'].nil?
+              dev_team = config.build_settings['DEVELOPMENT_TEAM']
+          end
+      end
+  end
+
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['ENABLE_BITCODE'] = 'NO'
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-      if dev_team.empty? and !config.build_settings['DEVELOPMENT_TEAM'].nil?
-        dev_team = config.build_settings['DEVELOPMENT_TEAM']
-      end
+      config.build_settings['DEVELOPMENT_TEAM'] = dev_team
     end
   end
 end
