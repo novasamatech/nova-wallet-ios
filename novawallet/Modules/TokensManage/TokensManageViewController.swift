@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class TokensManageViewController: UIViewController, ViewHolder {
     typealias RootViewType = TokensManageViewLayout
@@ -8,8 +9,6 @@ final class TokensManageViewController: UIViewController, ViewHolder {
     typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, TokensManageViewModel>
 
     let presenter: TokensManagePresenterProtocol
-
-    private var items: [String: TokensManageViewModel] = [:]
 
     private lazy var dataSource = makeDataSource()
 
@@ -128,15 +127,40 @@ extension TokensManageViewController: TokensManageTableViewCellDelegate {
 
 extension TokensManageViewController: TokensManageViewProtocol {
     func didReceive(viewModels: [TokensManageViewModel]) {
-        items = viewModels.reduce(into: [String: TokensManageViewModel]()) {
-            $0[$1.symbol] = $1
-        }
-
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
 
         dataSource.apply(snapshot, animatingDifferences: false)
+
+        reloadEmptyState(animated: false)
+    }
+}
+
+extension TokensManageViewController: EmptyStateViewOwnerProtocol {
+    var emptyStateDelegate: EmptyStateDelegate { self }
+    var emptyStateDataSource: EmptyStateDataSource { self }
+}
+
+extension TokensManageViewController: EmptyStateDataSource {
+    var viewForEmptyState: UIView? {
+        let emptyView = EmptyStateView()
+        emptyView.image = R.image.iconLoadingError()!
+        emptyView.title = R.string.localizable.tokensManageSearchEmpty(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        emptyView.titleColor = R.color.colorTextSecondary()!
+        emptyView.titleFont = .regularFootnote
+        return emptyView
+    }
+}
+
+extension TokensManageViewController: EmptyStateDelegate {
+    var shouldDisplayEmptyState: Bool {
+        let hasQuery = !(rootView.searchTextField.text ?? "").isEmpty
+        let hasNoItems = dataSource.snapshot().numberOfItems(inSection: .main) == 0
+
+        return hasQuery && hasNoItems
     }
 }
 
@@ -144,6 +168,7 @@ extension TokensManageViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
+            reloadEmptyState(animated: false)
         }
     }
 }
