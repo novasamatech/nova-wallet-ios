@@ -1085,3 +1085,4 @@
 "tokens.manage.search" = "Search by token";
 "tokens.manage.all.selected" = "All networks";
 "tokens.manage.partial.selected" = "%@ (%@ more)";
+"tokens.manage.search.empty" = "No tokens with entered name were\nfound";

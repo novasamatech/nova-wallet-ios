@@ -1085,3 +1085,4 @@
 "tokens.manage.search" = "Поиск по токену";
 "tokens.manage.all.selected" = "Все сети";
 "tokens.manage.partial.selected" = "%@ (ещё %@)";
+"tokens.manage.search.empty" = "Для введенного имени токены\nне найдены";
