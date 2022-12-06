@@ -60,7 +60,7 @@ final class TokensManageViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.assetsManageTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string.localizable.tokensManageTitle(preferredLanguages: selectedLocale.rLanguages)
 
         rootView.addTokenButton.title = R.string.localizable.commonAddToken(
             preferredLanguages: selectedLocale.rLanguages
