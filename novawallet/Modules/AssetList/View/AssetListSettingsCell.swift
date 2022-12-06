@@ -10,9 +10,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
 
     let settingsButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
-        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorIconChip()!)
+        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
         button.triangularedBlurView?.overlayView?.highlightedFillColor =
@@ -32,9 +30,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
 
     let searchButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
-        button.imageWithTitleView?.iconImage = R.image.iconSearchButton()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorIconChip()!)
+        button.imageWithTitleView?.iconImage = R.image.iconSearchButton()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
         button.triangularedBlurView?.overlayView?.highlightedFillColor =
