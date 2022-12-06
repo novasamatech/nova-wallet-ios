@@ -67,9 +67,9 @@ extension VoteStatusSectionView {
 extension VoteStatusSectionView {
     private enum Constants {
         enum TitleLabelInsets {
-            static let top: CGFloat = 24
-            static let leading: CGFloat = 20
-            static let bottom: CGFloat = 8
+            static let top: CGFloat = 8
+            static let leading: CGFloat = 16
+            static let bottom: CGFloat = 16
         }
 
         enum CountView {
