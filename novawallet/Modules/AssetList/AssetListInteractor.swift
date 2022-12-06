@@ -72,7 +72,7 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
         presenter?.didReceiveChainModelChanges(changes)
 
-        updateAccountInfoSubscription(from: changes)
+        updateAssetBalanceSubscription(from: changes)
         setupNftSubscription(from: Array(availableChains.values))
         updateLocksSubscription(from: changes)
         updateCrowdloansSubscription(from: Array(availableChains.values))
@@ -110,13 +110,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
     override func applyChanges(
         allChanges: [DataProviderChange<ChainModel>],
-        accountDependentChanges: [DataProviderChange<ChainModel>]
+        enabledChainChanges: [DataProviderChange<ChainModel>]
     ) {
-        super.applyChanges(allChanges: allChanges, accountDependentChanges: accountDependentChanges)
+        super.applyChanges(allChanges: allChanges, enabledChainChanges: enabledChainChanges)
 
         updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
-        updateLocksSubscription(from: allChanges)
+        updateLocksSubscription(from: enabledChainChanges)
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
