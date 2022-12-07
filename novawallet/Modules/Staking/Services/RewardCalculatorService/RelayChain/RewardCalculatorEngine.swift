@@ -150,6 +150,11 @@ class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
         fatalError("Child class must override this method")
     }
 
+    func calculateReturnForStake(_ stake: Decimal, commission: Decimal) -> Decimal {
+        let annualInflation = calculateAnnualInflation()
+        return (annualInflation * averageStake / (stakedPortion * stake)) * (1.0 - commission)
+    }
+
     func calculateEarnings(
         amount: Decimal,
         validatorAccountId: Data,
@@ -184,11 +189,6 @@ class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
             isCompound: isCompound,
             period: period
         )
-    }
-
-    private func calculateReturnForStake(_ stake: Decimal, commission: Decimal) -> Decimal {
-        let annualInflation = calculateAnnualInflation()
-        return (annualInflation * averageStake / (stakedPortion * stake)) * (1.0 - commission)
     }
 
     private func calculateEarningsForValidator(
