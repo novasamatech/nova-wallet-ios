@@ -31,7 +31,8 @@ extension NSPredicate {
     static func filterTransactionsBy(
         address: String,
         chainId: ChainModel.Id,
-        assetId: UInt32
+        assetId: UInt32,
+        source: TransactionHistoryItemSource?
     ) -> NSPredicate {
         let senderPredicate = filterTransactionsBySender(address: address)
         let receiverPredicate = filterTransactionsByReceiver(address: address)
@@ -39,24 +40,32 @@ extension NSPredicate {
         let assetPredicate = filterTransactionsByAssetId(assetId)
 
         let orPredicates = [senderPredicate, receiverPredicate]
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             chainPredicate,
             assetPredicate,
             NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
         ])
+
+        if let source = source {
+            let sourcePredicate = filterTransactionsBySource(source)
+            return NSCompoundPredicate(andPredicateWithSubpredicates: [compoundPredicate, sourcePredicate])
+        } else {
+            return compoundPredicate
+        }
     }
 
     static func filterUtilityAssetTransactionsBy(
         address: String,
         chainId: ChainModel.Id,
-        utilityAssetId: UInt32
+        utilityAssetId: UInt32,
+        source: TransactionHistoryItemSource?
     ) -> NSPredicate {
         let senderPredicate = filterTransactionsBySender(address: address)
         let receiverPredicate = filterTransactionsByReceiver(address: address)
         let chainPredicate = filterTransactionsByChainId(chainId)
         let assetPredicate = filterTransactionsByAssetId(utilityAssetId)
 
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             chainPredicate,
             NSCompoundPredicate(
                 orPredicateWithSubpredicates: [
@@ -68,30 +77,41 @@ extension NSPredicate {
                 ]
             )
         ])
+
+        if let source = source {
+            let sourcePredicate = filterTransactionsBySource(source)
+            return NSCompoundPredicate(andPredicateWithSubpredicates: [compoundPredicate, sourcePredicate])
+        } else {
+            return compoundPredicate
+        }
     }
 
     static func filterTransactionsBy(transactionId: String) -> NSPredicate {
         NSPredicate(
             format: "%K == %@",
-            #keyPath(CDTransactionHistoryItem.identifier),
+            #keyPath(CDTransactionItem.identifier),
             transactionId
         )
     }
 
     static func filterTransactionsBySender(address: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.sender), address)
+        NSPredicate(format: "%K == %@", #keyPath(CDTransactionItem.sender), address)
     }
 
     static func filterTransactionsByReceiver(address: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.receiver), address)
+        NSPredicate(format: "%K == %@", #keyPath(CDTransactionItem.receiver), address)
     }
 
     static func filterTransactionsByChainId(_ chainId: String) -> NSPredicate {
-        NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.chainId), chainId)
+        NSPredicate(format: "%K == %@", #keyPath(CDTransactionItem.chainId), chainId)
     }
 
     static func filterTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
-        NSPredicate(format: "%K == %d", #keyPath(CDTransactionHistoryItem.assetId), assetId)
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.assetId), Int32(bitPattern: assetId))
+    }
+
+    static func filterTransactionsBySource(_ source: TransactionHistoryItemSource) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionItem.source), source.rawValue)
     }
 
     static func filterContactsByTarget(address: String) -> NSPredicate {

@@ -12,34 +12,10 @@ extension WalletNetworkFacade {
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
         let chain = chainAsset.chain
 
-        let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
-
-        if !chainAsset.asset.isEvm {
-            if let baseUrl = chain.externalApi?.history?.url {
-                do {
-                    let asset = chainAsset.asset
-                    let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
-                    let historyAssetId = try assetMapper.historyAssetId()
-
-                    maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(
-                        url: baseUrl,
-                        filter: filter,
-                        assetId: historyAssetId
-                    )
-                } catch {
-                    maybeRemoteHistoryFactory = nil
-                }
-            } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
-                maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
-                    baseURL: fallbackUrl,
-                    walletFilter: filter
-                )
-            } else {
-                maybeRemoteHistoryFactory = nil
-            }
-        } else {
-            maybeRemoteHistoryFactory = nil
-        }
+        let maybeRemoteHistoryFactory = AssetHistoryFacade().createOperationFactory(
+            for: chainAsset,
+            filter: filter
+        )
 
         if let remoteFactory = maybeRemoteHistoryFactory {
             return createRemoteUtilityAssetHistory(
@@ -89,10 +65,12 @@ extension WalletNetworkFacade {
 
         let localFetchOperation: BaseOperation<[TransactionHistoryItem]>?
 
+        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
         let txStorage = repositoryFactory.createUtilityAssetTxRepository(
             for: address,
             chainId: chain.chainId,
-            assetId: chainAsset.asset.assetId
+            assetId: chainAsset.asset.assetId,
+            source: source
         )
 
         if pagination.context == nil {
@@ -155,17 +133,20 @@ extension WalletNetworkFacade {
 
         let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
 
+        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
         if utilityAsset.assetId == chainAsset.asset.assetId {
             txStorage = repositoryFactory.createUtilityAssetTxRepository(
                 for: address,
                 chainId: chainAsset.chain.chainId,
-                assetId: utilityAsset.assetId
+                assetId: utilityAsset.assetId,
+                source: source
             )
         } else {
             txStorage = repositoryFactory.createCustomAssetTxRepository(
                 for: address,
                 chainId: chainAsset.chain.chainId,
-                assetId: chainAsset.asset.assetId
+                assetId: chainAsset.asset.assetId,
+                source: source
             )
         }
 
@@ -204,9 +185,7 @@ extension WalletNetworkFacade {
         address: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
         ClosureOperation {
-            // ignore remote transactions if not received
-            let optRemoteTransactions = try? remoteOperation?.extractNoCancellableResultData().historyItems
-            let remoteTransactions = optRemoteTransactions ?? []
+            let remoteTransactions = try remoteOperation?.extractNoCancellableResultData().historyItems ?? []
 
             if let localTransactions = try localOperation?.extractNoCancellableResultData(),
                !localTransactions.isEmpty {
@@ -222,7 +201,8 @@ extension WalletNetworkFacade {
                     item.createTransactionForAddress(
                         address,
                         assetId: chainAsset.chainAssetId.walletId,
-                        chainAssetInfo: chainAsset.chainAssetInfo
+                        chainAsset: chainAsset,
+                        utilityAsset: utilityAsset
                     )
                 }
 
