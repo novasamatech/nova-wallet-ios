@@ -57,6 +57,10 @@ final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
         try? context?.prepareAccountUpdateCommand().execute()
     }
 
+    func processAssetBalanceChanged(event _: AssetBalanceChanged) {
+        try? context?.prepareAccountUpdateCommand().execute()
+    }
+
     private func subscribe(for wallet: MetaAccountModel, chainAsset: ChainAsset) {
         guard let accountId = wallet.fetch(for: chainAsset.chain.accountRequest())?.accountId else {
             return

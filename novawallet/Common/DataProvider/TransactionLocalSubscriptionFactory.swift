@@ -63,7 +63,7 @@ extension TransactionLocalSubscriptionFactory: TransactionLocalSubscriptionFacto
         }
 
         let filter = NSPredicate.filterTransactionsBy(transactionId: txId)
-        let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem>
+        let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionItem>
             = storageFacade.createRepository(filter: filter)
 
         let observable = CoreDataContextObservable(

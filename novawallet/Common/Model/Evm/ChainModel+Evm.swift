@@ -3,8 +3,7 @@ import BigInt
 
 extension AssetModel {
     var isEvm: Bool {
-        // TODO: Replace Asset Type when ready
-        type == "evm"
+        type == AssetType.evm.rawValue
     }
 
     var evmContractAddress: AccountAddress? {

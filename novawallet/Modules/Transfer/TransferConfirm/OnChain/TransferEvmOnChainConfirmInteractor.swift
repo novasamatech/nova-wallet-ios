@@ -46,6 +46,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         details: PersistTransferDetails
     ) {
         persistExtrinsicService.saveTransfer(
+            source: .evm,
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             details: details,
             runningIn: .main

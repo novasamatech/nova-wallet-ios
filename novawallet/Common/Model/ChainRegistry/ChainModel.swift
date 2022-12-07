@@ -17,11 +17,61 @@ struct ChainModel: Equatable, Codable, Hashable {
         let url: URL
     }
 
+    struct TransactionHistoryApi: Codable, Hashable {
+        let serviceType: String
+        let url: URL
+        let assetType: String?
+
+        init(
+            serviceType: String,
+            url: URL,
+            assetType: String?
+        ) {
+            self.serviceType = serviceType
+            self.url = url
+            self.assetType = assetType
+        }
+
+        init(remoteModel: RemoteTransactionHistoryApi) {
+            serviceType = remoteModel.type
+            url = remoteModel.url
+            assetType = remoteModel.assetType
+        }
+    }
+
     struct ExternalApiSet: Codable, Hashable {
         let staking: ExternalApi?
-        let history: ExternalApi?
+        let history: Set<TransactionHistoryApi>?
         let crowdloans: ExternalApi?
         let governance: ExternalApi?
+
+        init(
+            staking: ExternalApi?,
+            history: Set<TransactionHistoryApi>?,
+            crowdloans: ExternalApi?,
+            governance: ExternalApi?
+        ) {
+            self.staking = staking
+            self.history = history
+            self.crowdloans = crowdloans
+            self.governance = governance
+        }
+
+        init(remoteModel: RemoteChainExternalApiSet) {
+            staking = remoteModel.staking
+            crowdloans = remoteModel.crowdloans
+            governance = remoteModel.governance
+
+            let optHistoryApis = remoteModel.history?.map {
+                TransactionHistoryApi(remoteModel: $0)
+            }
+
+            if let historyApis = optHistoryApis {
+                history = Set(historyApis)
+            } else {
+                history = nil
+            }
+        }
     }
 
     struct Explorer: Codable, Hashable {
@@ -97,7 +147,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         types = remoteModel.types
         icon = remoteModel.icon
         options = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) }
-        externalApi = remoteModel.externalApi
+        externalApi = remoteModel.externalApi.map { ExternalApiSet(remoteModel: $0) }
         explorers = remoteModel.explorers
         additional = remoteModel.additional
 

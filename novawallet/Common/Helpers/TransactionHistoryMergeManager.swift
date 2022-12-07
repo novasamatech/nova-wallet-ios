@@ -75,7 +75,8 @@ enum TransactionHistoryMergeItem {
             return item.createTransactionForAddress(
                 address,
                 assetId: chainAsset.chainAssetId.walletId,
-                chainAssetInfo: chainAsset.chainAssetInfo
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         }
     }
@@ -116,9 +117,9 @@ final class TransactionHistoryMergeManager {
         let existingHashes = Set(remoteItems.map(\.localIdentifier))
         let minRemoteItem = remoteItems.last
 
-        let hashesToRemove: [String] = localItems.compactMap { item in
-            if existingHashes.contains(item.txHash) {
-                return item.txHash
+        let identifiersToRemove: [String] = localItems.compactMap { item in
+            if existingHashes.contains(item.identifier) {
+                return item.identifier
             }
 
             guard let remoteItem = minRemoteItem else {
@@ -126,15 +127,15 @@ final class TransactionHistoryMergeManager {
             }
 
             if item.timestamp < remoteItem.itemTimestamp {
-                return item.txHash
+                return item.identifier
             }
 
             return nil
         }
 
-        let filterSet = Set(hashesToRemove)
+        let filterSet = Set(identifiersToRemove)
         let localMergeItems: [TransactionHistoryMergeItem] = localItems.compactMap { item in
-            guard !filterSet.contains(item.txHash) else {
+            guard !filterSet.contains(item.identifier) else {
                 return nil
             }
 
@@ -157,7 +158,7 @@ final class TransactionHistoryMergeManager {
 
         let results = TransactionHistoryMergeResult(
             historyItems: transactionsItems,
-            identifiersToRemove: hashesToRemove
+            identifiersToRemove: identifiersToRemove
         )
 
         return results

@@ -54,13 +54,14 @@ final class EvmTransactionHistoryUpdater {
         logger.debug("Saving new ERC20 transaction \(event.transactionHash.toHex(includePrefix: true))")
 
         let historyItem = TransactionHistoryItem(
+            source: .evm,
             chainId: assetContract.chainAssetId.chainId,
             assetId: assetContract.chainAssetId.assetId,
             sender: transferEvent.sender,
             receiver: transferEvent.receiver,
             amountInPlank: String(transferEvent.amount),
             status: .success,
-            txHash: event.transactionHash.toHex(),
+            txHash: event.transactionHash.toHex(includePrefix: true),
             timestamp: Int64(Date().timeIntervalSince1970),
             fee: nil,
             blockNumber: UInt64(event.blockNumber),

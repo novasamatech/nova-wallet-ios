@@ -3,6 +3,7 @@ import RobinHood
 
 protocol PersistentExtrinsicServiceProtocol {
     func saveTransfer(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistTransferDetails,
         runningIn queue: DispatchQueue,
@@ -10,6 +11,7 @@ protocol PersistentExtrinsicServiceProtocol {
     )
 
     func saveExtrinsic(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistExtrinsicDetails,
         runningIn queue: DispatchQueue,
@@ -32,12 +34,14 @@ final class PersistentExtrinsicService {
 
 extension PersistentExtrinsicService: PersistentExtrinsicServiceProtocol {
     func saveTransfer(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistTransferDetails,
         runningIn queue: DispatchQueue,
         completion closure: @escaping (Result<Void, Error>) -> Void
     ) {
         let wrapper = factory.createTransferSaveOperation(
+            source: source,
             chainAssetId: chainAssetId,
             details: details
         )
@@ -57,12 +61,14 @@ extension PersistentExtrinsicService: PersistentExtrinsicServiceProtocol {
     }
 
     func saveExtrinsic(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistExtrinsicDetails,
         runningIn queue: DispatchQueue,
         completion closure: @escaping (Result<Void, Error>) -> Void
     ) {
         let wrapper = factory.createExtrinsicSaveOperation(
+            source: source,
             chainAssetId: chainAssetId,
             details: details
         )

@@ -41,6 +41,7 @@ extension TransactionHistoryItem {
 
             let txHash = extrinsic.extrinsicHash ?? result.extrinsicHash
             return TransactionHistoryItem(
+                source: .substrate,
                 chainId: chain.chainId,
                 assetId: asset.assetId,
                 sender: sender,
