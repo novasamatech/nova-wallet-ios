@@ -12,8 +12,11 @@ struct AssetDetailsViewFactory {
 
         let interactor = AssetDetailsInteractor(
             selectedMetaAccount: wallet,
-            chain: chain,
-            asset: asset
+            chainAsset: ChainAsset(chain: chain, asset: asset),
+            purchaseProvider: PurchaseAggregator.defaultAggregator(),
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager
         )
         let wireframe = AssetDetailsWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -26,6 +29,8 @@ struct AssetDetailsViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             localizableManager: LocalizationManager.shared,
             asset: asset,
+            chain: chain,
+            selectedAccountType: wallet.type,
             wireframe: wireframe
         )
 

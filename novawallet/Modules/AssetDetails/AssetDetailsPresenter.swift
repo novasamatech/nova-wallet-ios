@@ -8,21 +8,29 @@ final class AssetDetailsPresenter {
     let interactor: AssetDetailsInteractorInputProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let asset: AssetModel
+    let chain: ChainModel
     private var priceData: PriceData?
     private var balance: AssetBalance?
     private var locks: [AssetLock] = []
+    private var purchaseActions: [PurchaseAction] = []
+    private var availableOperations: Operations = []
+    private var selectedAccountType: MetaAccountModelType
 
     init(
         interactor: AssetDetailsInteractorInputProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizableManager: LocalizationManagerProtocol,
         asset: AssetModel,
+        chain: ChainModel,
+        selectedAccountType: MetaAccountModelType,
         wireframe: AssetDetailsWireframeProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.asset = asset
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.chain = chain
+        self.selectedAccountType = selectedAccountType
         localizationManager = localizableManager
     }
 
@@ -71,13 +79,77 @@ final class AssetDetailsPresenter {
         view.didReceive(totalBalance: totalBalance)
         view.didReceive(transferableBalance: transferableBalance)
         view.didReceive(lockedBalance: lockedBalance, isSelectable: !locks.isEmpty)
-        view.didReceive(availableOperations: .send)
+        view.didReceive(availableOperations: availableOperations)
     }
 }
 
 extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     func setup() {
         interactor.setup()
+    }
+
+    func didTapSendButton() {
+        wireframe.showSendTokens(
+            from: view,
+            chainAsset: ChainAsset(chain: chain, asset: asset)
+        )
+    }
+
+    func didTapReceiveButton() {
+        switch selectedAccountType {
+        case .secrets, .paritySigner:
+            wireframe.showReceiveTokens(from: view)
+        case .ledger:
+            if let assetRawType = asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                wireframe.showLedgerNotSupport(for: asset.symbol, from: view)
+            } else {
+                wireframe.showReceiveTokens(from: view)
+            }
+
+        case .watchOnly:
+            wireframe.showNoSigning(from: view)
+        }
+    }
+
+    func didTapBuyButton() {
+        guard !purchaseActions.isEmpty else {
+            return
+        }
+
+        switch selectedAccountType {
+        case .secrets, .paritySigner:
+            showPurchase()
+        case .ledger:
+            if let assetRawType = asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                wireframe.showLedgerNotSupport(for: asset.symbol, from: view)
+            } else {
+                showPurchase()
+            }
+        case .watchOnly:
+            wireframe.showNoSigning(from: view)
+        }
+    }
+
+    private func showPurchase() {
+        guard !purchaseActions.isEmpty else {
+            return
+        }
+        if purchaseActions.count == 1 {
+            wireframe.showPurchaseTokens(
+                from: view,
+                action: purchaseActions[0]
+            )
+        } else {
+            wireframe.showPurchaseProviders(
+                from: view,
+                actions: purchaseActions,
+                delegate: self
+            )
+        }
+    }
+
+    func didTapLocks() {
+        wireframe.showLocks(from: view)
     }
 }
 
@@ -97,6 +169,16 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
+    func didReceive(purchaseActions: [PurchaseAction]) {
+        self.purchaseActions = purchaseActions
+        updateView()
+    }
+
+    func didReceive(availableOperations: Operations) {
+        self.availableOperations = availableOperations
+        updateView()
+    }
+
     func didReceive(error _: AssetDetailsError) {}
 }
 
@@ -105,5 +187,14 @@ extension AssetDetailsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+extension AssetDetailsPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
+        wireframe.showPurchaseTokens(
+            from: view,
+            action: purchaseActions[index]
+        )
     }
 }

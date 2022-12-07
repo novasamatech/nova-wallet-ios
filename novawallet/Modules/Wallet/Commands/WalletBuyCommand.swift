@@ -13,7 +13,7 @@ final class WalletBuyCommand: WalletCommandProtocol {
     func execute() throws {
         guard
             let commandFactory = commandFactory,
-            let webView = PurchaseViewFactory.createView(
+            let webView = PurchaseViewFactoryLegacy.createView(
                 for: action,
                 commandFactory: commandFactory
             )

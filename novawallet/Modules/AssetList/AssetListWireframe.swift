@@ -10,18 +10,18 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        guard let view = AssetDetailsViewFactory.createView(
+        guard let assetDetailsView = AssetDetailsViewFactory.createView(
             chain: chain,
             asset: asset
         ) else {
             return
         }
-        guard let navigationController = view.controller.navigationController else {
+        guard let navigationController = view?.controller.navigationController else {
             return
         }
 
         navigationController.pushViewController(
-            view.controller,
+            assetDetailsView.controller,
             animated: true
         )
     }
