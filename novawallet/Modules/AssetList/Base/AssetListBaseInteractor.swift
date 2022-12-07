@@ -134,10 +134,47 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         updateCrowdloansSubscription(from: Array(enabledChains.values))
     }
 
+    func resetWallet() {
+        clearAccountSubscriptions()
+        clearCrowdloansSubscription()
+
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
+        let changes = availableChains.values.map { DataProviderChange.insert(newItem: $0) }
+
+        enabledChains = [:]
+        availableChains = [:]
+
+        let accountDependentChanges = convertToAccountDependentChanges(changes, selectedWallet: selectedMetaAccount)
+        let assetDependentChanges = convertToAssetEnabledChanges(
+            accountDependentChanges,
+            allEnabledChains: enabledChains
+        )
+
+        basePresenter?.didReceiveChainModelChanges(assetDependentChanges)
+
+        didResetWallet(allChanges: changes, enabledChainChanges: assetDependentChanges)
+    }
+
+    func didResetWallet(
+        allChanges: [DataProviderChange<ChainModel>],
+        enabledChainChanges: [DataProviderChange<ChainModel>]
+    ) {
+        availableChains = allChanges.mergeToDict(availableChains)
+        enabledChains = enabledChainChanges.mergeToDict(enabledChains)
+
+        updateAssetBalanceSubscription(from: enabledChainChanges)
+        updateCrowdloansSubscription(from: Array(enabledChains.values))
+    }
+
     func updateAssetBalanceSubscription(from changes: [DataProviderChange<ChainModel>]) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
+
+        let previousMappingIds = Set(assetBalanceIdMapping.keys)
 
         assetBalanceIdMapping = changes.reduce(into: assetBalanceIdMapping) { result, change in
             switch change {
@@ -164,6 +201,14 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
                 }
             case let .delete(deletedIdentifier):
                 result = result.filter { $0.value.chainId != deletedIdentifier }
+            }
+        }
+
+        let newMappingKeys = Set(assetBalanceIdMapping.keys)
+
+        for newKey in newMappingKeys {
+            if !previousMappingIds.contains(newKey), let accountId = assetBalanceIdMapping[newKey]?.accountId {
+                assetBalanceSubscriptions[accountId] = nil
             }
         }
 
