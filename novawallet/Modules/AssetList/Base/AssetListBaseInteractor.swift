@@ -443,7 +443,9 @@ extension AssetListBaseInteractor: CrowdloanContributionLocalSubscriptionHandler
         guard let chainAccountId = selectedMetaAccount.fetch(
             for: chain.accountRequest()
         )?.accountId, chainAccountId == accountId else {
-            logger?.warning("Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different")
+            logger?.warning(
+                "Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different"
+            )
             return
         }
 
