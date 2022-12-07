@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import CommonWallet
 
-final class PurchaseViewFactory: PurchaseViewFactoryProtocol {
+final class PurchaseViewFactoryLegacy: PurchaseViewFactoryProtocol {
     static func createView(
         for action: PurchaseAction,
         commandFactory: WalletCommandFactoryProtocol

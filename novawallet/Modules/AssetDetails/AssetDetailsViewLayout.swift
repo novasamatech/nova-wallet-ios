@@ -1,8 +1,17 @@
 import UIKit
 import SoraUI
+import SnapKit
 
 final class AssetDetailsViewLayout: UIView {
-    private let preferredRowHeight: CGFloat = 48
+    let backgroundView = MultigradientView.background
+
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 6.0, left: 16, bottom: 24, right: 16)
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
+        return view
+    }()
 
     let headerCell: StackTableHeaderCell = .create {
         $0.titleLabel.apply(style: .regularSubhedlineSecondary)
@@ -31,6 +40,7 @@ final class AssetDetailsViewLayout: UIView {
         $0.changesContentOpacityWhenHighlighted = true
         $0.imageWithTitleView?.layoutType = .verticalImageFirst
         $0.isEnabled = false
+        $0.imageWithTitleView?.iconImage = R.image.iconSend()
     }
 
     let receiveButton: RoundedButton = .create {
@@ -40,6 +50,7 @@ final class AssetDetailsViewLayout: UIView {
         $0.changesContentOpacityWhenHighlighted = true
         $0.imageWithTitleView?.layoutType = .verticalImageFirst
         $0.isEnabled = false
+        $0.imageWithTitleView?.iconImage = R.image.iconReceive()
     }
 
     let buyButton: RoundedButton = .create {
@@ -49,6 +60,7 @@ final class AssetDetailsViewLayout: UIView {
         $0.changesContentOpacityWhenHighlighted = true
         $0.imageWithTitleView?.layoutType = .verticalImageFirst
         $0.isEnabled = false
+        $0.imageWithTitleView?.iconImage = R.image.iconBuy()
     }
 
     private lazy var buttonsRow = PayButtonsRow(
@@ -74,9 +86,24 @@ final class AssetDetailsViewLayout: UIView {
     }
 
     private func setupLayout() {
+        balanceTableView.addArrangedSubview(headerCell)
         balanceTableView.addArrangedSubview(totalCell)
         balanceTableView.addArrangedSubview(transferrableCell)
         balanceTableView.addArrangedSubview(lockCell)
+
+        addSubview(backgroundView)
+        backgroundView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
+        addSubview(containerView)
+        containerView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
+        containerView.stackView.spacing = 8
+        containerView.stackView.addArrangedSubview(balanceTableView)
+        containerView.stackView.addArrangedSubview(buttonsRow)
     }
 
     func set(locale: Locale) {
@@ -122,9 +149,16 @@ final class PayButtonsRow: RowView<UIStackView>, StackTableViewCellProtocol {
     private func configureStyle() {
         preferredHeight = 80
         borderView.strokeColor = R.color.colorDivider()!
-        isUserInteractionEnabled = false
+        isUserInteractionEnabled = true
+        rowContentView.isUserInteractionEnabled = true
         rowContentView.distribution = .fillEqually
         rowContentView.axis = .horizontal
+        backgroundColor = .clear
+
+        roundedBackgroundView.applyFilledBackgroundStyle()
+        roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
+        roundedBackgroundView.cornerRadius = 12
+        roundedBackgroundView.roundingCorners = .allCorners
     }
 }
 

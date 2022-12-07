@@ -11,8 +11,8 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
         localizableManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        localizationManager = localizableManager
         super.init(nibName: nil, bundle: nil)
+        localizationManager = localizableManager
     }
 
     @available(*, unavailable)
@@ -28,7 +28,31 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         applyLocalization()
+        addHandlers()
         presenter.setup()
+    }
+
+    private func addHandlers() {
+        rootView.sendButton.addTarget(self, action: #selector(didTapSendButton), for: .touchUpInside)
+        rootView.receiveButton.addTarget(self, action: #selector(didTapReceiveButton), for: .touchUpInside)
+        rootView.buyButton.addTarget(self, action: #selector(didTapBuyButton), for: .touchUpInside)
+        rootView.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
+    }
+
+    @objc func didTapSendButton() {
+        presenter.didTapSendButton()
+    }
+
+    @objc func didTapReceiveButton() {
+        presenter.didTapReceiveButton()
+    }
+
+    @objc func didTapBuyButton() {
+        presenter.didTapBuyButton()
+    }
+
+    @objc func didTapLocks() {
+        presenter.didTapLocks()
     }
 }
 

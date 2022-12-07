@@ -3,11 +3,18 @@ import RobinHood
 
 final class AssetDetailsInteractor {
     weak var presenter: AssetDetailsInteractorOutputProtocol!
-    let chain: ChainModel
-    let asset: AssetModel
+    let chainAsset: ChainAsset
+    var chain: ChainModel { chainAsset.chain }
+    var asset: AssetModel { chainAsset.asset }
     let selectedMetaAccount: MetaAccountModel
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let purchaseProvider: PurchaseProviderProtocol
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var assetLocksSubscription: StreamableProvider<AssetLock>?
+    private var priceSubscription: AnySingleValueProvider<PriceData>?
+    private var assetBalanceSubscription: StreamableProvider<AssetBalance>?
+
     private var locks: [AssetLock] = []
     private var accountId: AccountId? {
         selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
@@ -15,20 +22,69 @@ final class AssetDetailsInteractor {
 
     init(
         selectedMetaAccount: MetaAccountModel,
-        chain: ChainModel,
-        asset: AssetModel
+        chainAsset: ChainAsset,
+        purchaseProvider: PurchaseProviderProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        currencyManager: CurrencyManagerProtocol
     ) {
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.selectedMetaAccount = selectedMetaAccount
-        self.chain = chain
-        self.asset = asset
+        self.chainAsset = chainAsset
+        self.currencyManager = currencyManager
+        self.purchaseProvider = purchaseProvider
     }
 
     private func subscribePrice() {
         if let priceId = asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+            priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceive(price: nil)
         }
+    }
+
+    private var isTransfersEnable: Bool {
+        if let type = asset.type {
+            switch AssetType(rawValue: type) {
+            case .statemine, .none:
+                return true
+            case .orml:
+                if let extras = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) {
+                    return extras.transfersEnabled ?? true
+                } else {
+                    return false
+                }
+            }
+        } else {
+            return true
+        }
+    }
+
+    private func setAvailableOperations() {
+        guard let accountId = accountId else {
+            return
+        }
+        let assetId = chainAsset.chainAssetId.walletId
+        let operations: Operations
+
+        if isTransfersEnable {
+            operations.insert(.send)
+        }
+
+        let actions = purchaseProvider.buildPurchaseActions(
+            for: chainAsset,
+            accountId: accountId
+        )
+
+        if !actions.isEmpty {
+            operations.insert(.buy)
+        }
+
+        operations.insert(.receive)
+
+        presenter.didReceive(purchaseActions: actions)
+        presenter.didReceive(availableOperations: operations)
     }
 }
 
@@ -38,16 +94,17 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
             return
         }
         subscribePrice()
-        subscribeToAssetBalanceProvider(
+        assetBalanceSubscription = subscribeToAssetBalanceProvider(
             for: accountId,
             chainId: chain.chainId,
             assetId: asset.assetId
         )
-        subscribeToLocksProvider(
+        assetLocksSubscription = subscribeToLocksProvider(
             for: accountId,
             chainId: chain.chainId,
             assetId: asset.assetId
         )
+        setAvailableOperations()
     }
 }
 
@@ -116,7 +173,7 @@ extension AssetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscri
 extension AssetDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         if presenter != nil, let priceId = asset.priceId {
-            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+            priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 }

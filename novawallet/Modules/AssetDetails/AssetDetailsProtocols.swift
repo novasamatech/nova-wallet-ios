@@ -7,6 +7,10 @@ protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol {
 
 protocol AssetDetailsPresenterProtocol: AnyObject {
     func setup()
+    func didTapSendButton()
+    func didTapReceiveButton()
+    func didTapBuyButton()
+    func didTapLocks()
 }
 
 protocol AssetDetailsInteractorInputProtocol: AnyObject {
@@ -18,9 +22,23 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(locks: [AssetLock])
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
+    func didReceive(availableOperations: Operations)
+    func didReceive(purchaseActions: [PurchaseAction])
 }
 
-protocol AssetDetailsWireframeProtocol: AnyObject {}
+protocol AssetDetailsWireframeProtocol: AnyObject {
+    func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
+    func showReceiveTokens(from view: AssetDetailsViewProtocol?)
+    func showPurchaseProviders(
+        from view: AssetDetailsViewProtocol?,
+        actions: [PurchaseAction],
+        delegate: ModalPickerViewControllerDelegate
+    )
+    func showPurchaseTokens(from view: AssetDetailsViewProtocol?, action: PurchaseAction)
+    func showLocks(from view: AssetDetailsViewProtocol?)
+    func showNoSigning(from view: AssetDetailsViewProtocol?)
+    func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?)
+}
 
 enum AssetDetailsError: Error {
     case accountBalance(Error)
