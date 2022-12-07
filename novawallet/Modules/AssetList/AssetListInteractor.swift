@@ -52,30 +52,23 @@ final class AssetListInteractor: AssetListBaseInteractor {
         )
     }
 
-    private func resetWallet() {
-        clearAccountSubscriptions()
+    override func resetWallet() {
         clearNftSubscription()
         clearLocksSubscription()
-        clearCrowdloansSubscription()
 
-        guard let selectedMetaAccount = selectedWalletSettings.value else {
-            return
-        }
+        super.resetWallet()
 
         providerWalletInfo()
+    }
 
-        let changes = availableChains.values.filter {
-            selectedMetaAccount.fetch(for: $0.accountRequest()) != nil
-        }.map {
-            DataProviderChange.insert(newItem: $0)
-        }
+    override func didResetWallet(
+        allChanges: [DataProviderChange<ChainModel>],
+        enabledChainChanges: [DataProviderChange<ChainModel>]
+    ) {
+        super.didResetWallet(allChanges: allChanges, enabledChainChanges: enabledChainChanges)
 
-        presenter?.didReceiveChainModelChanges(changes)
-
-        updateAssetBalanceSubscription(from: changes)
         setupNftSubscription(from: Array(availableChains.values))
-        updateLocksSubscription(from: changes)
-        updateCrowdloansSubscription(from: Array(availableChains.values))
+        updateLocksSubscription(from: enabledChainChanges)
     }
 
     private func clearLocksSubscription() {
