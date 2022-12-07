@@ -20,7 +20,8 @@ protocol WalletRemoteHistoryItemProtocol {
     func createTransactionForAddress(
         _ address: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) -> AssetTransactionData
 }
 
