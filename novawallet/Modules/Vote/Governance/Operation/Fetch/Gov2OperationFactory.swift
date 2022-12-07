@@ -6,7 +6,7 @@ import BigInt
 final class Gov2OperationFactory {
     struct AdditionalInfo {
         let tracks: [Referenda.TrackId: Referenda.TrackInfo]
-        let totalIssuance: BigUInt
+        let electorate: BigUInt
         let undecidingTimeout: Moment
     }
 
@@ -115,6 +115,43 @@ final class Gov2OperationFactory {
         }
     }
 
+    func createElectorateWrapper(
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        from connection: JSONRPCEngine,
+        runtimeProvider _: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<BigUInt> {
+        let totalWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
+            requestFactory.queryItem(
+                engine: connection,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: .totalIssuance,
+                at: blockHash
+            )
+
+        let inactiveWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
+            requestFactory.queryItem(
+                engine: connection,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                storagePath: .inactiveIssuance,
+                at: blockHash
+            )
+
+        let mapOperation = ClosureOperation<BigUInt> {
+            let totalIssuance = try totalWrapper.targetOperation.extractResultData()?.value?.value ?? 0
+            let inactiveIssuance = (try? inactiveWrapper.targetOperation.extractResultData()?.value?.value) ?? 0
+
+            return totalIssuance > inactiveIssuance ? totalIssuance - inactiveIssuance : 0
+        }
+
+        mapOperation.addDependency(totalWrapper.targetOperation)
+        mapOperation.addDependency(inactiveWrapper.targetOperation)
+
+        let dependencies = totalWrapper.allOperations + inactiveWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
     func createAdditionalInfoWrapper(
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
@@ -142,15 +179,14 @@ final class Gov2OperationFactory {
             }
         }
 
-        let totalIssuanceWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
-            requestFactory.queryItem(
-                engine: connection,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .totalIssuance,
-                at: blockHash
-            )
+        let electorateWrapper = createElectorateWrapper(
+            dependingOn: codingFactoryOperation,
+            from: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: blockHash
+        )
 
-        let fetchOperations = [tracksOperation, undecidingTimeoutOperation] + totalIssuanceWrapper.allOperations
+        let fetchOperations = [tracksOperation, undecidingTimeoutOperation] + electorateWrapper.allOperations
         fetchOperations.forEach { $0.addDependency(codingFactoryOperation) }
 
         let mappingOperation = ClosureOperation<AdditionalInfo> {
@@ -160,11 +196,11 @@ final class Gov2OperationFactory {
 
             let undecidingTimeout = try undecidingTimeoutOperation.extractNoCancellableResultData()
 
-            let totalIssuance = try totalIssuanceWrapper.targetOperation.extractNoCancellableResultData().value
+            let electorate = try electorateWrapper.targetOperation.extractNoCancellableResultData()
 
             return AdditionalInfo(
                 tracks: tracks,
-                totalIssuance: totalIssuance?.value ?? 0,
+                electorate: electorate,
                 undecidingTimeout: undecidingTimeout
             )
         }
