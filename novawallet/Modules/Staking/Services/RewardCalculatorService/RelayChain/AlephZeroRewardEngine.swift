@@ -44,10 +44,13 @@ final class AlephZeroRewardEngine: RewardCalculatorEngine {
     }
 
     override func calculateEraReturn(from annualReturn: Decimal) -> Decimal {
-        solveExponential(
-            for: annualReturn,
-            eraDurationInSeconds: eraDurationInSeconds,
-            daysInYear: TimeInterval(CalculationPeriod.year.inDays)
-        )
+        let daysInYear = TimeInterval(CalculationPeriod.year.inDays)
+        let erasInYear = daysInYear * TimeInterval.secondsInDay / eraDurationInSeconds
+
+        guard erasInYear > 0 else {
+            return 0
+        }
+
+        return annualReturn / Decimal(erasInYear)
     }
 }
