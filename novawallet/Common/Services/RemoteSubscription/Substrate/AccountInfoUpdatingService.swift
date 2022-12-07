@@ -71,30 +71,39 @@ final class AccountInfoUpdatingService {
 
         for change in changes {
             switch change {
-            case let .insert(newItem):
-                addSubscriptionIfNeeded(for: newItem)
-            case .update:
-                break
+            case let .insert(newItem), let .update(newItem):
+                updateSubscription(for: newItem)
             case let .delete(deletedIdentifier):
                 removeSubscription(for: deletedIdentifier)
             }
         }
     }
 
-    private func addSubscriptionIfNeeded(for chain: ChainModel) {
+    private func updateSubscription(for chain: ChainModel) {
+        let hasSubscription = subscribedChains[chain.chainId] != nil
+
+        guard let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
+            logger.warning("Native asset not found for chain \(chain.chainId)")
+
+            if hasSubscription {
+                removeSubscription(for: chain.chainId)
+            }
+
+            return
+        }
+
+        if asset.enabled, !hasSubscription {
+            addSubscription(for: chain, asset: asset)
+        } else if hasSubscription, !asset.enabled {
+            removeSubscription(for: chain.chainId)
+        }
+    }
+
+    private func addSubscription(for chain: ChainModel, asset: AssetModel) {
         guard
             let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId,
             let address = try? accountId.toAddress(using: chain.chainFormat) else {
             logger.warning("Couldn't create account for chain \(chain.chainId)")
-            return
-        }
-
-        guard let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
-            logger.warning("Native asset not found for chain \(chain.chainId)")
-            return
-        }
-
-        guard subscribedChains[chain.chainId] == nil else {
             return
         }
 
@@ -151,7 +160,6 @@ final class AccountInfoUpdatingService {
 
     private func removeSubscription(for chainId: ChainModel.Id) {
         guard let subscriptionInfo = subscribedChains[chainId] else {
-            logger.error("Expected to remove subscription but not found for \(chainId)")
             return
         }
 
