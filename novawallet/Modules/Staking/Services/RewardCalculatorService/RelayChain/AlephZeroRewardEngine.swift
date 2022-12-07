@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-final class UniformCurveRewardEngine: RewardCalculatorEngine {
+final class AlephZeroRewardEngine: RewardCalculatorEngine {
     let issuancePerYear: Decimal
     let treasuryPercentage: Decimal
 
@@ -32,6 +32,15 @@ final class UniformCurveRewardEngine: RewardCalculatorEngine {
         }
 
         return (1 - treasuryPercentage) * issuancePerYear / totalIssuance
+    }
+
+    override func calculateReturnForStake(_: Decimal, commission: Decimal) -> Decimal {
+        guard totalStake > 0 else {
+            return 0
+        }
+
+        let annualInflation = calculateAnnualInflation()
+        return (annualInflation / stakedPortion) * (1.0 - commission)
     }
 
     override func calculateEraReturn(from annualReturn: Decimal) -> Decimal {
