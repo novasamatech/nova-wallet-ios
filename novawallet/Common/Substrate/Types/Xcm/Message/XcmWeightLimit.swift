@@ -3,6 +3,9 @@ import SubstrateSdk
 
 extension Xcm {
     enum WeightLimit: Codable {
+        static let unlimitedField = "Unlimited"
+        static let limitedField = "Limited"
+
         case unlimited
         case limited(weight: UInt64)
 
@@ -11,15 +14,30 @@ extension Xcm {
 
             switch self {
             case .unlimited:
-                try container.encode("Unlimited")
+                try container.encode(Self.unlimitedField)
             case let .limited(weight):
-                try container.encode("Limited")
+                try container.encode(Self.limitedField)
                 try container.encode(StringScaleMapper(value: weight))
             }
         }
 
-        init(from _: Decoder) throws {
-            fatalError("Decoding unsupported")
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            let type = try container.decode(String.self)
+
+            switch type {
+            case Self.unlimitedField:
+                self = .unlimited
+            case Self.limitedField:
+                let weight = try container.decode(StringScaleMapper<UInt64>.self).value
+                self = .limited(weight: weight)
+            default:
+                throw DecodingError.dataCorruptedError(
+                    in: container,
+                    debugDescription: "Unexpected type"
+                )
+            }
         }
     }
 }
