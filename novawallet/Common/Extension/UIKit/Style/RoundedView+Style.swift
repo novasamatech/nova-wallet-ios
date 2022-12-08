@@ -119,6 +119,15 @@ extension RoundedView.Style {
         return containerStyle
     }
 
+    static let tokenContainer = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0.5,
+        strokeColor: R.color.colorContainerBorder(),
+        highlightedStrokeColor: R.color.colorContainerBorder(),
+        fillColor: R.color.colorContainerBackground()!,
+        highlightedFillColor: R.color.colorContainerBackground()!
+    )
+
     static let assetContainer = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0.5,
