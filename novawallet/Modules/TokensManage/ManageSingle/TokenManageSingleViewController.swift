@@ -1,9 +1,14 @@
 import UIKit
 
-final class TokenManageSingleViewController: UIViewController {
+final class TokenManageSingleViewController: UIViewController, ViewHolder {
     typealias RootViewType = TokenManageSingleViewLayout
 
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, TokenManageNetworkViewModel>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, TokenManageNetworkViewModel>
+
     let presenter: TokenManageSinglePresenterProtocol
+
+    private lazy var dataSource = makeDataSource()
 
     init(presenter: TokenManageSinglePresenterProtocol) {
         self.presenter = presenter
@@ -22,12 +27,48 @@ final class TokenManageSingleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupTableView()
         presenter.setup()
+    }
+
+    private func setupTableView() {
+        rootView.tableView.rowHeight = 52
+        rootView.tableView.registerClassForCell(TokenManageInstanceTableViewCell.self)
+    }
+
+    private func makeDataSource() -> DataSource {
+        .init(tableView: rootView.tableView) { [weak self] tableView, _, viewModel in
+            let cell = tableView.dequeueReusableCellWithType(TokenManageInstanceTableViewCell.self)
+            cell?.delegate = self
+
+            cell?.bind(viewModel: viewModel)
+
+            return cell
+        }
     }
 }
 
 extension TokenManageSingleViewController: TokenManageSingleViewProtocol {
-    func didReceiveNetwork(viewModels _: [TokenManageNetworkViewModel]) {}
+    func didReceiveNetwork(viewModels: [TokenManageNetworkViewModel]) {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(viewModels)
+        dataSource.apply(snapshot)
+    }
 
-    func didReceiveTokenManage(viewModel _: TokenManageViewModel) {}
+    func didReceiveTokenManage(viewModel: TokenManageViewModel) {
+        rootView.tokenView.bind(viewModel: viewModel)
+    }
+}
+
+extension TokenManageSingleViewController: TokenManageInstanceTableViewCellDelegate {
+    func tokenManageInstanceCell(_ cell: TokenManageInstanceTableViewCell, didChangeSwitch enabled: Bool) {
+        guard
+            let indexPath = rootView.tableView.indexPath(for: cell),
+            let viewModel = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        presenter.performSwitch(for: viewModel, enabled: enabled)
+    }
 }
