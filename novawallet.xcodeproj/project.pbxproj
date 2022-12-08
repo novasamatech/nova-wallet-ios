@@ -1690,6 +1690,7 @@
 		84AF08DA2941BC7900D0572B /* TokenManageNetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF08D92941BC7900D0572B /* TokenManageNetworkViewModel.swift */; };
 		84AF08DD2941C4AC00D0572B /* TokenManageInstanceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF08DC2941C4AC00D0572B /* TokenManageInstanceTableViewCell.swift */; };
 		84AF08DF2941DB2300D0572B /* MultichainTokenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF08DE2941DB2300D0572B /* MultichainTokenView.swift */; };
+		84AF08E12941E44700D0572B /* TokenManageSingleMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF08E02941E44700D0572B /* TokenManageSingleMeasurement.swift */; };
 		84AF378A272349DA007408D6 /* SiDataTypeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF3789272349DA007408D6 /* SiDataTypeMapper.swift */; };
 		84B018AC26E01A4100C75E28 /* StakingStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B018AB26E01A4100C75E28 /* StakingStateView.swift */; };
 		84B018AE26E03FB500C75E28 /* NominatorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B018AD26E03FB500C75E28 /* NominatorStateView.swift */; };
@@ -4732,6 +4733,7 @@
 		84AF08D92941BC7900D0572B /* TokenManageNetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManageNetworkViewModel.swift; sourceTree = "<group>"; };
 		84AF08DC2941C4AC00D0572B /* TokenManageInstanceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManageInstanceTableViewCell.swift; sourceTree = "<group>"; };
 		84AF08DE2941DB2300D0572B /* MultichainTokenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultichainTokenView.swift; sourceTree = "<group>"; };
+		84AF08E02941E44700D0572B /* TokenManageSingleMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManageSingleMeasurement.swift; sourceTree = "<group>"; };
 		84AF3789272349DA007408D6 /* SiDataTypeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiDataTypeMapper.swift; sourceTree = "<group>"; };
 		84B018AB26E01A4100C75E28 /* StakingStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateView.swift; sourceTree = "<group>"; };
 		84B018AD26E03FB500C75E28 /* NominatorStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominatorStateView.swift; sourceTree = "<group>"; };
@@ -6160,6 +6162,7 @@
 				ADBC3405EEB1F8941FB19BAA /* TokenManageSingleViewController.swift */,
 				FFF5B66ACB3DFA32DD43BD75 /* TokenManageSingleViewLayout.swift */,
 				D19485BAFCB2056BDC135441 /* TokenManageSingleViewFactory.swift */,
+				84AF08E02941E44700D0572B /* TokenManageSingleMeasurement.swift */,
 			);
 			path = ManageSingle;
 			sourceTree = "<group>";
@@ -16541,6 +16544,7 @@
 				843910CE253F7E8000E3C217 /* SubstrateDataStorageFacade.swift in Sources */,
 				84E731C326652B5C00D5B15A /* AttributedString+Crowdloan.swift in Sources */,
 				84C91FAA261E724F002796B9 /* SwitchTableViewCell.swift in Sources */,
+				84AF08E12941E44700D0572B /* TokenManageSingleMeasurement.swift in Sources */,
 				84644A0725670B03004EAA4B /* BlockBackgroundView.swift in Sources */,
 				84D1ABD827E0A0600073C631 /* AssetStorageInfo.swift in Sources */,
 				AEA0C8B0267B82BA00F9666F /* SelectedValidatorListHeaderView.swift in Sources */,
