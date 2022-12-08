@@ -158,6 +158,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         assets.first { $0.assetId == assetId }
     }
 
+    func hasEnabledAsset() -> Bool {
+        assets.contains { $0.enabled }
+    }
+
     var isEthereumBased: Bool {
         options?.contains(.ethereumBased) ?? false
     }

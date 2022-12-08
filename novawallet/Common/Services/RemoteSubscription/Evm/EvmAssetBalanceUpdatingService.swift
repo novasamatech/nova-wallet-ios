@@ -1,8 +1,10 @@
 import Foundation
 
-final class EvmAssetBalanceUpdatingService: AssetBalanceBaseUpdatingService {
+final class EvmAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatingService {
     let remoteSubscriptionService: WalletRemoteEvmSubscriptionServiceProtocol
     let transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol
+
+    private var subscribedAssets: [ChainModel.Id: Set<AssetModel.Id>] = [:]
 
     init(
         selectedAccount: MetaAccountModel,
@@ -17,23 +19,23 @@ final class EvmAssetBalanceUpdatingService: AssetBalanceBaseUpdatingService {
         super.init(selectedAccount: selectedAccount, chainRegistry: chainRegistry, logger: logger)
     }
 
-    override func createSubscription(
-        for _: AssetModel,
+    private func createSubscription(
         accountId: AccountId,
-        chain: ChainModel
-    ) -> AssetBalanceBaseUpdatingService.SubscriptionInfo? {
-        guard getSubscriptions(for: chain.chainId) == nil else {
-            // we are subscribing to all evm assets in the chain at once
+        chain: ChainModel,
+        assetIds: Set<AssetModel.Id>
+    ) -> AssetBalanceBatchBaseUpdatingService.SubscriptionInfo? {
+        guard let evmAsset = chain.assets.first(where: { assetIds.contains($0.assetId) }) else {
             return nil
         }
 
-        guard let evmAsset = chain.assets.first(where: { $0.isEvm }) else {
-            return nil
-        }
+        let info = RemoteEvmSubscriptionInfo(
+            accountId: accountId,
+            chain: chain,
+            assets: assetIds
+        )
 
         let optSubscriptionId = remoteSubscriptionService.attachERC20Balance(
-            for: accountId,
-            chain: chain,
+            for: info,
             transactionHistoryUpdaterFactory: transactionHistoryUpdaterFactory,
             queue: nil,
             closure: nil
@@ -44,6 +46,38 @@ final class EvmAssetBalanceUpdatingService: AssetBalanceBaseUpdatingService {
         }
 
         return .init(subscriptionId: subscriptionId, accountId: accountId, asset: evmAsset)
+    }
+
+    override func updateSubscription(for chain: ChainModel) {
+        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
+            return
+        }
+
+        let newAssetIdsList = chain.assets.compactMap { asset in
+            if asset.isEvm, asset.enabled {
+                return asset.assetId
+            } else {
+                return nil
+            }
+        }
+
+        let newAssetIds = Set(newAssetIdsList)
+
+        guard subscribedAssets[chain.chainId] != newAssetIds else {
+            return
+        }
+
+        removeSubscription(for: chain.chainId)
+        subscribedAssets[chain.chainId] = nil
+
+        guard !newAssetIds.isEmpty else {
+            return
+        }
+
+        if let subscription = createSubscription(accountId: accountId, chain: chain, assetIds: newAssetIds) {
+            setSubscriptions(for: chain.chainId, subscriptions: [subscription.asset.assetId: subscription])
+            subscribedAssets[chain.chainId] = newAssetIds
+        }
     }
 
     override func removeSubscription(for chainId: ChainModel.Id) {
