@@ -1,11 +1,24 @@
 import Foundation
 import UIKit
 import SoraUI
+import SoraFoundation
 
 final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
     weak var prsentedViewController: UIViewController?
 
-    func showPurchaseTokens(from _: AssetDetailsViewProtocol?, action _: PurchaseAction) {}
+    func showPurchaseTokens(
+        from view: AssetDetailsViewProtocol?,
+        action: PurchaseAction,
+        delegate: PurchaseDelegate
+    ) {
+        guard let purchaseView = PurchaseViewFactory.createView(
+            for: action,
+            delegate: delegate
+        ) else {
+            return
+        }
+        present(purchaseView, from: view)
+    }
 
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
         guard let transferSetupView = TransferSetupViewFactory.createView(
@@ -34,7 +47,9 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         prsentedViewController?.dismiss(animated: true)
     }
 
-    func showReceiveTokens(from _: AssetDetailsViewProtocol?) {}
+    func showReceiveTokens(from _: AssetDetailsViewProtocol?) {
+        // todo
+    }
 
     func showPurchaseProviders(
         from view: AssetDetailsViewProtocol?,
@@ -54,7 +69,16 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         navigationController.present(pickerView, animated: true)
     }
 
-    func showLocks(from _: AssetDetailsViewProtocol?) {}
+    func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel) {
+        let locksViewController = ModalInfoFactory.createFromBalanceContext(
+            model.balanceContext,
+            amountFormatter: model.amountFormatter,
+            priceFormatter: model.priceFormatter,
+            precision: model.precision
+        )
+
+        present(locksViewController, from: view)
+    }
 
     func showNoSigning(from view: AssetDetailsViewProtocol?) {
         guard let confirmationView = MessageSheetViewFactory.createNoSigningView(with: {}) else {
@@ -82,4 +106,26 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         vc.controller.modalPresentationStyle = .custom
         navigationController.present(vc.controller, animated: true)
     }
+
+    private func present(_ vc: UIViewController, from view: AssetDetailsViewProtocol?) {
+        guard let navigationController = view?.controller.navigationController else {
+            return
+        }
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        vc.modalTransitioningFactory = factory
+        vc.modalPresentationStyle = .custom
+        navigationController.present(vc, animated: true)
+    }
+
+    func presentSuccessAlert(from view: AssetDetailsViewProtocol?, message: String) {
+        let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
+        view?.controller.present(alertController, animated: true)
+    }
+}
+
+struct AssetDetailsLocksViewModel {
+    let balanceContext: BalanceContext
+    let amountFormatter: LocalizableResource<TokenFormatter>
+    let priceFormatter: LocalizableResource<TokenFormatter>
+    let precision: Int16
 }

@@ -10,19 +10,5 @@ final class WalletBuyCommand: WalletCommandProtocol {
         self.commandFactory = commandFactory
     }
 
-    func execute() throws {
-        guard
-            let commandFactory = commandFactory,
-            let webView = PurchaseViewFactoryLegacy.createView(
-                for: action,
-                commandFactory: commandFactory
-            )
-        else {
-            return
-        }
-
-        let command = commandFactory.preparePresentationCommand(for: webView.controller)
-        command.presentationStyle = .modal(inNavigation: false)
-        try command.execute()
-    }
+    func execute() throws {}
 }

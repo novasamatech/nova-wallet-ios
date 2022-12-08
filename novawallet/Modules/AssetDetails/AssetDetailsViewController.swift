@@ -29,6 +29,7 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
 
         applyLocalization()
         addHandlers()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.chainView)
         presenter.setup()
     }
 
@@ -57,6 +58,10 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
 }
 
 extension AssetDetailsViewController: AssetDetailsViewProtocol {
+    func didReceive(assetModel: AssetDetailsModel) {
+        rootView.set(assetDetailsModel: assetModel)
+    }
+
     func didReceive(totalBalance: BalanceViewModelProtocol) {
         rootView.totalCell.bind(viewModel: totalBalance)
     }

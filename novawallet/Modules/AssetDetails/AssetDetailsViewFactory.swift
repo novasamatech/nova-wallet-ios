@@ -16,6 +16,7 @@ struct AssetDetailsViewFactory {
             purchaseProvider: PurchaseAggregator.defaultAggregator(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactory.shared,
             currencyManager: currencyManager
         )
         let wireframe = AssetDetailsWireframe()
@@ -24,9 +25,13 @@ struct AssetDetailsViewFactory {
             targetAssetInfo: asset.displayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
+        let balanceFormatterFactory = AssetBalanceFormatterFactory()
+        let tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: asset.displayInfo)
         let presenter = AssetDetailsPresenter(
             interactor: interactor,
             balanceViewModelFactory: balanceViewModelFactory,
+            amountFormatter: tokenFormatter,
+            priceFormatter: tokenFormatter,
             localizableManager: LocalizationManager.shared,
             asset: asset,
             chain: chain,

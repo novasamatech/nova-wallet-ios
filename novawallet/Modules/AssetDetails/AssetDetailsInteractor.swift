@@ -9,13 +9,17 @@ final class AssetDetailsInteractor {
     let selectedMetaAccount: MetaAccountModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
+
     let purchaseProvider: PurchaseProviderProtocol
 
     private var assetLocksSubscription: StreamableProvider<AssetLock>?
     private var priceSubscription: AnySingleValueProvider<PriceData>?
     private var assetBalanceSubscription: StreamableProvider<AssetBalance>?
+    private var crowdloansSubscription: StreamableProvider<CrowdloanContributionData>?
 
     private var locks: [AssetLock] = []
+    private var crowdloans: [CrowdloanContributionData] = []
     private var accountId: AccountId? {
         selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
     }
@@ -26,14 +30,17 @@ final class AssetDetailsInteractor {
         purchaseProvider: PurchaseProviderProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
         self.selectedMetaAccount = selectedMetaAccount
         self.chainAsset = chainAsset
-        self.currencyManager = currencyManager
         self.purchaseProvider = purchaseProvider
+
+        self.currencyManager = currencyManager
     }
 
     private func subscribePrice() {
@@ -66,7 +73,7 @@ final class AssetDetailsInteractor {
             return
         }
         let assetId = chainAsset.chainAssetId.walletId
-        let operations: Operations
+        var operations: Operations = .init()
 
         if isTransfersEnable {
             operations.insert(.send)
@@ -104,6 +111,14 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
             chainId: chain.chainId,
             assetId: asset.assetId
         )
+        if chain.hasCrowdloans {
+            crowdloansSubscription = subscribeToCrowdloansProvider(
+                for: accountId,
+                chain: chain
+            )
+        } else {
+            crowdloansSubscription = nil
+        }
         setAvailableOperations()
     }
 }
@@ -174,6 +189,34 @@ extension AssetDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         if presenter != nil, let priceId = asset.priceId {
             priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        }
+    }
+}
+
+extension AssetDetailsInteractor: CrowdloanContributionLocalSubscriptionHandler, CrowdloansLocalStorageSubscriber {
+    func handleCrowdloans(
+        result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
+        accountId: AccountId,
+        chain _: ChainModel
+    ) {
+        guard self.accountId == accountId else {
+            return
+        }
+
+        switch result {
+        case let .failure(error):
+            presenter.didReceive(error: .crowdloans(error))
+        case let .success(changes):
+            crowdloans = changes.reduce(into: crowdloans) { result, change in
+                switch change {
+                case let .insert(crowdloan), let .update(crowdloan):
+                    result.addOrReplaceSingle(crowdloan)
+                case let .delete(deletedIdentifier):
+                    result = result.filter { $0.identifier != deletedIdentifier }
+                }
+            }
+
+            presenter.didReceive(crowdloans: crowdloans)
         }
     }
 }

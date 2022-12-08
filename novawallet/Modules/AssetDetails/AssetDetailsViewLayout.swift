@@ -4,10 +4,28 @@ import SnapKit
 
 final class AssetDetailsViewLayout: UIView {
     let backgroundView = MultigradientView.background
+    let chainView = AssetListChainView()
+
+    let assetIconView: AssetIconView = .create {
+        $0.backgroundView.cornerRadius = 14
+        $0.backgroundView.apply(style: .container)
+        $0.contentInsets = .init(top: 3, left: 3, bottom: 3, right: 3)
+        $0.imageView.tintColor = R.color.colorIconSecondary()
+    }
+
+    let assetLabel = UILabel(
+        style: .init(
+            textColor: R.color.colorTextPrimary(),
+            font: .semiBoldBody
+        ),
+        textAlignment: .right
+    )
+    let priceLabel = UILabel(style: .footnoteSecondary)
+    let priceChangeLabel = UILabel(style: .init(textColor: .clear, font: .regularFootnote))
 
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 6.0, left: 16, bottom: 24, right: 16)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 6, left: 16, bottom: 24, right: 16)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
@@ -96,9 +114,33 @@ final class AssetDetailsViewLayout: UIView {
             $0.edges.equalToSuperview()
         }
 
+        let priceStack = UIStackView(arrangedSubviews: [priceLabel, priceChangeLabel])
+        priceStack.spacing = 4
+
+        addSubview(priceStack)
+        priceStack.snp.makeConstraints {
+            $0.leading.greaterThanOrEqualToSuperview()
+            $0.trailing.lessThanOrEqualToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(26)
+            $0.top.equalTo(self.safeAreaLayoutGuide.snp.top)
+        }
+
+        let assetView = UIStackView(arrangedSubviews: [assetIconView, assetLabel])
+        assetView.spacing = 8
+        addSubview(assetView)
+        assetView.snp.makeConstraints {
+            $0.leading.greaterThanOrEqualToSuperview()
+            $0.trailing.lessThanOrEqualToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(28)
+            $0.bottom.equalTo(priceStack.snp.top).offset(-7)
+        }
+
         addSubview(containerView)
         containerView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.leading.trailing.bottom.equalToSuperview()
+            $0.top.equalTo(priceStack.snp.bottom)
         }
 
         containerView.stackView.spacing = 8
@@ -135,6 +177,37 @@ final class AssetDetailsViewLayout: UIView {
             preferredLanguages: languages
         )
         buyButton.invalidateLayout()
+    }
+
+    func set(assetDetailsModel: AssetDetailsModel) {
+        assetDetailsModel.assetIcon?.cancel(on: assetIconView.imageView)
+        assetIconView.imageView.image = nil
+
+        let iconSize = 28 - 6
+        assetDetailsModel.assetIcon?.loadImage(
+            on: assetIconView.imageView,
+            targetSize: CGSize(width: iconSize, height: iconSize),
+            animated: true
+        )
+        assetLabel.text = assetDetailsModel.tokenName
+        chainView.bind(viewModel: assetDetailsModel.network)
+
+        guard let priceModel = assetDetailsModel.price else {
+            priceChangeLabel.text = ""
+            priceLabel.text = ""
+            return
+        }
+
+        priceLabel.text = priceModel.amount
+
+        switch priceModel.change {
+        case let .increase(value):
+            priceChangeLabel.text = value
+            priceChangeLabel.textColor = R.color.colorTextPositive()
+        case let .decrease(value):
+            priceChangeLabel.text = value
+            priceChangeLabel.textColor = R.color.colorTextNegative()
+        }
     }
 }
 
@@ -230,4 +303,11 @@ extension RoundedView.Style {
         highlightedFillColor: .clear,
         rounding: .init(radius: 0, corners: .allCorners)
     )
+}
+
+struct AssetDetailsModel {
+    let tokenName: String
+    let assetIcon: ImageViewModelProtocol?
+    let price: AssetPriceViewModel?
+    let network: NetworkViewModel
 }
