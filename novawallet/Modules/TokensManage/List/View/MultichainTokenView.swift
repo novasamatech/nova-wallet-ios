@@ -14,7 +14,7 @@ final class MultichainTokenView: UIView {
     }
 
     let iconView: AssetIconView = .create {
-        $0.backgroundView.apply(style: .assetContainer)
+        $0.backgroundView.apply(style: .tokenContainer)
         $0.backgroundView.cornerRadius = Constants.iconBackgroundSize.height / 2.0
     }
 
