@@ -1,4 +1,5 @@
 protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol {
+    func didReceive(assetModel: AssetDetailsModel)
     func didReceive(totalBalance: BalanceViewModelProtocol)
     func didReceive(transferableBalance: BalanceViewModelProtocol)
     func didReceive(lockedBalance: BalanceViewModelProtocol, isSelectable: Bool)
@@ -20,6 +21,7 @@ protocol AssetDetailsInteractorInputProtocol: AnyObject {
 protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(balance: AssetBalance?)
     func didReceive(locks: [AssetLock])
+    func didReceive(crowdloans: [CrowdloanContributionData])
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: Operations)
@@ -34,14 +36,20 @@ protocol AssetDetailsWireframeProtocol: AnyObject {
         actions: [PurchaseAction],
         delegate: ModalPickerViewControllerDelegate
     )
-    func showPurchaseTokens(from view: AssetDetailsViewProtocol?, action: PurchaseAction)
-    func showLocks(from view: AssetDetailsViewProtocol?)
+    func showPurchaseTokens(
+        from view: AssetDetailsViewProtocol?,
+        action: PurchaseAction,
+        delegate: PurchaseDelegate
+    )
     func showNoSigning(from view: AssetDetailsViewProtocol?)
     func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?)
+    func presentSuccessAlert(from view: AssetDetailsViewProtocol?, message: String)
+    func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel)
 }
 
 enum AssetDetailsError: Error {
     case accountBalance(Error)
     case price(Error)
     case locks(Error)
+    case crowdloans(Error)
 }
