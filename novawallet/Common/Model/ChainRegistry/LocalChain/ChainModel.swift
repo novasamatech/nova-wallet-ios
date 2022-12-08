@@ -252,30 +252,15 @@ extension ChainModel {
         )
     }
 
-    func byChanging(assets: Set<AssetModel>) -> ChainModel {
-        .init(
-            chainId: chainId,
-            parentId: parentId,
-            name: name,
-            assets: assets,
-            nodes: nodes,
-            addressPrefix: addressPrefix,
-            types: types,
-            icon: icon,
-            options: options,
-            externalApi: externalApi,
-            explorers: explorers,
-            order: order,
-            additional: additional
-        )
-    }
+    func byChanging(assets: Set<AssetModel>? = nil, name: String? = nil) -> ChainModel {
+        let newAssets = assets ?? self.assets
+        let newName = name ?? self.name
 
-    func byChanging(name: String) -> ChainModel {
-        .init(
+        return .init(
             chainId: chainId,
             parentId: parentId,
-            name: name,
-            assets: assets,
+            name: newName,
+            assets: newAssets,
             nodes: nodes,
             addressPrefix: addressPrefix,
             types: types,
