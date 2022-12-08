@@ -29,7 +29,7 @@ final class TokensAddSelectNetworkPresenter {
 
     func updateTargetChains() {
         targetChains = chains.values
-            .map(\.isEthereumBased)
+            .filter(\.isEthereumBased)
             .sorted { ChainModelCompator.defaultComparator(chain1: $0, chain2: $1) }
     }
 }
