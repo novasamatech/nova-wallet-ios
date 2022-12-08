@@ -10,15 +10,13 @@ extension WalletNetworkFacade {
         pagination: Pagination,
         filter: WalletHistoryFilter
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
-        let chain = chainAsset.chain
-
         let maybeRemoteHistoryFactory = AssetHistoryFacade().createOperationFactory(
             for: chainAsset,
             filter: filter
         )
 
         if let remoteFactory = maybeRemoteHistoryFactory {
-            return createRemoteUtilityAssetHistory(
+            return createRemoteAssetHistory(
                 for: address,
                 chainAsset: chainAsset,
                 pagination: pagination,
@@ -35,7 +33,31 @@ extension WalletNetworkFacade {
         }
     }
 
-    func createRemoteUtilityAssetHistory(
+    private func createLocalRepository(
+        for address: AccountAddress,
+        chainAsset: ChainAsset
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let utilityAsset = chainAsset.chain.utilityAssets().first
+        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+
+        if let utilityAssetId = utilityAsset?.assetId, utilityAssetId == chainAsset.asset.assetId {
+            return repositoryFactory.createUtilityAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: utilityAssetId,
+                source: source
+            )
+        } else {
+            return repositoryFactory.createCustomAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId,
+                source: source
+            )
+        }
+    }
+
+    func createRemoteAssetHistory(
         for address: AccountAddress,
         chainAsset: ChainAsset,
         pagination: Pagination,
@@ -56,22 +78,13 @@ extension WalletNetworkFacade {
             remoteAddress = address
         }
 
-        let remoteHistoryWrapper = remoteFactory.createOperationWrapper(
-            for: remoteAddress,
-            pagination: pagination
-        )
+        let remoteHistoryWrapper = remoteFactory.createOperationWrapper(for: remoteAddress, pagination: pagination)
 
         var dependencies = remoteHistoryWrapper.allOperations
 
         let localFetchOperation: BaseOperation<[TransactionHistoryItem]>?
 
-        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
-        let txStorage = repositoryFactory.createUtilityAssetTxRepository(
-            for: address,
-            chainId: chain.chainId,
-            assetId: chainAsset.asset.assetId,
-            source: source
-        )
+        let txStorage = createLocalRepository(for: address, chainAsset: chainAsset)
 
         if pagination.context == nil {
             let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
@@ -131,24 +144,7 @@ extension WalletNetworkFacade {
             return createEmptyHistoryResponseOperation()
         }
 
-        let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
-
-        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
-        if utilityAsset.assetId == chainAsset.asset.assetId {
-            txStorage = repositoryFactory.createUtilityAssetTxRepository(
-                for: address,
-                chainId: chainAsset.chain.chainId,
-                assetId: utilityAsset.assetId,
-                source: source
-            )
-        } else {
-            txStorage = repositoryFactory.createCustomAssetTxRepository(
-                for: address,
-                chainId: chainAsset.chain.chainId,
-                assetId: chainAsset.asset.assetId,
-                source: source
-            )
-        }
+        let txStorage = createLocalRepository(for: address, chainAsset: chainAsset)
 
         let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
 

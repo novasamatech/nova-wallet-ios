@@ -2272,7 +2272,7 @@
 		84FBECF92927403100FBEB83 /* EvmAssetContractId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECF82927403100FBEB83 /* EvmAssetContractId.swift */; };
 		84FBECFB2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */; };
 		84FBECFD292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */; };
-		84FBECFF2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFE2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift */; };
+		84FBECFF2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFE2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift */; };
 		84FBED0129277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */; };
 		84FBED0329279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */; };
 		84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */; };
@@ -5307,7 +5307,7 @@
 		84FBECF82927403100FBEB83 /* EvmAssetContractId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmAssetContractId.swift; sourceTree = "<group>"; };
 		84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceUpdateServiceFactory.swift; sourceTree = "<group>"; };
 		84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteEvmSubscriptionService.swift; sourceTree = "<group>"; };
-		84FBECFE2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceBaseUpdatingService.swift; sourceTree = "<group>"; };
+		84FBECFE2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceBatchBaseUpdatingService.swift; sourceTree = "<group>"; };
 		84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmAssetBalanceUpdatingService.swift; sourceTree = "<group>"; };
 		84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdater.swift; sourceTree = "<group>"; };
 		84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmEventParser.swift; sourceTree = "<group>"; };
@@ -7057,7 +7057,7 @@
 			children = (
 				84BCC7142924ADDC00354DE0 /* Evm */,
 				84BCC7132924ADB200354DE0 /* Substrate */,
-				84FBECFE2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift */,
+				84FBECFE2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift */,
 			);
 			path = RemoteSubscription;
 			sourceTree = "<group>";
@@ -17124,7 +17124,7 @@
 				888B8E95291D274B00AA78E9 /* MercuryoProvider.swift in Sources */,
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
 				B1B0F4818510EB082ACA83AB /* MoonbeamTermsViewLayout.swift in Sources */,
-				84FBECFF2927797600FBEB83 /* AssetBalanceBaseUpdatingService.swift in Sources */,
+				84FBECFF2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift in Sources */,
 				97F1D128D46B072D68940FC4 /* MoonbeamTermsViewFactory.swift in Sources */,
 				84C5ADE8281428F1006D7388 /* WalletAccountInfoView.swift in Sources */,
 				849976BA27B24C2200B14A6C /* DAppBrowserTransportProtocol.swift in Sources */,

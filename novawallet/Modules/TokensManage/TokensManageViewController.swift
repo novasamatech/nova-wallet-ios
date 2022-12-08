@@ -52,6 +52,8 @@ final class TokensManageViewController: UIViewController, ViewHolder {
             action: #selector(actionSearchEditingChanged),
             for: .editingChanged
         )
+
+        rootView.searchTextField.delegate = self
     }
 
     private func setupTableView() {
@@ -152,6 +154,13 @@ extension TokensManageViewController: EmptyStateDataSource {
         emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView
+    }
+}
+
+extension TokensManageViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
     }
 }
 

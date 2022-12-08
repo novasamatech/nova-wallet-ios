@@ -8,7 +8,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
         return view
     }()
 
-    let settingsButton: TriangularedBlurButton = {
+    let manageButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
         button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
@@ -18,7 +18,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
         return button
     }()
 
-    let manageButton: TriangularedBlurButton = {
+    let settingsButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
         button.imageWithTitleView?.iconImage = R.image.iconFilterAssets()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
@@ -65,24 +65,24 @@ final class AssetListSettingsCell: UICollectionViewCell {
     }
 
     private func setupLayout() {
-        addSubview(settingsButton)
+        addSubview(manageButton)
 
-        settingsButton.snp.makeConstraints { make in
+        manageButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalToSuperview()
         }
 
-        addSubview(manageButton)
+        addSubview(settingsButton)
 
-        manageButton.snp.makeConstraints { make in
-            make.trailing.equalTo(settingsButton.snp.leading).inset(-8.0)
+        settingsButton.snp.makeConstraints { make in
+            make.trailing.equalTo(manageButton.snp.leading).inset(-8.0)
             make.centerY.equalToSuperview()
         }
 
         addSubview(searchButton)
 
         searchButton.snp.makeConstraints { make in
-            make.trailing.equalTo(manageButton.snp.leading).inset(-8.0)
+            make.trailing.equalTo(settingsButton.snp.leading).inset(-8.0)
             make.centerY.equalToSuperview()
         }
 
