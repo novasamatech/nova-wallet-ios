@@ -7,35 +7,9 @@ protocol TokensManageTableViewCellDelegate: AnyObject {
 }
 
 final class TokensManageTableViewCell: UITableViewCell {
-    private enum Constants {
-        static let iconBackgroundSize = CGSize(width: 40, height: 40)
-        static let iconInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        static var iconSize: CGSize {
-            CGSize(
-                width: iconBackgroundSize.width - iconInsets.left - iconInsets.right,
-                height: iconBackgroundSize.height - iconInsets.top - iconInsets.bottom
-            )
-        }
-    }
-
     weak var delegate: TokensManageTableViewCellDelegate?
 
-    let iconView: AssetIconView = .create {
-        $0.backgroundView.apply(style: .assetContainer)
-        $0.backgroundView.cornerRadius = Constants.iconBackgroundSize.height / 2.0
-    }
-
-    let detailsView: MultiValueView = .create { view in
-        view.valueTop.textAlignment = .left
-        view.valueTop.textColor = R.color.colorTextPrimary()
-        view.valueTop.font = .semiBoldBody
-
-        view.valueBottom.textAlignment = .left
-        view.valueBottom.textColor = R.color.colorTextSecondary()
-        view.valueBottom.font = .regularFootnote
-
-        view.spacing = 0
-    }
+    let tokenView = MultichainTokenView()
 
     let editButton: RoundedButton = .create { button in
         button.applyIconStyle()
@@ -62,27 +36,14 @@ final class TokensManageTableViewCell: UITableViewCell {
     }
 
     func bind(viewModel: TokensManageViewModel) {
-        let iconColor: UIColor
-
-        if viewModel.isOn {
-            iconColor = R.color.colorIconPrimary()!
-        } else {
-            iconColor = R.color.colorIconSecondary()!
-        }
-
-        let imageSettings = ImageViewModelSettings(
-            targetSize: Constants.iconSize,
-            cornerRadius: nil,
-            tintColor: iconColor
+        let tokenViewModel = TokenManageViewModel(
+            symbol: viewModel.symbol,
+            imageViewModel: viewModel.imageViewModel,
+            subtitle: viewModel.subtitle,
+            isOn: viewModel.isOn
         )
 
-        iconView.bind(viewModel: viewModel.imageViewModel, settings: imageSettings)
-
-        detailsView.valueTop.text = viewModel.symbol
-        detailsView.valueTop.textColor = viewModel.isOn ? R.color.colorTextPrimary()! :
-            R.color.colorTextSecondary()!
-
-        detailsView.valueBottom.text = viewModel.subtitle
+        tokenView.bind(viewModel: tokenViewModel)
 
         if viewModel.isOn != switchView.isOn {
             switchView.setOn(viewModel.isOn, animated: false)
@@ -104,14 +65,6 @@ final class TokensManageTableViewCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(iconView)
-
-        iconView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(Constants.iconBackgroundSize)
-        }
-
         contentView.addSubview(switchView)
 
         switchView.snp.makeConstraints { make in
@@ -127,11 +80,11 @@ final class TokensManageTableViewCell: UITableViewCell {
             make.size.equalTo(40)
         }
 
-        contentView.addSubview(detailsView)
+        contentView.addSubview(tokenView)
 
-        detailsView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(8.0)
-            make.leading.equalTo(iconView.snp.trailing).offset(12.0)
+        tokenView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.lessThanOrEqualTo(editButton.snp.leading)
         }
     }

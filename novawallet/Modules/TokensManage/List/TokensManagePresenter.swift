@@ -84,7 +84,7 @@ final class TokensManagePresenter {
         let filteredTokens = filterTokens(tokenModels, for: query)
 
         let viewModels = filteredTokens.map {
-            viewModelFactory.createViewModel(from: $0, locale: selectedLocale)
+            viewModelFactory.createListViewModel(from: $0, locale: selectedLocale)
         }
 
         view?.didReceive(viewModels: viewModels)
@@ -116,7 +116,9 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
             return
         }
 
-        wireframe.showEditToken(from: view, token: token)
+        let allChains = chains.allItems.reduceToDict()
+
+        wireframe.showEditToken(from: view, token: token, allChains: allChains)
     }
 
     func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool) {

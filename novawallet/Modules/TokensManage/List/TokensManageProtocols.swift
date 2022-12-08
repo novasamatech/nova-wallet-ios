@@ -24,5 +24,9 @@ protocol TokensManageInteractorOutputProtocol: AnyObject {
 
 protocol TokensManageWireframeProtocol: AnyObject {
     func showAddToken(from view: TokensManageViewProtocol?)
-    func showEditToken(from view: TokensManageViewProtocol?, token: MultichainToken)
+    func showEditToken(
+        from view: TokensManageViewProtocol?,
+        token: MultichainToken,
+        allChains: [ChainModel.Id: ChainModel]
+    )
 }
