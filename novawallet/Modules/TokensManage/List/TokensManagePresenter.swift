@@ -116,7 +116,9 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
             return
         }
 
-        wireframe.showEditToken(from: view, token: token)
+        let allChains = chains.allItems.reduceToDict()
+
+        wireframe.showEditToken(from: view, token: token, allChains: allChains)
     }
 
     func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool) {

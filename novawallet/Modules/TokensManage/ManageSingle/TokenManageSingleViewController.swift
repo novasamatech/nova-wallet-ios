@@ -32,7 +32,7 @@ final class TokenManageSingleViewController: UIViewController, ViewHolder {
     }
 
     private func setupTableView() {
-        rootView.tableView.rowHeight = 52
+        rootView.tableView.rowHeight = TokenManageSingleMeasurement.cellHeight
         rootView.tableView.registerClassForCell(TokenManageInstanceTableViewCell.self)
     }
 
