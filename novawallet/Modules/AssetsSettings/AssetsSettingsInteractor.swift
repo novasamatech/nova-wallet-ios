@@ -1,8 +1,8 @@
 import UIKit
 import SoraKeystore
 
-final class AssetsManageInteractor {
-    weak var presenter: AssetsManageInteractorOutputProtocol!
+final class AssetsSettingsInteractor {
+    weak var presenter: AssetsSettingsInteractorOutputProtocol!
 
     private(set) var settingsManager: SettingsManagerProtocol
     let eventCenter: EventCenterProtocol
@@ -13,7 +13,7 @@ final class AssetsManageInteractor {
     }
 }
 
-extension AssetsManageInteractor: AssetsManageInteractorInputProtocol {
+extension AssetsSettingsInteractor: AssetsSettingsInteractorInputProtocol {
     func setup() {
         let value = settingsManager.hidesZeroBalances
         presenter.didReceive(hideZeroBalances: value)

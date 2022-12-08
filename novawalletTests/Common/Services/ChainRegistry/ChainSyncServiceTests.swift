@@ -18,9 +18,12 @@ class ChainSyncServiceTests: XCTestCase {
         let dataOperationFactory = MockDataOperationFactoryProtocol()
         let operationQueue = OperationQueue()
         let eventCenter = MockEventCenterProtocol()
+        let converter = ChainModelConverter()
+
         let chainService = ChainSyncService(
             url: chainURL,
             evmAssetsURL: evmAssetURL,
+            chainConverter: ChainModelConverter(),
             dataFetchFactory: dataOperationFactory,
             repository: AnyDataProviderRepository(repository),
             eventCenter: eventCenter,
@@ -30,8 +33,8 @@ class ChainSyncServiceTests: XCTestCase {
         // when
         
         let remoteItems = ChainModelGenerator.generateRemote(count: 16)
-        let localMappedItems = remoteItems.enumerated().map { index, item in
-            ChainModel(remoteModel: item, order: Int64(index))
+        let localMappedItems = remoteItems.enumerated().compactMap { index, item in
+            converter.update(localModel: nil, remoteModel: item, additionalAssets: [], order: Int64(index))
         }
         
         let newItems = Array(localMappedItems[0..<8])
@@ -99,6 +102,7 @@ class ChainSyncServiceTests: XCTestCase {
         let chainService = ChainSyncService(
             url: chainURL,
             evmAssetsURL: evmAssetURL,
+            chainConverter: ChainModelConverter(),
             dataFetchFactory: dataOperationFactory,
             repository: AnyDataProviderRepository(repository),
             eventCenter: eventCenter,
@@ -155,9 +159,12 @@ class ChainSyncServiceTests: XCTestCase {
         let dataOperationFactory = MockDataOperationFactoryProtocol()
         let operationQueue = OperationQueue()
         let eventCenter = MockEventCenterProtocol()
+
+        let converter = ChainModelConverter()
         let chainService = ChainSyncService(
             url: chainURL,
             evmAssetsURL: evmAssetURL,
+            chainConverter: converter,
             dataFetchFactory: dataOperationFactory,
             repository: AnyDataProviderRepository(repository),
             eventCenter: eventCenter,
@@ -177,15 +184,14 @@ class ChainSyncServiceTests: XCTestCase {
         let chainsData = try JSONEncoder().encode(remoteItems)
         let evmTokensData = try JSONEncoder().encode([evmToken])
         
-        let expectedResult = [
-            ChainModel(remoteModel: chainWithEvmTokens,
-                       additionalAssets: usdChainAssets[chainWithEvmTokens.chainId]!,
-                       order: 0),
-            ChainModel(remoteModel: otherChainWithEvmTokens,
-                       additionalAssets: usdChainAssets[otherChainWithEvmTokens.chainId]!,
-                       order: 1),
-            ChainModel(remoteModel: chainWithoutEvmTokens, order: 2)
-        ]
+        let expectedResult = remoteItems.enumerated().compactMap { (index, remoteItem) in
+            converter.update(
+                localModel: nil,
+                remoteModel: remoteItem,
+                additionalAssets: usdChainAssets[remoteItem.chainId] ?? [],
+                order: Int64(index)
+            )
+        }
         
         stub(dataOperationFactory) { stub in
             stub.fetchData(from: chainURL).thenReturn(BaseOperation.createWithResult(chainsData))
@@ -220,5 +226,189 @@ class ChainSyncServiceTests: XCTestCase {
         
         XCTAssertEqual(chainService.isSyncing, false)
         XCTAssertEqual(Set(localItems), Set(expectedResult))
+    }
+
+    func testSyncDontRemoveUserAssets() throws {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+
+        let mapper = ChainModelMapper()
+        let repository: CoreDataRepository<ChainModel, CDChain> =
+        storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        let dataOperationFactory = MockDataOperationFactoryProtocol()
+        let operationQueue = OperationQueue()
+        let eventCenter = MockEventCenterProtocol()
+        let converter = ChainModelConverter()
+
+        let chainService = ChainSyncService(
+            url: chainURL,
+            evmAssetsURL: evmAssetURL,
+            chainConverter: ChainModelConverter(),
+            dataFetchFactory: dataOperationFactory,
+            repository: AnyDataProviderRepository(repository),
+            eventCenter: eventCenter,
+            operationQueue: operationQueue
+        )
+
+        // when
+
+        let remoteItems = ChainModelGenerator.generateRemote(count: 16)
+        let localMappedItems = remoteItems.enumerated().compactMap { index, item in
+            let localChain = converter.update(
+                localModel: nil,
+                remoteModel: item,
+                additionalAssets: [],
+                order: Int64(index)
+            )
+
+            let userAssetId = (localChain?.assets ?? []).count + 1
+            let userAsset = ChainModelGenerator.generateAssetWithId(AssetModel.Id(userAssetId), source: .user)
+            return localChain?.adding(asset: userAsset)
+        }
+
+
+        let chainsData = try JSONEncoder().encode(remoteItems)
+        let evmTokensData = try JSONEncoder().encode([RemoteEvmToken]())
+
+        stub(dataOperationFactory) { stub in
+            stub.fetchData(from: chainURL).thenReturn(BaseOperation.createWithResult(chainsData))
+            stub.fetchData(from: evmAssetURL).thenReturn(BaseOperation.createWithResult(evmTokensData))
+        }
+
+        let repositoryPresetOperation = repository.saveOperation({
+            return localMappedItems
+        }, {
+            return []
+        })
+
+        operationQueue.addOperations([repositoryPresetOperation], waitUntilFinished: true)
+
+        let startExpectation = XCTestExpectation()
+        let completionExpectation = XCTestExpectation()
+
+        stub(eventCenter) { stub in
+            stub.notify(with: any()).then { event in
+                if event is ChainSyncDidStart {
+                    startExpectation.fulfill()
+                }
+
+                if event is ChainSyncDidComplete {
+                    completionExpectation.fulfill()
+                }
+            }
+        }
+
+        chainService.syncUp()
+
+        // then
+
+        wait(for: [startExpectation, completionExpectation], timeout: 10, enforceOrder: true)
+
+        let localItemsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        operationQueue.addOperations([localItemsOperation], waitUntilFinished: true)
+
+        let localItems = try localItemsOperation.extractNoCancellableResultData()
+
+        XCTAssertEqual(Set(localItems), Set(localMappedItems))
+    }
+
+    func testSyncDontOverwriteUserSettings() throws {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+
+        let mapper = ChainModelMapper()
+        let repository: CoreDataRepository<ChainModel, CDChain> =
+        storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        let dataOperationFactory = MockDataOperationFactoryProtocol()
+        let operationQueue = OperationQueue()
+        let eventCenter = MockEventCenterProtocol()
+        let converter = ChainModelConverter()
+
+        let chainService = ChainSyncService(
+            url: chainURL,
+            evmAssetsURL: evmAssetURL,
+            chainConverter: ChainModelConverter(),
+            dataFetchFactory: dataOperationFactory,
+            repository: AnyDataProviderRepository(repository),
+            eventCenter: eventCenter,
+            operationQueue: operationQueue
+        )
+
+        // when
+
+        let remoteItems = ChainModelGenerator.generateRemote(count: 16)
+        let initMappedItems = remoteItems.enumerated().map { index, item in
+            let localChain = converter.update(
+                localModel: nil,
+                remoteModel: item,
+                additionalAssets: [],
+                order: Int64(index)
+            )!
+
+            var assets = Array(localChain.assets)
+            assets[0] = assets[0].byChanging(enabled: false)
+
+            return localChain.byChanging(assets: Set(assets))
+        }
+
+        // apply new name
+
+        let updatedChains = zip(initMappedItems, remoteItems).map { (localItem, remoteItem) in
+            let newName = UUID().uuidString
+
+            let newLocalItem = localItem.byChanging(name: newName)
+            let newRemoteItem = remoteItem.byChanging(name: newName)
+
+            return (newLocalItem, newRemoteItem)
+        }
+
+        let newRemoteItems = updatedChains.map { $0.1 }
+        let expectedLocalItems = updatedChains.map { $0.0 }
+
+        let chainsData = try JSONEncoder().encode(newRemoteItems)
+        let evmTokensData = try JSONEncoder().encode([RemoteEvmToken]())
+
+        stub(dataOperationFactory) { stub in
+            stub.fetchData(from: chainURL).thenReturn(BaseOperation.createWithResult(chainsData))
+            stub.fetchData(from: evmAssetURL).thenReturn(BaseOperation.createWithResult(evmTokensData))
+        }
+
+        let repositoryPresetOperation = repository.saveOperation({
+            return initMappedItems
+        }, {
+            return []
+        })
+
+        operationQueue.addOperations([repositoryPresetOperation], waitUntilFinished: true)
+
+        let startExpectation = XCTestExpectation()
+        let completionExpectation = XCTestExpectation()
+
+        stub(eventCenter) { stub in
+            stub.notify(with: any()).then { event in
+                if event is ChainSyncDidStart {
+                    startExpectation.fulfill()
+                }
+
+                if event is ChainSyncDidComplete {
+                    completionExpectation.fulfill()
+                }
+            }
+        }
+
+        chainService.syncUp()
+
+        // then
+
+        wait(for: [startExpectation, completionExpectation], timeout: 10, enforceOrder: true)
+
+        let localItemsOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        operationQueue.addOperations([localItemsOperation], waitUntilFinished: true)
+
+        let localItems = try localItemsOperation.extractNoCancellableResultData()
+
+        XCTAssertEqual(Set(localItems), Set(expectedLocalItems))
     }
 }

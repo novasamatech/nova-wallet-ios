@@ -1,12 +1,12 @@
 import UIKit
 import SoraFoundation
 
-final class AssetsManageViewController: UIViewController, ViewHolder {
-    typealias RootViewType = AssetsManageViewLayout
+final class AssetsSettingsViewController: UIViewController, ViewHolder {
+    typealias RootViewType = AssetsSettingsViewLayout
 
-    let presenter: AssetsManagePresenterProtocol
+    let presenter: AssetsSettingsPresenterProtocol
 
-    init(presenter: AssetsManagePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: AssetsSettingsPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
@@ -19,7 +19,7 @@ final class AssetsManageViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = AssetsManageViewLayout()
+        view = AssetsSettingsViewLayout()
     }
 
     override func viewDidLoad() {
@@ -81,8 +81,8 @@ final class AssetsManageViewController: UIViewController, ViewHolder {
     }
 }
 
-extension AssetsManageViewController: AssetsManageViewProtocol {
-    func didReceive(viewModel: AssetsManageViewModel) {
+extension AssetsSettingsViewController: AssetsSettingsViewProtocol {
+    func didReceive(viewModel: AssetsSettingsViewModel) {
         if rootView.switchControl.isOn != viewModel.hideZeroBalances {
             rootView.switchControl.isOn = viewModel.hideZeroBalances
         }
@@ -95,7 +95,7 @@ extension AssetsManageViewController: AssetsManageViewProtocol {
     }
 }
 
-extension AssetsManageViewController: Localizable {
+extension AssetsSettingsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             applyLocalization()

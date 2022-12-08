@@ -1,7 +1,7 @@
 import Foundation
 import SubstrateSdk
 
-struct AssetModel: Equatable, Codable, Hashable {
+struct RemoteAssetModel: Equatable, Codable, Hashable {
     // swiftlint:disable:next type_name
     typealias Id = UInt32
     typealias PriceId = String
@@ -16,12 +16,4 @@ struct AssetModel: Equatable, Codable, Hashable {
     let type: String?
     let typeExtras: JSON?
     let buyProviders: JSON?
-
-    var isUtility: Bool { assetId == 0 }
-}
-
-extension AssetModel {
-    var decimalPrecision: Int16 {
-        Int16(bitPattern: precision)
-    }
 }

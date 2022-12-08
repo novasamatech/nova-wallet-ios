@@ -29,6 +29,8 @@ final class ChainModelMapper {
             buyProviders = nil
         }
 
+        let source = AssetModel.Source(rawValue: entity.source!) ?? .remote
+
         return AssetModel(
             assetId: UInt32(bitPattern: entity.assetId),
             icon: entity.icon,
@@ -39,7 +41,9 @@ final class ChainModelMapper {
             staking: entity.staking,
             type: entity.type,
             typeExtras: typeExtras,
-            buyProviders: buyProviders
+            buyProviders: buyProviders,
+            enabled: entity.enabled,
+            source: source
         )
     }
 
@@ -86,6 +90,8 @@ final class ChainModelMapper {
             assetEntity.priceId = asset.priceId
             assetEntity.staking = asset.staking
             assetEntity.type = asset.type
+            assetEntity.enabled = asset.enabled
+            assetEntity.source = asset.source.rawValue
 
             if let json = asset.typeExtras {
                 assetEntity.typeExtras = try jsonEncoder.encode(json)

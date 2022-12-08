@@ -6,6 +6,7 @@ enum SubstrateStorageVersion: String, CaseIterable {
     case version5 = "SubstrateDataModel5"
     case version6 = "SubstrateDataModel6"
     case version7 = "SubstrateDataModel7"
+    case version8 = "SubstrateDataModel8"
 
     static var current: SubstrateStorageVersion {
         allCases.last!
@@ -26,6 +27,8 @@ enum SubstrateStorageVersion: String, CaseIterable {
         case .version6:
             return .version7
         case .version7:
+            return .version8
+        case .version8:
             return nil
         }
     }
