@@ -45,6 +45,23 @@ extension MultichainToken {
 }
 
 extension Array where Element == ChainModel {
+    func createMultichainToken(for symbol: String) -> MultichainToken {
+        reduce(MultichainToken(symbol: symbol, instances: [])) { token, chain in
+            let assets = chain.assets.filter { $0.symbol == symbol }.sorted { $0.assetId < $1.assetId }
+
+            return assets.reduce(token) { _, asset in
+                let instance = MultichainToken.Instance(
+                    chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+                    chainName: chain.name,
+                    enabled: asset.enabled,
+                    icon: asset.icon
+                )
+
+                return MultichainToken(symbol: symbol, instances: token.instances + [instance])
+            }
+        }
+    }
+
     func createMultichainTokens() -> [MultichainToken] {
         let mapping = reduce(into: [String: MultichainToken]()) { accum, chain in
             let assets = chain.assets.sorted { $0.assetId < $1.assetId }

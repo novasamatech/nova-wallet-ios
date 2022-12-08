@@ -84,7 +84,7 @@ final class TokensManagePresenter {
         let filteredTokens = filterTokens(tokenModels, for: query)
 
         let viewModels = filteredTokens.map {
-            viewModelFactory.createViewModel(from: $0, locale: selectedLocale)
+            viewModelFactory.createListViewModel(from: $0, locale: selectedLocale)
         }
 
         view?.didReceive(viewModels: viewModels)
