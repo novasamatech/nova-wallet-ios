@@ -53,7 +53,7 @@ extension TokenManageSingleViewController: TokenManageSingleViewProtocol {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
-        dataSource.apply(snapshot)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
 
     func didReceiveTokenManage(viewModel: TokenManageViewModel) {
