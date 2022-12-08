@@ -7,7 +7,7 @@ final class VoteViewLayout: UIView, TableHeaderLayoutUpdatable {
     let headerView = VoteTableHeaderView()
 
     let tableView: UITableView = {
-        let view = UITableView()
+        let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = .clear
         view.separatorColor = R.color.colorDivider()
         view.tableFooterView = UIView()

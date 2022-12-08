@@ -6,7 +6,7 @@ final class SettingsViewLayout: UIView {
     let footerView = SettingsTableFooterView()
 
     let tableView: UITableView = {
-        let view = UITableView()
+        let view = UITableView(frame: .zero, style: .grouped)
         view.backgroundColor = R.color.colorSecondaryScreenBackground()
         view.separatorColor = R.color.colorDivider()
         return view
@@ -27,8 +27,8 @@ final class SettingsViewLayout: UIView {
         super.layoutSubviews()
 
         headerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 118))
-        footerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 122))
-        tableView.contentInset = .init(top: 0, left: 0, bottom: footerView.frame.height + 16, right: 0)
+        footerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 92))
+        tableView.contentInset = .init(top: 0, left: 0, bottom: footerView.frame.height + 6, right: 0)
     }
 
     private func setupLayout() {
