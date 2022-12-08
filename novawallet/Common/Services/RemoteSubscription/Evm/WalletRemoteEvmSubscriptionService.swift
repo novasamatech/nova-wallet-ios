@@ -1,9 +1,14 @@
 import Foundation
 
+struct RemoteEvmSubscriptionInfo {
+    let accountId: AccountId
+    let chain: ChainModel
+    let assets: Set<AssetModel.Id>
+}
+
 protocol WalletRemoteEvmSubscriptionServiceProtocol {
     func attachERC20Balance(
-        for accountId: AccountId,
-        chain: ChainModel,
+        for info: RemoteEvmSubscriptionInfo,
         transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol?,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
@@ -25,12 +30,13 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
     }
 
     func attachERC20Balance(
-        for accountId: AccountId,
-        chain: ChainModel,
+        for info: RemoteEvmSubscriptionInfo,
         transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol?,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
+        let chain = info.chain
+        let accountId = info.accountId
         let cacheKey = createERC20CacheKey(for: chain.chainId, accountId: accountId)
 
         guard let holder = try? accountId.toAddress(using: chain.chainFormat) else {
@@ -40,7 +46,7 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
         }
 
         let assetContracts: [EvmAssetContractId] = chain.assets.compactMap { asset in
-            guard let contractAddress = asset.evmContractAddress else {
+            guard let contractAddress = asset.evmContractAddress, info.assets.contains(asset.assetId) else {
                 return nil
             }
 

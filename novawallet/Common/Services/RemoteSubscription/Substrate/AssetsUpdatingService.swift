@@ -70,35 +70,83 @@ final class AssetsUpdatingService {
 
         for change in changes {
             switch change {
-            case let .insert(newItem):
-                addSubscriptionIfNeeded(for: newItem)
-            case .update:
-                break
+            case let .insert(newItem), let .update(newItem):
+                updateSubscription(for: newItem)
             case let .delete(deletedIdentifier):
                 removeSubscription(for: deletedIdentifier)
             }
         }
     }
 
-    private func addSubscriptionIfNeeded(for chain: ChainModel) {
+    private func updateSubscription(for chain: ChainModel) {
+        chain.assets.forEach { asset in
+            guard supportsAssetSubscription(for: asset) else {
+                return
+            }
+
+            let subscribed = hasSubscription(for: chain.chainId, assetId: asset.assetId)
+
+            if !subscribed, asset.enabled {
+                addSubscriptionIfNeeded(for: ChainAsset(chain: chain, asset: asset))
+            } else if subscribed, !asset.enabled {
+                dropSubscriptionIfNeeded(for: chain.chainId, assetId: asset.assetId)
+            }
+        }
+    }
+
+    private func hasSubscription(for chainId: ChainModel.Id, assetId: AssetModel.Id) -> Bool {
+        let chainSubscription = subscribedChains[chainId]
+
+        return chainSubscription?[assetId] != nil
+    }
+
+    private func supportsAssetSubscription(for asset: AssetModel) -> Bool {
+        guard let typeString = asset.type, let assetType = AssetType(rawValue: typeString) else {
+            return false
+        }
+
+        switch assetType {
+        case .statemine, .orml:
+            return true
+        case .evm:
+            return false
+        }
+    }
+
+    private func addSubscriptionIfNeeded(for chainAsset: ChainAsset) {
+        let chain = chainAsset.chain
+        let chainId = chainAsset.chain.chainId
+        let assetId = chainAsset.asset.assetId
+
         guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            logger.warning("Couldn't create account for chain \(chain.chainId)")
+            logger.warning("Couldn't create account for chain \(chainId)")
             return
         }
 
-        removeSubscription(for: chain.chainId)
-
-        let assetSubscriptions = chain.assets.reduce(
-            into: [AssetModel.Id: SubscriptionInfo]()
-        ) { result, asset in
-            result[asset.assetId] = createSubscription(
-                for: asset,
-                accountId: accountId,
-                chain: chain
-            )
+        guard !hasSubscription(for: chainId, assetId: assetId) else {
+            return
         }
 
+        var assetSubscriptions = subscribedChains[chainId] ?? [:]
+        assetSubscriptions[assetId] = createSubscription(
+            for: chainAsset.asset,
+            accountId: accountId,
+            chain: chain
+        )
+
         subscribedChains[chain.chainId] = assetSubscriptions
+    }
+
+    private func dropSubscriptionIfNeeded(for chainId: ChainModel.Id, assetId: AssetModel.Id) {
+        var chainSubscriptions = subscribedChains[chainId]
+        let optSubsription = chainSubscriptions?[assetId]
+
+        if let subscription = optSubsription {
+            chainSubscriptions?[assetId] = nil
+            subscribedChains[chainId] = chainSubscriptions
+
+            removeSubscription(for: chainId, subscriptionInfo: subscription)
+        }
     }
 
     private func createSubscription(
@@ -226,47 +274,51 @@ final class AssetsUpdatingService {
         subscribedChains[chainId] = nil
 
         for subscriptionInfo in assetSubscriptions.values {
-            let asset = subscriptionInfo.asset
+            removeSubscription(for: chainId, subscriptionInfo: subscriptionInfo)
+        }
+    }
 
-            guard let typeString = asset.type, let assetType = AssetType(rawValue: typeString) else {
+    private func removeSubscription(for chainId: ChainModel.Id, subscriptionInfo: SubscriptionInfo) {
+        let asset = subscriptionInfo.asset
+
+        guard let typeString = asset.type, let assetType = AssetType(rawValue: typeString) else {
+            return
+        }
+
+        switch assetType {
+        case .statemine:
+            guard
+                let extras = asset.typeExtras,
+                let assetExtras = try? extras.map(to: StatemineAssetExtras.self) else {
                 return
             }
 
-            switch assetType {
-            case .statemine:
-                guard
-                    let extras = asset.typeExtras,
-                    let assetExtras = try? extras.map(to: StatemineAssetExtras.self) else {
-                    return
-                }
-
-                remoteSubscriptionService.detachFromAsset(
-                    for: subscriptionInfo.subscriptionId,
-                    accountId: subscriptionInfo.accountId,
-                    extras: assetExtras,
-                    chainId: chainId,
-                    queue: nil,
-                    closure: nil
-                )
-            case .orml:
-                guard
-                    let extras = asset.typeExtras,
-                    let assetExtras = try? extras.map(to: OrmlTokenExtras.self),
-                    let currencyId = try? Data(hexString: assetExtras.currencyIdScale) else {
-                    return
-                }
-
-                remoteSubscriptionService.detachFromOrmlToken(
-                    for: subscriptionInfo.subscriptionId,
-                    accountId: subscriptionInfo.accountId,
-                    currencyId: currencyId,
-                    chainId: chainId,
-                    queue: nil,
-                    closure: nil
-                )
-            case .evm:
-                break
+            remoteSubscriptionService.detachFromAsset(
+                for: subscriptionInfo.subscriptionId,
+                accountId: subscriptionInfo.accountId,
+                extras: assetExtras,
+                chainId: chainId,
+                queue: nil,
+                closure: nil
+            )
+        case .orml:
+            guard
+                let extras = asset.typeExtras,
+                let assetExtras = try? extras.map(to: OrmlTokenExtras.self),
+                let currencyId = try? Data(hexString: assetExtras.currencyIdScale) else {
+                return
             }
+
+            remoteSubscriptionService.detachFromOrmlToken(
+                for: subscriptionInfo.subscriptionId,
+                accountId: subscriptionInfo.accountId,
+                currencyId: currencyId,
+                chainId: chainId,
+                queue: nil,
+                closure: nil
+            )
+        case .evm:
+            break
         }
     }
 

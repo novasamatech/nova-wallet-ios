@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-class AssetBalanceBaseUpdatingService {
+class AssetBalanceBatchBaseUpdatingService {
     struct SubscriptionInfo {
         let subscriptionId: UUID
         let accountId: AccountId
@@ -26,45 +26,24 @@ class AssetBalanceBaseUpdatingService {
         self.logger = logger
     }
 
-    func createSubscription(
-        for _: AssetModel,
-        accountId _: AccountId,
-        chain _: ChainModel
-    ) -> SubscriptionInfo? {
-        fatalError("Must be implemented in child class")
-    }
-
-    func removeSubscription(for _: ChainModel.Id) {
-        fatalError("Must be implemented in child class")
-    }
-
     func clearSubscriptions(for chainId: ChainModel.Id) {
         subscribedChains[chainId] = nil
+    }
+
+    func setSubscriptions(for chainId: ChainModel.Id, subscriptions: [AssetModel.Id: SubscriptionInfo]) {
+        subscribedChains[chainId] = subscriptions
     }
 
     func getSubscriptions(for chainId: ChainModel.Id) -> [AssetModel.Id: SubscriptionInfo]? {
         subscribedChains[chainId]
     }
 
-    private func addSubscriptionIfNeeded(for chain: ChainModel) {
-        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            logger.warning("Couldn't create account for chain \(chain.chainId)")
-            return
-        }
+    func updateSubscription(for _: ChainModel) {
+        fatalError("Must be implemented in child class")
+    }
 
-        removeSubscription(for: chain.chainId)
-
-        let assetSubscriptions = chain.assets.reduce(
-            into: [AssetModel.Id: SubscriptionInfo]()
-        ) { result, asset in
-            result[asset.assetId] = createSubscription(
-                for: asset,
-                accountId: accountId,
-                chain: chain
-            )
-        }
-
-        subscribedChains[chain.chainId] = assetSubscriptions
+    func removeSubscription(for _: ChainModel.Id) {
+        fatalError("Must be implemented in child class")
     }
 
     private func removeAllSubscriptions() {
@@ -74,8 +53,9 @@ class AssetBalanceBaseUpdatingService {
             mutex.unlock()
         }
 
-        for key in subscribedChains.keys {
-            removeSubscription(for: key)
+        let chainIds = subscribedChains.keys
+        for chainId in chainIds {
+            removeSubscription(for: chainId)
         }
     }
 
@@ -88,10 +68,8 @@ class AssetBalanceBaseUpdatingService {
 
         for change in changes {
             switch change {
-            case let .insert(newItem):
-                addSubscriptionIfNeeded(for: newItem)
-            case .update:
-                break
+            case let .insert(newItem), let .update(newItem):
+                updateSubscription(for: newItem)
             case let .delete(deletedIdentifier):
                 removeSubscription(for: deletedIdentifier)
             }
@@ -114,7 +92,7 @@ class AssetBalanceBaseUpdatingService {
     }
 }
 
-extension AssetBalanceBaseUpdatingService: AssetsUpdatingServiceProtocol {
+extension AssetBalanceBatchBaseUpdatingService: AssetsUpdatingServiceProtocol {
     func setup() {
         subscribeToChains()
     }
