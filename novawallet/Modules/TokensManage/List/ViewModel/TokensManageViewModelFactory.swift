@@ -65,6 +65,6 @@ extension TokensManageViewModelFactory: TokensManageViewModelFactoryProtocol {
         let imageViewModel = token.icon.map { RemoteImageViewModel(url: $0) }
         let subtitle = createSubtitle(from: token, locale: locale)
 
-        return .init(symbol: token.symbol, imageViewModel: imageViewModel, subtitle: subtitle)
+        return .init(symbol: token.symbol, imageViewModel: imageViewModel, subtitle: subtitle, isOn: token.enabled)
     }
 }
