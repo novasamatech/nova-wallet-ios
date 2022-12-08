@@ -23,7 +23,9 @@ enum ChainModelGenerator {
                 staking: hasStaking ? "relaychain" : nil,
                 type: nil,
                 typeExtras: nil,
-                buyProviders: nil
+                buyProviders: nil,
+                enabled: true,
+                source: .remote
             )
 
             let node = ChainNodeModel(
@@ -90,7 +92,7 @@ enum ChainModelGenerator {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
 
-            let asset = AssetModel(
+            let asset = RemoteAssetModel(
                 assetId: UInt32(index),
                 icon: nil,
                 name: chainId,
@@ -242,7 +244,9 @@ enum ChainModelGenerator {
         symbol: String? = nil,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        buyProviders: JSON? = nil
+        buyProviders: JSON? = nil,
+        enabled: Bool = true,
+        source: AssetModel.Source = .remote
     ) -> AssetModel {
 
         let assetSymbol = symbol ?? String(UUID().uuidString.prefix(3))
@@ -257,7 +261,9 @@ enum ChainModelGenerator {
             staking: hasStaking ? "relaychain" : nil,
             type: nil,
             typeExtras: nil,
-            buyProviders: buyProviders
+            buyProviders: buyProviders,
+            enabled: enabled,
+            source: source
         )
     }
 

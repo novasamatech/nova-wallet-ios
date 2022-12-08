@@ -14,6 +14,7 @@ final class ChainSyncService {
 
     let url: URL
     let evmAssetsURL: URL
+    let chainConverter: ChainModelConversionProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let dataFetchFactory: DataOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
@@ -33,6 +34,7 @@ final class ChainSyncService {
     init(
         url: URL,
         evmAssetsURL: URL,
+        chainConverter: ChainModelConversionProtocol,
         dataFetchFactory: DataOperationFactoryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         eventCenter: EventCenterProtocol,
@@ -42,6 +44,7 @@ final class ChainSyncService {
     ) {
         self.url = url
         self.dataFetchFactory = dataFetchFactory
+        self.chainConverter = chainConverter
         self.repository = repository
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
@@ -64,10 +67,10 @@ final class ChainSyncService {
         let event = ChainSyncDidStart()
         eventCenter.notify(with: event)
 
-        executeSync()
+        executeSync(using: chainConverter)
     }
 
-    private func executeSync() {
+    private func executeSync(using chainConverter: ChainModelConversionProtocol) {
         let remoteFetchOperation = dataFetchFactory.fetchData(from: url)
         let evmRemoteFetchOperation = dataFetchFactory.fetchData(from: evmAssetsURL)
 
@@ -80,15 +83,7 @@ final class ChainSyncService {
             let evmRemoteItems = try decoder.decode([RemoteEvmToken].self, from: evmRemoteData)
             let remoteEvmTokens = evmRemoteItems.chainAssets()
 
-            let remoteChains = remoteItems.enumerated().map { index, chain in
-                ChainModel(
-                    remoteModel: chain,
-                    additionalAssets: remoteEvmTokens[chain.chainId] ?? .init(),
-                    order: Int64(index)
-                )
-            }
-
-            let remoteMapping = remoteChains.reduce(into: [ChainModel.Id: ChainModel]()) { mapping, item in
+            let remoteMapping = remoteItems.reduce(into: [ChainModel.Id: RemoteChainModel]()) { mapping, item in
                 mapping[item.chainId] = item
             }
 
@@ -97,12 +92,13 @@ final class ChainSyncService {
                 mapping[item.chainId] = item
             }
 
-            let newOrUpdated: [ChainModel] = remoteChains.compactMap { remoteItem in
-                if let localItem = localMapping[remoteItem.chainId] {
-                    return localItem != remoteItem ? remoteItem : nil
-                } else {
-                    return remoteItem
-                }
+            let newOrUpdated: [ChainModel] = remoteItems.enumerated().compactMap { index, remoteItem in
+                chainConverter.update(
+                    localModel: localMapping[remoteItem.chainId],
+                    remoteModel: remoteItem,
+                    additionalAssets: remoteEvmTokens[remoteItem.chainId] ?? [],
+                    order: Int64(index)
+                )
             }
 
             let removed = localChains.compactMap { localItem in

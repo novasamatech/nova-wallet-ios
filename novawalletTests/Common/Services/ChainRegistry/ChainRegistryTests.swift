@@ -76,6 +76,7 @@ class ChainRegistryTests: XCTestCase {
         let chainSyncService = ChainSyncService(
             url: chainURL,
             evmAssetsURL: evmAssetURL,
+            chainConverter: ChainModelConverter(),
             dataFetchFactory: dataOperationFactory,
             repository: AnyDataProviderRepository(repository),
             eventCenter: eventCenter,

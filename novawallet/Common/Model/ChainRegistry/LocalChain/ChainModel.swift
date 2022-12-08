@@ -131,11 +131,11 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.additional = additional
     }
 
-    init(remoteModel: RemoteChainModel, order: Int64) {
+    init(remoteModel: RemoteChainModel, assets: Set<AssetModel>, order: Int64) {
         chainId = remoteModel.chainId
         parentId = remoteModel.parentId
         name = remoteModel.name
-        assets = Set(remoteModel.assets)
+        self.assets = assets
 
         let nodeList = remoteModel.nodes.enumerated().map { index, node in
             ChainNodeModel(remoteModel: node, order: Int16(index))
@@ -234,20 +234,42 @@ enum ChainOptions: String, Codable {
 }
 
 extension ChainModel {
-    init(remoteModel: RemoteChainModel, additionalAssets: Set<AssetModel>, order: Int64) {
-        let chain = ChainModel(remoteModel: remoteModel, order: order)
-        chainId = chain.chainId
-        parentId = chain.parentId
-        name = chain.name
-        assets = chain.assets.union(additionalAssets)
-        nodes = chain.nodes
-        addressPrefix = chain.addressPrefix
-        types = chain.types
-        icon = chain.icon
-        options = chain.options
-        externalApi = chain.externalApi
-        explorers = chain.explorers
-        self.order = chain.order
-        additional = chain.additional
+    func adding(asset: AssetModel) -> ChainModel {
+        .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: name,
+            assets: assets.union([asset]),
+            nodes: nodes,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApi: externalApi,
+            explorers: explorers,
+            order: order,
+            additional: additional
+        )
+    }
+
+    func byChanging(assets: Set<AssetModel>? = nil, name: String? = nil) -> ChainModel {
+        let newAssets = assets ?? self.assets
+        let newName = name ?? self.name
+
+        return .init(
+            chainId: chainId,
+            parentId: parentId,
+            name: newName,
+            assets: newAssets,
+            nodes: nodes,
+            addressPrefix: addressPrefix,
+            types: types,
+            icon: icon,
+            options: options,
+            externalApi: externalApi,
+            explorers: explorers,
+            order: order,
+            additional: additional
+        )
     }
 }

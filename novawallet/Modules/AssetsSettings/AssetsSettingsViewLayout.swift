@@ -1,6 +1,6 @@
 import UIKit
 
-final class AssetsManageViewLayout: UIView {
+final class AssetsSettingsViewLayout: UIView {
     let controlTitleLabel: UILabel = {
         let label = UILabel()
         label.font = .regularFootnote
