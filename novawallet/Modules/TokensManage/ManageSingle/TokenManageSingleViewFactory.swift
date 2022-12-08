@@ -25,6 +25,8 @@ struct TokenManageSingleViewFactory {
         )
 
         let view = TokenManageSingleViewController(presenter: presenter)
+        let height = TokenManageSingleMeasurement.estimatePreferredHeight(for: token.instances.count)
+        view.preferredContentSize = CGSize(width: 0, height: height)
 
         presenter.view = view
         interactor.presenter = presenter

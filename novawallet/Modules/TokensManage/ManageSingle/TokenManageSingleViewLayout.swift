@@ -11,7 +11,7 @@ final class TokenManageSingleViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = .clear
+        backgroundColor = R.color.colorBottomSheetBackground()!
 
         setupLayout()
     }
@@ -26,11 +26,12 @@ final class TokenManageSingleViewLayout: UIView {
         tokenView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.height.equalTo(TokenManageSingleMeasurement.headerHeight)
         }
 
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(tokenView.snp.bottom).offset(8.0)
+            make.top.equalTo(tokenView.snp.bottom).offset(TokenManageSingleMeasurement.verticalSpacing)
             make.bottom.leading.trailing.equalToSuperview()
         }
     }

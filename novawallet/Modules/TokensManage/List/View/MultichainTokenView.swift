@@ -1,7 +1,8 @@
 import UIKit
 
 final class MultichainTokenView: UIView {
-    private enum Constants {
+    enum Constants {
+        static let preferredHeight: CGFloat = 40
         static let iconBackgroundSize = CGSize(width: 40, height: 40)
         static let iconInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         static var iconSize: CGSize {
@@ -30,7 +31,7 @@ final class MultichainTokenView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: 40)
+        CGSize(width: UIView.noIntrinsicMetric, height: Constants.preferredHeight)
     }
 
     override init(frame: CGRect) {
@@ -72,6 +73,8 @@ final class MultichainTokenView: UIView {
             make.centerY.equalToSuperview()
             make.size.equalTo(Constants.iconBackgroundSize)
         }
+
+        addSubview(detailsView)
 
         detailsView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
