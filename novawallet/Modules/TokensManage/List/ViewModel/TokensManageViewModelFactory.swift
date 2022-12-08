@@ -2,7 +2,8 @@ import Foundation
 import SoraFoundation
 
 protocol TokensManageViewModelFactoryProtocol {
-    func createViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel
+    func createListViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel
+    func createSingleViewModel(from token: MultichainToken, locale: Locale) -> TokenManageViewModel
 }
 
 final class TokensManageViewModelFactory {
@@ -40,7 +41,7 @@ final class TokensManageViewModelFactory {
 }
 
 extension TokensManageViewModelFactory: TokensManageViewModelFactoryProtocol {
-    func createViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel {
+    func createListViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel {
         let imageViewModel = token.icon.map { RemoteImageViewModel(url: $0) }
         let subtitle = createSubtitle(from: token, locale: locale)
 
@@ -58,5 +59,12 @@ extension TokensManageViewModelFactory: TokensManageViewModelFactoryProtocol {
             subtitle: subtitle,
             isOn: token.enabled
         )
+    }
+
+    func createSingleViewModel(from token: MultichainToken, locale: Locale) -> TokenManageViewModel {
+        let imageViewModel = token.icon.map { RemoteImageViewModel(url: $0) }
+        let subtitle = createSubtitle(from: token, locale: locale)
+
+        return .init(symbol: token.symbol, imageViewModel: imageViewModel, subtitle: subtitle)
     }
 }
