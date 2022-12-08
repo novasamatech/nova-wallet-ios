@@ -25,16 +25,16 @@ struct MultichainToken {
 }
 
 extension MultichainToken.Instance {
-    func byChangingEnabled(_ enabled: Bool) -> MultichainToken.Instance {
+    func byChanging(enabled: Bool) -> MultichainToken.Instance {
         .init(chainAssetId: chainAssetId, chainName: chainName, enabled: enabled, icon: icon)
     }
 }
 
 extension MultichainToken {
-    func byChangingEnabled(_ enabled: Bool, for chainAssetId: ChainAssetId? = nil) -> MultichainToken {
+    func byChanging(enabled: Bool, for chainAssetId: ChainAssetId? = nil) -> MultichainToken {
         let newInstances = instances.map { instance in
             if chainAssetId == nil || chainAssetId == instance.chainAssetId {
-                return instance.byChangingEnabled(enabled)
+                return instance.byChanging(enabled: enabled)
             } else {
                 return instance
             }
