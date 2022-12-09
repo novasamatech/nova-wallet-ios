@@ -72,7 +72,6 @@ final class AssetDetailsInteractor {
         guard let accountId = accountId else {
             return
         }
-        let assetId = chainAsset.chainAssetId.walletId
         var operations: Operations = .init()
 
         if isTransfersEnable {
@@ -197,9 +196,9 @@ extension AssetDetailsInteractor: CrowdloanContributionLocalSubscriptionHandler,
     func handleCrowdloans(
         result: Result<[DataProviderChange<CrowdloanContributionData>], Error>,
         accountId: AccountId,
-        chain _: ChainModel
+        chain: ChainModel
     ) {
-        guard self.accountId == accountId else {
+        guard self.accountId == accountId, self.chain.chainId == chain.chainId else {
             return
         }
 
