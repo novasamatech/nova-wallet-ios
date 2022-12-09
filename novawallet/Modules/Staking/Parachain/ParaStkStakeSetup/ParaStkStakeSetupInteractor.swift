@@ -278,7 +278,7 @@ extension ParaStkStakeSetupInteractor: PriceLocalStorageSubscriber, PriceLocalSu
 }
 
 extension ParaStkStakeSetupInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
         presenter?.didReceiveFee(result)
     }
 }

@@ -18,6 +18,7 @@ enum AssetStorageInfo {
     case native(canTransferAll: Bool)
     case statemine(extras: StatemineAssetExtras)
     case orml(info: OrmlTokenStorageInfo)
+    case erc20(contractAccount: AccountId)
 }
 
 extension AssetStorageInfo {
@@ -42,6 +43,14 @@ extension AssetStorageInfo {
             }
 
             return .statemine(extras: extras)
+        case .evm:
+            guard let contractAddress = asset.typeExtras?.stringValue else {
+                throw AssetStorageInfoError.unexpectedTypeExtras
+            }
+
+            let accountId = try contractAddress.toAccountId(using: .ethereum)
+
+            return .erc20(contractAccount: accountId)
         case .none:
             let call = CallCodingPath.transferAll
             let canTransferAll = codingFactory.metadata.getCall(

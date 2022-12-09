@@ -25,9 +25,10 @@ class SpecVersionSubscriptionTests: XCTestCase {
             stub.subscribe(
                 any(),
                 params: any([String].self),
+                unsubscribeMethod: any(),
                 updateClosure: any(),
                 failureClosure: any()
-            ).then { (_, _, updateClosure: @escaping (RuntimeVersionUpdate) -> Void, _) in
+            ).then { (_, _, _, updateClosure: @escaping (RuntimeVersionUpdate) -> Void, _) in
                 DispatchQueue.global().async {
                     let update = RuntimeVersionUpdate(
                         jsonrpc: "2.0",

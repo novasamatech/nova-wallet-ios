@@ -122,126 +122,32 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
     }
 
     func transferMetadataOperation(
-        _ info: TransferMetadataInfo
+        _: TransferMetadataInfo
     ) -> CompoundOperationWrapper<TransferMetaData?> {
-        nodeOperationFactory.transferMetadataOperation(info)
+        CompoundOperationWrapper.createWithError(BaseOperationError.parentOperationCancelled)
     }
 
-    func transferOperation(_ info: TransferInfo) -> CompoundOperationWrapper<Data> {
-        do {
-            guard
-                let chainAssetId = ChainAssetId(walletId: info.asset),
-                let chain = chains[chainAssetId.chainId],
-                let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-                let accountResponse = metaAccount.fetch(for: chain.accountRequest()),
-                let address = accountResponse.toAddress(),
-                let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-                throw BaseOperationError.parentOperationCancelled
-            }
+    // Below methods are not currently invoked and will be completely removed with CommonWallet removal
 
-            let transferWrapper = nodeOperationFactory.transferOperation(info)
-
-            let destinationId = try Data(hexString: info.destination)
-            let destinationAddress = try destinationId.toAddress(using: chain.chainFormat)
-            let contactSaveWrapper = contactsOperationFactory.saveByAddressOperation(destinationAddress)
-
-            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-            let txStorage = repositoryFactory.createChainAddressTxRepository(
-                for: address,
-                chainId: chain.chainId
-            )
-
-            let txSaveOperation = txStorage.saveOperation({
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                switch transferWrapper.targetOperation.result {
-                case let .success(txHash):
-                    let item = try TransactionHistoryItem
-                        .createFromTransferInfo(
-                            info,
-                            senderAccount: accountResponse,
-                            transactionHash: txHash,
-                            chainAsset: ChainAsset(chain: chain, asset: asset),
-                            codingFactory: codingFactory
-                        )
-                    return [item]
-                case let .failure(error):
-                    throw error
-                case .none:
-                    throw BaseOperationError.parentOperationCancelled
-                }
-            }, { [] })
-
-            txSaveOperation.addDependency(codingFactoryOperation)
-
-            transferWrapper.allOperations.forEach { transaferOperation in
-                txSaveOperation.addDependency(transaferOperation)
-
-                contactSaveWrapper.allOperations.forEach { $0.addDependency(transaferOperation) }
-            }
-
-            let completionOperation: BaseOperation<Data> = ClosureOperation {
-                try txSaveOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-
-                try contactSaveWrapper.targetOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-
-                return try transferWrapper.targetOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-            }
-
-            let dependencies = [codingFactoryOperation, txSaveOperation] + contactSaveWrapper.allOperations +
-                transferWrapper.allOperations
-
-            completionOperation.addDependency(txSaveOperation)
-            completionOperation.addDependency(contactSaveWrapper.targetOperation)
-
-            return CompoundOperationWrapper(
-                targetOperation: completionOperation,
-                dependencies: dependencies
-            )
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
+    func transferOperation(_: TransferInfo) -> CompoundOperationWrapper<Data> {
+        CompoundOperationWrapper.createWithError(BaseOperationError.parentOperationCancelled)
     }
 
-    func searchOperation(_ searchString: String) -> CompoundOperationWrapper<[SearchData]?> {
-        let fetchOperation = contactsOperation()
-
-        let normalizedSearch = searchString.lowercased()
-
-        let filterOperation: BaseOperation<[SearchData]?> = ClosureOperation {
-            let result = try fetchOperation.targetOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-
-            return result?.filter {
-                ($0.firstName.lowercased().range(of: normalizedSearch) != nil) ||
-                    ($0.lastName.lowercased().range(of: normalizedSearch) != nil)
-            }
-        }
-
-        let dependencies = fetchOperation.allOperations
-        dependencies.forEach { filterOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(
-            targetOperation: filterOperation,
-            dependencies: dependencies
-        )
+    func searchOperation(_: String) -> CompoundOperationWrapper<[SearchData]?> {
+        CompoundOperationWrapper.createWithError(BaseOperationError.parentOperationCancelled)
     }
 
     func contactsOperation() -> CompoundOperationWrapper<[SearchData]?> {
-        CompoundOperationWrapper.createWithResult([])
+        CompoundOperationWrapper.createWithError(BaseOperationError.parentOperationCancelled)
     }
 
     func withdrawalMetadataOperation(
-        _ info: WithdrawMetadataInfo
+        _: WithdrawMetadataInfo
     ) -> CompoundOperationWrapper<WithdrawMetaData?> {
-        nodeOperationFactory.withdrawalMetadataOperation(info)
+        CompoundOperationWrapper.createWithError(BaseOperationError.parentOperationCancelled)
     }
 
-    func withdrawOperation(_ info: WithdrawInfo) -> CompoundOperationWrapper<Data> {
-        nodeOperationFactory.withdrawOperation(info)
+    func withdrawOperation(_: WithdrawInfo) -> CompoundOperationWrapper<Data> {
+        CompoundOperationWrapper.createWithError(BaseOperationError.parentOperationCancelled)
     }
 }

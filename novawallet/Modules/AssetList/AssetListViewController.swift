@@ -84,6 +84,10 @@ final class AssetListViewController: UIViewController, ViewHolder {
     @objc func actionSearch() {
         presenter.presentSearch()
     }
+
+    @objc func actionManage() {
+        presenter.presentAssetsManage()
+    }
 }
 
 extension AssetListViewController: UICollectionViewDelegateFlowLayout {
@@ -229,6 +233,12 @@ extension AssetListViewController: UICollectionViewDataSource {
         settingsCell.settingsButton.addTarget(
             self,
             action: #selector(actionSettings),
+            for: .touchUpInside
+        )
+
+        settingsCell.manageButton.addTarget(
+            self,
+            action: #selector(actionManage),
             for: .touchUpInside
         )
 
