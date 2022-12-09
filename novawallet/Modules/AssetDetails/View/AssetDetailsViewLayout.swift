@@ -20,6 +20,7 @@ final class AssetDetailsViewLayout: UIView {
         ),
         textAlignment: .right
     )
+    
     let priceLabel = UILabel(style: .footnoteSecondary)
     let priceChangeLabel = UILabel(style: .init(textColor: .clear, font: .regularFootnote))
 
@@ -51,35 +52,9 @@ final class AssetDetailsViewLayout: UIView {
         $0.canSelect = false
     }
 
-    let sendButton: RoundedButton = .create {
-        $0.apply(style: .operation)
-        $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
-        $0.contentOpacityWhenDisabled = 0.2
-        $0.changesContentOpacityWhenHighlighted = true
-        $0.imageWithTitleView?.layoutType = .verticalImageFirst
-        $0.isEnabled = false
-        $0.imageWithTitleView?.iconImage = R.image.iconSend()
-    }
-
-    let receiveButton: RoundedButton = .create {
-        $0.apply(style: .operation)
-        $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
-        $0.contentOpacityWhenDisabled = 0.2
-        $0.changesContentOpacityWhenHighlighted = true
-        $0.imageWithTitleView?.layoutType = .verticalImageFirst
-        $0.isEnabled = false
-        $0.imageWithTitleView?.iconImage = R.image.iconReceive()
-    }
-
-    let buyButton: RoundedButton = .create {
-        $0.apply(style: .operation)
-        $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
-        $0.contentOpacityWhenDisabled = 0.2
-        $0.changesContentOpacityWhenHighlighted = true
-        $0.imageWithTitleView?.layoutType = .verticalImageFirst
-        $0.isEnabled = false
-        $0.imageWithTitleView?.iconImage = R.image.iconBuy()
-    }
+    let sendButton: RoundedButton = createOperationButton(icon: R.image.iconSend())
+    let receiveButton: RoundedButton = createOperationButton(icon: R.image.iconReceive())
+    let buyButton: RoundedButton = createOperationButton(icon: R.image.iconBuy())
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
@@ -101,6 +76,16 @@ final class AssetDetailsViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private static func createOperationButton(icon: UIImage?) {
+        $0.apply(style: .operation)
+        $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
+        $0.contentOpacityWhenDisabled = 0.2
+        $0.changesContentOpacityWhenHighlighted = true
+        $0.imageWithTitleView?.layoutType = .verticalImageFirst
+        $0.isEnabled = false
+        $0.imageWithTitleView?.iconImage = icon
     }
 
     private func setupLayout() {
@@ -183,7 +168,7 @@ final class AssetDetailsViewLayout: UIView {
         assetDetailsModel.assetIcon?.cancel(on: assetIconView.imageView)
         assetIconView.imageView.image = nil
 
-        let iconSize = 28 - 6
+        let iconSize = 22
         assetDetailsModel.assetIcon?.loadImage(
             on: assetIconView.imageView,
             targetSize: CGSize(width: iconSize, height: iconSize),
@@ -209,105 +194,4 @@ final class AssetDetailsViewLayout: UIView {
             priceChangeLabel.textColor = R.color.colorTextNegative()
         }
     }
-}
-
-final class PayButtonsRow: RowView<UIStackView>, StackTableViewCellProtocol {
-    init(frame: CGRect, views: [UIView]) {
-        super.init(frame: frame)
-
-        configureStyle()
-        views.forEach(rowContentView.addArrangedSubview)
-    }
-
-    private func configureStyle() {
-        preferredHeight = 80
-        borderView.strokeColor = R.color.colorDivider()!
-        isUserInteractionEnabled = true
-        rowContentView.isUserInteractionEnabled = true
-        rowContentView.distribution = .fillEqually
-        rowContentView.axis = .horizontal
-        backgroundColor = .clear
-
-        roundedBackgroundView.applyFilledBackgroundStyle()
-        roundedBackgroundView.fillColor = R.color.colorBlockBackground()!
-        roundedBackgroundView.cornerRadius = 12
-        roundedBackgroundView.roundingCorners = .allCorners
-    }
-}
-
-extension StackTitleMultiValueCell {
-    func bind(viewModel: BalanceViewModelProtocol) {
-        rowContentView.valueView.bind(
-            topValue: viewModel.amount,
-            bottomValue: viewModel.price
-        )
-    }
-}
-
-extension StackTitleMultiValueCell {
-    struct Style {
-        let title: IconDetailsView.Style
-        let value: MultiValueView.Style
-    }
-
-    func apply(style: Style) {
-        rowContentView.titleView.apply(style: style.title)
-        rowContentView.valueView.apply(style: style.value)
-    }
-}
-
-extension StackTitleMultiValueCell.Style {
-    static let balancePart = StackTitleMultiValueCell.Style(
-        title: .secondaryRow,
-        value: .bigRowContrasted
-    )
-}
-
-extension IconDetailsView.Style {
-    static let secondaryRow = IconDetailsView.Style(
-        tintColor: R.color.colorTextSecondary()!,
-        font: .regularSubheadline
-    )
-}
-
-extension RoundedButton {
-    struct Style {
-        let background: RoundedView.Style
-        let title: UILabel.Style
-    }
-
-    func apply(style: Style) {
-        roundedBackgroundView?.apply(style: style.background)
-        imageWithTitleView?.titleFont = style.title.font
-        imageWithTitleView?.titleColor = style.title.textColor
-    }
-}
-
-extension RoundedButton.Style {
-    static let operation = RoundedButton.Style(
-        background: .icon,
-        title: .init(
-            textColor: R.color.colorTextPrimary()!,
-            font: .semiBoldFootnote
-        )
-    )
-}
-
-extension RoundedView.Style {
-    static let icon = RoundedView.Style(
-        shadowOpacity: 0,
-        strokeWidth: 0,
-        strokeColor: .clear,
-        highlightedStrokeColor: .clear,
-        fillColor: .clear,
-        highlightedFillColor: .clear,
-        rounding: .init(radius: 0, corners: .allCorners)
-    )
-}
-
-struct AssetDetailsModel {
-    let tokenName: String
-    let assetIcon: ImageViewModelProtocol?
-    let price: AssetPriceViewModel?
-    let network: NetworkViewModel
 }

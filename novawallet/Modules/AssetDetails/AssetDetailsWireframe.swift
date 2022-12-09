@@ -17,7 +17,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         ) else {
             return
         }
-        present(purchaseView, from: view)
+        present(purchaseView.controller, from: view)
     }
 
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
@@ -37,7 +37,8 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
             action: #selector(closeModalController)
         )
 
-        let fearlessNavigationController = FearlessNavigationController(rootViewController: transferSetupView.controller)
+        let fearlessNavigationController = FearlessNavigationController(
+            rootViewController: transferSetupView.controller)
         transferSetupView.controller.navigationItem.leftBarButtonItem = closeButtonItem
         navigationController.present(fearlessNavigationController, animated: true)
         prsentedViewController = fearlessNavigationController
@@ -77,14 +78,14 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
             precision: model.precision
         )
 
-        present(locksViewController, from: view)
+        present(locksViewController.controller, from: view)
     }
 
     func showNoSigning(from view: AssetDetailsViewProtocol?) {
         guard let confirmationView = MessageSheetViewFactory.createNoSigningView(with: {}) else {
             return
         }
-        present(confirmationView, from: view)
+        present(confirmationView.controller, from: view)
     }
 
     func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?) {
@@ -94,27 +95,17 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         ) else {
             return
         }
-        present(confirmationView, from: view)
+        present(confirmationView.controller, from: view)
     }
 
-    private func present(_ vc: ControllerBackedProtocol, from view: AssetDetailsViewProtocol?) {
+    private func present(_ viewController: UIViewController, from view: AssetDetailsViewProtocol?) {
         guard let navigationController = view?.controller.navigationController else {
             return
         }
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
-        vc.controller.modalTransitioningFactory = factory
-        vc.controller.modalPresentationStyle = .custom
-        navigationController.present(vc.controller, animated: true)
-    }
-
-    private func present(_ vc: UIViewController, from view: AssetDetailsViewProtocol?) {
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
-        vc.modalTransitioningFactory = factory
-        vc.modalPresentationStyle = .custom
-        navigationController.present(vc, animated: true)
+        viewController.modalTransitioningFactory = factory
+        viewController.modalPresentationStyle = .custom
+        navigationController.present(viewController, animated: true)
     }
 
     func presentSuccessAlert(from view: AssetDetailsViewProtocol?, message: String) {

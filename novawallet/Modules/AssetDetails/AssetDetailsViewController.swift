@@ -27,9 +27,9 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        applyLocalization()
-        addHandlers()
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.chainView)
+        addHandlers()
+        applyLocalization()
         presenter.setup()
     }
 
@@ -80,15 +80,6 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.buyButton.isEnabled = availableOperations.contains(.buy)
     }
-}
-
-struct Operations: OptionSet {
-    let rawValue: Int
-
-    static let send = Operations(rawValue: 1 << 0)
-    static let receive = Operations(rawValue: 1 << 1)
-    static let buy = Operations(rawValue: 1 << 2)
-    static let all = [Operations.send, Operations.receive, Operations.buy]
 }
 
 extension AssetDetailsViewController: Localizable {
