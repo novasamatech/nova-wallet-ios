@@ -45,4 +45,9 @@ extension UILabel.Style {
         textColor: R.color.colorButtonTextAccent(),
         font: .p2Paragraph
     )
+
+    static let secondaryScreenTitle = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle2
+    )
 }

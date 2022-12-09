@@ -1087,3 +1087,12 @@
 "tokens.manage.partial.selected" = "%@ (ещё %@)";
 "tokens.manage.search.empty" = "Для введенного имени токены\nне найдены";
 "add.token.network.selection.title" = "Выберите сеть для добавления ERC-20 токена";
+"add.token.title" = "Введите информацию о ERC-20 токене";
+"common.contract.address" = "Адрес контракта";
+"common.token.symbol" = "Символ";
+"common.token.decimals" = "Точность";
+"add.token.price.title" = "Ссылка на coingecko для информации о цене (Необязательно) ";
+"add.token.enter.contract.address" = "Введите адрес контракта";
+"add.token.enter.symbol" = "Введите символ";
+"add.token.enter.decimals" = "Введите точность";
+"add.token.action" = "Добавить токен";
