@@ -807,7 +807,7 @@
 		8442003A28EAA2D400C49C4A /* ReferendumsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003928EAA2D300C49C4A /* ReferendumsInteractor.swift */; };
 		8442003C28EAA2E400C49C4A /* ReferendumsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8442003B28EAA2E400C49C4A /* ReferendumsWireframe.swift */; };
 		844384AC28538D3000611CE2 /* RewardCalculatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */; };
-		844384AE28538F4700611CE2 /* UniformCurveRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AD28538F4700611CE2 /* UniformCurveRewardEngine.swift */; };
+		844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */; };
 		844384B0285391D800611CE2 /* RewardCalculatorEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */; };
 		8443CA4A289D04E900FA4A95 /* TransactionSigningPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443CA49289D04E900FA4A95 /* TransactionSigningPresenting.swift */; };
 		8443FDB12554B7640092893D /* TitledMnemonicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443FDB02554B7640092893D /* TitledMnemonicView.swift */; };
@@ -3809,7 +3809,7 @@
 		8442003928EAA2D300C49C4A /* ReferendumsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsInteractor.swift; sourceTree = "<group>"; };
 		8442003B28EAA2E400C49C4A /* ReferendumsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumsWireframe.swift; sourceTree = "<group>"; };
 		844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngine.swift; sourceTree = "<group>"; };
-		844384AD28538F4700611CE2 /* UniformCurveRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniformCurveRewardEngine.swift; sourceTree = "<group>"; };
+		844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlephZeroRewardEngine.swift; sourceTree = "<group>"; };
 		844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorEngineFactory.swift; sourceTree = "<group>"; };
 		8443CA49289D04E900FA4A95 /* TransactionSigningPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSigningPresenting.swift; sourceTree = "<group>"; };
 		8443FDB02554B7640092893D /* TitledMnemonicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitledMnemonicView.swift; sourceTree = "<group>"; };
@@ -12537,7 +12537,7 @@
 				AEE4E35125E945AA00D6DF31 /* RewardCalculatorFacade.swift */,
 				844384AB28538D3000611CE2 /* RewardCalculatorEngine.swift */,
 				AEF7404D25E6DC9400407D41 /* InflationCurveRewardEngine.swift */,
-				844384AD28538F4700611CE2 /* UniformCurveRewardEngine.swift */,
+				844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */,
 				844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */,
 			);
 			path = RelayChain;
@@ -15820,7 +15820,7 @@
 				84FACCD925F8C22A00F32ED4 /* BigInt+Hex.swift in Sources */,
 				F409672626B29B04008CD244 /* UIScrollView+ScrollToPage.swift in Sources */,
 				84E0EE0E292D69A9008B2953 /* CallMetadata+TypeCheck.swift in Sources */,
-				844384AE28538F4700611CE2 /* UniformCurveRewardEngine.swift in Sources */,
+				844384AE28538F4700611CE2 /* AlephZeroRewardEngine.swift in Sources */,
 				846A2C4525271F0100731018 /* DateFormatter.swift in Sources */,
 				F4F65C3326D8B81A002EE838 /* FWChartViewProtocol.swift in Sources */,
 				8441007C28A3CD5900DCCA11 /* ParitySignerScanInteractor.swift in Sources */,
