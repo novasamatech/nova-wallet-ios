@@ -51,7 +51,7 @@ final class AssetDetailsInteractor {
     private var isTransfersEnable: Bool {
         if let type = chainAsset.asset.type {
             switch AssetType(rawValue: type) {
-            case .statemine, .none:
+            case .statemine, .none, .evm:
                 return true
             case .orml:
                 if let extras = try? chainAsset.asset.typeExtras?.map(to: OrmlTokenExtras.self) {
