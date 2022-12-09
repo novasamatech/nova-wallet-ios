@@ -19,10 +19,10 @@ final class AssetDetailsViewLayout: UIView {
             textColor: R.color.colorTextPrimary(),
             font: .semiBoldBody
         ),
-        textAlignment: .right
+        textAlignment: .center
     )
 
-    let priceLabel = UILabel(style: .footnoteSecondary)
+    let priceLabel = UILabel(style: .footnoteSecondary, textAlignment: .right)
     let priceChangeLabel = UILabel(style: .init(textColor: .clear, font: .regularFootnote))
 
     let containerView: ScrollableContainerView = {
@@ -101,6 +101,7 @@ final class AssetDetailsViewLayout: UIView {
         backgroundView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+        addSubview(topBackgroundView)
 
         let priceStack = UIStackView(arrangedSubviews: [priceLabel, priceChangeLabel])
         priceStack.spacing = 4
@@ -114,13 +115,10 @@ final class AssetDetailsViewLayout: UIView {
             $0.top.equalTo(self.safeAreaLayoutGuide.snp.top)
         }
 
-        addSubview(topBackgroundView)
         topBackgroundView.snp.makeConstraints {
             $0.leading.trailing.top.equalToSuperview()
             $0.bottom.equalTo(priceStack.snp.bottom)
         }
-
-        priceStack.bringSubviewToFront(topBackgroundView)
 
         let assetView = UIStackView(arrangedSubviews: [assetIconView, assetLabel])
         assetView.spacing = 8
@@ -136,7 +134,7 @@ final class AssetDetailsViewLayout: UIView {
         addSubview(containerView)
         containerView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
-            $0.top.equalTo(priceStack.snp.bottom)
+            $0.top.equalTo(priceStack.snp.bottom).offset(12)
         }
 
         containerView.stackView.spacing = 8
