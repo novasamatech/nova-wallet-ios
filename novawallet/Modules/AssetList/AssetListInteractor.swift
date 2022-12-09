@@ -56,9 +56,9 @@ final class AssetListInteractor: AssetListBaseInteractor {
         clearNftSubscription()
         clearLocksSubscription()
 
-        super.resetWallet()
-
         providerWalletInfo()
+
+        super.resetWallet()
     }
 
     override func didResetWallet(
