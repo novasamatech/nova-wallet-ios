@@ -108,7 +108,8 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
     }
 
     func performAddToken() {
-        wireframe.showAddToken(from: view)
+        let allChains = chains.allItems.reduceToDict()
+        wireframe.showAddToken(from: view, allChains: allChains)
     }
 
     func performEdit(for viewModel: TokensManageViewModel) {
