@@ -2,8 +2,14 @@ import Foundation
 import RobinHood
 import BigInt
 
+enum TransactionHistoryItemSource: Int16, Codable {
+    case substrate = 0
+    case evm = 1
+}
+
 struct TransactionHistoryItem: Codable {
     enum CodingKeys: String, CodingKey {
+        case source
         case chainId
         case assetId
         case sender
@@ -25,6 +31,7 @@ struct TransactionHistoryItem: Codable {
         case failed
     }
 
+    let source: TransactionHistoryItemSource
     let chainId: String
     let assetId: UInt32
     let sender: String
@@ -41,7 +48,11 @@ struct TransactionHistoryItem: Codable {
 }
 
 extension TransactionHistoryItem: Identifiable {
-    var identifier: String { txHash }
+    var identifier: String { Self.createIdentifier(from: txHash, source: source) }
+
+    static func createIdentifier(from txHash: String, source: TransactionHistoryItemSource) -> String {
+        txHash + " - " + String(source.rawValue)
+    }
 }
 
 extension TransactionHistoryItem {

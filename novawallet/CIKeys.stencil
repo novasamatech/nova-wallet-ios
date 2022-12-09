@@ -1,5 +1,6 @@
-enum SubscanCIKeys {
-    static var apiKey: String = "{{ argument.subscanAPIKey }}"
+enum MoonscanCIKeys {
+    static var moonbeamApiKey: String = "{{ argument.moonbeamHistoryApiKey }}"
+    static var moonriverApiKey: String = "{{ argument.moonriverHistoryApiKey }}"
 }
 
 enum MercuryoCIKeys {

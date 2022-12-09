@@ -2,6 +2,7 @@ import Foundation
 import SoraFoundation
 
 extension TransferSetupPresenterFactory {
+    // swiftlint:disable:next function_body_length
     func createOnChainPresenter(
         for chainAsset: ChainAsset,
         initialState: TransferSetupInputState,
@@ -77,7 +78,17 @@ extension TransferSetupPresenterFactory {
         return presenter
     }
 
-    private func createInteractor(for chainAsset: ChainAsset) -> OnChainTransferSetupInteractor? {
+    private func createInteractor(
+        for chainAsset: ChainAsset
+    ) -> (OnChainTransferBaseInteractor & OnChainTransferSetupInteractorInputProtocol)? {
+        if chainAsset.asset.isEvm {
+            return createEvmInteractor(for: chainAsset)
+        } else {
+            return createSubstrateInteractor(for: chainAsset)
+        }
+    }
+
+    private func createSubstrateInteractor(for chainAsset: ChainAsset) -> OnChainTransferSetupInteractor? {
         let chain = chainAsset.chain
         let asset = chainAsset.asset
 
@@ -121,6 +132,39 @@ extension TransferSetupPresenterFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+    }
+
+    private func createEvmInteractor(for chainAsset: ChainAsset) -> EvmOnChainTransferSetupInteractor? {
+        let chain = chainAsset.chain
+        let asset = chainAsset.asset
+
+        guard
+            let selectedAccount = wallet.fetch(for: chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let extrinsicService = EvmTransactionService(
+            accountId: selectedAccount.accountId,
+            operationFactory: EvmWebSocketOperationFactory(connection: connection),
+            chain: chain,
+            operationQueue: operationQueue
+        )
+
+        return EvmOnChainTransferSetupInteractor(
+            selectedAccount: selectedAccount,
+            chain: chain,
+            asset: asset,
+            feeProxy: EvmTransactionFeeProxy(),
+            extrinsicService: extrinsicService,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue
         )
     }
 }
