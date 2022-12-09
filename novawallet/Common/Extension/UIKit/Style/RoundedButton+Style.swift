@@ -1,4 +1,4 @@
-import UIKit
+import SoraUI
 
 extension RoundedButton {
     struct Style {

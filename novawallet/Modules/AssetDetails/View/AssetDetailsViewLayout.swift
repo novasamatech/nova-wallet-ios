@@ -5,6 +5,7 @@ import SnapKit
 final class AssetDetailsViewLayout: UIView {
     let backgroundView = MultigradientView.background
     let chainView = AssetListChainView()
+    let topBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 
     let assetIconView: AssetIconView = .create {
         $0.backgroundView.cornerRadius = 14
@@ -78,14 +79,16 @@ final class AssetDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private static func createOperationButton(icon: UIImage?) {
-        $0.apply(style: .operation)
-        $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
-        $0.contentOpacityWhenDisabled = 0.2
-        $0.changesContentOpacityWhenHighlighted = true
-        $0.imageWithTitleView?.layoutType = .verticalImageFirst
-        $0.isEnabled = false
-        $0.imageWithTitleView?.iconImage = icon
+    private static func createOperationButton(icon: UIImage?) -> RoundedButton {
+        let button = RoundedButton()
+        button.apply(style: .operation)
+        button.imageWithTitleView?.spacingBetweenLabelAndIcon = 8
+        button.contentOpacityWhenDisabled = 0.2
+        button.changesContentOpacityWhenHighlighted = true
+        button.imageWithTitleView?.layoutType = .verticalImageFirst
+        button.isEnabled = false
+        button.imageWithTitleView?.iconImage = icon
+        return button
     }
 
     private func setupLayout() {
@@ -110,6 +113,14 @@ final class AssetDetailsViewLayout: UIView {
             $0.height.equalTo(26)
             $0.top.equalTo(self.safeAreaLayoutGuide.snp.top)
         }
+
+        addSubview(topBackgroundView)
+        topBackgroundView.snp.makeConstraints {
+            $0.leading.trailing.top.equalToSuperview()
+            $0.bottom.equalTo(priceStack.snp.bottom)
+        }
+
+        priceStack.bringSubviewToFront(topBackgroundView)
 
         let assetView = UIStackView(arrangedSubviews: [assetIconView, assetLabel])
         assetView.spacing = 8
