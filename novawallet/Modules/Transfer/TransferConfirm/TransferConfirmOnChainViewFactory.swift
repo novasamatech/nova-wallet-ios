@@ -88,6 +88,67 @@ struct TransferConfirmOnChainViewFactory {
         for chainAsset: ChainAsset,
         account: ChainAccountResponse,
         accountMetaId: String
+    ) -> (OnChainTransferBaseInteractor & TransferConfirmOnChainInteractorInputProtocol)? {
+        if chainAsset.asset.isEvm {
+            return createEvmInteractor(for: chainAsset, account: account)
+        } else {
+            return createSubstrateInteractor(for: chainAsset, account: account, accountMetaId: accountMetaId)
+        }
+    }
+
+    private static func createEvmInteractor(
+        for chainAsset: ChainAsset,
+        account: ChainAccountResponse
+    ) -> TransferEvmOnChainConfirmInteractor? {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let chain = chainAsset.chain
+        let asset = chainAsset.asset
+
+        guard
+            let ethereumResponse = SelectedWalletSettings.shared.value?.fetchEthereum(for: account.accountId),
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let extrinsicService = EvmTransactionService(
+            accountId: account.accountId,
+            operationFactory: EvmWebSocketOperationFactory(connection: connection),
+            chain: chain,
+            operationQueue: operationQueue
+        )
+
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(for: ethereumResponse)
+
+        let repositoryFactory = SubstrateRepositoryFactory()
+        let transactionStorage = repositoryFactory.createTxRepository()
+        let persistentExtrinsicService = PersistentExtrinsicService(
+            repository: transactionStorage,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        return TransferEvmOnChainConfirmInteractor(
+            selectedAccount: account,
+            chain: chain,
+            asset: asset,
+            feeProxy: EvmTransactionFeeProxy(),
+            extrinsicService: extrinsicService,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            signingWrapper: signingWrapper,
+            persistExtrinsicService: persistentExtrinsicService,
+            eventCenter: EventCenter.shared,
+            currencyManager: currencyManager,
+            operationQueue: operationQueue
+        )
+    }
+
+    private static func createSubstrateInteractor(
+        for chainAsset: ChainAsset,
+        account: ChainAccountResponse,
+        accountMetaId: String
     ) -> TransferOnChainConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chain = chainAsset.chain

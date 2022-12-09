@@ -10,35 +10,13 @@ extension WalletNetworkFacade {
         pagination: Pagination,
         filter: WalletHistoryFilter
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
-        let chain = chainAsset.chain
-
-        let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
-
-        if let baseUrl = chain.externalApi?.history?.url {
-            do {
-                let asset = chainAsset.asset
-                let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
-                let historyAssetId = try assetMapper.historyAssetId()
-
-                maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(
-                    url: baseUrl,
-                    filter: filter,
-                    assetId: historyAssetId
-                )
-            } catch {
-                maybeRemoteHistoryFactory = nil
-            }
-        } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
-            maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
-                baseURL: fallbackUrl,
-                walletFilter: filter
-            )
-        } else {
-            maybeRemoteHistoryFactory = nil
-        }
+        let maybeRemoteHistoryFactory = AssetHistoryFacade().createOperationFactory(
+            for: chainAsset,
+            filter: filter
+        )
 
         if let remoteFactory = maybeRemoteHistoryFactory {
-            return createRemoteUtilityAssetHistory(
+            return createRemoteAssetHistory(
                 for: address,
                 chainAsset: chainAsset,
                 pagination: pagination,
@@ -55,7 +33,31 @@ extension WalletNetworkFacade {
         }
     }
 
-    func createRemoteUtilityAssetHistory(
+    private func createLocalRepository(
+        for address: AccountAddress,
+        chainAsset: ChainAsset
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let utilityAsset = chainAsset.chain.utilityAssets().first
+        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+
+        if let utilityAssetId = utilityAsset?.assetId, utilityAssetId == chainAsset.asset.assetId {
+            return repositoryFactory.createUtilityAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: utilityAssetId,
+                source: source
+            )
+        } else {
+            return repositoryFactory.createCustomAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId,
+                source: source
+            )
+        }
+    }
+
+    func createRemoteAssetHistory(
         for address: AccountAddress,
         chainAsset: ChainAsset,
         pagination: Pagination,
@@ -76,20 +78,13 @@ extension WalletNetworkFacade {
             remoteAddress = address
         }
 
-        let remoteHistoryWrapper = remoteFactory.createOperationWrapper(
-            for: remoteAddress,
-            pagination: pagination
-        )
+        let remoteHistoryWrapper = remoteFactory.createOperationWrapper(for: remoteAddress, pagination: pagination)
 
         var dependencies = remoteHistoryWrapper.allOperations
 
         let localFetchOperation: BaseOperation<[TransactionHistoryItem]>?
 
-        let txStorage = repositoryFactory.createUtilityAssetTxRepository(
-            for: address,
-            chainId: chain.chainId,
-            assetId: chainAsset.asset.assetId
-        )
+        let txStorage = createLocalRepository(for: address, chainAsset: chainAsset)
 
         if pagination.context == nil {
             let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
@@ -149,21 +144,7 @@ extension WalletNetworkFacade {
             return createEmptyHistoryResponseOperation()
         }
 
-        let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
-
-        if utilityAsset.assetId == chainAsset.asset.assetId {
-            txStorage = repositoryFactory.createUtilityAssetTxRepository(
-                for: address,
-                chainId: chainAsset.chain.chainId,
-                assetId: utilityAsset.assetId
-            )
-        } else {
-            txStorage = repositoryFactory.createCustomAssetTxRepository(
-                for: address,
-                chainId: chainAsset.chain.chainId,
-                assetId: chainAsset.asset.assetId
-            )
-        }
+        let txStorage = createLocalRepository(for: address, chainAsset: chainAsset)
 
         let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
 
@@ -200,9 +181,7 @@ extension WalletNetworkFacade {
         address: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
         ClosureOperation {
-            // ignore remote transactions if not received
-            let optRemoteTransactions = try? remoteOperation?.extractNoCancellableResultData().historyItems
-            let remoteTransactions = optRemoteTransactions ?? []
+            let remoteTransactions = try remoteOperation?.extractNoCancellableResultData().historyItems ?? []
 
             if let localTransactions = try localOperation?.extractNoCancellableResultData(),
                !localTransactions.isEmpty {
@@ -218,7 +197,8 @@ extension WalletNetworkFacade {
                     item.createTransactionForAddress(
                         address,
                         assetId: chainAsset.chainAssetId.walletId,
-                        chainAssetInfo: chainAsset.chainAssetInfo
+                        chainAsset: chainAsset,
+                        utilityAsset: utilityAsset
                     )
                 }
 
@@ -267,9 +247,9 @@ extension WalletNetworkFacade {
             let items = try fetchOperation.extractNoCancellableResultData()
 
             return items.filter { item in
-                if item.callPath.isTransfer, !filter.contains(.transfers) {
+                if item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.transfers) {
                     return false
-                } else if !item.callPath.isTransfer, !filter.contains(.extrinsics) {
+                } else if !item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.extrinsics) {
                     return false
                 } else {
                     return true

@@ -26,13 +26,25 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         walletUpdater.setup(context: context, chainAsset: chainAsset)
     }
 
-    func showAssetsManage(from view: AssetListViewProtocol?) {
-        guard let assetsManageView = AssetsManageViewFactory.createView() else {
+    func showAssetsSettings(from view: AssetListViewProtocol?) {
+        guard let assetsManageView = AssetsSettingsViewFactory.createView() else {
             return
         }
 
         let navigationController = FearlessNavigationController(
             rootViewController: assetsManageView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showTokensManage(from view: AssetListViewProtocol?) {
+        guard let tokensManageView = TokensManageViewFactory.createView() else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: tokensManageView.controller
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
