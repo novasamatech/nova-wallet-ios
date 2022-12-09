@@ -14,6 +14,7 @@ final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
             return
         }
 
+        // TODO: Remove wireframe
 //        let command = commandFactory?.preparePresentationCommand(for: transferView.controller)
 //        command?.presentationStyle = .push(hidesBottomBar: true)
 //        try? command?.execute()

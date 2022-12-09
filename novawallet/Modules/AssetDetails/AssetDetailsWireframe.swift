@@ -78,7 +78,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
             precision: model.precision
         )
 
-        present(locksViewController.controller, from: view)
+        present(locksViewController, from: view)
     }
 
     func showNoSigning(from view: AssetDetailsViewProtocol?) {

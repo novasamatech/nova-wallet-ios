@@ -134,7 +134,10 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
 
         switch result {
         case let .success(balance):
-            presenter.didReceive(balance: balance)
+            presenter.didReceive(balance: balance ?? AssetBalance.createZero(
+                for: chainAsset.chainAssetId,
+                accountId: accountId
+            ))
         case let .failure(error):
             presenter.didReceive(error: .accountBalance(error))
         }

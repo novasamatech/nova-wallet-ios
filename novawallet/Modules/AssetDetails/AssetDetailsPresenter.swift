@@ -5,8 +5,8 @@ import SoraFoundation
 final class AssetDetailsPresenter {
     weak var view: AssetDetailsViewProtocol?
     let wireframe: AssetDetailsWireframeProtocol
-    let viewModelFactory: AssetDetailsViewModelFactoryProtocol,
-        let interactor: AssetDetailsInteractorInputProtocol
+    let viewModelFactory: AssetDetailsViewModelFactoryProtocol
+    let interactor: AssetDetailsInteractorInputProtocol
     let chainAsset: ChainAsset
     let selectedAccountType: MetaAccountModelType
     let logger: LoggerProtocol?
@@ -54,22 +54,22 @@ final class AssetDetailsPresenter {
         view.didReceive(assetModel: assetDetailsModel)
 
         let totalBalance = viewModelFactory.createBalanceViewModel(
-            from: balance.totalInPlank,
-            precision: chainAsset.asset.precision,
+            value: balance.totalInPlank,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceData: priceData,
             locale: selectedLocale
         )
 
         let transferableBalance = viewModelFactory.createBalanceViewModel(
-            from: balance.transferable,
-            precision: chainAsset.asset.precision,
+            value: balance.transferable,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceData: priceData,
             locale: selectedLocale
         )
 
         let lockedBalance = viewModelFactory.createBalanceViewModel(
-            from: balance.locked,
-            precision: chainAsset.asset.precision,
+            value: balance.locked,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceData: priceData,
             locale: selectedLocale
         )
@@ -90,7 +90,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
     func didTapSendButton() {
         wireframe.showSendTokens(
             from: view,
-            chainAsset: ChainAsset(chain: chain, asset: asset)
+            chainAsset: chainAsset
         )
     }
 
@@ -99,8 +99,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         case .secrets, .paritySigner:
             wireframe.showReceiveTokens(from: view)
         case .ledger:
-            if let assetRawType = asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                wireframe.showLedgerNotSupport(for: asset.symbol, from: view)
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {
                 wireframe.showReceiveTokens(from: view)
             }
@@ -119,8 +119,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         case .secrets, .paritySigner:
             showPurchase()
         case .ledger:
-            if let assetRawType = asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                wireframe.showLedgerNotSupport(for: asset.symbol, from: view)
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
             } else {
                 showPurchase()
             }
@@ -165,8 +165,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         )
         let model = AssetDetailsLocksViewModel(
             balanceContext: balanceContext,
-            amountFormatter: viewModelFactory.amountFormatter,
-            priceFormatter: viewModelFactory.priceFormatter,
+            amountFormatter: viewModelFactory.amountFormatter(assetDisplayInfo: chainAsset.assetDisplayInfo),
+            priceFormatter: viewModelFactory.priceFormatter(priceId: priceData?.currencyId),
             precision: Int16(precision)
         )
         wireframe.showLocks(from: view, model: model)

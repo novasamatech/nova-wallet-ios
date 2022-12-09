@@ -21,28 +21,24 @@ struct AssetDetailsViewFactory {
         )
         let wireframe = AssetDetailsWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: asset.displayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
+
+        let viewModelFactory = AssetDetailsViewModelFactory(
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            networkViewModelFactory: NetworkViewModelFactory(),
+            priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource()
         )
-        let balanceFormatterFactory = AssetBalanceFormatterFactory()
-        let tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: asset.displayInfo)
-        let viewModelFactory = AssetDetailsViewModelFactory(balanceViewModelFactory: balanceFormatterFactory,
-                                                            amountFormatter: tokenFormatter,
-                                                            priceFormatter: tokenFormatter,
-                                                            networkViewModelFactory: NetworkViewModelFactory(),
-                                                            priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource())
-        
+
         let presenter = AssetDetailsPresenter(
             interactor: interactor,
             localizableManager: LocalizationManager.shared,
             chainAsset: chainAsset,
             selectedAccountType: wallet.type,
-            viewModelFactory: AssetDetailsViewModelFactoryProtocol,
+            viewModelFactory: viewModelFactory,
             wireframe: wireframe,
             logger: Logger.shared
         )
-  
+
         let view = AssetDetailsViewController(
             presenter: presenter,
             localizableManager: LocalizationManager.shared

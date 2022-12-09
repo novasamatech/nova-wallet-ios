@@ -3,12 +3,12 @@ import SoraFoundation
 import BigInt
 
 protocol AssetDetailsViewModelFactoryProtocol {
-    var amountFormatter: LocalizableResource<TokenFormatter> { get }
-    var priceFormatter: LocalizableResource<TokenFormatter> { get }
+    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter>
+    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter>
 
     func createBalanceViewModel(
-        from plank: BigUInt,
-        precision: UInt16,
+        value: BigUInt,
+        assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
         locale: Locale
     ) -> BalanceViewModelProtocol
@@ -22,36 +22,45 @@ protocol AssetDetailsViewModelFactoryProtocol {
 }
 
 final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let amountFormatter: LocalizableResource<TokenFormatter>
-    let priceFormatter: LocalizableResource<TokenFormatter>
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let priceChangePercentFormatter: LocalizableResource<NumberFormatter>
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
+    let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
     init(
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        amountFormatter: LocalizableResource<TokenFormatter>,
-        priceFormatter: LocalizableResource<TokenFormatter>,
+        assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         priceChangePercentFormatter: LocalizableResource<NumberFormatter>
     ) {
-        self.balanceViewModelFactory = balanceViewModelFactory
-        self.amountFormatter = amountFormatter
-        self.priceFormatter = priceFormatter
+        self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
+        self.priceAssetInfoFactory = priceAssetInfoFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.priceChangePercentFormatter = priceChangePercentFormatter
     }
 
     func createBalanceViewModel(
-        from plank: BigUInt,
-        precision: UInt16,
+        value: BigUInt,
+        assetDisplayInfo: AssetBalanceDisplayInfo,
         priceData: PriceData?,
         locale: Locale
     ) -> BalanceViewModelProtocol {
-        balanceViewModelFactory.balanceFromPrice(
-            plank.decimal(precision: precision),
-            priceData: priceData
-        ).value(for: locale)
+        let formatter = amountFormatter(assetDisplayInfo: assetDisplayInfo).value(for: locale)
+        let amount = value.decimal(precision: UInt16(assetDisplayInfo.assetPrecision))
+        let amountString = formatter.stringFromDecimal(amount) ?? ""
+        guard let priceData = priceData, let price = Decimal(string: priceData.price) else {
+            return BalanceViewModel(
+                amount: amountString,
+                price: ""
+            )
+        }
+        let priceString = priceFormatter(priceId: priceData.currencyId)
+            .value(for: locale)
+            .stringFromDecimal(price * amount) ?? ""
+        return BalanceViewModel(
+            amount: amountString,
+            price: priceString
+        )
     }
 
     func createAssetDetailsModel(
@@ -63,7 +72,7 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         let assetIcon = chainAsset.asset.icon.map { RemoteImageViewModel(url: $0) }
         return AssetDetailsModel(
-            tokenName: asset.assetDisplayInfo.symbol,
+            tokenName: chainAsset.asset.symbol,
             assetIcon: assetIcon,
             price: createPriceState(
                 balance: balance,
@@ -76,24 +85,32 @@ final class AssetDetailsViewModelFactory: AssetDetailsViewModelFactoryProtocol {
     }
 
     private func createPriceState(
-        balance: AssetBalance,
-        precision: UInt16,
+        balance _: AssetBalance,
+        precision _: UInt16,
         priceData: PriceData?,
         locale: Locale
     ) -> AssetPriceViewModel? {
-        guard let priceData = priceData else {
+        guard let priceData = priceData,
+              let price = Decimal(string: priceData.price) else {
             return nil
         }
-        let amount = Decimal.fromSubstrateAmount(
-            balance.totalInPlank,
-            precision: Int16(precision)
-        ) ?? 0.0
-        let price = Decimal(string: priceData.price)
+
         let priceChangeValue = (priceData.dayChange ?? 0.0) / 100.0
         let priceChangeString = priceChangePercentFormatter.value(for: locale).stringFromDecimal(priceChangeValue) ?? ""
         let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
             ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
-        let priceString = priceFormatter.value(for: locale).stringFromDecimal(price)
+        let priceString = priceFormatter(priceId: priceData.currencyId)
+            .value(for: locale)
+            .stringFromDecimal(price) ?? ""
         return AssetPriceViewModel(amount: priceString, change: priceChange)
+    }
+
+    func priceFormatter(priceId: Int?) -> LocalizableResource<TokenFormatter> {
+        let assetBalanceDisplayInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: priceId)
+        return assetBalanceFormatterFactory.createTokenFormatter(for: assetBalanceDisplayInfo)
+    }
+
+    func amountFormatter(assetDisplayInfo: AssetBalanceDisplayInfo) -> LocalizableResource<TokenFormatter> {
+        assetBalanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
     }
 }
