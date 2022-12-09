@@ -1087,3 +1087,12 @@
 "tokens.manage.partial.selected" = "%@ (%@ more)";
 "tokens.manage.search.empty" = "No tokens with entered name were\nfound";
 "add.token.network.selection.title" = "Select network to add ERC-20 token";
+"add.token.title" = "Enter ERC-20 token details";
+"common.contract.address" = "Contract address";
+"common.token.symbol" = "Symbol";
+"common.token.decimals" = "Decimals";
+"add.token.price.title" = "Coingecko link for price info (Optional)";
+"add.token.enter.contract.address" = "Enter contract address";
+"add.token.enter.symbol" = "Enter symbol";
+"add.token.enter.decimals" = "Enter decimals";
+"add.token.action" = "Add token";
