@@ -9,10 +9,10 @@ struct AssetDetailsViewFactory {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
-
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
         let interactor = AssetDetailsInteractor(
             selectedMetaAccount: wallet,
-            chainAsset: ChainAsset(chain: chain, asset: asset),
+            chainAsset: chainAsset,
             purchaseProvider: PurchaseAggregator.defaultAggregator(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
@@ -27,18 +27,22 @@ struct AssetDetailsViewFactory {
         )
         let balanceFormatterFactory = AssetBalanceFormatterFactory()
         let tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: asset.displayInfo)
+        let viewModelFactory = AssetDetailsViewModelFactory(balanceViewModelFactory: balanceFormatterFactory,
+                                                            amountFormatter: tokenFormatter,
+                                                            priceFormatter: tokenFormatter,
+                                                            networkViewModelFactory: NetworkViewModelFactory(),
+                                                            priceChangePercentFormatter: NumberFormatter.signedPercent.localizableResource())
+        
         let presenter = AssetDetailsPresenter(
             interactor: interactor,
-            balanceViewModelFactory: balanceViewModelFactory,
-            amountFormatter: tokenFormatter,
-            priceFormatter: tokenFormatter,
             localizableManager: LocalizationManager.shared,
-            asset: asset,
-            chain: chain,
+            chainAsset: chainAsset,
             selectedAccountType: wallet.type,
-            wireframe: wireframe
+            viewModelFactory: AssetDetailsViewModelFactoryProtocol,
+            wireframe: wireframe,
+            logger: Logger.shared
         )
-
+  
         let view = AssetDetailsViewController(
             presenter: presenter,
             localizableManager: LocalizationManager.shared

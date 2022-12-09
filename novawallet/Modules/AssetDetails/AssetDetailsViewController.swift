@@ -75,7 +75,7 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.lockCell.canSelect = isSelectable
     }
 
-    func didReceive(availableOperations: Operations) {
+    func didReceive(availableOperations: AssetDetailsOperation) {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.buyButton.isEnabled = availableOperations.contains(.buy)

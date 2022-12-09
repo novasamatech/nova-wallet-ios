@@ -5,88 +5,35 @@ import SoraFoundation
 final class AssetDetailsPresenter {
     weak var view: AssetDetailsViewProtocol?
     let wireframe: AssetDetailsWireframeProtocol
-    let interactor: AssetDetailsInteractorInputProtocol
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let asset: AssetModel
-    let chain: ChainModel
-    let amountFormatter: LocalizableResource<TokenFormatter>
-    let priceFormatter: LocalizableResource<TokenFormatter>
+    let viewModelFactory: AssetDetailsViewModelFactoryProtocol,
+        let interactor: AssetDetailsInteractorInputProtocol
+    let chainAsset: ChainAsset
+    let selectedAccountType: MetaAccountModelType
+    let logger: LoggerProtocol?
 
     private var priceData: PriceData?
     private var balance: AssetBalance?
     private var locks: [AssetLock] = []
     private var crowdloans: [CrowdloanContributionData] = []
     private var purchaseActions: [PurchaseAction] = []
-    private var availableOperations: Operations = []
-    private var selectedAccountType: MetaAccountModelType
+    private var availableOperations: AssetDetailsOperation = []
 
     init(
         interactor: AssetDetailsInteractorInputProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        amountFormatter: LocalizableResource<TokenFormatter>,
-        priceFormatter: LocalizableResource<TokenFormatter>,
         localizableManager: LocalizationManagerProtocol,
-        asset: AssetModel,
-        chain: ChainModel,
+        chainAsset: ChainAsset,
         selectedAccountType: MetaAccountModelType,
-        wireframe: AssetDetailsWireframeProtocol
+        viewModelFactory: AssetDetailsViewModelFactoryProtocol,
+        wireframe: AssetDetailsWireframeProtocol,
+        logger: LoggerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.asset = asset
-        self.balanceViewModelFactory = balanceViewModelFactory
-        self.chain = chain
+        self.chainAsset = chainAsset
         self.selectedAccountType = selectedAccountType
-        self.amountFormatter = amountFormatter
-        self.priceFormatter = priceFormatter
+        self.viewModelFactory = viewModelFactory
+        self.logger = logger
         localizationManager = localizableManager
-    }
-
-    private func createBalanceViewModel(
-        from plank: BigUInt,
-        precision: UInt16,
-        priceData: PriceData?
-    ) -> BalanceViewModelProtocol {
-        let amount = Decimal.fromSubstrateAmount(
-            plank,
-            precision: Int16(precision)
-        ) ?? 0.0
-
-        return balanceViewModelFactory.balanceFromPrice(
-            amount,
-            priceData: priceData
-        ).value(for: selectedLocale)
-    }
-
-    private func createPriceState(priceData: PriceData?) -> AssetPriceViewModel? {
-        guard let balance = balance else {
-            return nil
-        }
-        guard let priceData = priceData else {
-            return nil
-        }
-        let amount = Decimal.fromSubstrateAmount(
-            balance.totalInPlank,
-            precision: Int16(asset.precision)
-        ) ?? 0.0
-        let price = Decimal(string: priceData.price)
-        let priceChangeValue = (priceData.dayChange ?? 0.0) / 100.0
-        let priceChangeString = NumberFormatter.signedPercent.localizableResource().value(for: selectedLocale).stringFromDecimal(priceChangeValue) ?? ""
-        let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
-            ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
-        let priceString = balanceViewModelFactory.priceFromAmount(1, priceData: priceData).value(for: selectedLocale)
-        return AssetPriceViewModel(amount: priceString, change: priceChange)
-    }
-
-    private func createAssetDetailsModel() -> AssetDetailsModel {
-        let networkViewModel = NetworkViewModelFactory().createViewModel(from: chain)
-        let assetIcon = asset.icon.map { RemoteImageViewModel(url: $0) }
-        return AssetDetailsModel(
-            tokenName: asset.symbol,
-            assetIcon: assetIcon,
-            price: createPriceState(priceData: priceData),
-            network: networkViewModel
-        )
     }
 
     private func updateView() {
@@ -98,25 +45,33 @@ final class AssetDetailsPresenter {
             return
         }
 
-        let assetDetailsModel = createAssetDetailsModel()
+        let assetDetailsModel = viewModelFactory.createAssetDetailsModel(
+            balance: balance,
+            priceData: priceData,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
         view.didReceive(assetModel: assetDetailsModel)
 
-        let totalBalance = createBalanceViewModel(
+        let totalBalance = viewModelFactory.createBalanceViewModel(
             from: balance.totalInPlank,
-            precision: asset.precision,
-            priceData: priceData
+            precision: chainAsset.asset.precision,
+            priceData: priceData,
+            locale: selectedLocale
         )
 
-        let transferableBalance = createBalanceViewModel(
+        let transferableBalance = viewModelFactory.createBalanceViewModel(
             from: balance.transferable,
-            precision: asset.precision,
-            priceData: priceData
+            precision: chainAsset.asset.precision,
+            priceData: priceData,
+            locale: selectedLocale
         )
 
-        let lockedBalance = createBalanceViewModel(
+        let lockedBalance = viewModelFactory.createBalanceViewModel(
             from: balance.locked,
-            precision: asset.precision,
-            priceData: priceData
+            precision: chainAsset.asset.precision,
+            priceData: priceData,
+            locale: selectedLocale
         )
 
         view.didReceive(totalBalance: totalBalance)
@@ -197,7 +152,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         guard let balance = balance else {
             return
         }
-        let precision = asset.precision
+        let precision = chainAsset.asset.precision
         let balanceContext = BalanceContext(
             free: balance.freeInPlank.decimal(precision: precision),
             reserved: balance.reservedInPlank.decimal(precision: precision),
@@ -210,8 +165,8 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         )
         let model = AssetDetailsLocksViewModel(
             balanceContext: balanceContext,
-            amountFormatter: amountFormatter,
-            priceFormatter: priceFormatter,
+            amountFormatter: viewModelFactory.amountFormatter,
+            priceFormatter: viewModelFactory.priceFormatter,
             precision: Int16(precision)
         )
         wireframe.showLocks(from: view, model: model)
@@ -239,7 +194,7 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(availableOperations: Operations) {
+    func didReceive(availableOperations: AssetDetailsOperation) {
         self.availableOperations = availableOperations
         updateView()
     }
@@ -249,8 +204,8 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(error _: AssetDetailsError) {
-        // logger
+    func didReceive(error: AssetDetailsError) {
+        logger?.error(error.localizedDescription)
     }
 }
 
@@ -278,14 +233,5 @@ extension AssetDetailsPresenter: PurchaseDelegate {
         let message = R.string.localizable
             .buyCompleted(preferredLanguages: languages)
         wireframe.presentSuccessAlert(from: view, message: message)
-    }
-}
-
-extension BigUInt {
-    func decimal(precision: UInt16) -> Decimal {
-        Decimal.fromSubstrateAmount(
-            self,
-            precision: Int16(precision)
-        ) ?? 0
     }
 }

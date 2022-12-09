@@ -3,7 +3,7 @@ protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol {
     func didReceive(totalBalance: BalanceViewModelProtocol)
     func didReceive(transferableBalance: BalanceViewModelProtocol)
     func didReceive(lockedBalance: BalanceViewModelProtocol, isSelectable: Bool)
-    func didReceive(availableOperations: Operations)
+    func didReceive(availableOperations: AssetDetailsOperation)
 }
 
 protocol AssetDetailsPresenterProtocol: AnyObject {
@@ -24,7 +24,7 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(crowdloans: [CrowdloanContributionData])
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
-    func didReceive(availableOperations: Operations)
+    func didReceive(availableOperations: AssetDetailsOperation)
     func didReceive(purchaseActions: [PurchaseAction])
 }
 

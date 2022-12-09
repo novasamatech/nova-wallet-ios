@@ -4,13 +4,10 @@ import RobinHood
 final class AssetDetailsInteractor {
     weak var presenter: AssetDetailsInteractorOutputProtocol!
     let chainAsset: ChainAsset
-    var chain: ChainModel { chainAsset.chain }
-    var asset: AssetModel { chainAsset.asset }
     let selectedMetaAccount: MetaAccountModel
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
-
     let purchaseProvider: PurchaseProviderProtocol
 
     private var assetLocksSubscription: StreamableProvider<AssetLock>?
@@ -21,7 +18,7 @@ final class AssetDetailsInteractor {
     private var locks: [AssetLock] = []
     private var crowdloans: [CrowdloanContributionData] = []
     private var accountId: AccountId? {
-        selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
+        selectedMetaAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
     }
 
     init(
@@ -44,7 +41,7 @@ final class AssetDetailsInteractor {
     }
 
     private func subscribePrice() {
-        if let priceId = asset.priceId {
+        if let priceId = chainAsset.asset.priceId {
             priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter.didReceive(price: nil)
@@ -52,12 +49,12 @@ final class AssetDetailsInteractor {
     }
 
     private var isTransfersEnable: Bool {
-        if let type = asset.type {
+        if let type = chainAsset.asset.type {
             switch AssetType(rawValue: type) {
             case .statemine, .none:
                 return true
             case .orml:
-                if let extras = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) {
+                if let extras = try? chainAsset.asset.typeExtras?.map(to: OrmlTokenExtras.self) {
                     return extras.transfersEnabled ?? true
                 } else {
                     return false
@@ -72,7 +69,7 @@ final class AssetDetailsInteractor {
         guard let accountId = accountId else {
             return
         }
-        var operations: Operations = .init()
+        var operations: AssetDetailsOperation = .init()
 
         if isTransfersEnable {
             operations.insert(.send)
@@ -102,18 +99,18 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         subscribePrice()
         assetBalanceSubscription = subscribeToAssetBalanceProvider(
             for: accountId,
-            chainId: chain.chainId,
-            assetId: asset.assetId
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
         )
         assetLocksSubscription = subscribeToLocksProvider(
             for: accountId,
-            chainId: chain.chainId,
-            assetId: asset.assetId
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
         )
-        if chain.hasCrowdloans {
+        if chainAsset.chain.hasCrowdloans {
             crowdloansSubscription = subscribeToCrowdloansProvider(
                 for: accountId,
-                chain: chain
+                chain: chainAsset.chain
             )
         } else {
             crowdloansSubscription = nil
@@ -129,8 +126,8 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) {
-        guard chainId == chain.chainId,
-              assetId == asset.assetId,
+        guard chainId == chainAsset.chain.chainId,
+              assetId == chainAsset.asset.assetId,
               accountId == self.accountId else {
             return
         }
@@ -149,8 +146,8 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) {
-        guard chainId == chain.chainId,
-              assetId == asset.assetId,
+        guard chainId == chainAsset.chain.chainId,
+              assetId == chainAsset.asset.assetId,
               accountId == self.accountId else {
             return
         }
@@ -186,7 +183,7 @@ extension AssetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscri
 
 extension AssetDetailsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
-        if presenter != nil, let priceId = asset.priceId {
+        if presenter != nil, let priceId = chainAsset.asset.priceId {
             priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
@@ -198,7 +195,8 @@ extension AssetDetailsInteractor: CrowdloanContributionLocalSubscriptionHandler,
         accountId: AccountId,
         chain: ChainModel
     ) {
-        guard self.accountId == accountId, self.chain.chainId == chain.chainId else {
+        guard self.accountId == accountId,
+              chainAsset.chain.chainId == chain.chainId else {
             return
         }
 
