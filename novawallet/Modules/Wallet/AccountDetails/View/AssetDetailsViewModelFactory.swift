@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 import SoraFoundation
 
-final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
+final class AssetDetailsViewModelFactoryLegacy: AccountListViewModelFactoryProtocol {
     let balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let priceInfoFactory: PriceAssetInfoFactoryProtocol
 

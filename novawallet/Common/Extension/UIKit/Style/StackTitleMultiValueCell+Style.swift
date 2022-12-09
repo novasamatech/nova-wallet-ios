@@ -11,4 +11,3 @@ extension StackTitleMultiValueCell {
         rowContentView.valueView.apply(style: style.value)
     }
 }
-

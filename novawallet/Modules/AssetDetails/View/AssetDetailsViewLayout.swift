@@ -20,7 +20,7 @@ final class AssetDetailsViewLayout: UIView {
         ),
         textAlignment: .right
     )
-    
+
     let priceLabel = UILabel(style: .footnoteSecondary)
     let priceChangeLabel = UILabel(style: .init(textColor: .clear, font: .regularFootnote))
 
@@ -77,7 +77,7 @@ final class AssetDetailsViewLayout: UIView {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private static func createOperationButton(icon: UIImage?) {
         $0.apply(style: .operation)
         $0.imageWithTitleView?.spacingBetweenLabelAndIcon = 8

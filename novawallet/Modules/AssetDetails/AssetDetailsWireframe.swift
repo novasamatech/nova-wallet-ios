@@ -4,7 +4,7 @@ import SoraUI
 import SoraFoundation
 
 final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
-    weak var prsentedViewController: UIViewController?
+    weak var presentedViewController: UIViewController?
 
     func showPurchaseTokens(
         from view: AssetDetailsViewProtocol?,
@@ -41,11 +41,11 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
             rootViewController: transferSetupView.controller)
         transferSetupView.controller.navigationItem.leftBarButtonItem = closeButtonItem
         navigationController.present(fearlessNavigationController, animated: true)
-        prsentedViewController = fearlessNavigationController
+        presentedViewController = fearlessNavigationController
     }
 
     @objc func closeModalController() {
-        prsentedViewController?.dismiss(animated: true)
+        presentedViewController?.dismiss(animated: true)
     }
 
     func showReceiveTokens(from _: AssetDetailsViewProtocol?) {
@@ -112,11 +112,4 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         let alertController = ModalAlertFactory.createMultilineSuccessAlert(message)
         view?.controller.present(alertController, animated: true)
     }
-}
-
-struct AssetDetailsLocksViewModel {
-    let balanceContext: BalanceContext
-    let amountFormatter: LocalizableResource<TokenFormatter>
-    let priceFormatter: LocalizableResource<TokenFormatter>
-    let precision: Int16
 }

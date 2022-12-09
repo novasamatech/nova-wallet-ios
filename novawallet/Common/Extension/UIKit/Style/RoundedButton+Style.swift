@@ -12,4 +12,3 @@ extension RoundedButton {
         imageWithTitleView?.titleColor = style.title.textColor
     }
 }
-
