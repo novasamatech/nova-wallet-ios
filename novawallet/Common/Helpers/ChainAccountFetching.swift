@@ -279,6 +279,10 @@ extension ChainModel {
     }
 
     var accountIdSize: Int {
+        Self.getAccountIdSize(for: chainFormat)
+    }
+
+    static func getAccountIdSize(for chainFormat: ChainFormat) -> Int {
         switch chainFormat {
         case .substrate:
             return 32

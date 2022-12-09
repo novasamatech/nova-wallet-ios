@@ -1632,6 +1632,9 @@
 		849ECD3526DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849ECD3426DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift */; };
 		849ECD3926DF792800F542A3 /* SkeletonRow+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849ECD3826DF792800F542A3 /* SkeletonRow+View.swift */; };
 		849F144029434E4B00D9F9BA /* TextInputView+Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F143F29434E4B00D9F9BA /* TextInputView+Empty.swift */; };
+		849F144329435F3000D9F9BA /* EvmContractMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F144229435F3000D9F9BA /* EvmContractMetadata.swift */; };
+		849F1445294360BB00D9F9BA /* EvmTokenAddRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F1444294360BB00D9F9BA /* EvmTokenAddRequest.swift */; };
+		849F14472943616A00D9F9BA /* TokensManageAddInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F14462943616A00D9F9BA /* TokensManageAddInteractorError.swift */; };
 		849FA21628A26CB500F83EAA /* CountdownTimerMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849FA21528A26CB500F83EAA /* CountdownTimerMediator.swift */; };
 		84A04622277DE83E000B24DA /* DAppListErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A04621277DE83E000B24DA /* DAppListErrorView.swift */; };
 		84A15489262888CA0050D557 /* IdentityOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A15488262888CA0050D557 /* IdentityOperationFactory.swift */; };
@@ -4693,6 +4696,9 @@
 		849ECD3426DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleToMultiassetUserMigrationTests.swift; sourceTree = "<group>"; };
 		849ECD3826DF792800F542A3 /* SkeletonRow+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SkeletonRow+View.swift"; sourceTree = "<group>"; };
 		849F143F29434E4B00D9F9BA /* TextInputView+Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextInputView+Empty.swift"; sourceTree = "<group>"; };
+		849F144229435F3000D9F9BA /* EvmContractMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmContractMetadata.swift; sourceTree = "<group>"; };
+		849F1444294360BB00D9F9BA /* EvmTokenAddRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTokenAddRequest.swift; sourceTree = "<group>"; };
+		849F14462943616A00D9F9BA /* TokensManageAddInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageAddInteractorError.swift; sourceTree = "<group>"; };
 		849FA21528A26CB500F83EAA /* CountdownTimerMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownTimerMediator.swift; sourceTree = "<group>"; };
 		84A04621277DE83E000B24DA /* DAppListErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListErrorView.swift; sourceTree = "<group>"; };
 		84A15488262888CA0050D557 /* IdentityOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityOperationFactory.swift; sourceTree = "<group>"; };
@@ -10557,6 +10563,15 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		849F144129435EA400D9F9BA /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				849F144229435F3000D9F9BA /* EvmContractMetadata.swift */,
+				849F1444294360BB00D9F9BA /* EvmTokenAddRequest.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		84A1742528ED60610096F943 /* Operation */ = {
 			isa = PBXGroup;
 			children = (
@@ -13052,6 +13067,7 @@
 		9D97DD4BC9672502D2E2A625 /* TokensManage */ = {
 			isa = PBXGroup;
 			children = (
+				849F144129435EA400D9F9BA /* Model */,
 				ACDFB461ED677A210961B259 /* AddToken */,
 				DA0973528DD51E42056062D7 /* SelectNetwork */,
 				07D2FF615310DE5488F30FF3 /* ManageSingle */,
@@ -13220,6 +13236,7 @@
 				03E6ED849A247ACCC3FB1AC3 /* TokensManageAddViewController.swift */,
 				D8A5632D4768BC5039EE8276 /* TokensManageAddViewLayout.swift */,
 				5C4D750179BD034AC7300F38 /* TokensManageAddViewFactory.swift */,
+				849F14462943616A00D9F9BA /* TokensManageAddInteractorError.swift */,
 			);
 			path = AddToken;
 			sourceTree = "<group>";
@@ -15754,6 +15771,7 @@
 				84D2F1A727743DB00040C680 /* StaticImageViewModel.swift in Sources */,
 				841E5532282CD86C00C8438F /* StakingMainPresenterFactory.swift in Sources */,
 				84031C17263EC95C008FD9D4 /* SetPayeeCall.swift in Sources */,
+				849F14472943616A00D9F9BA /* TokensManageAddInteractorError.swift in Sources */,
 				2A902075273E766400F2D584 /* NetworkFeeView+Protocol.swift in Sources */,
 				8490895428D4BA7C00C3CCE9 /* CustomSiMappers.swift in Sources */,
 				84100F3A26A60B0900A5054E /* YourValidatorListStatusSectionView.swift in Sources */,
@@ -16394,6 +16412,7 @@
 				9942034DCB680824831B0AC1 /* AccountCreatePresenter.swift in Sources */,
 				AEA2C1B82681E9BD0069492E /* ValidatorSearchWireframe.swift in Sources */,
 				846952A62852A1E60083E0B4 /* AuraStakingDurationFactory.swift in Sources */,
+				849F1445294360BB00D9F9BA /* EvmTokenAddRequest.swift in Sources */,
 				F40966DB26B29839008CD244 /* SubqueryRewardData.swift in Sources */,
 				84C4C2D7255D2B780045B582 /* PinChangeWireframe.swift in Sources */,
 				845353BB2886E3B4006C871A /* OnboardingMainViewLayout.swift in Sources */,
@@ -17285,6 +17304,7 @@
 				842A737927DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift in Sources */,
 				22403E58019260719055E122 /* AdvancedWalletWireframe.swift in Sources */,
 				EC328560F66AA0F5CFB3FE58 /* AdvancedWalletPresenter.swift in Sources */,
+				849F144329435F3000D9F9BA /* EvmContractMetadata.swift in Sources */,
 				671C5788468FE8445A46C09F /* AdvancedWalletViewController.swift in Sources */,
 				88421058289BBA8D00306F2C /* CurrencyViewController.swift in Sources */,
 				84D9C8EB28AD903E007FB23B /* LedgerSendOperation.swift in Sources */,
