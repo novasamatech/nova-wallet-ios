@@ -25,7 +25,7 @@ final class EvmQueryContractMessageFactory: EvmQueryContractMessageFactoryProtoc
         let data = contract.method(Self.erc20Balance, parameters: [holder as NSString], extraData: Data())
 
         return try createContractQuery(
-            contract, data: data,
+            data: data,
             contractAddress: contractAddress,
             holder: holder
         )
@@ -47,16 +47,15 @@ final class EvmQueryContractMessageFactory: EvmQueryContractMessageFactoryProtoc
         let contract = try EthereumContract(Web3.Utils.erc20ABI)
         let data = contract.method(name, parameters: [], extraData: Data())
 
-        return try createContractQuery(contract, data: data, contractAddress: contractAddress, holder: nil)
+        return try createContractQuery(data: data, contractAddress: contractAddress, holder: nil)
     }
 
     private func createContractQuery(
-        _ contract: EthereumContract,
         data: Data?,
         contractAddress: AccountAddress,
         holder: AccountAddress?
     ) throws -> EthereumTransaction {
-        guard let data = contract.method(Self.erc20Name, parameters: [], extraData: Data()) else {
+        guard let data = data else {
             throw EvmQueryContractMessageFactoryError.dataEncodingFailed
         }
 
