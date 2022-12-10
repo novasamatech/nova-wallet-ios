@@ -25,7 +25,7 @@ protocol TokensManageAddInteractorInputProtocol: AnyObject {
 protocol TokensManageAddInteractorOutputProtocol: AnyObject {
     func didReceiveDetails(_ tokenDetails: EvmContractMetadata, for address: AccountAddress)
     func didExtractPriceId(_ priceId: String, from urlString: String)
-    func didSaveEvmToken()
+    func didSaveEvmToken(_ token: AssetModel)
     func didReceiveError(_ error: TokensManageAddInteractorError)
 }
 
