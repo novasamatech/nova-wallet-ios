@@ -1635,6 +1635,9 @@
 		849F144329435F3000D9F9BA /* EvmContractMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F144229435F3000D9F9BA /* EvmContractMetadata.swift */; };
 		849F1445294360BB00D9F9BA /* EvmTokenAddRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F1444294360BB00D9F9BA /* EvmTokenAddRequest.swift */; };
 		849F14472943616A00D9F9BA /* TokensManageAddInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F14462943616A00D9F9BA /* TokensManageAddInteractorError.swift */; };
+		849F14492944443500D9F9BA /* CoingeckoUrlParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F14482944443500D9F9BA /* CoingeckoUrlParser.swift */; };
+		849F144B29444C3E00D9F9BA /* AssetModel+Id.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F144A29444C3E00D9F9BA /* AssetModel+Id.swift */; };
+		849F144D29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849F144C29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift */; };
 		849FA21628A26CB500F83EAA /* CountdownTimerMediator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849FA21528A26CB500F83EAA /* CountdownTimerMediator.swift */; };
 		84A04622277DE83E000B24DA /* DAppListErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A04621277DE83E000B24DA /* DAppListErrorView.swift */; };
 		84A15489262888CA0050D557 /* IdentityOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A15488262888CA0050D557 /* IdentityOperationFactory.swift */; };
@@ -4699,6 +4702,9 @@
 		849F144229435F3000D9F9BA /* EvmContractMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmContractMetadata.swift; sourceTree = "<group>"; };
 		849F1444294360BB00D9F9BA /* EvmTokenAddRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTokenAddRequest.swift; sourceTree = "<group>"; };
 		849F14462943616A00D9F9BA /* TokensManageAddInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageAddInteractorError.swift; sourceTree = "<group>"; };
+		849F14482944443500D9F9BA /* CoingeckoUrlParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoUrlParser.swift; sourceTree = "<group>"; };
+		849F144A29444C3E00D9F9BA /* AssetModel+Id.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetModel+Id.swift"; sourceTree = "<group>"; };
+		849F144C29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetModel+TokenAddRequest.swift"; sourceTree = "<group>"; };
 		849FA21528A26CB500F83EAA /* CountdownTimerMediator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownTimerMediator.swift; sourceTree = "<group>"; };
 		84A04621277DE83E000B24DA /* DAppListErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListErrorView.swift; sourceTree = "<group>"; };
 		84A15488262888CA0050D557 /* IdentityOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityOperationFactory.swift; sourceTree = "<group>"; };
@@ -10568,6 +10574,8 @@
 			children = (
 				849F144229435F3000D9F9BA /* EvmContractMetadata.swift */,
 				849F1444294360BB00D9F9BA /* EvmTokenAddRequest.swift */,
+				849F14482944443500D9F9BA /* CoingeckoUrlParser.swift */,
+				849F144C29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -11530,6 +11538,7 @@
 				84D1110D26B931C20016D962 /* ChainModel.swift */,
 				84D1111026B932480016D962 /* AssetModel.swift */,
 				84D1111226B932C40016D962 /* ChainNodeModel.swift */,
+				849F144A29444C3E00D9F9BA /* AssetModel+Id.swift */,
 			);
 			path = LocalChain;
 			sourceTree = "<group>";
@@ -15284,6 +15293,7 @@
 				84D9C8F328ADA42F007FB23B /* Data+Chunk.swift in Sources */,
 				8456C08227CF9DC9001282DE /* RemoteNftModel.swift in Sources */,
 				8401AEC42642A71D000B03E3 /* StakingRebondConfirmationWireframe.swift in Sources */,
+				849F144D29444CB800D9F9BA /* AssetModel+TokenAddRequest.swift in Sources */,
 				841221A628F13BA100715C82 /* GovernanceServiceFactory.swift in Sources */,
 				F4F3C3CB265BB12200C58400 /* CustomValidatorListViewModelFactory.swift in Sources */,
 				84E9A05028F000AB00551DC4 /* ReferendumMetadataLocal.swift in Sources */,
@@ -16617,6 +16627,7 @@
 				AE398398272B62C100BC8A85 /* ChainAccountListSectionView.swift in Sources */,
 				84DED3EF26661CC600A153BB /* CrowdloanFlow.swift in Sources */,
 				21322B4A297840739C389F17 /* AccountManagementInteractor.swift in Sources */,
+				849F14492944443500D9F9BA /* CoingeckoUrlParser.swift in Sources */,
 				84E25BE427E5F71900290BF1 /* AccountFieldStateViewModel.swift in Sources */,
 				84452F4E25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift in Sources */,
 				84BC703F289DBE6C008A9758 /* QRCreationOperation.swift in Sources */,
@@ -16977,6 +16988,7 @@
 				84350ACC284569560031EF24 /* ParaStkCollatorInfoViewController.swift in Sources */,
 				84B73AE2279E95810071AE16 /* TransferInfoContext.swift in Sources */,
 				6A977B56FD6441F52660771C /* StakingRewardDetailsPresenter.swift in Sources */,
+				849F144B29444C3E00D9F9BA /* AssetModel+Id.swift in Sources */,
 				F4B39C4927326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift in Sources */,
 				845B821926EF808D00D25C72 /* MetaAccountMapper.swift in Sources */,
 				19A29027666EB5388CBFAD61 /* StakingRewardDetailsInteractor.swift in Sources */,
