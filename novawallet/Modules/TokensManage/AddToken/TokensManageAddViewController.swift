@@ -55,6 +55,7 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             for: .editingChanged
         )
 
+        rootView.priceIdInputView.delegate = self
         rootView.priceIdInputView.addTarget(
             self,
             action: #selector(actionPriceIdChanged),
@@ -124,39 +125,79 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
     @objc func actionContractAddressChanged() {
         let partialAddress = rootView.addressInputView.textField.text ?? ""
         presenter.handlePartial(address: partialAddress)
+
+        updateActionButton()
     }
 
     @objc func actionSymbolChanged() {
         let partialSymbol = rootView.symbolInputView.textField.text ?? ""
         presenter.handlePartial(symbol: partialSymbol)
+
+        updateActionButton()
     }
 
     @objc func actionDecimalsChanged() {
         let partialDecimals = rootView.decimalsInputView.textField.text ?? ""
         presenter.handlePartial(decimals: partialDecimals)
+
+        updateActionButton()
     }
 
     @objc func actionPriceIdChanged() {
-        let partialPriceId = rootView.priceIdInputView.textField.text ?? ""
-        presenter.handlePartial(priceId: partialPriceId)
+        let partialPriceIdUrl = rootView.priceIdInputView.textField.text ?? ""
+        presenter.handlePartial(priceIdUrl: partialPriceIdUrl)
+
+        updateActionButton()
+    }
+}
+
+extension TokensManageAddViewController: TextInputViewDelegate {
+    func textInputViewWillStartEditing(_: TextInputView) {}
+
+    func textInputViewShouldReturn(_ inputView: TextInputView) -> Bool {
+        guard inputView === rootView.priceIdInputView else {
+            return true
+        }
+
+        presenter.completePriceIdUrlInput()
+
+        return true
     }
 }
 
 extension TokensManageAddViewController: TokensManageAddViewProtocol {
     func didReceiveAddress(viewModel: InputViewModelProtocol) {
         rootView.addressInputView.bind(inputViewModel: viewModel)
+
+        updateActionButton()
     }
 
     func didReceiveSymbol(viewModel: InputViewModelProtocol) {
         rootView.symbolInputView.bind(inputViewModel: viewModel)
+
+        updateActionButton()
     }
 
     func didReceiveDecimals(viewModel: InputViewModelProtocol) {
         rootView.decimalsInputView.bind(inputViewModel: viewModel)
+
+        updateActionButton()
     }
 
     func didReceivePriceId(viewModel: InputViewModelProtocol) {
         rootView.priceIdInputView.bind(inputViewModel: viewModel)
+
+        updateActionButton()
+    }
+}
+
+extension TokensManageAddViewController: LoadableViewProtocol {
+    func didStartLoading() {
+        rootView.actionLoadableView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.actionLoadableView.stopLoading()
     }
 }
 
