@@ -1,6 +1,6 @@
 import SoraFoundation
 
-protocol TokensManageAddViewProtocol: AnyObject {
+protocol TokensManageAddViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAddress(viewModel: InputViewModelProtocol)
     func didReceiveSymbol(viewModel: InputViewModelProtocol)
     func didReceiveDecimals(viewModel: InputViewModelProtocol)
@@ -12,7 +12,8 @@ protocol TokensManageAddPresenterProtocol: AnyObject {
     func handlePartial(address: String)
     func handlePartial(symbol: String)
     func handlePartial(decimals: String)
-    func handlePartial(priceId: String)
+    func handlePartial(priceIdUrl: String)
+    func completePriceIdUrlInput()
     func confirmTokenAdd()
 }
 

@@ -9,7 +9,11 @@ struct TokensManageAddViewFactory {
 
         let wireframe = TokensManageAddWireframe()
 
-        let presenter = TokensManageAddPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = TokensManageAddPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            logger: Logger.shared
+        )
 
         let view = TokensManageAddViewController(
             presenter: presenter,
