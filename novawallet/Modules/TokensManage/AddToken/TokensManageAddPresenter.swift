@@ -15,45 +15,25 @@ final class TokensManageAddPresenter {
 }
 
 extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
-    func setup() {
+    func setup() {}
 
-    }
+    func handlePartial(address _: String) {}
 
-    func handlePartial(address: String) {
+    func handlePartial(symbol _: String) {}
 
-    }
+    func handlePartial(decimals _: String) {}
 
-    func handlePartial(symbol: String) {
+    func handlePartial(priceId _: String) {}
 
-    }
-
-    func handlePartial(decimals: String) {
-
-    }
-
-    func handlePartial(priceId: String) {
-
-    }
-
-    func confirmTokenAdd() {
-
-    }
+    func confirmTokenAdd() {}
 }
 
 extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
-    func didReceiveDetails(_ tokenDetails: EvmTokenDetails, for address: AccountAddress) {
+    func didReceiveDetails(_: EvmContractMetadata, for _: AccountAddress) {}
 
-    }
-    
-    func didExtractPriceId(_ priceId: String, from urlString: String) {
+    func didExtractPriceId(_: String, from _: String) {}
 
-    }
+    func didSaveEvmToken(_: AssetModel) {}
 
-    func didSaveEvmToken() {
-
-    }
-
-    func didReceiveError(_ error: TokensManageAddInteractorError) {
-
-    }
+    func didReceiveError(_: TokensManageAddInteractorError) {}
 }
