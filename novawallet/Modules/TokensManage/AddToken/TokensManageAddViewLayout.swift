@@ -26,11 +26,11 @@ final class TokensManageAddViewLayout: UIView {
     let priceIdTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
     let priceIdInputView = TextInputView()
 
-    let actionButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        return button
-    }()
+    let actionLoadableView = LoadableActionView()
+
+    var actionButton: TriangularedButton {
+        actionLoadableView.actionButton
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -46,6 +46,19 @@ final class TokensManageAddViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(actionLoadableView)
+        actionLoadableView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionLoadableView.snp.top).offset(-8.0)
+        }
+
         containerView.stackView.addArrangedSubview(titleLabel)
         containerView.stackView.setCustomSpacing(16, after: titleLabel)
 

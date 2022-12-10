@@ -1,39 +1,163 @@
 import Foundation
+import SoraFoundation
 
 final class TokensManageAddPresenter {
     weak var view: TokensManageAddViewProtocol?
     let wireframe: TokensManageAddWireframeProtocol
     let interactor: TokensManageAddInteractorInputProtocol
+    let logger: LoggerProtocol
+
+    private var partialAddress: String?
+    private var partialSymbol: String?
+    private var partialDecimals: String?
+    private var partialPriceIdUrl: String?
+
+    private var contractMetadata: [AccountAddress: EvmContractMetadata] = [:]
+    private var priceIds: [String: String] = [:]
 
     init(
         interactor: TokensManageAddInteractorInputProtocol,
-        wireframe: TokensManageAddWireframeProtocol
+        wireframe: TokensManageAddWireframeProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.logger = logger
+    }
+
+    private func provideAddressViewModel() {
+        let value = partialAddress ?? ""
+
+        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
+        view?.didReceiveAddress(viewModel: inputViewModel)
+    }
+
+    private func provideSymbolViewModel() {
+        let value = partialSymbol ?? ""
+
+        let inputViewModel = InputViewModel.createTokenSymbolInputViewModel(for: value)
+        view?.didReceiveSymbol(viewModel: inputViewModel)
+    }
+
+    private func provideDecimalsViewModel() {
+        let value = partialDecimals ?? ""
+
+        let inputViewModel = InputViewModel.createTokenDecimalsInputViewModel(for: value)
+        view?.didReceiveDecimals(viewModel: inputViewModel)
+    }
+
+    private func providePriceIdViewModel() {
+        let value = partialPriceIdUrl ?? ""
+
+        let inputViewModel = InputViewModel.createTokenPriceIdInputViewModel(for: value, required: false)
+        view?.didReceiveDecimals(viewModel: inputViewModel)
+    }
+
+    private func provideViewModels() {
+        provideAddressViewModel()
+        provideSymbolViewModel()
+        provideDecimalsViewModel()
+        providePriceIdViewModel()
+    }
+
+    private func provideTokenDetailsIfNeeded() {
+        guard
+            let partialAddress = partialAddress,
+            (try? partialAddress.toAccountId(using: .ethereum)) != nil,
+            contractMetadata[partialAddress] != nil else {
+            return
+        }
+
+        view?.didStartLoading()
+
+        interactor.provideDetails(for: partialAddress)
+    }
+
+    private func providePriceIdIfNeeded() {
+        guard let partialPriceIdUrl = partialPriceIdUrl, priceIds[partialPriceIdUrl] != nil else {
+            return
+        }
+
+        view?.didStartLoading()
+
+        interactor.processPriceId(from: partialPriceIdUrl)
     }
 }
 
 extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
-    func setup() {}
+    func setup() {
+        provideViewModels()
+    }
 
-    func handlePartial(address _: String) {}
+    func handlePartial(address: String) {
+        partialAddress = address
 
-    func handlePartial(symbol _: String) {}
+        provideTokenDetailsIfNeeded()
+    }
 
-    func handlePartial(decimals _: String) {}
+    func handlePartial(symbol: String) {
+        partialSymbol = symbol
+    }
 
-    func handlePartial(priceId _: String) {}
+    func handlePartial(decimals: String) {
+        partialDecimals = decimals
+    }
+
+    func handlePartial(priceIdUrl: String) {
+        partialPriceIdUrl = priceIdUrl
+    }
+
+    func completePriceIdUrlInput() {
+        providePriceIdIfNeeded()
+    }
 
     func confirmTokenAdd() {}
 }
 
 extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
-    func didReceiveDetails(_: EvmContractMetadata, for _: AccountAddress) {}
+    func didReceiveDetails(_ tokenDetails: EvmContractMetadata, for address: AccountAddress) {
+        view?.didStopLoading()
 
-    func didExtractPriceId(_: String, from _: String) {}
+        guard contractMetadata[address] == nil else {
+            return
+        }
+
+        contractMetadata[address] = tokenDetails
+        if let newSymbol = tokenDetails.symbol {
+            partialSymbol = newSymbol
+
+            provideSymbolViewModel()
+        }
+
+        if let newDecimal = tokenDetails.decimals.map({ String($0) }) {
+            partialDecimals = newDecimal
+
+            provideDecimalsViewModel()
+        }
+    }
+
+    func didExtractPriceId(_ priceId: String, from urlString: String) {
+        view?.didStopLoading()
+
+        priceIds[urlString] = priceId
+    }
 
     func didSaveEvmToken(_: AssetModel) {}
 
-    func didReceiveError(_: TokensManageAddInteractorError) {}
+    func didReceiveError(_ error: TokensManageAddInteractorError) {
+        logger.error("Did receive error: \(error)")
+
+        view?.didStopLoading()
+
+        switch error {
+        case .evmDetailsFetchFailed:
+            break
+        case .priceIdProcessingFailed:
+            break
+        case .tokenAlreadyExists:
+            break
+        case .tokenSaveFailed:
+            break
+        }
+    }
 }
