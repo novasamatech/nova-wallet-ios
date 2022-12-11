@@ -15,7 +15,7 @@ final class TokensManageAddViewLayout: UIView {
     }
 
     let addressTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
-    let addressInputView = TextInputView()
+    let addressInputView = TextWithServiceInputView()
 
     let symbolTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
     let symbolInputView = TextInputView()
@@ -24,7 +24,7 @@ final class TokensManageAddViewLayout: UIView {
     let decimalsInputView = TextInputView()
 
     let priceIdTitleLabel: UILabel = .create { $0.apply(style: .footnoteSecondary) }
-    let priceIdInputView = TextInputView()
+    let priceIdInputView = TextWithServiceInputView()
 
     let actionLoadableView = LoadableActionView()
 
@@ -63,13 +63,28 @@ final class TokensManageAddViewLayout: UIView {
         containerView.stackView.setCustomSpacing(16, after: titleLabel)
 
         containerView.stackView.addArrangedSubview(addressTitleLabel)
-        containerView.stackView.setCustomSpacing(8, after: addressInputView)
+        containerView.stackView.setCustomSpacing(8, after: addressTitleLabel)
+
+        containerView.stackView.addArrangedSubview(addressInputView)
+        containerView.stackView.setCustomSpacing(16, after: addressInputView)
 
         let symbolView = UIView.vStack(spacing: 8, [symbolTitleLabel, symbolInputView])
         let decimalsView = UIView.vStack(spacing: 8, [decimalsTitleLabel, decimalsInputView])
-        let symbolAndDecimalView = UIView.hStack(spacing: 16, [symbolView, decimalsView])
+        let symbolAndDecimalView = UIView.hStack(
+            spacing: 16,
+            [symbolView, decimalsView]
+        )
+
         containerView.stackView.addArrangedSubview(symbolAndDecimalView)
         containerView.stackView.setCustomSpacing(16, after: symbolAndDecimalView)
+
+        symbolView.snp.makeConstraints { make in
+            make.width.equalTo(symbolAndDecimalView).multipliedBy(0.5).offset(-8)
+        }
+
+        decimalsView.snp.makeConstraints { make in
+            make.width.equalTo(symbolAndDecimalView).multipliedBy(0.5).offset(-8)
+        }
 
         containerView.stackView.addArrangedSubview(priceIdTitleLabel)
         containerView.stackView.setCustomSpacing(8, after: priceIdTitleLabel)

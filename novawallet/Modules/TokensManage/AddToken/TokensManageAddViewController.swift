@@ -4,6 +4,8 @@ import SoraFoundation
 final class TokensManageAddViewController: UIViewController, ViewHolder {
     typealias RootViewType = TokensManageAddViewLayout
 
+    var keyboardHandler: KeyboardHandler?
+
     let presenter: TokensManageAddPresenterProtocol
 
     init(presenter: TokensManageAddPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
@@ -26,8 +28,23 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupHandlers()
 
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if keyboardHandler == nil {
+            setupKeyboardHandler()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 
     private func setupHandlers() {
@@ -67,9 +84,13 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
         let languages = selectedLocale.rLanguages
 
         rootView.titleLabel.text = R.string.localizable.addTokenTitle(preferredLanguages: languages)
+        rootView.addressTitleLabel.text = R.string.localizable.commonContractAddress(preferredLanguages: languages)
         rootView.symbolTitleLabel.text = R.string.localizable.commonTokenSymbol(preferredLanguages: languages)
         rootView.decimalsTitleLabel.text = R.string.localizable.commonTokenDecimals(preferredLanguages: languages)
         rootView.priceIdTitleLabel.text = R.string.localizable.addTokenPriceTitle(preferredLanguages: languages)
+
+        rootView.addressInputView.locale = selectedLocale
+        rootView.priceIdInputView.locale = selectedLocale
 
         updateActionButton()
     }
@@ -118,6 +139,18 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
         )
     }
 
+    private func applyPlaceholder(_ placeholder: String, inputView: TextInputView) {
+        let placeholder = NSAttributedString(
+            string: placeholder,
+            attributes: [
+                .foregroundColor: R.color.colorHintText()!,
+                .font: UIFont.regularSubheadline
+            ]
+        )
+
+        inputView.textField.attributedPlaceholder = placeholder
+    }
+
     @objc func actionAdd() {
         presenter.confirmTokenAdd()
     }
@@ -151,10 +184,50 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
     }
 }
 
+extension TokensManageAddViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let localKeyboardFrame = view.convert(frame, from: nil)
+        let bottomInset = view.bounds.height - localKeyboardFrame.minY
+        let scrollView = rootView.containerView.scrollView
+        let scrollViewOffset = view.bounds.height - scrollView.frame.maxY
+
+        var contentInsets = scrollView.contentInset
+        contentInsets.bottom = max(0.0, bottomInset - scrollViewOffset)
+        scrollView.contentInset = contentInsets
+
+        if contentInsets.bottom > 0.0 {
+            let targetView: UIView?
+
+            if rootView.addressInputView.textField.isFirstResponder {
+                targetView = rootView.addressInputView
+            } else if rootView.symbolInputView.textField.isFirstResponder {
+                targetView = rootView.symbolInputView
+            } else if rootView.decimalsInputView.textField.isFirstResponder {
+                targetView = rootView.decimalsInputView
+            } else if rootView.priceIdInputView.textField.isFirstResponder {
+                targetView = rootView.priceIdInputView
+            } else {
+                targetView = nil
+            }
+
+            if let firstResponderView = targetView {
+                let fieldFrame = scrollView.convert(
+                    firstResponderView.frame,
+                    from: firstResponderView.superview
+                )
+
+                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+            }
+        }
+    }
+}
+
 extension TokensManageAddViewController: TextInputViewDelegate {
     func textInputViewWillStartEditing(_: TextInputView) {}
 
     func textInputViewShouldReturn(_ inputView: TextInputView) -> Bool {
+        inputView.textField.resignFirstResponder()
+
         guard inputView === rootView.priceIdInputView else {
             return true
         }
@@ -169,11 +242,15 @@ extension TokensManageAddViewController: TokensManageAddViewProtocol {
     func didReceiveAddress(viewModel: InputViewModelProtocol) {
         rootView.addressInputView.bind(inputViewModel: viewModel)
 
+        applyPlaceholder(viewModel.placeholder, inputView: rootView.addressInputView)
+
         updateActionButton()
     }
 
     func didReceiveSymbol(viewModel: InputViewModelProtocol) {
         rootView.symbolInputView.bind(inputViewModel: viewModel)
+
+        applyPlaceholder(viewModel.placeholder, inputView: rootView.symbolInputView)
 
         updateActionButton()
     }
@@ -181,11 +258,15 @@ extension TokensManageAddViewController: TokensManageAddViewProtocol {
     func didReceiveDecimals(viewModel: InputViewModelProtocol) {
         rootView.decimalsInputView.bind(inputViewModel: viewModel)
 
+        applyPlaceholder(viewModel.placeholder, inputView: rootView.decimalsInputView)
+
         updateActionButton()
     }
 
     func didReceivePriceId(viewModel: InputViewModelProtocol) {
         rootView.priceIdInputView.bind(inputViewModel: viewModel)
+
+        applyPlaceholder(viewModel.placeholder, inputView: rootView.priceIdInputView)
 
         updateActionButton()
     }
