@@ -2,6 +2,8 @@ import Foundation
 import SoraFoundation
 
 final class TokensManageAddPresenter {
+    static let priceIdUrlPlaceholder = "coingecko.com/coins/tether"
+
     weak var view: TokensManageAddViewProtocol?
     let wireframe: TokensManageAddWireframeProtocol
     let interactor: TokensManageAddInteractorInputProtocol
@@ -28,7 +30,7 @@ final class TokensManageAddPresenter {
     private func provideAddressViewModel() {
         let value = partialAddress ?? ""
 
-        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
+        let inputViewModel = InputViewModel.createContractAddressViewModel(for: value)
         view?.didReceiveAddress(viewModel: inputViewModel)
     }
 
@@ -49,8 +51,13 @@ final class TokensManageAddPresenter {
     private func providePriceIdViewModel() {
         let value = partialPriceIdUrl ?? ""
 
-        let inputViewModel = InputViewModel.createTokenPriceIdInputViewModel(for: value, required: false)
-        view?.didReceiveDecimals(viewModel: inputViewModel)
+        let inputViewModel = InputViewModel.createTokenPriceIdInputViewModel(
+            for: value,
+            required: false,
+            placeholder: Self.priceIdUrlPlaceholder
+        )
+
+        view?.didReceivePriceId(viewModel: inputViewModel)
     }
 
     private func provideViewModels() {
@@ -64,7 +71,7 @@ final class TokensManageAddPresenter {
         guard
             let partialAddress = partialAddress,
             (try? partialAddress.toAccountId(using: .ethereum)) != nil,
-            contractMetadata[partialAddress] != nil else {
+            contractMetadata[partialAddress] == nil else {
             return
         }
 
@@ -74,7 +81,7 @@ final class TokensManageAddPresenter {
     }
 
     private func providePriceIdIfNeeded() {
-        guard let partialPriceIdUrl = partialPriceIdUrl, priceIds[partialPriceIdUrl] != nil else {
+        guard let partialPriceIdUrl = partialPriceIdUrl, priceIds[partialPriceIdUrl] == nil else {
             return
         }
 

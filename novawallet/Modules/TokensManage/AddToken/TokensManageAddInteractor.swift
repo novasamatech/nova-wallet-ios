@@ -35,11 +35,22 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         self.operationQueue = operationQueue
     }
 
-    private func handleDetailsResponse(_ results: [Result<JSON, Error>], contractAddress: AccountAddress) {
-        let symbol = (try? results[1].get())?.stringValue
+    private func handleDetailsResponse(
+        _ results: [Result<JSON, Error>],
+        contractAddress: AccountAddress
+    ) {
+        let hexSymbol = (try? results[0].get())?.stringValue
+        let symbol: String? = hexSymbol.flatMap { hexString in
+            guard let data = try? Data(hexString: hexString) else {
+                return nil
+            }
+
+            return String(data: data, encoding: .utf8)
+        }
+
         let decimals: UInt8?
 
-        if let decimalsString = (try? results[2].get())?.stringValue {
+        if let decimalsString = (try? results[1].get())?.stringValue {
             decimals = BigUInt.fromHexString(decimalsString).map { UInt8($0) }
         } else {
             decimals = nil
