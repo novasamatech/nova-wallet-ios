@@ -642,6 +642,7 @@
 		842B18042864F9A90014CC57 /* CrossChainTransferInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B18032864F9A90014CC57 /* CrossChainTransferInteractor.swift */; };
 		842B1806286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */; };
 		842B18082865923B0014CC57 /* XcmExtrinsicFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */; };
+		842B2FCD2947239B002829B6 /* CoinGeckoUrlParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B2FCC2947239B002829B6 /* CoinGeckoUrlParserTests.swift */; };
 		842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36A27B64F1000D31EEF /* DAppViewModel.swift */; };
 		842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */; };
 		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
@@ -3698,6 +3699,7 @@
 		842B18032864F9A90014CC57 /* CrossChainTransferInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferInteractor.swift; sourceTree = "<group>"; };
 		842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupProtocols.swift; sourceTree = "<group>"; };
 		842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmExtrinsicFeeProxy.swift; sourceTree = "<group>"; };
+		842B2FCC2947239B002829B6 /* CoinGeckoUrlParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinGeckoUrlParserTests.swift; sourceTree = "<group>"; };
 		842BA36A27B64F1000D31EEF /* DAppViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
 		842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
@@ -12641,6 +12643,7 @@
 				84452F5C25D5CB3B00F47EC5 /* FileManagerTests.swift */,
 				84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */,
 				847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */,
+				842B2FCC2947239B002829B6 /* CoinGeckoUrlParserTests.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -17945,6 +17948,7 @@
 				84B66A1226FDF0230038B963 /* CrowdloanLocalSubscriptionFactoryStub.swift in Sources */,
 				84B7C740289BFA79001A3566 /* RootTests.swift in Sources */,
 				84B7C712289BFA79001A3566 /* ExtrinsicDetailsTests.swift in Sources */,
+				842B2FCD2947239B002829B6 /* CoinGeckoUrlParserTests.swift in Sources */,
 				84B7C711289BFA79001A3566 /* OnboardingMainTests.swift in Sources */,
 				84625101263EDBD4001039B2 /* ExtrinsicServiceFactoryStub.swift in Sources */,
 				846A2C54252A0FDF00731018 /* FilterTests.swift in Sources */,
