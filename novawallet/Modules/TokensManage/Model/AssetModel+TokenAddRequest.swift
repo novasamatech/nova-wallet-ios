@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 extension AssetModel {
-    init?(request: EvmTokenAddRequest) {
+    init?(request: EvmTokenAddRequest, priceId: String?) {
         guard let assetId = AssetModel.createAssetId(from: request.contractAddress) else {
             return nil
         }
@@ -13,7 +13,7 @@ extension AssetModel {
             name: request.name,
             symbol: request.symbol,
             precision: UInt16(request.decimals),
-            priceId: request.priceId,
+            priceId: priceId,
             staking: nil,
             type: AssetType.evm.rawValue,
             typeExtras: JSON.stringValue(request.contractAddress),

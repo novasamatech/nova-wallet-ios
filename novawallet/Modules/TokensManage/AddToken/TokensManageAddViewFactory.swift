@@ -12,6 +12,7 @@ struct TokensManageAddViewFactory {
         let presenter = TokensManageAddPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 

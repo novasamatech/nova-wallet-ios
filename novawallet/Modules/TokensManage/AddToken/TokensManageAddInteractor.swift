@@ -2,6 +2,7 @@ import UIKit
 import SubstrateSdk
 import BigInt
 import RobinHood
+import Core
 
 final class TokensManageAddInteractor: AnyCancellableCleaning {
     weak var presenter: TokensManageAddInteractorOutputProtocol?
@@ -15,7 +16,6 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
 
     private var pendingQueryId: UInt16?
-    private var priceIdCancellable: CancellableCall?
 
     init(
         chain: ChainModel,
@@ -39,26 +39,96 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         _ results: [Result<JSON, Error>],
         contractAddress: AccountAddress
     ) {
-        let hexSymbol = (try? results[0].get())?.stringValue
-        let symbol: String? = hexSymbol.flatMap { hexString in
-            guard let data = try? Data(hexString: hexString) else {
-                return nil
-            }
-
-            return String(data: data, encoding: .utf8)
-        }
-
-        let decimals: UInt8?
-
-        if let decimalsString = (try? results[1].get())?.stringValue {
-            decimals = BigUInt.fromHexString(decimalsString).map { UInt8($0) }
-        } else {
-            decimals = nil
-        }
+        let symbol = EthereumRpcResultParser.parseStringOrNil(from: results[0])
+        let decimals = EthereumRpcResultParser.parseUnsignedIntOrNil(from: results[1], bits: 8).map { UInt8($0) }
 
         let details = EvmContractMetadata(symbol: symbol, decimals: decimals)
 
         presenter?.didReceiveDetails(details, for: contractAddress)
+    }
+
+    private func createPriceIdWrapper(for urlString: String?) -> CompoundOperationWrapper<AssetModel.PriceId?> {
+        guard let urlString = urlString, !urlString.isEmpty else {
+            return CompoundOperationWrapper.createWithResult(nil)
+        }
+
+        guard let priceId = priceIdParser.parsePriceId(from: urlString) else {
+            return CompoundOperationWrapper.createWithError(TokensManageAddInteractorError.priceIdProcessingFailed)
+        }
+
+        let fetchOperation = priceOperationFactory.fetchPriceOperation(for: [priceId], currency: .usd)
+
+        let mapOperation = ClosureOperation<AssetModel.PriceId?> {
+            do {
+                let prices = try fetchOperation.extractNoCancellableResultData()
+
+                if !prices.isEmpty {
+                    return priceId
+                } else {
+                    throw TokensManageAddInteractorError.priceIdProcessingFailed
+                }
+            } catch {
+                throw TokensManageAddInteractorError.priceIdProcessingFailed
+            }
+        }
+
+        mapOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+    }
+
+    private func performTokenSave(newToken: EvmTokenAddRequest, chain: ChainModel) {
+        let priceIdWrapper = createPriceIdWrapper(for: newToken.priceIdUrl)
+
+        let chainModifyOperation = ClosureOperation<ChainAsset> {
+            let priceId = try priceIdWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let newAsset = AssetModel(request: newToken, priceId: priceId) else {
+                throw TokensManageAddInteractorError.tokenSaveFailed(CommonError.dataCorruption)
+            }
+
+            if let asset = chain.assets.first(where: { $0.assetId == newAsset.assetId }) {
+                throw TokensManageAddInteractorError.tokenAlreadyExists(asset)
+            }
+
+            let newChain = chain.adding(asset: newAsset)
+
+            return ChainAsset(chain: newChain, asset: newAsset)
+        }
+
+        chainModifyOperation.addDependency(priceIdWrapper.targetOperation)
+
+        let saveOperation = chainRepository.saveOperation({
+            let newChain = try chainModifyOperation.extractNoCancellableResultData().chain
+
+            return [newChain]
+        }, {
+            []
+        })
+
+        saveOperation.addDependency(chainModifyOperation)
+
+        saveOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let chainAsset = try chainModifyOperation.extractNoCancellableResultData()
+                    try saveOperation.extractNoCancellableResultData()
+
+                    self?.chain = chainAsset.chain
+                    self?.presenter?.didSaveEvmToken(chainAsset.asset)
+                } catch {
+                    if let interactorError = error as? TokensManageAddInteractorError {
+                        self?.presenter?.didReceiveError(interactorError)
+                    } else {
+                        self?.presenter?.didReceiveError(.tokenSaveFailed(error))
+                    }
+                }
+            }
+        }
+
+        let operations = priceIdWrapper.allOperations + [chainModifyOperation, saveOperation]
+
+        operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 }
 
@@ -102,73 +172,7 @@ extension TokensManageAddInteractor: TokensManageAddInteractorInputProtocol {
         }
     }
 
-    func processPriceId(from urlString: String) {
-        if priceIdCancellable != nil {
-            clear(cancellable: &priceIdCancellable)
-        }
-
-        guard let priceId = priceIdParser.parsePriceId(from: urlString) else {
-            presenter?.didReceiveError(.priceIdProcessingFailed)
-            return
-        }
-
-        let operation = priceOperationFactory.fetchPriceOperation(for: [priceId], currency: .usd)
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard operation === self?.priceIdCancellable else {
-                    return
-                }
-
-                self?.priceIdCancellable = nil
-
-                do {
-                    let prices = try operation.extractNoCancellableResultData()
-
-                    if !prices.isEmpty {
-                        self?.presenter?.didExtractPriceId(priceId, from: urlString)
-                    } else {
-                        self?.presenter?.didReceiveError(.priceIdProcessingFailed)
-                    }
-                } catch {
-                    self?.presenter?.didReceiveError(.priceIdProcessingFailed)
-                }
-            }
-        }
-
-        priceIdCancellable = operation
-
-        operationQueue.addOperation(operation)
-    }
-
     func save(newToken: EvmTokenAddRequest) {
-        guard
-            let newAsset = AssetModel(request: newToken),
-            chain.assets.contains(where: { $0.assetId == newAsset.assetId }) else {
-            presenter?.didReceiveError(.tokenAlreadyExists)
-            return
-        }
-
-        let newChain = chain.adding(asset: newAsset)
-
-        let saveOperation = chainRepository.saveOperation({
-            [newChain]
-        }, {
-            []
-        })
-
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    try saveOperation.extractNoCancellableResultData()
-
-                    self?.chain = newChain
-                    self?.presenter?.didSaveEvmToken(newAsset)
-                } catch {
-                    self?.presenter?.didReceiveError(.tokenSaveFailed(error))
-                }
-            }
-        }
-
-        operationQueue.addOperation(saveOperation)
+        performTokenSave(newToken: newToken, chain: chain)
     }
 }

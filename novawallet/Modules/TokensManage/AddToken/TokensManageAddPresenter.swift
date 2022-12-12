@@ -7,6 +7,7 @@ final class TokensManageAddPresenter {
     weak var view: TokensManageAddViewProtocol?
     let wireframe: TokensManageAddWireframeProtocol
     let interactor: TokensManageAddInteractorInputProtocol
+    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
 
     private var partialAddress: String?
@@ -15,15 +16,16 @@ final class TokensManageAddPresenter {
     private var partialPriceIdUrl: String?
 
     private var contractMetadata: [AccountAddress: EvmContractMetadata] = [:]
-    private var priceIds: [String: String] = [:]
 
     init(
         interactor: TokensManageAddInteractorInputProtocol,
         wireframe: TokensManageAddWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.localizationManager = localizationManager
         self.logger = logger
     }
 
@@ -67,7 +69,7 @@ final class TokensManageAddPresenter {
         providePriceIdViewModel()
     }
 
-    private func provideTokenDetailsIfNeeded() {
+    private func fetchTokenDetailsIfNeeded() {
         guard
             let partialAddress = partialAddress,
             (try? partialAddress.toAccountId(using: .ethereum)) != nil,
@@ -79,16 +81,6 @@ final class TokensManageAddPresenter {
 
         interactor.provideDetails(for: partialAddress)
     }
-
-    private func providePriceIdIfNeeded() {
-        guard let partialPriceIdUrl = partialPriceIdUrl, priceIds[partialPriceIdUrl] == nil else {
-            return
-        }
-
-        view?.didStartLoading()
-
-        interactor.processPriceId(from: partialPriceIdUrl)
-    }
 }
 
 extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
@@ -99,7 +91,7 @@ extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
     func handlePartial(address: String) {
         partialAddress = address
 
-        provideTokenDetailsIfNeeded()
+        fetchTokenDetailsIfNeeded()
     }
 
     func handlePartial(symbol: String) {
@@ -114,11 +106,32 @@ extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
         partialPriceIdUrl = priceIdUrl
     }
 
-    func completePriceIdUrlInput() {
-        providePriceIdIfNeeded()
-    }
+    func confirmTokenAdd() {
+        guard let contractAddress = partialAddress, (try? contractAddress.toAccountId(using: .ethereum)) != nil else {
+            if let view = view {
+                wireframe.presentInvalidContractAddress(from: view, locale: localizationManager.selectedLocale)
+            }
+            return
+        }
 
-    func confirmTokenAdd() {}
+        guard let symbol = partialSymbol, let decimals = partialDecimals.flatMap({ UInt8($0) }) else {
+            return
+        }
+
+        let isPriceIdUrlEmpty = (partialPriceIdUrl ?? "").isEmpty
+
+        let request = EvmTokenAddRequest(
+            contractAddress: contractAddress,
+            name: nil,
+            symbol: symbol,
+            decimals: decimals,
+            priceIdUrl: !isPriceIdUrlEmpty ? partialPriceIdUrl : nil
+        )
+
+        view?.didStartLoading()
+
+        interactor.save(newToken: request)
+    }
 }
 
 extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
@@ -143,13 +156,9 @@ extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
         }
     }
 
-    func didExtractPriceId(_ priceId: String, from urlString: String) {
-        view?.didStopLoading()
-
-        priceIds[urlString] = priceId
+    func didSaveEvmToken(_ token: AssetModel) {
+        wireframe.complete(from: view, token: token, locale: localizationManager.selectedLocale)
     }
-
-    func didSaveEvmToken(_: AssetModel) {}
 
     func didReceiveError(_ error: TokensManageAddInteractorError) {
         logger.error("Did receive error: \(error)")
@@ -158,13 +167,39 @@ extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
 
         switch error {
         case .evmDetailsFetchFailed:
-            break
+            let languages = localizationManager.selectedLocale.rLanguages
+            let title = R.string.localizable.addTokenContractMetadataErrorTitle(preferredLanguages: languages)
+            let message = R.string.localizable.addTokenContractMetadataErrorMessage(preferredLanguages: languages)
+
+            wireframe.presentRequestStatus(
+                on: view,
+                title: title,
+                message: message,
+                locale: localizationManager.selectedLocale
+            ) { [weak self] in
+                self?.fetchTokenDetailsIfNeeded()
+            }
         case .priceIdProcessingFailed:
-            break
-        case .tokenAlreadyExists:
-            break
-        case .tokenSaveFailed:
-            break
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentInvalidCoingeckoPriceUrl(from: view, locale: localizationManager.selectedLocale)
+        case let .tokenAlreadyExists(token):
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentTokenAlreadyExists(
+                from: view,
+                symbol: token.symbol,
+                locale: localizationManager.selectedLocale
+            )
+        case let .tokenSaveFailed(error):
+            let locale = localizationManager.selectedLocale
+            if !wireframe.present(error: error, from: view, locale: locale) {
+                _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
+            }
         }
     }
 }
