@@ -72,7 +72,6 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
             for: .editingChanged
         )
 
-        rootView.priceIdInputView.delegate = self
         rootView.priceIdInputView.addTarget(
             self,
             action: #selector(actionPriceIdChanged),
@@ -219,22 +218,6 @@ extension TokensManageAddViewController: KeyboardAdoptable {
                 scrollView.scrollRectToVisible(fieldFrame, animated: true)
             }
         }
-    }
-}
-
-extension TokensManageAddViewController: TextInputViewDelegate {
-    func textInputViewWillStartEditing(_: TextInputView) {}
-
-    func textInputViewShouldReturn(_ inputView: TextInputView) -> Bool {
-        inputView.textField.resignFirstResponder()
-
-        guard inputView === rootView.priceIdInputView else {
-            return true
-        }
-
-        presenter.completePriceIdUrlInput()
-
-        return true
     }
 }
 

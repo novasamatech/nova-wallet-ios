@@ -5,5 +5,5 @@ struct EvmTokenAddRequest {
     let name: String?
     let symbol: String
     let decimals: UInt8
-    let priceId: String?
+    let priceIdUrl: String?
 }
