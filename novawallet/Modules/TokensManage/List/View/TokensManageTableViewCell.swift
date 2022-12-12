@@ -24,7 +24,7 @@ final class TokensManageTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         selectionStyle = .none
-        backgroundColor = .clear
+        backgroundColor = R.color.colorSecondaryScreenBackground()!
 
         setupHandlers()
         setupLayout()
