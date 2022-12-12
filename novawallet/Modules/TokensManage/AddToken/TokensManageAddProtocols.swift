@@ -13,21 +13,20 @@ protocol TokensManageAddPresenterProtocol: AnyObject {
     func handlePartial(symbol: String)
     func handlePartial(decimals: String)
     func handlePartial(priceIdUrl: String)
-    func completePriceIdUrlInput()
     func confirmTokenAdd()
 }
 
 protocol TokensManageAddInteractorInputProtocol: AnyObject {
     func provideDetails(for address: AccountAddress)
-    func processPriceId(from urlString: String)
     func save(newToken: EvmTokenAddRequest)
 }
 
 protocol TokensManageAddInteractorOutputProtocol: AnyObject {
     func didReceiveDetails(_ tokenDetails: EvmContractMetadata, for address: AccountAddress)
-    func didExtractPriceId(_ priceId: String, from urlString: String)
     func didSaveEvmToken(_ token: AssetModel)
     func didReceiveError(_ error: TokensManageAddInteractorError)
 }
 
-protocol TokensManageAddWireframeProtocol: AnyObject {}
+protocol TokensManageAddWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, TokenAddErrorPresentable {
+    func complete(from view: TokensManageAddViewProtocol?, token: AssetModel, locale: Locale)
+}

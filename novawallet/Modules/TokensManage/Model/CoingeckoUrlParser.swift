@@ -12,8 +12,12 @@ final class CoingeckoUrlParser {
     }
 
     private func getPriceId(from path: String) -> String? {
-        let paths = path.components(separatedBy: "/")
-        return paths.last?.trimmingCharacters(in: .whitespaces)
+        let paths = path
+            .trimmingCharacters(in: .whitespaces)
+            .components(separatedBy: "/")
+            .filter { !$0.isEmpty }
+
+        return paths.last
     }
 }
 
