@@ -23,13 +23,16 @@ final class CoingeckoUrlParser {
 
 extension CoingeckoUrlParser: PriceUrlParserProtocol {
     func parsePriceId(from urlString: String) -> AssetModel.PriceId? {
-        guard
-            let components = URLComponents(string: urlString),
-            isHostValid(components.host)
-        else {
+        var optUrlComponents = URLComponents(string: urlString)
+
+        if optUrlComponents?.host == nil {
+            optUrlComponents = URLComponents(string: "https://" + urlString)
+        }
+
+        guard let urlComponents = optUrlComponents, isHostValid(urlComponents.host) else {
             return nil
         }
 
-        return getPriceId(from: components.path)
+        return getPriceId(from: urlComponents.path)
     }
 }
