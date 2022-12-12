@@ -29,6 +29,7 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
 
         setupLocalization()
         setupHandlers()
+        setupTextFields()
 
         presenter.setup()
     }
@@ -45,6 +46,21 @@ final class TokensManageAddViewController: UIViewController, ViewHolder {
         super.viewDidDisappear(animated)
 
         clearKeyboardHandler()
+    }
+
+    private func setupTextFields() {
+        rootView.addressInputView.textField.applyLineBreakMode(.byTruncatingMiddle)
+        rootView.addressInputView.textField.returnKeyType = .done
+        rootView.addressInputView.textField.keyboardType = .asciiCapable
+
+        rootView.symbolInputView.textField.returnKeyType = .done
+        rootView.symbolInputView.textField.keyboardType = .asciiCapable
+
+        rootView.decimalsInputView.textField.returnKeyType = .done
+        rootView.decimalsInputView.textField.keyboardType = .decimalPad
+
+        rootView.priceIdInputView.textField.returnKeyType = .done
+        rootView.priceIdInputView.textField.keyboardType = .URL
     }
 
     private func setupHandlers() {

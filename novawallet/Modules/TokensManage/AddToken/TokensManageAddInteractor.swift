@@ -56,7 +56,11 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
             return CompoundOperationWrapper.createWithError(TokensManageAddInteractorError.priceIdProcessingFailed)
         }
 
-        let fetchOperation = priceOperationFactory.fetchPriceOperation(for: [priceId], currency: .usd)
+        let fetchOperation = priceOperationFactory.fetchPriceOperation(
+            for: [priceId],
+            currency: .usd,
+            returnsZeroIfUnsupported: false
+        )
 
         let mapOperation = ClosureOperation<AssetModel.PriceId?> {
             do {

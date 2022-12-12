@@ -643,6 +643,7 @@
 		842B1806286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */; };
 		842B18082865923B0014CC57 /* XcmExtrinsicFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */; };
 		842B2FCD2947239B002829B6 /* CoinGeckoUrlParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B2FCC2947239B002829B6 /* CoinGeckoUrlParserTests.swift */; };
+		842B2FCF2947352A002829B6 /* UITextField+Attributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B2FCE2947352A002829B6 /* UITextField+Attributes.swift */; };
 		842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36A27B64F1000D31EEF /* DAppViewModel.swift */; };
 		842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */; };
 		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
@@ -3700,6 +3701,7 @@
 		842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupProtocols.swift; sourceTree = "<group>"; };
 		842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmExtrinsicFeeProxy.swift; sourceTree = "<group>"; };
 		842B2FCC2947239B002829B6 /* CoinGeckoUrlParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinGeckoUrlParserTests.swift; sourceTree = "<group>"; };
+		842B2FCE2947352A002829B6 /* UITextField+Attributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Attributes.swift"; sourceTree = "<group>"; };
 		842BA36A27B64F1000D31EEF /* DAppViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
 		842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
@@ -9813,6 +9815,7 @@
 				88C7165528C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift */,
 				84BAD214293B0E8A00C55C49 /* UITableView+Section.swift */,
 				849F143F29434E4B00D9F9BA /* TextInputView+Empty.swift */,
+				842B2FCE2947352A002829B6 /* UITextField+Attributes.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -16537,6 +16540,7 @@
 				8436B6DA2848119C00F24360 /* AccountDetailsSelectionCell.swift in Sources */,
 				501347BEA67CD30FE484358E /* AccountImportViewFactory.swift in Sources */,
 				84EBC55124F660A700459D15 /* EventVisitor.swift in Sources */,
+				842B2FCF2947352A002829B6 /* UITextField+Attributes.swift in Sources */,
 				8452585127ABC531004F9082 /* AssetsSettingsViewModel.swift in Sources */,
 				8454C21D2632A78900657DAD /* EventRecord.swift in Sources */,
 				84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */,
