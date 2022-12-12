@@ -172,13 +172,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let assetInfo = assetAccountInfo.assetInfo
 
-        let iconViewModel: ImageViewModelProtocol
-
-        if let remoteUrl = assetInfo.icon {
-            iconViewModel = RemoteImageViewModel(url: remoteUrl)
-        } else {
-            iconViewModel = StaticImageViewModel(image: R.image.iconDefaultToken()!)
-        }
+        let iconViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: assetInfo.icon)
 
         return AssetListAssetViewModel(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: assetAccountInfo.assetId),

@@ -61,14 +61,7 @@ extension TokensManageViewModelFactory: TokensManageViewModelFactoryProtocol {
     }
 
     func createSingleViewModel(from token: MultichainToken, locale: Locale) -> TokenManageViewModel {
-        let imageViewModel: ImageViewModelProtocol
-
-        if let remoteUrl = token.icon {
-            imageViewModel = RemoteImageViewModel(url: remoteUrl)
-        } else {
-            imageViewModel = StaticImageViewModel(image: R.image.iconDefaultToken()!)
-        }
-
+        let imageViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: token.icon)
         let subtitle = createSubtitle(from: token, locale: locale)
 
         return .init(symbol: token.symbol, imageViewModel: imageViewModel, subtitle: subtitle, isOn: token.enabled)
