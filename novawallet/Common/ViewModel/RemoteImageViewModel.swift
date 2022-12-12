@@ -33,6 +33,11 @@ extension RemoteImageViewModel: ImageViewModelProtocol {
             .diskCacheExpiration(.days(1))
         ]
 
+        if let renderingMode = settings.renderingMode {
+            let imageModifier = RenderingModeImageModifier(renderingMode: renderingMode)
+            options.append(.imageModifier(imageModifier))
+        }
+
         if animated {
             options.append(.transition(.fade(0.25)))
         }

@@ -17,6 +17,8 @@ final class AssetIconView: UIView {
 
     private var viewModel: ImageViewModelProtocol?
 
+    var shouldTintView: Bool = false
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -45,7 +47,24 @@ final class AssetIconView: UIView {
         self.viewModel = viewModel
 
         imageView.image = nil
-        viewModel?.loadImage(on: imageView, settings: settings, animated: true)
+
+        let updatedSettings: ImageViewModelSettings
+
+        if shouldTintView {
+            imageView.tintColor = settings.tintColor
+
+            updatedSettings = ImageViewModelSettings(
+                targetSize: settings.targetSize,
+                cornerRadius: settings.cornerRadius,
+                tintColor: nil,
+                renderingMode: .alwaysTemplate
+            )
+        } else {
+            imageView.tintColor = nil
+            updatedSettings = settings
+        }
+
+        viewModel?.loadImage(on: imageView, settings: updatedSettings, animated: true)
     }
 
     private func updateInsets() {

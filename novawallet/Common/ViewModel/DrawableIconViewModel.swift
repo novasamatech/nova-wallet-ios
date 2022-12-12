@@ -27,7 +27,11 @@ extension DrawableIconViewModel: ImageViewModelProtocol {
             contentScale: UIScreen.main.scale
         )
 
-        imageView.image = image
+        if let renderingMode = settings.renderingMode {
+            imageView.image = image?.withRenderingMode(renderingMode)
+        } else {
+            imageView.image = image
+        }
     }
 
     func cancel(on _: UIImageView) {}

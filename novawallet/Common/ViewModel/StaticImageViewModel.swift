@@ -9,10 +9,17 @@ final class StaticImageViewModel: ImageViewModelProtocol {
     }
 
     func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated _: Bool) {
+        let newImage: UIImage?
         if let tintColor = settings.tintColor {
-            imageView.image = image.tinted(with: tintColor)
+            newImage = image.tinted(with: tintColor)
         } else {
-            imageView.image = image
+            newImage = image
+        }
+
+        if let renderingMode = settings.renderingMode {
+            imageView.image = newImage?.withRenderingMode(renderingMode)
+        } else {
+            imageView.image = newImage
         }
     }
 
