@@ -4,10 +4,24 @@ struct ImageViewModelSettings {
     let targetSize: CGSize
     let cornerRadius: CGFloat?
     let tintColor: UIColor?
+    let renderingMode: UIImage.RenderingMode?
+
+    init(
+        targetSize: CGSize,
+        cornerRadius: CGFloat? = nil,
+        tintColor: UIColor? = nil,
+        renderingMode: UIImage.RenderingMode? = nil
+    ) {
+        self.targetSize = targetSize
+        self.cornerRadius = cornerRadius
+        self.tintColor = tintColor
+        self.renderingMode = renderingMode
+    }
 }
 
 protocol ImageViewModelProtocol {
     func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated: Bool)
+
     func cancel(on imageView: UIImageView)
 }
 
@@ -16,7 +30,8 @@ extension ImageViewModelProtocol {
         let settings = ImageViewModelSettings(
             targetSize: targetSize,
             cornerRadius: nil,
-            tintColor: nil
+            tintColor: nil,
+            renderingMode: nil
         )
 
         loadImage(on: imageView, settings: settings, animated: animated)
@@ -31,7 +46,8 @@ extension ImageViewModelProtocol {
         let settings = ImageViewModelSettings(
             targetSize: targetSize,
             cornerRadius: cornerRadius,
-            tintColor: nil
+            tintColor: nil,
+            renderingMode: nil
         )
 
         loadImage(on: imageView, settings: settings, animated: animated)
