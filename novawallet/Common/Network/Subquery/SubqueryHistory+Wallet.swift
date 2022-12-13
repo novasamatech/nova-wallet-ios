@@ -7,7 +7,11 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         identifier
     }
 
-    var localIdentifier: String { extrinsicHash ?? identifier }
+    var localIdentifier: String {
+        let localId = extrinsicHash ?? identifier
+
+        return TransactionHistoryItem.createIdentifier(from: localId, source: .substrate)
+    }
 
     var itemBlockNumber: UInt64 {
         blockNumber
@@ -34,35 +38,40 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
     func createTransactionForAddress(
         _ address: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) -> AssetTransactionData {
         if let transfer = transfer {
             return createTransactionFromTransfer(
                 transfer,
                 address: address,
                 assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         } else if let reward = reward {
             return createTransactionFromReward(
                 reward,
                 address: address,
                 assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         } else if let extrinsic = extrinsic {
             return createTransactionFromExtrinsic(
                 extrinsic,
                 address: address,
                 assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         } else if let assetTransfer = assetTransfer {
             return createTransactionFromTransfer(
                 assetTransfer,
                 address: address,
                 assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         } else {
             // we shouldn't crash if broken data received
@@ -89,25 +98,26 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         _ transfer: SubqueryTransfer,
         address: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) -> AssetTransactionData {
         let status: AssetTransactionStatus = transfer.success ? .commited : .rejected
 
         let isSender = address.caseInsensitiveCompare(transfer.sender) == .orderedSame
         let peerAddress = isSender ? transfer.receiver : transfer.sender
-        let accountId = try? peerAddress.toAccountId(using: chainAssetInfo.chain)
+        let accountId = try? peerAddress.toAccountId(using: chainAsset.chain.chainFormat)
         let peerId = accountId?.toHex() ?? peerAddress
 
         let amountValue = BigUInt(transfer.amount) ?? 0
         let amountDecimal = Decimal.fromSubstrateAmount(
             amountValue,
-            precision: chainAssetInfo.asset.assetPrecision
+            precision: chainAsset.asset.decimalPrecision
         ) ?? 0
 
         let feeValue = BigUInt(transfer.fee) ?? 0
         let feeDecimal = Decimal.fromSubstrateAmount(
             feeValue,
-            precision: chainAssetInfo.asset.assetPrecision
+            precision: utilityAsset.decimalPrecision
         ) ?? 0
 
         let fee = AssetTransactionFee(
@@ -141,12 +151,13 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         _ reward: SubqueryRewardOrSlash,
         address _: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAsset: ChainAsset,
+        utilityAsset _: AssetModel
     ) -> AssetTransactionData {
         let amountValue = BigUInt(reward.amount) ?? 0
         let amountDecimal = Decimal.fromSubstrateAmount(
             amountValue,
-            precision: chainAssetInfo.asset.assetPrecision
+            precision: chainAsset.asset.decimalPrecision
         ) ?? 0
 
         let type: TransactionType = reward.isReward ? .reward : .slash
@@ -179,17 +190,18 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         _ extrinsic: SubqueryExtrinsic,
         address: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAsset: ChainAsset,
+        utilityAsset _: AssetModel
     ) -> AssetTransactionData {
         let status: AssetTransactionStatus = extrinsic.success ? .commited : .rejected
 
-        let accountId = try? address.toAccountId(using: chainAssetInfo.chain)
+        let accountId = try? address.toAccountId(using: chainAsset.chain.chainFormat)
         let peerId = accountId?.toHex() ?? address
 
         let amountValue = BigUInt(extrinsic.fee) ?? 0
         let amountDecimal = Decimal.fromSubstrateAmount(
             amountValue,
-            precision: chainAssetInfo.asset.assetPrecision
+            precision: chainAsset.asset.decimalPrecision
         ) ?? 0
 
         return AssetTransactionData(

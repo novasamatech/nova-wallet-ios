@@ -101,7 +101,7 @@ final class TransactionSubscription {
                     self.logger.debug("Did complete block processing")
                     if !items.isEmpty {
                         DispatchQueue.main.async {
-                            self.eventCenter.notify(with: WalletNewTransactionInserted())
+                            self.eventCenter.notify(with: WalletTransactionListUpdated())
                         }
                     }
                 case let .failure(error):

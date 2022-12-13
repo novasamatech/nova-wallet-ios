@@ -2,7 +2,17 @@ import Foundation
 import RobinHood
 
 protocol CoingeckoOperationFactoryProtocol {
-    func fetchPriceOperation(for tokenIds: [String], currency: Currency) -> BaseOperation<[PriceData]>
+    func fetchPriceOperation(
+        for tokenIds: [String],
+        currency: Currency,
+        returnsZeroIfUnsupported: Bool
+    ) -> BaseOperation<[PriceData]>
+}
+
+extension CoingeckoOperationFactoryProtocol {
+    func fetchPriceOperation(for tokenIds: [String], currency: Currency) -> BaseOperation<[PriceData]> {
+        fetchPriceOperation(for: tokenIds, currency: currency, returnsZeroIfUnsupported: true)
+    }
 }
 
 final class CoingeckoOperationFactory {
@@ -30,7 +40,11 @@ final class CoingeckoOperationFactory {
 }
 
 extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
-    func fetchPriceOperation(for tokenIds: [String], currency: Currency) -> BaseOperation<[PriceData]> {
+    func fetchPriceOperation(
+        for tokenIds: [String],
+        currency: Currency,
+        returnsZeroIfUnsupported: Bool
+    ) -> BaseOperation<[PriceData]> {
         guard let url = buildURLForAssets(
             tokenIds,
             method: CoingeckoAPI.price,
@@ -58,10 +72,10 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
                 from: data
             )
 
-            return tokenIds.map { assetId in
+            return tokenIds.compactMap { assetId in
                 guard let assetPriceData = priceData[assetId],
                       let priceData = assetPriceData.rates[currency.coingeckoId] else {
-                    return PriceData.zero(for: currency.id)
+                    return returnsZeroIfUnsupported ? PriceData.zero(for: currency.id) : nil
                 }
 
                 return PriceData(

@@ -4,11 +4,13 @@ import RobinHood
 
 protocol PersistExtrinsicFactoryProtocol {
     func createTransferSaveOperation(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistTransferDetails
     ) -> CompoundOperationWrapper<Void>
 
     func createExtrinsicSaveOperation(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistExtrinsicDetails
     ) -> CompoundOperationWrapper<Void>
@@ -22,6 +24,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
     }
 
     func createTransferSaveOperation(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistTransferDetails
     ) -> CompoundOperationWrapper<Void> {
@@ -29,6 +32,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
         let feeString = details.fee.map { String($0) }
 
         let transferItem = TransactionHistoryItem(
+            source: source,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
             sender: details.sender,
@@ -50,6 +54,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
     }
 
     func createExtrinsicSaveOperation(
+        source: TransactionHistoryItemSource,
         chainAssetId: ChainAssetId,
         details: PersistExtrinsicDetails
     ) -> CompoundOperationWrapper<Void> {
@@ -57,6 +62,7 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
         let feeString = details.fee.map { String($0) }
 
         let item = TransactionHistoryItem(
+            source: source,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
             sender: details.sender,

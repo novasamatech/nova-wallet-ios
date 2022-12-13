@@ -39,7 +39,7 @@ extension ParaStkYieldBoostCancelInteractor: ParaStkYieldBoostCancelInteractorIn
 }
 
 extension ParaStkYieldBoostCancelInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
         switch result {
         case let .success(feeInfo):
             presenter?.didReceiveCancelTask(feeInfo: feeInfo)
