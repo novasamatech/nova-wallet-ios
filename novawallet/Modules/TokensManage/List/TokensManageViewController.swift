@@ -68,7 +68,10 @@ final class TokensManageViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        let placeholder = R.string.localizable.tokensManageSearch(preferredLanguages: selectedLocale.rLanguages)
+        let placeholder = R.string.localizable.assetsSearchPlaceholder(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
         rootView.searchTextField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
             attributes: [
@@ -148,7 +151,7 @@ extension TokensManageViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
         emptyView.image = R.image.iconLoadingError()!
-        emptyView.title = R.string.localizable.tokensManageSearchEmpty(
+        emptyView.title = R.string.localizable.assetsSearchEmpty(
             preferredLanguages: selectedLocale.rLanguages
         )
         emptyView.titleColor = R.color.colorTextSecondary()!
