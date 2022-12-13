@@ -3,6 +3,7 @@ import SoraFoundation
 
 final class TokensManageAddPresenter {
     static let priceIdUrlPlaceholder = "coingecko.com/coins/tether"
+    static let maxDecimals: Int = 36
 
     weak var view: TokensManageAddViewProtocol?
     let wireframe: TokensManageAddWireframeProtocol
@@ -81,6 +82,16 @@ final class TokensManageAddPresenter {
 
         interactor.provideDetails(for: partialAddress)
     }
+
+    private func constructEvmAddress() -> AccountAddress? {
+        let optEvmAccountId = try? partialAddress?.toAccountId(using: .ethereum)
+
+        guard optEvmAccountId != nil else {
+            return nil
+        }
+
+        return partialAddress
+    }
 }
 
 extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
@@ -107,7 +118,7 @@ extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
     }
 
     func confirmTokenAdd() {
-        guard let contractAddress = partialAddress, (try? contractAddress.toAccountId(using: .ethereum)) != nil else {
+        guard let contractAddress = constructEvmAddress() else {
             if let view = view {
                 wireframe.presentInvalidContractAddress(from: view, locale: localizationManager.selectedLocale)
             }
@@ -115,6 +126,17 @@ extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
         }
 
         guard let symbol = partialSymbol, let decimals = partialDecimals.flatMap({ UInt8($0) }) else {
+            return
+        }
+
+        guard decimals <= Self.maxDecimals else {
+            if let view = view {
+                wireframe.presentInvalidDecimals(
+                    from: view,
+                    maxValue: String(Self.maxDecimals),
+                    locale: localizationManager.selectedLocale
+                )
+            }
             return
         }
 
@@ -185,6 +207,16 @@ extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
             }
 
             wireframe.presentInvalidCoingeckoPriceUrl(from: view, locale: localizationManager.selectedLocale)
+        case let .contractNotExists(chain):
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentInvalidNetworkContract(
+                from: view,
+                name: chain.name,
+                locale: localizationManager.selectedLocale
+            )
         case let .tokenAlreadyExists(token):
             guard let view = view else {
                 return

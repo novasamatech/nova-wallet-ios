@@ -58,7 +58,11 @@ final class TokenManageSinglePresenter {
 
     private func updateToken() {
         let tokenChains = chains.values
-            .filter { $0.assets.contains { $0.symbol == token.symbol } }
+            .filter {
+                $0.assets.contains {
+                    MultichainToken.reserveTokensOf(symbol: $0.symbol).contains(token.symbol)
+                }
+            }
             .sorted { chain1, chain2 in
                 ChainModelCompator.defaultComparator(chain1: chain1, chain2: chain2)
             }
