@@ -6,8 +6,7 @@ import RobinHood
 struct OperationDetailsViewFactory {
     static func createView(
         for txData: AssetTransactionData,
-        chainAsset: ChainAsset,
-        commandFactory _: WalletCommandFactoryProtocol?
+        chainAsset: ChainAsset
     ) -> OperationDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil

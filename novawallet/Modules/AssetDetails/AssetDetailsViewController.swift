@@ -41,19 +41,19 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     }
 
     @objc func didTapSendButton() {
-        presenter.didTapSendButton()
+        presenter.handleSend()
     }
 
     @objc func didTapReceiveButton() {
-        presenter.didTapReceiveButton()
+        presenter.handleReceive()
     }
 
     @objc func didTapBuyButton() {
-        presenter.didTapBuyButton()
+        presenter.handleBuy()
     }
 
     @objc func didTapLocks() {
-        presenter.didTapLocks()
+        presenter.handleLocks()
     }
 }
 

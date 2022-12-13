@@ -20,8 +20,7 @@ final class OperationDetailsCommand: WalletCommandProtocol {
     func execute() throws {
         guard let view = OperationDetailsViewFactory.createView(
             for: txData,
-            chainAsset: chainAsset,
-            commandFactory: commandFactory
+            chainAsset: chainAsset
         ) else {
             return
         }

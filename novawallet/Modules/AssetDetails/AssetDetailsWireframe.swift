@@ -4,8 +4,6 @@ import SoraUI
 import SoraFoundation
 
 final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
-    weak var presentedViewController: UIViewController?
-
     func showPurchaseTokens(
         from view: AssetDetailsViewProtocol?,
         action: PurchaseAction,
@@ -30,22 +28,9 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         guard let navigationController = view?.controller.navigationController else {
             return
         }
-        let closeButtonItem = UIBarButtonItem(
-            image: R.image.iconClose()!,
-            style: .plain,
-            target: self,
-            action: #selector(closeModalController)
-        )
-
         let fearlessNavigationController = FearlessNavigationController(
             rootViewController: transferSetupView.controller)
-        transferSetupView.controller.navigationItem.leftBarButtonItem = closeButtonItem
         navigationController.present(fearlessNavigationController, animated: true)
-        presentedViewController = fearlessNavigationController
-    }
-
-    @objc func closeModalController() {
-        presentedViewController?.dismiss(animated: true)
     }
 
     func showReceiveTokens(from _: AssetDetailsViewProtocol?) {

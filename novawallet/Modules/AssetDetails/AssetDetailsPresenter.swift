@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import RobinHood
 
 final class AssetDetailsPresenter {
     weak var view: AssetDetailsViewProtocol?
@@ -87,14 +88,14 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         updateView()
     }
 
-    func didTapSendButton() {
+    func handleSend() {
         wireframe.showSendTokens(
             from: view,
             chainAsset: chainAsset
         )
     }
 
-    func didTapReceiveButton() {
+    func handleReceive() {
         switch selectedAccountType {
         case .secrets, .paritySigner:
             wireframe.showReceiveTokens(from: view)
@@ -110,7 +111,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         }
     }
 
-    func didTapBuyButton() {
+    func handleBuy() {
         guard !purchaseActions.isEmpty else {
             return
         }
@@ -148,7 +149,7 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         }
     }
 
-    func didTapLocks() {
+    func handleLocks() {
         guard let balance = balance else {
             return
         }
@@ -179,8 +180,8 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(locks: [AssetLock]) {
-        self.locks = locks
+    func didReceive(lockChanges: [DataProviderChange<AssetLock>]) {
+        locks = locks.applying(changes: lockChanges)
         updateView()
     }
 
@@ -199,8 +200,8 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceive(crowdloans: [CrowdloanContributionData]) {
-        self.crowdloans = crowdloans
+    func didReceive(crowdloanChanges: [DataProviderChange<CrowdloanContributionData>]) {
+        crowdloans = crowdloans.applying(changes: crowdloanChanges)
         updateView()
     }
 
