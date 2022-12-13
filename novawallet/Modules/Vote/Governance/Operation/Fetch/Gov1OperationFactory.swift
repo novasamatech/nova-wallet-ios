@@ -10,7 +10,7 @@ final class Gov1OperationFactory {
     struct AdditionalInfo {
         let votingPeriod: UInt32
         let enactmentPeriod: UInt32
-        let totalIssuance: BigUInt
+        let electorate: BigUInt
         let block: BlockNumber
     }
 
@@ -70,10 +70,16 @@ final class Gov1OperationFactory {
     }
 
     let requestFactory: StorageRequestFactoryProtocol
+    let commonOperationFactory: GovCommonOperationFactoryProtocol
     let operationQueue: OperationQueue
 
-    init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
+    init(
+        requestFactory: StorageRequestFactoryProtocol,
+        commonOperationFactory: GovCommonOperationFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
         self.requestFactory = requestFactory
+        self.commonOperationFactory = commonOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -199,13 +205,12 @@ final class Gov1OperationFactory {
             }
         }
 
-        let totalIssuanceWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
-            requestFactory.queryItem(
-                engine: connection,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .totalIssuance,
-                at: blockHash
-            )
+        let electorateWrapper = commonOperationFactory.createTotalIssuanceWrapper(
+            dependingOn: codingFactoryOperation,
+            requestFactory: requestFactory,
+            connection: connection,
+            blockHash: blockHash
+        )
 
         let blockNumberWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BlockNumber>>> =
             requestFactory.queryItem(
@@ -217,24 +222,24 @@ final class Gov1OperationFactory {
 
         let mapOperation = ClosureOperation<AdditionalInfo> {
             let votingPeriod = try votingPeriodOperation.extractNoCancellableResultData()
-            let totalIssuance = try totalIssuanceWrapper.targetOperation.extractNoCancellableResultData().value
+            let electorate = try electorateWrapper.targetOperation.extractNoCancellableResultData()
             let enactmentPeriod = try enactmentPeriodOperation.extractNoCancellableResultData()
             let block = try blockNumberWrapper.targetOperation.extractNoCancellableResultData().value
 
             return .init(
                 votingPeriod: votingPeriod,
                 enactmentPeriod: enactmentPeriod,
-                totalIssuance: totalIssuance?.value ?? 0,
+                electorate: electorate,
                 block: block?.value ?? 0
             )
         }
 
         mapOperation.addDependency(votingPeriodOperation)
-        mapOperation.addDependency(totalIssuanceWrapper.targetOperation)
+        mapOperation.addDependency(electorateWrapper.targetOperation)
         mapOperation.addDependency(enactmentPeriodOperation)
         mapOperation.addDependency(blockNumberWrapper.targetOperation)
 
-        let dependencies = [votingPeriodOperation, enactmentPeriodOperation] + totalIssuanceWrapper.allOperations +
+        let dependencies = [votingPeriodOperation, enactmentPeriodOperation] + electorateWrapper.allOperations +
             blockNumberWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)

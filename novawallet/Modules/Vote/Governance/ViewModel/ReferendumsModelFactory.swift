@@ -367,12 +367,12 @@ final class ReferendumsModelFactory {
             return nil
         }
 
-        let totalIssuanceDecimal = Decimal.fromSubstrateAmount(
-            supportAndVotes.totalIssuance,
+        let electorateDecimal = Decimal.fromSubstrateAmount(
+            supportAndVotes.electorate,
             precision: Int16(chainAsset.precision)
         ) ?? 0
 
-        let targetThreshold = totalIssuanceDecimal * supportThreshold
+        let targetThreshold = electorateDecimal * supportThreshold
 
         let threshold = Decimal.fromSubstrateAmount(
             supportAndVotes.support,

@@ -38,6 +38,7 @@ final class InflationCurveRewardEngine: RewardCalculatorEngine {
 
         let rawAnnualReturn = (annualReturn as NSDecimalNumber).doubleValue
         let result = pow(rawAnnualReturn + 1.0, 1.0 / Double(erasInYear)) - 1.0
+
         return Decimal(result)
     }
 }
