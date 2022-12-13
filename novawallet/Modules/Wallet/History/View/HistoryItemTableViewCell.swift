@@ -226,3 +226,63 @@ extension HistoryItemTableViewCell: WalletViewProtocol {
         }
     }
 }
+
+extension HistoryItemTableViewCell {
+    func bind(transactionModel: TransactionItemViewModel) {
+        titleLabel.text = transactionModel.title
+        subtitleLabel.text = transactionModel.subtitle
+        timeLabel.text = transactionModel.time
+
+        switch transactionModel.type {
+        case .incoming, .reward:
+            amountLabel.text = "+ \(transactionModel.amount)"
+            amountLabel.textColor = R.color.colorTextPositive()!
+        case .outgoing, .slash, .extrinsic:
+            amountLabel.text = "- \(transactionModel.amount)"
+            amountLabel.textColor = R.color.colorTextPrimary()!
+        }
+
+        switch transactionModel.type {
+        case .incoming, .outgoing:
+            titleLabel.lineBreakMode = .byTruncatingMiddle
+
+            titleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+                    .offset(-Constants.titleSpacingForTransfer)
+            }
+
+        case .slash, .reward, .extrinsic:
+            titleLabel.lineBreakMode = .byTruncatingTail
+
+            titleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+                    .offset(-Constants.titleSpacingForOthers)
+            }
+        }
+
+        switch transactionModel.status {
+        case .commited:
+            removeStatusView()
+        case .rejected:
+            addStatusViewIfNeeded()
+            statusImageView?.image = R.image.iconErrorFilled()
+            amountLabel.textColor = R.color.colorTextSecondary()
+        case .pending:
+            addStatusViewIfNeeded()
+            statusImageView?.image = R.image.iconPending()
+            amountLabel.textColor = R.color.colorTextPrimary()
+        }
+
+        let settings = ImageViewModelSettings(
+            targetSize: Constants.displayImageSize,
+            cornerRadius: nil,
+            tintColor: R.color.colorIconSecondary()
+        )
+
+        iconView.bind(viewModel: transactionModel.imageViewModel, settings: settings)
+
+        updateAmountConstraints()
+
+        setNeedsLayout()
+    }
+}
