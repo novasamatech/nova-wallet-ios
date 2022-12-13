@@ -7,6 +7,7 @@ protocol EvmQueryContractMessageFactoryProtocol: AnyObject {
     func erc20Name(from contractAddress: AccountAddress) throws -> EthereumTransaction
     func erc20Symbol(from contractAddress: AccountAddress) throws -> EthereumTransaction
     func erc20Decimals(from contractAddress: AccountAddress) throws -> EthereumTransaction
+    func erc20TotalSupply(from contractAddress: AccountAddress) throws -> EthereumTransaction
 }
 
 enum EvmQueryContractMessageFactoryError: Error {
@@ -18,6 +19,7 @@ final class EvmQueryContractMessageFactory: EvmQueryContractMessageFactoryProtoc
     static let erc20Name = "name"
     static let erc20Symbol = "symbol"
     static let erc20Decimals = "decimals"
+    static let totalSupply = "totalSupply"
 
     func erc20Balance(of holder: AccountAddress, contractAddress: AccountAddress) throws -> EthereumTransaction {
         let contract = try EthereumContract(Web3.Utils.erc20ABI)
@@ -41,6 +43,10 @@ final class EvmQueryContractMessageFactory: EvmQueryContractMessageFactoryProtoc
 
     func erc20Decimals(from contractAddress: AccountAddress) throws -> EthereumTransaction {
         try createConstantQuery(from: contractAddress, name: Self.erc20Decimals)
+    }
+
+    func erc20TotalSupply(from contractAddress: AccountAddress) throws -> EthereumTransaction {
+        try createConstantQuery(from: contractAddress, name: Self.totalSupply)
     }
 
     private func createConstantQuery(from contractAddress: AccountAddress, name: String) throws -> EthereumTransaction {

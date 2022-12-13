@@ -3,6 +3,7 @@ import SoraFoundation
 
 final class TokensManageAddPresenter {
     static let priceIdUrlPlaceholder = "coingecko.com/coins/tether"
+    static let maxDecimals: Int = 36
 
     weak var view: TokensManageAddViewProtocol?
     let wireframe: TokensManageAddWireframeProtocol
@@ -118,6 +119,17 @@ extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
             return
         }
 
+        guard decimals <= Self.maxDecimals else {
+            if let view = view {
+                wireframe.presentInvalidDecimals(
+                    from: view,
+                    maxValue: String(Self.maxDecimals),
+                    locale: localizationManager.selectedLocale
+                )
+            }
+            return
+        }
+
         let isPriceIdUrlEmpty = (partialPriceIdUrl ?? "").isEmpty
 
         let request = EvmTokenAddRequest(
@@ -185,6 +197,16 @@ extension TokensManageAddPresenter: TokensManageAddInteractorOutputProtocol {
             }
 
             wireframe.presentInvalidCoingeckoPriceUrl(from: view, locale: localizationManager.selectedLocale)
+        case let .contractNotExists(chain):
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentInvalidNetworkContract(
+                from: view,
+                name: chain.name,
+                locale: localizationManager.selectedLocale
+            )
         case let .tokenAlreadyExists(token):
             guard let view = view else {
                 return

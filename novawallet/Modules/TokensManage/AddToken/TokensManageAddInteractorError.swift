@@ -5,4 +5,5 @@ enum TokensManageAddInteractorError: Error {
     case priceIdProcessingFailed
     case tokenAlreadyExists(AssetModel)
     case tokenSaveFailed(_ internalError: Error)
+    case contractNotExists(chain: ChainModel)
 }

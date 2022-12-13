@@ -81,10 +81,49 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
     }
 
+    func createContractExistenseWrapper(
+        for address: AccountAddress,
+        chain: ChainModel
+    ) -> CompoundOperationWrapper<Void> {
+        do {
+            let call = try queryFactory.erc20TotalSupply(from: address)
+            let params = EvmQueryMessage.Params(call: call, block: .latest)
+            let fetchOperation = JSONRPCOperation<EvmQueryMessage.Params, JSON>(
+                engine: connection,
+                method: EvmQueryMessage.method,
+                parameters: params
+            )
+
+            let mapOperation = ClosureOperation<Void> {
+                if
+                    let json = try? fetchOperation.extractNoCancellableResultData(),
+                    let totalSupply = EthereumRpcResultParser.parseUnsignedIntOrNil(from: .success(json), bits: 256),
+                    totalSupply > 0 {
+                    return
+                }
+
+                throw TokensManageAddInteractorError.contractNotExists(chain: chain)
+            }
+
+            mapOperation.addDependency(fetchOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+        } catch {
+            return CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+        }
+    }
+
     private func performTokenSave(newToken: EvmTokenAddRequest, chain: ChainModel) {
         let priceIdWrapper = createPriceIdWrapper(for: newToken.priceIdUrl)
 
+        let contractExistenseWrapper = createContractExistenseWrapper(
+            for: newToken.contractAddress,
+            chain: chain
+        )
+
         let chainModifyOperation = ClosureOperation<ChainAsset> {
+            try contractExistenseWrapper.targetOperation.extractNoCancellableResultData()
+
             let priceId = try priceIdWrapper.targetOperation.extractNoCancellableResultData()
 
             guard let newAsset = AssetModel(request: newToken, priceId: priceId) else {
@@ -100,6 +139,7 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
             return ChainAsset(chain: newChain, asset: newAsset)
         }
 
+        chainModifyOperation.addDependency(contractExistenseWrapper.targetOperation)
         chainModifyOperation.addDependency(priceIdWrapper.targetOperation)
 
         let saveOperation = chainRepository.saveOperation({
@@ -130,7 +170,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
             }
         }
 
-        let operations = priceIdWrapper.allOperations + [chainModifyOperation, saveOperation]
+        let operations = priceIdWrapper.allOperations + contractExistenseWrapper.allOperations +
+            [chainModifyOperation, saveOperation]
 
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }

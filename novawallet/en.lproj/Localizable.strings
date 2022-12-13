@@ -1098,6 +1098,7 @@
 "add.token.action" = "Add token";
 "add.token.invalid.contract.address.title" = "Invalid contract address";
 "add.token.invalid.contract.address.message" = "The entered contract address is not ERC-20 contract.";
+"add.token.invalid.network.contract.message" = "The entered contract address is not a %@ ERC-20 contract.";
 "add.token.already.exists.title" = "This token already exist";
 "add.token.already.exists.message" = "The entered contract address is present in Nova as a %@ token.";
 "add.token.invalid.price.url.title" = "Invalid CoinGecko link";
@@ -1105,3 +1106,5 @@
 "add.token.completion.message" = "%@ token added";
 "add.token.contract.metadata.error.title" = "Metadata fetch failed";
 "add.token.contract.metadata.error.message" = "Contract metadata fetch failed";
+"add.token.invalid.decimals.title" = "Invalid decimals value";
+"add.token.invalid.decimals.message" = "Decimals must be at least 0, and not over %@.";
