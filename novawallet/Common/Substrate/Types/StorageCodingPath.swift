@@ -50,6 +50,10 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "Balances", itemName: "TotalIssuance")
     }
 
+    static var inactiveIssuance: StorageCodingPath {
+        StorageCodingPath(moduleName: "Balances", itemName: "InactiveIssuance")
+    }
+
     static var identity: StorageCodingPath {
         StorageCodingPath(moduleName: "Identity", itemName: "IdentityOf")
     }
