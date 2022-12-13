@@ -158,6 +158,10 @@ extension TokensManageViewController: EmptyStateDataSource {
         emptyView.titleFont = .regularFootnote
         return emptyView
     }
+
+    var contentViewForEmptyState: UIView {
+        rootView.contentView
+    }
 }
 
 extension TokensManageViewController: UITextFieldDelegate {
