@@ -106,7 +106,7 @@ class TextInputView: BackgroundedContentControl {
         layoutContent()
     }
 
-    func applingActionWidth(for currentWidth: CGFloat) -> CGFloat {
+    func applyingActionWidth(for currentWidth: CGFloat) -> CGFloat {
         if !clearButton.isHidden {
             return currentWidth + clearButton.intrinsicContentSize.width
         } else {
@@ -116,7 +116,7 @@ class TextInputView: BackgroundedContentControl {
 
     private func layoutContent() {
         let buttonHeight: CGFloat = 32.0
-        var actionsWidth: CGFloat = applingActionWidth(for: 0)
+        let actionsWidth: CGFloat = applyingActionWidth(for: 0)
 
         stackView.frame = CGRect(
             x: bounds.maxX - contentInsets.right - actionsWidth,
