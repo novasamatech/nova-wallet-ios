@@ -205,7 +205,7 @@ final class Gov1OperationFactory {
             }
         }
 
-        let electorateWrapper = commonOperationFactory.createElectorateWrapper(
+        let electorateWrapper = commonOperationFactory.createTotalIssuanceWrapper(
             dependingOn: codingFactoryOperation,
             requestFactory: requestFactory,
             connection: connection,
