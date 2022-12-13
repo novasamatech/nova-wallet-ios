@@ -1,3 +1,5 @@
+import RobinHood
+
 protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol {
     func didReceive(assetModel: AssetDetailsModel)
     func didReceive(totalBalance: BalanceViewModelProtocol)
@@ -8,10 +10,10 @@ protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol {
 
 protocol AssetDetailsPresenterProtocol: AnyObject {
     func setup()
-    func didTapSendButton()
-    func didTapReceiveButton()
-    func didTapBuyButton()
-    func didTapLocks()
+    func handleSend()
+    func handleReceive()
+    func handleBuy()
+    func handleLocks()
 }
 
 protocol AssetDetailsInteractorInputProtocol: AnyObject {
@@ -20,8 +22,8 @@ protocol AssetDetailsInteractorInputProtocol: AnyObject {
 
 protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(balance: AssetBalance?)
-    func didReceive(locks: [AssetLock])
-    func didReceive(crowdloans: [CrowdloanContributionData])
+    func didReceive(lockChanges: [DataProviderChange<AssetLock>])
+    func didReceive(crowdloanChanges: [DataProviderChange<CrowdloanContributionData>])
     func didReceive(price: PriceData?)
     func didReceive(error: AssetDetailsError)
     func didReceive(availableOperations: AssetDetailsOperation)

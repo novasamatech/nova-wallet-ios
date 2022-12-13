@@ -9,14 +9,13 @@ final class AssetDetailsInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
     let purchaseProvider: PurchaseProviderProtocol
+    let assetMapper: CustomAssetMapper
 
     private var assetLocksSubscription: StreamableProvider<AssetLock>?
     private var priceSubscription: AnySingleValueProvider<PriceData>?
     private var assetBalanceSubscription: StreamableProvider<AssetBalance>?
     private var crowdloansSubscription: StreamableProvider<CrowdloanContributionData>?
 
-    private var locks: [AssetLock] = []
-    private var crowdloans: [CrowdloanContributionData] = []
     private var accountId: AccountId? {
         selectedMetaAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId
     }
@@ -36,7 +35,10 @@ final class AssetDetailsInteractor {
         self.selectedMetaAccount = selectedMetaAccount
         self.chainAsset = chainAsset
         self.purchaseProvider = purchaseProvider
-
+        assetMapper = CustomAssetMapper(
+            type: chainAsset.asset.type,
+            typeExtras: chainAsset.asset.typeExtras
+        )
         self.currencyManager = currencyManager
     }
 
@@ -159,16 +161,7 @@ extension AssetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubsc
         case let .failure(error):
             presenter.didReceive(error: .locks(error))
         case let .success(changes):
-            locks = changes.reduce(into: locks) { result, change in
-                switch change {
-                case let .insert(lock), let .update(lock):
-                    result.addOrReplaceSingle(lock)
-                case let .delete(deletedIdentifier):
-                    result = result.filter { $0.identifier != deletedIdentifier }
-                }
-            }
-
-            presenter.didReceive(locks: locks)
+            presenter.didReceive(lockChanges: changes)
         }
     }
 }
@@ -207,16 +200,7 @@ extension AssetDetailsInteractor: CrowdloanContributionLocalSubscriptionHandler,
         case let .failure(error):
             presenter.didReceive(error: .crowdloans(error))
         case let .success(changes):
-            crowdloans = changes.reduce(into: crowdloans) { result, change in
-                switch change {
-                case let .insert(crowdloan), let .update(crowdloan):
-                    result.addOrReplaceSingle(crowdloan)
-                case let .delete(deletedIdentifier):
-                    result = result.filter { $0.identifier != deletedIdentifier }
-                }
-            }
-
-            presenter.didReceive(crowdloans: crowdloans)
+            presenter.didReceive(crowdloanChanges: changes)
         }
     }
 }
