@@ -291,10 +291,9 @@ extension OperationDetailsInteractor: OperationDetailsInteractorInputProtocol {
     func setup() {
         provideModel(overridingBy: nil)
 
-        transactionProvider = subscribeToTransaction(
-            for: txData.transactionId,
-            chainId: chain.chainId
-        )
+        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+        let identifier = TransactionHistoryItem.createIdentifier(from: txData.transactionId, source: source)
+        transactionProvider = subscribeToTransaction(for: identifier, chainId: chain.chainId)
     }
 }
 

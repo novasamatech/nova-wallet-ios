@@ -24,6 +24,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private(set) var availableChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var enabledChains: [ChainModel.Id: ChainModel] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -57,49 +58,123 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         crowdloanChainIds = .init()
     }
 
+    private func convertToAccountDependentChanges(
+        _ changes: [DataProviderChange<ChainModel>],
+        selectedWallet: MetaAccountModel
+    ) -> [DataProviderChange<ChainModel>] {
+        changes.filter { change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                return selectedWallet.fetch(for: newItem.accountRequest()) != nil ? true : false
+            case .delete:
+                return true
+            }
+        }
+    }
+
+    private func convertToAssetEnabledChanges(
+        _ changes: [DataProviderChange<ChainModel>],
+        allEnabledChains: [ChainModel.Id: ChainModel]
+    ) -> [DataProviderChange<ChainModel>] {
+        changes.compactMap { change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                let exists = allEnabledChains[newItem.chainId] != nil
+
+                let enabledAssets = newItem.assets.filter { $0.enabled }
+                let updatedChain = newItem.byChanging(assets: Set(enabledAssets))
+                let hasEnabledAssets = !enabledAssets.isEmpty
+
+                if !exists, hasEnabledAssets {
+                    return .insert(newItem: updatedChain)
+                } else if exists, hasEnabledAssets {
+                    return .update(newItem: updatedChain)
+                } else if exists, !hasEnabledAssets {
+                    return .delete(deletedIdentifier: updatedChain.chainId)
+                } else {
+                    return nil
+                }
+
+            case let .delete(deletedIdentifier):
+                let exists = allEnabledChains[deletedIdentifier] != nil
+
+                if exists {
+                    return .delete(deletedIdentifier: deletedIdentifier)
+                } else {
+                    return nil
+                }
+            }
+        }
+    }
+
     private func handle(changes: [DataProviderChange<ChainModel>]) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
 
-        let accountDependentChanges = changes.filter { change in
-            switch change {
-            case let .insert(newItem), let .update(newItem):
-                return selectedMetaAccount.fetch(for: newItem.accountRequest()) != nil ? true : false
-            case .delete:
-                return true
-            }
-        }
+        let accountDependentChanges = convertToAccountDependentChanges(changes, selectedWallet: selectedMetaAccount)
+        let assetDependentChanges = convertToAssetEnabledChanges(
+            accountDependentChanges,
+            allEnabledChains: enabledChains
+        )
 
-        basePresenter?.didReceiveChainModelChanges(accountDependentChanges)
-        applyChanges(allChanges: changes, accountDependentChanges: accountDependentChanges)
+        basePresenter?.didReceiveChainModelChanges(assetDependentChanges)
+        applyChanges(allChanges: changes, enabledChainChanges: assetDependentChanges)
     }
 
     func applyChanges(
         allChanges: [DataProviderChange<ChainModel>],
-        accountDependentChanges: [DataProviderChange<ChainModel>]
+        enabledChainChanges: [DataProviderChange<ChainModel>]
     ) {
-        updateAvailableChains(from: allChanges)
-        updateAccountInfoSubscription(from: accountDependentChanges)
+        availableChains = allChanges.mergeToDict(availableChains)
+        enabledChains = enabledChainChanges.mergeToDict(enabledChains)
+
+        updateAssetBalanceSubscription(from: enabledChainChanges)
         updatePriceSubscription(from: allChanges)
-        updateCrowdloansSubscription(from: Array(availableChains.values))
+        updateCrowdloansSubscription(from: Array(enabledChains.values))
     }
 
-    func updateAvailableChains(from changes: [DataProviderChange<ChainModel>]) {
-        for change in changes {
-            switch change {
-            case let .insert(newItem), let .update(newItem):
-                availableChains[newItem.chainId] = newItem
-            case let .delete(deletedIdentifier):
-                availableChains[deletedIdentifier] = nil
-            }
-        }
-    }
+    func resetWallet() {
+        clearAccountSubscriptions()
+        clearCrowdloansSubscription()
 
-    func updateAccountInfoSubscription(from changes: [DataProviderChange<ChainModel>]) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
+
+        let changes = availableChains.values.map { DataProviderChange.insert(newItem: $0) }
+
+        enabledChains = [:]
+        availableChains = [:]
+
+        let accountDependentChanges = convertToAccountDependentChanges(changes, selectedWallet: selectedMetaAccount)
+        let assetDependentChanges = convertToAssetEnabledChanges(
+            accountDependentChanges,
+            allEnabledChains: enabledChains
+        )
+
+        basePresenter?.didReceiveChainModelChanges(assetDependentChanges)
+
+        didResetWallet(allChanges: changes, enabledChainChanges: assetDependentChanges)
+    }
+
+    func didResetWallet(
+        allChanges: [DataProviderChange<ChainModel>],
+        enabledChainChanges: [DataProviderChange<ChainModel>]
+    ) {
+        availableChains = allChanges.mergeToDict(availableChains)
+        enabledChains = enabledChainChanges.mergeToDict(enabledChains)
+
+        updateAssetBalanceSubscription(from: enabledChainChanges)
+        updateCrowdloansSubscription(from: Array(enabledChains.values))
+    }
+
+    func updateAssetBalanceSubscription(from changes: [DataProviderChange<ChainModel>]) {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
+        let previousMappingIds = Set(assetBalanceIdMapping.keys)
 
         assetBalanceIdMapping = changes.reduce(into: assetBalanceIdMapping) { result, change in
             switch change {
@@ -126,6 +201,14 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
                 }
             case let .delete(deletedIdentifier):
                 result = result.filter { $0.value.chainId != deletedIdentifier }
+            }
+        }
+
+        let newMappingKeys = Set(assetBalanceIdMapping.keys)
+
+        for newKey in newMappingKeys {
+            if !previousMappingIds.contains(newKey), let accountId = assetBalanceIdMapping[newKey]?.accountId {
+                assetBalanceSubscriptions[accountId] = nil
             }
         }
 
@@ -360,7 +443,9 @@ extension AssetListBaseInteractor: CrowdloanContributionLocalSubscriptionHandler
         guard let chainAccountId = selectedMetaAccount.fetch(
             for: chain.accountRequest()
         )?.accountId, chainAccountId == accountId else {
-            logger?.warning("Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different")
+            logger?.warning(
+                "Crowdloans updates can't be handled because account for selected wallet for chain: \(chain.name) is different"
+            )
             return
         }
 

@@ -78,7 +78,7 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         let assetModel = asset.assetModel
         let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
 
-        let assetInfo = assetModel.displayInfo(with: chain.icon)
+        let assetInfo = assetModel.displayInfo
 
         let priceData: PriceData?
 

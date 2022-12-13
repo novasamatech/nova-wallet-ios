@@ -63,13 +63,14 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
         let chainAssetId = ChainAssetId(chainId: originChainAsset.chain.chainId, assetId: utilityAsset.assetId)
 
         persistExtrinsicService.saveExtrinsic(
+            source: .substrate,
             chainAssetId: chainAssetId,
             details: details,
             runningIn: .main
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.eventCenter.notify(with: WalletNewTransactionInserted())
+                self?.eventCenter.notify(with: WalletTransactionListUpdated())
                 self?.submitionPresenter?.didCompleteSubmition()
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
