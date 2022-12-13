@@ -19,7 +19,7 @@ final class Gov1LocalMappingFactory {
             ayes: referendum.tally.ayes,
             nays: referendum.tally.nays,
             turnout: referendum.tally.turnout,
-            electorate: additionalInfo.totalIssuance,
+            electorate: additionalInfo.electorate,
             thresholdFunction: Gov1DecidingFunction(thresholdType: referendum.threshold)
         )
 
