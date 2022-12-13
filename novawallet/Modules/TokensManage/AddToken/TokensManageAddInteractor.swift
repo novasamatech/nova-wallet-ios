@@ -97,8 +97,7 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
             let mapOperation = ClosureOperation<Void> {
                 if
                     let json = try? fetchOperation.extractNoCancellableResultData(),
-                    let totalSupply = EthereumRpcResultParser.parseUnsignedIntOrNil(from: .success(json), bits: 256),
-                    totalSupply > 0 {
+                    EthereumRpcResultParser.parseUnsignedIntOrNil(from: .success(json), bits: 256) != nil {
                     return
                 }
 

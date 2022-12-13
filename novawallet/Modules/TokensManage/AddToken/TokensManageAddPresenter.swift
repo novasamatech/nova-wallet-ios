@@ -82,6 +82,16 @@ final class TokensManageAddPresenter {
 
         interactor.provideDetails(for: partialAddress)
     }
+
+    private func constructEvmAddress() -> AccountAddress? {
+        let optEvmAccountId = try? partialAddress?.toAccountId(using: .ethereum)
+
+        guard optEvmAccountId != nil else {
+            return nil
+        }
+
+        return partialAddress
+    }
 }
 
 extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
@@ -108,7 +118,7 @@ extension TokensManageAddPresenter: TokensManageAddPresenterProtocol {
     }
 
     func confirmTokenAdd() {
-        guard let contractAddress = partialAddress, (try? contractAddress.toAccountId(using: .ethereum)) != nil else {
+        guard let contractAddress = constructEvmAddress() else {
             if let view = view {
                 wireframe.presentInvalidContractAddress(from: view, locale: localizationManager.selectedLocale)
             }
