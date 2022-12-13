@@ -69,7 +69,7 @@ struct SupportAndVotesLocal {
     let ayes: BigUInt
     let nays: BigUInt
     let support: BigUInt
-    let totalIssuance: BigUInt
+    let electorate: BigUInt
 
     /// fraction of ayes
     var approvalFraction: Decimal? {
@@ -85,7 +85,7 @@ struct SupportAndVotesLocal {
     /// fraction of voted tokens
     var supportFraction: Decimal {
         guard
-            let totalDecimal = Decimal(totalIssuance), totalDecimal > 0,
+            let totalDecimal = Decimal(electorate), totalDecimal > 0,
             let supportDecimal = Decimal(support) else {
             return 0.0
         }

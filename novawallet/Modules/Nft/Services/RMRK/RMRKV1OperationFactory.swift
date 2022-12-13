@@ -7,9 +7,9 @@ protocol RMRKV1NftOperationFactoryProtocol {
 }
 
 final class RMRKV1OperationFactory: BaseFetchOperationFactory {
-    static let accountPath = "/account"
+    static let accountPath = "/account-rmrk1"
     static let collectionPath = "/collection"
-    static let baseURL = URL(string: "https://singular.rmrk.app/api/rmrk1")!
+    static let baseURL = URL(string: "https://singular.rmrk-api.xyz/api")!
 }
 
 extension RMRKV1OperationFactory: RMRKV1NftOperationFactoryProtocol {
@@ -19,7 +19,11 @@ extension RMRKV1OperationFactory: RMRKV1NftOperationFactoryProtocol {
     }
 
     func fetchCollection(for identifier: String) -> BaseOperation<[RMRKV1Collection]> {
-        let url = Self.baseURL.appendingPathComponent(Self.collectionPath).appendingPathComponent(identifier)
+        guard let collectionBaseURL = URL(string: "https://singular.rmrk.app/api/rmrk1") else {
+            return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
+        }
+
+        let url = collectionBaseURL.appendingPathComponent(Self.collectionPath).appendingPathComponent(identifier)
         return createFetchOperation(from: url, shouldUseCache: false)
     }
 }

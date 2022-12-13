@@ -24,7 +24,7 @@ extension ReferendumStateLocal {
     var electorate: BigUInt? {
         switch voting {
         case let .supportAndVotes(model):
-            return model.totalIssuance
+            return model.electorate
         case let .threshold(model):
             return model.electorate
         case .none:

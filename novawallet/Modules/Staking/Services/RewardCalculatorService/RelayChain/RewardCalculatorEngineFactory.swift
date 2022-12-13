@@ -31,7 +31,7 @@ final class RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol
             let issuancePerYear: Decimal = 30_000_000
             let treasuryPercentage: Decimal = 0.1
 
-            return UniformCurveRewardEngine(
+            return AlephZeroRewardEngine(
                 chainId: chainId,
                 assetPrecision: assetPrecision,
                 totalIssuance: totalIssuance,
