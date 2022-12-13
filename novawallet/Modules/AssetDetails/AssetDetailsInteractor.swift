@@ -50,30 +50,13 @@ final class AssetDetailsInteractor {
         }
     }
 
-    private var isTransfersEnable: Bool {
-        if let type = chainAsset.asset.type {
-            switch AssetType(rawValue: type) {
-            case .statemine, .none, .evm:
-                return true
-            case .orml:
-                if let extras = try? chainAsset.asset.typeExtras?.map(to: OrmlTokenExtras.self) {
-                    return extras.transfersEnabled ?? true
-                } else {
-                    return false
-                }
-            }
-        } else {
-            return true
-        }
-    }
-
     private func setAvailableOperations() {
         guard let accountId = accountId else {
             return
         }
         var operations: AssetDetailsOperation = .init()
-
-        if isTransfersEnable {
+        let isTransfersEnable = try? assetMapper.transfersEnabled()
+        if isTransfersEnable == true {
             operations.insert(.send)
         }
 
