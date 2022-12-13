@@ -52,13 +52,14 @@ final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
         details: PersistTransferDetails
     ) {
         persistExtrinsicService.saveTransfer(
+            source: .substrate,
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             details: details,
             runningIn: .main
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.eventCenter.notify(with: WalletNewTransactionInserted())
+                self?.eventCenter.notify(with: WalletTransactionListUpdated())
                 self?.submitionPresenter?.didCompleteSubmition()
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)

@@ -2,17 +2,26 @@ import Foundation
 import RobinHood
 import CoreData
 
-extension CDTransactionHistoryItem: CoreDataCodable {
+extension CDTransactionItem: CoreDataCodable {
     public func populate(from decoder: Decoder, using _: NSManagedObjectContext) throws {
         let container = try decoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
+        let sourceValue = try container.decode(TransactionHistoryItemSource.self, forKey: .source)
+        source = sourceValue.rawValue
         chainId = try container.decode(String.self, forKey: .chainId)
-        assetId = try container.decode(Int32.self, forKey: .assetId)
-        identifier = try container.decode(String.self, forKey: .txHash)
+
+        let assetId = try container.decode(UInt32.self, forKey: .assetId)
+        self.assetId = Int32(bitPattern: assetId)
+
+        let hash = try container.decode(String.self, forKey: .txHash)
+        txHash = hash
+        identifier = TransactionHistoryItem.createIdentifier(from: hash, source: sourceValue)
+
         sender = try container.decode(String.self, forKey: .sender)
         receiver = try container.decodeIfPresent(String.self, forKey: .receiver)
         amountInPlank = try container.decodeIfPresent(String.self, forKey: .amountInPlank)
         status = try container.decode(Int16.self, forKey: .status)
+
         timestamp = try container.decode(Int64.self, forKey: .timestamp)
 
         if let fee = try container.decodeIfPresent(String.self, forKey: .fee) {
@@ -41,9 +50,10 @@ extension CDTransactionHistoryItem: CoreDataCodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
+        try container.encodeIfPresent(TransactionHistoryItemSource(rawValue: source), forKey: .source)
         try container.encodeIfPresent(chainId, forKey: .chainId)
-        try container.encode(assetId, forKey: .assetId)
-        try container.encodeIfPresent(identifier, forKey: .txHash)
+        try container.encode(UInt32(bitPattern: assetId), forKey: .assetId)
+        try container.encodeIfPresent(txHash, forKey: .txHash)
         try container.encodeIfPresent(sender, forKey: .sender)
         try container.encodeIfPresent(receiver, forKey: .receiver)
         try container.encodeIfPresent(amountInPlank, forKey: .amountInPlank)

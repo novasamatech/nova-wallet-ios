@@ -756,6 +756,20 @@ public class MockJSONRPCSubscribing: JSONRPCSubscribing, Cuckoo.ProtocolMock {
         
     }
     
+    
+    
+    public var unsubscribeMethod: String {
+        get {
+            return cuckoo_manager.getter("unsubscribeMethod",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.unsubscribeMethod)
+        }
+        
+    }
+    
 
     
 
@@ -819,6 +833,11 @@ public class MockJSONRPCSubscribing: JSONRPCSubscribing, Cuckoo.ProtocolMock {
 	    }
 	    
 	    
+	    var unsubscribeMethod: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockJSONRPCSubscribing, String> {
+	        return .init(manager: cuckoo_manager, name: "unsubscribeMethod")
+	    }
+	    
+	    
 	    func handle<M1: Cuckoo.Matchable>(data: M1) -> Cuckoo.ProtocolStubNoReturnThrowingFunction<(Data)> where M1.MatchedType == Data {
 	        let matchers: [Cuckoo.ParameterMatcher<(Data)>] = [wrap(matchable: data) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCSubscribing.self, method: "handle(data: Data) throws", parameterMatchers: matchers))
@@ -861,6 +880,11 @@ public class MockJSONRPCSubscribing: JSONRPCSubscribing, Cuckoo.ProtocolMock {
 	    
 	    var remoteId: Cuckoo.VerifyOptionalProperty<String> {
 	        return .init(manager: cuckoo_manager, name: "remoteId", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var unsubscribeMethod: Cuckoo.VerifyReadOnlyProperty<String> {
+	        return .init(manager: cuckoo_manager, name: "unsubscribeMethod", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
 	
@@ -917,6 +941,15 @@ public class JSONRPCSubscribingStub: JSONRPCSubscribing {
         }
         
         set { }
+        
+    }
+        
+    
+    
+    public var unsubscribeMethod: String {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (String).self)
+        }
         
     }
     
@@ -980,16 +1013,16 @@ public class MockJSONRPCEngine: JSONRPCEngine, Cuckoo.ProtocolMock {
     
     
     
-    public func subscribe<P: Encodable, T: Decodable>(_ method: String, params: P?, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16 {
+    public func subscribe<P: Encodable, T: Decodable>(_ method: String, params: P?, unsubscribeMethod: String, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16 {
         
-    return try cuckoo_manager.callThrows("subscribe(_: String, params: P?, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16",
-            parameters: (method, params, updateClosure, failureClosure),
-            escapingParameters: (method, params, updateClosure, failureClosure),
+    return try cuckoo_manager.callThrows("subscribe(_: String, params: P?, unsubscribeMethod: String, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16",
+            parameters: (method, params, unsubscribeMethod, updateClosure, failureClosure),
+            escapingParameters: (method, params, unsubscribeMethod, updateClosure, failureClosure),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.subscribe(method, params: params, updateClosure: updateClosure, failureClosure: failureClosure))
+            defaultCall: __defaultImplStub!.subscribe(method, params: params, unsubscribeMethod: unsubscribeMethod, updateClosure: updateClosure, failureClosure: failureClosure))
         
     }
     
@@ -1008,6 +1041,51 @@ public class MockJSONRPCEngine: JSONRPCEngine, Cuckoo.ProtocolMock {
         
     }
     
+    
+    
+    public func addBatchCallMethod<P: Encodable>(_ method: String, params: P?, batchId: JSONRPCBatchId) throws {
+        
+    return try cuckoo_manager.callThrows("addBatchCallMethod(_: String, params: P?, batchId: JSONRPCBatchId) throws",
+            parameters: (method, params, batchId),
+            escapingParameters: (method, params, batchId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.addBatchCallMethod(method, params: params, batchId: batchId))
+        
+    }
+    
+    
+    
+    public func submitBatch(for batchId: JSONRPCBatchId, options: JSONRPCOptions, completion closure: (([Result<JSON, Error>]) -> Void)?) throws -> UInt16 {
+        
+    return try cuckoo_manager.callThrows("submitBatch(for: JSONRPCBatchId, options: JSONRPCOptions, completion: (([Result<JSON, Error>]) -> Void)?) throws -> UInt16",
+            parameters: (batchId, options, closure),
+            escapingParameters: (batchId, options, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.submitBatch(for: batchId, options: options, completion: closure))
+        
+    }
+    
+    
+    
+    public func clearBatch(for batchId: JSONRPCBatchId)  {
+        
+    return cuckoo_manager.call("clearBatch(for: JSONRPCBatchId)",
+            parameters: (batchId),
+            escapingParameters: (batchId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.clearBatch(for: batchId))
+        
+    }
+    
 
 	public struct __StubbingProxy_JSONRPCEngine: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -1022,14 +1100,29 @@ public class MockJSONRPCEngine: JSONRPCEngine, Cuckoo.ProtocolMock {
 	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCEngine.self, method: "callMethod(_: String, params: P?, options: JSONRPCOptions, completion: ((Result<T, Error>) -> Void)?) throws -> UInt16", parameterMatchers: matchers))
 	    }
 	    
-	    func subscribe<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, P: Encodable, T: Decodable>(_ method: M1, params: M2, updateClosure: M3, failureClosure: M4) -> Cuckoo.ProtocolStubThrowingFunction<(String, P?, (T) -> Void, (Error, Bool) -> Void), UInt16> where M1.MatchedType == String, M2.OptionalMatchedType == P, M3.MatchedType == (T) -> Void, M4.MatchedType == (Error, Bool) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(String, P?, (T) -> Void, (Error, Bool) -> Void)>] = [wrap(matchable: method) { $0.0 }, wrap(matchable: params) { $0.1 }, wrap(matchable: updateClosure) { $0.2 }, wrap(matchable: failureClosure) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCEngine.self, method: "subscribe(_: String, params: P?, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16", parameterMatchers: matchers))
+	    func subscribe<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable, P: Encodable, T: Decodable>(_ method: M1, params: M2, unsubscribeMethod: M3, updateClosure: M4, failureClosure: M5) -> Cuckoo.ProtocolStubThrowingFunction<(String, P?, String, (T) -> Void, (Error, Bool) -> Void), UInt16> where M1.MatchedType == String, M2.OptionalMatchedType == P, M3.MatchedType == String, M4.MatchedType == (T) -> Void, M5.MatchedType == (Error, Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, P?, String, (T) -> Void, (Error, Bool) -> Void)>] = [wrap(matchable: method) { $0.0 }, wrap(matchable: params) { $0.1 }, wrap(matchable: unsubscribeMethod) { $0.2 }, wrap(matchable: updateClosure) { $0.3 }, wrap(matchable: failureClosure) { $0.4 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCEngine.self, method: "subscribe(_: String, params: P?, unsubscribeMethod: String, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16", parameterMatchers: matchers))
 	    }
 	    
 	    func cancelForIdentifier<M1: Cuckoo.Matchable>(_ identifier: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(UInt16)> where M1.MatchedType == UInt16 {
 	        let matchers: [Cuckoo.ParameterMatcher<(UInt16)>] = [wrap(matchable: identifier) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCEngine.self, method: "cancelForIdentifier(_: UInt16)", parameterMatchers: matchers))
+	    }
+	    
+	    func addBatchCallMethod<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, P: Encodable>(_ method: M1, params: M2, batchId: M3) -> Cuckoo.ProtocolStubNoReturnThrowingFunction<(String, P?, JSONRPCBatchId)> where M1.MatchedType == String, M2.OptionalMatchedType == P, M3.MatchedType == JSONRPCBatchId {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, P?, JSONRPCBatchId)>] = [wrap(matchable: method) { $0.0 }, wrap(matchable: params) { $0.1 }, wrap(matchable: batchId) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCEngine.self, method: "addBatchCallMethod(_: String, params: P?, batchId: JSONRPCBatchId) throws", parameterMatchers: matchers))
+	    }
+	    
+	    func submitBatch<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(for batchId: M1, options: M2, completion closure: M3) -> Cuckoo.ProtocolStubThrowingFunction<(JSONRPCBatchId, JSONRPCOptions, (([Result<JSON, Error>]) -> Void)?), UInt16> where M1.MatchedType == JSONRPCBatchId, M2.MatchedType == JSONRPCOptions, M3.OptionalMatchedType == (([Result<JSON, Error>]) -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(JSONRPCBatchId, JSONRPCOptions, (([Result<JSON, Error>]) -> Void)?)>] = [wrap(matchable: batchId) { $0.0 }, wrap(matchable: options) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCEngine.self, method: "submitBatch(for: JSONRPCBatchId, options: JSONRPCOptions, completion: (([Result<JSON, Error>]) -> Void)?) throws -> UInt16", parameterMatchers: matchers))
+	    }
+	    
+	    func clearBatch<M1: Cuckoo.Matchable>(for batchId: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(JSONRPCBatchId)> where M1.MatchedType == JSONRPCBatchId {
+	        let matchers: [Cuckoo.ParameterMatcher<(JSONRPCBatchId)>] = [wrap(matchable: batchId) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockJSONRPCEngine.self, method: "clearBatch(for: JSONRPCBatchId)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1055,15 +1148,33 @@ public class MockJSONRPCEngine: JSONRPCEngine, Cuckoo.ProtocolMock {
 	    }
 	    
 	    @discardableResult
-	    func subscribe<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, P: Encodable, T: Decodable>(_ method: M1, params: M2, updateClosure: M3, failureClosure: M4) -> Cuckoo.__DoNotUse<(String, P?, (T) -> Void, (Error, Bool) -> Void), UInt16> where M1.MatchedType == String, M2.OptionalMatchedType == P, M3.MatchedType == (T) -> Void, M4.MatchedType == (Error, Bool) -> Void {
-	        let matchers: [Cuckoo.ParameterMatcher<(String, P?, (T) -> Void, (Error, Bool) -> Void)>] = [wrap(matchable: method) { $0.0 }, wrap(matchable: params) { $0.1 }, wrap(matchable: updateClosure) { $0.2 }, wrap(matchable: failureClosure) { $0.3 }]
-	        return cuckoo_manager.verify("subscribe(_: String, params: P?, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func subscribe<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable, P: Encodable, T: Decodable>(_ method: M1, params: M2, unsubscribeMethod: M3, updateClosure: M4, failureClosure: M5) -> Cuckoo.__DoNotUse<(String, P?, String, (T) -> Void, (Error, Bool) -> Void), UInt16> where M1.MatchedType == String, M2.OptionalMatchedType == P, M3.MatchedType == String, M4.MatchedType == (T) -> Void, M5.MatchedType == (Error, Bool) -> Void {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, P?, String, (T) -> Void, (Error, Bool) -> Void)>] = [wrap(matchable: method) { $0.0 }, wrap(matchable: params) { $0.1 }, wrap(matchable: unsubscribeMethod) { $0.2 }, wrap(matchable: updateClosure) { $0.3 }, wrap(matchable: failureClosure) { $0.4 }]
+	        return cuckoo_manager.verify("subscribe(_: String, params: P?, unsubscribeMethod: String, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
 	    func cancelForIdentifier<M1: Cuckoo.Matchable>(_ identifier: M1) -> Cuckoo.__DoNotUse<(UInt16), Void> where M1.MatchedType == UInt16 {
 	        let matchers: [Cuckoo.ParameterMatcher<(UInt16)>] = [wrap(matchable: identifier) { $0 }]
 	        return cuckoo_manager.verify("cancelForIdentifier(_: UInt16)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func addBatchCallMethod<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, P: Encodable>(_ method: M1, params: M2, batchId: M3) -> Cuckoo.__DoNotUse<(String, P?, JSONRPCBatchId), Void> where M1.MatchedType == String, M2.OptionalMatchedType == P, M3.MatchedType == JSONRPCBatchId {
+	        let matchers: [Cuckoo.ParameterMatcher<(String, P?, JSONRPCBatchId)>] = [wrap(matchable: method) { $0.0 }, wrap(matchable: params) { $0.1 }, wrap(matchable: batchId) { $0.2 }]
+	        return cuckoo_manager.verify("addBatchCallMethod(_: String, params: P?, batchId: JSONRPCBatchId) throws", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func submitBatch<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(for batchId: M1, options: M2, completion closure: M3) -> Cuckoo.__DoNotUse<(JSONRPCBatchId, JSONRPCOptions, (([Result<JSON, Error>]) -> Void)?), UInt16> where M1.MatchedType == JSONRPCBatchId, M2.MatchedType == JSONRPCOptions, M3.OptionalMatchedType == (([Result<JSON, Error>]) -> Void) {
+	        let matchers: [Cuckoo.ParameterMatcher<(JSONRPCBatchId, JSONRPCOptions, (([Result<JSON, Error>]) -> Void)?)>] = [wrap(matchable: batchId) { $0.0 }, wrap(matchable: options) { $0.1 }, wrap(matchable: closure) { $0.2 }]
+	        return cuckoo_manager.verify("submitBatch(for: JSONRPCBatchId, options: JSONRPCOptions, completion: (([Result<JSON, Error>]) -> Void)?) throws -> UInt16", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func clearBatch<M1: Cuckoo.Matchable>(for batchId: M1) -> Cuckoo.__DoNotUse<(JSONRPCBatchId), Void> where M1.MatchedType == JSONRPCBatchId {
+	        let matchers: [Cuckoo.ParameterMatcher<(JSONRPCBatchId)>] = [wrap(matchable: batchId) { $0 }]
+	        return cuckoo_manager.verify("clearBatch(for: JSONRPCBatchId)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -1083,13 +1194,31 @@ public class JSONRPCEngineStub: JSONRPCEngine {
     
     
     
-    public func subscribe<P: Encodable, T: Decodable>(_ method: String, params: P?, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16  {
+    public func subscribe<P: Encodable, T: Decodable>(_ method: String, params: P?, unsubscribeMethod: String, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16  {
         return DefaultValueRegistry.defaultValue(for: (UInt16).self)
     }
     
     
     
     public func cancelForIdentifier(_ identifier: UInt16)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+    public func addBatchCallMethod<P: Encodable>(_ method: String, params: P?, batchId: JSONRPCBatchId) throws  {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+    public func submitBatch(for batchId: JSONRPCBatchId, options: JSONRPCOptions, completion closure: (([Result<JSON, Error>]) -> Void)?) throws -> UInt16  {
+        return DefaultValueRegistry.defaultValue(for: (UInt16).self)
+    }
+    
+    
+    
+    public func clearBatch(for batchId: JSONRPCBatchId)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
