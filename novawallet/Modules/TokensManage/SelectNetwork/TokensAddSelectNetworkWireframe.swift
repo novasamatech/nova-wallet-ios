@@ -1,7 +1,11 @@
 import Foundation
 
 final class TokensAddSelectNetworkWireframe: TokensAddSelectNetworkWireframeProtocol {
-    func showTokenAdd(from _: TokensAddSelectNetworkViewProtocol?, chain _: ChainModel) {
-        // TODO: There is a separate task
+    func showTokenAdd(from view: TokensAddSelectNetworkViewProtocol?, chain: ChainModel) {
+        guard let tokenAddView = TokensManageAddViewFactory.createView(for: chain) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(tokenAddView.controller, animated: true)
     }
 }
