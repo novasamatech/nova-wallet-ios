@@ -27,10 +27,16 @@ final class Gov2OperationFactory {
     }
 
     let requestFactory: StorageRequestFactoryProtocol
+    let commonOperationFactory: GovCommonOperationFactoryProtocol
     let operationQueue: OperationQueue
 
-    init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
+    init(
+        requestFactory: StorageRequestFactoryProtocol,
+        commonOperationFactory: GovCommonOperationFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
         self.requestFactory = requestFactory
+        self.commonOperationFactory = commonOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -115,43 +121,6 @@ final class Gov2OperationFactory {
         }
     }
 
-    func createElectorateWrapper(
-        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
-        from connection: JSONRPCEngine,
-        runtimeProvider _: RuntimeProviderProtocol,
-        blockHash: Data?
-    ) -> CompoundOperationWrapper<BigUInt> {
-        let totalWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
-            requestFactory.queryItem(
-                engine: connection,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .totalIssuance,
-                at: blockHash
-            )
-
-        let inactiveWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
-            requestFactory.queryItem(
-                engine: connection,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .inactiveIssuance,
-                at: blockHash
-            )
-
-        let mapOperation = ClosureOperation<BigUInt> {
-            let totalIssuance = try totalWrapper.targetOperation.extractResultData()?.value?.value ?? 0
-            let inactiveIssuance = (try? inactiveWrapper.targetOperation.extractResultData()?.value?.value) ?? 0
-
-            return totalIssuance > inactiveIssuance ? totalIssuance - inactiveIssuance : 0
-        }
-
-        mapOperation.addDependency(totalWrapper.targetOperation)
-        mapOperation.addDependency(inactiveWrapper.targetOperation)
-
-        let dependencies = totalWrapper.allOperations + inactiveWrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
-    }
-
     func createAdditionalInfoWrapper(
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol,
@@ -179,10 +148,10 @@ final class Gov2OperationFactory {
             }
         }
 
-        let electorateWrapper = createElectorateWrapper(
+        let electorateWrapper = commonOperationFactory.createElectorateWrapper(
             dependingOn: codingFactoryOperation,
-            from: connection,
-            runtimeProvider: runtimeProvider,
+            requestFactory: requestFactory,
+            connection: connection,
             blockHash: blockHash
         )
 
