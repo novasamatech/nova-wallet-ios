@@ -26,6 +26,10 @@ final class TokensManageViewLayout: UIView {
         return button
     }()
 
+    let contentView: UIView = .create {
+        $0.backgroundColor = .clear
+    }
+
     let tableView: UITableView = .create {
         $0.backgroundColor = .clear
         $0.separatorStyle = .none
@@ -45,19 +49,29 @@ final class TokensManageViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         addSubview(searchView)
 
         searchView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(TopCustomSearchView.preferredNavigationBarHeight)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(TopCustomSearchView.preferredBarHeight)
         }
 
-        addSubview(tableView)
+        contentView.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(searchView.snp.bottom)
-            make.bottom.equalToSuperview()
+            make.edges.equalToSuperview()
         }
+
+        tableView.contentInset = UIEdgeInsets(
+            top: TopCustomSearchView.preferredBarHeight,
+            left: 0,
+            bottom: 0,
+            right: 0
+        )
     }
 }
