@@ -47,8 +47,8 @@ class TextWithServiceInputView: TextInputView {
         pasteboardService.delegate = self
     }
 
-    override func applingActionWidth(for currentWidth: CGFloat) -> CGFloat {
-        let actionWidth = super.applingActionWidth(for: currentWidth)
+    override func applyingActionWidth(for currentWidth: CGFloat) -> CGFloat {
+        let actionWidth = super.applyingActionWidth(for: currentWidth)
 
         if !pasteButton.isHidden {
             return actionWidth + pasteButton.intrinsicContentSize.width
