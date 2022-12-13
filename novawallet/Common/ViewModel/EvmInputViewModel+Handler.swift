@@ -14,7 +14,7 @@ extension InputViewModel {
             processor: TrimmingCharacterProcessor(charset: CharacterSet.whitespacesAndNewlines)
         )
 
-        let viewModel = InputViewModel(inputHandler: inputHandler, placeholder: "0x..")
+        let viewModel = InputViewModel(inputHandler: inputHandler, placeholder: "0x...")
         return viewModel
     }
 
@@ -22,7 +22,7 @@ extension InputViewModel {
         let inputHandling = InputHandler(
             value: value,
             required: required,
-            maxLength: 12,
+            maxLength: 11,
             predicate: required ? NSPredicate.notEmpty : nil,
             processor: TrimmingCharacterProcessor(charset: .whitespaces)
         )
@@ -34,7 +34,7 @@ extension InputViewModel {
         let inputHandling = InputHandler(
             value: value,
             required: required,
-            maxLength: 3,
+            maxLength: 2,
             validCharacterSet: CharacterSet.decimalDigits,
             predicate: required ? NSPredicate.notEmpty : nil,
             processor: TrimmingCharacterProcessor(charset: .whitespaces)
