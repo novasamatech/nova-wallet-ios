@@ -74,6 +74,7 @@ final class GovernanceSharedState {
         case .governanceV2:
             let operationFactory = Gov2OperationFactory(
                 requestFactory: requestFactory,
+                commonOperationFactory: GovCommonOperationFactory(),
                 operationQueue: operationQueue
             )
 
@@ -93,6 +94,7 @@ final class GovernanceSharedState {
         case .governanceV1:
             let operationFactory = Gov1OperationFactory(
                 requestFactory: requestFactory,
+                commonOperationFactory: GovCommonOperationFactory(),
                 operationQueue: operationQueue
             )
 
