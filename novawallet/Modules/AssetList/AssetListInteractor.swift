@@ -52,30 +52,23 @@ final class AssetListInteractor: AssetListBaseInteractor {
         )
     }
 
-    private func resetWallet() {
-        clearAccountSubscriptions()
+    override func resetWallet() {
         clearNftSubscription()
         clearLocksSubscription()
-        clearCrowdloansSubscription()
-
-        guard let selectedMetaAccount = selectedWalletSettings.value else {
-            return
-        }
 
         providerWalletInfo()
 
-        let changes = availableChains.values.filter {
-            selectedMetaAccount.fetch(for: $0.accountRequest()) != nil
-        }.map {
-            DataProviderChange.insert(newItem: $0)
-        }
+        super.resetWallet()
+    }
 
-        presenter?.didReceiveChainModelChanges(changes)
+    override func didResetWallet(
+        allChanges: [DataProviderChange<ChainModel>],
+        enabledChainChanges: [DataProviderChange<ChainModel>]
+    ) {
+        super.didResetWallet(allChanges: allChanges, enabledChainChanges: enabledChainChanges)
 
-        updateAccountInfoSubscription(from: changes)
         setupNftSubscription(from: Array(availableChains.values))
-        updateLocksSubscription(from: changes)
-        updateCrowdloansSubscription(from: Array(availableChains.values))
+        updateLocksSubscription(from: enabledChainChanges)
     }
 
     private func clearLocksSubscription() {
@@ -110,13 +103,13 @@ final class AssetListInteractor: AssetListBaseInteractor {
 
     override func applyChanges(
         allChanges: [DataProviderChange<ChainModel>],
-        accountDependentChanges: [DataProviderChange<ChainModel>]
+        enabledChainChanges: [DataProviderChange<ChainModel>]
     ) {
-        super.applyChanges(allChanges: allChanges, accountDependentChanges: accountDependentChanges)
+        super.applyChanges(allChanges: allChanges, enabledChainChanges: enabledChainChanges)
 
         updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
-        updateLocksSubscription(from: allChanges)
+        updateLocksSubscription(from: enabledChainChanges)
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {

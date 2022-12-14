@@ -182,11 +182,11 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
         let optAccountId = getRecepientAccountId()
 
-        interactor.change(recepient: optAccountId)
-
         if optAccountId != nil {
             resetRecepientBalance()
         }
+
+        interactor.change(recepient: optAccountId)
 
         provideRecepientStateViewModel()
 

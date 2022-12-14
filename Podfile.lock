@@ -15,6 +15,7 @@ PODS:
     - SoraFoundation/NotificationHandlers (~> 1.0.0)
     - SoraFoundation/NumberProcessing (~> 1.0.0)
     - SoraUI (~> 1.11.0)
+  - CryptoSwift (1.5.1)
   - Cuckoo (1.7.1):
     - Cuckoo/Swift (= 1.7.1)
   - Cuckoo/Swift (1.7.1)
@@ -123,6 +124,13 @@ PODS:
     - BigInt (~> 5.0)
   - SwiftyBeaver (1.9.3)
   - TweetNacl (1.0.2)
+  - Web3Core (3.0.6):
+    - BigInt (~> 5.2.0)
+    - CryptoSwift (~> 1.5.1)
+    - secp256k1.c (~> 0.1)
+  - web3swift (3.0.6):
+    - Starscream (~> 4.0.4)
+    - Web3Core (~> 3.0.6)
   - xxHash-Swift (1.0.13)
 
 DEPENDENCIES:
@@ -141,18 +149,20 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.11.1`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.5`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.5.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `caa1c264e41d8ba5428db6c91b66a2d25154f341`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
   - SwiftyBeaver
+  - web3swift (from `https://github.com/web3swift-team/web3swift.git`, tag `3.0.6`)
 
 SPEC REPOS:
   trunk:
     - BigInt
     - Charts
     - CocoaLumberjack
+    - CryptoSwift
     - Cuckoo
     - FireMock
     - IrohaCrypto
@@ -173,6 +183,7 @@ SPEC REPOS:
     - SwiftLint
     - SwiftyBeaver
     - TweetNacl
+    - Web3Core
     - xxHash-Swift
 
 EXTERNAL SOURCES:
@@ -189,13 +200,16 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.5
   SubstrateSdk:
+    :commit: caa1c264e41d8ba5428db6c91b66a2d25154f341
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.5.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
+  web3swift:
+    :git: https://github.com/web3swift-team/web3swift.git
+    :tag: 3.0.6
 
 CHECKOUT OPTIONS:
   CDMarkdownKit:
@@ -211,14 +225,17 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.5
   SubstrateSdk:
+    :commit: caa1c264e41d8ba5428db6c91b66a2d25154f341
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.5.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
+  web3swift:
+    :git: https://github.com/web3swift-team/web3swift.git
+    :tag: 3.0.6
 
 SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
@@ -226,6 +243,7 @@ SPEC CHECKSUMS:
   Charts: 354f86803d11d9c35de280587fef50d1af063978
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   CommonWallet: 59fdbf5511d6fcdc38496db4baf425dd0cf29274
+  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
@@ -251,8 +269,10 @@ SPEC CHECKSUMS:
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
+  Web3Core: 4a62a109cac056915d2d5023606438c89e229a1e
+  web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: f0266fabfe6e7f6dfb62690262b3b1c8ab02bfba
+PODFILE CHECKSUM: ba0e80e9495d7a239fdcaf67699da02a45068114
 
 COCOAPODS: 1.11.3

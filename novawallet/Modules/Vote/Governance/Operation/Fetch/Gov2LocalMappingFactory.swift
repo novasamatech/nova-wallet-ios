@@ -24,7 +24,7 @@ final class Gov2LocalMappingFactory {
             ayes: status.tally.ayes,
             nays: status.tally.nays,
             support: status.tally.support,
-            totalIssuance: additionalInfo.totalIssuance,
+            electorate: additionalInfo.electorate,
             approvalFunction: approvalFunction,
             supportFunction: supportFunction
         )
@@ -74,7 +74,7 @@ final class Gov2LocalMappingFactory {
             ayes: status.tally.ayes,
             nays: status.tally.nays,
             support: status.tally.support,
-            totalIssuance: additionalInfo.totalIssuance,
+            electorate: additionalInfo.electorate,
             approvalFunction: approvalFunction,
             supportFunction: supportFunction
         )

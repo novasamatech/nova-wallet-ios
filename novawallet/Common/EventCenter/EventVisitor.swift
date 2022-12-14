@@ -5,7 +5,7 @@ protocol EventVisitorProtocol: AnyObject {
     func processSelectedAccountChanged(event: SelectedAccountChanged)
     func processSelectedUsernameChanged(event: SelectedUsernameChanged)
     func processSelectedConnectionChanged(event: SelectedConnectionChanged)
-    func processNewTransaction(event: WalletNewTransactionInserted)
+    func processTransactionHistoryUpdate(event: WalletTransactionListUpdated)
     func processPurchaseCompletion(event: PurchaseCompleted)
     func processTypeRegistryPrepared(event: TypeRegistryPrepared)
     func processEraStakersInfoChanged(event: EraStakersInfoChanged)
@@ -32,7 +32,7 @@ extension EventVisitorProtocol {
     func processChainAccountChanged(event _: ChainAccountChanged) {}
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {}
     func processSelectedConnectionChanged(event _: SelectedConnectionChanged) {}
-    func processNewTransaction(event _: WalletNewTransactionInserted) {}
+    func processTransactionHistoryUpdate(event _: WalletTransactionListUpdated) {}
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {}
     func processPurchaseCompletion(event _: PurchaseCompleted) {}
     func processTypeRegistryPrepared(event _: TypeRegistryPrepared) {}

@@ -23,6 +23,21 @@ extension MockConnection: ChainConnection {
 
     func disconnect(_ force: Bool) {}
 
+    func subscribe<P, T>(
+        _ method: String, params: P?,
+        unsubscribeMethod: String,
+        updateClosure: @escaping (T) -> Void,
+        failureClosure: @escaping (Error, Bool) -> Void
+    ) throws -> UInt16 where P : Encodable, T : Decodable {
+        try internalConnection.subscribe(
+            method,
+            params: params,
+            unsubscribeMethod: unsubscribeMethod,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure
+        )
+    }
+
     func callMethod<P, T>(_ method: String, params: P?, options: JSONRPCOptions, completion closure: ((Result<T, Error>) -> Void)?) throws -> UInt16 where P : Encodable, T : Decodable {
         try internalConnection.callMethod(
             method,
@@ -32,16 +47,35 @@ extension MockConnection: ChainConnection {
         )
     }
 
-    func subscribe<P, T>(_ method: String, params: P?, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16 where P : Encodable, T : Decodable {
-        try internalConnection.subscribe(
-            method,
-            params: params,
-            updateClosure: updateClosure,
-            failureClosure: failureClosure
+    func cancelForIdentifier(_ identifier: UInt16) {
+        internalConnection.cancelForIdentifier(identifier)
+    }
+
+    func submitBatch(
+        for batchId: JSONRPCBatchId,
+        options: JSONRPCOptions,
+        completion closure: (([Result<JSON, Error>]) -> Void)?
+    ) throws -> UInt16 {
+        try internalConnection.submitBatch(
+            for: batchId,
+            options: options,
+            completion: closure
         )
     }
 
-    func cancelForIdentifier(_ identifier: UInt16) {
-        internalConnection.cancelForIdentifier(identifier)
+    func addBatchCallMethod<P>(
+        _ method: String,
+        params: P?,
+        batchId: JSONRPCBatchId
+    ) throws where P : Encodable {
+        try internalConnection.addBatchCallMethod(
+            method,
+            params: params,
+            batchId: batchId
+        )
+    }
+
+    func clearBatch(for batchId: JSONRPCBatchId) {
+        internalConnection.clearBatch(for: batchId)
     }
 }
