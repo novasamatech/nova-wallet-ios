@@ -19,6 +19,12 @@ final class EvmAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatingService
         super.init(selectedAccount: selectedAccount, chainRegistry: chainRegistry, logger: logger)
     }
 
+    override func clearSubscriptions(for chainId: ChainModel.Id) {
+        super.clearSubscriptions(for: chainId)
+
+        subscribedAssets[chainId] = nil
+    }
+
     private func createSubscription(
         accountId: AccountId,
         chain: ChainModel,
@@ -68,7 +74,6 @@ final class EvmAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatingService
         }
 
         removeSubscription(for: chain.chainId)
-        subscribedAssets[chain.chainId] = nil
 
         guard !newAssetIds.isEmpty else {
             return
