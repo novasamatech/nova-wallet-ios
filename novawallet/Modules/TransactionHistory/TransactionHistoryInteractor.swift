@@ -5,9 +5,26 @@ import CommonWallet
 
 final class TransactionHistoryInteractor {
     weak var presenter: TransactionHistoryInteractorOutputProtocol!
-    let historyFacade: AssetHistoryFactoryFacadeProtocol = AssetHistoryFacade()
-    let repositoryFactory: SubstrateRepositoryFactoryProtocol = SubstrateRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-    let dataProvider: SingleValueProvider<AssetTransactionPageData>
+    let historyFacade: AssetHistoryFactoryFacadeProtocol
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    // let dataProvider: SingleValueProvider<AssetTransactionPageData>
+    let operationQueue: OperationQueue
+    let chainAsset: ChainAsset
+    let metaAccount: MetaAccountModel
+
+    init(
+        chainAsset: ChainAsset,
+        metaAccount: MetaAccountModel,
+        operationQueue: OperationQueue,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        historyFacade: AssetHistoryFactoryFacadeProtocol
+    ) {
+        self.chainAsset = chainAsset
+        self.metaAccount = metaAccount
+        self.operationQueue = operationQueue
+        self.repositoryFactory = repositoryFactory
+        self.historyFacade = historyFacade
+    }
 
     private func createAssetHistory(
         for address: AccountAddress,
@@ -255,28 +272,20 @@ final class TransactionHistoryInteractor {
             )
         }
     }
-    
+
     func fetchTransactionHistoryOperation(
         _ request: WalletHistoryRequest,
         pagination: Pagination
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
-        let mayBeUserAssets = request.assets?.filter { $0 != totalPriceId }
+        let chain = chainAsset.chain
+        let asset = chainAsset.asset
 
-        // The history only works for asset detals now
-        guard let userAssets = mayBeUserAssets,
-              userAssets.count == 1,
-              let walletAssetId = userAssets.first,
-              let chainAssetId = ChainAssetId(walletId: walletAssetId),
-              let chain = chains[chainAssetId.chainId],
-              let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-              let utilityAsset = chain.utilityAssets().first,
-              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress()
-        else {
+        guard let utilityAsset = chain.utilityAssets().first,
+              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress() else {
             return createEmptyHistoryResponseOperation()
         }
 
         let filter = WalletHistoryFilter(string: request.filter)
-
         let assetFilter: WalletHistoryFilter
 
         if asset.assetId != utilityAsset.assetId {
@@ -292,15 +301,15 @@ final class TransactionHistoryInteractor {
             filter: assetFilter
         )
     }
-    
-    func fetchTransactionHistory(for filter: WalletHistoryRequest,
-                                 pagination: Pagination,
-                                 runCompletionIn queue: DispatchQueue,
-                                 completionBlock: @escaping TransactionHistoryBlock)
-        -> CancellableCall {
 
-        let operationWrapper = operationFactory.fetchTransactionHistoryOperation(filter,
-                                                                                 pagination: pagination)
+    func fetchTransactionHistory(
+        for filter: WalletHistoryRequest,
+        pagination: Pagination,
+        runCompletionIn queue: DispatchQueue,
+        completionBlock: @escaping (Result<AssetTransactionPageData?, Error>?) -> Void
+    )
+        -> CancellableCall {
+        let operationWrapper = fetchTransactionHistoryOperation(filter, pagination: pagination)
 
         operationWrapper.targetOperation.completionBlock = {
             queue.async {
@@ -308,76 +317,51 @@ final class TransactionHistoryInteractor {
             }
         }
 
-        operationQueue.addOperations(operationWrapper.allOperations,
-                                     waitUntilFinished: false)
+        operationQueue.addOperations(
+            operationWrapper.allOperations,
+            waitUntilFinished: false
+        )
 
         return operationWrapper
     }
-    
+
+    var currentFetchOpeartion: CancellableCall?
 }
 
 extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtocol {
-    
-    func setup() {
-        setupDataProvider()
-    }
-    
-    func refresh() {
-        
-    }
-    
-    func loadNext(for filter: WalletHistoryRequest,
-                  pagination: Pagination) {
-        fetchTransactionHistory(for: filter,
-                                pagination: pagination,
-                                runCompletionIn: .main) { [weak self] (optionalResult) in
+    func setup() {}
+
+    func refresh() {}
+
+    func loadNext(
+        for filter: WalletHistoryRequest,
+        pagination: Pagination
+    ) {
+        guard currentFetchOpeartion == nil else {
+            return
+        }
+
+        let fetch = fetchTransactionHistory(
+            for: filter,
+            pagination: pagination,
+            runCompletionIn: .main
+        ) { [weak self] optionalResult in
+            guard let self = self else {
+                return
+            }
+
             if let result = optionalResult {
                 switch result {
-                case .success(let pageData):
-                    let loadedData = pageData ??
-                    AssetTransactionPageData(transactions: [])
-                    self?.presenter.handle
-                    
-                    handleNext(transactionData: loadedData,
-                                     for: pagination)
-                case .failure(let error):
-                    self?.handleNext(error: error, for: pagination)
+                case let .success(pageData):
+                    let loadedData = pageData ?? AssetTransactionPageData(transactions: [])
+                    self.presenter.didReceive(transactionData: loadedData, for: pagination)
+                case let .failure(error):
+                    self.presenter.didReceive(error: error, for: pagination)
                 }
             }
-        }
-    }
-    
-}
-
-extension TransactionHistoryInteractor {
-    private func setupDataProvider() {
-        let changesBlock = { [weak self] (changes: [DataProviderChange<AssetTransactionPageData>]) -> Void in
-            if let change = changes.first {
-                switch change {
-                case .insert(let item), .update(let item):
-                    self?.handleDataProvider(transactionData: item)
-                default:
-                    break
-                }
-            } else {
-                self?.handleDataProvider(transactionData: nil)
-            }
+            self.currentFetchOpeartion = nil
         }
 
-        let failBlock: (Error) -> Void = { [weak self] (error: Error) in
-            self?.handleDataProvider(error: error)
-        }
-
-        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: true)
-        dataProvider.addObserver(self,
-                                 deliverOn: .main,
-                                 executing: changesBlock,
-                                 failing: failBlock,
-                                 options: options)
+        currentFetchOpeartion = fetch
     }
-    
-    private func clearDataProvider() {
-        dataProvider.removeObserver(self)
-    }
-
 }
