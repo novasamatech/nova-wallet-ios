@@ -25,6 +25,10 @@ extension ChainAsset {
             chain: chain.chainFormat
         )
     }
+
+    var isUtilityAsset: Bool {
+        chain.utilityAsset()?.assetId == asset.assetId
+    }
 }
 
 extension ChainAssetId {

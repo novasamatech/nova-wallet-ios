@@ -30,19 +30,19 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
 
         let iconViewModel: WalletImageViewModelProtocol?
 
-        let assetInfo = chainAsset.assetDisplayInfo
+        let asset = chainAsset.asset
 
-        if let iconUrl = assetInfo.icon {
+        if let iconUrl = asset.icon {
             iconViewModel = WalletRemoteImageViewModel(
                 url: iconUrl,
                 size: CGSize(width: 24.0, height: 24.0)
             )
         } else {
-            iconViewModel = nil
+            iconViewModel = WalletStaticImageViewModel(staticImage: R.image.iconDefaultToken()!)
         }
 
         let title = LocalizableResource { _ in
-            assetInfo.symbol
+            asset.symbol
         }
 
         view.bind(title: title, iconViewModel: iconViewModel)
@@ -71,6 +71,8 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
                 } else {
                     return false
                 }
+            case .evm:
+                return true
             }
         } else {
             return true

@@ -7,24 +7,24 @@ class AssetsManageTests: XCTestCase {
     func testSetupAndSave() {
         // given
 
-        let view = MockAssetsManageViewProtocol()
-        let wireframe = MockAssetsManageWireframeProtocol()
+        let view = MockAssetsSettingsViewProtocol()
+        let wireframe = MockAssetsSettingsWireframeProtocol()
 
         let settingsManager = InMemorySettingsManager()
         settingsManager.hidesZeroBalances = true
 
         let eventCenter = MockEventCenterProtocol()
 
-        let interactor = AssetsManageInteractor(settingsManager: settingsManager, eventCenter: eventCenter)
-        let presenter = AssetsManagePresenter(interactor: interactor, wireframe: wireframe)
+        let interactor = AssetsSettingsInteractor(settingsManager: settingsManager, eventCenter: eventCenter)
+        let presenter = AssetsSettingsPresenter(interactor: interactor, wireframe: wireframe)
 
         presenter.view = view
         interactor.presenter = presenter
 
         // when
 
-        var receivedViewModel: AssetsManageViewModel?
-        let expectedViewModel = AssetsManageViewModel(hideZeroBalances: true, canApply: false)
+        var receivedViewModel: AssetsSettingsViewModel?
+        let expectedViewModel = AssetsSettingsViewModel(hideZeroBalances: true, canApply: false)
 
         let setupCompletion = XCTestExpectation()
 

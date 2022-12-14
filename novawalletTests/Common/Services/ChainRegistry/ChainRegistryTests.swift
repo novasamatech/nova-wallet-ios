@@ -35,9 +35,13 @@ class ChainRegistryTests: XCTestCase {
         let expectedChains = ChainModelGenerator.generate(count: chainCount)
         let expectedChainIds = Set(expectedChains.map { $0.chainId })
         let chainsData = try JSONEncoder().encode(expectedChains)
-
+        let evmTokensData = try JSONEncoder().encode([RemoteEvmToken]())
+        let chainURL = URL(string: "https://github.com")!
+        let evmAssetURL = URL(string: "https://google.com")!
+        
         stub(dataOperationFactory) { stub in
-            stub.fetchData(from: any()).thenReturn(BaseOperation.createWithResult(chainsData))
+            stub.fetchData(from: chainURL).thenReturn(BaseOperation.createWithResult(chainsData))
+            stub.fetchData(from: evmAssetURL).thenReturn(BaseOperation.createWithResult(evmTokensData))
         }
 
         stub(runtimeProviderPool) { stub in
@@ -70,7 +74,9 @@ class ChainRegistryTests: XCTestCase {
         )
 
         let chainSyncService = ChainSyncService(
-            url: URL(string: "https://google.com")!,
+            url: chainURL,
+            evmAssetsURL: evmAssetURL,
+            chainConverter: ChainModelConverter(),
             dataFetchFactory: dataOperationFactory,
             repository: AnyDataProviderRepository(repository),
             eventCenter: eventCenter,

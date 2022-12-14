@@ -95,7 +95,8 @@ jobs:
         env:
           MERCURYO_PRODUCTION_SECRET: ${{ secrets.MERCURYO_PRODUCTION_SECRET }}
           MERCURYO_TEST_SECRET: ${{ secrets.MERCURYO_TEST_SECRET }}
-          SUBSCAN_API_KEY: ${{ secrets.SUBSCAN_API_KEY }}
+          MOONBEAM_HISTORY_API_KEY: ${{ secrets.MOONBEAM_HISTORY_API_KEY }}
+          MOONRIVER_HISTORY_API_KEY: ${{ secrets.MOONRIVER_HISTORY_API_KEY }}
           ACALA_AUTH_TOKEN: ${{ secrets.ACALA_AUTH_TOKEN }}
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}

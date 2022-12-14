@@ -13,7 +13,8 @@ struct CustomAssetMapper {
     private func mapAssetWithExtras<T>(
         nativeHandler: () -> T,
         statemineHandler: (StatemineAssetExtras) -> T,
-        ormlHandler: (OrmlTokenExtras) -> T
+        ormlHandler: (OrmlTokenExtras) -> T,
+        evmHandler: (AccountId) -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -36,6 +37,14 @@ struct CustomAssetMapper {
             }
 
             return ormlHandler(wrappedExtras)
+        case .evm:
+            guard let contractAddress = typeExtras?.stringValue else {
+                throw MapperError.invalidJson(type)
+            }
+
+            let accountId = try contractAddress.toAccountId(using: .ethereum)
+
+            return evmHandler(accountId)
         case .none:
             return nativeHandler()
         }
@@ -44,7 +53,8 @@ struct CustomAssetMapper {
     private func mapAsset<T>(
         nativeHandler: () -> T,
         statemineHandler: () -> T,
-        ormlHandler: () -> T
+        ormlHandler: () -> T,
+        evmHandler: () -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -59,6 +69,8 @@ struct CustomAssetMapper {
             return statemineHandler()
         case .orml:
             return ormlHandler()
+        case .evm:
+            return evmHandler()
         case .none:
             return nativeHandler()
         }
@@ -70,7 +82,8 @@ extension CustomAssetMapper {
         try mapAssetWithExtras(
             nativeHandler: { nil },
             statemineHandler: { $0.assetId },
-            ormlHandler: { $0.currencyIdScale }
+            ormlHandler: { $0.currencyIdScale },
+            evmHandler: { try? $0.toAddress(using: .ethereum) }
         )
     }
 }

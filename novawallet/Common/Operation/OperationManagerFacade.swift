@@ -11,7 +11,7 @@ final class OperationManagerFacade {
     static let runtimeBuildingQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 50
+        operationQueue.maxConcurrentOperationCount = 10
         return operationQueue
     }()
 
@@ -25,7 +25,7 @@ final class OperationManagerFacade {
     static let fileDownloadQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 50
+        operationQueue.maxConcurrentOperationCount = 10
         return operationQueue
     }()
 
@@ -38,7 +38,7 @@ final class OperationManagerFacade {
 
     static let nftQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 30
+        operationQueue.maxConcurrentOperationCount = 20
         return operationQueue
     }()
 

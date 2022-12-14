@@ -53,7 +53,11 @@ final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
         }
     }
 
-    func processNewTransaction(event _: WalletNewTransactionInserted) {
+    func processTransactionHistoryUpdate(event _: WalletTransactionListUpdated) {
+        try? context?.prepareAccountUpdateCommand().execute()
+    }
+
+    func processAssetBalanceChanged(event _: AssetBalanceChanged) {
         try? context?.prepareAccountUpdateCommand().execute()
     }
 

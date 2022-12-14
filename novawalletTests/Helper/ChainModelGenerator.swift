@@ -23,7 +23,9 @@ enum ChainModelGenerator {
                 staking: hasStaking ? "relaychain" : nil,
                 type: nil,
                 typeExtras: nil,
-                buyProviders: nil
+                buyProviders: nil,
+                enabled: true,
+                source: .remote
             )
 
             let node = ChainNodeModel(
@@ -90,7 +92,7 @@ enum ChainModelGenerator {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
 
-            let asset = AssetModel(
+            let asset = RemoteAssetModel(
                 assetId: UInt32(index),
                 icon: nil,
                 name: chainId,
@@ -120,7 +122,7 @@ enum ChainModelGenerator {
                 options.append(.crowdloans)
             }
 
-            let externalApi: ChainModel.ExternalApiSet? = generateExternaApis(
+            let externalApi = generateRemoteExternaApis(
                 for: chainId,
                 hasStaking: hasStaking,
                 hasCrowdloans: hasCrowdloans
@@ -242,7 +244,9 @@ enum ChainModelGenerator {
         symbol: String? = nil,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        buyProviders: JSON? = nil
+        buyProviders: JSON? = nil,
+        enabled: Bool = true,
+        source: AssetModel.Source = .remote
     ) -> AssetModel {
 
         let assetSymbol = symbol ?? String(UUID().uuidString.prefix(3))
@@ -257,7 +261,38 @@ enum ChainModelGenerator {
             staking: hasStaking ? "relaychain" : nil,
             type: nil,
             typeExtras: nil,
-            buyProviders: buyProviders
+            buyProviders: buyProviders,
+            enabled: enabled,
+            source: source
+        )
+    }
+
+    private static func generateRemoteExternaApis(
+        for chainId: ChainModel.Id,
+        hasStaking: Bool,
+        hasCrowdloans: Bool
+    ) -> RemoteChainExternalApiSet? {
+        guard let externalApi = generateExternaApis(
+            for: chainId,
+            hasStaking: hasStaking,
+            hasCrowdloans: hasCrowdloans
+        ) else {
+            return nil
+        }
+
+        let remoteHistory = externalApi.history?.map { localHistory in
+            return RemoteTransactionHistoryApi(
+                type: localHistory.serviceType,
+                url: localHistory.url,
+                assetType: localHistory.assetType
+            )
+        }
+
+        return .init(
+            staking: externalApi.staking,
+            history: remoteHistory,
+            crowdloans: externalApi.crowdloans,
+            governance: externalApi.governance
         )
     }
 
@@ -302,5 +337,19 @@ enum ChainModelGenerator {
 
     static func generateChainColor() -> String {
         "linear-gradient(315deg, #D43079 0%, #F93C90 100%)"
+    }
+    
+    static func generateEvmToken(chainId1: ChainModel.Id, chainId2: ChainModel.Id) -> RemoteEvmToken {
+        RemoteEvmToken(symbol: "USDT",
+                       precision: 6,
+                       name: "Tether USD",
+                       priceId: "tether",
+                       icon: nil,
+                       instances: [
+                        .init(chainId: chainId1,
+                              contractAddress: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73"),
+                        .init(chainId: chainId2,
+                              contractAddress: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C")
+                       ])
     }
 }

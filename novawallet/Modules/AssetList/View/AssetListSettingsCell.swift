@@ -8,9 +8,19 @@ final class AssetListSettingsCell: UICollectionViewCell {
         return view
     }()
 
-    let settingsButton: TriangularedBlurButton = {
+    let manageButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
         button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
+        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        button.changesContentOpacityWhenHighlighted = true
+        button.triangularedBlurView?.overlayView?.highlightedFillColor =
+            R.color.colorCellBackgroundPressed()!
+        return button
+    }()
+
+    let settingsButton: TriangularedBlurButton = {
+        let button = TriangularedBlurButton()
+        button.imageWithTitleView?.iconImage = R.image.iconFilterAssets()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
         button.triangularedBlurView?.overlayView?.highlightedFillColor =
@@ -55,10 +65,17 @@ final class AssetListSettingsCell: UICollectionViewCell {
     }
 
     private func setupLayout() {
+        addSubview(manageButton)
+
+        manageButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalToSuperview()
+        }
+
         addSubview(settingsButton)
 
         settingsButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalTo(manageButton.snp.leading).inset(-8.0)
             make.centerY.equalToSuperview()
         }
 
