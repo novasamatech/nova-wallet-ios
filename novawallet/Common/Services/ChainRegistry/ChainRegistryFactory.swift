@@ -85,7 +85,7 @@ final class ChainRegistryFactory {
             dataFetchFactory: dataFetchOperationFactory,
             repository: AnyDataProviderRepository(chainRepository),
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.runtimeBuildingQueue,
+            operationQueue: OperationManagerFacade.runtimeSyncQueue,
             logger: Logger.shared
         )
 
@@ -99,7 +99,7 @@ final class ChainRegistryFactory {
             filesOperationFactory: filesOperationFactory,
             dataOperationFactory: dataFetchOperationFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.runtimeBuildingQueue
+            operationQueue: OperationManagerFacade.runtimeSyncQueue
         )
 
         return ChainRegistry(
