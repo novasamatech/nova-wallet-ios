@@ -1,4 +1,6 @@
-protocol TransactionHistoryViewProtocol: AnyObject {
+import CommonWallet
+
+protocol TransactionHistoryViewProtocol: ControllerBackedProtocol {
     func startLoading()
     func stopLoading()
     func didReceive(viewModel: [TransactionSectionModel])
@@ -14,13 +16,15 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func loadNext()
+    func loadNext(
+        for filter: WalletHistoryRequest,
+        pagination: Pagination
+    )
 }
 
 protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
-    
+    func didReceive(error: Error, for: Pagination)
+    func didReceive(transactionData: AssetTransactionPageData, for: Pagination)
 }
 
-protocol TransactionHistoryWireframeProtocol: AnyObject {
-    
-}
+protocol TransactionHistoryWireframeProtocol: AnyObject {}

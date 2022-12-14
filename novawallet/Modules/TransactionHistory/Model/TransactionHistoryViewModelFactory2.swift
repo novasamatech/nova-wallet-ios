@@ -54,7 +54,7 @@ final class TransactionHistoryViewModelFactory2 {
         let subtitle = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
 
         return TransactionItemViewModel(
-            timestamp: timestamp,
+            timestamp: data.timestamp,
             title: data.peerName ?? "",
             subtitle: subtitle,
             time: time,
@@ -93,7 +93,7 @@ final class TransactionHistoryViewModelFactory2 {
         let subtitle = R.string.localizable.stakingTitle(preferredLanguages: locale.rLanguages)
 
         return TransactionItemViewModel(
-            timestamp: timestamp,
+            timestamp: data.timestamp,
             title: title,
             subtitle: subtitle,
             time: time,
@@ -126,7 +126,7 @@ final class TransactionHistoryViewModelFactory2 {
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
 
         return TransactionItemViewModel(
-            timestamp: timestamp,
+            timestamp: data.timestamp,
             title: data.peerLastName?.displayCall ?? "",
             subtitle: data.peerFirstName?.displayModule ?? "",
             time: time,
