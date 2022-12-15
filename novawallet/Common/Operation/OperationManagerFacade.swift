@@ -31,8 +31,8 @@ final class OperationManagerFacade {
 
     static let assetsQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 30
         operationQueue.qualityOfService = .userInitiated
+        operationQueue.maxConcurrentOperationCount = 30
         return operationQueue
     }()
 
