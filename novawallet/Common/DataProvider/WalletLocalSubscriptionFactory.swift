@@ -35,6 +35,13 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         logger: Logger.shared
     )
 
+    private func createStreamableProcessingQueue() -> DispatchQueue {
+        DispatchQueue(
+            label: "com.streamableprovider.repository.queue.\(UUID().uuidString)",
+            qos: .userInitiated
+        )
+    }
+
     func getAccountProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id
@@ -119,12 +126,15 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        let processingQueue = createStreamableProcessingQueue()
+
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
                 accountId.toHex() == entity.chainAccountId
-            }
+            },
+            processingQueue: processingQueue
         )
 
         observable.start { [weak self] error in
@@ -137,7 +147,8 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: operationManager
+            operationManager: operationManager,
+            serialQueue: processingQueue
         )
 
         saveProvider(provider, for: cacheKey)
@@ -157,10 +168,13 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         let mapper = AssetBalanceMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
+        let processingQueue = createStreamableProcessingQueue()
+
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
-            predicate: { _ in true }
+            predicate: { _ in true },
+            processingQueue: processingQueue
         )
 
         observable.start { [weak self] error in
@@ -173,7 +187,8 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: operationManager
+            operationManager: operationManager,
+            serialQueue: processingQueue
         )
 
         saveProvider(provider, for: cacheKey)
@@ -240,12 +255,15 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        let processingQueue = createStreamableProcessingQueue()
+
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
                 observingFilter(entity)
-            }
+            },
+            processingQueue: processingQueue
         )
 
         observable.start { [weak self] error in
@@ -258,7 +276,8 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: operationManager
+            operationManager: operationManager,
+            serialQueue: processingQueue
         )
     }
 }
