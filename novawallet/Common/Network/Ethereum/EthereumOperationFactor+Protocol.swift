@@ -52,7 +52,7 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
-    func createTransactionReceiptOperation(for transactionHash: String) -> BaseOperation<EthereumTransactionReceipt> {
+    func createTransactionReceiptOperation(for transactionHash: String) -> BaseOperation<EthereumTransactionReceipt?> {
         let url = node
 
         let requestFactory = BlockNetworkRequestFactory {
@@ -69,7 +69,7 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
             return request
         }
 
-        let resultFactory: AnyNetworkResultFactory<EthereumTransactionReceipt> = createResultFactory()
+        let resultFactory: AnyNetworkResultFactory<EthereumTransactionReceipt?> = createResultFactory()
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
