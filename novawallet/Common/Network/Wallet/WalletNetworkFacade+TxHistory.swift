@@ -174,36 +174,14 @@ extension WalletNetworkFacade {
     }
 
     func createHistoryMergeOperation(
-        dependingOn remoteOperation: BaseOperation<WalletRemoteHistoryData>?,
-        localOperation: BaseOperation<[TransactionHistoryItem]>?,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel,
-        address: String
+        dependingOn _: BaseOperation<WalletRemoteHistoryData>?,
+        localOperation _: BaseOperation<[TransactionHistoryItem]>?,
+        chainAsset _: ChainAsset,
+        utilityAsset _: AssetModel,
+        address _: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
         ClosureOperation {
-            let remoteTransactions = try remoteOperation?.extractNoCancellableResultData().historyItems ?? []
-
-            if let localTransactions = try localOperation?.extractNoCancellableResultData(),
-               !localTransactions.isEmpty {
-                let manager = TransactionHistoryMergeManager(
-                    address: address,
-                    chainAsset: chainAsset,
-                    utilityAsset: utilityAsset
-                )
-
-                return manager.merge(remoteItems: remoteTransactions, localItems: localTransactions)
-            } else {
-                let transactions: [AssetTransactionData] = remoteTransactions.map { item in
-                    item.createTransactionForAddress(
-                        address,
-                        assetId: chainAsset.chainAssetId.walletId,
-                        chainAsset: chainAsset,
-                        utilityAsset: utilityAsset
-                    )
-                }
-
-                return TransactionHistoryMergeResult(historyItems: transactions, identifiersToRemove: [])
-            }
+            TransactionHistoryMergeResult(historyItems: [], identifiersToRemove: [])
         }
     }
 
@@ -220,7 +198,7 @@ extension WalletNetworkFacade {
             let newHistoryContext = optNewHistoryResult?.context ?? previousContext
 
             return AssetTransactionPageData(
-                transactions: mergeResult.historyItems,
+                transactions: [],
                 context: newHistoryContext
             )
         }

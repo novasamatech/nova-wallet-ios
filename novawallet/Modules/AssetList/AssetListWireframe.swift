@@ -10,10 +10,25 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        guard let assetDetailsView = AssetDetailsViewFactory.createView(
-            chain: chain,
-            asset: asset
-        ) else {
+        showHistory(from: view, chain: chain, asset: asset)
+//        guard let assetDetailsView = AssetDetailsViewFactory.createView(
+//            chain: chain,
+//            asset: asset
+//        ) else {
+//            return
+//        }
+//        guard let navigationController = view?.controller.navigationController else {
+//            return
+//        }
+//
+//        navigationController.pushViewController(
+//            assetDetailsView.controller,
+//            animated: true
+//        )
+    }
+
+    func showHistory(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
+        guard let history = TransactionHistoryViewFactory.createView(chainAsset: .init(chain: chain, asset: asset)) else {
             return
         }
         guard let navigationController = view?.controller.navigationController else {
@@ -21,7 +36,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         }
 
         navigationController.pushViewController(
-            assetDetailsView.controller,
+            history.controller,
             animated: true
         )
     }

@@ -4,7 +4,7 @@ import IrohaCrypto
 import SubstrateSdk
 
 struct TransactionHistoryMergeResult {
-    let historyItems: [AssetTransactionData]
+    let historyItems: [TransactionHistoryItem]
     let identifiersToRemove: [String]
 }
 
@@ -59,25 +59,21 @@ enum TransactionHistoryMergeItem {
     }
 
     func buildTransactionData(
-        address: String,
+        address _: String,
         chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData {
+        utilityAsset _: AssetModel
+    ) -> TransactionHistoryItem? {
         switch self {
         case let .local(item):
-            return AssetTransactionData.createTransaction(
-                from: item,
-                address: address,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
-            )
+            return item
         case let .remote(item):
-            return item.createTransactionForAddress(
-                address,
-                assetId: chainAsset.chainAssetId.walletId,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
-            )
+            if let etherscanItem = item as? EtherscanHistoryElement {
+                return etherscanItem.createTransactionItem(chainAssetId: chainAsset.chainAssetId)
+            } else if let subqueryItem = item as? SubqueryHistoryElement {
+                return subqueryItem.createTransactionItem(chainAssetId: chainAsset.chainAssetId)
+            } else {
+                return nil
+            }
         }
     }
 
@@ -148,7 +144,7 @@ final class TransactionHistoryMergeManager {
 
         let transactionsItems = (localMergeItems + remoteMergeItems)
             .sorted { $0.compareWithItem($1) }
-            .map { item in
+            .compactMap { item in
                 item.buildTransactionData(
                     address: address,
                     chainAsset: chainAsset,
@@ -162,5 +158,108 @@ final class TransactionHistoryMergeManager {
         )
 
         return results
+    }
+}
+
+import BigInt
+
+extension EtherscanHistoryElement {
+    func createTransactionItem(chainAssetId: ChainAssetId) -> TransactionHistoryItem {
+        let gasValue = BigUInt(gasUsed) ?? 0
+        let gasPriceValue = BigUInt(gasPrice) ?? 0
+        let feeInPlank = gasValue * gasPriceValue
+
+        return .init(
+            source: .evm,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: from,
+            receiver: to,
+            amountInPlank: value,
+            status: .success,
+            txHash: hash,
+            timestamp: itemTimestamp,
+            fee: String(feeInPlank),
+            blockNumber: nil,
+            txIndex: nil,
+            callPath: CallCodingPath.erc20Tranfer,
+            call: nil
+        )
+    }
+}
+
+extension SubqueryHistoryElement {
+    func createTransactionItem(chainAssetId: ChainAssetId) -> TransactionHistoryItem? {
+        if let transfer = self.transfer {
+            return .init(
+                source: .substrate,
+                chainId: chainAssetId.chainId,
+                assetId: chainAssetId.assetId,
+                sender: transfer.sender,
+                receiver: transfer.receiver,
+                amountInPlank: transfer.amount,
+                status: transfer.success ? .success : .failed,
+                txHash: identifier,
+                timestamp: itemTimestamp,
+                fee: transfer.amount,
+                blockNumber: blockNumber,
+                txIndex: nil,
+                callPath: CallCodingPath.transfer,
+                call: nil
+            )
+        } else if let assetTransfer = assetTransfer {
+            return .init(
+                source: .substrate,
+                chainId: chainAssetId.chainId,
+                assetId: chainAssetId.assetId,
+                sender: assetTransfer.sender,
+                receiver: assetTransfer.receiver,
+                amountInPlank: assetTransfer.amount,
+                status: assetTransfer.success ? .success : .failed,
+                txHash: identifier,
+                timestamp: itemTimestamp,
+                fee: assetTransfer.fee,
+                blockNumber: blockNumber,
+                txIndex: nil,
+                callPath: CallCodingPath.assetsTransfer(for: nil),
+                call: nil
+            )
+        } else if let extrinsic = extrinsic {
+            return .init(
+                source: .substrate,
+                chainId: chainAssetId.chainId,
+                assetId: chainAssetId.assetId,
+                sender: "",
+                receiver: nil,
+                amountInPlank: nil,
+                status: extrinsic.success ? .success : .failed,
+                txHash: identifier,
+                timestamp: itemTimestamp,
+                fee: extrinsic.fee,
+                blockNumber: blockNumber,
+                txIndex: nil,
+                callPath: CallCodingPath(moduleName: extrinsic.module, callName: extrinsic.call),
+                call: nil
+            )
+        } else if let reward = reward {
+            return .init(
+                source: .substrate,
+                chainId: chainAssetId.chainId,
+                assetId: chainAssetId.assetId,
+                sender: reward.validator ?? "",
+                receiver: nil,
+                amountInPlank: reward.amount,
+                status: .success,
+                txHash: identifier,
+                timestamp: itemTimestamp,
+                fee: nil,
+                blockNumber: blockNumber,
+                txIndex: nil,
+                callPath: CallCodingPath(moduleName: "", callName: ""),
+                call: nil
+            )
+        } else {
+            return nil
+        }
     }
 }

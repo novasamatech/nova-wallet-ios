@@ -34,10 +34,10 @@ final class TransactionHistoryViewLayout: UIView {
 
     lazy var tableView: UITableView = .create {
         $0.backgroundColor = .clear
-        $0.tableFooterView = UIView()
         $0.separatorStyle = .none
         $0.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
         $0.tableFooterView = pageLoadingView
+        $0.isScrollEnabled = true
     }
 
     let titleLabel = UILabel(style: .init(
@@ -74,19 +74,25 @@ final class TransactionHistoryViewLayout: UIView {
             $0.edges.equalToSuperview()
         }
 
+        addSubview(headerView)
+        headerView.snp.makeConstraints {
+            headerHeight = $0.height.equalTo(45).constraint
+            headerTop = $0.top.equalToSuperview().constraint
+            $0.leading.trailing.equalToSuperview()
+        }
+
+        addSubview(contentView)
+        contentView.snp.makeConstraints {
+            $0.trailing.leading.bottom.equalToSuperview()
+            $0.top.equalTo(headerView.snp.bottom)
+        }
+
         addSubview(panIndicatorView)
         panIndicatorView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(5)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(35)
             $0.height.equalTo(5)
-        }
-
-        addSubview(headerView)
-        headerView.snp.makeConstraints {
-            headerHeight = $0.height.equalTo(45).constraint
-            headerTop = $0.top.equalToSuperview().constraint
-            $0.leading.trailing.equalToSuperview()
         }
 
         headerView.addSubview(filterButton)
@@ -111,12 +117,6 @@ final class TransactionHistoryViewLayout: UIView {
 
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.trailing.leading.bottom.equalToSuperview()
-            $0.top.equalTo(headerView.snp.bottom)
-        }
-
-        addSubview(contentView)
-        contentView.snp.makeConstraints {
             $0.trailing.leading.bottom.equalToSuperview()
             $0.top.equalTo(headerView.snp.bottom)
         }

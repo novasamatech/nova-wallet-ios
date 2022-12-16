@@ -8,11 +8,4 @@ final class TransactionHistoryDataSource: UITableViewDiffableDataSource<Transact
             return cell
         }
     }
-
-    func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView: TransactionHistoryHeaderView = .init(frame: .zero)
-        headerView.bind(title: snapshot().sectionIdentifiers[section].title)
-
-        return headerView
-    }
 }

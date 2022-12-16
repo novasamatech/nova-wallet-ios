@@ -18,7 +18,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     private var dataSource: TransactionHistoryDataSource?
 
     let presenter: TransactionHistoryPresenterProtocol
-    private var draggableState: DraggableState = .compact
+    private var draggableState: DraggableState = .full
     private var didSetupLayout: Bool = false
     private let emptyDatasource = WalletEmptyStateDataSource.history
     private var fullInsets: UIEdgeInsets = .zero
@@ -63,7 +63,9 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
 
         applyContentInsets(for: draggableState)
         rootView.tableView.delegate = self
+        rootView.tableView.registerClassForCell(HistoryItemTableViewCell.self)
         dataSource = TransactionHistoryDataSource(tableView: rootView.tableView)
+        rootView.tableView.dataSource = dataSource
         setupLocalization()
         presenter.setup()
     }
@@ -255,13 +257,17 @@ extension TransactionHistoryViewController: Draggable {
 
 extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
     func startLoading() {
-        rootView.pageLoadingView.start()
-        isLoading = true
+        DispatchQueue.main.async {
+            self.rootView.pageLoadingView.start()
+            self.isLoading = true
+        }
     }
 
     func stopLoading() {
-        rootView.pageLoadingView.stop()
-        isLoading = false
+        DispatchQueue.main.async {
+            self.rootView.pageLoadingView.stop()
+            self.isLoading = false
+        }
     }
 
     func didReceive(viewModel: [TransactionSectionModel]) {
@@ -291,6 +297,16 @@ extension TransactionHistoryViewController: UITableViewDelegate {
 
         let item = viewModel[indexPath.section].items[indexPath.row]
         presenter.select(item: item)
+    }
+
+    func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let dataSource = dataSource else {
+            return nil
+        }
+        let headerView: TransactionHistoryHeaderView = .init(frame: .zero)
+        headerView.bind(title: dataSource.snapshot().sectionIdentifiers[section].title)
+
+        return headerView
     }
 }
 

@@ -1,40 +1,40 @@
 import Foundation
 import SoraFoundation
 import CommonWallet
+import RobinHood
 
 struct TransactionHistoryViewFactory {
     static func createView(chainAsset: ChainAsset) -> TransactionHistoryViewProtocol? {
         guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
-        let historyFacade: AssetHistoryFactoryFacadeProtocol = AssetHistoryFacade()
-        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-        // let dataProvider: SingleValueProvider<AssetTransactionPageData>
+
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared)
+        let transactionSubscriptionFactory = TransactionSubscriptionFactory(
+            storageFacade: repositoryFactory.storageFacade,
+            operationQueue: operationQueue,
+            historyFacade: AssetHistoryFacade(),
+            repositoryFactory: repositoryFactory,
+            logger: Logger.shared
+        )
 
         let interactor = TransactionHistoryInteractor(
             chainAsset: chainAsset,
             metaAccount: selectedMetaAccount,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             repositoryFactory: repositoryFactory,
-            historyFacade: AssetHistoryFacade()
+            historyFacade: AssetHistoryFacade(),
+            dataProviderFactory: transactionSubscriptionFactory
         )
         let wireframe = TransactionHistoryWireframe()
 
-        let walletAsset = WalletAsset(
-            identifier: chainAsset.chainAssetId.walletId,
-            name: LocalizableResource { _ in chainAsset.asset.name ?? chainAsset.chain.name },
-            platform: LocalizableResource { _ in chainAsset.chain.name },
-            symbol: chainAsset.asset.symbol,
-            precision: chainAsset.assetDisplayInfo.assetPrecision,
-            modes: WalletAssetModes.all
-        )
-
+        let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: chainAsset.assetDisplayInfo)
         let viewModelFactory = TransactionHistoryViewModelFactory2(
             chainAsset: chainAsset,
-            balanceFormatterFactory: AssetBalanceFormatterFactory(),
+            tokenFormatter: tokenFormatter,
             dateFormatter: DateFormatter.txHistory,
-            assets: [walletAsset]
+            groupDateFormatter: DateFormatter.txHistoryDate
         )
         let presenter = TransactionHistoryPresenter(
             interactor: interactor,
@@ -43,6 +43,7 @@ struct TransactionHistoryViewFactory {
             filter: .init(),
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
+            chainAsset: chainAsset,
             logger: Logger.shared
         )
 
