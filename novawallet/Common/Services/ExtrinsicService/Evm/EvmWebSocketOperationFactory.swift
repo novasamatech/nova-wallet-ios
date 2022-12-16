@@ -13,6 +13,19 @@ final class EvmWebSocketOperationFactory {
 }
 
 extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
+    func createTransactionReceiptOperation(
+        for transactionHash: String
+    ) -> RobinHood.BaseOperation<EthereumTransactionReceipt> {
+        let parameters = [transactionHash]
+
+        return JSONRPCListOperation(
+            engine: connection,
+            method: EthereumMethod.transactionReceipt.rawValue,
+            parameters: parameters,
+            timeout: timeout
+        )
+    }
+
     func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<String> {
         JSONRPCOperation<[EthereumTransaction], String>(
             engine: connection,
