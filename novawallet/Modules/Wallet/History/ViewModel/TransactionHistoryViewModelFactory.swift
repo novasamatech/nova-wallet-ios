@@ -6,6 +6,7 @@ import SubstrateSdk
 enum TransactionHistoryViewModelFactoryError: Error {
     case missingAsset
     case unsupportedType
+    case invalidDate
 }
 
 final class TransactionHistoryViewModelFactory {

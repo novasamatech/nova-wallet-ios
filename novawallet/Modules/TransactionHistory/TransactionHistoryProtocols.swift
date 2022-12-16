@@ -1,4 +1,5 @@
 import CommonWallet
+import RobinHood
 
 protocol TransactionHistoryViewProtocol: ControllerBackedProtocol {
     func startLoading()
@@ -14,17 +15,14 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
 }
 
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
-    func setup()
+    func setup(historyFilter: WalletHistoryFilter)
     func refresh()
-    func loadNext(
-        for filter: WalletHistoryRequest,
-        pagination: Pagination
-    )
+    func loadNext()
 }
 
 protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
-    func didReceive(error: Error, for: Pagination)
-    func didReceive(transactionData: AssetTransactionPageData, for: Pagination)
+    func didReceive(error: Error)
+    func didReceive(changes: [DataProviderChange<TransactionHistoryItem>])
 }
 
 protocol TransactionHistoryWireframeProtocol: AnyObject {}

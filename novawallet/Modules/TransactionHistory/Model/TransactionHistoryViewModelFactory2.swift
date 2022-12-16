@@ -8,43 +8,38 @@ protocol TransactionHistoryViewModelFactory2Protocol {
         locale: Locale
     ) throws -> TransactionItemViewModel
 
-    func createGroupModel(_ data: [AssetTransactionData], locale: Locale) throws -> [String: [TransactionItemViewModel]]
+    func createGroupModel(_ data: [AssetTransactionData], locale: Locale) throws -> [Date: [TransactionItemViewModel]]
+
+    func formatHeader(date: Date, locale: Locale) -> String
 }
 
 final class TransactionHistoryViewModelFactory2 {
     let chainAsset: ChainAsset
-    let balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
-    let assets: [WalletAsset]
+    let groupDateFormatter: LocalizableResource<DateFormatter>
     var chainFormat: ChainFormat { chainAsset.chain.chainFormat }
+    let tokenFormatter: LocalizableResource<TokenFormatter>
     let iconGenerator = PolkadotIconGenerator()
+    let calendar = Calendar.current
 
     init(
         chainAsset: ChainAsset,
-        balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
+        tokenFormatter: LocalizableResource<TokenFormatter>,
         dateFormatter: LocalizableResource<DateFormatter>,
-        assets: [WalletAsset]
+        groupDateFormatter: LocalizableResource<DateFormatter>
     ) {
         self.chainAsset = chainAsset
-        self.balanceFormatterFactory = balanceFormatterFactory
+        self.tokenFormatter = tokenFormatter
         self.dateFormatter = dateFormatter
-        self.assets = assets
+        self.groupDateFormatter = groupDateFormatter
     }
 
     private func createTransferItemFromData(
         _ data: AssetTransactionData,
         locale: Locale,
         txType: TransactionType
-    ) throws -> TransactionItemViewModel {
-        guard let asset = assets.first(where: { $0.identifier == data.assetId }) else {
-            throw TransactionHistoryViewModelFactoryError.missingAsset
-        }
-
-        let assetDisplayInfo = AssetBalanceDisplayInfo.fromWallet(asset: asset)
-        let amount = balanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
-            .value(for: locale)
-            .stringFromDecimal(data.amount.decimalValue)
-            ?? ""
+    ) -> TransactionItemViewModel {
+        let amount = tokenFormatter.value(for: locale).stringFromDecimal(data.amount.decimalValue) ?? ""
 
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
@@ -69,15 +64,8 @@ final class TransactionHistoryViewModelFactory2 {
         _ data: AssetTransactionData,
         locale: Locale,
         txType: TransactionType
-    ) throws -> TransactionItemViewModel {
-        guard let asset = assets.first(where: { $0.identifier == data.assetId }) else {
-            throw TransactionHistoryViewModelFactoryError.missingAsset
-        }
-
-        let assetDisplayInfo = AssetBalanceDisplayInfo.fromWallet(asset: asset)
-        let amount = balanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
-            .value(for: locale)
-            .stringFromDecimal(data.amount.decimalValue)
+    ) -> TransactionItemViewModel {
+        let amount = tokenFormatter.value(for: locale).stringFromDecimal(data.amount.decimalValue)
             ?? ""
 
         let time = dateFormatter.value(for: locale)
@@ -108,15 +96,8 @@ final class TransactionHistoryViewModelFactory2 {
         _ data: AssetTransactionData,
         locale: Locale,
         txType: TransactionType
-    ) throws -> TransactionItemViewModel {
-        guard let asset = assets.first(where: { $0.identifier == data.assetId }) else {
-            throw TransactionHistoryViewModelFactoryError.missingAsset
-        }
-
-        let assetDisplayInfo = AssetBalanceDisplayInfo.fromWallet(asset: asset)
-        let amount = balanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
-            .value(for: locale)
-            .stringFromDecimal(data.amount.decimalValue)
+    ) -> TransactionItemViewModel {
+        let amount = tokenFormatter.value(for: locale).stringFromDecimal(data.amount.decimalValue)
             ?? ""
 
         let time = dateFormatter.value(for: locale)
@@ -139,12 +120,23 @@ final class TransactionHistoryViewModelFactory2 {
 }
 
 extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactory2Protocol {
-    func createGroupModel(_ data: [AssetTransactionData], locale: Locale) throws -> [String: [TransactionItemViewModel]] {
-        let items = try data.map { try self.createItemFromData($0, locale: locale) }
-        return Dictionary(grouping: items, by: {
-            let eventDate = Date(timeIntervalSince1970: TimeInterval($0.timestamp))
-            return dateFormatter.value(for: locale).string(from: eventDate)
+    func formatHeader(date: Date, locale: Locale) -> String {
+        groupDateFormatter.value(for: locale).string(from: date)
+    }
+
+    func createGroupModel(_ data: [AssetTransactionData], locale: Locale) throws ->
+        [Date: [TransactionItemViewModel]] {
+        let items = try data.map {
+            try self.createItemFromData($0, locale: locale)
+        }
+
+        let sections = Dictionary(grouping: items, by: {
+            let eventDateTime = Date(timeIntervalSince1970: TimeInterval($0.timestamp))
+            let eventDate = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: eventDateTime)!
+            return eventDate
         })
+
+        return sections
     }
 
     func createItemFromData(
@@ -157,19 +149,19 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
 
         switch transactionType {
         case .incoming, .outgoing:
-            return try createTransferItemFromData(
+            return createTransferItemFromData(
                 data,
                 locale: locale,
                 txType: transactionType
             )
         case .reward, .slash:
-            return try createRewardOrSlashItemFromData(
+            return createRewardOrSlashItemFromData(
                 data,
                 locale: locale,
                 txType: transactionType
             )
         case .extrinsic:
-            return try createExtrinsicItemFromData(
+            return createExtrinsicItemFromData(
                 data,
                 locale: locale,
                 txType: transactionType

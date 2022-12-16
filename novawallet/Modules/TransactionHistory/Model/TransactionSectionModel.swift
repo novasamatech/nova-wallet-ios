@@ -3,6 +3,7 @@ import CommonWallet
 
 struct TransactionSectionModel: Hashable {
     let title: String
+    let date: Date
     let items: [TransactionItemViewModel]
 }
 
