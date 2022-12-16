@@ -19,7 +19,8 @@ class EthereumBaseIntegrationTests: XCTestCase {
         let walletService = WalletRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: Logger.shared
         )
 

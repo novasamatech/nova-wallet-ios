@@ -95,7 +95,8 @@ class ParachainStakingCollatorsTests: XCTestCase {
         let remoteSubscription = ParachainStaking.StakingRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 
