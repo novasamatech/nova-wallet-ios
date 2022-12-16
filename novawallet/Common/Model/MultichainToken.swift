@@ -51,7 +51,7 @@ extension Array where Element == ChainModel {
                 MultichainToken.reserveTokensOf(symbol: $0.symbol).contains(symbol)
             }.sorted { $0.assetId < $1.assetId }
 
-            return assets.reduce(token) { _, asset in
+            return assets.reduce(token) { accumToken, asset in
                 let instance = MultichainToken.Instance(
                     chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
                     chainName: chain.name,
@@ -59,7 +59,7 @@ extension Array where Element == ChainModel {
                     icon: asset.icon
                 )
 
-                return MultichainToken(symbol: symbol, instances: token.instances + [instance])
+                return MultichainToken(symbol: symbol, instances: accumToken.instances + [instance])
             }
         }
     }
