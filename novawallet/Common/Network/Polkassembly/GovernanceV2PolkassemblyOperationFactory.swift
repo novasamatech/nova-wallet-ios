@@ -3,7 +3,7 @@ import RobinHood
 import SubstrateSdk
 
 class GovernanceV2PolkassemblyOperationFactory: BasePolkassemblyOperationFactory {
-    override func createPreviewQuery() -> String {
+    override func createPreviewQuery(for _: JSON?) -> String {
         """
         {
          posts(
@@ -18,7 +18,7 @@ class GovernanceV2PolkassemblyOperationFactory: BasePolkassemblyOperationFactory
         """
     }
 
-    override func createDetailsQuery(for referendumId: ReferendumIdLocal) -> String {
+    override func createDetailsQuery(for referendumId: ReferendumIdLocal, parameters _: JSON?) -> String {
         """
         {
              posts(

@@ -15,6 +15,7 @@ struct ChainModel: Equatable, Codable, Hashable {
     struct ExternalApi: Codable, Hashable {
         let type: String
         let url: URL
+        let parameters: JSON?
     }
 
     struct TransactionHistoryApi: Codable, Hashable {
