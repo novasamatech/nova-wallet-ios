@@ -9,6 +9,7 @@ protocol EvmTransactionHistoryUpdaterProtocol {
 
 final class EvmTransactionHistoryUpdater {
     let repository: AnyDataProviderRepository<TransactionHistoryItem>
+    let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let accountId: AccountId
@@ -19,6 +20,7 @@ final class EvmTransactionHistoryUpdater {
 
     init(
         repository: AnyDataProviderRepository<TransactionHistoryItem>,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
         accountId: AccountId,
@@ -26,11 +28,86 @@ final class EvmTransactionHistoryUpdater {
         logger: LoggerProtocol
     ) {
         self.repository = repository
+        self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.accountId = accountId
         self.assetContracts = assetContracts
         self.logger = logger
+    }
+
+    private func createTransactionReceiptWrapper(
+        for chainId: ChainModel.Id,
+        transactionHash: String
+    ) -> CompoundOperationWrapper<EthereumTransactionReceipt?> {
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            return CompoundOperationWrapper.createWithResult(nil)
+        }
+
+        let operationFactory = EvmWebSocketOperationFactory(connection: connection)
+
+        let fetchOperation = operationFactory.createTransactionReceiptOperation(for: transactionHash)
+
+        let mapOperation = ClosureOperation<EthereumTransactionReceipt?> {
+            try fetchOperation.extractNoCancellableResultData()
+        }
+
+        mapOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+    }
+
+    private func createAndSaveTransaction(
+        for event: EventLog,
+        assetContract: EvmAssetContractId,
+        transferEvent: ERC20TransferEvent
+    ) {
+        let transactionHashString = event.transactionHash.toHex(includePrefix: true)
+
+        let transactionReceiptWrapper = createTransactionReceiptWrapper(
+            for: assetContract.chainAssetId.chainId,
+            transactionHash: transactionHashString
+        )
+
+        let saveOperation = repository.saveOperation({
+            let receipt = try? transactionReceiptWrapper.targetOperation.extractNoCancellableResultData()
+            let fee = receipt?.fee.map { String($0) }
+
+            let historyItem = TransactionHistoryItem(
+                source: .evm,
+                chainId: assetContract.chainAssetId.chainId,
+                assetId: assetContract.chainAssetId.assetId,
+                sender: transferEvent.sender,
+                receiver: transferEvent.receiver,
+                amountInPlank: String(transferEvent.amount),
+                status: .success,
+                txHash: event.transactionHash.toHex(includePrefix: true),
+                timestamp: Int64(Date().timeIntervalSince1970),
+                fee: fee,
+                blockNumber: UInt64(event.blockNumber),
+                txIndex: nil,
+                callPath: CallCodingPath.erc20Tranfer,
+                call: nil
+            )
+
+            return [historyItem]
+        }, {
+            []
+        })
+
+        saveOperation.addDependency(transactionReceiptWrapper.targetOperation)
+
+        saveOperation.completionBlock = { [weak self] in
+            guard case .success = saveOperation.result else {
+                return
+            }
+
+            self?.eventCenter.notify(with: WalletTransactionListUpdated())
+        }
+
+        let operations = transactionReceiptWrapper.allOperations + [saveOperation]
+
+        operationQueue.addOperations(operations, waitUntilFinished: true)
     }
 
     private func insertOrUpdateTransaction(for event: EventLog) {
@@ -53,38 +130,7 @@ final class EvmTransactionHistoryUpdater {
 
         logger.debug("Saving new ERC20 transaction \(event.transactionHash.toHex(includePrefix: true))")
 
-        let historyItem = TransactionHistoryItem(
-            source: .evm,
-            chainId: assetContract.chainAssetId.chainId,
-            assetId: assetContract.chainAssetId.assetId,
-            sender: transferEvent.sender,
-            receiver: transferEvent.receiver,
-            amountInPlank: String(transferEvent.amount),
-            status: .success,
-            txHash: event.transactionHash.toHex(includePrefix: true),
-            timestamp: Int64(Date().timeIntervalSince1970),
-            fee: nil,
-            blockNumber: UInt64(event.blockNumber),
-            txIndex: nil,
-            callPath: CallCodingPath.erc20Tranfer,
-            call: nil
-        )
-
-        let saveOperation = repository.saveOperation({
-            [historyItem]
-        }, {
-            []
-        })
-
-        saveOperation.completionBlock = { [weak self] in
-            guard case .success = saveOperation.result else {
-                return
-            }
-
-            self?.eventCenter.notify(with: WalletTransactionListUpdated())
-        }
-
-        operationQueue.addOperation(saveOperation)
+        createAndSaveTransaction(for: event, assetContract: assetContract, transferEvent: transferEvent)
     }
 
     private func removeTransaction(for event: EventLog) {
