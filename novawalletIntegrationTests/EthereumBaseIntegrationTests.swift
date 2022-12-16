@@ -90,7 +90,6 @@ class EthereumBaseIntegrationTests: XCTestCase {
 
         let chainId = "fe58ea77779b7abda7da4ec526d14db9b1e9cd40a217c34892af80a9b332b76d"
         let transactionHash = "0x6350478650f0ad0771ddd5895c5bc9c86d575d047cd9a095ebbb8a8f029a39f6"
-        let logger = Logger.shared
         let chainStorageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: chainStorageFacade)
 
