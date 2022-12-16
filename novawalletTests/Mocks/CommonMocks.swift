@@ -4299,6 +4299,20 @@ import SubstrateSdk
         
     }
     
+    
+    
+     var hasSnapshot: Bool {
+        get {
+            return cuckoo_manager.getter("hasSnapshot",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.hasSnapshot)
+        }
+        
+    }
+    
 
     
 
@@ -4377,6 +4391,11 @@ import SubstrateSdk
 	    }
 	    
 	    
+	    var hasSnapshot: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockRuntimeProviderProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "hasSnapshot")
+	    }
+	    
+	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderProtocol.self, method: "setup()", parameterMatchers: matchers))
@@ -4416,6 +4435,11 @@ import SubstrateSdk
 	        return .init(manager: cuckoo_manager, name: "chainId", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
+	    
+	    var hasSnapshot: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "hasSnapshot", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
 	
 	    
 	    @discardableResult
@@ -4452,6 +4476,15 @@ import SubstrateSdk
      var chainId: ChainModel.Id {
         get {
             return DefaultValueRegistry.defaultValue(for: (ChainModel.Id).self)
+        }
+        
+    }
+        
+    
+    
+     var hasSnapshot: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
         }
         
     }
