@@ -101,7 +101,7 @@ final class EvmTransactionHistoryUpdater {
 
         let operations = transactionReceiptWrapper.allOperations + [saveOperation]
 
-        operationQueue.addOperations(operations, waitUntilFinished: true)
+        operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
     private func insertOrUpdateTransaction(for event: EventLog) {
