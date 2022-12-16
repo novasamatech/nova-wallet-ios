@@ -8,13 +8,16 @@ final class ReferendumsMetadataPreviewProviderSource {
     let operationFactory: PolkassemblyOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ReferendumMetadataLocal>
     let operationQueue: OperationQueue
+    let apiParameters: JSON?
 
     init(
         operationFactory: PolkassemblyOperationFactoryProtocol,
+        apiParameters: JSON?,
         repository: AnyDataProviderRepository<ReferendumMetadataLocal>,
         operationQueue: OperationQueue
     ) {
         self.operationFactory = operationFactory
+        self.apiParameters = apiParameters
         self.repository = repository
         self.operationQueue = operationQueue
     }
@@ -44,7 +47,7 @@ extension ReferendumsMetadataPreviewProviderSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: ((Result<Int, Error>?) -> Void)?
     ) {
-        let remoteFetchOperation = operationFactory.createPreviewsOperation()
+        let remoteFetchOperation = operationFactory.createPreviewsOperation(for: apiParameters)
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
         let changesOperation = ClosureOperation<[ReferendumMetadataLocal]> {
