@@ -4,19 +4,22 @@ import RobinHood
 final class WalletServiceFacade {
     static let sharedRemoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol = {
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
-        let assetsOperationQueue = OperationManagerFacade.assetsQueue
-        let assetsOperationManager = OperationManager(operationQueue: assetsOperationQueue)
+        let syncOperationQueue = OperationManagerFacade.assetsSyncQueue
+        let repositoryOperationQueue = OperationManagerFacade.assetsRepositoryQueue
+        let syncOperationManager = OperationManager(operationQueue: syncOperationQueue)
+        let repositoryOperationManager = OperationManager(operationQueue: repositoryOperationQueue)
 
         return WalletRemoteSubscriptionService(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             repository: repository,
-            operationManager: assetsOperationManager,
+            syncOperationManager: syncOperationManager,
+            repositoryOperationManager: repositoryOperationManager,
             logger: Logger.shared
         )
     }()
 
     static let sharedEvmRemoteSubscriptionService: WalletRemoteEvmSubscriptionServiceProtocol = {
-        let assetsOperationQueue = OperationManagerFacade.assetsQueue
+        let assetsOperationQueue = OperationManagerFacade.assetsSyncQueue
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let logger = Logger.shared
 

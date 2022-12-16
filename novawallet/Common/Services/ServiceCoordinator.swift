@@ -61,7 +61,7 @@ extension ServiceCoordinator {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let logger = Logger.shared
 
-        let assetsOperationQueue = OperationManagerFacade.assetsQueue
+        let assetsOperationQueue = OperationManagerFacade.assetsSyncQueue
         let assetsOperationManager = OperationManager(operationQueue: assetsOperationQueue)
 
         let walletSettings = SelectedWalletSettings.shared
