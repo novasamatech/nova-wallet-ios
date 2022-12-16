@@ -99,6 +99,7 @@ extension ServiceCoordinator {
 
         let evmTransactionHistoryUpdaterFactory = EvmTransactionHistoryUpdaterFactory(
             storageFacade: substrateStorageFacade,
+            chainRegistry: chainRegistry,
             eventCenter: EventCenter.shared,
             operationQueue: assetsOperationQueue,
             logger: logger
