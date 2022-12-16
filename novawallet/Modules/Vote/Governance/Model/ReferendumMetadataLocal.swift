@@ -37,7 +37,11 @@ struct ReferendumMetadataLocal: Equatable {
     let timeline: [TimelineItem]?
 
     func proposerAccountId(for chainFormat: ChainFormat) -> AccountId? {
-        try? proposer?.toAccountId(using: chainFormat)
+        if let chainAccountId = try? proposer?.toAccountId(using: chainFormat) {
+            return chainAccountId
+        } else {
+            return try? proposer?.toAccountId()
+        }
     }
 }
 
