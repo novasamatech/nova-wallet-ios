@@ -91,7 +91,7 @@ extension EtherscanOperationFactory: WalletRemoteHistoryFactoryProtocol {
         if let currentPage = context.page {
             page = currentPage + 1
         } else {
-            page = 0
+            page = 1
         }
 
         let info = EtherscanHistoryInfo(
