@@ -42,7 +42,8 @@ class RemoteSubscriptionService {
 
     let chainRegistry: ChainRegistryProtocol
     let repository: AnyDataProviderRepository<ChainStorageItem>
-    let operationManager: OperationManagerProtocol
+    let syncOperationManager: OperationManagerProtocol
+    let repositoryOperationManager: OperationManagerProtocol
     let logger: LoggerProtocol
 
     private var activeSubscriptions: [String: Active] = [:]
@@ -57,12 +58,14 @@ class RemoteSubscriptionService {
     init(
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainStorageItem>,
-        operationManager: OperationManagerProtocol,
+        syncOperationManager: OperationManagerProtocol,
+        repositoryOperationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.repository = repository
-        self.operationManager = operationManager
+        self.syncOperationManager = syncOperationManager
+        self.repositoryOperationManager = repositoryOperationManager
         self.logger = logger
     }
 
@@ -120,7 +123,7 @@ class RemoteSubscriptionService {
 
         pendingSubscriptions[cacheKey] = pending
 
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+        syncOperationManager.enqueue(operations: wrapper.allOperations, in: .transient)
 
         logger.debug("Operations enqued for subscription: \(chainId)")
 
@@ -249,7 +252,7 @@ class RemoteSubscriptionService {
                 remoteStorageKey: keysPair.remote,
                 localStorageKey: keysPair.local,
                 storage: repository,
-                operationManager: operationManager,
+                operationManager: repositoryOperationManager,
                 logger: logger
             )
         }
