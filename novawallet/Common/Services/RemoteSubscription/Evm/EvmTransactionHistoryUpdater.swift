@@ -48,13 +48,7 @@ final class EvmTransactionHistoryUpdater {
 
         let fetchOperation = operationFactory.createTransactionReceiptOperation(for: transactionHash)
 
-        let mapOperation = ClosureOperation<EthereumTransactionReceipt?> {
-            try fetchOperation.extractNoCancellableResultData()
-        }
-
-        mapOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+        return CompoundOperationWrapper(targetOperation: fetchOperation)
     }
 
     private func createAndSaveTransaction(
