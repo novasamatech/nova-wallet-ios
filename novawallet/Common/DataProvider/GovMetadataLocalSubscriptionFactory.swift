@@ -98,6 +98,7 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
 
         let source = ReferendumsMetadataPreviewProviderSource(
             operationFactory: operationFactory,
+            apiParameters: option.chain.externalApi?.governance?.parameters,
             repository: AnyDataProviderRepository(repository),
             operationQueue: operationQueue
         )
@@ -166,6 +167,7 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         let source = ReferendumMetadataDetailsProviderSource(
             chainId: chainId,
             referendumId: referendumId,
+            apiParameters: option.chain.externalApi?.governance?.parameters,
             operationFactory: operationFactory,
             repository: AnyDataProviderRepository(repository),
             operationQueue: operationQueue

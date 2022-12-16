@@ -7,6 +7,7 @@ final class ReferendumMetadataDetailsProviderSource {
 
     let chainId: ChainModel.Id
     let referendumId: ReferendumIdLocal
+    let apiParameters: JSON?
     let operationFactory: PolkassemblyOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ReferendumMetadataLocal>
     let operationQueue: OperationQueue
@@ -14,12 +15,14 @@ final class ReferendumMetadataDetailsProviderSource {
     init(
         chainId: ChainModel.Id,
         referendumId: ReferendumIdLocal,
+        apiParameters: JSON?,
         operationFactory: PolkassemblyOperationFactoryProtocol,
         repository: AnyDataProviderRepository<ReferendumMetadataLocal>,
         operationQueue: OperationQueue
     ) {
         self.chainId = chainId
         self.referendumId = referendumId
+        self.apiParameters = apiParameters
         self.operationFactory = operationFactory
         self.repository = repository
         self.operationQueue = operationQueue
@@ -50,7 +53,10 @@ extension ReferendumMetadataDetailsProviderSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: ((Result<Int, Error>?) -> Void)?
     ) {
-        let remoteFetchOperation = operationFactory.createDetailsOperation(for: referendumId)
+        let remoteFetchOperation = operationFactory.createDetailsOperation(
+            for: referendumId,
+            parameters: apiParameters
+        )
 
         let identifier = ReferendumMetadataLocal.identifier(from: chainId, referendumId: referendumId)
         let saveOperation = repository.saveOperation({
