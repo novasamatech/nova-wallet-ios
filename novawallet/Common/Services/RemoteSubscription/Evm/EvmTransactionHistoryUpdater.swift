@@ -54,7 +54,8 @@ final class EvmTransactionHistoryUpdater {
     private func createAndSaveTransaction(
         for event: EventLog,
         assetContract: EvmAssetContractId,
-        transferEvent: ERC20TransferEvent
+        transferEvent: ERC20TransferEvent,
+        logger: LoggerProtocol
     ) {
         let transactionHashString = event.transactionHash.toHex(includePrefix: true)
 
@@ -65,6 +66,9 @@ final class EvmTransactionHistoryUpdater {
 
         let saveOperation = repository.saveOperation({
             let receipt = try? transactionReceiptWrapper.targetOperation.extractNoCancellableResultData()
+
+            logger.debug("Tx receipt \(transactionHashString): \(receipt)")
+
             let fee = receipt?.fee.map { String($0) }
 
             let historyItem = TransactionHistoryItem(
