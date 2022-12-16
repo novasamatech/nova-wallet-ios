@@ -29,7 +29,14 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
-    static let assetsQueue: OperationQueue = {
+    static let assetsSyncQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.qualityOfService = .userInitiated
+        operationQueue.maxConcurrentOperationCount = 30
+        return operationQueue
+    }()
+
+    static let assetsRepositoryQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
         operationQueue.maxConcurrentOperationCount = 30

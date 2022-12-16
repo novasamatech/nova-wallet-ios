@@ -59,14 +59,16 @@ extension StakingMainPresenterFactory {
         let stakingAccountService = ParachainStaking.AccountSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 
         let stakingAssetService = ParachainStaking.StakingRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 
