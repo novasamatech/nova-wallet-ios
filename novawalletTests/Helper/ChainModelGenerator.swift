@@ -306,7 +306,8 @@ enum ChainModelGenerator {
         if hasCrowdloans {
             crowdloanApi = ChainModel.ExternalApi(
                 type: "test",
-                url: URL(string: "https://crowdloan.io/\(chainId)-\(UUID().uuidString).json")!
+                url: URL(string: "https://crowdloan.io/\(chainId)-\(UUID().uuidString).json")!,
+                parameters: nil
             )
         } else {
             crowdloanApi = nil
@@ -317,7 +318,8 @@ enum ChainModelGenerator {
         if hasStaking {
             stakingApi = ChainModel.ExternalApi(
                 type: "test",
-                url: URL(string: "https://staking.io/\(chainId)-\(UUID().uuidString).json")!
+                url: URL(string: "https://staking.io/\(chainId)-\(UUID().uuidString).json")!,
+                parameters: nil
             )
         } else {
             stakingApi = nil
