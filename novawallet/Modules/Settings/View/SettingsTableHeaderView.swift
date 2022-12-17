@@ -11,16 +11,17 @@ final class SettingsTableHeaderView: UIView {
     let walletSwitch = WalletSwitchControl()
 
     let accountDetailsView: DetailsTriangularedView = {
-        let detailsView = UIFactory().createDetailsView(with: .singleTitle, filled: false)
+        let detailsView = DetailsTriangularedView()
+        detailsView.layout = .singleTitle
         detailsView.iconRadius = UIConstants.normalAddressIconSize.height / 2.0
         detailsView.titleLabel.lineBreakMode = .byTruncatingTail
         detailsView.titleLabel.font = .regularSubheadline
         detailsView.titleLabel.textColor = R.color.colorTextPrimary()
-        detailsView.actionImage = R.image.iconInfo()?.tinted(with: R.color.colorIconSecondary()!)
+        detailsView.actionImage = R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!)
+        detailsView.fillColor = R.color.colorBlockBackground()!
         detailsView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
-        detailsView.strokeColor = R.color.colorContainerBorder()!
-        detailsView.borderWidth = 1
         detailsView.horizontalSpacing = 12.0
+        detailsView.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         return detailsView
     }()
 
