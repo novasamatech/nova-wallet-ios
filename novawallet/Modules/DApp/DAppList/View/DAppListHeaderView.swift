@@ -5,7 +5,7 @@ final class DAppListHeaderView: UICollectionViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTextPrimary()
-        label.font = .h1Title
+        label.font = .boldLargeTitle
         return label
     }()
 
