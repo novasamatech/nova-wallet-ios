@@ -39,11 +39,8 @@ struct TransactionHistoryViewFactory {
         let presenter = TransactionHistoryPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            transactionsPerPage: 10,
-            filter: .init(),
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            chainAsset: chainAsset,
             logger: Logger.shared
         )
 

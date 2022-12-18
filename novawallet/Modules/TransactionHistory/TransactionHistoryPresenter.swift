@@ -8,47 +8,33 @@ final class TransactionHistoryPresenter {
     let wireframe: TransactionHistoryWireframeProtocol
     let interactor: TransactionHistoryInteractorInputProtocol
     let viewModelFactory: TransactionHistoryViewModelFactory2Protocol
-    let chainAsset: ChainAsset
+    let logger: LoggerProtocol?
 
-    private let transactionsPerPage: Int
-    private let logger: LoggerProtocol?
-
-    private var filter: WalletHistoryRequest
     private var viewModel: [Date: [TransactionItemViewModel]] = [:]
-    private var items: [TransactionHistoryItem] = []
+    private var items: [String: TransactionHistoryItem] = [:]
+    private var accountAddress: AccountAddress?
 
     init(
         interactor: TransactionHistoryInteractorInputProtocol,
         wireframe: TransactionHistoryWireframeProtocol,
-        transactionsPerPage: Int = 100,
-        filter: WalletHistoryRequest,
         viewModelFactory: TransactionHistoryViewModelFactory2Protocol,
         localizationManager: LocalizationManagerProtocol,
-        chainAsset: ChainAsset,
         logger: LoggerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.transactionsPerPage = transactionsPerPage
-        self.filter = filter
         self.viewModelFactory = viewModelFactory
         self.logger = logger
-        self.chainAsset = chainAsset
-
         self.localizationManager = localizationManager
     }
 
-    private func reloadView(items: [TransactionHistoryItem]) throws {
-        guard let view = view else {
+    private func reloadView(items: [String: TransactionHistoryItem]) throws {
+        guard let view = view, let accountAddress = accountAddress else {
             return
         }
         let pageViewModels = try viewModelFactory.createGroupModel(
-            items.map { AssetTransactionData.createTransaction(
-                from: $0,
-                address: "",
-                chainAsset: chainAsset,
-                utilityAsset: chainAsset.chain.utilityAsset()!
-            ) },
+            Array(items.values),
+            address: accountAddress,
             locale: selectedLocale
         )
         viewModel.merge(pageViewModels) { _, new in new }
@@ -64,7 +50,7 @@ final class TransactionHistoryPresenter {
         view.didReceive(viewModel: sections)
     }
 
-    private func reloadView() throws {
+    private func reloadView() {
         guard let view = view else {
             return
         }
@@ -77,11 +63,6 @@ final class TransactionHistoryPresenter {
         }.sorted(by: { $0.date < $1.date })
 
         view.didReceive(viewModel: sections)
-    }
-
-    private func resetView() {
-        viewModel = [:]
-        try? reloadView()
     }
 }
 
@@ -112,20 +93,41 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
 }
 
 extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtocol {
-    func didReceive(error: Error) {
-        logger?.error("Cached data expected but received page error \(error)")
+    func didReceive(error: TransactionHistoryError) {
+        view?.stopLoading()
+        logger?.error("Received error \(error.localizedDescription)")
     }
 
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>]) {
-        items = items.applying(changes: changes)
+        items = changes.mergeToDict(items)
         try? reloadView(items: items)
+    }
+
+    func didReceive(nextItems: [TransactionHistoryItem]) {
+        guard let accountAddress = accountAddress else {
+            return
+        }
+        let pageViewModels = viewModelFactory.createGroupModel(
+            nextItems,
+            address: accountAddress,
+            locale: selectedLocale
+        )
+
+        items = nextItems.reduceToDict(items)
+        viewModel.merge(pageViewModels) { _, new in new }
+        view?.stopLoading()
+        reloadView()
+    }
+
+    func didReceive(accountAddress: AccountAddress) {
+        self.accountAddress = accountAddress
     }
 }
 
 extension TransactionHistoryPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-            try? reloadView()
+            reloadView()
         }
     }
 }
