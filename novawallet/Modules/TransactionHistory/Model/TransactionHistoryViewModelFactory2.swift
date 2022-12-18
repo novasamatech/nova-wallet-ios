@@ -1,14 +1,19 @@
 import SoraFoundation
 import SubstrateSdk
-import CommonWallet
+import BigInt
 
 protocol TransactionHistoryViewModelFactory2Protocol {
     func createItemFromData(
-        _ data: AssetTransactionData,
+        _ data: TransactionHistoryItem,
+        address: AccountAddress,
         locale: Locale
-    ) throws -> TransactionItemViewModel
+    ) -> TransactionItemViewModel?
 
-    func createGroupModel(_ data: [AssetTransactionData], locale: Locale) throws -> [Date: [TransactionItemViewModel]]
+    func createGroupModel(
+        _ data: [TransactionHistoryItem],
+        address: AccountAddress,
+        locale: Locale
+    ) -> [Date: [TransactionItemViewModel]]
 
     func formatHeader(date: Date, locale: Locale) -> String
 }
@@ -35,49 +40,56 @@ final class TransactionHistoryViewModelFactory2 {
     }
 
     private func createTransferItemFromData(
-        _ data: AssetTransactionData,
+        _ data: TransactionHistoryItem,
+        address: AccountAddress,
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
-        let amount = tokenFormatter.value(for: locale).stringFromDecimal(data.amount.decimalValue) ?? ""
-
+        let amountInPlank = data.amountInPlank.map { BigUInt($0) ?? 0 } ?? 0
+        let amount = Decimal.fromSubstrateAmount(
+            amountInPlank,
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ) ?? .zero
+        let formattedAmount = tokenFormatter.value(for: locale).stringFromDecimal(amount) ?? ""
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
         let icon = txType == .incoming ? R.image.iconIncomingTransfer() : R.image.iconOutgoingTransfer()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
         let subtitle = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
+        let peerAddress = (data.sender == address ? data.receiver : data.sender) ?? data.sender
 
         return TransactionItemViewModel(
             timestamp: data.timestamp,
-            title: data.peerName ?? "",
+            title: peerAddress,
             subtitle: subtitle,
             time: time,
-            amount: amount,
+            amount: formattedAmount,
             type: txType,
-            status: data.status,
+            status: data.status.walletValue,
             imageViewModel: imageViewModel
         )
     }
 
     private func createRewardOrSlashItemFromData(
-        _ data: AssetTransactionData,
+        _ data: TransactionHistoryItem,
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
-        let amount = tokenFormatter.value(for: locale).stringFromDecimal(data.amount.decimalValue)
+        let feeValue = data.fee.map { BigUInt($0) ?? 0 } ?? 0
+        let amount = Decimal.fromSubstrateAmount(
+            feeValue,
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ) ?? .zero
+        let formattedAmount = tokenFormatter.value(for: locale).stringFromDecimal(amount)
             ?? ""
-
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
-
         let icon = R.image.iconRewardOperation()
         let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
-
         let title = txType == .reward ?
             R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
             R.string.localizable.stakingSlash(preferredLanguages: locale.rLanguages)
-
         let subtitle = R.string.localizable.stakingTitle(preferredLanguages: locale.rLanguages)
 
         return TransactionItemViewModel(
@@ -85,35 +97,41 @@ final class TransactionHistoryViewModelFactory2 {
             title: title,
             subtitle: subtitle,
             time: time,
-            amount: amount,
+            amount: formattedAmount,
             type: txType,
-            status: data.status,
+            status: data.status.walletValue,
             imageViewModel: imageViewModel
         )
     }
 
     private func createExtrinsicItemFromData(
-        _ data: AssetTransactionData,
+        _ data: TransactionHistoryItem,
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
-        let amount = tokenFormatter.value(for: locale).stringFromDecimal(data.amount.decimalValue)
+        let feeValue = data.fee.map { BigUInt($0) ?? 0 } ?? 0
+        let amount = Decimal.fromSubstrateAmount(
+            feeValue,
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ) ?? .zero
+        let formattedAmount = tokenFormatter.value(for: locale).stringFromDecimal(amount)
             ?? ""
-
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
         let iconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
         let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
+        let peerFirstName = data.callPath.moduleName.displayCall
+        let peerLastName = data.callPath.callName.displayCall
 
         return TransactionItemViewModel(
             timestamp: data.timestamp,
-            title: data.peerLastName?.displayCall ?? "",
-            subtitle: data.peerFirstName?.displayModule ?? "",
+            title: peerFirstName,
+            subtitle: peerLastName,
             time: time,
-            amount: amount,
+            amount: formattedAmount,
             type: txType,
-            status: data.status,
+            status: data.status.walletValue,
             imageViewModel: imageViewModel
         )
     }
@@ -124,10 +142,13 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
         groupDateFormatter.value(for: locale).string(from: date)
     }
 
-    func createGroupModel(_ data: [AssetTransactionData], locale: Locale) throws ->
-        [Date: [TransactionItemViewModel]] {
-        let items = try data.map {
-            try self.createItemFromData($0, locale: locale)
+    func createGroupModel(
+        _ data: [TransactionHistoryItem],
+        address: AccountAddress,
+        locale: Locale
+    ) -> [Date: [TransactionItemViewModel]] {
+        let items = data.compactMap {
+            try? self.createItemFromData($0, address: address, locale: locale)
         }
 
         let sections = Dictionary(grouping: items, by: {
@@ -140,17 +161,18 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
     }
 
     func createItemFromData(
-        _ data: AssetTransactionData,
+        _ data: TransactionHistoryItem,
+        address: AccountAddress,
         locale: Locale
-    ) throws -> TransactionItemViewModel {
-        guard let transactionType = TransactionType(rawValue: data.type) else {
-            throw TransactionHistoryViewModelFactoryError.unsupportedType
+    ) -> TransactionItemViewModel? {
+        guard let transactionType = data.type(for: address) else {
+            return nil
         }
-
         switch transactionType {
         case .incoming, .outgoing:
             return createTransferItemFromData(
                 data,
+                address: address,
                 locale: locale,
                 txType: transactionType
             )
@@ -167,5 +189,15 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
                 txType: transactionType
             )
         }
+    }
+}
+
+extension TransactionHistoryItem {
+    func type(for address: AccountAddress) -> TransactionType? {
+        if callPath.isTransfer {
+            return sender == address ? .outgoing : .incoming
+        }
+        // TODO:
+        return nil
     }
 }
