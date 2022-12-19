@@ -119,8 +119,6 @@ extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
             assetRepository: assetRepository,
             transactionSubscription: transactionSubscription,
             remoteStorageKey: remoteStorageKey,
-            localStorageKey: localStorageKey,
-            storage: storage,
             operationManager: operationManager,
             logger: logger,
             eventCenter: eventCenter
