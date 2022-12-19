@@ -239,6 +239,7 @@ extension SubqueryHistoryElement {
                 blockNumber: blockNumber,
                 txIndex: nil,
                 callPath: CallCodingPath(moduleName: extrinsic.module, callName: extrinsic.call),
+                // TODO:
                 call: nil
             )
         } else if let reward = reward {
@@ -255,7 +256,7 @@ extension SubqueryHistoryElement {
                 fee: nil,
                 blockNumber: blockNumber,
                 txIndex: nil,
-                callPath: CallCodingPath(moduleName: "", callName: ""),
+                callPath: reward.isReward ? .reward : .slash,
                 call: nil
             )
         } else {

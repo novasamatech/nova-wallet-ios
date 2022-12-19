@@ -2465,6 +2465,12 @@
 		88F7716028BEA589008C028A /* YourWalletsIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7715F28BEA589008C028A /* YourWalletsIconDetailsView.swift */; };
 		88F7716428BF6B59008C028A /* GenericMultiValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7716328BF6B59008C028A /* GenericMultiValueView.swift */; };
 		88FAE78828FCF8E200130B47 /* ReferendumDetailsTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FAE78728FCF8E200130B47 /* ReferendumDetailsTitleView.swift */; };
+		88FB7DC829505DC300784E08 /* AssetDetailsContainerViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DC729505DC300784E08 /* AssetDetailsContainerViewFactory.swift */; };
+		88FB7DCB2950712E00784E08 /* AssetDetailsContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DCA2950712E00784E08 /* AssetDetailsContainerViewController.swift */; };
+		88FB7DCD2950715E00784E08 /* AssetDetailsContainerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DCC2950715E00784E08 /* AssetDetailsContainerProtocols.swift */; };
+		88FB7DCF295071B100784E08 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DCE295071B100784E08 /* ContainerViewController.swift */; };
+		88FB7DD12950720800784E08 /* ContainerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DD02950720800784E08 /* ContainerProtocols.swift */; };
+		88FB7DD32950723100784E08 /* NovaWalletViewModelObserverContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DD22950723100784E08 /* NovaWalletViewModelObserverContainer.swift */; };
 		8916E9179CF5409E65D1B3A6 /* NftDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A46EE888D60C1538A0A3EFC /* NftDetailsProtocols.swift */; };
 		89724EA9F732D0C967253597 /* ReferendumVotersViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF3C1CFECE4340E82837FC4 /* ReferendumVotersViewFactory.swift */; };
 		8A19EC93E6A6972327116D80 /* ParaStkStakeConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139FB38E7D8D25A36726089 /* ParaStkStakeConfirmProtocols.swift */; };
@@ -5550,6 +5556,12 @@
 		88F7715F28BEA589008C028A /* YourWalletsIconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourWalletsIconDetailsView.swift; sourceTree = "<group>"; };
 		88F7716328BF6B59008C028A /* GenericMultiValueView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericMultiValueView.swift; sourceTree = "<group>"; };
 		88FAE78728FCF8E200130B47 /* ReferendumDetailsTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumDetailsTitleView.swift; sourceTree = "<group>"; };
+		88FB7DC729505DC300784E08 /* AssetDetailsContainerViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailsContainerViewFactory.swift; sourceTree = "<group>"; };
+		88FB7DCA2950712E00784E08 /* AssetDetailsContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailsContainerViewController.swift; sourceTree = "<group>"; };
+		88FB7DCC2950715E00784E08 /* AssetDetailsContainerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetDetailsContainerProtocols.swift; sourceTree = "<group>"; };
+		88FB7DCE295071B100784E08 /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
+		88FB7DD02950720800784E08 /* ContainerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerProtocols.swift; sourceTree = "<group>"; };
+		88FB7DD22950723100784E08 /* NovaWalletViewModelObserverContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaWalletViewModelObserverContainer.swift; sourceTree = "<group>"; };
 		899686C7351A2600FFA08371 /* TransferConfirmOnChainViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransferConfirmOnChainViewFactory.swift; sourceTree = "<group>"; };
 		89CFED2E01AB638656E251AF /* NftListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListProtocols.swift; sourceTree = "<group>"; };
 		8ADA5C374888879D27DBAA29 /* Pods-novawalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.release.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -13084,6 +13096,19 @@
 			path = Rows;
 			sourceTree = "<group>";
 		};
+		88FB7DC9295070FC00784E08 /* Container */ = {
+			isa = PBXGroup;
+			children = (
+				88FB7DC729505DC300784E08 /* AssetDetailsContainerViewFactory.swift */,
+				88FB7DCC2950715E00784E08 /* AssetDetailsContainerProtocols.swift */,
+				88FB7DCA2950712E00784E08 /* AssetDetailsContainerViewController.swift */,
+				88FB7DCE295071B100784E08 /* ContainerViewController.swift */,
+				88FB7DD02950720800784E08 /* ContainerProtocols.swift */,
+				88FB7DD22950723100784E08 /* NovaWalletViewModelObserverContainer.swift */,
+			);
+			path = Container;
+			sourceTree = "<group>";
+		};
 		8C1DCF40C8BE3290D4BB9843 /* ParaStkStakeConfirm */ = {
 			isa = PBXGroup;
 			children = (
@@ -13808,6 +13833,7 @@
 				F04A75E7196E62F45CA9369D /* AssetDetailsInteractor.swift */,
 				A479F3338BE7DA2C846023FA /* AssetDetailsViewController.swift */,
 				0A42FD5E0D98EFE83883EC56 /* AssetDetailsViewFactory.swift */,
+				88FB7DC9295070FC00784E08 /* Container */,
 			);
 			path = AssetDetails;
 			sourceTree = "<group>";
@@ -15235,6 +15261,7 @@
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
 				843910C1253F36F300E3C217 /* BaseStorageChildSubscription.swift in Sources */,
 				84FAB0812543A7EE00319F74 /* ReceiveConfigurator.swift in Sources */,
+				88FB7DC829505DC300784E08 /* AssetDetailsContainerViewFactory.swift in Sources */,
 				846B749528B422C800C39B93 /* ChainAccountAddViewModel.swift in Sources */,
 				84EBFCE4285E734C0006327E /* XcmTransferDestination.swift in Sources */,
 				AE805FC726B3E54E00007CE9 /* YourValidatorInfoInteractor.swift in Sources */,
@@ -17116,6 +17143,7 @@
 				84BB3CEE267CD6B500676FFE /* CrowdloanContributionDict.swift in Sources */,
 				8473F4B4282BD5A1007CC55A /* StakingRelaychainInteractor.swift in Sources */,
 				845B821B26EF80BC00D25C72 /* MetaAccountModel.swift in Sources */,
+				88FB7DCF295071B100784E08 /* ContainerViewController.swift in Sources */,
 				841E5536282CDB9E00C8438F /* StakingMainPresenterFactory+Relaychain.swift in Sources */,
 				F409673326B29C9B008CD244 /* RewardAnalyticsWidgetViewModel.swift in Sources */,
 				8499FEC827BF73F400712589 /* StorageKeyFactory+Size.swift in Sources */,
@@ -17180,6 +17208,7 @@
 				8461CC8126BBFF70007460E4 /* ImmortalEraOperationFactory.swift in Sources */,
 				6D5851FB5F830D55EFDB8B7D /* StakingUnbondSetupProtocols.swift in Sources */,
 				84DBEA4E265ED5B600FDF73C /* CrowdloanDataValidatorFactory.swift in Sources */,
+				88FB7DD32950723100784E08 /* NovaWalletViewModelObserverContainer.swift in Sources */,
 				84274B8127A19AFF00A26657 /* OrmlTokenTransfer.swift in Sources */,
 				8401AEC22642A71D000B03E3 /* StakingRebondConfirmationInteractor.swift in Sources */,
 				84DC5A1328BAA8020014E081 /* LedgerInvaliDataPolkadotReason.swift in Sources */,
@@ -17217,6 +17246,7 @@
 				843E9B2827C83985009C143A /* AssetListNftsCell.swift in Sources */,
 				3E1462D9E1C0D490E81FD288 /* StakingUnbondConfirmViewFactory.swift in Sources */,
 				9B4BE26140C63E07C256CC97 /* StakingRedeemProtocols.swift in Sources */,
+				88FB7DD12950720800784E08 /* ContainerProtocols.swift in Sources */,
 				AEE5FB1C264A610C002B8FDC /* StakingRewardDestSetupLayout.swift in Sources */,
 				84350ADB28461E5B0031EF24 /* ParaStkYourCollatorsViewModelFactory.swift in Sources */,
 				B7CF31A548C02AD7AAC16A8D /* StakingRedeemWireframe.swift in Sources */,
@@ -17590,6 +17620,7 @@
 				48D5EFA462A597368024E9ED /* DAppAuthSettingsViewController.swift in Sources */,
 				8857E02F28A4FA6000260BA2 /* Currency+usd.swift in Sources */,
 				84BFE8AA28C3881800140F1F /* StorageCodingPath+AutomationTime.swift in Sources */,
+				88FB7DCD2950715E00784E08 /* AssetDetailsContainerProtocols.swift in Sources */,
 				2B682D343F75EBEB8A1E65BD /* DAppAuthSettingsViewLayout.swift in Sources */,
 				148748ACAE23B7D15144015B /* DAppAuthSettingsViewFactory.swift in Sources */,
 				B1F86CA723BB4D69C5EF989D /* ParaStkStakeSetupProtocols.swift in Sources */,
@@ -17636,6 +17667,7 @@
 				842643BF28785CFC0031B5B5 /* TuringStaking.swift in Sources */,
 				688F73AFD5FF20F77242B57E /* ParaStkCollatorsSearchViewController.swift in Sources */,
 				3BFD635E852E4D395025BEE8 /* ParaStkCollatorsSearchViewFactory.swift in Sources */,
+				88FB7DCB2950712E00784E08 /* AssetDetailsContainerViewController.swift in Sources */,
 				846AACED28BF94B9009F3D42 /* AccountManagementFilter.swift in Sources */,
 				8425D0E628FE82CB003B782A /* ReferendumVoteInteractor.swift in Sources */,
 				766FE2FAB8509BF0F56EA3C0 /* ParaStkCollatorInfoProtocols.swift in Sources */,

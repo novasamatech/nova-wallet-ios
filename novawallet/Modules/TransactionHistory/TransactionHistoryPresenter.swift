@@ -32,7 +32,7 @@ final class TransactionHistoryPresenter {
         guard let view = view, let accountAddress = accountAddress else {
             return
         }
-        let pageViewModels = try viewModelFactory.createGroupModel(
+        let pageViewModels = viewModelFactory.createGroupModel(
             Array(items.values),
             address: accountAddress,
             locale: selectedLocale
@@ -60,7 +60,7 @@ final class TransactionHistoryPresenter {
                 date: $0.key,
                 items: $0.value.sorted(by: { $0.timestamp < $1.timestamp })
             )
-        }.sorted(by: { $0.date < $1.date })
+        }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
         view.didReceive(viewModel: sections)
     }

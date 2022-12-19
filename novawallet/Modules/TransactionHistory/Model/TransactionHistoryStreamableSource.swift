@@ -109,16 +109,11 @@ final class TransactionHistoryStreamableSource {
 
         dependencies.forEach { mergeOperation.addDependency($0) }
         dependencies.append(mergeOperation)
-
-        let saveOperation = txStorage.saveOperation({
+        let saveOperation = txStorage.replaceOperation {
             let mergeResult = try mergeOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
             return mergeResult.historyItems
-        }, {
-            let mergeResult = try mergeOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-            return mergeResult.identifiersToRemove
-        })
+        }
 
         dependencies.append(saveOperation)
         saveOperation.addDependency(mergeOperation)

@@ -5,6 +5,10 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = AssetDetailsViewLayout
 
     let presenter: AssetDetailsPresenterProtocol
+    var observable = NovaWalletViewModelObserverContainer<ContainableObserver>()
+    weak var reloadableDelegate: ReloadableDelegate?
+    var contentInsets: UIEdgeInsets = .zero
+    var preferredContentHeight: CGFloat { rootView.prefferedHeight }
 
     init(
         presenter: AssetDetailsPresenterProtocol,
@@ -40,19 +44,19 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
         rootView.lockCell.addTarget(self, action: #selector(didTapLocks), for: .touchUpInside)
     }
 
-    @objc func didTapSendButton() {
+    @objc private func didTapSendButton() {
         presenter.handleSend()
     }
 
-    @objc func didTapReceiveButton() {
+    @objc private func didTapReceiveButton() {
         presenter.handleReceive()
     }
 
-    @objc func didTapBuyButton() {
+    @objc private func didTapBuyButton() {
         presenter.handleBuy()
     }
 
-    @objc func didTapLocks() {
+    @objc private func didTapLocks() {
         presenter.handleLocks()
     }
 }
@@ -79,6 +83,16 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.buyButton.isEnabled = availableOperations.contains(.buy)
+    }
+}
+
+extension AssetDetailsViewController: Containable {
+    func setContentInsets(_ insets: UIEdgeInsets, animated _: Bool) {
+        contentInsets = insets
+    }
+
+    var contentView: UIView {
+        view
     }
 }
 

@@ -123,8 +123,24 @@ extension CallCodingPath {
     static var localAssetsTransferAll: CallCodingPath {
         CallCodingPath(moduleName: "LocalAssets", callName: "transfer_all")
     }
+}
 
+// MARK: Syntetic keys
+
+extension CallCodingPath {
     static var ethereumTransact: CallCodingPath {
         CallCodingPath(moduleName: "Ethereum", callName: "transact")
+    }
+
+    static var slash: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "slash")
+    }
+
+    static var reward: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "reward")
+    }
+
+    static var extrinsic: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "extrinsic")
     }
 }
