@@ -1,13 +1,16 @@
 import Foundation
 import RobinHood
 
-final class AccountInfoSubscription: BaseStorageChildSubscription {
+final class AccountInfoSubscription {
+    let remoteStorageKey: Data
     let chainAssetId: ChainAssetId
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
     let transactionSubscription: TransactionSubscription?
     let eventCenter: EventCenterProtocol
+    let logger: LoggerProtocol
+    let operationManager: OperationManagerProtocol
 
     init(
         chainAssetId: ChainAssetId,
@@ -16,8 +19,6 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         assetRepository: AnyDataProviderRepository<AssetBalance>,
         transactionSubscription: TransactionSubscription?,
         remoteStorageKey: Data,
-        localStorageKey: String,
-        storage: AnyDataProviderRepository<ChainStorageItem>,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol,
         eventCenter: EventCenterProtocol
@@ -28,41 +29,13 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         self.assetRepository = assetRepository
         self.transactionSubscription = transactionSubscription
         self.eventCenter = eventCenter
-
-        super.init(
-            remoteStorageKey: remoteStorageKey,
-            localStorageKey: localStorageKey,
-            storage: storage,
-            operationManager: operationManager,
-            logger: logger
-        )
-    }
-
-    override func handle(
-        result: Result<DataProviderChange<ChainStorageItem>?, Error>,
-        remoteItem: ChainStorageItem?,
-        blockHash: Data?
-    ) {
-        logger.debug("Did account info update")
-
-        decodeAndSaveAccountInfo(
-            remoteItem,
-            chainAssetId: chainAssetId,
-            accountId: accountId,
-            blockHash: blockHash
-        )
-
-        if case let .success(optionalChange) = result, optionalChange != nil {
-            logger.debug("Did change account info")
-
-            if let blockHash = blockHash {
-                transactionSubscription?.process(blockHash: blockHash)
-            }
-        }
+        self.remoteStorageKey = remoteStorageKey
+        self.operationManager = operationManager
+        self.logger = logger
     }
 
     private func createDecodingOperationWrapper(
-        _ item: ChainStorageItem?,
+        _ item: Data?,
         chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<AccountInfo?> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
@@ -74,7 +47,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
         let decodingOperation = StorageFallbackDecodingOperation<AccountInfo>(
             path: .account,
-            data: item?.data
+            data: item
         )
 
         decodingOperation.configurationBlock = {
@@ -133,7 +106,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
     }
 
     private func decodeAndSaveAccountInfo(
-        _ item: ChainStorageItem?,
+        _ item: Data?,
         chainAssetId: ChainAssetId,
         accountId: AccountId,
         blockHash: Data?
@@ -178,7 +151,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
                     let assetBalanceChangeEvent = AssetBalanceChanged(
                         chainAssetId: chainAssetId,
                         accountId: accountId,
-                        changes: item?.data,
+                        changes: item,
                         block: blockHash
                     )
 
@@ -190,5 +163,26 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         let operations = decodingWrapper.allOperations + changesWrapper.allOperations + [saveOperation]
 
         operationManager.enqueue(operations: operations, in: .transient)
+    }
+}
+
+extension AccountInfoSubscription: StorageChildSubscribing {
+    func processUpdate(_ data: Data?, blockHash: Data?) {
+        logger.debug("Did account info update")
+
+        decodeAndSaveAccountInfo(
+            data,
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            blockHash: blockHash
+        )
+
+        if data != nil {
+            logger.debug("Did change account info")
+
+            if let blockHash = blockHash {
+                transactionSubscription?.process(blockHash: blockHash)
+            }
+        }
     }
 }
