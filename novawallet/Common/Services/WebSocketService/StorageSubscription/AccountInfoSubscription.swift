@@ -144,10 +144,12 @@ final class AccountInfoSubscription {
         saveOperation.addDependency(changesWrapper.targetOperation)
 
         saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
+            DispatchQueue.global().async {
                 let maybeItem = try? changesWrapper.targetOperation.extractNoCancellableResultData()
 
                 if maybeItem != nil {
+                    self?.handleTransactionIfNeeded(for: blockHash)
+
                     let assetBalanceChangeEvent = AssetBalanceChanged(
                         chainAssetId: chainAssetId,
                         accountId: accountId,
@@ -164,6 +166,13 @@ final class AccountInfoSubscription {
 
         operationManager.enqueue(operations: operations, in: .transient)
     }
+
+    private func handleTransactionIfNeeded(for blockHash: Data?) {
+        if let blockHash = blockHash {
+            logger.debug("Handle account info transaction")
+            transactionSubscription?.process(blockHash: blockHash)
+        }
+    }
 }
 
 extension AccountInfoSubscription: StorageChildSubscribing {
@@ -176,10 +185,5 @@ extension AccountInfoSubscription: StorageChildSubscribing {
             accountId: accountId,
             blockHash: blockHash
         )
-
-        if let blockHash = blockHash {
-            logger.debug("Will process transaction info")
-            transactionSubscription?.process(blockHash: blockHash)
-        }
     }
 }
