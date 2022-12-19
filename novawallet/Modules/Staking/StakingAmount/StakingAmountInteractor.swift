@@ -19,7 +19,7 @@ final class StakingAmountInteractor {
     let rewardService: RewardCalculatorServiceProtocol
     let operationManager: OperationManagerProtocol
 
-    private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
@@ -81,9 +81,10 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
             presenter.didReceive(price: nil)
         }
 
-        balanceProvider = subscribeToAccountInfoProvider(
+        balanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.accountId,
-            chainId: chainAsset.chain.chainId
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
         )
 
         minBondProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
@@ -195,10 +196,15 @@ extension StakingAmountInteractor: StakingLocalStorageSubscriber, StakingLocalSu
 }
 
 extension StakingAmountInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
         switch result {
-        case let .success(accountInfo):
-            presenter.didReceive(balance: accountInfo?.data)
+        case let .success(assetBalance):
+            presenter.didReceive(balance: assetBalance)
         case let .failure(error):
             presenter.didReceive(error: error)
         }

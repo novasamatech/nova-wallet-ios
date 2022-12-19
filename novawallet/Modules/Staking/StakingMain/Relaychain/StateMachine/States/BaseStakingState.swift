@@ -37,7 +37,7 @@ class BaseStakingState: StakingStateProtocol {
         if commonData.address != address {
             commonData = commonData
                 .byReplacing(address: address)
-                .byReplacing(accountInfo: nil)
+                .byReplacing(accountBalance: nil)
                 .byReplacing(subqueryRewards: nil, period: .week)
 
             guard let stateMachine = stateMachine else {
@@ -53,8 +53,8 @@ class BaseStakingState: StakingStateProtocol {
         }
     }
 
-    func process(accountInfo: AccountInfo?) {
-        commonData = commonData.byReplacing(accountInfo: accountInfo)
+    func process(accountBalance: AssetBalance?) {
+        commonData = commonData.byReplacing(accountBalance: accountBalance)
 
         stateMachine?.transit(to: self)
     }

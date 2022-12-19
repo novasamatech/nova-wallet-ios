@@ -90,14 +90,18 @@ extension CrowdloanListInteractor: CrowdloanLocalStorageSubscriber, CrowdloanLoc
 }
 
 extension CrowdloanListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId: AccountId,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
     ) {
-        if let chain = crowdloanState.settings.value, chain.chainId == chainId {
+        if
+            let chain = crowdloanState.settings.value,
+            chain.utilityChainAssetId() == ChainAssetId(chainId: chainId, assetId: assetId) {
             logger?.debug("Did receive balance for accountId: \(accountId.toHex()))")
-            presenter?.didReceiveAccountInfo(result: result)
+
+            presenter?.didReceiveAccountBalance(result: result)
         }
     }
 }

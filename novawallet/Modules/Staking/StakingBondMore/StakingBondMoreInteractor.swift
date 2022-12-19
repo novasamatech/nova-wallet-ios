@@ -16,7 +16,7 @@ final class StakingBondMoreInteractor: AccountFetching {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let operationManager: OperationManagerProtocol
 
-    private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var extrinsicService: ExtrinsicServiceProtocol?
@@ -98,17 +98,18 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
             let maybeStashItem = try result.get()
             let maybeStashId = try maybeStashItem.map { try $0.stash.toAccountId() }
 
-            clear(dataProvider: &balanceProvider)
+            clear(streamableProvider: &balanceProvider)
             presenter.didReceiveStashItem(result: result)
 
             guard let stashAccountId = maybeStashId else {
-                presenter.didReceiveAccountInfo(result: .success(nil))
+                presenter.didReceiveAccountBalance(result: .success(nil))
                 return
             }
 
-            balanceProvider = subscribeToAccountInfoProvider(
+            balanceProvider = subscribeToAssetBalanceProvider(
                 for: stashAccountId,
-                chainId: chainAsset.chain.chainId
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId
             )
 
             fetchFirstMetaAccountResponse(
@@ -132,7 +133,7 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
 
         } catch {
             presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountInfo(result: .failure(error))
+            presenter.didReceiveAccountBalance(result: .failure(error))
         }
     }
 }
@@ -144,12 +145,13 @@ extension StakingBondMoreInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
 }
 
 extension StakingBondMoreInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 
