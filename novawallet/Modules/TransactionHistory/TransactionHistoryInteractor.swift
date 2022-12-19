@@ -49,7 +49,7 @@ final class TransactionHistoryInteractor {
             }
             self.presenter.didReceive(changes: changes)
             if self.currentOffset == 0 {
-                self.currentOffset += 1
+                self.currentOffset = 1
             }
         }
 
@@ -86,7 +86,6 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
             return
         }
 
-        currentOffset += 1
         currentFetchOpeartion = dataProvider?.fetch(
             offset: currentOffset,
             count: fetchCount,
@@ -99,6 +98,7 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
                         self?.presenter.didReceive(error: .fetchProvider(error))
                     case let .success(items):
                         self?.presenter.didReceive(nextItems: items)
+                        self?.currentOffset += 1
                     case .none:
                         break
                     }

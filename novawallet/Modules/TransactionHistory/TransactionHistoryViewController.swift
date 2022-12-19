@@ -5,6 +5,10 @@ import SoraFoundation
 import CommonWallet
 
 final class TransactionHistoryViewController: UIViewController, ViewHolder, EmptyStateViewOwnerProtocol {
+    var presentationNavigationItem: UINavigationItem? {
+        navigationController != nil ? navigationItem : nil
+    }
+
     var emptyStateDelegate: EmptyStateDelegate {
         self
     }
@@ -13,17 +17,17 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         emptyDatasource
     }
 
-    var delegate: DraggableDelegate?
+    weak var delegate: DraggableDelegate?
     typealias RootViewType = TransactionHistoryViewLayout
     private var dataSource: TransactionHistoryDataSource?
 
     let presenter: TransactionHistoryPresenterProtocol
-    private var draggableState: DraggableState = .full
+    private var draggableState: DraggableState = .compact
     private var didSetupLayout: Bool = false
     private let emptyDatasource = WalletEmptyStateDataSource.history
     private var fullInsets: UIEdgeInsets = .zero
 
-    let viewModel: [TransactionSectionModel] = []
+    private var viewModel: [TransactionSectionModel] = []
     private var isLoading: Bool = false
 
     private var compactInsets: UIEdgeInsets = .zero {
@@ -272,13 +276,13 @@ extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
 
     func didReceive(viewModel: [TransactionSectionModel]) {
         isLoading = false
+        self.viewModel = viewModel
         var snapshot = NSDiffableDataSourceSnapshot<TransactionSectionModel, TransactionItemViewModel>()
         snapshot.appendSections(viewModel)
         viewModel.forEach { section in
             snapshot.appendItems(section.items, toSection: section)
         }
-
-        dataSource?.apply(snapshot)
+        dataSource?.apply(snapshot, animatingDifferences: true)
         reloadEmptyState(animated: false)
     }
 }

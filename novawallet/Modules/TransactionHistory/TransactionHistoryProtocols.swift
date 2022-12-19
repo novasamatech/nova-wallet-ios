@@ -1,7 +1,7 @@
 import CommonWallet
 import RobinHood
 
-protocol TransactionHistoryViewProtocol: ControllerBackedProtocol {
+protocol TransactionHistoryViewProtocol: ControllerBackedProtocol, Draggable {
     func startLoading()
     func stopLoading()
     func didReceive(viewModel: [TransactionSectionModel])

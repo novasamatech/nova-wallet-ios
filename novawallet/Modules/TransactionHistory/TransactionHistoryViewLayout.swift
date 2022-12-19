@@ -18,7 +18,7 @@ final class TransactionHistoryViewLayout: UIView {
 
     let filterButton: RoundedButton = .create {
         $0.applyIconStyle()
-        $0.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()?.tinted(with: R.color.colorIconPrimary()!)
+        $0.imageWithTitleView?.iconImage = R.image.iconFilter()?.tinted(with: R.color.colorIconPrimary()!)
     }
 
     let closeButton: RoundedButton = .create {
@@ -54,7 +54,8 @@ final class TransactionHistoryViewLayout: UIView {
 
     let panIndicatorView: RoundedView = .create {
         $0.cornerRadius = 2.5
-        $0.fillColor = R.color.colorBlockBackground()!
+        $0.fillColor = R.color.colorPullIndicator()!
+        $0.shadowOpacity = 0
     }
 
     override init(frame: CGRect) {

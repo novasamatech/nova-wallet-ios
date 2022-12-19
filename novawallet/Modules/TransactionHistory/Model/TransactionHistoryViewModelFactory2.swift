@@ -148,7 +148,7 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
         locale: Locale
     ) -> [Date: [TransactionItemViewModel]] {
         let items = data.compactMap {
-            try? self.createItemFromData($0, address: address, locale: locale)
+            createItemFromData($0, address: address, locale: locale)
         }
 
         let sections = Dictionary(grouping: items, by: {
@@ -194,10 +194,17 @@ extension TransactionHistoryViewModelFactory2: TransactionHistoryViewModelFactor
 
 extension TransactionHistoryItem {
     func type(for address: AccountAddress) -> TransactionType? {
-        if callPath.isTransfer {
-            return sender == address ? .outgoing : .incoming
+        switch callPath {
+        case .slash:
+            return .slash
+        case .reward:
+            return .reward
+        default:
+            if callPath.isTransfer {
+                return sender == address ? .outgoing : .incoming
+            } else {
+                return nil
+            }
         }
-        // TODO:
-        return nil
     }
 }
