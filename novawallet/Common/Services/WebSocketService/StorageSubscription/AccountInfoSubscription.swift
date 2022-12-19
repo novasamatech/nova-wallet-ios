@@ -177,12 +177,9 @@ extension AccountInfoSubscription: StorageChildSubscribing {
             blockHash: blockHash
         )
 
-        if data != nil {
-            logger.debug("Did change account info")
-
-            if let blockHash = blockHash {
-                transactionSubscription?.process(blockHash: blockHash)
-            }
+        if let blockHash = blockHash {
+            logger.debug("Will process transaction info")
+            transactionSubscription?.process(blockHash: blockHash)
         }
     }
 }
