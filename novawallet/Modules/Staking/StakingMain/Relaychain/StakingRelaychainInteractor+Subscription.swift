@@ -77,13 +77,14 @@ extension StakingRelaychainInteractor {
         guard let accountResponse = selectedAccount.fetch(
             for: chainAsset.chain.accountRequest()
         ) else {
-            presenter?.didReceive(accountInfo: nil)
+            presenter?.didReceive(assetBalance: nil)
             return
         }
 
-        balanceProvider = subscribeToAccountInfoProvider(
+        balanceProvider = subscribeToAssetBalanceProvider(
             for: accountResponse.accountId,
-            chainId: chainAsset.chain.chainId
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
         )
     }
 
@@ -254,14 +255,15 @@ extension StakingRelaychainInteractor: PriceLocalStorageSubscriber, PriceLocalSu
 }
 
 extension StakingRelaychainInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
         switch result {
-        case let .success(accountInfo):
-            presenter?.didReceive(accountInfo: accountInfo)
+        case let .success(assetBalance):
+            presenter?.didReceive(assetBalance: assetBalance)
         case let .failure(error):
             presenter?.didReceive(balanceError: error)
         }

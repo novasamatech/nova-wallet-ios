@@ -84,7 +84,11 @@ class PersistentValueSettings<T> {
         save(value: value, runningCompletionIn: nil, completionClosure: nil)
     }
 
-    func remove(value: T, runningCompletionIn queue: DispatchQueue?, completionClosure: ((Result<T?, Error>) -> Void)?) {
+    func remove(
+        value: T,
+        runningCompletionIn queue: DispatchQueue?,
+        completionClosure: ((Result<T?, Error>) -> Void)?
+    ) {
         mutex.lock()
 
         performRemove(value: value) { result in

@@ -28,7 +28,7 @@ protocol StakingRebondSetupInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveController(result: Result<ChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
 }
 
 protocol StakingRebondSetupWireframeProtocol: AlertPresentable, ErrorPresentable,

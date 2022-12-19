@@ -21,7 +21,7 @@ final class StakingRewardDestConfirmInteractor: AccountFetching {
 
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var signingWrapper: SigningWrapperProtocol?
@@ -138,15 +138,16 @@ extension StakingRewardDestConfirmInteractor: StakingLocalStorageSubscriber,
     StakingLocalSubscriptionHandler, AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            clear(dataProvider: &accountInfoProvider)
+            clear(streamableProvider: &balanceProvider)
             let stashItem = try result.get()
 
             let maybeController = try stashItem.map { try $0.controller.toAccountId() }
 
             if let controllerId = maybeController {
-                accountInfoProvider = subscribeToAccountInfoProvider(
+                balanceProvider = subscribeToAssetBalanceProvider(
                     for: controllerId,
-                    chainId: chainAsset.chain.chainId
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
                 )
 
                 fetchFirstMetaAccountResponse(
@@ -170,26 +171,27 @@ extension StakingRewardDestConfirmInteractor: StakingLocalStorageSubscriber,
                 }
             } else {
                 presenter.didReceiveStashItem(result: .success(nil))
-                presenter.didReceiveAccountInfo(result: .success(nil))
+                presenter.didReceiveAccountBalance(result: .success(nil))
                 presenter.didReceiveController(result: .success(nil))
             }
 
         } catch {
             presenter.didReceiveStashItem(result: .failure(error))
             presenter.didReceiveController(result: .success(nil))
-            presenter.didReceiveAccountInfo(result: .failure(error))
+            presenter.didReceiveAccountBalance(result: .failure(error))
         }
     }
 }
 
 extension StakingRewardDestConfirmInteractor: WalletLocalStorageSubscriber,
     WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 
