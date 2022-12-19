@@ -37,7 +37,9 @@ final class TransactionHistoryPresenter {
             address: accountAddress,
             locale: selectedLocale
         )
-        viewModel.merge(pageViewModels) { _, new in new }
+        viewModel.merge(pageViewModels) { old, new in
+            Array(Set(old + new))
+        }
 
         let sections = viewModel.map {
             TransactionSectionModel(
@@ -104,7 +106,7 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
     }
 
     func didReceive(nextItems: [TransactionHistoryItem]) {
-        guard let accountAddress = accountAddress else {
+        guard let accountAddress = accountAddress, !nextItems.isEmpty else {
             return
         }
         let pageViewModels = viewModelFactory.createGroupModel(
@@ -114,7 +116,9 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
         )
 
         items = nextItems.reduceToDict(items)
-        viewModel.merge(pageViewModels) { _, new in new }
+        viewModel.merge(pageViewModels) { old, new in
+            Array(Set(old + new))
+        }
         view?.stopLoading()
         reloadView()
     }

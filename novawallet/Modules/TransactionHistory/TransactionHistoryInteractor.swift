@@ -21,7 +21,8 @@ final class TransactionHistoryInteractor {
     private let fetchCount: Int = 100
     private var currentOffset: Int = 0
 
-    private var dataProvider: StreamableProvider<TransactionHistoryItem>?
+    private var localDataProvider: StreamableProvider<TransactionHistoryItem>?
+    private var remoteDataProvider: StreamableProvider<TransactionHistoryItem>?
 
     init(
         chainAsset: ChainAsset,
@@ -57,23 +58,27 @@ final class TransactionHistoryInteractor {
             self?.presenter.didReceive(error: .dataProvider(error))
         }
 
-        dataProvider = try? dataProviderFactory.getTransactionsProvider(
+        let transactionsProvider = try? dataProviderFactory.getTransactionsProvider(
             address: accountAddress,
             chainAsset: chainAsset,
             historyFilter: historyFilter
         )
 
-        dataProvider?.addObserver(
+        localDataProvider = transactionsProvider?.local
+
+        localDataProvider?.addObserver(
             self,
             deliverOn: .main,
             executing: changesBlock,
             failing: failBlock,
             options: .init(alwaysNotifyOnRefresh: true)
         )
+
+        remoteDataProvider = transactionsProvider?.remote
     }
 
     private func clearDataProvider() {
-        dataProvider?.removeObserver(self)
+        localDataProvider?.removeObserver(self)
     }
 }
 
@@ -86,7 +91,7 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
             return
         }
 
-        currentFetchOpeartion = dataProvider?.fetch(
+        currentFetchOpeartion = remoteDataProvider?.fetch(
             offset: currentOffset,
             count: fetchCount,
             synchronized: false,
@@ -98,7 +103,9 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
                         self?.presenter.didReceive(error: .fetchProvider(error))
                     case let .success(items):
                         self?.presenter.didReceive(nextItems: items)
-                        self?.currentOffset += 1
+                        if !items.isEmpty {
+                            self?.currentOffset += 1
+                        }
                     case .none:
                         break
                     }
@@ -116,6 +123,6 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
         }
         clearDataProvider()
         setupDataProvider(historyFilter: historyFilter)
-        dataProvider?.refresh()
+        localDataProvider?.refresh()
     }
 }

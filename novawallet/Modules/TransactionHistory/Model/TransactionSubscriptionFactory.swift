@@ -1,12 +1,25 @@
 import RobinHood
 import CommonWallet
 
+final class TransactionSubscriptionProvider {
+    let remote: StreamableProvider<TransactionHistoryItem>
+    let local: StreamableProvider<TransactionHistoryItem>
+
+    init(
+        local: StreamableProvider<TransactionHistoryItem>,
+        remote: StreamableProvider<TransactionHistoryItem>
+    ) {
+        self.local = local
+        self.remote = remote
+    }
+}
+
 protocol TransactionSubscriptionFactoryProtocol {
     func getTransactionsProvider(
         address: String,
         chainAsset: ChainAsset,
         historyFilter: WalletHistoryFilter
-    ) throws -> StreamableProvider<TransactionHistoryItem>
+    ) throws -> TransactionSubscriptionProvider
 }
 
 final class TransactionSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -36,13 +49,18 @@ extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
         address: String,
         chainAsset: ChainAsset,
         historyFilter: WalletHistoryFilter
-    ) throws -> StreamableProvider<TransactionHistoryItem> {
+    ) throws -> TransactionSubscriptionProvider {
         let chainId = chainAsset.chainAssetId.chainId
         let assetId = chainAsset.chainAssetId.assetId
-        let cacheKey = "transactions-\(chainId)-\(assetId)-\(address)"
+        let localCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-local"
+        let remoteCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-remote"
 
-        if let provider = getProvider(for: cacheKey) as? StreamableProvider<TransactionHistoryItem> {
-            return provider
+        if let localProvider = getProvider(for: localCacheKey) as? StreamableProvider<TransactionHistoryItem>,
+           let remoteProvider = getProvider(for: localCacheKey) as? StreamableProvider<TransactionHistoryItem> {
+            return .init(
+                local: localProvider,
+                remote: remoteProvider
+            )
         }
 
         let filter = NSPredicate.filterTransactionsBy(
@@ -79,15 +97,27 @@ extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
             operationQueue: operationQueue
         )
 
-        let provider = StreamableProvider(
-            source: AnyStreamableSource(source),
+        let sharedSource = AnyStreamableSource(source)
+
+        let localProvider = StreamableProvider(
+            source: sharedSource,
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: OperationManager(operationQueue: operationQueue)
         )
 
-        saveProvider(provider, for: cacheKey)
+        let emptyRepository = EmptyDataProviderRepository<TransactionHistoryItem>()
 
-        return provider
+        let remoteProvider = StreamableProvider(
+            source: sharedSource,
+            repository: AnyDataProviderRepository(emptyRepository),
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        saveProvider(localProvider, for: localCacheKey)
+        saveProvider(remoteProvider, for: remoteCacheKey)
+
+        return .init(local: localProvider, remote: remoteProvider)
     }
 }
