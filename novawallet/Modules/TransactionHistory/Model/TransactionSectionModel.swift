@@ -9,7 +9,8 @@ struct TransactionSectionModel: Hashable {
 
 struct TransactionItemViewModel: Hashable {
     static func == (lhs: TransactionItemViewModel, rhs: TransactionItemViewModel) -> Bool {
-        lhs.timestamp == rhs.timestamp &&
+        lhs.identifier == rhs.identifier &&
+            lhs.timestamp == rhs.timestamp &&
             lhs.title == rhs.title &&
             lhs.subtitle == rhs.subtitle &&
             lhs.time == rhs.time &&
@@ -19,14 +20,11 @@ struct TransactionItemViewModel: Hashable {
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(timestamp)
-        hasher.combine(title)
-        hasher.combine(subtitle)
-        hasher.combine(amount)
+        hasher.combine(identifier)
         hasher.combine(type)
-        hasher.combine(status)
     }
 
+    let identifier: String
     let timestamp: Int64
     let title: String
     let subtitle: String

@@ -60,6 +60,7 @@ final class TransactionHistoryViewModelFactory2 {
         let peerAddress = (data.sender == address ? data.receiver : data.sender) ?? data.sender
 
         return TransactionItemViewModel(
+            identifier: data.identifier,
             timestamp: data.timestamp,
             title: peerAddress,
             subtitle: subtitle,
@@ -93,6 +94,7 @@ final class TransactionHistoryViewModelFactory2 {
         let subtitle = R.string.localizable.stakingTitle(preferredLanguages: locale.rLanguages)
 
         return TransactionItemViewModel(
+            identifier: data.identifier,
             timestamp: data.timestamp,
             title: title,
             subtitle: subtitle,
@@ -125,6 +127,7 @@ final class TransactionHistoryViewModelFactory2 {
         let peerLastName = data.callPath.callName.displayCall
 
         return TransactionItemViewModel(
+            identifier: data.identifier,
             timestamp: data.timestamp,
             title: peerFirstName,
             subtitle: peerLastName,
@@ -203,7 +206,8 @@ extension TransactionHistoryItem {
             if callPath.isTransfer {
                 return sender == address ? .outgoing : .incoming
             } else {
-                return nil
+                // Is it correct?
+                return TransactionType.extrinsic
             }
         }
     }
