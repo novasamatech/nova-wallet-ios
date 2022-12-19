@@ -27,7 +27,7 @@ struct TransactionHistoryViewFactory {
             historyFacade: AssetHistoryFacade(),
             dataProviderFactory: transactionSubscriptionFactory
         )
-        let wireframe = TransactionHistoryWireframe()
+        let wireframe = TransactionHistoryWireframe(chainAsset: chainAsset)
 
         let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: chainAsset.assetDisplayInfo)
         let viewModelFactory = TransactionHistoryViewModelFactory2(

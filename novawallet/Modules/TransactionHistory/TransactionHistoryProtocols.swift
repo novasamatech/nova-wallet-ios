@@ -12,6 +12,7 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
     func viewDidAppear()
     func select(item: TransactionItemViewModel)
     func loadNext()
+    func showFilter()
 }
 
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
@@ -27,7 +28,18 @@ protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
     func didReceive(accountAddress: AccountAddress)
 }
 
-protocol TransactionHistoryWireframeProtocol: AnyObject {}
+protocol TransactionHistoryWireframeProtocol: AnyObject {
+    func showFilter(
+        from view: TransactionHistoryViewProtocol,
+        filter: WalletHistoryFilter,
+        delegate: TransactionHistoryFilterEditingDelegate?
+    )
+    func showOperationDetails(
+        from view: TransactionHistoryViewProtocol,
+        operation: TransactionHistoryItem
+    )
+    func closeTopModal(from view: TransactionHistoryViewProtocol)
+}
 
 enum TransactionHistoryError: Error {
     case loadingInProgress

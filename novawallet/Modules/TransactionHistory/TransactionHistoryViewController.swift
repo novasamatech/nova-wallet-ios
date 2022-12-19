@@ -71,6 +71,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         dataSource = TransactionHistoryDataSource(tableView: rootView.tableView)
         rootView.tableView.dataSource = dataSource
         setupLocalization()
+        setupHandlers()
         presenter.setup()
     }
 
@@ -89,6 +90,14 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         super.viewDidLayoutSubviews()
 
         didSetupLayout = true
+    }
+
+    private func setupHandlers() {
+        rootView.filterButton.addTarget(self, action: #selector(didTapOnFilter), for: .touchUpInside)
+    }
+
+    @objc private func didTapOnFilter() {
+        presenter.showFilter()
     }
 
     private func update(

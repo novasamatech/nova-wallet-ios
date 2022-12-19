@@ -13,6 +13,7 @@ final class TransactionHistoryPresenter {
     private var viewModel: [Date: [TransactionItemViewModel]] = [:]
     private var items: [String: TransactionHistoryItem] = [:]
     private var accountAddress: AccountAddress?
+    private var filter: WalletHistoryFilter = .all
 
     init(
         interactor: TransactionHistoryInteractorInputProtocol,
@@ -77,8 +78,15 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
         interactor.refresh()
     }
 
-    func select(item _: TransactionItemViewModel) {
-        // wireframe
+    func select(item: TransactionItemViewModel) {
+        guard let view = view, let operation = items[item.identifier] else {
+            return
+        }
+
+        wireframe.showOperationDetails(
+            from: view,
+            operation: operation
+        )
     }
 
     func loadNext() {
@@ -90,7 +98,14 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
     }
 
     func showFilter() {
-        // wireframe.presentFilter(filter: selectedFilter, assets: assets)
+        guard let view = view else {
+            return
+        }
+        wireframe.showFilter(
+            from: view,
+            filter: filter,
+            delegate: self
+        )
     }
 }
 
@@ -133,5 +148,13 @@ extension TransactionHistoryPresenter: Localizable {
         if view?.isSetup == true {
             reloadView()
         }
+    }
+}
+
+extension TransactionHistoryPresenter: TransactionHistoryFilterEditingDelegate {
+    func historyFilterDidEdit(filter: WalletHistoryFilter) {
+        view.map { wireframe.closeTopModal(from: $0) }
+        self.filter = filter
+        interactor.setup(historyFilter: filter)
     }
 }
