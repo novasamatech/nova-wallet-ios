@@ -8,6 +8,7 @@ class EthereumBaseIntegrationTests: XCTestCase {
 
         let accountId = try Data(hexString: "0x2e042c2F97f0952E6fa3D68CD6D65F7201c2de84")
         let chainId = "91bc6e169807aaa54802737e1c504b2577d4fafedd5a02c10293b1cd60e39527"
+        let assetId: AssetModel.Id = 0
 
         let logger = Logger.shared
         let chainStorageFacade = SubstrateStorageTestFacade()
@@ -43,19 +44,20 @@ class EthereumBaseIntegrationTests: XCTestCase {
             logger: Logger.shared
         )
 
-        let accountInfoProvider = try walletLocalSubscriptionFactory.getAccountProvider(
+        let balanceProvider = try walletLocalSubscriptionFactory.getAssetBalanceProvider(
             for: accountId,
-            chainId: chainId
+            chainId: chainId,
+            assetId: assetId
         )
 
         let expectation = XCTestExpectation()
 
-        let updateClosure: ([DataProviderChange<DecodedAccountInfo>]) -> Void = { changes in
-            guard let accountInfo = changes.reduceToLastChange()?.item else {
+        let updateClosure: ([DataProviderChange<AssetBalance>]) -> Void = { changes in
+            guard let balance = changes.reduceToLastChange() else {
                 return
             }
 
-            logger.info("Available: \(accountInfo.data.available)")
+            logger.info("Available: \(balance.transferable)")
 
             expectation.fulfill()
         }
@@ -64,14 +66,17 @@ class EthereumBaseIntegrationTests: XCTestCase {
             XCTFail("Unexpected error \(error)")
         }
 
-        accountInfoProvider.addObserver(self,
-                                        deliverOn: .global(),
-                                        executing: updateClosure,
-                                        failing: failureClosure,
-                                        options: DataProviderObserverOptions(
-                                            alwaysNotifyOnRefresh: false,
-                                            waitsInProgressSyncOnAdd: false
-                                        )
+        balanceProvider.addObserver(
+            self,
+            deliverOn: .global(),
+            executing: updateClosure,
+            failing: failureClosure,
+            options: StreamableProviderObserverOptions(
+                alwaysNotifyOnRefresh: false,
+                waitsInProgressSyncOnAdd: false,
+                initialSize: 0,
+                refreshWhenEmpty: true
+            )
         )
 
         wait(for: [expectation], timeout: 20.0)

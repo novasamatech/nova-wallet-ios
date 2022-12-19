@@ -16,7 +16,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol?
 
-    var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
+    var balanceProvider: StreamableProvider<AssetBalance>?
 
     init(
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -39,7 +39,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     }
 
     func clearAccountInfoSubscription() {
-        clear(dataProvider: &balanceProvider)
+        clear(streamableProvider: &balanceProvider)
     }
 
     func performAccountInfoSubscription() {
@@ -53,13 +53,14 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         guard let accountResponse = selectedAccount.fetch(
             for: chainAsset.chain.accountRequest()
         ) else {
-            presenter?.didReceiveAccountInfo(nil)
+            presenter?.didReceiveAccountBalance(nil)
             return
         }
 
-        balanceProvider = subscribeToAccountInfoProvider(
+        balanceProvider = subscribeToAssetBalanceProvider(
             for: accountResponse.accountId,
-            chainId: chainAsset.chain.chainId
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
         )
     }
 
@@ -130,14 +131,15 @@ extension StakingMainInteractor: EventVisitorProtocol {
 }
 
 extension StakingMainInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
         switch result {
-        case let .success(accountInfo):
-            presenter?.didReceiveAccountInfo(accountInfo)
+        case let .success(assetBalance):
+            presenter?.didReceiveAccountBalance(assetBalance)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

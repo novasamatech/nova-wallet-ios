@@ -26,7 +26,7 @@ protocol StakingUnbondSetupInteractorInputProtocol: AnyObject {
 
 protocol StakingUnbondSetupInteractorOutputProtocol: AnyObject {
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveBondingDuration(result: Result<UInt32, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)

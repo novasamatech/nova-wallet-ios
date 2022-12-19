@@ -231,10 +231,10 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
         switch result {
-        case let .success(accountInfo):
-            if let availableValue = accountInfo?.data.available {
+        case let .success(assetBalance):
+            if let availableValue = assetBalance?.transferable {
                 balance = Decimal.fromSubstrateAmount(
                     availableValue,
                     precision: assetInfo.assetPrecision

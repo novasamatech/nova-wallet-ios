@@ -34,7 +34,7 @@ protocol StakingMainInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingMainInteractorOutputProtocol: AnyObject {
-    func didReceiveAccountInfo(_ accountInfo: AccountInfo?)
+    func didReceiveAccountBalance(_ assetBalance: AssetBalance?)
     func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)
     func didReceiveStakingSettings(_ stakingSettings: StakingAssetSettings)
     func didReceiveExpansion(_ isExpanded: Bool)
