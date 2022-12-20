@@ -28,12 +28,14 @@ final class TransactionSubscriptionFactory: BaseLocalSubscriptionFactory {
     let operationQueue: OperationQueue
     let historyFacade: AssetHistoryFactoryFacadeProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let fetchCount: Int
 
     init(
         storageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue,
         historyFacade: AssetHistoryFactoryFacadeProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        fetchCount: Int,
         logger: LoggerProtocol? = nil
     ) {
         self.storageFacade = storageFacade
@@ -41,6 +43,7 @@ final class TransactionSubscriptionFactory: BaseLocalSubscriptionFactory {
         self.logger = logger
         self.historyFacade = historyFacade
         self.repositoryFactory = repositoryFactory
+        self.fetchCount = fetchCount
     }
 }
 
@@ -52,33 +55,46 @@ extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
     ) throws -> TransactionSubscriptionProvider {
         let chainId = chainAsset.chainAssetId.chainId
         let assetId = chainAsset.chainAssetId.assetId
-        let localCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-local"
-        let remoteCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-remote"
+        let localCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-\(historyFilter.rawValue)-local"
+        let remoteCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-\(historyFilter.rawValue)-remote"
 
         if let localProvider = getProvider(for: localCacheKey) as? StreamableProvider<TransactionHistoryItem>,
-           let remoteProvider = getProvider(for: localCacheKey) as? StreamableProvider<TransactionHistoryItem> {
+           let remoteProvider = getProvider(for: remoteCacheKey) as? StreamableProvider<TransactionHistoryItem> {
             return .init(
                 local: localProvider,
                 remote: remoteProvider
             )
         }
 
-        let filter = NSPredicate.filterTransactionsBy(
-            address: address,
-            chainId: chainId,
-            assetId: assetId,
-            source: nil
-        )
+        let sourceFilter: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+        var filter: NSPredicate
+        if let utilityAssetId = chainAsset.chain.utilityAsset()?.assetId,
+           utilityAssetId == chainAsset.asset.assetId {
+            filter = .filterUtilityAssetTransactionsBy(
+                address: address,
+                chainId: chainId,
+                utilityAssetId: utilityAssetId,
+                source: sourceFilter
+            )
+        } else {
+            filter = .filterTransactionsBy(
+                address: address,
+                chainId: chainId,
+                assetId: assetId,
+                source: sourceFilter
+            )
+        }
 
-        let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionItem> = storageFacade.createRepository(filter: filter)
+        let coreDataRepository: CoreDataRepository<TransactionHistoryItem, CDTransactionItem> = storageFacade.createRepository(filter: filter)
+        let repository = AnyDataProviderRepository(coreDataRepository)
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
-            mapper: AnyCoreDataMapper(repository.dataMapper),
-            predicate: { entity in
+            mapper: AnyCoreDataMapper(coreDataRepository.dataMapper),
+            predicate: { [historyFilter] entity in
                 entity.chainId == chainId &&
-                    (entity.sender == address || entity.receiver == address) &&
-                    entity.assetId == assetId
+                    entity.assetId == assetId &&
+                    historyFilter.isFit(moduleName: entity.moduleName, callName: entity.callName)
             }
         )
 
@@ -92,8 +108,9 @@ extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
             historyFacade: historyFacade,
             address: address,
             chainAsset: chainAsset,
-            repositoryFactory: repositoryFactory,
+            repository: repository,
             filter: historyFilter,
+            fetchCount: fetchCount,
             operationQueue: operationQueue
         )
 
@@ -101,7 +118,7 @@ extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
 
         let localProvider = StreamableProvider(
             source: sharedSource,
-            repository: AnyDataProviderRepository(repository),
+            repository: repository,
             observable: AnyDataProviderRepositoryObservable(observable),
             operationManager: OperationManager(operationQueue: operationQueue)
         )

@@ -1,11 +1,11 @@
 import RobinHood
 
 final class EmptyDataProviderRepository<T: Identifiable>: DataProviderRepositoryProtocol {
+    typealias Model = T
+
     func fetchOperation(by _: RepositorySliceRequest, options _: RepositoryFetchOptions) -> BaseOperation<[T]> {
         BaseOperation.createWithResult([])
     }
-
-    typealias Model = T
 
     func fetchOperation(by _: @escaping () throws -> String, options _: RepositoryFetchOptions) -> BaseOperation<T?> {
         BaseOperation.createWithResult(nil)

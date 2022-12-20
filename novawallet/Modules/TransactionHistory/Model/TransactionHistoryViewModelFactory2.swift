@@ -2,6 +2,7 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
+// TODO: Rename
 protocol TransactionHistoryViewModelFactory2Protocol {
     func createItemFromData(
         _ data: TransactionHistoryItem,
@@ -77,9 +78,9 @@ final class TransactionHistoryViewModelFactory2 {
         locale: Locale,
         txType: TransactionType
     ) -> TransactionItemViewModel {
-        let feeValue = data.fee.map { BigUInt($0) ?? 0 } ?? 0
+        let amountInPlank = data.amountInPlank.map { BigUInt($0) ?? 0 } ?? 0
         let amount = Decimal.fromSubstrateAmount(
-            feeValue,
+            amountInPlank,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
         let formattedAmount = tokenFormatter.value(for: locale).stringFromDecimal(amount)
@@ -206,7 +207,6 @@ extension TransactionHistoryItem {
             if callPath.isTransfer {
                 return sender == address ? .outgoing : .incoming
             } else {
-                // Is it correct?
                 return TransactionType.extrinsic
             }
         }

@@ -9,7 +9,6 @@ protocol TransactionHistoryViewProtocol: ControllerBackedProtocol, Draggable {
 
 protocol TransactionHistoryPresenterProtocol: AnyObject {
     func setup()
-    func viewDidAppear()
     func select(item: TransactionItemViewModel)
     func loadNext()
     func showFilter()
@@ -17,7 +16,6 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
 
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
     func setup(historyFilter: WalletHistoryFilter)
-    func refresh()
     func loadNext()
 }
 
@@ -42,7 +40,6 @@ protocol TransactionHistoryWireframeProtocol: AnyObject {
 }
 
 enum TransactionHistoryError: Error {
-    case loadingInProgress
     case dataProvider(Error)
     case fetchProvider(Error)
 }

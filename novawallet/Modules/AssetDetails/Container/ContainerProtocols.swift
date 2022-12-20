@@ -22,3 +22,32 @@ protocol ReloadableDelegate: AnyObject {
     func willChangePreferredContentHeight()
     func didChangePreferredContentHeight(to newContentHeight: CGFloat)
 }
+
+enum DraggableState {
+    case compact
+    case full
+
+    var other: DraggableState {
+        switch self {
+        case .compact:
+            return .full
+        case .full:
+            return .compact
+        }
+    }
+}
+
+protocol DraggableDelegate: AnyObject {
+    var presentationNavigationItem: UINavigationItem? { get }
+    func wantsTransit(to draggableState: DraggableState, animating: Bool)
+}
+
+protocol Draggable: AnyObject {
+    var draggableView: UIView { get }
+    var delegate: DraggableDelegate? { get set }
+    var scrollPanRecognizer: UIPanGestureRecognizer? { get }
+    func set(dragableState: DraggableState, animated: Bool)
+    func set(contentInsets: UIEdgeInsets, for state: DraggableState)
+    func canDrag(from state: DraggableState) -> Bool
+    func animate(progress: Double, from oldState: DraggableState, to newState: DraggableState, finalFrame: CGRect)
+}

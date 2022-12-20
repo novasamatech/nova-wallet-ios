@@ -2472,6 +2472,7 @@
 		88FB7DD12950720800784E08 /* ContainerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DD02950720800784E08 /* ContainerProtocols.swift */; };
 		88FB7DD32950723100784E08 /* NovaWalletViewModelObserverContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DD22950723100784E08 /* NovaWalletViewModelObserverContainer.swift */; };
 		88FB7DD5295097E600784E08 /* EmptyDataProviderRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DD4295097E600784E08 /* EmptyDataProviderRepository.swift */; };
+		88FB7DD72951B1AF00784E08 /* WalletHistoryFilter+CallCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FB7DD62951B1AF00784E08 /* WalletHistoryFilter+CallCodingPath.swift */; };
 		8916E9179CF5409E65D1B3A6 /* NftDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A46EE888D60C1538A0A3EFC /* NftDetailsProtocols.swift */; };
 		89724EA9F732D0C967253597 /* ReferendumVotersViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF3C1CFECE4340E82837FC4 /* ReferendumVotersViewFactory.swift */; };
 		8A19EC93E6A6972327116D80 /* ParaStkStakeConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1139FB38E7D8D25A36726089 /* ParaStkStakeConfirmProtocols.swift */; };
@@ -5564,6 +5565,7 @@
 		88FB7DD02950720800784E08 /* ContainerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerProtocols.swift; sourceTree = "<group>"; };
 		88FB7DD22950723100784E08 /* NovaWalletViewModelObserverContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaWalletViewModelObserverContainer.swift; sourceTree = "<group>"; };
 		88FB7DD4295097E600784E08 /* EmptyDataProviderRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyDataProviderRepository.swift; sourceTree = "<group>"; };
+		88FB7DD62951B1AF00784E08 /* WalletHistoryFilter+CallCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletHistoryFilter+CallCodingPath.swift"; sourceTree = "<group>"; };
 		899686C7351A2600FFA08371 /* TransferConfirmOnChainViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TransferConfirmOnChainViewFactory.swift; sourceTree = "<group>"; };
 		89CFED2E01AB638656E251AF /* NftListProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListProtocols.swift; sourceTree = "<group>"; };
 		8ADA5C374888879D27DBAA29 /* Pods-novawalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-novawalletTests.release.xcconfig"; path = "Target Support Files/Pods-novawalletTests/Pods-novawalletTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -13055,6 +13057,7 @@
 				88B66A13294C57D700DD720E /* TransactionHistoryStreamableSource.swift */,
 				88B66A0F294C17D900DD720E /* TransactionSubscriptionFactory.swift */,
 				88FB7DD4295097E600784E08 /* EmptyDataProviderRepository.swift */,
+				88FB7DD62951B1AF00784E08 /* WalletHistoryFilter+CallCodingPath.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -15984,6 +15987,7 @@
 				848CC93B28D9F6A5009EB4B0 /* OnChainScheduler.swift in Sources */,
 				84953F662934C7D90033F47D /* EtherscanHistoryElement.swift in Sources */,
 				AEAC68F526E9F93B00346599 /* CoingeckoDefinitions.swift in Sources */,
+				88FB7DD72951B1AF00784E08 /* WalletHistoryFilter+CallCodingPath.swift in Sources */,
 				8410DBCB26EA31DE00FE1738 /* AccountProviderFactory.swift in Sources */,
 				841E554F282E2C0300C8438F /* StakingParachainInteractor+InputProtocol.swift in Sources */,
 				84DB9E902640A48E00F23DD3 /* StakingRedeemViewModel.swift in Sources */,

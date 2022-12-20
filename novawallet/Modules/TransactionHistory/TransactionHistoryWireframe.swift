@@ -20,29 +20,36 @@ final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
             return
         }
 
-        guard let navigationController = view.controller.navigationController else {
-            return
-        }
-
-        navigationController.present(filterView.controller, animated: true)
+        presentInNavigation(filterView.controller, from: view)
     }
 
     func showOperationDetails(
         from view: TransactionHistoryViewProtocol,
         operation: TransactionHistoryItem
     ) {
-        guard let operationDetailsView = OperationDetailsViewFactory.createView(for: operation, chainAsset: chainAsset) else {
+        guard let operationDetailsView = OperationDetailsViewFactory.createView(
+            for: operation,
+            chainAsset: chainAsset
+        ) else {
             return
         }
-
-        guard let navigationController = view.controller.navigationController else {
-            return
-        }
-
-        navigationController.present(operationDetailsView.controller, animated: true)
+        presentInNavigation(operationDetailsView.controller, from: view)
     }
 
     func closeTopModal(from view: TransactionHistoryViewProtocol) {
         view.controller.topModalViewController.dismiss(animated: true)
+    }
+
+    private func presentInNavigation(
+        _ viewController: UIViewController,
+        from view: TransactionHistoryViewProtocol
+    ) {
+        guard let navigationController = view.controller.navigationController else {
+            return
+        }
+
+        let operationNavigationController = FearlessNavigationController(rootViewController: viewController)
+
+        navigationController.present(operationNavigationController, animated: true)
     }
 }

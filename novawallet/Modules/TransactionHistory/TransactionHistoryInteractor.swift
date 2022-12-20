@@ -11,6 +11,7 @@ final class TransactionHistoryInteractor {
     let operationQueue: OperationQueue
     let chainAsset: ChainAsset
     let metaAccount: MetaAccountModel
+    let fetchCount: Int
 
     private var historyFilter: WalletHistoryFilter?
     private var accountAddress: AccountAddress? {
@@ -18,9 +19,7 @@ final class TransactionHistoryInteractor {
     }
 
     private var currentFetchOpeartion: CancellableCall?
-    private let fetchCount: Int = 100
     private var currentOffset: Int = 0
-
     private var localDataProvider: StreamableProvider<TransactionHistoryItem>?
     private var remoteDataProvider: StreamableProvider<TransactionHistoryItem>?
 
@@ -30,7 +29,8 @@ final class TransactionHistoryInteractor {
         operationQueue: OperationQueue,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         historyFacade: AssetHistoryFactoryFacadeProtocol,
-        dataProviderFactory: TransactionSubscriptionFactoryProtocol
+        dataProviderFactory: TransactionSubscriptionFactoryProtocol,
+        fetchCount: Int
     ) {
         self.chainAsset = chainAsset
         self.metaAccount = metaAccount
@@ -38,6 +38,7 @@ final class TransactionHistoryInteractor {
         self.repositoryFactory = repositoryFactory
         self.historyFacade = historyFacade
         self.dataProviderFactory = dataProviderFactory
+        self.fetchCount = fetchCount
     }
 
     private func setupDataProvider(historyFilter: WalletHistoryFilter) {
@@ -83,11 +84,8 @@ final class TransactionHistoryInteractor {
 }
 
 extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtocol {
-    func refresh() {}
-
     func loadNext() {
         guard currentFetchOpeartion == nil, currentOffset > 0 else {
-            presenter.didReceive(error: .loadingInProgress)
             return
         }
 
@@ -103,15 +101,14 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
                         self?.presenter.didReceive(error: .fetchProvider(error))
                     case let .success(items):
                         self?.presenter.didReceive(nextItems: items)
-                        if !items.isEmpty {
-                            self?.currentOffset += 1
-                        }
                     case .none:
                         break
                     }
                 }
             }
         )
+
+        currentOffset += 1
     }
 
     func setup(historyFilter: WalletHistoryFilter) {
@@ -121,6 +118,7 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
         accountAddress.map {
             presenter.didReceive(accountAddress: $0)
         }
+        currentOffset = 0
         clearDataProvider()
         setupDataProvider(historyFilter: historyFilter)
         localDataProvider?.refresh()

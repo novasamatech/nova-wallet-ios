@@ -75,17 +75,6 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         presenter.setup()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        presenter.viewDidAppear()
-//        if !firstAppearance {
-//            presenter.reloadCache()
-//        } else {
-//            firstAppearance = false
-//        }
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -270,17 +259,13 @@ extension TransactionHistoryViewController: Draggable {
 
 extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
     func startLoading() {
-        DispatchQueue.main.async {
-            self.rootView.pageLoadingView.start()
-            self.isLoading = true
-        }
+        rootView.pageLoadingView.start()
+        isLoading = true
     }
 
     func stopLoading() {
-        DispatchQueue.main.async {
-            self.rootView.pageLoadingView.stop()
-            self.isLoading = false
-        }
+        rootView.pageLoadingView.stop()
+        isLoading = false
     }
 
     func didReceive(viewModel: [TransactionSectionModel]) {
@@ -371,12 +356,9 @@ extension TransactionHistoryViewController {
         static let cellHeight: CGFloat = 56.0
         static let headerHeight: CGFloat = 45.0
         static let sectionHeight: CGFloat = 44.0
-        static let compactTitleLeft: CGFloat = 20.0
         static let multiplierToActivateNextLoading: CGFloat = 1.5
-        static let draggableProgressStart: Double = 0.0
         static let draggableProgressFinal: Double = 1.0
         static let triggerProgressThreshold: Double = 0.8
-        static let loadingViewMargin: CGFloat = 4.0
         static let bouncesThreshold: CGFloat = 1.0
     }
 }

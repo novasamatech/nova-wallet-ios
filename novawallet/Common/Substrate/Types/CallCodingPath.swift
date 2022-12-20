@@ -44,6 +44,33 @@ extension CallCodingPath {
         ].contains(self)
     }
 
+    static var transfers: [CallCodingPath] {
+        [.transfer,
+         .transferKeepAlive,
+         .forceTransfer,
+         .transferAll,
+         .assetsTransfer(for: nil),
+         .assetsTransferKeepAlive(for: nil),
+         .assetsForceTransfer(for: nil),
+         .assetsTransferAll(for: nil),
+         .localAssetsTransfer,
+         .localAssetsTransferKeepAlive,
+         .localAssetsForceTransfer,
+         .localAssetsTransferAll,
+         .tokensTransfer,
+         .currenciesTransfer,
+         .tokensTransferKeepAlive,
+         .currenciesTransferKeepAlive,
+         .tokensForceTransfer,
+         .currenciesForceTransfer,
+         .tokensTransferAll,
+         .currenciesTransferAll]
+    }
+
+    var isRewardOrSlashTransfer: Bool {
+        [.reward, .slash].contains(self)
+    }
+
     static var transfer: CallCodingPath {
         CallCodingPath(moduleName: "Balances", callName: "transfer")
     }
@@ -138,9 +165,5 @@ extension CallCodingPath {
 
     static var reward: CallCodingPath {
         CallCodingPath(moduleName: "Substrate", callName: "reward")
-    }
-
-    static var extrinsic: CallCodingPath {
-        CallCodingPath(moduleName: "Substrate", callName: "extrinsic")
     }
 }

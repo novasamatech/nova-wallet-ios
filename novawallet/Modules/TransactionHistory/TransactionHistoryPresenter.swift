@@ -15,6 +15,34 @@ final class TransactionHistoryPresenter {
     private var accountAddress: AccountAddress?
     private var filter: WalletHistoryFilter = .all
 
+    private var state: State = .waitingCache {
+        didSet {
+            switch (oldValue, state) {
+            case (_, .waitingCache):
+                view?.startLoading()
+            case (_, .loadingData):
+                view?.startLoading()
+            case (.loadingData, .dataLoaded):
+                view?.stopLoading()
+            case (.waitingCache, .cacheLoaded):
+                view?.stopLoading()
+            default:
+                break
+            }
+        }
+    }
+
+    enum State {
+        case waitingCache
+        case cacheLoaded
+        case loadingData
+        case dataLoaded
+
+        var isLoading: Bool {
+            self == .waitingCache || self == .loadingData
+        }
+    }
+
     init(
         interactor: TransactionHistoryInteractorInputProtocol,
         wireframe: TransactionHistoryWireframeProtocol,
@@ -46,7 +74,7 @@ final class TransactionHistoryPresenter {
             TransactionSectionModel(
                 title: viewModelFactory.formatHeader(date: $0.key, locale: selectedLocale),
                 date: $0.key,
-                items: $0.value.sorted(by: { $0.timestamp < $1.timestamp })
+                items: $0.value.sorted(by: { $0.timestamp > $1.timestamp })
             )
         }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
@@ -61,7 +89,7 @@ final class TransactionHistoryPresenter {
             TransactionSectionModel(
                 title: viewModelFactory.formatHeader(date: $0.key, locale: selectedLocale),
                 date: $0.key,
-                items: $0.value.sorted(by: { $0.timestamp < $1.timestamp })
+                items: $0.value.sorted(by: { $0.timestamp > $1.timestamp })
             )
         }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
@@ -90,7 +118,7 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
     }
 
     func loadNext() {
-        guard let view = view else {
+        guard let view = view, !state.isLoading else {
             return
         }
         view.startLoading()
@@ -111,16 +139,32 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
 
 extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtocol {
     func didReceive(error: TransactionHistoryError) {
-        view?.stopLoading()
-        logger?.error("Received error \(error.localizedDescription)")
+        switch error {
+        case let .dataProvider(error):
+            if state == .waitingCache {
+                state = .cacheLoaded
+            }
+            logger?.error("Data provider error: \(error.localizedDescription)")
+        case let .fetchProvider(error):
+            if state == .loadingData {
+                state = .dataLoaded
+            }
+            logger?.error("Error occur \(error.localizedDescription) while fetching data")
+        }
     }
 
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>]) {
+        if state == .waitingCache {
+            state = .cacheLoaded
+        }
         items = changes.mergeToDict(items)
         try? reloadView(items: items)
     }
 
     func didReceive(nextItems: [TransactionHistoryItem]) {
+        if state == .loadingData {
+            state = .dataLoaded
+        }
         guard let accountAddress = accountAddress, !nextItems.isEmpty else {
             return
         }
@@ -134,12 +178,17 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
         viewModel.merge(pageViewModels) { old, new in
             Array(Set(old + new))
         }
-        view?.stopLoading()
         reloadView()
     }
 
     func didReceive(accountAddress: AccountAddress) {
         self.accountAddress = accountAddress
+    }
+
+    func clear() {
+        viewModel = [:]
+        items = [:]
+        reloadView()
     }
 }
 
@@ -153,8 +202,10 @@ extension TransactionHistoryPresenter: Localizable {
 
 extension TransactionHistoryPresenter: TransactionHistoryFilterEditingDelegate {
     func historyFilterDidEdit(filter: WalletHistoryFilter) {
-        view.map { wireframe.closeTopModal(from: $0) }
         self.filter = filter
+
+        view.map { wireframe.closeTopModal(from: $0) }
         interactor.setup(historyFilter: filter)
+        clear()
     }
 }
