@@ -43,7 +43,7 @@ extension CallCodingPath {
             .currenciesTransferAll
         ].contains(self)
     }
-    
+
     var isRewardOrSlashTransfer: Bool {
         [.reward, .slash].contains(self)
     }
