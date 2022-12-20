@@ -7,7 +7,8 @@ final class SelectValidatorsConfirmPresenter {
     let wireframe: SelectValidatorsConfirmWireframeProtocol
     let interactor: SelectValidatorsConfirmInteractorInputProtocol
 
-    private var balance: Decimal?
+    private var freeBalance: Decimal?
+    private var transferableBalance: Decimal?
     private var priceData: PriceData?
     private var fee: Decimal?
     private var minimalBalance: Decimal?
@@ -85,8 +86,12 @@ final class SelectValidatorsConfirmPresenter {
     }
 
     private func provideAmount() {
-        if let state = state, !state.hasExistingBond {
-            let viewModel = balanceViewModelFactory.lockingAmountFromPrice(state.amount, priceData: priceData)
+        if let state = state, state.amountToBond > 0 {
+            let viewModel = balanceViewModelFactory.lockingAmountFromPrice(
+                state.amountToBond,
+                priceData: priceData
+            )
+            
             view?.didReceive(amountViewModel: viewModel)
         } else {
             view?.didReceive(amountViewModel: nil)
@@ -170,17 +175,22 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
 
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
-        let spendingAmount: Decimal = !state.hasExistingBond ? state.amount : 0.0
-
         let validators: [DataValidating] = [
             dataValidatingFactory.has(fee: fee, locale: locale) { [weak self] in
                 self?.interactor.estimateFee()
             },
 
-            dataValidatingFactory.canPayFeeAndAmount(
-                balance: balance,
+            dataValidatingFactory.canPayFee(
+                balance: transferableBalance,
                 fee: fee,
-                spendingAmount: spendingAmount,
+                asset: assetInfo,
+                locale: locale
+            ),
+
+            dataValidatingFactory.canPayFeeAndAmount(
+                balance: freeBalance,
+                fee: fee,
+                spendingAmount: state.amountToBond,
                 locale: locale
             ),
 
@@ -234,13 +244,19 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
     func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
         switch result {
         case let .success(assetBalance):
-            if let availableValue = assetBalance?.transferable {
-                balance = Decimal.fromSubstrateAmount(
-                    availableValue,
+            if let assetBalance = assetBalance {
+                freeBalance = Decimal.fromSubstrateAmount(
+                    assetBalance.freeInPlank,
+                    precision: assetInfo.assetPrecision
+                )
+
+                transferableBalance = Decimal.fromSubstrateAmount(
+                    assetBalance.transferable,
                     precision: assetInfo.assetPrecision
                 )
             } else {
-                balance = 0.0
+                freeBalance = 0.0
+                transferableBalance = 0.0
             }
         case let .failure(error):
             handle(error: error)
