@@ -35,190 +35,97 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         }
     }
 
-    func createTransactionForAddress(
-        _ address: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData {
+    func createTransaction(
+        chainAsset: ChainAsset
+    ) -> TransactionHistoryItem? {
         if let transfer = transfer {
             return createTransactionFromTransfer(
                 transfer,
-                address: address,
-                assetId: assetId,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
+                chainAssetId: chainAsset.chainAssetId
             )
         } else if let reward = reward {
             return createTransactionFromReward(
                 reward,
-                address: address,
-                assetId: assetId,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
+                chainAssetId: chainAsset.chainAssetId
             )
         } else if let extrinsic = extrinsic {
             return createTransactionFromExtrinsic(
                 extrinsic,
-                address: address,
-                assetId: assetId,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
+                chainAssetId: chainAsset.chainAssetId
             )
         } else if let assetTransfer = assetTransfer {
             return createTransactionFromTransfer(
                 assetTransfer,
-                address: address,
-                assetId: assetId,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
+                chainAssetId: chainAsset.chainAssetId
             )
         } else {
-            // we shouldn't crash if broken data received
-            return AssetTransactionData(
-                transactionId: "",
-                status: .commited,
-                assetId: "",
-                peerId: "",
-                peerFirstName: nil,
-                peerLastName: nil,
-                peerName: nil,
-                details: "",
-                amount: AmountDecimal(value: 0),
-                fees: [],
-                timestamp: 0,
-                type: "",
-                reason: nil,
-                context: nil
-            )
+            return nil
         }
     }
 
     private func createTransactionFromTransfer(
         _ transfer: SubqueryTransfer,
-        address: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData {
-        let status: AssetTransactionStatus = transfer.success ? .commited : .rejected
-
-        let isSender = address.caseInsensitiveCompare(transfer.sender) == .orderedSame
-        let peerAddress = isSender ? transfer.receiver : transfer.sender
-        let accountId = try? peerAddress.toAccountId(using: chainAsset.chain.chainFormat)
-        let peerId = accountId?.toHex() ?? peerAddress
-
-        let amountValue = BigUInt(transfer.amount) ?? 0
-        let amountDecimal = Decimal.fromSubstrateAmount(
-            amountValue,
-            precision: chainAsset.asset.decimalPrecision
-        ) ?? 0
-
-        let feeValue = BigUInt(transfer.fee) ?? 0
-        let feeDecimal = Decimal.fromSubstrateAmount(
-            feeValue,
-            precision: utilityAsset.decimalPrecision
-        ) ?? 0
-
-        let fee = AssetTransactionFee(
-            identifier: assetId,
-            assetId: assetId,
-            amount: AmountDecimal(value: feeDecimal),
-            context: nil
-        )
-
-        let type: TransactionType = isSender ? .outgoing : .incoming
-
-        return AssetTransactionData(
-            transactionId: extrinsicHash ?? identifier,
-            status: status,
-            assetId: assetId,
-            peerId: peerId,
-            peerFirstName: nil,
-            peerLastName: nil,
-            peerName: peerAddress,
-            details: "",
-            amount: AmountDecimal(value: amountDecimal),
-            fees: [fee],
+        chainAssetId: ChainAssetId
+    ) -> TransactionHistoryItem {
+        .init(
+            source: .substrate,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: transfer.sender,
+            receiver: transfer.receiver,
+            amountInPlank: transfer.amount,
+            status: transfer.success ? .success : .failed,
+            txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
-            type: type.rawValue,
-            reason: nil,
-            context: nil
+            fee: transfer.amount,
+            blockNumber: blockNumber,
+            txIndex: nil,
+            callPath: CallCodingPath.transfer,
+            call: nil
         )
     }
 
     private func createTransactionFromReward(
         _ reward: SubqueryRewardOrSlash,
-        address _: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset _: AssetModel
-    ) -> AssetTransactionData {
-        let amountValue = BigUInt(reward.amount) ?? 0
-        let amountDecimal = Decimal.fromSubstrateAmount(
-            amountValue,
-            precision: chainAsset.asset.decimalPrecision
-        ) ?? 0
-
-        let type: TransactionType = reward.isReward ? .reward : .slash
-
-        let context = HistoryRewardContext(
-            validator: reward.validator,
-            era: reward.era,
-            eventId: identifier
-        )
-
-        return AssetTransactionData(
-            transactionId: identifier,
-            status: .commited,
-            assetId: assetId,
-            peerId: extrinsicHash ?? "",
-            peerFirstName: nil,
-            peerLastName: nil,
-            peerName: nil,
-            details: "",
-            amount: AmountDecimal(value: amountDecimal),
-            fees: [],
+        chainAssetId: ChainAssetId
+    ) -> TransactionHistoryItem {
+        .init(
+            source: .substrate,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: reward.validator ?? "",
+            receiver: nil,
+            amountInPlank: reward.amount,
+            status: .success,
+            txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
-            type: type.rawValue,
-            reason: nil,
-            context: context.toContext()
+            fee: nil,
+            blockNumber: blockNumber,
+            txIndex: nil,
+            callPath: reward.isReward ? .reward : .slash,
+            call: nil
         )
     }
 
     private func createTransactionFromExtrinsic(
         _ extrinsic: SubqueryExtrinsic,
-        address: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset _: AssetModel
-    ) -> AssetTransactionData {
-        let status: AssetTransactionStatus = extrinsic.success ? .commited : .rejected
-
-        let accountId = try? address.toAccountId(using: chainAsset.chain.chainFormat)
-        let peerId = accountId?.toHex() ?? address
-
-        let amountValue = BigUInt(extrinsic.fee) ?? 0
-        let amountDecimal = Decimal.fromSubstrateAmount(
-            amountValue,
-            precision: chainAsset.asset.decimalPrecision
-        ) ?? 0
-
-        return AssetTransactionData(
-            transactionId: extrinsicHash ?? identifier,
-            status: status,
-            assetId: assetId,
-            peerId: peerId,
-            peerFirstName: extrinsic.module,
-            peerLastName: extrinsic.call,
-            peerName: "\(extrinsic.module) \(extrinsic.call)",
-            details: "",
-            amount: AmountDecimal(value: amountDecimal),
-            fees: [],
+        chainAssetId: ChainAssetId
+    ) -> TransactionHistoryItem {
+        .init(
+            source: .substrate,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: "",
+            receiver: nil,
+            amountInPlank: nil,
+            status: extrinsic.success ? .success : .failed,
+            txHash: extrinsicHash ?? identifier,
             timestamp: itemTimestamp,
-            type: TransactionType.extrinsic.rawValue,
-            reason: nil,
-            context: nil
+            fee: extrinsic.fee,
+            blockNumber: blockNumber,
+            txIndex: nil,
+            callPath: CallCodingPath(moduleName: extrinsic.module, callName: extrinsic.call),
+            call: extrinsic.call.data(using: .utf8)
         )
     }
 }

@@ -11,11 +11,13 @@ struct TransactionHistoryViewFactory {
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared)
+        let fetchCount = 100
         let transactionSubscriptionFactory = TransactionSubscriptionFactory(
             storageFacade: repositoryFactory.storageFacade,
             operationQueue: operationQueue,
             historyFacade: AssetHistoryFacade(),
             repositoryFactory: repositoryFactory,
+            fetchCount: fetchCount,
             logger: Logger.shared
         )
 
@@ -25,7 +27,8 @@ struct TransactionHistoryViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             repositoryFactory: repositoryFactory,
             historyFacade: AssetHistoryFacade(),
-            dataProviderFactory: transactionSubscriptionFactory
+            dataProviderFactory: transactionSubscriptionFactory,
+            fetchCount: fetchCount
         )
         let wireframe = TransactionHistoryWireframe(chainAsset: chainAsset)
 

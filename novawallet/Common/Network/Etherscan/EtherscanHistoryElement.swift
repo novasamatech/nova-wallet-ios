@@ -1,5 +1,4 @@
 import Foundation
-import CommonWallet
 import BigInt
 
 struct EtherscanHistoryElement: Decodable {
@@ -44,57 +43,26 @@ extension EtherscanHistoryElement: WalletRemoteHistoryItemProtocol {
         .transfers
     }
 
-    func createTransactionForAddress(
-        _ address: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData {
-        let isSender = address.caseInsensitiveCompare(from) == .orderedSame
-        let senderAccountId = try? from.toAccountId(using: chainAsset.chain.chainFormat)
-        let receiverAccountId = try? to.toAccountId(using: chainAsset.chain.chainFormat)
-
-        let peerId = isSender ? receiverAccountId : senderAccountId
-        let peerAddress = isSender ? to : from
-
-        let amountInPlank = BigUInt(value) ?? 0
-        let amount = Decimal.fromSubstrateAmount(
-            amountInPlank,
-            precision: chainAsset.asset.decimalPrecision
-        ) ?? .zero
-
+    func createTransaction(chainAsset: ChainAsset) -> TransactionHistoryItem? {
         let gasValue = BigUInt(gasUsed) ?? 0
         let gasPriceValue = BigUInt(gasPrice) ?? 0
         let feeInPlank = gasValue * gasPriceValue
-        let fee = Decimal.fromSubstrateAmount(
-            feeInPlank,
-            precision: utilityAsset.decimalPrecision
-        ) ?? .zero
 
-        let feeModel = AssetTransactionFee(
-            identifier: assetId,
-            assetId: assetId,
-            amount: AmountDecimal(value: fee),
-            context: nil
-        )
-
-        let type: TransactionType = isSender ? .outgoing : .incoming
-
-        return AssetTransactionData(
-            transactionId: hash,
-            status: .commited,
-            assetId: assetId,
-            peerId: peerId?.toHex(includePrefix: true) ?? peerAddress,
-            peerFirstName: nil,
-            peerLastName: nil,
-            peerName: peerAddress,
-            details: "",
-            amount: AmountDecimal(value: amount),
-            fees: [feeModel],
+        return .init(
+            source: .evm,
+            chainId: chainAsset.chainAssetId.chainId,
+            assetId: chainAsset.chainAssetId.assetId,
+            sender: from,
+            receiver: to,
+            amountInPlank: value,
+            status: .success,
+            txHash: hash,
             timestamp: itemTimestamp,
-            type: type.rawValue,
-            reason: nil,
-            context: nil
+            fee: String(feeInPlank),
+            blockNumber: itemBlockNumber,
+            txIndex: nil,
+            callPath: CallCodingPath.erc20Tranfer,
+            call: nil
         )
     }
 }

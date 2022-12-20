@@ -17,12 +17,9 @@ protocol WalletRemoteHistoryItemProtocol {
     var itemTimestamp: Int64 { get }
     var label: WalletRemoteHistorySourceLabel { get }
 
-    func createTransactionForAddress(
-        _ address: String,
-        assetId: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData
+    func createTransaction(
+        chainAsset: ChainAsset
+    ) -> TransactionHistoryItem?
 }
 
 struct WalletRemoteHistoryData {

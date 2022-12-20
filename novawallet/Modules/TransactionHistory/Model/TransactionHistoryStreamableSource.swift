@@ -3,38 +3,34 @@ import RobinHood
 
 final class TransactionHistoryStreamableSource {
     let remoteFactory: WalletRemoteHistoryFactoryProtocol
-    let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let repository: AnyDataProviderRepository<TransactionHistoryItem>
     let address: AccountAddress
     let chainAsset: ChainAsset
     let filter: WalletHistoryFilter
-    let count: Int = 100
+    let fetchCount: Int
     let operationQueue: OperationQueue
 
-    var pagination: Pagination?
+    private var pagination: Pagination?
 
     init(
         historyFacade: AssetHistoryFactoryFacadeProtocol,
         address: AccountAddress,
         chainAsset: ChainAsset,
-        repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        repository: AnyDataProviderRepository<TransactionHistoryItem>,
         filter: WalletHistoryFilter,
+        fetchCount: Int,
         operationQueue: OperationQueue
     ) {
         remoteFactory = historyFacade.createOperationFactory(for: chainAsset, filter: filter)!
         self.address = address
         self.chainAsset = chainAsset
         self.filter = filter
-        self.repositoryFactory = repositoryFactory
+        self.repository = repository
+        self.fetchCount = fetchCount
         self.operationQueue = operationQueue
     }
 
-    private func createRemoteAssetHistoryWithoutSave(
-        for address: AccountAddress,
-        chainAsset: ChainAsset,
-        filter _: WalletHistoryFilter,
-        remoteFactory: WalletRemoteHistoryFactoryProtocol,
-        repositoryFactory _: SubstrateRepositoryFactoryProtocol
-    ) -> CompoundOperationWrapper<[TransactionHistoryItem]> {
+    private func createRemoteAssetHistory() -> CompoundOperationWrapper<[TransactionHistoryItem]> {
         guard let pagination = pagination else {
             return CompoundOperationWrapper<[TransactionHistoryItem]>.createWithResult([])
         }
@@ -46,19 +42,19 @@ final class TransactionHistoryStreamableSource {
             pagination: pagination
         )
 
-        let operation = ClosureOperation { [weak self] in
+        let operation = ClosureOperation {
             let result = try remoteHistoryWrapper.targetOperation.extractNoCancellableResultData()
             let remoteTransactions = result.historyItems
-            self?.pagination = .init(count: remoteTransactions.count, context: result.context)
+            self.pagination = .init(
+                count: self.fetchCount,
+                context: result.context
+            )
+            let filter = self.filter
 
             let transactions: [TransactionHistoryItem] = remoteTransactions.compactMap { item in
-                if let etherscanItem = item as? EtherscanHistoryElement {
-                    return etherscanItem.createTransactionItem(chainAssetId: chainAsset.chainAssetId)
-                } else if let subqueryItem = item as? SubqueryHistoryElement {
-                    return subqueryItem.createTransactionItem(chainAssetId: chainAsset.chainAssetId)
-                } else {
-                    return nil
-                }
+                item.createTransaction(chainAsset: self.chainAsset)
+            }.filter { item in
+                filter.isFit(callPath: item.callPath)
             }
 
             return transactions
@@ -72,14 +68,8 @@ final class TransactionHistoryStreamableSource {
         )
     }
 
-    private func createRemoteAssetHistory(
-        for address: AccountAddress,
-        chainAsset: ChainAsset,
-        filter: WalletHistoryFilter,
-        remoteFactory: WalletRemoteHistoryFactoryProtocol,
-        repositoryFactory: SubstrateRepositoryFactoryProtocol
-    ) -> CompoundOperationWrapper<[TransactionHistoryItem]> {
-        let pagination = pagination ?? Pagination(count: count, context: nil)
+    private func createAssetHistory() -> CompoundOperationWrapper<Void> {
+        let pagination = pagination ?? Pagination(count: fetchCount, context: nil)
 
         let chain = chainAsset.chain
         let remoteAddress = (chain.isEthereumBased ? address.toEthereumAddressWithChecksum() : address) ?? address
@@ -89,15 +79,10 @@ final class TransactionHistoryStreamableSource {
         )
 
         var dependencies = remoteHistoryWrapper.allOperations
-        let txStorage = createLocalRepository(
-            for: address,
-            chainAsset: chainAsset,
-            repositoryFactory: repositoryFactory
-        )
-        let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
-        wrapper.addDependency(wrapper: remoteHistoryWrapper)
-        dependencies.append(contentsOf: wrapper.allOperations)
-        let localFetchOperation = wrapper.targetOperation
+
+        let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        dependencies.append(localFetchOperation)
 
         let mergeOperation = createHistoryMergeOperation(
             dependingOn: remoteHistoryWrapper.targetOperation,
@@ -109,87 +94,20 @@ final class TransactionHistoryStreamableSource {
 
         dependencies.forEach { mergeOperation.addDependency($0) }
         dependencies.append(mergeOperation)
-        let saveOperation = txStorage.replaceOperation {
+
+        let saveOperation = repository.saveOperation({
             let mergeResult = try mergeOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
             return mergeResult.historyItems
-        }
+        }, {
+            let mergeResult = try mergeOperation
+                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            return mergeResult.identifiersToRemove
+        })
 
-        dependencies.append(saveOperation)
         saveOperation.addDependency(mergeOperation)
 
-        let mapOperation = createHistoryMapOperation(
-            dependingOn: mergeOperation,
-            remoteOperation: remoteHistoryWrapper.targetOperation
-        )
-
-        dependencies.forEach { mapOperation.addDependency($0) }
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
-    }
-
-    private func createHistoryMapOperation(
-        dependingOn mergeOperation: BaseOperation<TransactionHistoryMergeResult>,
-        remoteOperation: BaseOperation<WalletRemoteHistoryData>
-    ) -> BaseOperation<[TransactionHistoryItem]> {
-        ClosureOperation {
-            let mergeResult = try mergeOperation.extractNoCancellableResultData()
-
-            // we still need to return local operations if remote failed
-            let optNewHistoryResult = try? remoteOperation.extractNoCancellableResultData()
-            let newHistoryContext = optNewHistoryResult?.context
-
-            return mergeResult.historyItems
-        }
-    }
-
-    private func createLocalRepository(
-        for address: AccountAddress,
-        chainAsset: ChainAsset,
-        repositoryFactory: SubstrateRepositoryFactoryProtocol
-    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
-        let utilityAsset = chainAsset.chain.utilityAssets().first
-        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
-
-        if let utilityAssetId = utilityAsset?.assetId, utilityAssetId == chainAsset.asset.assetId {
-            return repositoryFactory.createUtilityAssetTxRepository(
-                for: address,
-                chainId: chainAsset.chain.chainId,
-                assetId: utilityAssetId,
-                source: source
-            )
-        } else {
-            return repositoryFactory.createCustomAssetTxRepository(
-                for: address,
-                chainId: chainAsset.chain.chainId,
-                assetId: chainAsset.asset.assetId,
-                source: source
-            )
-        }
-    }
-
-    private func createLocalFetchWrapper(
-        for filter: WalletHistoryFilter,
-        txStorage: AnyDataProviderRepository<TransactionHistoryItem>
-    ) -> CompoundOperationWrapper<[TransactionHistoryItem]> {
-        let fetchOperation = txStorage.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let filterOperation = ClosureOperation<[TransactionHistoryItem]> {
-            let items = try fetchOperation.extractNoCancellableResultData()
-
-            return items.filter { item in
-                if item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.transfers) {
-                    return false
-                } else if !item.callPath.isSubstrateOrEvmTransfer, !filter.contains(.extrinsics) {
-                    return false
-                } else {
-                    return true
-                }
-            }
-        }
-
-        filterOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(targetOperation: filterOperation, dependencies: [fetchOperation])
+        return CompoundOperationWrapper(targetOperation: saveOperation, dependencies: dependencies)
     }
 
     func createHistoryMergeOperation(
@@ -199,11 +117,12 @@ final class TransactionHistoryStreamableSource {
         utilityAsset: AssetModel,
         address: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
-        ClosureOperation { [weak self] in
+        ClosureOperation {
             let result = try remoteOperation?.extractNoCancellableResultData()
             let remoteTransactions = result?.historyItems ?? []
-            self?.pagination = .init(
-                count: remoteTransactions.count,
+
+            self.pagination = .init(
+                count: self.fetchCount,
                 context: result?.context
             )
 
@@ -218,13 +137,7 @@ final class TransactionHistoryStreamableSource {
                 return manager.merge(remoteItems: remoteTransactions, localItems: localTransactions)
             } else {
                 let transactions: [TransactionHistoryItem] = remoteTransactions.compactMap { item in
-                    if let etherscanItem = item as? EtherscanHistoryElement {
-                        return etherscanItem.createTransactionItem(chainAssetId: chainAsset.chainAssetId)
-                    } else if let subqueryItem = item as? SubqueryHistoryElement {
-                        return subqueryItem.createTransactionItem(chainAssetId: chainAsset.chainAssetId)
-                    } else {
-                        return nil
-                    }
+                    item.createTransaction(chainAsset: chainAsset)
                 }
 
                 return TransactionHistoryMergeResult(historyItems: transactions, identifiersToRemove: [])
@@ -240,13 +153,7 @@ extension TransactionHistoryStreamableSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: ((Result<Int, Error>?) -> Void)?
     ) {
-        let operation = createRemoteAssetHistoryWithoutSave(
-            for: address,
-            chainAsset: chainAsset,
-            filter: filter,
-            remoteFactory: remoteFactory,
-            repositoryFactory: repositoryFactory
-        )
+        let operation = createRemoteAssetHistory()
 
         let queue = queue ?? .global()
 
@@ -268,20 +175,14 @@ extension TransactionHistoryStreamableSource: StreamableSourceProtocol {
     }
 
     func refresh(runningIn queue: DispatchQueue?, commitNotificationBlock: ((Result<Int, Error>?) -> Void)?) {
-        let operation = createRemoteAssetHistory(
-            for: address,
-            chainAsset: chainAsset,
-            filter: filter,
-            remoteFactory: remoteFactory,
-            repositoryFactory: repositoryFactory
-        )
+        let operation = createAssetHistory()
 
         operation.targetOperation.completionBlock = {
             do {
-                let count = try operation.targetOperation.extractNoCancellableResultData().count
+                try operation.targetOperation.extractNoCancellableResultData()
 
                 dispatchInQueueWhenPossible(queue) {
-                    commitNotificationBlock?(.success(count))
+                    commitNotificationBlock?(.success(1))
                 }
             } catch {
                 dispatchInQueueWhenPossible(queue) {
