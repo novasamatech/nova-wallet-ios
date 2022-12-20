@@ -2,8 +2,6 @@ import SoraFoundation
 
 final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryProtocol {
     static func createView(chain: ChainModel, asset: AssetModel) -> AssetDetailsContainerViewProtocol? {
-        let view = AssetDetailsContainerViewController(localizationManager: LocalizationManager.shared)
-
         guard
             let accountView = AssetDetailsViewFactory.createView(
                 chain: chain,
@@ -12,6 +10,7 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
             let historyView = TransactionHistoryViewFactory.createView(chainAsset: .init(chain: chain, asset: asset)) else {
             return nil
         }
+        let view = AssetDetailsContainerViewController()
 
         view.content = accountView
         view.draggable = historyView

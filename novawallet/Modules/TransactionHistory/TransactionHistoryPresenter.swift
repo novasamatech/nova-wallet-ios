@@ -102,10 +102,6 @@ extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
         interactor.setup(historyFilter: .all)
     }
 
-    func viewDidAppear() {
-        interactor.refresh()
-    }
-
     func select(item: TransactionItemViewModel) {
         guard let view = view, let operation = items[item.identifier] else {
             return
