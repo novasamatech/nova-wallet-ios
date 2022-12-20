@@ -5,7 +5,7 @@ import UIKit
 
 final class AssetDetailsConfigurator {
     let containingViewFactory: AssetDetailsContainingViewFactory
-    let viewModelFactory: AssetDetailsViewModelFactory
+    let viewModelFactory: AssetDetailsViewModelFactoryLegacy
 
     init(
         accountId: AccountId,
@@ -25,7 +25,7 @@ final class AssetDetailsConfigurator {
             selectedAccountType: accountType
         )
 
-        viewModelFactory = AssetDetailsViewModelFactory(
+        viewModelFactory = AssetDetailsViewModelFactoryLegacy(
             balanceFormatterFactory: balanceFormatterFactory,
             priceInfoFactory: priceAssetFactory
         )
