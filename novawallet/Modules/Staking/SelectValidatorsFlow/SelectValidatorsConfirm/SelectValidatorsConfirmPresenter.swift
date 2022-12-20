@@ -91,7 +91,7 @@ final class SelectValidatorsConfirmPresenter {
                 state.amountToBond,
                 priceData: priceData
             )
-            
+
             view?.didReceive(amountViewModel: viewModel)
         } else {
             view?.didReceive(amountViewModel: nil)

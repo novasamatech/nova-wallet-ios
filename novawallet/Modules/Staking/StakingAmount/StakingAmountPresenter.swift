@@ -289,17 +289,17 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
 
     func didReceive(balance: AssetBalance?) {
         if let assetBalance = balance {
-            self.freeBalance = Decimal.fromSubstrateAmount(
+            freeBalance = Decimal.fromSubstrateAmount(
                 assetBalance.freeInPlank,
                 precision: assetInfo.assetPrecision
             )
 
-            self.transferableBalance = Decimal.fromSubstrateAmount(
+            transferableBalance = Decimal.fromSubstrateAmount(
                 assetBalance.transferable,
                 precision: assetInfo.assetPrecision
             )
         } else {
-            self.freeBalance = 0.0
+            freeBalance = 0.0
         }
 
         provideAsset()
