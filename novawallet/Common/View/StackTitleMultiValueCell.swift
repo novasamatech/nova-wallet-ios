@@ -62,3 +62,12 @@ final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsV
 }
 
 extension StackTitleMultiValueCell: StackTableViewCellProtocol {}
+
+extension StackTitleMultiValueCell {
+    func bind(viewModel: BalanceViewModelProtocol) {
+        rowContentView.valueView.bind(
+            topValue: viewModel.amount,
+            bottomValue: viewModel.price
+        )
+    }
+}

@@ -10,20 +10,20 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        guard let context = try? WalletContextFactory().createContext(for: chain, asset: asset) else {
+        guard let assetDetailsView = AssetDetailsViewFactory.createView(
+            chain: chain,
+            asset: asset
+        ) else {
             return
         }
-
-        let assetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId).walletId
-
         guard let navigationController = view?.controller.navigationController else {
             return
         }
 
-        try? context.createAssetDetails(for: assetId, in: navigationController)
-
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
-        walletUpdater.setup(context: context, chainAsset: chainAsset)
+        navigationController.pushViewController(
+            assetDetailsView.controller,
+            animated: true
+        )
     }
 
     func showAssetsSettings(from view: AssetListViewProtocol?) {

@@ -86,4 +86,13 @@ extension CustomAssetMapper {
             evmHandler: { try? $0.toAddress(using: .ethereum) }
         )
     }
+
+    func transfersEnabled() throws -> Bool {
+        try mapAssetWithExtras(
+            nativeHandler: { true },
+            statemineHandler: { _ in true },
+            ormlHandler: { $0.transfersEnabled ?? true },
+            evmHandler: { _ in true }
+        )
+    }
 }
