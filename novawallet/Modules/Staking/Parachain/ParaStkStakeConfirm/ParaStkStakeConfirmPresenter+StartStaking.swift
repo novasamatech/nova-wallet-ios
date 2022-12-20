@@ -32,7 +32,8 @@ extension ParaStkStakeConfirmPresenter {
 
     private func createStartStakingValidationRunner(
         for inputAmount: Decimal?,
-        precision: Int16
+        allowedAmountToStake: BigUInt?,
+        assetDisplayInfo: AssetBalanceDisplayInfo
     ) -> DataValidationRunner {
         let minStake: BigUInt?
 
@@ -42,6 +43,8 @@ extension ParaStkStakeConfirmPresenter {
             minStake = minTechStake
         }
 
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
         return DataValidationRunner(validators: [
             dataValidatingFactory.hasInPlank(
                 fee: fee,
@@ -49,8 +52,14 @@ extension ParaStkStakeConfirmPresenter {
                 precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
+            dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
+                fee: fee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canPayFeeAndAmountInPlank(
+                balance: allowedAmountToStake,
                 fee: fee,
                 spendingAmount: inputAmount,
                 precision: precision,
@@ -76,10 +85,12 @@ extension ParaStkStakeConfirmPresenter {
         ])
     }
 
-    func startStaking() {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
-        let validator = createStartStakingValidationRunner(for: amount, precision: precision)
+    func startStaking(for allowedAmountToStake: BigUInt?) {
+        let validator = createStartStakingValidationRunner(
+            for: amount,
+            allowedAmountToStake: allowedAmountToStake,
+            assetDisplayInfo: chainAsset.assetDisplayInfo
+        )
 
         validator.runValidation { [weak self] in
             self?.submitExtrinsic()
