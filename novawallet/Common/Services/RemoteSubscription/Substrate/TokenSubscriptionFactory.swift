@@ -65,8 +65,8 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
 
     func createOrmlAccountSubscription(
         remoteStorageKey: Data,
-        localStorageKey: String,
-        storage: AnyDataProviderRepository<ChainStorageItem>,
+        localStorageKey _: String,
+        storage _: AnyDataProviderRepository<ChainStorageItem>,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing {
@@ -76,8 +76,6 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
             remoteStorageKey: remoteStorageKey,
-            localStorageKey: localStorageKey,
-            storage: storage,
             operationManager: operationManager,
             logger: logger,
             eventCenter: eventCenter,
@@ -107,8 +105,8 @@ final class TokenSubscriptionFactory: OrmlTokenSubscriptionFactoryProtocol {
 extension TokenSubscriptionFactory: NativeTokenSubscriptionFactoryProtocol {
     func createAccountInfoSubscription(
         remoteStorageKey: Data,
-        localStorageKey: String,
-        storage: AnyDataProviderRepository<ChainStorageItem>,
+        localStorageKey _: String,
+        storage _: AnyDataProviderRepository<ChainStorageItem>,
         operationManager: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing {
