@@ -206,7 +206,7 @@ extension NSPredicate {
 
     static func assetBalance(chainAssetIds: Set<ChainAssetId>) -> NSPredicate {
         let predicates = chainAssetIds.map { assetBalance(chainId: $0.chainId, assetId: $0.assetId) }
-        return NSCompoundPredicate(andPredicateWithSubpredicates: Array(predicates))
+        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
     }
 
     static func assetBalance(
