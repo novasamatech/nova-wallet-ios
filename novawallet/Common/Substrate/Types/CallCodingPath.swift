@@ -43,30 +43,7 @@ extension CallCodingPath {
             .currenciesTransferAll
         ].contains(self)
     }
-
-    static var transfers: [CallCodingPath] {
-        [.transfer,
-         .transferKeepAlive,
-         .forceTransfer,
-         .transferAll,
-         .assetsTransfer(for: nil),
-         .assetsTransferKeepAlive(for: nil),
-         .assetsForceTransfer(for: nil),
-         .assetsTransferAll(for: nil),
-         .localAssetsTransfer,
-         .localAssetsTransferKeepAlive,
-         .localAssetsForceTransfer,
-         .localAssetsTransferAll,
-         .tokensTransfer,
-         .currenciesTransfer,
-         .tokensTransferKeepAlive,
-         .currenciesTransferKeepAlive,
-         .tokensForceTransfer,
-         .currenciesForceTransfer,
-         .tokensTransferAll,
-         .currenciesTransferAll]
-    }
-
+    
     var isRewardOrSlashTransfer: Bool {
         [.reward, .slash].contains(self)
     }
