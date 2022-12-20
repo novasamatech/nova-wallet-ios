@@ -126,17 +126,7 @@ final class TransactionHistoryViewLayout: UIView {
 
 extension TransactionHistoryViewLayout {
     private enum Constants {
-        static let sectionNibName = "SeparatedSectionView"
-        static let headerHeight: CGFloat = 45.0
-        static let sectionHeight: CGFloat = 44.0
-        static let compactTitleLeft: CGFloat = 20.0
-        static let multiplierToActivateNextLoading: CGFloat = 1.5
-        static let draggableProgressStart: Double = 0.0
-        static let draggableProgressFinal: Double = 1.0
-        static let triggerProgressThreshold: Double = 0.8
         static let loadingViewMargin: CGFloat = 4.0
-        static let bouncesThreshold: CGFloat = 1.0
-
         static let cornerRadius: CGFloat = 12
     }
 }

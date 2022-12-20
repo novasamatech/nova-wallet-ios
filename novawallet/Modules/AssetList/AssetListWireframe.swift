@@ -10,7 +10,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
     }
 
     func showAssetDetails(from view: AssetListViewProtocol?, chain: ChainModel, asset: AssetModel) {
-        // showHistory(from: view, chain: chain, asset: asset)
         guard let assetDetailsView = AssetDetailsContainerViewFactory.createView(
             chain: chain,
             asset: asset
