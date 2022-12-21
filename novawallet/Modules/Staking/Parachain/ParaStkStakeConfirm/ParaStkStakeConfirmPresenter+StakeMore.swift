@@ -10,8 +10,9 @@ extension ParaStkStakeConfirmPresenter {
         view?.didReceiveHints(viewModel: hints)
     }
 
-    func stakeMore(above existingBond: BigUInt) {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
+    func stakeMore(above existingBond: BigUInt, allowedAmountToStake: BigUInt?) {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let precision = assetDisplayInfo.assetPrecision
         let collatorId = try? collator.address.toAccountId()
 
         DataValidationRunner(validators: [
@@ -21,8 +22,14 @@ extension ParaStkStakeConfirmPresenter {
                 precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
+            dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
+                fee: fee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canPayFeeAndAmountInPlank(
+                balance: allowedAmountToStake,
                 fee: fee,
                 spendingAmount: amount,
                 precision: precision,
