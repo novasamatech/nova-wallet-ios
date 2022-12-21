@@ -2448,6 +2448,8 @@
 		88E74E8829538BF8008031A3 /* ReceiveInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E74E8729538BF8008031A3 /* ReceiveInteractorError.swift */; };
 		88E74E8A29538C1F008031A3 /* NovaAccountShareFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E74E8929538C1F008031A3 /* NovaAccountShareFactoryProtocol.swift */; };
 		88E74E8C29538C36008031A3 /* QRCodeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E74E8B29538C36008031A3 /* QRCodeInfo.swift */; };
+		88E74E8E29539E18008031A3 /* QRCreationOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E74E8D29539E18008031A3 /* QRCreationOperationFactory.swift */; };
+		88E74E9029539EBC008031A3 /* NovaReceiveInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E74E8F29539EBC008031A3 /* NovaReceiveInfo.swift */; };
 		88E8CF5E28E3789600C90112 /* CrowdloanEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E8CF5D28E3789600C90112 /* CrowdloanEmptyView.swift */; };
 		88F19DDE28D8D0A100F6E459 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F19DDD28D8D0A100F6E459 /* Either.swift */; };
 		88F19DE028D8D0F600F6E459 /* LoadableViewModelState+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F19DDF28D8D0F600F6E459 /* LoadableViewModelState+Addition.swift */; };
@@ -5536,6 +5538,8 @@
 		88E74E8729538BF8008031A3 /* ReceiveInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveInteractorError.swift; sourceTree = "<group>"; };
 		88E74E8929538C1F008031A3 /* NovaAccountShareFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAccountShareFactoryProtocol.swift; sourceTree = "<group>"; };
 		88E74E8B29538C36008031A3 /* QRCodeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeInfo.swift; sourceTree = "<group>"; };
+		88E74E8D29539E18008031A3 /* QRCreationOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCreationOperationFactory.swift; sourceTree = "<group>"; };
+		88E74E8F29539EBC008031A3 /* NovaReceiveInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaReceiveInfo.swift; sourceTree = "<group>"; };
 		88E8CF5D28E3789600C90112 /* CrowdloanEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanEmptyView.swift; sourceTree = "<group>"; };
 		88F19DDD28D8D0A100F6E459 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		88F19DDF28D8D0F600F6E459 /* LoadableViewModelState+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoadableViewModelState+Addition.swift"; sourceTree = "<group>"; };
@@ -10194,6 +10198,7 @@
 				8419378025442FEE00CFA50C /* LegacyWalletQRCoderFactory.swift */,
 				84FB1F642526879200E0242B /* WalletSingleProviderIdFactory.swift */,
 				8490152024ABC721008F705E /* WalletStaticImageViewModel.swift */,
+				88E74E8F29539EBC008031A3 /* NovaReceiveInfo.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -14077,6 +14082,7 @@
 				73DE88ED69EF6E4F4F6612D8 /* ReceiveViewLayout.swift */,
 				1C5C524FD0E3E7E5113F325D /* NewReceiveViewFactory.swift */,
 				88E74E8929538C1F008031A3 /* NovaAccountShareFactoryProtocol.swift */,
+				88E74E8D29539E18008031A3 /* QRCreationOperationFactory.swift */,
 			);
 			path = Receive;
 			sourceTree = "<group>";
@@ -17277,6 +17283,7 @@
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,
 				840B3D632899BBDD00DA1DA9 /* ParitySignerScanPresenter.swift in Sources */,
 				1BEADE77C6236CB3BF719A47 /* CrowdloanContributionSetupViewFactory.swift in Sources */,
+				88E74E9029539EBC008031A3 /* NovaReceiveInfo.swift in Sources */,
 				845353BD2886EB1A006C871A /* ButtonLargeControl.swift in Sources */,
 				8466781827EC9CDA007935D3 /* PersistTransferDetails.swift in Sources */,
 				84800B02273301C800E1E4DD /* RemoteChainModel.swift in Sources */,
@@ -17854,6 +17861,7 @@
 				89724EA9F732D0C967253597 /* ReferendumVotersViewFactory.swift in Sources */,
 				1F496969FEE3E160BABDAC66 /* ReferendumVoteSetupProtocols.swift in Sources */,
 				F1BED07F67119E1BD052952A /* ReferendumVoteSetupWireframe.swift in Sources */,
+				88E74E8E29539E18008031A3 /* QRCreationOperationFactory.swift in Sources */,
 				7E2800371BE3B166F3475E90 /* ReferendumVoteSetupPresenter.swift in Sources */,
 				04D86D5341406305E60F6D18 /* ReferendumVoteSetupInteractor.swift in Sources */,
 				2CEFF4C2574F0AABE0E9BF89 /* ReferendumVoteSetupViewController.swift in Sources */,

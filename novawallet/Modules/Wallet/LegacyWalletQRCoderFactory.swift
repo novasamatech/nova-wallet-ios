@@ -3,6 +3,7 @@ import CommonWallet
 import IrohaCrypto
 import SubstrateSdk
 
+// TODO: Remove WalletQREncoderProtocol
 final class WalletQREncoder: WalletQREncoderProtocol, NovaWalletQREncoderProtocol {
     let username: String?
     let chainFormat: ChainFormat
@@ -177,19 +178,5 @@ final class WalletQRCoderFactory: NovaWalletQRCoderFactoryProtocol {
 
     func createDecoder() -> NovaWalletQRDecoderProtocol {
         WalletQRDecoder(chainFormat: chainFormat, assets: [])
-    }
-}
-
-public struct NovaReceiveInfo: Codable, Equatable {
-    public var accountId: String
-    public var assetId: String?
-    public var amount: AmountDecimal?
-    public var details: String?
-
-    public init(accountId: String, assetId: String?, amount: AmountDecimal?, details: String?) {
-        self.accountId = accountId
-        self.assetId = assetId
-        self.amount = amount
-        self.details = details
     }
 }
