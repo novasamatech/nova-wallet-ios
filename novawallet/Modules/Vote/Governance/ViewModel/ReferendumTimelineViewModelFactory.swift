@@ -374,9 +374,8 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
             )
         }
 
-        if createdAt == nil {
+        if let createdDate = metadata?.timeline?.first(where: { $0.isStarted })?.time {
             let title = R.string.localizable.govTimelineCreated(preferredLanguages: locale.rLanguages)
-            let createdDate = metadata?.timeline?.first(where: { $0.isStarted })?.time
 
             let created = makeTimeViewModel(
                 title: title,

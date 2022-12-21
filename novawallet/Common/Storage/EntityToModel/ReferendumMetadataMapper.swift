@@ -15,7 +15,7 @@ extension ReferendumMetadataMapper: CoreDataMapperProtocol {
         let timeline: [ReferendumMetadataLocal.TimelineItem]?
 
         if let timelineData = entity.timeline {
-            timeline = try JSONDecoder().decode(
+            timeline = try? JSONDecoder().decode(
                 [ReferendumMetadataLocal.TimelineItem].self,
                 from: timelineData
             )
