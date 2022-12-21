@@ -5,18 +5,15 @@ final class AssetsSubscriptionHandlingFactory {
     let assetAccountKey: String
     let assetDetailsKey: String
     let assetBalanceUpdater: AssetsBalanceUpdater
-    let transactionSubscription: TransactionSubscription?
 
     init(
         assetAccountKey: String,
         assetDetailsKey: String,
-        assetBalanceUpdater: AssetsBalanceUpdater,
-        transactionSubscription: TransactionSubscription?
+        assetBalanceUpdater: AssetsBalanceUpdater
     ) {
         self.assetAccountKey = assetAccountKey
         self.assetDetailsKey = assetDetailsKey
         self.assetBalanceUpdater = assetBalanceUpdater
-        self.transactionSubscription = transactionSubscription
     }
 }
 
@@ -24,28 +21,20 @@ extension AssetsSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryPr
     func createHandler(
         remoteStorageKey: Data,
         localStorageKey: String,
-        storage: AnyDataProviderRepository<ChainStorageItem>,
-        operationManager: OperationManagerProtocol,
+        storage _: AnyDataProviderRepository<ChainStorageItem>,
+        operationManager _: OperationManagerProtocol,
         logger: LoggerProtocol
     ) -> StorageChildSubscribing {
         if localStorageKey == assetAccountKey {
             return AssetAccountSubscription(
                 assetBalanceUpdater: assetBalanceUpdater,
                 remoteStorageKey: remoteStorageKey,
-                localStorageKey: localStorageKey,
-                storage: storage,
-                operationManager: operationManager,
-                transactionSubscription: transactionSubscription,
                 logger: logger
             )
         } else {
             return AssetDetailsSubscription(
                 assetBalanceUpdater: assetBalanceUpdater,
                 remoteStorageKey: remoteStorageKey,
-                localStorageKey: localStorageKey,
-                storage: storage,
-                operationManager: operationManager,
-                transactionSubscription: nil,
                 logger: logger
             )
         }

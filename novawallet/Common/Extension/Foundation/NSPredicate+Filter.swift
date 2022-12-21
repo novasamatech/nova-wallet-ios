@@ -186,6 +186,29 @@ extension NSPredicate {
         NSPredicate(format: "%K == true", #keyPath(CDChain.hasCrowdloans))
     }
 
+    static func assetBalance(chainId: ChainModel.Id, assetId: AssetModel.Id) -> NSPredicate {
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainId),
+            chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetBalance.assetId),
+            assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainIdPredicate, assetIdPredicate
+        ])
+    }
+
+    static func assetBalance(chainAssetIds: Set<ChainAssetId>) -> NSPredicate {
+        let predicates = chainAssetIds.map { assetBalance(chainId: $0.chainId, assetId: $0.assetId) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
+    }
+
     static func assetBalance(
         for accountId: AccountId,
         chainId: ChainModel.Id,

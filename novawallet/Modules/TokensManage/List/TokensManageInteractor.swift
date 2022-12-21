@@ -6,6 +6,7 @@ final class TokensManageInteractor {
 
     let chainRegistry: ChainRegistryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let operationQueue: OperationQueue
 
     private weak var pendingOperation: BaseOperation<Void>?
@@ -13,10 +14,12 @@ final class TokensManageInteractor {
     init(
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.repository = repository
+        self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
     }
 
@@ -27,6 +30,11 @@ final class TokensManageInteractor {
         ) { [weak self] changes in
             self?.presenter?.didReceiveChainModel(changes: changes)
         }
+    }
+
+    private func createBalanceClearOperation(for chainAssetIds: Set<ChainAssetId>) -> BaseOperation<Void> {
+        let repository = repositoryFactory.createAssetBalanceRepository(for: chainAssetIds)
+        return repository.deleteAllOperation()
     }
 }
 
@@ -81,5 +89,10 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
         }
 
         operationQueue.addOperation(saveOperation)
+
+        if !enabled {
+            let clearAssetBalanceOperation = createBalanceClearOperation(for: chainAssetIds)
+            operationQueue.addOperation(clearAssetBalanceOperation)
+        }
     }
 }

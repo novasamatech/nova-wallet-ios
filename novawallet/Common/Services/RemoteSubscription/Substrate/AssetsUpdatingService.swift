@@ -220,7 +220,7 @@ final class AssetsUpdatingService {
             extras: assetExtras,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
-            chainRepository: chainItemRepository,
+            transactionSubscription: transactionSubscription,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             logger: logger

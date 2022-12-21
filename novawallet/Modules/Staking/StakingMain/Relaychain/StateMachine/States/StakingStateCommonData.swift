@@ -4,7 +4,7 @@ import BigInt
 struct StakingStateCommonData {
     let address: String?
     let chainAsset: ChainAsset?
-    let accountInfo: AccountInfo?
+    let accountBalance: AssetBalance?
     let price: PriceData?
     let calculatorEngine: RewardCalculatorEngineProtocol?
     let eraStakersInfo: EraStakersInfo?
@@ -22,7 +22,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: nil,
             chainAsset: nil,
-            accountInfo: nil,
+            accountBalance: nil,
             price: nil,
             calculatorEngine: nil,
             eraStakersInfo: nil,
@@ -40,7 +40,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -58,7 +58,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -72,11 +72,11 @@ extension StakingStateCommonData {
         )
     }
 
-    func byReplacing(accountInfo: AccountInfo?) -> StakingStateCommonData {
+    func byReplacing(accountBalance: AssetBalance?) -> StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -94,7 +94,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -112,7 +112,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -130,7 +130,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -148,7 +148,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -166,7 +166,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -184,7 +184,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -202,7 +202,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -220,7 +220,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -238,7 +238,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -256,7 +256,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,

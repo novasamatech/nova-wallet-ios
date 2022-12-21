@@ -13,7 +13,7 @@ final class CrowdloanListPresenter {
     let wallet: MetaAccountModel
 
     private var selectedChainResult: Result<ChainModel, Error>?
-    private var accountInfoResult: Result<AccountInfo?, Error>?
+    private var accountBalanceResult: Result<AssetBalance?, Error>?
     private var crowdloansResult: Result<[Crowdloan], Error>?
     private var displayInfoResult: Result<CrowdloanDisplayInfoDict, Error>?
     private var blockNumber: BlockNumber?
@@ -63,8 +63,8 @@ final class CrowdloanListPresenter {
 
         let balance: BigUInt?
 
-        if let accountInfoResult = accountInfoResult {
-            balance = (try? accountInfoResult.get()?.data.available) ?? 0
+        if let accountBalanceResult = accountBalanceResult {
+            balance = (try? accountBalanceResult.get()?.transferable) ?? 0
         } else {
             balance = nil
         }
@@ -402,8 +402,8 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
         updateListView()
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
-        accountInfoResult = result
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
+        accountBalanceResult = result
         updateChainView()
     }
 
@@ -420,7 +420,7 @@ extension CrowdloanListPresenter: AssetSelectionDelegate {
         }
 
         selectedChainResult = .success(chainAsset.chain)
-        accountInfoResult = nil
+        accountBalanceResult = nil
         crowdloansResult = nil
         displayInfoResult = nil
         blockNumber = nil

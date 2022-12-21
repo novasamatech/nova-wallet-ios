@@ -22,7 +22,7 @@ protocol StakingPayoutConfirmationInteractorOutputProtocol: AnyObject {
     func didRecieve(account: MetaChainAccountResponse, rewardAmount: Decimal)
 
     func didReceivePriceData(result: Result<PriceData?, Error>)
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
 
     func didReceiveFee(result: Result<Decimal, Error>)
 
