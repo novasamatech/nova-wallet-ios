@@ -300,6 +300,7 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
             )
         } else {
             freeBalance = 0.0
+            transferableBalance = 0.0
         }
 
         provideAsset()
