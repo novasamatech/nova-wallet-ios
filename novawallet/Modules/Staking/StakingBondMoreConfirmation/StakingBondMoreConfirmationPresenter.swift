@@ -14,11 +14,20 @@ final class StakingBondMoreConfirmationPresenter {
     let chain: ChainModel
     let logger: LoggerProtocol?
 
-    private var balance: Decimal?
+    private var freeBalance: Decimal?
+    private var transferableBalance: Decimal?
+    private var bondBalance: Decimal?
     private var priceData: PriceData?
     private var fee: Decimal?
     private var stashAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
+
+    private var availableAmountToStake: Decimal? {
+        let free = freeBalance ?? 0
+        let bond = bondBalance ?? 0
+
+        return free >= bond ? free - bond : 0
+    }
 
     init(
         interactor: StakingBondMoreConfirmationInteractorInputProtocol,
@@ -96,8 +105,14 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
                 self?.refreshFeeIfNeeded()
             }),
 
+            dataValidatingFactory.canPayFee(
+                balance: transferableBalance,
+                fee: fee,
+                asset: assetInfo,
+                locale: locale
+            ),
             dataValidatingFactory.canPayFeeAndAmount(
-                balance: balance,
+                balance: availableAmountToStake,
                 fee: fee,
                 spendingAmount: inputAmount,
                 locale: locale
@@ -138,18 +153,40 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         switch result {
         case let .success(assetBalance):
             if let assetBalance = assetBalance {
-                balance = Decimal.fromSubstrateAmount(
+                freeBalance = Decimal.fromSubstrateAmount(
+                    assetBalance.freeInPlank,
+                    precision: assetInfo.assetPrecision
+                )
+
+                transferableBalance = Decimal.fromSubstrateAmount(
                     assetBalance.transferable,
                     precision: assetInfo.assetPrecision
                 )
             } else {
-                balance = nil
+                freeBalance = nil
+                transferableBalance = nil
             }
 
             provideAssetViewModel()
             provideConfirmationViewModel()
         case let .failure(error):
             logger?.error("Did receive account info error: \(error)")
+        }
+    }
+
+    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+        switch result {
+        case let .success(ledger):
+            if let ledger = ledger {
+                bondBalance = Decimal.fromSubstrateAmount(
+                    ledger.total,
+                    precision: assetInfo.assetPrecision
+                )
+            } else {
+                bondBalance = nil
+            }
+        case let .failure(error):
+            logger?.error("Did receive staking ledger error: \(error)")
         }
     }
 

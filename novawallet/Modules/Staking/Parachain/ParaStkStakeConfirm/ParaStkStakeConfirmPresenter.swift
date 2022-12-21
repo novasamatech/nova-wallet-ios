@@ -63,6 +63,13 @@ final class ParaStkStakeConfirmPresenter {
         }
     }
 
+    private func allowedAmountToStake() -> BigUInt? {
+        let totalStake = delegator?.total ?? 0
+        let freeBalance = balance?.freeInPlank ?? 0
+
+        return freeBalance >= totalStake ? freeBalance - totalStake : 0
+    }
+
     private func provideAmountViewModel() {
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             amount,
@@ -215,9 +222,9 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
 
     func confirm() {
         if let existingAmount = existingStakeInPlank() {
-            stakeMore(above: existingAmount)
+            stakeMore(above: existingAmount, allowedAmountToStake: allowedAmountToStake())
         } else {
-            startStaking()
+            startStaking(for: allowedAmountToStake())
         }
     }
 }

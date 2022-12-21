@@ -73,8 +73,15 @@ final class ParaStkStakeSetupPresenter {
         }
     }
 
+    private func allowedAmountToStake() -> BigUInt? {
+        let totalStake = delegator?.total ?? 0
+        let freeBalance = balance?.freeInPlank ?? 0
+
+        return freeBalance >= totalStake ? freeBalance - totalStake : 0
+    }
+
     func balanceMinusFee() -> Decimal {
-        let balanceValue = balance?.transferable ?? 0
+        let balanceValue = allowedAmountToStake() ?? 0
         let feeValue = fee ?? 0
 
         let precision = chainAsset.assetDisplayInfo.assetPrecision
@@ -99,9 +106,9 @@ final class ParaStkStakeSetupPresenter {
     }
 
     private func provideAssetViewModel() {
-        let balanceDecimal = balance.flatMap { value in
+        let balanceDecimal = allowedAmountToStake().flatMap { value in
             Decimal.fromSubstrateAmount(
-                value.transferable,
+                value,
                 precision: chainAsset.assetDisplayInfo.assetPrecision
             )
         }
@@ -356,9 +363,9 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
 
     func proceed() {
         if let stakingAmount = existingStakeInPlank() {
-            stakeMore(above: stakingAmount)
+            stakeMore(above: stakingAmount, allowedAmountToStake: allowedAmountToStake())
         } else {
-            startStaking()
+            startStaking(for: allowedAmountToStake())
         }
     }
 }

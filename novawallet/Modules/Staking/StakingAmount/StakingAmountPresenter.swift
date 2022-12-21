@@ -17,7 +17,8 @@ final class StakingAmountPresenter {
 
     private var calculator: RewardCalculatorEngineProtocol?
     private var priceData: PriceData?
-    private var balance: Decimal?
+    private var freeBalance: Decimal?
+    private var transferableBalance: Decimal?
     private var fee: Decimal?
     private var loadingFee: Bool = false
     private var amount: Decimal?
@@ -100,7 +101,7 @@ final class StakingAmountPresenter {
     private func provideAsset() {
         let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
             amount ?? 0.0,
-            balance: balance,
+            balance: freeBalance,
             priceData: priceData
         )
         view?.didReceiveAsset(viewModel: viewModel)
@@ -164,7 +165,7 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
     }
 
     func selectAmountPercentage(_ percentage: Float) {
-        if let balance = balance, let fee = fee {
+        if let balance = freeBalance, let fee = fee {
             let newAmount = max(balance - fee, 0.0) * Decimal(Double(percentage))
 
             if newAmount > 0 {
@@ -212,8 +213,14 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
             dataValidatingFactory.has(fee: fee, locale: locale) { [weak self] in
                 self?.scheduleFeeEstimation()
             },
+            dataValidatingFactory.canPayFee(
+                balance: transferableBalance,
+                fee: fee,
+                asset: assetInfo,
+                locale: locale
+            ),
             dataValidatingFactory.canPayFeeAndAmount(
-                balance: balance,
+                balance: freeBalance,
                 fee: fee,
                 spendingAmount: amount,
                 locale: locale
@@ -281,10 +288,19 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
     }
 
     func didReceive(balance: AssetBalance?) {
-        if let availableValue = balance?.transferable {
-            self.balance = Decimal.fromSubstrateAmount(availableValue, precision: assetInfo.assetPrecision)
+        if let assetBalance = balance {
+            freeBalance = Decimal.fromSubstrateAmount(
+                assetBalance.freeInPlank,
+                precision: assetInfo.assetPrecision
+            )
+
+            transferableBalance = Decimal.fromSubstrateAmount(
+                assetBalance.transferable,
+                precision: assetInfo.assetPrecision
+            )
         } else {
-            self.balance = 0.0
+            freeBalance = 0.0
+            transferableBalance = 0.0
         }
 
         provideAsset()

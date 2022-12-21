@@ -68,6 +68,24 @@ final class ReferendumTimelineViewModelFactory {
         return .init(title: title, subtitle: subtitle, isLast: isLast)
     }
 
+    private func makeTimeViewModel(
+        title: String,
+        date: Date?,
+        locale: Locale,
+        isLast: Bool = false
+    ) -> ReferendumTimelineView.Model {
+        let subtitle: ReferendumTimelineView.StatusSubtitle?
+
+        if let date = date {
+            let subtitleString = timeFormatter.value(for: locale).string(from: date)
+            subtitle = .date(subtitleString)
+        } else {
+            subtitle = nil
+        }
+
+        return .init(title: title, subtitle: subtitle, isLast: isLast)
+    }
+
     private func makeCreatedViewModel(
         atBlock: BlockNumber?,
         currentBlock: BlockNumber,
@@ -233,37 +251,24 @@ final class ReferendumTimelineViewModelFactory {
 
     private func createExecutedViewModels(
         metadata: ReferendumMetadataLocal?,
-        currentBlock: BlockNumber,
-        blockTime: BlockTime,
         locale: Locale
     ) -> [ReferendumTimelineView.Model] {
-        let approvedBlock = metadata?.timeline?.first(
+        let approvedDate = metadata?.timeline?.first(
             where: { $0.isApproved }
-        )?.block
+        )?.time
 
-        let approved = createApproved(
-            atBlock: approvedBlock,
-            currentBlock: currentBlock,
-            blockTime: blockTime,
-            locale: locale
-        )
+        let approvedTitle = createApprovedTitle(for: locale)
+        let approved = makeTimeViewModel(title: approvedTitle, date: approvedDate, locale: locale, isLast: false)
 
-        let executedBlock = metadata?.timeline?.first(
+        let executedDate = metadata?.timeline?.first(
             where: { $0.isExecuted }
-        )?.block
+        )?.time
 
         let executedTitle = R.string.localizable.governanceReferendumsStatusExecuted(
             preferredLanguages: locale.rLanguages
         ).firstLetterCapitalized()
 
-        let executed = makeTimeViewModel(
-            title: executedTitle,
-            atBlock: executedBlock,
-            currentBlock: currentBlock,
-            blockTime: blockTime,
-            locale: locale,
-            isLast: true
-        )
+        let executed = makeTimeViewModel(title: executedTitle, date: executedDate, locale: locale, isLast: true)
 
         return [approved, executed]
     }
@@ -359,27 +364,28 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
 
             models = [timedOut]
         case .executed:
-            models = createExecutedViewModels(
-                metadata: metadata,
+            models = createExecutedViewModels(metadata: metadata, locale: locale)
+        }
+
+        if let createdDate = metadata?.timeline?.first(where: { $0.isStarted })?.time {
+            let title = R.string.localizable.govTimelineCreated(preferredLanguages: locale.rLanguages)
+
+            let created = makeTimeViewModel(
+                title: title,
+                date: createdDate,
+                locale: locale
+            )
+
+            return [created] + models
+        } else {
+            let created = makeCreatedViewModel(
+                atBlock: createdAt,
                 currentBlock: currentBlock,
                 blockTime: blockDuration,
                 locale: locale
             )
+
+            return [created] + models
         }
-
-        if createdAt == nil {
-            createdAt = metadata?.timeline?.first(
-                where: { $0.isStarted }
-            )?.block
-        }
-
-        let created = makeCreatedViewModel(
-            atBlock: createdAt,
-            currentBlock: currentBlock,
-            blockTime: blockDuration,
-            locale: locale
-        )
-
-        return [created] + models
     }
 }
