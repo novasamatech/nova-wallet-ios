@@ -26,6 +26,7 @@ protocol StakingBondMoreInteractorOutputProtocol: AnyObject {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveStash(result: Result<ChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
+    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
 }
 
 protocol StakingBondMoreWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {
