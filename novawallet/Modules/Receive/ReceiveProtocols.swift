@@ -1,7 +1,7 @@
 import UIKit
 
 protocol ReceiveViewProtocol: ControllerBackedProtocol {
-    func didReceive(accountModel: WalletAccountViewModel, token: String)
+    func didReceive(chainAccountViewModel: ChainAccountViewModel, token: String)
     func didReceive(qrImage: UIImage)
 }
 

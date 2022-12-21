@@ -1,12 +1,13 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
 import UIKit
 
 final class ReceivePresenter {
     weak var view: ReceiveViewProtocol?
     let wireframe: ReceiveWireframeProtocol
     let interactor: ReceiveInteractorInputProtocol
-    let viewModelFactory: WalletAccountViewModelFactoryProtocol
+    let iconGenerator: IconGenerating
     let accountShareFactory: NovaAccountShareFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
@@ -19,17 +20,32 @@ final class ReceivePresenter {
     init(
         interactor: ReceiveInteractorInputProtocol,
         wireframe: ReceiveWireframeProtocol,
-        viewModelFactory: WalletAccountViewModelFactoryProtocol,
+        iconGenerator: IconGenerating,
         accountShareFactory: NovaAccountShareFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.viewModelFactory = viewModelFactory
+        self.iconGenerator = iconGenerator
         self.accountShareFactory = accountShareFactory
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    private func createChainAccountViewModel(for accountId: AccountId, chain: ChainModel) -> ChainAccountViewModel {
+        let icon = try? iconGenerator.generateFromAccountId(accountId)
+        let accountAddress = try? accountId.toAddress(using: chain.chainFormat)
+
+        let viewModel = ChainAccountViewModel(
+            networkName: chain.name,
+            networkIconViewModel: RemoteImageViewModel(url: chain.icon),
+            displayAddressViewModel: .init(
+                details: accountAddress ?? "",
+                imageViewModel: icon.map { DrawableIconViewModel(icon: $0) }
+            )
+        )
+        return viewModel
     }
 }
 
@@ -83,11 +99,13 @@ extension ReceivePresenter: ReceiveInteractorOutputProtocol {
         self.account = account
         self.chain = chain
 
-        guard let accountModel = try? viewModelFactory.createViewModel(from: account) else {
-            return
-        }
+        let chainAccountViewModel = createChainAccountViewModel(
+            for: account.chainAccount.accountId,
+            chain: chain
+        )
+
         view?.didReceive(
-            accountModel: accountModel,
+            chainAccountViewModel: chainAccountViewModel,
             token: token
         )
     }

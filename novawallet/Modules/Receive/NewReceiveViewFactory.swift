@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
 
 struct NewReceiveViewFactory {
     static func createView(
@@ -32,7 +33,7 @@ struct NewReceiveViewFactory {
         let presenter = ReceivePresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: WalletAccountViewModelFactory(),
+            iconGenerator: PolkadotIconGenerator(),
             accountShareFactory: accountShareFactory,
             localizationManager: localizationManager,
             logger: Logger.shared

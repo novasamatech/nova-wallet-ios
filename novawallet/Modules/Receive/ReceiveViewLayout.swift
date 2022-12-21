@@ -10,7 +10,9 @@ final class ReceiveViewLayout: UIView {
         return view
     }()
 
-    let accountDetailsView: WalletAccountInfoView = .create { $0.applyOutlineStyle() }
+    let accountDetailsView: ChainAccountControl = .create {
+        $0.chainAccountView.actionIconView.image = R.image.iconMore()?.tinted(with: R.color.colorIconSecondary()!)
+    }
     let titleLabel = UILabel(style: .semiBoldBodyPrimary, textAlignment: .center)
     let qrView: QRDisplayView = .create { $0.contentInsets = Constants.qrViewContentInsets }
     let shareButton: TriangularedButton = .create { $0.applyDefaultStyle() }

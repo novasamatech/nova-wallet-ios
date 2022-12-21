@@ -73,8 +73,8 @@ final class ReceiveViewController: UIViewController, ViewHolder {
 }
 
 extension ReceiveViewController: ReceiveViewProtocol {
-    func didReceive(accountModel: WalletAccountViewModel, token: String) {
-        rootView.accountDetailsView.bind(viewModel: accountModel)
+    func didReceive(chainAccountViewModel: ChainAccountViewModel, token: String) {
+        rootView.accountDetailsView.chainAccountView.bind(viewModel: chainAccountViewModel)
         update(token: token)
     }
 
