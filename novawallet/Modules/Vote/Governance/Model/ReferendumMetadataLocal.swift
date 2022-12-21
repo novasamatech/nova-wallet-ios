@@ -15,8 +15,10 @@ enum ReferendumMetadataStatus: String {
 }
 
 enum ReferendumMetadataStatusV2: String {
+    case submitted = "Submitted"
     case ongoing = "Ongoing"
     case approved = "Approved"
+    case confirmed = "Confirmed"
     case rejected = "Rejected"
     case cancelled = "Cancelled"
     case timedOut = "TimedOut"
@@ -58,11 +60,13 @@ extension ReferendumMetadataLocal: Identifiable {
 extension ReferendumMetadataLocal.TimelineItem {
     var isStarted: Bool {
         status == ReferendumMetadataStatus.started.rawValue ||
+            status == ReferendumMetadataStatusV2.submitted.rawValue ||
             status == ReferendumMetadataStatusV2.ongoing.rawValue
     }
 
     var isApproved: Bool {
         status == ReferendumMetadataStatus.passed.rawValue ||
+            status == ReferendumMetadataStatusV2.confirmed.rawValue ||
             status == ReferendumMetadataStatusV2.approved.rawValue
     }
 

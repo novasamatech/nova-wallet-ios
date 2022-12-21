@@ -89,10 +89,13 @@ class GovernanceV2PolkassemblyOperationFactory: BasePolkassemblyOperationFactory
             let remoteTimeline = onChainLink?.onchain_referendumv2?.arrayValue?.first?.referendumStatus?.arrayValue
 
             let timeline: [ReferendumMetadataLocal.TimelineItem]?
+            let isoFormatter = ISO8601DateFormatter()
+            isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
             timeline = remoteTimeline?.compactMap { item in
                 guard
                     let timeString = item.blockNumber?.startDateTime?.stringValue,
-                    let time = ISO8601DateFormatter().date(from: timeString),
+                    let time = isoFormatter.date(from: timeString),
                     let status = item.status?.stringValue else {
                     return nil
                 }
