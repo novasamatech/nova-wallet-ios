@@ -25,7 +25,7 @@ enum ReferendumMetadataStatusV2: String {
 
 struct ReferendumMetadataLocal: Equatable {
     struct TimelineItem: Equatable, Codable {
-        let block: BlockNumber
+        let time: Date
         let status: String
     }
 

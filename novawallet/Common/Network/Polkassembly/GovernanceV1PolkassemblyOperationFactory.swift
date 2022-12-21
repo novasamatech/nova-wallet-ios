@@ -58,7 +58,7 @@ final class GovernanceV1PolkassemblyOperationFactory: BasePolkassemblyOperationF
                       referendumId
                       referendumStatus {
                         blockNumber {
-                          number
+                          startDateTime
                         }
                         status
                       }
@@ -121,12 +121,13 @@ final class GovernanceV1PolkassemblyOperationFactory: BasePolkassemblyOperationF
             let timeline: [ReferendumMetadataLocal.TimelineItem]?
             timeline = remoteTimeline?.compactMap { item in
                 guard
-                    let block = item.blockNumber?.number?.unsignedIntValue,
+                    let timeString = item.blockNumber?.startDateTime?.stringValue,
+                    let time = ISO8601DateFormatter().date(from: timeString),
                     let status = item.status?.stringValue else {
                     return nil
                 }
 
-                return .init(block: BlockNumber(block), status: status)
+                return .init(time: time, status: status)
             }
 
             return .init(
