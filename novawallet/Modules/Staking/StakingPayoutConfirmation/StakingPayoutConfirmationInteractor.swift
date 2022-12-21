@@ -25,7 +25,7 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
     private var batches: [Batch]?
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
-    private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var stashControllerProvider: StreamableProvider<StashItem>?
     private var payeeProvider: AnyDataProvider<DecodedPayee>?
@@ -229,9 +229,10 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
     func setup() {
         generateBatches { self.estimateFee() }
 
-        balanceProvider = subscribeToAccountInfoProvider(
+        balanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.chainAccount.accountId,
-            chainId: chainAsset.chain.chainId
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
         )
 
         if let priceId = chainAsset.asset.priceId {
@@ -290,8 +291,13 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
 }
 
 extension StakingPayoutConfirmationInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
-        presenter.didReceiveAccountInfo(result: result)
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 

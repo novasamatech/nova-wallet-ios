@@ -236,12 +236,12 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address _: AccountAddress) {
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>, address _: AccountAddress) {
         switch result {
-        case let .success(accountInfo):
-            let amount = accountInfo.flatMap {
+        case let .success(assetBalance):
+            let amount = assetBalance.flatMap {
                 Decimal.fromSubstrateAmount(
-                    $0.data.available,
+                    $0.transferable,
                     precision: assetInfo.assetPrecision
                 )
             }

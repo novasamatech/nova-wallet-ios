@@ -18,7 +18,7 @@ protocol StakingStateProtocol {
 
     func process(address: String?)
     func process(chainAsset: ChainAsset?)
-    func process(accountInfo: AccountInfo?)
+    func process(accountBalance: AssetBalance?)
     func process(price: PriceData?)
     func process(calculator: RewardCalculatorEngineProtocol?)
     func process(stashItem: StashItem?)

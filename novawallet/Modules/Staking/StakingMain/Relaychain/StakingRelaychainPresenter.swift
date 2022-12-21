@@ -393,8 +393,8 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         logger?.error("Total reward fetch failed with error: \(totalRewardError)")
     }
 
-    func didReceive(accountInfo: AccountInfo?) {
-        if let availableValue = accountInfo?.data.available, let chainAsset = chainAsset {
+    func didReceive(assetBalance: AssetBalance?) {
+        if let availableValue = assetBalance?.transferable, let chainAsset = chainAsset {
             balance = Decimal.fromSubstrateAmount(
                 availableValue,
                 precision: Int16(chainAsset.asset.precision)
@@ -403,7 +403,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
             balance = 0.0
         }
 
-        stateMachine.state.process(accountInfo: accountInfo)
+        stateMachine.state.process(accountBalance: assetBalance)
     }
 
     func didReceive(balanceError: Error) {

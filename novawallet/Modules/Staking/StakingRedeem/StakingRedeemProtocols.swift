@@ -22,7 +22,7 @@ protocol StakingRedeemInteractorInputProtocol: AnyObject {
 
 protocol StakingRedeemInteractorOutputProtocol: AnyObject {
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)

@@ -9,7 +9,7 @@ protocol CrowdloanContributionInteractorInputProtocol: AnyObject {
 protocol CrowdloanContributionInteractorOutputProtocol: AnyObject {
     func didReceiveCrowdloan(result: Result<Crowdloan, Error>)
     func didReceiveDisplayInfo(result: Result<CrowdloanDisplayInfo?, Error>)
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceiveBlockNumber(result: Result<BlockNumber?, Error>)
     func didReceiveBlockDuration(result: Result<BlockTime, Error>)
     func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)

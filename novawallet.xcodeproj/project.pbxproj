@@ -445,6 +445,7 @@
 		841221A628F13BA100715C82 /* GovernanceServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841221A528F13BA100715C82 /* GovernanceServiceFactory.swift */; };
 		8412AF992789AB76008A6C22 /* PolkadotExtensionMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412AF982789AB76008A6C22 /* PolkadotExtensionMetadata.swift */; };
 		8412AF9B2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8412AF9A2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift */; };
+		8413B27A29507F3A00F8E2E4 /* DataProviderRepositoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8413B27929507F3900F8E2E4 /* DataProviderRepositoryStub.swift */; };
 		841494402604E71C000D8D1A /* TotalRewardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8414943F2604E71C000D8D1A /* TotalRewardItem.swift */; };
 		84155DED2539817200A27058 /* ApplicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84155DEC2539817200A27058 /* ApplicationService.swift */; };
 		84155DF3253A1DBA00A27058 /* SchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84155DF2253A1DBA00A27058 /* SchedulerTests.swift */; };
@@ -3502,6 +3503,7 @@
 		841221A528F13BA100715C82 /* GovernanceServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceServiceFactory.swift; sourceTree = "<group>"; };
 		8412AF982789AB76008A6C22 /* PolkadotExtensionMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionMetadata.swift; sourceTree = "<group>"; };
 		8412AF9A2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionMetadataResponse.swift; sourceTree = "<group>"; };
+		8413B27929507F3900F8E2E4 /* DataProviderRepositoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProviderRepositoryStub.swift; sourceTree = "<group>"; };
 		8414943F2604E71C000D8D1A /* TotalRewardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalRewardItem.swift; sourceTree = "<group>"; };
 		84155DEC2539817200A27058 /* ApplicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationService.swift; sourceTree = "<group>"; };
 		84155DF2253A1DBA00A27058 /* SchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulerTests.swift; sourceTree = "<group>"; };
@@ -8201,6 +8203,7 @@
 				846CA777270911920011124C /* StakingLocalSubscriptionFactoryStub.swift */,
 				846CA7812709AD300011124C /* StakingAnalyticsLocalSubscriptionFactoryStub.swift */,
 				848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */,
+				8413B27929507F3900F8E2E4 /* DataProviderRepositoryStub.swift */,
 			);
 			path = DataProviders;
 			sourceTree = "<group>";
@@ -18017,6 +18020,7 @@
 				84B7C72C289BFA79001A3566 /* SelectValidatorsConfirmTests.swift in Sources */,
 				84E25BF427E8FEFD00290BF1 /* RewardDataSourceTests.swift in Sources */,
 				84AA004326C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift in Sources */,
+				8413B27A29507F3A00F8E2E4 /* DataProviderRepositoryStub.swift in Sources */,
 				84B7C748289BFA79001A3566 /* WalletListTests.swift in Sources */,
 				84B7C720289BFA79001A3566 /* ReferralCrowdloanTests.swift in Sources */,
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,

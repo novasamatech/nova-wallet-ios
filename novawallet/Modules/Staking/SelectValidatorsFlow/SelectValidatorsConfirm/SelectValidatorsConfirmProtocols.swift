@@ -25,7 +25,7 @@ protocol SelectValidatorsConfirmInteractorInputProtocol: AnyObject {
 protocol SelectValidatorsConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveModel(result: Result<SelectValidatorsConfirmationModel, Error>)
     func didReceivePrice(result: Result<PriceData?, Error>)
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>)
     func didReceiveMinBond(result: Result<BigUInt?, Error>)
     func didReceiveCounterForNominators(result: Result<UInt32?, Error>)
     func didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)

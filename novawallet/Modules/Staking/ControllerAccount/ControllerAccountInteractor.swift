@@ -22,7 +22,7 @@ final class ControllerAccountInteractor: AccountFetching {
 
     private lazy var callFactory = SubstrateCallFactory()
     private var stashItemProvider: StreamableProvider<StashItem>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinsicService: ExtrinsicServiceProtocol?
 
@@ -199,7 +199,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
     AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            clear(dataProvider: &accountInfoProvider)
+            clear(streamableProvider: &balanceProvider)
 
             let maybeStashItem = try result.get()
             let maybeStashId = try maybeStashItem?.stash.toAccountId()
@@ -208,9 +208,10 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
             presenter.didReceiveStashItem(result: .success(maybeStashItem))
 
             if let stashId = maybeStashId, let controllerId = maybeControllerId {
-                accountInfoProvider = subscribeToAccountInfoProvider(
-                    for: stashId,
-                    chainId: chainAsset.chain.chainId
+                balanceProvider = subscribeToAssetBalanceProvider(
+                    for: controllerId,
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
                 )
 
                 let chain = chainAsset.chain
@@ -266,16 +267,17 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
 }
 
 extension ControllerAccountInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
         guard let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return
         }
 
-        presenter.didReceiveAccountInfo(result: result, address: address)
+        presenter.didReceiveAccountBalance(result: result, address: address)
     }
 }
 

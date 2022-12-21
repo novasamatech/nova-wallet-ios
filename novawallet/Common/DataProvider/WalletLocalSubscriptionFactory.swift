@@ -2,11 +2,6 @@ import Foundation
 import RobinHood
 
 protocol WalletLocalSubscriptionFactoryProtocol {
-    func getAccountProvider(
-        for accountId: AccountId,
-        chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedAccountInfo>
-
     func getAssetBalanceProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id,
@@ -39,25 +34,6 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         DispatchQueue(
             label: "com.streamableprovider.repository.queue.\(UUID().uuidString)",
             qos: .userInitiated
-        )
-    }
-
-    func getAccountProvider(
-        for accountId: AccountId,
-        chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedAccountInfo> {
-        let codingPath = StorageCodingPath.account
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            codingPath,
-            accountId: accountId,
-            chainId: chainId
-        )
-
-        return try getDataProvider(
-            for: localKey,
-            chainId: chainId,
-            storageCodingPath: codingPath,
-            shouldUseFallback: false
         )
     }
 
