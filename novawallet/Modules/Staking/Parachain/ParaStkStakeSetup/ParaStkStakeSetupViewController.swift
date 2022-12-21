@@ -60,7 +60,7 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, Impor
             preferredLanguages: languages
         )
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonAvailablePrefix(
             preferredLanguages: languages
         )
 
