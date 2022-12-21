@@ -29,19 +29,6 @@ struct WestendStub {
         DecodedEraIndex(identifier: Chain.westend.genesisHash + "_current_era", item: StringScaleMapper(value: 777))
     }()
 
-    static let accountInfo: DecodedAccountInfo = {
-
-        let data = AccountData(free: BigUInt(1e+13),
-                                 reserved: BigUInt(0),
-                                 miscFrozen: BigUInt(0),
-                                 feeFrozen: BigUInt(0))
-
-        let info = AccountInfo(nonce: 1, data: data)
-
-        return DecodedAccountInfo(identifier: "5EJQtTE1ZS9cBdqiuUcjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6",
-                                  item: info)
-    }()
-
     static let minNominatorBond: DecodedBigUInt = {
         DecodedBigUInt(
             identifier: Chain.westend.genesisHash + "_minbond",

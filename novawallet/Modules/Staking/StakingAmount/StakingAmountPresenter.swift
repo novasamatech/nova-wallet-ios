@@ -280,8 +280,8 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
         provideRewardDestination()
     }
 
-    func didReceive(balance: AccountData?) {
-        if let availableValue = balance?.available {
+    func didReceive(balance: AssetBalance?) {
+        if let availableValue = balance?.transferable {
             self.balance = Decimal.fromSubstrateAmount(availableValue, precision: assetInfo.assetPrecision)
         } else {
             self.balance = 0.0

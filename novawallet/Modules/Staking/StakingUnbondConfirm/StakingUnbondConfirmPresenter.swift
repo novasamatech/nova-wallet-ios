@@ -195,10 +195,10 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
 }
 
 extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputProtocol {
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
         switch result {
-        case let .success(accountInfo):
-            let amountInPlank = accountInfo?.data.available ?? 0
+        case let .success(assetBalance):
+            let amountInPlank = assetBalance?.transferable ?? 0
 
             balance = Decimal.fromSubstrateAmount(
                 amountInPlank,
