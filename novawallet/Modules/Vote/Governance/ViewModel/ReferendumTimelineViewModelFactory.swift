@@ -251,8 +251,6 @@ final class ReferendumTimelineViewModelFactory {
 
     private func createExecutedViewModels(
         metadata: ReferendumMetadataLocal?,
-        currentBlock _: BlockNumber,
-        blockTime _: BlockTime,
         locale: Locale
     ) -> [ReferendumTimelineView.Model] {
         let approvedDate = metadata?.timeline?.first(
@@ -366,12 +364,7 @@ extension ReferendumTimelineViewModelFactory: ReferendumTimelineViewModelFactory
 
             models = [timedOut]
         case .executed:
-            models = createExecutedViewModels(
-                metadata: metadata,
-                currentBlock: currentBlock,
-                blockTime: blockDuration,
-                locale: locale
-            )
+            models = createExecutedViewModels(metadata: metadata, locale: locale)
         }
 
         if let createdDate = metadata?.timeline?.first(where: { $0.isStarted })?.time {
