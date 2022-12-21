@@ -30,7 +30,7 @@ struct WalletCommonConfigurator {
             dataStorageFacade: SubstrateDataStorageFacade.shared
         )
 
-        let qrCoderFactory = WalletQRCoderFactory(
+        let qrCoderFactory = LegacyWalletQRCoderFactory(
             addressPrefix: chainAccount.addressPrefix,
             chainFormat: chainAccount.chainFormat,
             publicKey: chainAccount.publicKey,

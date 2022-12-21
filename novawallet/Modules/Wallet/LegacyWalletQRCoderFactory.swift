@@ -3,7 +3,7 @@ import CommonWallet
 import IrohaCrypto
 import SubstrateSdk
 
-final class WalletQREncoder: WalletQREncoderProtocol {
+final class WalletQREncoder: WalletQREncoderProtocol, NovaWalletQREncoderProtocol {
     let username: String?
     let chainFormat: ChainFormat
     let publicKey: Data
@@ -28,9 +28,22 @@ final class WalletQREncoder: WalletQREncoderProtocol {
         )
         return try substrateEncoder.encode(info: info)
     }
+
+    func encode(receiverInfo: NovaReceiveInfo) throws -> Data {
+        let accountId = try Data(hexString: receiverInfo.accountId)
+
+        let address = try accountId.toAddress(using: chainFormat)
+
+        let info = SubstrateQRInfo(
+            address: address,
+            rawPublicKey: publicKey,
+            username: username
+        )
+        return try substrateEncoder.encode(info: info)
+    }
 }
 
-final class WalletQRDecoder: WalletQRDecoderProtocol {
+final class WalletQRDecoder: WalletQRDecoderProtocol, NovaWalletQRDecoderProtocol {
     private let chainFormat: ChainFormat
     private let assets: [WalletAsset]
 
@@ -71,9 +84,13 @@ final class WalletQRDecoder: WalletQRDecoderProtocol {
             )
         }
     }
+
+    func decode(data _: Data) throws -> NovaReceiveInfo {
+        fatalError()
+    }
 }
 
-final class WalletQRCoderFactory: WalletQRCoderFactoryProtocol {
+final class LegacyWalletQRCoderFactory: WalletQRCoderFactoryProtocol {
     let addressPrefix: ChainType
     let chainFormat: ChainFormat
     let publicKey: Data
@@ -115,5 +132,64 @@ extension ChainFormat {
         case let .substrate(type):
             return .substrate(type: type)
         }
+    }
+}
+
+// TODO: Rename
+protocol NovaWalletQRCoderFactoryProtocol {
+    func createEncoder() -> NovaWalletQREncoderProtocol
+    func createDecoder() -> NovaWalletQRDecoderProtocol
+}
+
+protocol NovaWalletQREncoderProtocol {
+    func encode(receiverInfo: NovaReceiveInfo) throws -> Data
+}
+
+protocol NovaWalletQRDecoderProtocol {
+    func decode(data: Data) throws -> NovaReceiveInfo
+}
+
+final class WalletQRCoderFactory: NovaWalletQRCoderFactoryProtocol {
+    let addressPrefix: ChainType
+    let chainFormat: ChainFormat
+    let publicKey: Data
+    let username: String?
+
+    init(
+        addressPrefix: ChainType,
+        chainFormat: ChainFormat,
+        publicKey: Data,
+        username: String?
+    ) {
+        self.addressPrefix = addressPrefix
+        self.chainFormat = chainFormat
+        self.publicKey = publicKey
+        self.username = username
+    }
+
+    func createEncoder() -> NovaWalletQREncoderProtocol {
+        WalletQREncoder(
+            chainFormat: chainFormat,
+            publicKey: publicKey,
+            username: username
+        )
+    }
+
+    func createDecoder() -> NovaWalletQRDecoderProtocol {
+        WalletQRDecoder(chainFormat: chainFormat, assets: [])
+    }
+}
+
+public struct NovaReceiveInfo: Codable, Equatable {
+    public var accountId: String
+    public var assetId: String?
+    public var amount: AmountDecimal?
+    public var details: String?
+
+    public init(accountId: String, assetId: String?, amount: AmountDecimal?, details: String?) {
+        self.accountId = accountId
+        self.assetId = assetId
+        self.amount = amount
+        self.details = details
     }
 }

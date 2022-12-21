@@ -1,7 +1,11 @@
 import Foundation
 import SubstrateSdk
 
-final class WalletAccountViewModelFactory {
+protocol WalletAccountViewModelFactoryProtocol {
+    func createViewModel(from account: MetaChainAccountResponse) throws -> WalletAccountViewModel
+}
+
+final class WalletAccountViewModelFactory: WalletAccountViewModelFactoryProtocol {
     private lazy var addressIconGenerator = PolkadotIconGenerator()
     private lazy var walletIconGenerator = NovaIconGenerator()
 
