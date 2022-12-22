@@ -1,12 +1,15 @@
 import CommonWallet
 import RobinHood
 
+protocol RemoteHistoryTransactionsProviderProtocol {
+    func fetch(by filter: WalletHistoryFilter, count: Int) -> CompoundOperationWrapper<[TransactionHistoryItem]>
+}
+
 final class TransactionHistoryStreamableSource {
-    let remoteFactory: WalletRemoteHistoryFactoryProtocol
+    let historyFacade: AssetHistoryFactoryFacadeProtocol
     let repository: AnyDataProviderRepository<TransactionHistoryItem>
     let address: AccountAddress
     let chainAsset: ChainAsset
-    let filter: WalletHistoryFilter
     let fetchCount: Int
     let operationQueue: OperationQueue
 
@@ -17,25 +20,24 @@ final class TransactionHistoryStreamableSource {
         address: AccountAddress,
         chainAsset: ChainAsset,
         repository: AnyDataProviderRepository<TransactionHistoryItem>,
-        filter: WalletHistoryFilter,
         fetchCount: Int,
         operationQueue: OperationQueue
     ) {
-        remoteFactory = historyFacade.createOperationFactory(for: chainAsset, filter: filter)!
+        self.historyFacade = historyFacade
         self.address = address
         self.chainAsset = chainAsset
-        self.filter = filter
         self.repository = repository
         self.fetchCount = fetchCount
         self.operationQueue = operationQueue
     }
 
-    private func createRemoteAssetHistory() -> CompoundOperationWrapper<[TransactionHistoryItem]> {
+    private func createRemoteAssetHistory(filter: WalletHistoryFilter, count: Int) -> CompoundOperationWrapper<[TransactionHistoryItem]> {
         guard let pagination = pagination else {
             return CompoundOperationWrapper<[TransactionHistoryItem]>.createWithResult([])
         }
         let chain = chainAsset.chain
         let remoteAddress = (chain.isEthereumBased ? address.toEthereumAddressWithChecksum() : address) ?? address
+        let remoteFactory = historyFacade.createOperationFactory(for: chainAsset, filter: filter)!
 
         let remoteHistoryWrapper = remoteFactory.createOperationWrapper(
             for: remoteAddress,
@@ -46,11 +48,9 @@ final class TransactionHistoryStreamableSource {
             let result = try remoteHistoryWrapper.targetOperation.extractNoCancellableResultData()
             let remoteTransactions = result.historyItems
             self.pagination = .init(
-                count: self.fetchCount,
+                count: count,
                 context: result.context
             )
-            let filter = self.filter
-
             let transactions: [TransactionHistoryItem] = remoteTransactions.compactMap { item in
                 item.createTransaction(chainAsset: self.chainAsset)
             }.filter { item in
@@ -73,6 +73,8 @@ final class TransactionHistoryStreamableSource {
 
         let chain = chainAsset.chain
         let remoteAddress = (chain.isEthereumBased ? address.toEthereumAddressWithChecksum() : address) ?? address
+        let remoteFactory = historyFacade.createOperationFactory(for: chainAsset, filter: .all)!
+
         let remoteHistoryWrapper = remoteFactory.createOperationWrapper(
             for: remoteAddress,
             pagination: pagination
@@ -153,25 +155,19 @@ extension TransactionHistoryStreamableSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: ((Result<Int, Error>?) -> Void)?
     ) {
-        let operation = createRemoteAssetHistory()
-
-        let queue = queue ?? .global()
-
-        operation.targetOperation.completionBlock = {
-            do {
-                let count = try operation.targetOperation.extractNoCancellableResultData().count
-
-                dispatchInQueueWhenPossible(queue) {
-                    commitNotificationBlock?(.success(count))
-                }
-            } catch {
-                dispatchInQueueWhenPossible(queue) {
-                    commitNotificationBlock?(.failure(error))
-                }
-            }
+        guard let closure = commitNotificationBlock else {
+            return
         }
 
-        operationQueue.addOperations(operation.allOperations, waitUntilFinished: false)
+        let result: Result<Int, Error> = Result.success(0)
+
+        if let queue = queue {
+            queue.async {
+                closure(result)
+            }
+        } else {
+            closure(result)
+        }
     }
 
     func refresh(runningIn queue: DispatchQueue?, commitNotificationBlock: ((Result<Int, Error>?) -> Void)?) {
@@ -192,5 +188,11 @@ extension TransactionHistoryStreamableSource: StreamableSourceProtocol {
         }
 
         operationQueue.addOperations(operation.allOperations, waitUntilFinished: false)
+    }
+}
+
+extension TransactionHistoryStreamableSource: RemoteHistoryTransactionsProviderProtocol {
+    func fetch(by filter: WalletHistoryFilter, count: Int) -> CompoundOperationWrapper<[TransactionHistoryItem]> {
+        createRemoteAssetHistory(filter: filter, count: count)
     }
 }

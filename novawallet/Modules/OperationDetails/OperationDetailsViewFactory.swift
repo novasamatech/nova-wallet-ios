@@ -41,7 +41,6 @@ struct OperationDetailsViewFactory {
         )
 
         let wireframe = OperationDetailsWireframe()
-        // wireframe.commandFactory = commandFactory
 
         let localizationManager = LocalizationManager.shared
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

@@ -105,7 +105,7 @@ final class TransactionHistoryViewLayout: UIView {
 
         headerView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints {
-            titleLeft = $0.leading.equalToSuperview().inset(20).constraint
+            titleLeft = $0.leading.equalToSuperview().inset(Constants.titleLeftCompactInset).constraint
             $0.centerY.equalToSuperview().inset(3)
         }
 
@@ -125,8 +125,9 @@ final class TransactionHistoryViewLayout: UIView {
 }
 
 extension TransactionHistoryViewLayout {
-    private enum Constants {
+    enum Constants {
         static let loadingViewMargin: CGFloat = 4.0
         static let cornerRadius: CGFloat = 12
+        static let titleLeftCompactInset: CGFloat = 20
     }
 }

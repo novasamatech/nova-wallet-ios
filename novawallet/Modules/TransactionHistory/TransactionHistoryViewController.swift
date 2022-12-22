@@ -129,7 +129,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
 
-            let headerTopOffset = CGFloat(1.0 - adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
+            let headerTopOffset = CGFloat(adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
             let headerHeightOffset = Constants.headerHeight * CGFloat(1.0 - adjustedProgress) + fullInsets.top * CGFloat(adjustedProgress)
             rootView.headerTop?.update(offset: headerTopOffset)
             rootView.headerHeight?.update(offset: headerHeightOffset)
@@ -145,26 +145,36 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         progress: Double,
         forcesLayoutUpdate: Bool
     ) {
+        let titleFullPosition = rootView.headerView.bounds.midX - rootView.titleLabel.intrinsicContentSize.width / 2.0
+        let titleCompactPosition = RootViewType.Constants.titleLeftCompactInset
+
         switch draggableState {
         case .compact:
             let adjustedProgress = min(progress / (1.0 - Constants.triggerProgressThreshold), 1.0)
+            let adjustedBackgroundProgress = min((1 - (1 - progress)) / Constants.triggerProgressThreshold, 1.0)
+            let backgroundProgress = adjustedBackgroundProgress
 
-            rootView.backgroundView.applyFullscreen(progress: CGFloat(adjustedProgress))
-            rootView.closeButton.alpha = 0.0
-            rootView.headerView.alpha = CGFloat(adjustedProgress)
+            rootView.backgroundView.applyFullscreen(progress: backgroundProgress)
+            rootView.closeButton.alpha = CGFloat(1.0 - adjustedProgress)
             rootView.panIndicatorView.alpha = CGFloat(adjustedProgress)
+
+            let titleProgress = CGFloat(1.0 - adjustedProgress) * (titleFullPosition - titleCompactPosition)
+            rootView.titleLeft?.update(inset: titleCompactPosition + titleProgress)
 
             if progress > 0.0 {
                 rootView.tableView.isScrollEnabled = false
             }
+
         case .full:
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
-
-            rootView.backgroundView.applyFullscreen(progress: CGFloat(1.0 - adjustedProgress))
-            rootView.closeButton.alpha = 0.0
-            rootView.headerView.alpha = CGFloat(1.0 - adjustedProgress)
+            let backgroundProgress = min(progress * Constants.triggerBackgroundProgressThreshold * 100, 1)
+            rootView.backgroundView.applyFullscreen(progress: CGFloat(1.0 - backgroundProgress))
+            rootView.closeButton.alpha = CGFloat(adjustedProgress)
             rootView.panIndicatorView.alpha = CGFloat(1.0 - adjustedProgress)
+
+            let titleProgress = CGFloat(adjustedProgress) * (titleFullPosition - titleCompactPosition)
+            rootView.titleLeft?.update(inset: titleCompactPosition + titleProgress)
         }
 
         if forcesLayoutUpdate {
@@ -190,7 +200,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         case .compact:
             rootView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: compactInsets.bottom, right: 0)
         default:
-            rootView.tableView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: fullInsets.bottom, right: 0)
+            rootView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: fullInsets.bottom, right: 0)
         }
     }
 
@@ -211,7 +221,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
 
 extension TransactionHistoryViewController: Draggable {
     var draggableView: UIView {
-        view
+        rootView
     }
 
     var scrollPanRecognizer: UIPanGestureRecognizer? {
@@ -243,7 +253,6 @@ extension TransactionHistoryViewController: Draggable {
         }
 
         updateTableViewAfterTransition(to: dragableState, animated: animated)
-//        updateHiddenTypeNavigationItem(for: dragableState, animated: animated)
     }
 
     func animate(progress: Double, from _: DraggableState, to newState: DraggableState, finalFrame: CGRect) {
@@ -360,5 +369,6 @@ extension TransactionHistoryViewController {
         static let draggableProgressFinal: Double = 1.0
         static let triggerProgressThreshold: Double = 0.8
         static let bouncesThreshold: CGFloat = 1.0
+        static let triggerBackgroundProgressThreshold: Double = 1 - triggerProgressThreshold
     }
 }

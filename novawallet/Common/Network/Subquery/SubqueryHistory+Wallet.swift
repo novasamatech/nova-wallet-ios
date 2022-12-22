@@ -81,7 +81,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: CallCodingPath.transfer,
-            call: nil
+            call: try? JSONEncoder().encode(transfer)
         )
     }
 
@@ -103,7 +103,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: reward.isReward ? .reward : .slash,
-            call: nil
+            call: try? JSONEncoder().encode(reward)
         )
     }
 
