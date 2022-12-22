@@ -115,7 +115,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
-            sender: "",
+            sender: address,
             receiver: nil,
             amountInPlank: nil,
             status: extrinsic.success ? .success : .failed,
