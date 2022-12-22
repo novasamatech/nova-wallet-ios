@@ -3,7 +3,7 @@ import CommonWallet
 
 final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
     func showSend(
-        from _: OperationDetailsViewProtocol?,
+        from view: OperationDetailsViewProtocol?,
         displayAddress: DisplayAddress,
         chainAsset: ChainAsset
     ) {
@@ -14,9 +14,6 @@ final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
             return
         }
 
-        // TODO: Remove wireframe
-//        let command = commandFactory?.preparePresentationCommand(for: transferView.controller)
-//        command?.presentationStyle = .push(hidesBottomBar: true)
-//        try? command?.execute()
+        view?.controller.navigationController?.pushViewController(transferView.controller, animated: true)
     }
 }

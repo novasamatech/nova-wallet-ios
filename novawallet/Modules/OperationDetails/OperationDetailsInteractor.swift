@@ -62,13 +62,12 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractSlashOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-//        let additionalInformation = try? transaction.call.map {
-//            JSONDecoder().decode(SubqueryRewardOrSlash.self, from: $0)
-//        }
-//
-//        let eventId = !additionalInformation.eventId.isEmpty ? context.eventId : txData.transactionId
+        let context = try? transaction.call.map {
+            try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
+        }
 
-        let eventId = transaction.identifier
+        let eventId = getEventId(from: context) ?? transaction.txHash
+
         let precision = Int16(bitPattern: chainAsset.asset.precision)
 
         let amount = transaction.amountInPlankIntOrZero
@@ -86,7 +85,7 @@ final class OperationDetailsInteractor: AccountFetching {
                         eventId: eventId,
                         amount: amount,
                         validator: addresses.first,
-                        era: nil
+                        era: context?.era
                     )
 
                     completion(.slash(model))
@@ -99,7 +98,7 @@ final class OperationDetailsInteractor: AccountFetching {
                 eventId: eventId,
                 amount: amount,
                 validator: nil,
-                era: nil
+                era: context?.era
             )
 
             completion(.slash(model))
@@ -109,9 +108,12 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractRewardOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        // TODO: Era, eventId
-        let eventId = transaction.identifier
-        // let eventId = !context.eventId.isEmpty ? context.eventId : transaction.identifier
+        let context = try? transaction.call.map {
+            try JSONDecoder().decode(HistoryRewardContext.self, from: $0)
+        }
+
+        let eventId = getEventId(from: context) ?? transaction.txHash
+
         let precision = Int16(bitPattern: chainAsset.asset.precision)
         let amount = transaction.amountInPlankIntOrZero
 
@@ -128,7 +130,7 @@ final class OperationDetailsInteractor: AccountFetching {
                         eventId: eventId,
                         amount: amount,
                         validator: addresses.first,
-                        era: nil
+                        era: context?.era
                     )
 
                     completion(.reward(model))
@@ -141,11 +143,18 @@ final class OperationDetailsInteractor: AccountFetching {
                 eventId: eventId,
                 amount: amount,
                 validator: nil,
-                era: nil
+                era: context?.era
             )
 
             completion(.reward(model))
         }
+    }
+
+    private func getEventId(from context: HistoryRewardContext?) -> String? {
+        guard let eventId = context?.eventId else {
+            return nil
+        }
+        return !eventId.isEmpty ? eventId : nil
     }
 
     private func extractExtrinsicOperationData(
