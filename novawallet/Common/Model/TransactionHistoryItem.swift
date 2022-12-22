@@ -60,11 +60,11 @@ extension TransactionHistoryItem {
         ChainAssetId(chainId: chainId, assetId: assetId).walletId
     }
 
-    var amountInPlankInt: BigUInt {
+    var amountInPlankIntOrZero: BigUInt {
         amountInPlank.map { BigUInt($0) ?? 0 } ?? 0
     }
 
-    var feeInPlankInt: BigUInt {
+    var feeInPlankIntOrZero: BigUInt {
         fee.map { BigUInt($0) ?? 0 } ?? 0
     }
 }

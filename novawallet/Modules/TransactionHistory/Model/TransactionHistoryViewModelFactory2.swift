@@ -31,13 +31,13 @@ final class TransactionHistoryViewModelFactory2 {
     init(
         chainAsset: ChainAsset,
         tokenFormatter: LocalizableResource<TokenFormatter>,
-        dateFormatter: LocalizableResource<DateFormatter>,
-        groupDateFormatter: LocalizableResource<DateFormatter>
+        dateFormatter: DateFormatter,
+        groupDateFormatter: DateFormatter
     ) {
         self.chainAsset = chainAsset
         self.tokenFormatter = tokenFormatter
-        self.dateFormatter = dateFormatter
-        self.groupDateFormatter = groupDateFormatter
+        self.dateFormatter = dateFormatter.localizableResource()
+        self.groupDateFormatter = groupDateFormatter.localizableResource()
     }
 
     private func createTransferItemFromData(

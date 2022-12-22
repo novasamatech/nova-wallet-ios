@@ -68,7 +68,7 @@ final class OperationDetailsInteractor: AccountFetching {
         let eventId = transaction.identifier
         let precision = Int16(bitPattern: chainAsset.asset.precision)
 
-        let amount = transaction.amountInPlankInt
+        let amount = transaction.amountInPlankIntOrZero
 
         if let validatorId = try? transaction.sender.toAccountId() {
             _ = fetchDisplayAddress(
@@ -110,7 +110,7 @@ final class OperationDetailsInteractor: AccountFetching {
         let eventId = transaction.identifier
         // let eventId = !context.eventId.isEmpty ? context.eventId : transaction.identifier
         let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let amount = transaction.amountInPlankInt
+        let amount = transaction.amountInPlankIntOrZero
 
         if let validatorId = try? transaction.sender.toAccountId() {
             _ = fetchDisplayAddress(
@@ -154,7 +154,7 @@ final class OperationDetailsInteractor: AccountFetching {
         }
 
         let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let fee = transaction.amountInPlankInt
+        let fee = transaction.amountInPlankIntOrZero
 
         let currentDisplayAddress = DisplayAddress(
             address: accountAddress,
@@ -192,9 +192,9 @@ final class OperationDetailsInteractor: AccountFetching {
 
         let precision = Int16(bitPattern: chainAsset.asset.precision)
 
-        let amount = transaction.amountInPlankInt
+        let amount = transaction.amountInPlankIntOrZero
 
-        let fee = transaction.feeInPlankInt
+        let fee = transaction.feeInPlankIntOrZero
 
         let currentDisplayAddress = DisplayAddress(
             address: accountAddress,
