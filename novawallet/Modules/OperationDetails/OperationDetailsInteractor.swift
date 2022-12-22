@@ -62,8 +62,11 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractSlashOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        // let context = HistoryRewardContext(context: txData.context ?? [:])
-        // let eventId = !context.eventId.isEmpty ? context.eventId : txData.transactionId
+//        let additionalInformation = try? transaction.call.map {
+//            JSONDecoder().decode(SubqueryRewardOrSlash.self, from: $0)
+//        }
+//
+//        let eventId = !additionalInformation.eventId.isEmpty ? context.eventId : txData.transactionId
 
         let eventId = transaction.identifier
         let precision = Int16(bitPattern: chainAsset.asset.precision)

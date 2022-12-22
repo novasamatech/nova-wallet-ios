@@ -17,7 +17,6 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             let navigationController = view?.controller.navigationController else {
             return
         }
-
         navigationController.pushViewController(
             assetDetailsView.controller,
             animated: true
