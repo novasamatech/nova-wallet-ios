@@ -64,8 +64,8 @@ extension TriangularedButton {
 
     func applyTranslucentDisabledStyle() {
         triangularedView?.shadowOpacity = 0.0
-        triangularedView?.fillColor = R.color.colorButtonBackgroundInactive()!
-        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundInactive()!
+        triangularedView?.fillColor = R.color.colorButtonBackgroundInactiveOnGradient()!
+        triangularedView?.highlightedFillColor = R.color.colorButtonBackgroundInactiveOnGradient()!
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 
