@@ -38,7 +38,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         chainAsset: ChainAsset,
         metaChainAccountResponse: MetaChainAccountResponse
     ) {
-        guard let receiveTokensView = NewReceiveViewFactory.createView(
+        guard let receiveTokensView = AssetReceiveViewFactory.createView(
             chainAsset: chainAsset,
             metaChainAccountResponse: metaChainAccountResponse
         ) else {

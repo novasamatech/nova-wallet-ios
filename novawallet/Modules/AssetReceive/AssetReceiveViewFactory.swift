@@ -2,11 +2,11 @@ import Foundation
 import SoraFoundation
 import SubstrateSdk
 
-struct NewReceiveViewFactory {
+struct AssetReceiveViewFactory {
     static func createView(
         chainAsset: ChainAsset,
         metaChainAccountResponse: MetaChainAccountResponse
-    ) -> ReceiveViewProtocol? {
+    ) -> AssetReceiveViewProtocol? {
         let chainAccount = metaChainAccountResponse.chainAccount
         let qrCoderFactory = WalletQRCoderFactory(
             addressPrefix: chainAccount.addressPrefix,
@@ -15,14 +15,14 @@ struct NewReceiveViewFactory {
             username: chainAccount.name
         )
 
-        let interactor = ReceiveInteractor(
+        let interactor = AssetReceiveInteractor(
             metaChainAccountResponse: metaChainAccountResponse,
             chainAsset: chainAsset,
             qrCoderFactory: qrCoderFactory,
             qrCodeCreationOperationFactory: QRCreationOperationFactory(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
-        let wireframe = ReceiveWireframe()
+        let wireframe = AssetReceiveWireframe()
         let localizationManager = LocalizationManager.shared
         let accountShareFactory = AccountShareFactory(
             chain: chainAsset.chain,
@@ -30,7 +30,7 @@ struct NewReceiveViewFactory {
             localizationManager: localizationManager
         )
 
-        let presenter = ReceivePresenter(
+        let presenter = AssetReceivePresenter(
             interactor: interactor,
             wireframe: wireframe,
             iconGenerator: PolkadotIconGenerator(),
@@ -39,7 +39,7 @@ struct NewReceiveViewFactory {
             logger: Logger.shared
         )
 
-        let view = ReceiveViewController(
+        let view = AssetReceiveViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )

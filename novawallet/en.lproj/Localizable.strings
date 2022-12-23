@@ -185,6 +185,7 @@
 "network.status.connecting" = "Connecting…";
 "network.status.connected" = "Connected";
 "wallet.receive.description" = "Share this QR to sender";
+"wallet.receive.error.generateQRCode.message" = "QR code generation failed. Would you like to retry?";
 "wallet.search.accounts" = "my accounts";
 "wallet.receive.share.message" = "My %@ address to receive %@:";
 "account.export.action" = "Export";

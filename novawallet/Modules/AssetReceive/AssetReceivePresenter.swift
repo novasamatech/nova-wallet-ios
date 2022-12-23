@@ -3,10 +3,10 @@ import SoraFoundation
 import SubstrateSdk
 import UIKit
 
-final class ReceivePresenter {
-    weak var view: ReceiveViewProtocol?
-    let wireframe: ReceiveWireframeProtocol
-    let interactor: ReceiveInteractorInputProtocol
+final class AssetReceivePresenter {
+    weak var view: AssetReceiveViewProtocol?
+    let wireframe: AssetReceiveWireframeProtocol
+    let interactor: AssetReceiveInteractorInputProtocol
     let iconGenerator: IconGenerating
     let accountShareFactory: NovaAccountShareFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
@@ -16,10 +16,11 @@ final class ReceivePresenter {
     private var qrCodeInfo: QRCodeInfo?
     private var account: MetaChainAccountResponse?
     private var chain: ChainModel?
+    private var qrCodeSize: CGSize?
 
     init(
-        interactor: ReceiveInteractorInputProtocol,
-        wireframe: ReceiveWireframeProtocol,
+        interactor: AssetReceiveInteractorInputProtocol,
+        wireframe: AssetReceiveWireframeProtocol,
         iconGenerator: IconGenerating,
         accountShareFactory: NovaAccountShareFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -49,13 +50,14 @@ final class ReceivePresenter {
     }
 }
 
-extension ReceivePresenter: ReceivePresenterProtocol {
+extension AssetReceivePresenter: AssetReceivePresenterProtocol {
     func setup() {
         interactor.setup()
     }
 
     func set(qrCodeSize: CGSize) {
-        interactor.set(qrCodeSize: qrCodeSize)
+        self.qrCodeSize = qrCodeSize
+        interactor.generateQRCode(with: qrCodeSize)
     }
 
     func share() {
@@ -90,7 +92,7 @@ extension ReceivePresenter: ReceivePresenterProtocol {
     }
 }
 
-extension ReceivePresenter: ReceiveInteractorOutputProtocol {
+extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
     func didReceive(
         account: MetaChainAccountResponse,
         chain: ChainModel,
@@ -115,7 +117,25 @@ extension ReceivePresenter: ReceiveInteractorOutputProtocol {
         view?.didReceive(qrImage: qrCodeInfo.image)
     }
 
-    func didReceive(error: ReceiveInteractorError) {
-        logger?.error(error.localizedDescription)
+    func didReceive(error: AssetReceiveInteractorError) {
+        switch error {
+        case .missingAccount, .encodingData:
+            logger?.error(error.localizedDescription)
+        case .generatingQRCode:
+            guard let qrCodeSize = qrCodeSize else {
+                return
+            }
+            let locale = localizationManager.selectedLocale
+            let message = R.string.localizable.walletReceiveErrorGenerateQRCodeMessage(preferredLanguages: locale.rLanguages)
+            let actionTitle = R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages)
+            wireframe.presentTryAgainOperation(
+                on: view,
+                title: "",
+                message: message,
+                actionTitle: actionTitle
+            ) { [weak self] in
+                self?.interactor.generateQRCode(with: qrCodeSize)
+            }
+        }
     }
 }

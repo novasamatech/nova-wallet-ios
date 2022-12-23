@@ -186,6 +186,7 @@
 "network.status.connected" = "Подключено";
 "wallet.receive.description" = "Поделитесь этим QR-кодом с отправителем";
 "wallet.search.accounts" = "мои аккаунты";
+"wallet.receive.error.generateQRCode.message" = "Генерация QR кода завершилась с ошибкой. Хотите повторить?";
 "wallet.receive.share.message" = "Мой %@ адрес для получения %@:";
 "account.export.action" = "Экспортировать";
 "account.export.warning.message" = "Передача или копирование вашего секрета - операция с высоким риском, не отправляйте ее никому. Хотите продолжить процесс обмена / копирования?";

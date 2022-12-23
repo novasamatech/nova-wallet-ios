@@ -1,7 +1,7 @@
 import UIKit
 import SnapKit
 
-final class ReceiveViewLayout: UIView {
+final class AssetReceiveViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = Constants.containerInsets
@@ -68,7 +68,7 @@ final class ReceiveViewLayout: UIView {
     }
 }
 
-extension ReceiveViewLayout {
+extension AssetReceiveViewLayout {
     enum Constants {
         static let qrViewSizeRatio: CGFloat = 0.75
         static let qrViewPlaceHolderWidth: CGFloat = 280

@@ -1,15 +1,15 @@
 import UIKit
 import SoraFoundation
 
-final class ReceiveViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ReceiveViewLayout
+final class AssetReceiveViewController: UIViewController, ViewHolder {
+    typealias RootViewType = AssetReceiveViewLayout
 
-    let presenter: ReceivePresenterProtocol
+    let presenter: AssetReceivePresenterProtocol
     private var cachedBounds: CGRect?
     private var token: String = ""
 
     init(
-        presenter: ReceivePresenterProtocol,
+        presenter: AssetReceivePresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -23,7 +23,7 @@ final class ReceiveViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ReceiveViewLayout()
+        view = AssetReceiveViewLayout()
     }
 
     override func viewDidLoad() {
@@ -40,7 +40,7 @@ final class ReceiveViewController: UIViewController, ViewHolder {
             return
         }
         cachedBounds = view.bounds
-        presenter.set(qrCodeSize: ReceiveViewLayout.Constants.calculateQRsize(view.bounds))
+        presenter.set(qrCodeSize: AssetReceiveViewLayout.Constants.calculateQRsize(view.bounds))
     }
 
     private func setupLocalization() {
@@ -72,7 +72,7 @@ final class ReceiveViewController: UIViewController, ViewHolder {
     }
 }
 
-extension ReceiveViewController: ReceiveViewProtocol {
+extension AssetReceiveViewController: AssetReceiveViewProtocol {
     func didReceive(chainAccountViewModel: ChainAccountViewModel, token: String) {
         rootView.accountDetailsView.chainAccountView.bind(viewModel: chainAccountViewModel)
         update(token: token)
@@ -83,7 +83,7 @@ extension ReceiveViewController: ReceiveViewProtocol {
     }
 }
 
-extension ReceiveViewController: Localizable {
+extension AssetReceiveViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

@@ -1,8 +1,8 @@
 import UIKit
 import RobinHood
 
-final class ReceiveInteractor {
-    weak var presenter: ReceiveInteractorOutputProtocol!
+final class AssetReceiveInteractor {
+    weak var presenter: AssetReceiveInteractorOutputProtocol!
 
     let chainAsset: ChainAsset
     let qrCoderFactory: NovaWalletQRCoderFactoryProtocol
@@ -78,7 +78,7 @@ final class ReceiveInteractor {
     }
 }
 
-extension ReceiveInteractor: ReceiveInteractorInputProtocol {
+extension AssetReceiveInteractor: AssetReceiveInteractorInputProtocol {
     func setup() {
         presenter.didReceive(
             account: metaChainAccountResponse,
@@ -87,7 +87,7 @@ extension ReceiveInteractor: ReceiveInteractorInputProtocol {
         )
     }
 
-    func set(qrCodeSize: CGSize) {
-        updateQRCode(size: qrCodeSize)
+    func generateQRCode(with size: CGSize) {
+        updateQRCode(size: size)
     }
 }
