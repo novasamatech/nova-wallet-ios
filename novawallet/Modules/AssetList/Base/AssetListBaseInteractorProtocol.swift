@@ -4,6 +4,8 @@ import BigInt
 
 protocol AssetListBaseInteractorInputProtocol: AnyObject {
     func setup()
+
+    func getFullChain(for chainId: ChainModel.Id) -> ChainModel?
 }
 
 protocol AssetListBaseInteractorOutputProtocol: AnyObject {

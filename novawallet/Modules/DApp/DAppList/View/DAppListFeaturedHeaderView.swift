@@ -12,9 +12,7 @@ final class DAppListFeaturedHeaderView: UICollectionViewCell {
 
     let actionButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
-        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorIconChip()!)
+        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
         button.changesContentOpacityWhenHighlighted = true
         button.triangularedBlurView?.overlayView?.highlightedFillColor =
