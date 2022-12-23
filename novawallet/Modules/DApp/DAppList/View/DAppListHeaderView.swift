@@ -43,8 +43,7 @@ final class DAppListHeaderView: UICollectionViewCell {
         backgroundView.overlayView?.highlightedFillColor = R.color.colorCellBackgroundPressed()!
 
         let contentView = IconDetailsView()
-        contentView.imageView.image = R.image.iconSearch()?.withRenderingMode(.alwaysTemplate)
-        contentView.tintColor = R.color.colorTextPrimary()
+        contentView.imageView.image = R.image.iconSearch()
         contentView.detailsLabel.textColor = R.color.colorIconSecondary()
         contentView.detailsLabel.font = .p1Paragraph
         contentView.detailsLabel.numberOfLines = 0
