@@ -36,7 +36,7 @@ final class AccountShareFactory: AccountShareFactoryProtocol {
 }
 
 extension AccountShareFactory: NovaAccountShareFactoryProtocol {
-    func createSources(for info: NovaReceiveInfo, qrImage: UIImage) -> [Any] {
+    func createSources(for info: AssetReceiveInfo, qrImage: UIImage) -> [Any] {
         guard
             let accountId = try? Data(hexString: info.accountId),
             let address = try? accountId.toAddress(using: chain.chainFormat) else {

@@ -14,7 +14,7 @@ protocol AssetReceivePresenterProtocol: AnyObject {
 
 protocol AssetReceiveInteractorInputProtocol: AnyObject {
     func setup()
-    func generateQRCode(with size: CGSize)
+    func generateQRCode(size: CGSize)
 }
 
 protocol AssetReceiveInteractorOutputProtocol: AnyObject {
@@ -23,4 +23,4 @@ protocol AssetReceiveInteractorOutputProtocol: AnyObject {
     func didReceive(error: AssetReceiveInteractorError)
 }
 
-protocol AssetReceiveWireframeProtocol: AnyObject, SharingPresentable, AddressOptionsPresentable, ErrorPresentable, CommonRetryable {}
+protocol AssetReceiveWireframeProtocol: AnyObject, SharingPresentable, AddressOptionsPresentable, ErrorPresentable, AlertPresentable, CommonRetryable {}

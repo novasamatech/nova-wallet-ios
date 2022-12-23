@@ -30,7 +30,7 @@ final class AssetReceiveInteractor {
         cancelCurrentQRCodeCreation()
 
         let encoder = qrCoderFactory.createEncoder()
-        let receiverInfo = NovaReceiveInfo(
+        let receiverInfo = AssetReceiveInfo(
             accountId: metaChainAccountResponse.chainAccount.accountId.toHex(),
             assetId: chainAsset.chainAssetId.walletId,
             amount: nil,
@@ -87,7 +87,7 @@ extension AssetReceiveInteractor: AssetReceiveInteractorInputProtocol {
         )
     }
 
-    func generateQRCode(with size: CGSize) {
+    func generateQRCode(size: CGSize) {
         updateQRCode(size: size)
     }
 }

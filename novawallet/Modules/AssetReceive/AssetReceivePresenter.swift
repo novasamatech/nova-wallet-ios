@@ -57,7 +57,7 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
 
     func set(qrCodeSize: CGSize) {
         self.qrCodeSize = qrCodeSize
-        interactor.generateQRCode(with: qrCodeSize)
+        interactor.generateQRCode(size: qrCodeSize)
     }
 
     func share() {
@@ -128,13 +128,16 @@ extension AssetReceivePresenter: AssetReceiveInteractorOutputProtocol {
             let locale = localizationManager.selectedLocale
             let message = R.string.localizable.walletReceiveErrorGenerateQRCodeMessage(preferredLanguages: locale.rLanguages)
             let actionTitle = R.string.localizable.commonTryAgain(preferredLanguages: locale.rLanguages)
-            wireframe.presentTryAgainOperation(
+            let cancelAction = R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
+
+            wireframe.presentRequestStatus(
                 on: view,
                 title: "",
                 message: message,
-                actionTitle: actionTitle
+                cancelAction: cancelAction,
+                locale: locale
             ) { [weak self] in
-                self?.interactor.generateQRCode(with: qrCodeSize)
+                self?.interactor.generateQRCode(size: qrCodeSize)
             }
         }
     }

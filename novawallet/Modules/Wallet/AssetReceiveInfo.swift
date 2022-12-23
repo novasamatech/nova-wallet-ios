@@ -1,6 +1,6 @@
 import Foundation
 
-public struct NovaReceiveInfo: Codable, Equatable {
+public struct AssetReceiveInfo: Codable, Equatable {
     public var accountId: String
     public var assetId: String?
     public var amount: Decimal?
