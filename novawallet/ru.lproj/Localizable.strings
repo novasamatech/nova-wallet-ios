@@ -1088,3 +1088,5 @@
 "tokens.manage.partial.selected" = "%@ (ещё %@)";
 "tokens.manage.search.empty" = "Для введенного имени токены\nне найдены";
 "add.token.network.selection.title" = "Выберите сеть для добавления ERC-20 токена";
+"common.today" = "Сегодня";
+"common.yesterday" = "Вчера";

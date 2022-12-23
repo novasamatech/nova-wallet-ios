@@ -1,6 +1,6 @@
 import RobinHood
 
-protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol {
+protocol AssetDetailsViewProtocol: AnyObject, ControllerBackedProtocol, Containable {
     func didReceive(assetModel: AssetDetailsModel)
     func didReceive(totalBalance: BalanceViewModelProtocol)
     func didReceive(transferableBalance: BalanceViewModelProtocol)
