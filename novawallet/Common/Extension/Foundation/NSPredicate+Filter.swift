@@ -265,6 +265,29 @@ extension NSPredicate {
         )
     }
 
+    static func assetLock(chainId: ChainModel.Id, assetId: AssetModel.Id) -> NSPredicate {
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.chainId),
+            chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetLock.assetId),
+            assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainIdPredicate, assetIdPredicate
+        ])
+    }
+
+    static func assetLock(chainAssetIds: Set<ChainAssetId>) -> NSPredicate {
+        let predicates = chainAssetIds.map { assetLock(chainId: $0.chainId, assetId: $0.assetId) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
+    }
+
     static func assetLock(
         for accountId: AccountId
     ) -> NSPredicate {
@@ -338,6 +361,13 @@ extension NSPredicate {
 
     static func filterAuthorizedDApps(by metaId: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDDAppSettings.metaId), metaId)
+    }
+
+    static func crowdloanContribution(chainIds: Set<ChainModel.Id>) -> NSPredicate {
+        let predicates = chainIds.map {
+            NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.chainId), $0)
+        }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
     }
 
     static func crowdloanContribution(
