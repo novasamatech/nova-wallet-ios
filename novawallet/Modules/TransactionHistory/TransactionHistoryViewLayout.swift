@@ -16,14 +16,17 @@ final class TransactionHistoryViewLayout: UIView {
         return backgroundView
     }()
 
-    let filterButton: RoundedButton = .create {
+    let filterIcon = R.image.iconFilter()?.tinted(with: R.color.colorIconPrimary()!)
+    let closeIcon = R.image.iconClose()?.tinted(with: R.color.colorIconPrimary()!)
+
+    lazy var filterButton: RoundedButton = .create {
         $0.applyIconStyle()
-        $0.imageWithTitleView?.iconImage = R.image.iconFilter()?.tinted(with: R.color.colorIconPrimary()!)
+        $0.imageWithTitleView?.iconImage = filterIcon
     }
 
-    let closeButton: RoundedButton = .create {
+    lazy var closeButton: RoundedButton = .create {
         $0.applyIconStyle()
-        $0.imageWithTitleView?.iconImage = R.image.iconClose()?.tinted(with: R.color.colorIconPrimary()!)
+        $0.imageWithTitleView?.iconImage = closeIcon
     }
 
     let pageLoadingView: PageLoadingView = .create {
