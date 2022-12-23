@@ -1,7 +1,7 @@
 import UIKit
 import RobinHood
 
-final class AssetReceiveInteractor {
+final class AssetReceiveInteractor: AnyCancellableCleaning {
     weak var presenter: AssetReceiveInteractorOutputProtocol!
 
     let chainAsset: ChainAsset
@@ -27,7 +27,7 @@ final class AssetReceiveInteractor {
     }
 
     private func updateQRCode(size: CGSize) {
-        cancelCurrentQRCodeCreation()
+        clear(&currentQRCodeOperation)
 
         let encoder = qrCoderFactory.createEncoder()
         let receiverInfo = AssetReceiveInfo(
@@ -69,13 +69,6 @@ final class AssetReceiveInteractor {
         operationQueue.addOperation(qrCreationOperation)
     }
 
-    private func cancelCurrentQRCodeCreation() {
-        guard currentQRCodeOperation != nil else {
-            return
-        }
-        currentQRCodeOperation?.cancel()
-        currentQRCodeOperation = nil
-    }
 }
 
 extension AssetReceiveInteractor: AssetReceiveInteractorInputProtocol {
