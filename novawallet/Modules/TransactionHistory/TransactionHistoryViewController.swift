@@ -4,10 +4,14 @@ import RobinHood
 import SoraFoundation
 import CommonWallet
 
+private struct NavigationItemState {
+    var title: String?
+    var leftBarItem: UIBarButtonItem?
+    var rightBarItem: UIBarButtonItem?
+}
+
 final class TransactionHistoryViewController: UIViewController, ViewHolder, EmptyStateViewOwnerProtocol {
-    var presentationNavigationItem: UINavigationItem? {
-        navigationController != nil ? navigationItem : nil
-    }
+    private var previousNavigationItemState: NavigationItemState?
 
     var emptyStateDelegate: EmptyStateDelegate {
         self
@@ -89,6 +93,12 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         presenter.showFilter()
     }
 
+    @objc private func didTapOnClose() {
+        if draggableState == .full {
+            delegate?.wantsTransit(to: .compact, animating: true)
+        }
+    }
+
     private func update(
         for draggableState: DraggableState,
         progress: Double,
@@ -110,7 +120,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         )
     }
 
-    func updateHeaderHeight(
+    private func updateHeaderHeight(
         for draggableState: DraggableState,
         progress: Double,
         forcesLayoutUpdate: Bool
@@ -122,17 +132,19 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
             let adjustedProgress = min(progress / (1.0 - Constants.triggerProgressThreshold), 1.0)
 
             let headerTopOffset = CGFloat(1.0 - adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
-            let headerHeightOffset = Constants.headerHeight * CGFloat(adjustedProgress) + fullInsets.top * CGFloat(1.0 - adjustedProgress)
+            let headerHeight = Constants.headerHeight * CGFloat(adjustedProgress) +
+                fullInsets.top * CGFloat(1.0 - adjustedProgress)
             rootView.headerTop?.update(offset: headerTopOffset)
-            rootView.headerHeight?.update(offset: headerHeightOffset)
+            rootView.headerHeight?.update(offset: headerHeight)
         case .full:
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
 
-            let headerTopOffset = CGFloat(adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
-            let headerHeightOffset = Constants.headerHeight * CGFloat(1.0 - adjustedProgress) + fullInsets.top * CGFloat(adjustedProgress)
+            let headerTopOffset = CGFloat(1.0 - adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
+            let headerHeight = Constants.headerHeight * CGFloat(1.0 - adjustedProgress) +
+                fullInsets.top * CGFloat(adjustedProgress)
             rootView.headerTop?.update(offset: headerTopOffset)
-            rootView.headerHeight?.update(offset: headerHeightOffset)
+            rootView.headerHeight?.update(offset: headerHeight)
         }
 
         if forcesLayoutUpdate {
@@ -160,11 +172,10 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
 
             let titleProgress = CGFloat(1.0 - adjustedProgress) * (titleFullPosition - titleCompactPosition)
             rootView.titleLeft?.update(inset: titleCompactPosition + titleProgress)
-
+            rootView.headerView.alpha = CGFloat(adjustedProgress)
             if progress > 0.0 {
                 rootView.tableView.isScrollEnabled = false
             }
-
         case .full:
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
@@ -175,8 +186,8 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
 
             let titleProgress = CGFloat(adjustedProgress) * (titleFullPosition - titleCompactPosition)
             rootView.titleLeft?.update(inset: titleCompactPosition + titleProgress)
+            rootView.headerView.alpha = CGFloat(1.0 - adjustedProgress)
         }
-
         if forcesLayoutUpdate {
             view.layoutIfNeeded()
         }
@@ -192,6 +203,48 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
             rootView.tableView.showsVerticalScrollIndicator = false
         case .full:
             rootView.tableView.isScrollEnabled = true
+        }
+    }
+
+    private func updateNavigationItem(for state: DraggableState, animated _: Bool) {
+        guard
+            let navigationItem = delegate?.presentationNavigationItem else {
+            return
+        }
+
+        switch state {
+        case .compact:
+            if let state = previousNavigationItemState {
+                navigationItem.title = state.title
+                navigationItem.leftBarButtonItem = state.leftBarItem
+                navigationItem.rightBarButtonItem = state.rightBarItem
+
+                previousNavigationItemState = nil
+            }
+        case .full:
+            if previousNavigationItemState == nil {
+                previousNavigationItemState = NavigationItemState(
+                    title: navigationItem.title,
+                    leftBarItem: navigationItem.leftBarButtonItem,
+                    rightBarItem: navigationItem.rightBarButtonItem
+                )
+                let closeBarItem = UIBarButtonItem(
+                    image: rootView.closeIcon,
+                    style: .plain,
+                    target: self,
+                    action: #selector(didTapOnClose)
+                )
+                navigationItem.setLeftBarButton(closeBarItem, animated: true)
+
+                let filterItem = UIBarButtonItem(
+                    image: rootView.filterIcon,
+                    style: .plain,
+                    target: self,
+                    action: #selector(didTapOnFilter)
+                )
+                navigationItem.setRightBarButton(filterItem, animated: true)
+                navigationItem.title = rootView.titleLabel.text
+            }
         }
     }
 
@@ -253,6 +306,7 @@ extension TransactionHistoryViewController: Draggable {
         }
 
         updateTableViewAfterTransition(to: dragableState, animated: animated)
+        updateNavigationItem(for: dragableState, animated: animated)
     }
 
     func animate(progress: Double, from _: DraggableState, to newState: DraggableState, finalFrame: CGRect) {
