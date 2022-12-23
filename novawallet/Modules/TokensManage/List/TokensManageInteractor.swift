@@ -36,6 +36,30 @@ final class TokensManageInteractor {
         let repository = repositoryFactory.createAssetBalanceRepository(for: chainAssetIds)
         return repository.deleteAllOperation()
     }
+
+    private func createLocksClearOperation(for chainAssetIds: Set<ChainAssetId>) -> BaseOperation<Void> {
+        let repository = repositoryFactory.createAssetLocksRepository(chainAssetIds: chainAssetIds)
+        return repository.deleteAllOperation()
+    }
+
+    private func createCrowdloanContributionClearOperation(
+        for chainAssetIds: Set<ChainAssetId>
+    ) -> BaseOperation<Void> {
+        let chainIds = Set(chainAssetIds.filter { $0.assetId == 0 }.map(\.chainId))
+        let repository = repositoryFactory.createCrowdloanContributionRepository(chainIds: chainIds)
+        return repository.deleteAllOperation()
+    }
+
+    private func createTokenClearWrapper(for chainAssetIds: Set<ChainAssetId>) -> CompoundOperationWrapper<Void> {
+        let clearBalanceOperation = createBalanceClearOperation(for: chainAssetIds)
+        let clearLocksOperation = createLocksClearOperation(for: chainAssetIds)
+        let clearCrowdloanContributionOperation = createCrowdloanContributionClearOperation(for: chainAssetIds)
+
+        return CompoundOperationWrapper(
+            targetOperation: clearBalanceOperation,
+            dependencies: [clearLocksOperation, clearCrowdloanContributionOperation]
+        )
+    }
 }
 
 extension TokensManageInteractor: TokensManageInteractorInputProtocol {
@@ -91,8 +115,9 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
         operationQueue.addOperation(saveOperation)
 
         if !enabled {
-            let clearAssetBalanceOperation = createBalanceClearOperation(for: chainAssetIds)
-            operationQueue.addOperation(clearAssetBalanceOperation)
+            let clearTokenWrapper = createTokenClearWrapper(for: chainAssetIds)
+            clearTokenWrapper.addDependency(operations: [saveOperation])
+            operationQueue.addOperations(clearTokenWrapper.allOperations, waitUntilFinished: false)
         }
     }
 }
