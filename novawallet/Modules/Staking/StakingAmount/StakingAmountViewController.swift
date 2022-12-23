@@ -119,7 +119,7 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
                 preferredLanguages: selectedLocale.rLanguages
             )
 
-            rootView.actionButton.applyTranslucentDisabledStyle()
+            rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
         }
     }
