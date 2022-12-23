@@ -60,7 +60,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
             let totalPriceBalance = BalanceData(
                 identifier: currentPriceId,
-                balance: AmountDecimal(value: totalPrice)
+                balance: CommonWallet.AmountDecimal(value: totalPrice)
             )
 
             return [totalPriceBalance] + (balances ?? [])

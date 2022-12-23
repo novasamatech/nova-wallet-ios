@@ -4,7 +4,7 @@ import IrohaCrypto
 import SubstrateSdk
 
 struct TransactionHistoryMergeResult {
-    let historyItems: [AssetTransactionData]
+    let historyItems: [TransactionHistoryItem]
     let identifiersToRemove: [String]
 }
 
@@ -59,25 +59,13 @@ enum TransactionHistoryMergeItem {
     }
 
     func buildTransactionData(
-        address: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
-    ) -> AssetTransactionData {
+        chainAsset: ChainAsset
+    ) -> TransactionHistoryItem? {
         switch self {
         case let .local(item):
-            return AssetTransactionData.createTransaction(
-                from: item,
-                address: address,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
-            )
+            return item
         case let .remote(item):
-            return item.createTransactionForAddress(
-                address,
-                assetId: chainAsset.chainAssetId.walletId,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
-            )
+            return item.createTransaction(chainAsset: chainAsset)
         }
     }
 
@@ -148,12 +136,8 @@ final class TransactionHistoryMergeManager {
 
         let transactionsItems = (localMergeItems + remoteMergeItems)
             .sorted { $0.compareWithItem($1) }
-            .map { item in
-                item.buildTransactionData(
-                    address: address,
-                    chainAsset: chainAsset,
-                    utilityAsset: utilityAsset
-                )
+            .compactMap { item in
+                item.buildTransactionData(chainAsset: chainAsset)
             }
 
         let results = TransactionHistoryMergeResult(

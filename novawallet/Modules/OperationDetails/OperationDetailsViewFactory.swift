@@ -4,8 +4,16 @@ import SoraFoundation
 import RobinHood
 
 struct OperationDetailsViewFactory {
+    // TODO: remove
     static func createView(
-        for txData: AssetTransactionData,
+        for _: AssetTransactionData,
+        chainAsset _: ChainAsset
+    ) -> OperationDetailsViewProtocol? {
+        nil
+    }
+
+    static func createView(
+        for transaction: TransactionHistoryItem,
         chainAsset: ChainAsset
     ) -> OperationDetailsViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
@@ -24,7 +32,7 @@ struct OperationDetailsViewFactory {
         )
 
         let interactor = OperationDetailsInteractor(
-            txData: txData,
+            transaction: transaction,
             chainAsset: chainAsset,
             wallet: SelectedWalletSettings.shared.value,
             walletRepository: AnyDataProviderRepository(walletRepository),

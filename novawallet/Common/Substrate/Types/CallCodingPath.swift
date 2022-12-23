@@ -44,6 +44,10 @@ extension CallCodingPath {
         ].contains(self)
     }
 
+    var isRewardOrSlashTransfer: Bool {
+        [.reward, .slash].contains(self)
+    }
+
     static var transfer: CallCodingPath {
         CallCodingPath(moduleName: "Balances", callName: "transfer")
     }
@@ -123,8 +127,21 @@ extension CallCodingPath {
     static var localAssetsTransferAll: CallCodingPath {
         CallCodingPath(moduleName: "LocalAssets", callName: "transfer_all")
     }
-
+    
     static var ethereumTransact: CallCodingPath {
         CallCodingPath(moduleName: "Ethereum", callName: "transact")
+    }
+}
+
+// MARK: Syntetic keys
+
+extension CallCodingPath {
+
+    static var slash: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "slash")
+    }
+
+    static var reward: CallCodingPath {
+        CallCodingPath(moduleName: "Substrate", callName: "reward")
     }
 }
