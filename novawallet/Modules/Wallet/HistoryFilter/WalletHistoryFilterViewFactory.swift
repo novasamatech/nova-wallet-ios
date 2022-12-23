@@ -3,13 +3,19 @@ import SoraFoundation
 import CommonWallet
 
 final class WalletHistoryFilterViewFactory: WalletHistoryFilterViewFactoryProtocol {
+    // TODO: Remove
     static func createView(
-        request: WalletHistoryRequest,
-        commandFactory: WalletCommandFactoryProtocol,
-        delegate: HistoryFilterEditingDelegate?
+        request _: WalletHistoryRequest,
+        commandFactory _: WalletCommandFactoryProtocol,
+        delegate _: HistoryFilterEditingDelegate?
     ) -> WalletHistoryFilterViewProtocol? {
-        let filter = WalletHistoryFilter(string: request.filter)
+        nil
+    }
 
+    static func createView(
+        filter: WalletHistoryFilter,
+        delegate: TransactionHistoryFilterEditingDelegate?
+    ) -> WalletHistoryFilterViewProtocol? {
         let presenter = WalletHistoryFilterPresenter(filter: filter)
         let view = WalletHistoryFilterViewController(
             presenter: presenter,
@@ -17,8 +23,6 @@ final class WalletHistoryFilterViewFactory: WalletHistoryFilterViewFactoryProtoc
         )
 
         let wireframe = WalletHistoryFilterWireframe(
-            originalRequest: request,
-            commandFactory: commandFactory,
             delegate: delegate
         )
 

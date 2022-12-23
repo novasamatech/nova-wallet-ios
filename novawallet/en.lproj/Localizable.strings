@@ -1087,3 +1087,5 @@
 "tokens.manage.partial.selected" = "%@ (%@ more)";
 "tokens.manage.search.empty" = "No tokens with entered name were\nfound";
 "add.token.network.selection.title" = "Select network to add ERC-20 token";
+"common.today" = "Today";
+"common.yesterday" = "Yesterday";

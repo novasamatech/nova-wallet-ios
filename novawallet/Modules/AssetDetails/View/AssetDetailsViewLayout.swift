@@ -63,7 +63,7 @@ final class AssetDetailsViewLayout: UIView {
     )
 
     private let balanceTableView: StackTableView = .create {
-        $0.cellHeight = 48
+        $0.cellHeight = Constants.balanceCellHeight
         $0.hasSeparators = true
         $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
     }
@@ -111,7 +111,7 @@ final class AssetDetailsViewLayout: UIView {
             $0.leading.greaterThanOrEqualToSuperview()
             $0.trailing.lessThanOrEqualToSuperview()
             $0.centerX.equalToSuperview()
-            $0.height.equalTo(26)
+            $0.height.equalTo(Constants.priceStackHeight)
             $0.top.equalTo(self.safeAreaLayoutGuide.snp.top)
         }
 
@@ -127,17 +127,17 @@ final class AssetDetailsViewLayout: UIView {
             $0.leading.greaterThanOrEqualToSuperview()
             $0.trailing.lessThanOrEqualToSuperview()
             $0.centerX.equalToSuperview()
-            $0.height.equalTo(28)
+            $0.height.equalTo(Constants.assetHeight)
             $0.bottom.equalTo(priceStack.snp.top).offset(-7)
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
-            $0.top.equalTo(priceStack.snp.bottom).offset(12)
+            $0.top.equalTo(priceStack.snp.bottom).offset(Constants.containerViewTopOffset)
         }
 
-        containerView.stackView.spacing = 8
+        containerView.stackView.spacing = Constants.sectionSpace
         containerView.stackView.addArrangedSubview(balanceTableView)
         containerView.stackView.addArrangedSubview(buttonsRow)
     }
@@ -202,5 +202,22 @@ final class AssetDetailsViewLayout: UIView {
             priceChangeLabel.text = value
             priceChangeLabel.textColor = R.color.colorTextNegative()
         }
+    }
+
+    var prefferedHeight: CGFloat {
+        let balanceSectionHeight = Constants.containerViewTopOffset + 4 * Constants.balanceCellHeight
+        let buttonsRowHeight = buttonsRow.preferredHeight ?? 0
+        return priceLabel.font.lineHeight + balanceSectionHeight + Constants.sectionSpace + buttonsRowHeight + Constants.bottomOffset
+    }
+}
+
+extension AssetDetailsViewLayout {
+    private enum Constants {
+        static let balanceCellHeight: CGFloat = 48
+        static let priceStackHeight: CGFloat = 26
+        static let assetHeight: CGFloat = 28
+        static let containerViewTopOffset: CGFloat = 12
+        static let sectionSpace: CGFloat = 8
+        static let bottomOffset: CGFloat = 46
     }
 }

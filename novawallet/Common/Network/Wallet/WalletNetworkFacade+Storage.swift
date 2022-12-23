@@ -116,7 +116,7 @@ extension WalletNetworkFacade {
 
             let balance = BalanceData(
                 identifier: asset.identifier,
-                balance: AmountDecimal(value: context.total),
+                balance: CommonWallet.AmountDecimal(value: context.total),
                 context: context.toContext()
             )
 

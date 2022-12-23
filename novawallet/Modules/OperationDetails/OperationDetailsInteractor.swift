@@ -10,7 +10,7 @@ enum OperationDetailsInteractorError: Error {
 final class OperationDetailsInteractor: AccountFetching {
     weak var presenter: OperationDetailsInteractorOutputProtocol?
 
-    let txData: AssetTransactionData
+    let transaction: TransactionHistoryItem
     let chainAsset: ChainAsset
 
     var chain: ChainModel { chainAsset.chain }
@@ -20,17 +20,21 @@ final class OperationDetailsInteractor: AccountFetching {
     let operationQueue: OperationQueue
     let wallet: MetaAccountModel
 
+    private var accountAddress: AccountAddress? {
+        wallet.fetch(for: chain.accountRequest())?.toAddress()
+    }
+
     private var transactionProvider: StreamableProvider<TransactionHistoryItem>?
 
     init(
-        txData: AssetTransactionData,
+        transaction: TransactionHistoryItem,
         chainAsset: ChainAsset,
         wallet: MetaAccountModel,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
         transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
-        self.txData = txData
+        self.transaction = transaction
         self.chainAsset = chainAsset
         self.wallet = wallet
         self.walletRepository = walletRepository
@@ -44,12 +48,12 @@ final class OperationDetailsInteractor: AccountFetching {
         if let newStatus = newStatus {
             return newStatus
         } else {
-            switch txData.status {
-            case .commited:
+            switch transaction.status {
+            case .success:
                 return .completed
             case .pending:
                 return .pending
-            case .rejected:
+            case .failed:
                 return .failed
             }
         }
@@ -58,17 +62,15 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractSlashOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let context = HistoryRewardContext(context: txData.context ?? [:])
+        // let context = HistoryRewardContext(context: txData.context ?? [:])
+        // let eventId = !context.eventId.isEmpty ? context.eventId : txData.transactionId
 
-        let eventId = !context.eventId.isEmpty ? context.eventId : txData.transactionId
-
+        let eventId = transaction.identifier
         let precision = Int16(bitPattern: chainAsset.asset.precision)
 
-        let amount: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
+        let amount = transaction.amountInPlankIntOrZero
 
-        if let validatorId = try? context.validator?.toAccountId() {
+        if let validatorId = try? transaction.sender.toAccountId() {
             _ = fetchDisplayAddress(
                 for: [validatorId],
                 chain: chain,
@@ -81,7 +83,7 @@ final class OperationDetailsInteractor: AccountFetching {
                         eventId: eventId,
                         amount: amount,
                         validator: addresses.first,
-                        era: context.era
+                        era: nil
                     )
 
                     completion(.slash(model))
@@ -94,7 +96,7 @@ final class OperationDetailsInteractor: AccountFetching {
                 eventId: eventId,
                 amount: amount,
                 validator: nil,
-                era: context.era
+                era: nil
             )
 
             completion(.slash(model))
@@ -104,17 +106,13 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractRewardOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let context = HistoryRewardContext(context: txData.context ?? [:])
-
-        let eventId = !context.eventId.isEmpty ? context.eventId : txData.transactionId
-
+        // TODO: Era, eventId
+        let eventId = transaction.identifier
+        // let eventId = !context.eventId.isEmpty ? context.eventId : transaction.identifier
         let precision = Int16(bitPattern: chainAsset.asset.precision)
+        let amount = transaction.amountInPlankIntOrZero
 
-        let amount: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
-
-        if let validatorId = try? context.validator?.toAccountId() {
+        if let validatorId = try? transaction.sender.toAccountId() {
             _ = fetchDisplayAddress(
                 for: [validatorId],
                 chain: chain,
@@ -127,7 +125,7 @@ final class OperationDetailsInteractor: AccountFetching {
                         eventId: eventId,
                         amount: amount,
                         validator: addresses.first,
-                        era: context.era
+                        era: nil
                     )
 
                     completion(.reward(model))
@@ -140,7 +138,7 @@ final class OperationDetailsInteractor: AccountFetching {
                 eventId: eventId,
                 amount: amount,
                 validator: nil,
-                era: context.era
+                era: nil
             )
 
             completion(.reward(model))
@@ -150,29 +148,23 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractExtrinsicOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let fee: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
-
-        guard
-            let accountResponse = wallet.fetch(for: chain.accountRequest()),
-            let currentAccountAddress = try? accountResponse.accountId.toAddress(
-                using: chain.chainFormat
-            ) else {
+        guard let accountAddress = accountAddress else {
             completion(nil)
             return
         }
 
+        let precision = Int16(bitPattern: chainAsset.asset.precision)
+        let fee = transaction.amountInPlankIntOrZero
+
         let currentDisplayAddress = DisplayAddress(
-            address: currentAccountAddress,
+            address: accountAddress,
             username: wallet.name
         )
 
         let model = OperationExtrinsicModel(
-            txHash: txData.transactionId,
-            call: txData.peerLastName ?? "",
-            module: txData.peerFirstName ?? "",
+            txHash: transaction.identifier,
+            call: transaction.callPath.callName,
+            module: transaction.callPath.moduleName,
             sender: currentDisplayAddress,
             fee: fee
         )
@@ -183,35 +175,33 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractTransferOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        guard let peerId = try? Data(hexString: txData.peerId) else {
+        guard let accountAddress = accountAddress else {
+            completion(nil)
+            return
+        }
+        let peerAddress = (transaction.sender == accountAddress ? transaction.receiver : transaction.sender) ?? transaction.sender
+        let accountId = try? peerAddress.toAccountId(using: chain.chainFormat)
+        let peerId = accountId?.toHex() ?? peerAddress
+
+        guard let peerId = try? Data(hexString: peerId) else {
             completion(nil)
             return
         }
 
-        let isOutgoing = TransactionType(rawValue: txData.type) == .outgoing
+        let isOutgoing = transaction.type(for: accountAddress) == .outgoing
 
         let precision = Int16(bitPattern: chainAsset.asset.precision)
 
-        let amount: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
+        let amount = transaction.amountInPlankIntOrZero
 
-        let fee: BigUInt = txData.fees.first?.amount.decimalValue.toSubstrateAmount(
-            precision: precision
-        ) ?? 0
+        let fee = transaction.feeInPlankIntOrZero
 
-        guard
-            let accountResponse = wallet.fetch(for: chain.accountRequest()),
-            let displayAddress = try? accountResponse.accountId.toAddress(
-                using: chain.chainFormat
-            ) else {
-            completion(nil)
-            return
-        }
+        let currentDisplayAddress = DisplayAddress(
+            address: accountAddress,
+            username: wallet.name
+        )
 
-        let currentDisplayAddress = DisplayAddress(address: displayAddress, username: wallet.name)
-
-        let txId = txData.transactionId
+        let txId = transaction.identifier
 
         _ = fetchDisplayAddress(
             for: [peerId],
@@ -245,7 +235,11 @@ final class OperationDetailsInteractor: AccountFetching {
     private func extractOperationData(
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        switch TransactionType(rawValue: txData.type) {
+        guard let accountAddress = accountAddress else {
+            completion(nil)
+            return
+        }
+        switch transaction.type(for: accountAddress) {
         case .incoming, .outgoing:
             extractTransferOperationData(completion)
         case .reward:
@@ -263,7 +257,7 @@ final class OperationDetailsInteractor: AccountFetching {
         for operationData: OperationDetailsModel.OperationData,
         overridingBy newStatus: OperationDetailsModel.Status?
     ) {
-        let time = Date(timeIntervalSince1970: TimeInterval(txData.timestamp))
+        let time = Date(timeIntervalSince1970: TimeInterval(transaction.timestamp))
         let status = extractStatus(overridingBy: newStatus)
 
         let details = OperationDetailsModel(
@@ -290,10 +284,7 @@ final class OperationDetailsInteractor: AccountFetching {
 extension OperationDetailsInteractor: OperationDetailsInteractorInputProtocol {
     func setup() {
         provideModel(overridingBy: nil)
-
-        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
-        let identifier = TransactionHistoryItem.createIdentifier(from: txData.transactionId, source: source)
-        transactionProvider = subscribeToTransaction(for: identifier, chainId: chain.chainId)
+        transactionProvider = subscribeToTransaction(for: transaction.identifier, chainId: chain.chainId)
     }
 }
 
