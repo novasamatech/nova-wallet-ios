@@ -15,7 +15,7 @@ final class StakingMainPresenter {
     private var childPresenter: StakingMainChildPresenterProtocol?
     private var wallet: MetaAccountModel?
     private var chainAsset: ChainAsset?
-    private var accountInfo: AccountInfo?
+    private var accountBalance: AssetBalance?
 
     init(
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
@@ -37,7 +37,7 @@ final class StakingMainPresenter {
         let viewModel = viewModelFactory.createMainViewModel(
             from: wallet,
             chainAsset: chainAsset,
-            balance: accountInfo?.data.available
+            balance: accountBalance?.transferable
         )
 
         view?.didReceive(viewModel: viewModel)
@@ -177,8 +177,8 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         }
     }
 
-    func didReceiveAccountInfo(_ accountInfo: AccountInfo?) {
-        self.accountInfo = accountInfo
+    func didReceiveAccountBalance(_ assetBalance: AssetBalance?) {
+        accountBalance = assetBalance
 
         provideMainViewModel()
     }

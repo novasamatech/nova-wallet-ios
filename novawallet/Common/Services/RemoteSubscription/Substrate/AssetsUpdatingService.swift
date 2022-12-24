@@ -78,7 +78,23 @@ final class AssetsUpdatingService {
         }
     }
 
+    private func checkSubscription(for chainId: ChainModel.Id) -> Bool {
+        subscribedChains[chainId] != nil
+    }
+
+    private func checkChainReadyForSubscription(_ chain: ChainModel) -> Bool {
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return false
+        }
+
+        return runtimeProvider.hasSnapshot
+    }
+
     private func updateSubscription(for chain: ChainModel) {
+        guard checkChainReadyForSubscription(chain) else {
+            return
+        }
+
         chain.assets.forEach { asset in
             guard supportsAssetSubscription(for: asset) else {
                 return
@@ -204,7 +220,7 @@ final class AssetsUpdatingService {
             extras: assetExtras,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
-            chainRepository: chainItemRepository,
+            transactionSubscription: transactionSubscription,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             logger: logger
@@ -363,10 +379,14 @@ final class AssetsUpdatingService {
 extension AssetsUpdatingService: AssetsUpdatingServiceProtocol {
     func setup() {
         subscribeToChains()
+
+        eventCenter.add(observer: self)
     }
 
     func throttle() {
         unsubscribeFromChains()
+
+        eventCenter.remove(observer: self)
     }
 
     func update(selectedMetaAccount: MetaAccountModel) {
@@ -375,5 +395,23 @@ extension AssetsUpdatingService: AssetsUpdatingServiceProtocol {
         self.selectedMetaAccount = selectedMetaAccount
 
         subscribeToChains()
+    }
+}
+
+extension AssetsUpdatingService: EventVisitorProtocol {
+    func processRuntimeCoderReady(event: RuntimeCoderCreated) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard
+            !checkSubscription(for: event.chainId),
+            let chain = chainRegistry.getChain(for: event.chainId) else {
+            return
+        }
+
+        updateSubscription(for: chain)
     }
 }

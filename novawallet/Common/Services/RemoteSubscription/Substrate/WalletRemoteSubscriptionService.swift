@@ -178,7 +178,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
         assetBalanceUpdater: AssetsBalanceUpdater,
-        transactionSubscription: TransactionSubscription?
+        transactionSubscription _: TransactionSubscription?
     ) -> UUID? {
         do {
             let localKeyFactory = LocalStorageKeyFactory()
@@ -215,8 +215,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             let handlingFactory = AssetsSubscriptionHandlingFactory(
                 assetAccountKey: accountLocalKey,
                 assetDetailsKey: detailsLocalKey,
-                assetBalanceUpdater: assetBalanceUpdater,
-                transactionSubscription: transactionSubscription
+                assetBalanceUpdater: assetBalanceUpdater
             )
 
             return attachToSubscription(

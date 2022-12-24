@@ -141,15 +141,15 @@ extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+    func didReceiveBalance(result: Result<AssetBalance?, Error>) {
         switch result {
-        case let .success(accountInfo):
-            if let accountInfo = accountInfo {
+        case let .success(model):
+            if let model = model {
                 balance = Decimal.fromSubstrateAmount(
-                    accountInfo.data.available,
+                    model.transferable,
                     precision: assetInfo.assetPrecision
                 )
-                totalBalanceValue = accountInfo.data.total
+                totalBalanceValue = model.totalInPlank
             } else {
                 balance = nil
             }

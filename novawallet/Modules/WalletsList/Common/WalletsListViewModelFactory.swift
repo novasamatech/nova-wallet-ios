@@ -87,7 +87,8 @@ final class WalletsListViewModelFactory {
                 excludingChainIds: Set(chainAccountIds)
             )
 
-            let contributions = crowdloanContributions[substrateAccountId]?.filter { !chainAccountIds.contains($0.key) } ?? [:]
+            let contributions = crowdloanContributions[substrateAccountId]?
+                .filter { !chainAccountIds.contains($0.key) } ?? [:]
             totalValue += calculateCrowdloanContribution(
                 contributions,
                 chains: chains,
@@ -104,7 +105,8 @@ final class WalletsListViewModelFactory {
                 excludingChainIds: Set(chainAccountIds)
             )
 
-            let contributions = crowdloanContributions[ethereumAddress]?.filter { !chainAccountIds.contains($0.key) } ?? [:]
+            let contributions = crowdloanContributions[ethereumAddress]?
+                .filter { !chainAccountIds.contains($0.key) } ?? [:]
             totalValue += calculateCrowdloanContribution(
                 contributions,
                 chains: chains,

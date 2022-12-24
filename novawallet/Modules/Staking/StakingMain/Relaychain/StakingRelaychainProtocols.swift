@@ -11,7 +11,7 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
     func didReceive(priceError: Error)
     func didReceive(totalReward: TotalRewardItem)
     func didReceive(totalRewardError: Error)
-    func didReceive(accountInfo: AccountInfo?)
+    func didReceive(assetBalance: AssetBalance?)
     func didReceive(balanceError: Error)
     func didReceive(calculator: RewardCalculatorEngineProtocol)
     func didReceive(calculatorError: Error)

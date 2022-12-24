@@ -89,7 +89,8 @@ extension StakingMainPresenterFactory {
         let stakingRemoteSubscriptionService = StakingRemoteSubscriptionService(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             repository: chainItemRepository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 

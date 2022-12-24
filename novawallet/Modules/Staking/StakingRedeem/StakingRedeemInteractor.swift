@@ -24,7 +24,7 @@ final class StakingRedeemInteractor: RuntimeConstantFetching, AccountFetching {
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
@@ -232,7 +232,7 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
     AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            clear(dataProvider: &accountInfoProvider)
+            clear(streamableProvider: &balanceProvider)
             clear(dataProvider: &ledgerProvider)
 
             let maybeStashItem = try result.get()
@@ -243,9 +243,10 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
             if let controllerId = maybeControllerId {
                 ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
 
-                accountInfoProvider = subscribeToAccountInfoProvider(
+                balanceProvider = subscribeToAssetBalanceProvider(
                     for: controllerId,
-                    chainId: chainAsset.chain.chainId
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
                 )
 
                 fetchFirstMetaAccountResponse(
@@ -268,12 +269,12 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
 
             } else {
                 presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountInfo(result: .success(nil))
+                presenter.didReceiveAccountBalance(result: .success(nil))
             }
 
         } catch {
             presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountInfo(result: .failure(error))
+            presenter.didReceiveAccountBalance(result: .failure(error))
             presenter.didReceiveStakingLedger(result: .failure(error))
         }
     }
@@ -292,12 +293,13 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
 }
 
 extension StakingRedeemInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 
