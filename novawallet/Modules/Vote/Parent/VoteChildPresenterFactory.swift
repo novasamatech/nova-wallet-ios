@@ -68,7 +68,8 @@ final class VoteChildPresenterFactory {
         let crowdloanRemoteSubscriptionService = CrowdloanRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: AnyDataProviderRepository(repository),
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 

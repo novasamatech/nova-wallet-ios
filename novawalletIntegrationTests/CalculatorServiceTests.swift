@@ -584,7 +584,8 @@ class CalculatorServiceTests: XCTestCase {
         let remoteStakingSubcriptionService = StakingRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: AnyDataProviderRepository(chainItemRepository),
-            operationManager: OperationManager(),
+            syncOperationManager: OperationManager(),
+            repositoryOperationManager: OperationManager(),
             logger: Logger.shared
         )
 

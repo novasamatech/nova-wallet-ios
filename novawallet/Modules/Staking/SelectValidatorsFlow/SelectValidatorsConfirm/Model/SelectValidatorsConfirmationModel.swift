@@ -9,4 +9,12 @@ struct SelectValidatorsConfirmationModel {
     let maxTargets: Int
     let hasExistingBond: Bool
     let hasExistingNomination: Bool
+
+    var existingBond: Decimal {
+        hasExistingBond ? amount : 0
+    }
+
+    var amountToBond: Decimal {
+        !hasExistingBond ? amount : 0
+    }
 }

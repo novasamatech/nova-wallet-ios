@@ -19,7 +19,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
     let operationManager: OperationManagerProtocol
 
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
-    private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var crowdloanProvider: AnyDataProvider<DecodedCrowdloanFunds>?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
@@ -116,11 +116,15 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
 
     private func subscribeToAccountInfo() {
         guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            presenter.didReceiveAccountInfo(result: .failure(ChainAccountFetchingError.accountNotExists))
+            presenter.didReceiveAccountBalance(result: .failure(ChainAccountFetchingError.accountNotExists))
             return
         }
 
-        balanceProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chain.chainId)
+        balanceProvider = subscribeToAssetBalanceProvider(
+            for: accountId,
+            chainId: chain.chainId,
+            assetId: asset.assetId
+        )
     }
 
     private func subscribeToPrice() {
@@ -182,12 +186,13 @@ extension CrowdloanContributionInteractor: CrowdloanLocalStorageSubscriber,
 }
 
 extension CrowdloanContributionInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 

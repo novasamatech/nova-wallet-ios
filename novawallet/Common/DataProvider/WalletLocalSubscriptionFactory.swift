@@ -2,11 +2,6 @@ import Foundation
 import RobinHood
 
 protocol WalletLocalSubscriptionFactoryProtocol {
-    func getAccountProvider(
-        for accountId: AccountId,
-        chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedAccountInfo>
-
     func getAssetBalanceProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id,
@@ -35,22 +30,10 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         logger: Logger.shared
     )
 
-    func getAccountProvider(
-        for accountId: AccountId,
-        chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedAccountInfo> {
-        let codingPath = StorageCodingPath.account
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-            codingPath,
-            accountId: accountId,
-            chainId: chainId
-        )
-
-        return try getDataProvider(
-            for: localKey,
-            chainId: chainId,
-            storageCodingPath: codingPath,
-            shouldUseFallback: false
+    private func createStreamableProcessingQueue() -> DispatchQueue {
+        DispatchQueue(
+            label: "com.streamableprovider.repository.queue.\(UUID().uuidString)",
+            qos: .userInitiated
         )
     }
 
@@ -119,12 +102,15 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        let processingQueue = createStreamableProcessingQueue()
+
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
                 accountId.toHex() == entity.chainAccountId
-            }
+            },
+            processingQueue: processingQueue
         )
 
         observable.start { [weak self] error in
@@ -137,7 +123,8 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: operationManager
+            operationManager: operationManager,
+            serialQueue: processingQueue
         )
 
         saveProvider(provider, for: cacheKey)
@@ -157,10 +144,13 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         let mapper = AssetBalanceMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
+        let processingQueue = createStreamableProcessingQueue()
+
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
-            predicate: { _ in true }
+            predicate: { _ in true },
+            processingQueue: processingQueue
         )
 
         observable.start { [weak self] error in
@@ -173,7 +163,8 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: operationManager
+            operationManager: operationManager,
+            serialQueue: processingQueue
         )
 
         saveProvider(provider, for: cacheKey)
@@ -240,12 +231,15 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        let processingQueue = createStreamableProcessingQueue()
+
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(mapper),
             predicate: { entity in
                 observingFilter(entity)
-            }
+            },
+            processingQueue: processingQueue
         )
 
         observable.start { [weak self] error in
@@ -258,7 +252,8 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             source: AnyStreamableSource(source),
             repository: AnyDataProviderRepository(repository),
             observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: operationManager
+            operationManager: operationManager,
+            serialQueue: processingQueue
         )
     }
 }

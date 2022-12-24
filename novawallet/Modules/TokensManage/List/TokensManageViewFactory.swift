@@ -36,6 +36,7 @@ struct TokensManageViewFactory {
         return .init(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             repository: repository,
+            repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

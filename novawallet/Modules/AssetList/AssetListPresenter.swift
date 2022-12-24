@@ -381,8 +381,11 @@ final class AssetListPresenter: AssetListBasePresenter {
     }
 
     private func presentAssetDetails(for chainAssetId: ChainAssetId) {
+        // get chain from interactor that includes also disabled assets
+        let optChain = interactor.getFullChain(for: chainAssetId.chainId) ?? allChains[chainAssetId.chainId]
+
         guard
-            let chain = allChains[chainAssetId.chainId],
+            let chain = optChain,
             let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
             return
         }

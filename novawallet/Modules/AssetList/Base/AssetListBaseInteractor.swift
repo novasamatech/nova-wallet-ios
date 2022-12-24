@@ -341,6 +341,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
         subscribeChains()
     }
 
+    func getFullChain(for chainId: ChainModel.Id) -> ChainModel? {
+        availableChains[chainId]
+    }
+
     func handleAccountBalance(
         result: Result<[DataProviderChange<AssetBalance>], Error>,
         accountId: AccountId
