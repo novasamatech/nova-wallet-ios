@@ -11,8 +11,6 @@ private struct NavigationItemState {
 }
 
 final class TransactionHistoryViewController: UIViewController, ViewHolder, EmptyStateViewOwnerProtocol {
-    private var previousNavigationItemState: NavigationItemState?
-
     var emptyStateDelegate: EmptyStateDelegate {
         self
     }
@@ -30,6 +28,8 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     private var didSetupLayout: Bool = false
     private let emptyDatasource = WalletEmptyStateDataSource.history
     private var fullInsets: UIEdgeInsets = .zero
+    private var originNavigationItemState: NavigationItemState?
+    private var cleanNavigationItemState: NavigationItemState = .init(leftBarItem: .init())
 
     private var viewModel: [TransactionSectionModel] = []
     private var isLoading: Bool = false
@@ -125,18 +125,23 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         progress: Double,
         forcesLayoutUpdate: Bool
     ) {
-        let cornerRadius = Constants.cornerRadius
-
+        let cornerRadius = 0.0
         switch draggableState {
         case .compact:
             let adjustedProgress = min(progress / (1.0 - Constants.triggerProgressThreshold), 1.0)
-            let headerHeight = (Constants.headerFullHeight - Constants.headerCompactHeight) * CGFloat(1.0 - adjustedProgress)
-        // rootView.headerHeight?.update(offset: headerHeight)
+            let headerTop = CGFloat(1.0 - adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
+            let headerHeight = Constants.headerCompactHeight * CGFloat(adjustedProgress) +
+                fullInsets.top * CGFloat(1.0 - adjustedProgress)
+            rootView.headerHeight?.update(offset: headerHeight)
         case .full:
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
-            let headerHeight = adjustedProgress * (Constants.headerFullHeight - Constants.headerCompactHeight + fullInsets.top) + Constants.headerCompactHeight
+
+            let headerTop = CGFloat(1.0 - adjustedProgress) * (fullInsets.top * CGFloat(adjustedProgress) - cornerRadius) + cornerRadius
+            let headerHeight = Constants.headerCompactHeight * CGFloat(1.0 - adjustedProgress) +
+                fullInsets.top * CGFloat(adjustedProgress)
             rootView.headerHeight?.update(offset: headerHeight)
+            rootView.headerTop?.update(offset: headerTop + 16)
         }
 
         if forcesLayoutUpdate {
@@ -197,46 +202,69 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         }
     }
 
-    private func updateNavigationItem(for state: DraggableState, animated _: Bool) {
-        guard
-            let navigationItem = delegate?.presentationNavigationItem else {
+    private func updateNavigationItem(
+        for draggableState: DraggableState,
+        progress: Double,
+        forcesLayoutUpdate: Bool
+    ) {
+        guard let navigationItem = delegate?.presentationNavigationItem else {
             return
         }
 
-        switch state {
+        switch draggableState {
         case .compact:
-            if let state = previousNavigationItemState {
-                navigationItem.title = state.title
-                navigationItem.leftBarButtonItem = state.leftBarItem
-                navigationItem.rightBarButtonItem = state.rightBarItem
-
-                previousNavigationItemState = nil
+            if progress > 0.01, progress < 1 - Constants.triggerProgressThreshold {
+                setNavigationItem(state: cleanNavigationItemState)
+            }
+            if progress >= 1 - Constants.triggerProgressThreshold {
+                setNavigationItem(state: originNavigationItemState)
             }
         case .full:
-            if previousNavigationItemState == nil {
-                previousNavigationItemState = NavigationItemState(
-                    title: navigationItem.title,
-                    leftBarItem: navigationItem.leftBarButtonItem,
-                    rightBarItem: navigationItem.rightBarButtonItem
-                )
-                let closeBarItem = UIBarButtonItem(
-                    image: rootView.closeIcon,
-                    style: .plain,
-                    target: self,
-                    action: #selector(didTapOnClose)
-                )
-                navigationItem.setLeftBarButton(closeBarItem, animated: true)
-
-                let filterItem = UIBarButtonItem(
-                    image: rootView.filterIcon,
-                    style: .plain,
-                    target: self,
-                    action: #selector(didTapOnFilter)
-                )
-                navigationItem.setRightBarButton(filterItem, animated: true)
-                navigationItem.title = rootView.titleLabel.text
-            }
+            break
         }
+
+        if forcesLayoutUpdate {
+            view.layoutIfNeeded()
+        }
+    }
+
+    private func updateNavigationItem(for state: DraggableState) {
+        switch state {
+        case .compact:
+            if let state = originNavigationItemState {
+                setNavigationItem(state: state)
+            }
+        case .full:
+            let closeBarItem = UIBarButtonItem(
+                image: rootView.closeIcon,
+                style: .plain,
+                target: self,
+                action: #selector(didTapOnClose)
+            )
+            let filterItem = UIBarButtonItem(
+                image: rootView.filterIcon,
+                style: .plain,
+                target: self,
+                action: #selector(didTapOnFilter)
+            )
+
+            let state = NavigationItemState(
+                title: rootView.titleLabel.text,
+                leftBarItem: closeBarItem,
+                rightBarItem: filterItem
+            )
+            setNavigationItem(state: state)
+        }
+    }
+
+    private func setNavigationItem(state: NavigationItemState?) {
+        guard let state = state,
+              let navigationItem = delegate?.presentationNavigationItem else {
+            return
+        }
+        navigationItem.title = state.title
+        navigationItem.leftBarButtonItem = state.leftBarItem
+        navigationItem.rightBarButtonItem = state.rightBarItem
     }
 
     func applyContentInsets(for draggableState: DraggableState) {
@@ -297,16 +325,27 @@ extension TransactionHistoryViewController: Draggable {
         }
 
         updateTableViewAfterTransition(to: dragableState, animated: animated)
-        updateNavigationItem(for: dragableState, animated: animated)
+        updateNavigationItem(for: dragableState)
     }
 
     func animate(progress: Double, from _: DraggableState, to newState: DraggableState, finalFrame: CGRect) {
         UIView.beginAnimations(nil, context: nil)
 
+        if originNavigationItemState == nil, let presentationNavigationItem = delegate?.presentationNavigationItem {
+            originNavigationItemState = .init(
+                title: presentationNavigationItem.title,
+                leftBarItem: presentationNavigationItem.leftBarButtonItem,
+                rightBarItem: presentationNavigationItem.rightBarButtonItem
+            )
+        }
         draggableView.frame = finalFrame
         updateHeaderHeight(for: newState, progress: progress, forcesLayoutUpdate: didSetupLayout)
         updateContent(for: newState, progress: progress, forcesLayoutUpdate: didSetupLayout)
-
+        updateNavigationItem(
+            for: newState,
+            progress: progress,
+            forcesLayoutUpdate: didSetupLayout
+        )
         UIView.commitAnimations()
     }
 }
@@ -322,7 +361,7 @@ extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
         isLoading = false
     }
 
-    func didReceive(viewModel: [TransactionSectionModel]) {
+    func didReceive(viewModel: [TransactionSectionModel], animating: Bool) {
         isLoading = false
         self.viewModel = viewModel
         var snapshot = NSDiffableDataSourceSnapshot<TransactionSectionModel, TransactionItemViewModel>()
@@ -330,7 +369,7 @@ extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
         viewModel.forEach { section in
             snapshot.appendItems(section.items, toSection: section)
         }
-        dataSource?.apply(snapshot, animatingDifferences: true)
+        dataSource?.apply(snapshot, animatingDifferences: animating)
         reloadEmptyState(animated: false)
     }
 }
@@ -408,7 +447,7 @@ extension TransactionHistoryViewController {
     private enum Constants {
         static let cornerRadius: CGFloat = 12
         static let cellHeight: CGFloat = 56.0
-        static let headerCompactHeight: CGFloat = 58
+        static let headerCompactHeight: CGFloat = 42
         static let headerFullHeight: CGFloat = 98
         static let sectionHeight: CGFloat = 44.0
         static let multiplierToActivateNextLoading: CGFloat = 1.5

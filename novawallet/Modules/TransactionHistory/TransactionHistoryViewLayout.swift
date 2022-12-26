@@ -35,13 +35,15 @@ final class TransactionHistoryViewLayout: UIView {
         $0.frame = CGRect(origin: .zero, size: size)
     }
 
-    lazy var tableView: UITableView = .create {
-        $0.backgroundColor = .clear
-        $0.separatorStyle = .none
-        $0.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
-        $0.tableFooterView = pageLoadingView
-        $0.isScrollEnabled = true
-    }
+    lazy var tableView: UITableView = {
+        let view = UITableView(frame: .zero, style: .grouped)
+        view.backgroundColor = .clear
+        view.separatorStyle = .none
+        view.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
+        view.tableFooterView = pageLoadingView
+        view.isScrollEnabled = true
+        return view
+    }()
 
     let titleLabel = UILabel(style: .init(
         textColor: R.color.colorTextPrimary()!,
@@ -80,8 +82,8 @@ final class TransactionHistoryViewLayout: UIView {
 
         addSubview(headerView)
         headerView.snp.makeConstraints {
-            headerHeight = $0.height.equalTo(58).constraint
-            headerTop = $0.top.equalToSuperview().constraint
+            headerHeight = $0.height.equalTo(42).constraint
+            headerTop = $0.top.equalToSuperview().offset(16).constraint
             $0.leading.trailing.equalToSuperview()
         }
 
@@ -103,20 +105,20 @@ final class TransactionHistoryViewLayout: UIView {
         filterButton.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(10)
             $0.width.height.equalTo(44)
-            $0.centerY.equalToSuperview().inset(3)
+            $0.centerY.equalToSuperview()
         }
 
         headerView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints {
             titleLeft = $0.leading.equalToSuperview().inset(Constants.titleLeftCompactInset).constraint
-            $0.centerY.equalToSuperview().inset(3)
+            $0.centerY.equalToSuperview()
         }
 
         headerView.addSubview(closeButton)
         closeButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(10)
             $0.width.height.equalTo(44)
-            $0.centerY.equalToSuperview().inset(3)
+            $0.centerY.equalToSuperview()
         }
 
         addSubview(tableView)
