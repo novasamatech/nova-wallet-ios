@@ -46,7 +46,7 @@ final class SecurityLayerInteractor {
         self.inactivityStart = nil
 
         if canEnterPincode {
-            let inactivityDelayReached = Date().timeIntervalSince(inactivityStart) >= inactivityDelay
+            let inactivityDelayReached = Date().timeIntervalSince(inactivityStart) > inactivityDelay
 
             if inactivityDelayReached {
                 presenter.didDecideRequestAuthorization()
