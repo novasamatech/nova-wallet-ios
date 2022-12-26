@@ -69,7 +69,7 @@ final class ChainRegistryFactory {
 
         let connectionPool = ConnectionPool(
             connectionFactory: ConnectionFactory(logger: Logger.shared),
-            applicationHandler: ApplicationHandler(with: nil)
+            applicationHandler: SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
         )
 
         let mapper = ChainModelMapper()

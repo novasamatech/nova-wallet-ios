@@ -2,6 +2,8 @@ import UIKit
 
 protocol SecurityLayerInteractorInputProtocol: AnyObject {
     func setup()
+
+    func completeAuthorization(for result: Bool)
 }
 
 protocol SecurityLayerInteractorOutputProtocol: AnyObject {
@@ -10,7 +12,7 @@ protocol SecurityLayerInteractorOutputProtocol: AnyObject {
     func didDecideRequestAuthorization()
 }
 
-protocol SecurityLayerWireframProtocol: AnyObject {
+protocol SecurityLayerWireframeProtocol: AuthorizationAccessible {
     func showSecuringOverlay()
     func hideSecuringOverlay()
     func showAuthorization()

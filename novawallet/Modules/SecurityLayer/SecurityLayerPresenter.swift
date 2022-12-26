@@ -2,9 +2,9 @@ import UIKit
 
 final class SecurityLayerPresenter {
     weak var interactor: SecurityLayerInteractorInputProtocol?
-    let wireframe: SecurityLayerWireframProtocol
+    let wireframe: SecurityLayerWireframeProtocol
 
-    init(wireframe: SecurityLayerWireframProtocol) {
+    init(wireframe: SecurityLayerWireframeProtocol) {
         self.wireframe = wireframe
     }
 }
