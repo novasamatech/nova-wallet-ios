@@ -43,23 +43,24 @@ extension SecuredPresentable {
             return
         }
 
-        let blurView = UIVisualEffectView()
-        blurView.effect = UIBlurEffect(style: .regular)
-        blurView.translatesAutoresizingMaskIntoConstraints = false
-        presentationView.addSubview(blurView)
+        guard
+            let splashView = UIStoryboard(
+                resource: R.storyboard.launchScreen
+            ).instantiateInitialViewController()?.view else {
+            return
+        }
 
-        NSLayoutConstraint.activate([
-            blurView.heightAnchor.constraint(equalTo: presentationView.heightAnchor),
-            blurView.widthAnchor.constraint(equalTo: presentationView.widthAnchor),
-            blurView.centerXAnchor.constraint(equalTo: presentationView.centerXAnchor),
-            blurView.centerYAnchor.constraint(equalTo: presentationView.centerYAnchor)
-        ])
+        presentationView.addSubview(splashView)
 
-        securityView = blurView
+        splashView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
+        securityView = splashView
 
         if animated {
             let transitionAnimator = TransitionAnimator(type: .reveal)
-            transitionAnimator.animate(view: blurView, completionBlock: nil)
+            transitionAnimator.animate(view: splashView, completionBlock: nil)
         }
     }
 
