@@ -45,7 +45,7 @@ final class TransactionHistoryPresenter {
         case dataFiltered
 
         var isLoading: Bool {
-            self == .waitingCache || self == .loadingData || self == .filteringData
+            [.waitingCache, .loadingData, .filteringData].contains(self)
         }
     }
 
@@ -63,7 +63,10 @@ final class TransactionHistoryPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func reloadView(items: [String: TransactionHistoryItem]) throws {
+    private func reloadView(
+        items: [String: TransactionHistoryItem],
+        animating: Bool = true
+    ) {
         guard let view = view, let accountAddress = accountAddress else {
             return
         }
@@ -84,7 +87,7 @@ final class TransactionHistoryPresenter {
             )
         }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
-        view.didReceive(viewModel: sections)
+        view.didReceive(viewModel: sections, animating: animating)
     }
 
     private func reloadView() {
@@ -99,7 +102,7 @@ final class TransactionHistoryPresenter {
             )
         }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
-        view.didReceive(viewModel: sections)
+        view.didReceive(viewModel: sections, animating: true)
     }
 }
 
@@ -165,7 +168,7 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
             state = .cacheLoaded
         }
         items = changes.mergeToDict(items)
-        try? reloadView(items: items)
+        reloadView(items: items, animating: false)
     }
 
     func didReceive(nextItems: [TransactionHistoryItem]) {
@@ -197,7 +200,7 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
             state = .dataFiltered
         }
         items = filteredItems.reduceToDict(items)
-        try? reloadView(items: items)
+        reloadView(items: items)
     }
 
     func clear() {
