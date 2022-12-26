@@ -116,7 +116,7 @@ extension StakingMainPresenterFactory {
             yieldBoostSupport: ParaStkYieldBoostSupport(),
             yieldBoostProviderFactory: ParaStkYieldBoostProviderFactory.shared,
             eventCenter: eventCenter,
-            applicationHandler: ApplicationHandler(),
+            applicationHandler: applicationHandler,
             currencyManager: currencyManager,
             operationQueue: operationQueue,
             logger: logger

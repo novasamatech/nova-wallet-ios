@@ -17987,6 +17987,21 @@ import UIKit
         
     }
     
+    
+    
+     func completeAuthorization(for result: Bool)  {
+        
+    return cuckoo_manager.call("completeAuthorization(for: Bool)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.completeAuthorization(for: result))
+        
+    }
+    
 
 	 struct __StubbingProxy_SecurityLayerInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -17999,6 +18014,11 @@ import UIKit
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func completeAuthorization<M1: Cuckoo.Matchable>(for result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerInteractorInputProtocol.self, method: "completeAuthorization(for: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -18023,6 +18043,12 @@ import UIKit
 	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func completeAuthorization<M1: Cuckoo.Matchable>(for result: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("completeAuthorization(for: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -18035,6 +18061,12 @@ import UIKit
     
     
      func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func completeAuthorization(for result: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -18199,19 +18231,19 @@ import UIKit
 
 
 
- class MockSecurityLayerWireframProtocol: SecurityLayerWireframProtocol, Cuckoo.ProtocolMock {
+ class MockSecurityLayerWireframeProtocol: SecurityLayerWireframeProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = SecurityLayerWireframProtocol
+     typealias MocksType = SecurityLayerWireframeProtocol
     
-     typealias Stubbing = __StubbingProxy_SecurityLayerWireframProtocol
-     typealias Verification = __VerificationProxy_SecurityLayerWireframProtocol
+     typealias Stubbing = __StubbingProxy_SecurityLayerWireframeProtocol
+     typealias Verification = __VerificationProxy_SecurityLayerWireframeProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: SecurityLayerWireframProtocol?
+    private var __defaultImplStub: SecurityLayerWireframeProtocol?
 
-     func enableDefaultImplementation(_ stub: SecurityLayerWireframProtocol) {
+     func enableDefaultImplementation(_ stub: SecurityLayerWireframeProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -18268,7 +18300,7 @@ import UIKit
     }
     
 
-	 struct __StubbingProxy_SecurityLayerWireframProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_SecurityLayerWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -18278,22 +18310,22 @@ import UIKit
 	    
 	    func showSecuringOverlay() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerWireframProtocol.self, method: "showSecuringOverlay()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerWireframeProtocol.self, method: "showSecuringOverlay()", parameterMatchers: matchers))
 	    }
 	    
 	    func hideSecuringOverlay() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerWireframProtocol.self, method: "hideSecuringOverlay()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerWireframeProtocol.self, method: "hideSecuringOverlay()", parameterMatchers: matchers))
 	    }
 	    
 	    func showAuthorization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerWireframProtocol.self, method: "showAuthorization()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockSecurityLayerWireframeProtocol.self, method: "showAuthorization()", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_SecurityLayerWireframProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_SecurityLayerWireframeProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -18328,7 +18360,7 @@ import UIKit
 	}
 }
 
- class SecurityLayerWireframProtocolStub: SecurityLayerWireframProtocol {
+ class SecurityLayerWireframeProtocolStub: SecurityLayerWireframeProtocol {
     
 
     
