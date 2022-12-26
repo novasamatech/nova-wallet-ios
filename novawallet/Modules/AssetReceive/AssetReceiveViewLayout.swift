@@ -88,7 +88,8 @@ extension AssetReceiveViewLayout {
 
         static let calculateQRsize: (CGRect) -> CGSize = { bounds in
             let width = qrViewSizeRatio * bounds.width - qrViewContentInsets * 2
-            return .init(width: width, height: width)
+            let adjustedWidth = max(width, qrViewPlaceHolderWidth)
+            return .init(width: adjustedWidth, height: adjustedWidth)
         }
     }
 }

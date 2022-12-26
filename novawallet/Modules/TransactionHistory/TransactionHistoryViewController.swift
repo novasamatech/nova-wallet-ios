@@ -207,10 +207,6 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         progress: Double,
         forcesLayoutUpdate: Bool
     ) {
-        guard let navigationItem = delegate?.presentationNavigationItem else {
-            return
-        }
-
         switch draggableState {
         case .compact:
             if progress > 0.01, progress < 1 - Constants.triggerProgressThreshold {
