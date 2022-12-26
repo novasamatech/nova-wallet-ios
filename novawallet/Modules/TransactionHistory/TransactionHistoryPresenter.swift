@@ -22,9 +22,13 @@ final class TransactionHistoryPresenter {
                 view?.startLoading()
             case (_, .loadingData):
                 view?.startLoading()
+            case (_, .filteringData):
+                view?.startLoading()
             case (.loadingData, .dataLoaded):
                 view?.stopLoading()
             case (.waitingCache, .cacheLoaded):
+                view?.stopLoading()
+            case (.filteringData, .dataFiltered):
                 view?.stopLoading()
             default:
                 break
@@ -37,9 +41,11 @@ final class TransactionHistoryPresenter {
         case cacheLoaded
         case loadingData
         case dataLoaded
+        case filteringData
+        case dataFiltered
 
         var isLoading: Bool {
-            self == .waitingCache || self == .loadingData
+            self == .waitingCache || self == .loadingData || self == .filteringData
         }
     }
 
@@ -99,7 +105,7 @@ final class TransactionHistoryPresenter {
 
 extension TransactionHistoryPresenter: TransactionHistoryPresenterProtocol {
     func setup() {
-        interactor.setup(historyFilter: .all)
+        interactor.setup()
     }
 
     func select(item: TransactionItemViewModel) {
@@ -146,6 +152,11 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
                 state = .dataLoaded
             }
             logger?.error("Error occur \(error.localizedDescription) while fetching data")
+        case let .filter(error):
+            if state == .filteringData {
+                state = .dataFiltered
+            }
+            logger?.error("Error occur \(error.localizedDescription) while fetching data")
         }
     }
 
@@ -181,6 +192,14 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
         self.accountAddress = accountAddress
     }
 
+    func didReceive(filteredItems: [TransactionHistoryItem]) {
+        if state == .filteringData {
+            state = .dataFiltered
+        }
+        items = filteredItems.reduceToDict(items)
+        try? reloadView(items: items)
+    }
+
     func clear() {
         viewModel = [:]
         items = [:]
@@ -199,9 +218,9 @@ extension TransactionHistoryPresenter: Localizable {
 extension TransactionHistoryPresenter: TransactionHistoryFilterEditingDelegate {
     func historyFilterDidEdit(filter: WalletHistoryFilter) {
         self.filter = filter
-
         view.map { wireframe.closeTopModal(from: $0) }
-        interactor.setup(historyFilter: filter)
+        state = .filteringData
         clear()
+        interactor.set(filter: filter)
     }
 }
