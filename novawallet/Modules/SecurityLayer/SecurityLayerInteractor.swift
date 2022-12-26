@@ -7,6 +7,8 @@ final class SecurityLayerInteractor {
     let settings: SettingsManagerProtocol
     let keystore: KeystoreProtocol
 
+    weak var service: SecurityLayerExecutionProtocol?
+
     private(set) var applicationHandler: ApplicationHandlerProtocol
 
     private var inactivityStart: Date?
@@ -57,6 +59,10 @@ extension SecurityLayerInteractor: SecurityLayerInteractorInputProtocol {
     func setup() {
         applicationHandler.delegate = self
     }
+
+    func completeAuthorization(for result: Bool) {
+        service?.executeScheduledRequests(result)
+    }
 }
 
 extension SecurityLayerInteractor: ApplicationHandlerDelegate {
@@ -73,5 +79,10 @@ extension SecurityLayerInteractor: ApplicationHandlerDelegate {
         presenter.didDecideSecurePresentation()
 
         inactivityStart = Date()
+    }
+
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        // clear all pending requests if we go to background without authorization
+        service?.executeScheduledRequests(false)
     }
 }
