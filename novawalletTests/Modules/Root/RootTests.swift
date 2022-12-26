@@ -20,15 +20,18 @@ class RootTests: XCTestCase {
             operationQueue: OperationQueue()
         )
 
-        let presenter = createPresenter(wireframe: wireframe,
-                                        settings: settings,
-                                        keystore: keystore)
+        let presenter = createPresenter(
+            wireframe: wireframe,
+            settings: settings,
+            keystore: keystore
+        )
 
-        let expectation = XCTestExpectation()
+        let onboardingExpectation = XCTestExpectation()
+        let securityLayerExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
             when(stub).showOnboarding(on: any()).then { _ in
-                expectation.fulfill()
+                onboardingExpectation.fulfill()
             }
         }
 
@@ -38,7 +41,10 @@ class RootTests: XCTestCase {
 
         // then
 
-        wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+        wait(
+            for: [onboardingExpectation],
+            timeout: Constants.defaultExpectationDuration
+        )
 
         XCTAssertFalse(try keystore.checkKey(for: KeystoreTag.pincode.rawValue))
     }
@@ -119,15 +125,32 @@ class RootTests: XCTestCase {
         wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
     }
 
-    private func createPresenter(wireframe: MockRootWireframeProtocol,
-                                 settings: SelectedWalletSettings,
-                                 keystore: KeystoreProtocol,
-                                 migrators: [Migrating] = []
+    private func createPresenter(
+        wireframe: MockRootWireframeProtocol,
+        settings: SelectedWalletSettings,
+        keystore: KeystoreProtocol,
+        securityLayerInteractor: SecurityLayerInteractorInputProtocol? = nil,
+        migrators: [Migrating] = []
     ) -> RootPresenter {
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set())
+        let actualSecurityLayerInteractor: SecurityLayerInteractorInputProtocol
+
+        if let securityLayerInteractor = securityLayerInteractor {
+            actualSecurityLayerInteractor = securityLayerInteractor
+        } else {
+            let mockLayer = MockSecurityLayerInteractorInputProtocol()
+
+            stub(mockLayer) { stub in
+                when(stub).setup().thenDoNothing()
+            }
+
+            actualSecurityLayerInteractor = mockLayer
+        }
+
         let interactor = RootInteractor(settings: settings,
                                         keystore: keystore,
                                         applicationConfig: ApplicationConfig.shared,
+                                        securityLayerInteractor: actualSecurityLayerInteractor,
                                         chainRegistryClosure: { chainRegistry },
                                         eventCenter: MockEventCenterProtocol(),
                                         migrators: migrators)
@@ -137,6 +160,8 @@ class RootTests: XCTestCase {
         presenter.wireframe = wireframe
         presenter.interactor = interactor
         interactor.presenter = presenter
+
+
 
         stub(wireframe) { stub in
             when(stub).showOnboarding(on: any()).thenDoNothing()
