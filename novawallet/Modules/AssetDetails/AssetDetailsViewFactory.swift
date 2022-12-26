@@ -6,12 +6,12 @@ struct AssetDetailsViewFactory {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
         }
-        guard let wallet = SelectedWalletSettings.shared.value else {
+        guard let selectedAccount = SelectedWalletSettings.shared.value else {
             return nil
         }
         let chainAsset = ChainAsset(chain: chain, asset: asset)
         let interactor = AssetDetailsInteractor(
-            selectedMetaAccount: wallet,
+            selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
             purchaseProvider: PurchaseAggregator.defaultAggregator(),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
@@ -33,7 +33,7 @@ struct AssetDetailsViewFactory {
             interactor: interactor,
             localizableManager: LocalizationManager.shared,
             chainAsset: chainAsset,
-            selectedAccountType: wallet.type,
+            selectedAccount: selectedAccount,
             viewModelFactory: viewModelFactory,
             wireframe: wireframe,
             logger: Logger.shared

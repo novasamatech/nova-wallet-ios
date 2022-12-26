@@ -37,7 +37,7 @@ struct TransactionHistoryViewFactory {
             chainAsset: chainAsset,
             tokenFormatter: tokenFormatter,
             dateFormatter: DateFormatter.txHistory,
-            groupDateFormatter: DateFormatter.txHistoryDate
+            groupDateFormatter: DateFormatter.txHistoryDate.localizableResource()
         )
         let presenter = TransactionHistoryPresenter(
             interactor: interactor,

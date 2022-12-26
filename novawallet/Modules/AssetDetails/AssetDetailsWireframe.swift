@@ -33,8 +33,23 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         navigationController.present(fearlessNavigationController, animated: true)
     }
 
-    func showReceiveTokens(from _: AssetDetailsViewProtocol?) {
-        // todo
+    func showReceiveTokens(
+        from view: AssetDetailsViewProtocol?,
+        chainAsset: ChainAsset,
+        metaChainAccountResponse: MetaChainAccountResponse
+    ) {
+        guard let receiveTokensView = AssetReceiveViewFactory.createView(
+            chainAsset: chainAsset,
+            metaChainAccountResponse: metaChainAccountResponse
+        ) else {
+            return
+        }
+        guard let navigationController = view?.controller.navigationController else {
+            return
+        }
+        let fearlessNavigationController = FearlessNavigationController(
+            rootViewController: receiveTokensView.controller)
+        navigationController.present(fearlessNavigationController, animated: true)
     }
 
     func showPurchaseProviders(
