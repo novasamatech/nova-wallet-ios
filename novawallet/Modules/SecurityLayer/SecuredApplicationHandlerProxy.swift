@@ -114,11 +114,15 @@ final class SecuredApplicationHandlerProxy: ApplicationHandlerProtocol {
 
 extension SecuredApplicationHandlerProxy: SecuredApplicationHandlerProxyProtocol {
     func addApplicationHandler() -> ApplicationHandlerProtocol {
-        let applicationHandler = ApplicationHandler()
+        let applicationHandler = SecuredApplicationHandlerProxyItem()
 
         applicationHandlers.clearEmptyItems()
         applicationHandlers.append(WeakWrapper(target: applicationHandler))
 
         return applicationHandler
     }
+}
+
+final class SecuredApplicationHandlerProxyItem: ApplicationHandlerProtocol {
+    weak var delegate: ApplicationHandlerDelegate?
 }
