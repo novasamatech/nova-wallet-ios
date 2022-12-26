@@ -9,7 +9,7 @@ final class AssetDetailsPresenter {
     let viewModelFactory: AssetDetailsViewModelFactoryProtocol
     let interactor: AssetDetailsInteractorInputProtocol
     let chainAsset: ChainAsset
-    let selectedAccountType: MetaAccountModelType
+    let selectedAccount: MetaAccountModel
     let logger: LoggerProtocol?
 
     private var priceData: PriceData?
@@ -23,7 +23,7 @@ final class AssetDetailsPresenter {
         interactor: AssetDetailsInteractorInputProtocol,
         localizableManager: LocalizationManagerProtocol,
         chainAsset: ChainAsset,
-        selectedAccountType: MetaAccountModelType,
+        selectedAccount: MetaAccountModel,
         viewModelFactory: AssetDetailsViewModelFactoryProtocol,
         wireframe: AssetDetailsWireframeProtocol,
         logger: LoggerProtocol?
@@ -31,7 +31,7 @@ final class AssetDetailsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAsset = chainAsset
-        self.selectedAccountType = selectedAccountType
+        self.selectedAccount = selectedAccount
         self.viewModelFactory = viewModelFactory
         self.logger = logger
         localizationManager = localizableManager
@@ -80,55 +80,6 @@ final class AssetDetailsPresenter {
         view.didReceive(lockedBalance: lockedBalance, isSelectable: !locks.isEmpty || !crowdloans.isEmpty)
         view.didReceive(availableOperations: availableOperations)
     }
-}
-
-extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
-    func setup() {
-        interactor.setup()
-        updateView()
-    }
-
-    func handleSend() {
-        wireframe.showSendTokens(
-            from: view,
-            chainAsset: chainAsset
-        )
-    }
-
-    func handleReceive() {
-        switch selectedAccountType {
-        case .secrets, .paritySigner:
-            wireframe.showReceiveTokens(from: view)
-        case .ledger:
-            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
-            } else {
-                wireframe.showReceiveTokens(from: view)
-            }
-
-        case .watchOnly:
-            wireframe.showNoSigning(from: view)
-        }
-    }
-
-    func handleBuy() {
-        guard !purchaseActions.isEmpty else {
-            return
-        }
-
-        switch selectedAccountType {
-        case .secrets, .paritySigner:
-            showPurchase()
-        case .ledger:
-            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
-                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
-            } else {
-                showPurchase()
-            }
-        case .watchOnly:
-            wireframe.showNoSigning(from: view)
-        }
-    }
 
     private func showPurchase() {
         guard !purchaseActions.isEmpty else {
@@ -146,6 +97,68 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
                 actions: purchaseActions,
                 delegate: self
             )
+        }
+    }
+
+    private func showReceiveTokens() {
+        guard let view = view,
+              let metaChainAccountResponse = selectedAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
+            return
+        }
+
+        wireframe.showReceiveTokens(
+            from: view,
+            chainAsset: chainAsset,
+            metaChainAccountResponse: metaChainAccountResponse
+        )
+    }
+}
+
+extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
+    func setup() {
+        interactor.setup()
+        updateView()
+    }
+
+    func handleSend() {
+        wireframe.showSendTokens(
+            from: view,
+            chainAsset: chainAsset
+        )
+    }
+
+    func handleReceive() {
+        switch selectedAccount.type {
+        case .secrets, .paritySigner:
+            showReceiveTokens()
+        case .ledger:
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
+            } else {
+                showReceiveTokens()
+            }
+
+        case .watchOnly:
+            wireframe.showNoSigning(from: view)
+        }
+    }
+
+    func handleBuy() {
+        guard !purchaseActions.isEmpty else {
+            return
+        }
+
+        switch selectedAccount.type {
+        case .secrets, .paritySigner:
+            showPurchase()
+        case .ledger:
+            if let assetRawType = chainAsset.asset.type, case .orml = AssetType(rawValue: assetRawType) {
+                wireframe.showLedgerNotSupport(for: chainAsset.asset.symbol, from: view)
+            } else {
+                showPurchase()
+            }
+        case .watchOnly:
+            wireframe.showNoSigning(from: view)
         }
     }
 
