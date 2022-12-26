@@ -130,20 +130,12 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         switch draggableState {
         case .compact:
             let adjustedProgress = min(progress / (1.0 - Constants.triggerProgressThreshold), 1.0)
-
-            let headerTopOffset = CGFloat(1.0 - adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
-            let headerHeight = Constants.headerHeight * CGFloat(adjustedProgress) +
-                fullInsets.top * CGFloat(1.0 - adjustedProgress)
-            rootView.headerTop?.update(offset: headerTopOffset)
-            rootView.headerHeight?.update(offset: headerHeight)
+            let headerHeight = (Constants.headerFullHeight - Constants.headerCompactHeight) * CGFloat(1.0 - adjustedProgress)
+        // rootView.headerHeight?.update(offset: headerHeight)
         case .full:
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
-
-            let headerTopOffset = CGFloat(1.0 - adjustedProgress) * (fullInsets.top - cornerRadius) + cornerRadius
-            let headerHeight = Constants.headerHeight * CGFloat(1.0 - adjustedProgress) +
-                fullInsets.top * CGFloat(adjustedProgress)
-            rootView.headerTop?.update(offset: headerTopOffset)
+            let headerHeight = adjustedProgress * (Constants.headerFullHeight - Constants.headerCompactHeight + fullInsets.top) + Constants.headerCompactHeight
             rootView.headerHeight?.update(offset: headerHeight)
         }
 
@@ -163,10 +155,9 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         switch draggableState {
         case .compact:
             let adjustedProgress = min(progress / (1.0 - Constants.triggerProgressThreshold), 1.0)
-            let adjustedBackgroundProgress = min((1 - (1 - progress)) / Constants.triggerProgressThreshold, 1.0)
-            let backgroundProgress = adjustedBackgroundProgress
+            let backgroundProgress = max((progress - 1 + Constants.triggerProgressThreshold) / Constants.triggerProgressThreshold, 0)
 
-            rootView.backgroundView.applyFullscreen(progress: backgroundProgress)
+            rootView.backgroundView.applyFullscreen(progress: 1 - backgroundProgress)
             rootView.closeButton.alpha = CGFloat(1.0 - adjustedProgress)
             rootView.panIndicatorView.alpha = CGFloat(adjustedProgress)
 
@@ -179,8 +170,8 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
         case .full:
             let adjustedProgress = max(progress - Constants.triggerProgressThreshold, 0.0)
                 / (1.0 - Constants.triggerProgressThreshold)
-            let backgroundProgress = min(progress * Constants.triggerBackgroundProgressThreshold * 100, 1)
-            rootView.backgroundView.applyFullscreen(progress: CGFloat(1.0 - backgroundProgress))
+            let backgroundProgress = min(progress / Constants.triggerBackgroundProgressThreshold, 1)
+            rootView.backgroundView.applyFullscreen(progress: backgroundProgress)
             rootView.closeButton.alpha = CGFloat(adjustedProgress)
             rootView.panIndicatorView.alpha = CGFloat(1.0 - adjustedProgress)
 
@@ -417,7 +408,8 @@ extension TransactionHistoryViewController {
     private enum Constants {
         static let cornerRadius: CGFloat = 12
         static let cellHeight: CGFloat = 56.0
-        static let headerHeight: CGFloat = 45.0
+        static let headerCompactHeight: CGFloat = 58
+        static let headerFullHeight: CGFloat = 98
         static let sectionHeight: CGFloat = 44.0
         static let multiplierToActivateNextLoading: CGFloat = 1.5
         static let draggableProgressFinal: Double = 1.0

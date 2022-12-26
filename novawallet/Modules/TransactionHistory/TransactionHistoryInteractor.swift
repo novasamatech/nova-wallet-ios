@@ -22,6 +22,7 @@ final class TransactionHistoryInteractor {
     private var firstPageLoaded: Bool = false
     private var localDataProvider: StreamableProvider<TransactionHistoryItem>?
     private var remoteDataProvider: RemoteHistoryTransactionsProviderProtocol?
+    private var firstPageItems: [TransactionHistoryItem] = []
 
     init(
         chainAsset: ChainAsset,
@@ -41,7 +42,7 @@ final class TransactionHistoryInteractor {
         self.fetchCount = fetchCount
     }
 
-    private func setupDataProvider(historyFilter _: WalletHistoryFilter) {
+    private func setupDataProvider() {
         guard let accountAddress = accountAddress else {
             return
         }
@@ -50,6 +51,7 @@ final class TransactionHistoryInteractor {
                 return
             }
             self.firstPageLoaded = true
+            self.firstPageItems = self.firstPageItems.applying(changes: changes)
             self.presenter.didReceive(changes: changes)
         }
 
@@ -94,10 +96,12 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
             return
         }
 
-        let fetchOperation = remoteDataProvider.fetch(
+        guard let fetchOperation = remoteDataProvider.fetchNext(
             by: historyFilter ?? .all,
             count: fetchCount
-        )
+        ) else {
+            return
+        }
 
         fetchOperation.targetOperation.completionBlock = { [weak self] in
             guard let self = self else { return }
@@ -119,15 +123,48 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
         )
     }
 
-    func setup(historyFilter: WalletHistoryFilter) {
-        guard historyFilter != self.historyFilter else {
-            return
-        }
+    func setup() {
         accountAddress.map {
             presenter.didReceive(accountAddress: $0)
         }
         clearDataProvider()
-        setupDataProvider(historyFilter: historyFilter)
+        setupDataProvider()
         localDataProvider?.refresh()
+    }
+
+    func set(filter: WalletHistoryFilter) {
+        guard historyFilter != filter else {
+            return
+        }
+        historyFilter = filter
+
+        if let fetchOperation = remoteDataProvider?.fetch(
+            by: historyFilter ?? .all,
+            count: fetchCount
+        ) {
+            fetchOperation.targetOperation.completionBlock = { [weak self] in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    do {
+                        self.currentFetchOperation = nil
+                        let items = try fetchOperation.targetOperation.extractNoCancellableResultData()
+                        self.presenter.didReceive(filteredItems: items)
+                    } catch {
+                        self.presenter.didReceive(error: .filter(error))
+                    }
+                }
+            }
+
+            currentFetchOperation = fetchOperation
+            operationQueue.addOperations(
+                fetchOperation.allOperations,
+                waitUntilFinished: false
+            )
+        } else {
+            let filteredItems = firstPageItems.filter {
+                filter.isFit(callPath: $0.callPath)
+            }
+            presenter.didReceive(filteredItems: filteredItems)
+        }
     }
 }

@@ -80,7 +80,7 @@ final class TransactionHistoryViewLayout: UIView {
 
         addSubview(headerView)
         headerView.snp.makeConstraints {
-            headerHeight = $0.height.equalTo(45).constraint
+            headerHeight = $0.height.equalTo(58).constraint
             headerTop = $0.top.equalToSuperview().constraint
             $0.leading.trailing.equalToSuperview()
         }
