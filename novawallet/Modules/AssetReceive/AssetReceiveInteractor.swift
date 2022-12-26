@@ -10,7 +10,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
     let metaChainAccountResponse: MetaChainAccountResponse
 
     private let operationQueue: OperationQueue
-    private var currentQRCodeOperation: Operation?
+    private var currentQRCodeOperation: CancellableCall?
 
     init(
         metaChainAccountResponse: MetaChainAccountResponse,
@@ -27,7 +27,7 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
     }
 
     private func updateQRCode(size: CGSize) {
-        clear(&currentQRCodeOperation)
+        clear(cancellable: &currentQRCodeOperation)
 
         let encoder = qrCoderFactory.createEncoder()
         let receiverInfo = AssetReceiveInfo(
@@ -68,7 +68,6 @@ final class AssetReceiveInteractor: AnyCancellableCleaning {
         currentQRCodeOperation = qrCreationOperation
         operationQueue.addOperation(qrCreationOperation)
     }
-
 }
 
 extension AssetReceiveInteractor: AssetReceiveInteractorInputProtocol {
