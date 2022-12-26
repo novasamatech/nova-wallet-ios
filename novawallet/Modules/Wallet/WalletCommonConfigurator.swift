@@ -30,14 +30,6 @@ struct WalletCommonConfigurator {
             dataStorageFacade: SubstrateDataStorageFacade.shared
         )
 
-        let qrCoderFactory = WalletQRCoderFactory(
-            addressPrefix: chainAccount.addressPrefix,
-            chainFormat: chainAccount.chainFormat,
-            publicKey: chainAccount.publicKey,
-            username: chainAccount.name,
-            assets: assets
-        )
-
         let singleProviderIdFactory = WalletSingleProviderIdFactory(
             currencyId: currencyManager.selectedCurrency.id
         )
@@ -51,6 +43,5 @@ struct WalletCommonConfigurator {
             .with(transactionTypeList: transactionTypes)
             .with(amountFormatterFactory: AmountFormatterFactory())
             .with(singleProviderIdentifierFactory: singleProviderIdFactory)
-            .with(qrCoderFactory: qrCoderFactory)
     }
 }

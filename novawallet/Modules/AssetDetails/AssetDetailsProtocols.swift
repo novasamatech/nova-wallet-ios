@@ -32,7 +32,11 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
 
 protocol AssetDetailsWireframeProtocol: AnyObject {
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
-    func showReceiveTokens(from view: AssetDetailsViewProtocol?)
+    func showReceiveTokens(
+        from view: AssetDetailsViewProtocol?,
+        chainAsset: ChainAsset,
+        metaChainAccountResponse: MetaChainAccountResponse
+    )
     func showPurchaseProviders(
         from view: AssetDetailsViewProtocol?,
         actions: [PurchaseAction],
