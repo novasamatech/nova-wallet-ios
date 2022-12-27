@@ -118,9 +118,9 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
 
-        rootView.favoriteBarButton.isEnabled = false
-        rootView.favoriteBarButton.target = self
-        rootView.favoriteBarButton.action = #selector(actionFavorite)
+        rootView.settingsBarButton.isEnabled = false
+        rootView.settingsBarButton.target = self
+        rootView.settingsBarButton.action = #selector(actionSettings)
 
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
     }
@@ -207,8 +207,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.webView.reload()
     }
 
-    @objc private func actionFavorite() {
-        presenter.toggleFavorite()
+    @objc private func actionSettings() {
+        presenter.showSettings()
     }
 
     @objc private func actionSearch() {
@@ -247,11 +247,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         rootView.webView.evaluateJavaScript(script.content)
     }
 
-    func didReceiveFavorite(flag: Bool) {
-        rootView.favoriteBarButton.isEnabled = true
-
-        let icon = flag ? R.image.iconFavToolbarSel() : R.image.iconFavToolbar()
-        rootView.favoriteBarButton.image = icon?.withRenderingMode(.alwaysOriginal)
+    func didReceiveSettings() {
+        rootView.settingsBarButton.isEnabled = true
     }
 }
 

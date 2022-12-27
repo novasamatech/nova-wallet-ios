@@ -8,8 +8,7 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
     )
-
-    func didReceiveFavorite(flag: Bool)
+    func didReceiveSettings()
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
@@ -17,7 +16,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     func process(page: DAppBrowserPage)
     func process(message: Any, host: String, transport name: String)
     func activateSearch(with query: String?)
-    func toggleFavorite()
+    func showSettings()
     func close()
 }
 
@@ -30,6 +29,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func processAuth(response: DAppAuthResponse, forTransport name: String)
     func removeFromFavorites(record: DAppFavorite)
     func reload()
+    func save(settings: DAppGlobalSettings)
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
@@ -47,6 +47,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceiveAuth(request: DAppAuthRequest)
     func didDetectPhishing(host: String)
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
+    func didReceiveSettings(changes: [DataProviderChange<DAppGlobalSettings>])
 }
 
 protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
@@ -77,6 +78,12 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
     func presentAddToFavoriteForm(
         from view: DAppBrowserViewProtocol?,
         page: DAppBrowserPage
+    )
+
+    func presentSettings(
+        from view: DAppBrowserViewProtocol?,
+        state: DAppSettingsInput,
+        delegate: DAppSettingsDelegate
     )
 
     func close(view: DAppBrowserViewProtocol?)
