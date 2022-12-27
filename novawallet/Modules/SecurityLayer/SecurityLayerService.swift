@@ -27,7 +27,6 @@ protocol SecurityLayerExecutionProtocol: AnyObject {
 
 final class SecurityLayerService {
     static let inactivityTimeoutInMinutes: TimeInterval = 5.0
-    static let inactivityDelayInSeconds: TimeInterval = inactivityTimeoutInMinutes.secondsFromMinutes
 
     static let shared: SecurityLayerService = {
         let wireframe = SecurityLayerWireframe()
@@ -40,7 +39,7 @@ final class SecurityLayerService {
             applicationHandler: applicationHandlingProxy,
             settings: SettingsManager.shared,
             keystore: Keychain(),
-            inactivityDelay: inactivityDelayInSeconds
+            inactivityDelay: inactivityTimeoutInMinutes.secondsFromMinutes
         )
 
         presenter.interactor = interactor
