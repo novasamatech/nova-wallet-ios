@@ -209,7 +209,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     ) {
         switch draggableState {
         case .compact:
-            if progress > 0.01, progress < 1 - Constants.triggerProgressThreshold {
+            if progress > Constants.navigationItemThreshold, progress < 1 - Constants.triggerProgressThreshold {
                 setNavigationItem(state: cleanNavigationItemState)
             }
             if progress >= 1 - Constants.triggerProgressThreshold {
@@ -449,6 +449,7 @@ extension TransactionHistoryViewController {
         static let multiplierToActivateNextLoading: CGFloat = 1.5
         static let draggableProgressFinal: Double = 1.0
         static let triggerProgressThreshold: Double = 0.8
+        static let navigationItemThreshold: Double = 0.01
         static let bouncesThreshold: CGFloat = 1.0
         static let triggerBackgroundProgressThreshold: Double = 1 - triggerProgressThreshold
     }

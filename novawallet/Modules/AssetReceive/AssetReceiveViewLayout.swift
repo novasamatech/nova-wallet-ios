@@ -72,6 +72,7 @@ extension AssetReceiveViewLayout {
     enum Constants {
         static let qrViewSizeRatio: CGFloat = 0.75
         static let qrViewPlaceHolderWidth: CGFloat = 280
+        static let qrCodeMinimumWidth: CGFloat = 120
         static let accountDetailsViewHeight: CGFloat = 52
         static let accountDetailsTitleVerticalSpace: CGFloat = 52
         static let titleQRVerticalSpace: CGFloat = 36
@@ -86,10 +87,12 @@ extension AssetReceiveViewLayout {
             right: containerHorizontalOffset
         )
 
-        static let calculateQRsize: (CGRect) -> CGSize = { bounds in
+        static let calculateQRsize: (CGRect) -> CGSize? = { bounds in
             let width = qrViewSizeRatio * bounds.width - qrViewContentInsets * 2
-            let adjustedWidth = max(width, qrViewPlaceHolderWidth)
-            return .init(width: adjustedWidth, height: adjustedWidth)
+            guard width >= qrCodeMinimumWidth else {
+                return nil
+            }
+            return .init(width: width, height: width)
         }
     }
 }
