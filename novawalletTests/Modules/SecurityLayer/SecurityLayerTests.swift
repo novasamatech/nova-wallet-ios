@@ -33,7 +33,9 @@ final class SecurityLayerTests: XCTestCase {
             }
         }
 
-        NotificationCenter.default.post(name: UIApplication.willResignActiveNotification, object: nil)
+        applicationHandler.willResignActiveHandler(
+            notification: Notification(name: UIApplication.willResignActiveNotification)
+        )
 
         // then
 
@@ -49,7 +51,9 @@ final class SecurityLayerTests: XCTestCase {
             }
         }
 
-        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        applicationHandler.didBecomeActiveHandler(
+            notification: Notification(name: UIApplication.didBecomeActiveNotification)
+        )
 
         // then
 
@@ -89,9 +93,13 @@ final class SecurityLayerTests: XCTestCase {
             }
         }
 
-        NotificationCenter.default.post(name: UIApplication.willResignActiveNotification, object: nil)
+        applicationHandler.willResignActiveHandler(
+            notification: Notification(name: UIApplication.willResignActiveNotification)
+        )
 
-        NotificationCenter.default.post(name: UIApplication.willEnterForegroundNotification, object: nil)
+        applicationHandler.willEnterForegroundHandler(
+            notification: Notification(name: UIApplication.willEnterForegroundNotification)
+        )
 
         // then
 
@@ -229,7 +237,9 @@ final class SecurityLayerTests: XCTestCase {
 
         // when
 
-        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        applicationHandler.didEnterBackgroundHandler(
+            notification: Notification(name: UIApplication.didEnterBackgroundNotification)
+        )
 
         XCTAssertTrue(securityLayer.scheduledRequests.isEmpty)
     }
