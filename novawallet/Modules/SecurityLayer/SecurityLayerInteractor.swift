@@ -4,7 +4,6 @@ import SoraFoundation
 
 final class SecurityLayerInteractor {
     let presenter: SecurityLayerInteractorOutputProtocol
-    let settings: SettingsManagerProtocol
     let keystore: KeystoreProtocol
 
     weak var service: SecurityLayerExecutionProtocol?
@@ -27,13 +26,11 @@ final class SecurityLayerInteractor {
     init(
         presenter: SecurityLayerInteractorOutputProtocol,
         applicationHandler: ApplicationHandlerProtocol,
-        settings: SettingsManagerProtocol,
         keystore: KeystoreProtocol,
         inactivityDelay: TimeInterval
     ) {
         self.presenter = presenter
         self.applicationHandler = applicationHandler
-        self.settings = settings
         self.keystore = keystore
         self.inactivityDelay = inactivityDelay
     }

@@ -39,14 +39,14 @@ final class SecuredApplicationHandlerProxy: ApplicationHandlerProtocol {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(willEnterForeground(notification:)),
+            selector: #selector(willEnterForegroundHandler(notification:)),
             name: UIApplication.willEnterForegroundNotification,
             object: nil
         )
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didEnterBackground(notification:)),
+            selector: #selector(didEnterBackgroundHandler(notification:)),
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
@@ -91,7 +91,7 @@ final class SecuredApplicationHandlerProxy: ApplicationHandlerProtocol {
         }
     }
 
-    @objc func willEnterForeground(notification: Notification) {
+    @objc func willEnterForegroundHandler(notification: Notification) {
         delegate?.didReceiveWillEnterForeground?(notification: notification)
 
         securedLayer?.scheduleExecution { [weak self] isAuthorized in
@@ -101,7 +101,7 @@ final class SecuredApplicationHandlerProxy: ApplicationHandlerProtocol {
         }
     }
 
-    @objc func didEnterBackground(notification: Notification) {
+    @objc func didEnterBackgroundHandler(notification: Notification) {
         delegate?.didReceiveDidEnterBackground?(notification: notification)
 
         securedLayer?.scheduleExecution { [weak self] isAuthorized in

@@ -37,7 +37,6 @@ final class SecurityLayerService {
         let interactor = SecurityLayerInteractor(
             presenter: presenter,
             applicationHandler: applicationHandlingProxy,
-            settings: SettingsManager.shared,
             keystore: Keychain(),
             inactivityDelay: inactivityTimeoutInMinutes.secondsFromMinutes
         )
