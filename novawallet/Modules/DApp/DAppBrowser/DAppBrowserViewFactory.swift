@@ -35,6 +35,7 @@ struct DAppBrowserViewFactory {
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
+            dAppGlobalSettingsRepository: accountRepositoryFactory.createDAppsGlobalSettingsRepository(),
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: favoritesRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

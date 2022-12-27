@@ -17,6 +17,7 @@ final class DAppBrowserInteractor {
     let sequentialPhishingVerifier: PhishingSiteVerifing
     let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
     let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
+    let dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>
 
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
 
@@ -28,6 +29,7 @@ final class DAppBrowserInteractor {
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
+        dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>,
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
         operationQueue: OperationQueue,
@@ -47,6 +49,7 @@ final class DAppBrowserInteractor {
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
+        self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
     }
 
     private func subscribeChainRegistry() {
@@ -236,6 +239,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
+        presenter.didReceiveSettings(changes: [])
     }
 
     func process(host: String) {
@@ -320,6 +324,19 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
         postExecutionScript: DAppScriptResponse
     ) {
         provideTransportUpdate(with: postExecutionScript)
+    }
+
+    func save(settings: DAppGlobalSettings) {
+        let operation: Operation
+        if settings.desktopMode == false {
+            operation = dAppGlobalSettingsRepository.saveOperation({ [] }, { [settings.identifier] })
+        } else {
+            operation = dAppGlobalSettingsRepository.saveOperation({
+                [settings]
+            }, { [] })
+        }
+
+        dataSource.operationQueue.addOperation(operation)
     }
 }
 
