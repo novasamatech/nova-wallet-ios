@@ -191,6 +191,17 @@ class StakingRewardDestConfirmTests: XCTestCase {
 
         wait(for: [feeExpectation, rewardDestinationExpectation], timeout: 10)
 
+        // no way to wait balance receive in presenter
+        presenter.didReceiveAccountBalance(
+            result: .success(
+                walletLocalSubscriptionFactory.getDummyBalance(
+                    for: selectedAccount.accountId,
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
+                )
+            )
+        )
+
         return presenter
     }
 
