@@ -4,8 +4,9 @@ import SoraFoundation
 
 final class SecurityLayerInteractor {
     let presenter: SecurityLayerInteractorOutputProtocol
-    let settings: SettingsManagerProtocol
     let keystore: KeystoreProtocol
+
+    weak var service: SecurityLayerExecutionProtocol?
 
     private(set) var applicationHandler: ApplicationHandlerProtocol
 
@@ -25,13 +26,11 @@ final class SecurityLayerInteractor {
     init(
         presenter: SecurityLayerInteractorOutputProtocol,
         applicationHandler: ApplicationHandlerProtocol,
-        settings: SettingsManagerProtocol,
         keystore: KeystoreProtocol,
         inactivityDelay: TimeInterval
     ) {
         self.presenter = presenter
         self.applicationHandler = applicationHandler
-        self.settings = settings
         self.keystore = keystore
         self.inactivityDelay = inactivityDelay
     }
@@ -44,7 +43,7 @@ final class SecurityLayerInteractor {
         self.inactivityStart = nil
 
         if canEnterPincode {
-            let inactivityDelayReached = Date().timeIntervalSince(inactivityStart) >= inactivityDelay
+            let inactivityDelayReached = Date().timeIntervalSince(inactivityStart) > inactivityDelay
 
             if inactivityDelayReached {
                 presenter.didDecideRequestAuthorization()
@@ -56,6 +55,10 @@ final class SecurityLayerInteractor {
 extension SecurityLayerInteractor: SecurityLayerInteractorInputProtocol {
     func setup() {
         applicationHandler.delegate = self
+    }
+
+    func completeAuthorization(for result: Bool) {
+        service?.executeScheduledRequests(result)
     }
 }
 
@@ -73,5 +76,10 @@ extension SecurityLayerInteractor: ApplicationHandlerDelegate {
         presenter.didDecideSecurePresentation()
 
         inactivityStart = Date()
+    }
+
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        // clear all pending requests if we go to background without authorization
+        service?.executeScheduledRequests(false)
     }
 }
