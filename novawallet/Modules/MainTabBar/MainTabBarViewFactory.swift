@@ -22,7 +22,8 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
             serviceCoordinator: serviceCoordinator,
-            keystoreImportService: keystoreImportService
+            keystoreImportService: keystoreImportService,
+            securedLayer: SecurityLayerService.shared
         )
 
         guard let walletController = createWalletController(for: localizationManager) else {

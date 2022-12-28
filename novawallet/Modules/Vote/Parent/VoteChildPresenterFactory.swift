@@ -31,12 +31,12 @@ final class VoteChildPresenterFactory {
 
     init(
         currencyManager: CurrencyManagerProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol = WalletLocalSubscriptionFactory.shared,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared,
         priceProviderFactory: PriceProviderFactoryProtocol = PriceProviderFactory.shared,
         repositoryFactory: SubstrateRepositoryFactoryProtocol = SubstrateRepositoryFactory(),
-        applicationHandler: ApplicationHandlerProtocol = ApplicationHandler(),
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         eventCenter: EventCenterProtocol = EventCenter.shared,
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
