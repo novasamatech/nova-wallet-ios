@@ -134,7 +134,7 @@ extension StakingMainPresenterFactory {
             accountProviderFactory: accountProviderFactory,
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
-            applicationHandler: ApplicationHandler(),
+            applicationHandler: applicationHandler,
             currencyManager: currencyManager,
             logger: logger
         )

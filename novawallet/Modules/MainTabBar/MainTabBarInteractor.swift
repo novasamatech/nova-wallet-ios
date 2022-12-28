@@ -9,6 +9,7 @@ final class MainTabBarInteractor {
     let eventCenter: EventCenterProtocol
     let keystoreImportService: KeystoreImportServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
+    let securedLayer: SecurityLayerServiceProtocol
 
     deinit {
         stopServices()
@@ -17,11 +18,13 @@ final class MainTabBarInteractor {
     init(
         eventCenter: EventCenterProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
-        keystoreImportService: KeystoreImportServiceProtocol
+        keystoreImportService: KeystoreImportServiceProtocol,
+        securedLayer: SecurityLayerServiceProtocol
     ) {
         self.eventCenter = eventCenter
         self.keystoreImportService = keystoreImportService
         self.serviceCoordinator = serviceCoordinator
+        self.securedLayer = securedLayer
 
         startServices()
     }
@@ -54,10 +57,12 @@ extension MainTabBarInteractor: EventVisitorProtocol {
 
 extension MainTabBarInteractor: KeystoreImportObserver {
     func didUpdateDefinition(from _: KeystoreDefinition?) {
-        guard keystoreImportService.definition != nil else {
-            return
-        }
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            guard self?.keystoreImportService.definition != nil else {
+                return
+            }
 
-        presenter?.didRequestImportAccount()
+            self?.presenter?.didRequestImportAccount()
+        }
     }
 }

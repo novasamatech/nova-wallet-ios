@@ -1,8 +1,9 @@
 import UIKit
 
-final class SecurityLayerWireframe: SecurityLayerWireframProtocol, AuthorizationPresentable,
-    AuthorizationAccessible, SecuredPresentable {
+final class SecurityLayerWireframe: SecurityLayerWireframeProtocol, AuthorizationPresentable, SecuredPresentable {
     var logger: LoggerProtocol?
+
+    weak var authorizationCompletionHandler: SecurityLayerExecutionProtocol?
 
     private var isPincodeVisible: Bool {
         let rootViewController = UIApplication.shared.keyWindow?.rootViewController
@@ -44,10 +45,12 @@ final class SecurityLayerWireframe: SecurityLayerWireframProtocol, Authorization
     }
 
     private func presentModalAuthorization() {
-        authorize(animated: false) { isAuthorized in
+        authorize(animated: false) { [weak self] isAuthorized in
             if !isAuthorized {
-                self.logger?.error("Authorization unexpectedly failed")
+                self?.logger?.error("Authorization unexpectedly failed")
             }
+
+            self?.authorizationCompletionHandler?.executeScheduledRequests(isAuthorized)
         }
     }
 
