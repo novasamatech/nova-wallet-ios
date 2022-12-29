@@ -107,6 +107,12 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(dappSettingsView.controller, animated: true, completion: nil)
     }
 
+    func hideSettings(from view: DAppBrowserViewProtocol?) {
+        if view?.controller.topModalViewController is DAppSettingsViewProtocol {
+            view?.controller.topModalViewController.dismiss(animated: true)
+        }
+    }
+
     func close(view: DAppBrowserViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }

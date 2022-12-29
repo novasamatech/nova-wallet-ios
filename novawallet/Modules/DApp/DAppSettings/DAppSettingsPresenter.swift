@@ -24,8 +24,10 @@ final class DAppSettingsPresenter {
 
         let title = "Page settings"
         view.update(title: title)
-        view.update(favoriteModel: favoriteModel(favorite: state.favorite))
-        view.updateDesktopModel(desktopTitleModel, isOn: state.desktopMode)
+        view.update(viewModels: [
+            .favorite(favoriteModel(favorite: state.favorite)),
+            .desktopModel(.init(title: desktopTitleModel, isOn: state.desktopMode))
+        ])
     }
 
     private func favoriteModel(favorite: Bool) -> TitleIconViewModel {

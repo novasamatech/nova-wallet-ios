@@ -48,13 +48,16 @@ final class DAppBrowserPresenter {
     }
 
     private func provideSettings() {
-        guard let page = browserPage,
-              let favorites = favorites,
-              let settings = settings else {
+        guard let settings = settings,
+              let page = browserPage else {
             return
         }
+        let dAppSettings = settings[page.identifier] ?? .init(
+            identifier: page.identifier,
+            desktopMode: false
+        )
 
-        view?.didReceiveSettings()
+        view?.didReceive(settings: dAppSettings)
     }
 }
 
@@ -72,6 +75,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         }
 
         interactor.process(host: newHost)
+        provideSettings()
     }
 
     func process(message: Any, host: String, transport name: String) {
@@ -165,11 +169,10 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
-        provideSettings()
     }
 
-    func didReceiveSettings(changes: [DataProviderChange<DAppGlobalSettings>]) {
-        settings = changes.mergeToDict(settings ?? [:])
+    func didReceive(settings: [DAppGlobalSettings]) {
+        self.settings = settings.reduceToDict()
         provideSettings()
     }
 }
@@ -203,6 +206,8 @@ extension DAppBrowserPresenter: DAppPhishingViewDelegate {
 
 extension DAppBrowserPresenter: DAppSettingsDelegate {
     func addToFavorites(dAppIdentifier _: String) {
+        wireframe.hideSettings(from: view)
+
         guard let page = browserPage else {
             return
         }
@@ -214,6 +219,8 @@ extension DAppBrowserPresenter: DAppSettingsDelegate {
     }
 
     func removeFromFavorites(dAppIdentifier: String) {
+        wireframe.hideSettings(from: view)
+
         guard let favoriteDApp = favorites?[dAppIdentifier] else {
             return
         }

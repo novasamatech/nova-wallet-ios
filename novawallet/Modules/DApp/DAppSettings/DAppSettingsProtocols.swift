@@ -1,7 +1,6 @@
 protocol DAppSettingsViewProtocol: ControllerBackedProtocol {
     func update(title: String)
-    func update(favoriteModel: TitleIconViewModel)
-    func updateDesktopModel(_ titleModel: TitleIconViewModel, isOn: Bool)
+    func update(viewModels: [DAppSettingsViewModelRow])
 }
 
 protocol DAppSettingsPresenterProtocol: AnyObject {

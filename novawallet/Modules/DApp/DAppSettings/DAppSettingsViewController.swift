@@ -5,8 +5,13 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
 
     let presenter: DAppSettingsPresenterProtocol
 
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, DAppSettingsViewModelRow>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, DAppSettingsViewModelRow>
+    private lazy var dataSource = createDataSource()
+    private var titleModel: String = ""
+
     var preferredHeight: CGFloat {
-        rootView.preferredHeight
+        196
     }
 
     init(presenter: DAppSettingsPresenterProtocol) {
@@ -26,35 +31,73 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        rootView.favoriteRow.addTarget(self, action: #selector(didTapOnFavorite), for: .touchUpInside)
-        rootView.desktopModeRow.switchView.addTarget(
-            self,
-            action: #selector(didChangeDesktopMode),
-            for: .valueChanged
-        )
+        rootView.tableView.dataSource = dataSource
+        rootView.tableView.delegate = self
         presenter.setup()
-    }
-
-    @objc private func didTapOnFavorite() {
-        presenter.presentFavorite()
     }
 
     @objc private func didChangeDesktopMode(control: UISwitch) {
         presenter.changeDesktopMode(isOn: control.isOn)
     }
+
+    private func createDataSource() -> DataSource {
+        .init(tableView: rootView.tableView) { tableView, indexPath, itemIdentifier -> UITableViewCell? in
+            switch itemIdentifier {
+            case let .favorite(model):
+                let cell: DAppFavoriteSettingsView = tableView.dequeueReusableCellWithType(
+                    DAppFavoriteSettingsView.self,
+                    forIndexPath: indexPath
+                )
+                cell.iconDetailsView.bind(viewModel: model)
+                return cell
+            case let .desktopModel(model):
+                let cell: DAppDesktopModeSettingsView =
+                    tableView.dequeueReusableCellWithType(DAppDesktopModeSettingsView.self, forIndexPath: indexPath)
+
+                cell.iconDetailsView.bind(viewModel: model.title)
+                cell.switchView.isOn = model.isOn
+                cell.switchView.addTarget(
+                    self,
+                    action: #selector(self.didChangeDesktopMode),
+                    for: .valueChanged
+                )
+                cell.selectionStyle = .none
+                return cell
+            }
+        }
+    }
 }
 
 extension DAppSettingsViewController: DAppSettingsViewProtocol {
     func update(title: String) {
-        rootView.titleRow.titleLabel.text = title
+        titleModel = title
     }
 
-    func update(favoriteModel: TitleIconViewModel) {
-        rootView.favoriteRow.iconDetailsView.bind(viewModel: favoriteModel)
+    func update(viewModels: [DAppSettingsViewModelRow]) {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(viewModels)
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+}
+
+extension DAppSettingsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
+        headerView.titleView.detailsLabel.apply(style: .bottomSheetTitle)
+        headerView.titleView.bind(viewModel: .init(title: titleModel, icon: nil))
+        return headerView
     }
 
-    func updateDesktopModel(_ titleModel: TitleIconViewModel, isOn: Bool) {
-        rootView.desktopModeRow.iconDetailsView.bind(viewModel: titleModel)
-        rootView.desktopModeRow.switchView.isOn = isOn
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        let viewModel = dataSource.itemIdentifier(for: indexPath)
+        switch viewModel {
+        case .favorite:
+            presenter.presentFavorite()
+        case .desktopModel, .none:
+            break
+        }
     }
 }
