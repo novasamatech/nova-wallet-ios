@@ -740,6 +740,9 @@
 "dapp.remove.favorites.message" = "”%@” DApp будет удален из Избранного";
 "dapp.remove.favorites.title" = "Удалить из Избранного?";
 "dapp.favorite.add.title" = "Добавить в избранное";
+"dapp.settings.title" = "Настройки страницы";
+"dapp.settings.mode.desktop" = "Режим рабочего стола";
+"dapp.settings.remove.favorite" = "Удалить из Избранного";
 "common.title" = "Заголовок";
 "dapp.remove.authorized.message" = "”%@” DApp будет удален из Авторизованных";
 "dapp.remove.authorized.title" = "Удалить из Авторизованных?";
