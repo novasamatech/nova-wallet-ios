@@ -63,6 +63,7 @@ class DAppBrowserTests: XCTestCase {
             userQuery: .query(string: dAppURL),
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
+            securedLayer: SecurityLayerService.shared,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
             dAppsLocalSubscriptionFactory: dAppLocalProviderFactory,
             dAppsFavoriteRepository: dAppsFavoriteRepository,
