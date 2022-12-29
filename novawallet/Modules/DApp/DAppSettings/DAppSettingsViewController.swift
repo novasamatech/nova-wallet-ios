@@ -11,7 +11,7 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
     private var titleModel: String = ""
 
     var preferredHeight: CGFloat {
-        196
+        RootViewType.Constants.headerHeight + RootViewType.Constants.rowHeight * 2
     }
 
     init(presenter: DAppSettingsPresenterProtocol) {
@@ -85,6 +85,7 @@ extension DAppSettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
         headerView.titleView.detailsLabel.apply(style: .bottomSheetTitle)
+        headerView.contentInsets = .init(top: 10, left: 0, bottom: 10, right: 0)
         headerView.titleView.bind(viewModel: .init(title: titleModel, icon: nil))
         return headerView
     }

@@ -15,7 +15,7 @@ struct DAppSettingsViewFactory {
         let view = DAppSettingsViewController(presenter: presenter)
         view.preferredContentSize = .init(
             width: 0,
-            height: 196
+            height: view.preferredHeight
         )
 
         presenter.view = view

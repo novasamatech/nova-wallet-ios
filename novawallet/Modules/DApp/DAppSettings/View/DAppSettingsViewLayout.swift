@@ -7,9 +7,8 @@ final class DAppSettingsViewLayout: UIView {
         $0.registerClassForCell(DAppDesktopModeSettingsView.self)
         $0.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
         $0.separatorStyle = .none
-        $0.rowHeight = 56
+        $0.rowHeight = Constants.rowHeight
         $0.backgroundColor = .clear
-        $0.contentInset = .init(top: 16, left: 16, bottom: 16, right: -16)
     }
 
     override init(frame: CGRect) {
@@ -24,5 +23,12 @@ final class DAppSettingsViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension DAppSettingsViewLayout {
+    enum Constants {
+        static let rowHeight: CGFloat = 56
+        static let headerHeight: CGFloat = 42
     }
 }

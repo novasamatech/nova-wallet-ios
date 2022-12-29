@@ -12,10 +12,10 @@ final class DAppDesktopModeSettingsView: UITableViewCell {
         backgroundColor = .clear
         iconDetailsView.apply(style: .regularSubheadline)
         iconDetailsView.detailsLabel.textAlignment = .left
-
+        iconDetailsView.spacing = 12
         contentView.addSubview(settingsView)
         settingsView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0))
+            $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
         }
     }
 
