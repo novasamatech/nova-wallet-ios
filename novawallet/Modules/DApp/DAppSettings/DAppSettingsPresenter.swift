@@ -22,7 +22,7 @@ final class DAppSettingsPresenter {
             return
         }
 
-        let title = "Page settings"
+        let title = R.string.localizable.dappSettingsTitle(preferredLanguages: selectedLocale.rLanguages)
         view.update(title: title)
         view.update(viewModels: [
             .favorite(favoriteModel(favorite: state.favorite)),
@@ -35,7 +35,7 @@ final class DAppSettingsPresenter {
         let icon: UIImage?
 
         if favorite {
-            title = R.string.localizable.dappRemoveFavoritesTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.dappSettingsRemoveFavorite(preferredLanguages: selectedLocale.rLanguages)
             icon = R.image.iconUnfavorite()
         } else {
             title = R.string.localizable.dappFavoriteAddTitle(preferredLanguages: selectedLocale.rLanguages)
@@ -46,7 +46,7 @@ final class DAppSettingsPresenter {
     }
 
     private var desktopTitleModel: TitleIconViewModel {
-        let title: String = "Desktop mode"
+        let title = R.string.localizable.dappSettingsModeDesktop(preferredLanguages: selectedLocale.rLanguages)
         let icon = R.image.iconDesktopMode()
 
         return .init(title: title, icon: icon)

@@ -36,10 +36,6 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    @objc private func didChangeDesktopMode(control: UISwitch) {
-        presenter.changeDesktopMode(isOn: control.isOn)
-    }
-
     private func createDataSource() -> DataSource {
         .init(tableView: rootView.tableView) { tableView, indexPath, itemIdentifier -> UITableViewCell? in
             switch itemIdentifier {
@@ -56,11 +52,7 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
 
                 cell.iconDetailsView.bind(viewModel: model.title)
                 cell.switchView.isOn = model.isOn
-                cell.switchView.addTarget(
-                    self,
-                    action: #selector(self.didChangeDesktopMode),
-                    for: .valueChanged
-                )
+                cell.switchView.delegate = self
                 cell.selectionStyle = .none
                 return cell
             }
@@ -100,5 +92,11 @@ extension DAppSettingsViewController: UITableViewDelegate {
         case .desktopModel, .none:
             break
         }
+    }
+}
+
+extension DAppSettingsViewController: DAppDesktopModeSettingsViewDelegate {
+    func didChangeDesktopMode(isOn: Bool) {
+        presenter.changeDesktopMode(isOn: isOn)
     }
 }
