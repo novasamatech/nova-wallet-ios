@@ -18,6 +18,7 @@ final class DAppBrowserInteractor {
     let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
     let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
     let dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>
+    let securedLayer: SecurityLayerServiceProtocol
 
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
 
@@ -28,6 +29,7 @@ final class DAppBrowserInteractor {
         userQuery: DAppSearchResult,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        securedLayer: SecurityLayerServiceProtocol,
         dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
         dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>,
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
@@ -50,6 +52,7 @@ final class DAppBrowserInteractor {
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
         self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
+        self.securedLayer = securedLayer
     }
 
     private func subscribeChainRegistry() {
@@ -267,22 +270,26 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(host: String) {
-        verifyPhishing(for: host, completion: nil)
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.verifyPhishing(for: host, completion: nil)
+        }
     }
 
     func process(message: Any, host: String, transport name: String) {
-        logger?.debug("Did receive \(name) message from \(host): \(message)")
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
-        verifyPhishing(for: host) { [weak self] isNotPhishing in
-            if isNotPhishing {
-                let queueMessage = QueueMessage(
-                    host: host,
-                    transportName: name,
-                    underliningMessage: message
-                )
-                self?.messageQueue.append(queueMessage)
+            self?.verifyPhishing(for: host) { [weak self] isNotPhishing in
+                if isNotPhishing {
+                    let queueMessage = QueueMessage(
+                        host: host,
+                        transportName: name,
+                        underliningMessage: message
+                    )
+                    self?.messageQueue.append(queueMessage)
 
-                self?.processMessageIfNeeded()
+                    self?.processMessageIfNeeded()
+                }
             }
         }
     }
@@ -301,7 +308,9 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func processAuth(response: DAppAuthResponse, forTransport name: String) {
-        transports.first(where: { $0.name == name })?.processAuth(response: response)
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.transports.first(where: { $0.name == name })?.processAuth(response: response)
+        }
     }
 
     func removeFromFavorites(record: DAppFavorite) {
