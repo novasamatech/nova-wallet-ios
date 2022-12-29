@@ -8,7 +8,7 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
     )
-    func didReceiveSettings()
+    func didReceive(settings: DAppGlobalSettings)
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
@@ -47,7 +47,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceiveAuth(request: DAppAuthRequest)
     func didDetectPhishing(host: String)
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
-    func didReceiveSettings(changes: [DataProviderChange<DAppGlobalSettings>])
+    func didReceive(settings: [DAppGlobalSettings])
 }
 
 protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
@@ -85,6 +85,8 @@ protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
         state: DAppSettingsInput,
         delegate: DAppSettingsDelegate
     )
+
+    func hideSettings(from view: DAppBrowserViewProtocol?)
 
     func close(view: DAppBrowserViewProtocol?)
 }

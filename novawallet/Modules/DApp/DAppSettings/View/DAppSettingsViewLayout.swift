@@ -2,34 +2,27 @@ import UIKit
 import SnapKit
 
 final class DAppSettingsViewLayout: UIView {
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.alignment = .fill
-        return view
-    }()
-
-    let titleRow = StackTableHeaderCell()
-    let favoriteRow = DAppFavoriteSettingsView(frame: .zero)
-    let desktopModeRow = DAppDesktopModeSettingsView(frame: .zero)
+    let tableView: UITableView = .create {
+        $0.registerClassForCell(DAppFavoriteSettingsView.self)
+        $0.registerClassForCell(DAppDesktopModeSettingsView.self)
+        $0.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
+        $0.separatorStyle = .none
+        $0.rowHeight = 56
+        $0.backgroundColor = .clear
+        $0.contentInset = .init(top: 16, left: 16, bottom: 16, right: -16)
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        containerView.stackView.addArrangedSubview(titleRow)
-        containerView.stackView.addArrangedSubview(favoriteRow)
-        containerView.stackView.addArrangedSubview(desktopModeRow)
+        backgroundColor = R.color.colorBottomSheetBackground()
+
+        addSubview(tableView)
+        tableView.snp.makeConstraints { $0.edges.equalToSuperview() }
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    var preferredHeight: CGFloat {
-        [titleRow.preferredHeight,
-         favoriteRow.preferredHeight,
-         desktopModeRow.preferredHeight].compactMap { $0 }.reduce(0, +)
     }
 }
