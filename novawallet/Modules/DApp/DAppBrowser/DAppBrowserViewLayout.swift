@@ -38,11 +38,12 @@ final class DAppBrowserViewLayout: UIView {
 
     let settingsBarButton: UIBarButtonItem = {
         let item = UIBarButtonItem(
-            image: R.image.iconMore()?.tinted(with: R.color.colorIconPrimary()!),
+            image: R.image.iconMore(),
             style: .plain,
             target: nil,
             action: nil
         )
+        item.tintColor = R.color.colorIconPrimary()
         item.isEnabled = false
         return item
     }()

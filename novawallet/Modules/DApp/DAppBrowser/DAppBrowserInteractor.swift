@@ -237,11 +237,20 @@ final class DAppBrowserInteractor {
         let settingsOperation = dAppGlobalSettingsRepository.fetchAllOperation(with: .init())
         settingsOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
+                guard let self = self else {
+                    return
+                }
                 do {
-                    let result = try settingsOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceive(settings: result)
+                    var result = try settingsOperation.extractNoCancellableResultData()
+                    if case let .dApp(model) = self.userQuery, model.desktopOnly == true {
+                        result.append(.init(
+                            identifier: model.identifier,
+                            desktopMode: true
+                        ))
+                    }
+                    self.presenter.didReceive(settings: result)
                 } catch {
-                    self?.presenter.didReceive(error: error)
+                    self.presenter.didReceive(error: error)
                 }
             }
         }
