@@ -232,6 +232,21 @@ final class DAppBrowserInteractor {
             }
         }
     }
+
+    private func provideSettingsOperation() -> Operation {
+        let settingsOperation = dAppGlobalSettingsRepository.fetchAllOperation(with: .init())
+        settingsOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let result = try settingsOperation.extractNoCancellableResultData()
+                    self?.presenter.didReceive(settings: result)
+                } catch {
+                    self?.presenter.didReceive(error: error)
+                }
+            }
+        }
+        return settingsOperation
+    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
@@ -239,7 +254,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
-        presenter.didReceiveSettings(changes: [])
+        dataSource.operationQueue.addOperation(provideSettingsOperation())
     }
 
     func process(host: String) {
@@ -327,16 +342,19 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     }
 
     func save(settings: DAppGlobalSettings) {
-        let operation: Operation
+        let saveOperation: Operation
         if settings.desktopMode == false {
-            operation = dAppGlobalSettingsRepository.saveOperation({ [] }, { [settings.identifier] })
+            saveOperation = dAppGlobalSettingsRepository.saveOperation({ [] }, { [settings.identifier] })
         } else {
-            operation = dAppGlobalSettingsRepository.saveOperation({
+            saveOperation = dAppGlobalSettingsRepository.saveOperation({
                 [settings]
             }, { [] })
         }
 
-        dataSource.operationQueue.addOperation(operation)
+        let fetchOperation = provideSettingsOperation()
+        fetchOperation.addDependency(saveOperation)
+
+        dataSource.operationQueue.addOperations([saveOperation, fetchOperation], waitUntilFinished: false)
     }
 }
 

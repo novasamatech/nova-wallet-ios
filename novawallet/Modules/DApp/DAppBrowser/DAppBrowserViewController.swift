@@ -13,7 +13,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var goBackObservation: NSKeyValueObservation?
     private var goForwardObservation: NSKeyValueObservation?
     private var titleObservation: NSKeyValueObservation?
-
+    private var dAppSettings: DAppGlobalSettings?
     private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
     private let localizationManager: LocalizationManagerProtocol
@@ -118,7 +118,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
 
-        rootView.settingsBarButton.isEnabled = false
         rootView.settingsBarButton.target = self
         rootView.settingsBarButton.action = #selector(actionSettings)
 
@@ -218,6 +217,25 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     @objc private func actionClose() {
         presenter.close()
     }
+
+    private func setDisplayMode(desktopMode: Bool) {
+        if desktopMode {
+            let preferences = WKWebpagePreferences()
+            preferences.preferredContentMode = .desktop
+            let width = UIScreen.main.bounds.width
+            let scale = UIScreen.main.scale
+            let viewPortScale = width / scale / Constants.viewPortWidthInPixels
+            let javaScript = """
+            document.querySelector('meta[name="viewport"]').setAttribute("content", "width=\(Constants.viewPortWidthInPixels)px initial-scale=\(viewPortScale)");
+            """
+            rootView.webView.configuration.defaultWebpagePreferences = preferences
+            rootView.webView.evaluateJavaScript(javaScript)
+        } else {
+            let preferences = WKWebpagePreferences()
+            preferences.preferredContentMode = .mobile
+            rootView.webView.configuration.defaultWebpagePreferences = preferences
+        }
+    }
 }
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
@@ -247,7 +265,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         rootView.webView.evaluateJavaScript(script.content)
     }
 
-    func didReceiveSettings() {
+    func didReceive(settings: DAppGlobalSettings) {
+        dAppSettings = settings
         rootView.settingsBarButton.isEnabled = true
     }
 }
@@ -290,5 +309,11 @@ extension DAppBrowserViewController: WKUIDelegate {
         alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
 
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension DAppBrowserViewController {
+    enum Constants {
+        static let viewPortWidthInPixels: CGFloat = 1100
     }
 }
