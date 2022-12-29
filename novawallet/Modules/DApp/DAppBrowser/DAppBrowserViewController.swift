@@ -66,6 +66,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.closeBarItem.action = #selector(actionClose)
 
         rootView.webView.uiDelegate = self
+        rootView.webView.navigationDelegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
@@ -217,25 +218,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     @objc private func actionClose() {
         presenter.close()
     }
-
-    private func setDisplayMode(desktopMode: Bool) {
-        if desktopMode {
-            let preferences = WKWebpagePreferences()
-            preferences.preferredContentMode = .desktop
-            let width = UIScreen.main.bounds.width
-            let scale = UIScreen.main.scale
-            let viewPortScale = width / scale / Constants.viewPortWidthInPixels
-            let javaScript = """
-            document.querySelector('meta[name="viewport"]').setAttribute("content", "width=\(Constants.viewPortWidthInPixels)px initial-scale=\(viewPortScale)");
-            """
-            rootView.webView.configuration.defaultWebpagePreferences = preferences
-            rootView.webView.evaluateJavaScript(javaScript)
-        } else {
-            let preferences = WKWebpagePreferences()
-            preferences.preferredContentMode = .mobile
-            rootView.webView.configuration.defaultWebpagePreferences = preferences
-        }
-    }
 }
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
@@ -266,8 +248,15 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
     }
 
     func didReceive(settings: DAppGlobalSettings) {
+        guard dAppSettings != settings else {
+            return
+        }
         dAppSettings = settings
         rootView.settingsBarButton.isEnabled = true
+        let preferences = WKWebpagePreferences()
+        preferences.preferredContentMode = settings.desktopMode ? .desktop : .mobile
+        rootView.webView.configuration.defaultWebpagePreferences = preferences
+        rootView.webView.reload()
     }
 }
 
@@ -309,6 +298,20 @@ extension DAppBrowserViewController: WKUIDelegate {
         alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
 
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension DAppBrowserViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+        if dAppSettings?.desktopMode == true {
+            let width = UIScreen.main.bounds.width
+            let scale = UIScreen.main.scale
+            let viewPortScale = width / scale / Constants.viewPortWidthInPixels
+            let javaScript = """
+            document.querySelector('meta[name="viewport"]').setAttribute("content", "width=\(Constants.viewPortWidthInPixels)px initial-scale=\(viewPortScale)");
+            """
+            webView.evaluateJavaScript(javaScript)
+        }
     }
 }
 
