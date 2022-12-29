@@ -1,5 +1,6 @@
 import Foundation
 import SoraKeystore
+import SoraFoundation
 
 protocol StakingMainPresenterFactoryProtocol {
     func createPresenter(
@@ -8,7 +9,13 @@ protocol StakingMainPresenterFactoryProtocol {
     ) -> StakingMainChildPresenterProtocol?
 }
 
-final class StakingMainPresenterFactory {}
+final class StakingMainPresenterFactory {
+    let applicationHandler: ApplicationHandlerProtocol
+
+    init(applicationHandler: ApplicationHandlerProtocol) {
+        self.applicationHandler = applicationHandler
+    }
+}
 
 extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
     func createPresenter(

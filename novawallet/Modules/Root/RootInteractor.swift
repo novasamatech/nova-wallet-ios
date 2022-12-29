@@ -10,6 +10,7 @@ final class RootInteractor {
     let keystore: KeystoreProtocol
     let applicationConfig: ApplicationConfigProtocol
     let chainRegistryClosure: ChainRegistryLazyClosure
+    let securityLayerInteractor: SecurityLayerInteractorInputProtocol
     let eventCenter: EventCenterProtocol
     let migrators: [Migrating]
     let logger: LoggerProtocol?
@@ -18,6 +19,7 @@ final class RootInteractor {
         settings: SelectedWalletSettings,
         keystore: KeystoreProtocol,
         applicationConfig: ApplicationConfigProtocol,
+        securityLayerInteractor: SecurityLayerInteractorInputProtocol,
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         eventCenter: EventCenterProtocol,
         migrators: [Migrating],
@@ -26,6 +28,7 @@ final class RootInteractor {
         self.settings = settings
         self.keystore = keystore
         self.applicationConfig = applicationConfig
+        self.securityLayerInteractor = securityLayerInteractor
         self.chainRegistryClosure = chainRegistryClosure
         self.eventCenter = eventCenter
         self.migrators = migrators
@@ -59,6 +62,10 @@ final class RootInteractor {
             UITableView.appearance().sectionHeaderTopPadding = 0
         }
     }
+
+    private func setupSecurityLayer() {
+        securityLayerInteractor.setup()
+    }
 }
 
 extension RootInteractor: RootInteractorInputProtocol {
@@ -85,6 +92,7 @@ extension RootInteractor: RootInteractorInputProtocol {
     }
 
     func setup() {
+        setupSecurityLayer()
         setupTableViewsAppearance()
 
         setupURLHandlingService()

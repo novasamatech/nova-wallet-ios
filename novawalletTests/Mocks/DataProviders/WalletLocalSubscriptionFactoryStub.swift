@@ -13,6 +13,24 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
         self.operationQueue = operationQueue
     }
 
+    func getDummyBalance(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> AssetBalance? {
+        if let balance = balance {
+            return AssetBalance(
+                chainAssetId: ChainAssetId(chainId: chainId, assetId: assetId),
+                accountId: accountId,
+                freeInPlank: balance,
+                reservedInPlank: 0,
+                frozenInPlank: 0
+            )
+        } else {
+            return nil
+        }
+    }
+
     func getAssetBalanceProvider(
         for accountId: AccountId,
         chainId: ChainModel.Id,
@@ -20,16 +38,13 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
     ) throws -> StreamableProvider<AssetBalance> {
         let models: [AssetBalance]
 
-        if let balance = balance {
-            let assetBalance = AssetBalance(
-                chainAssetId: ChainAssetId(chainId: chainId, assetId: assetId),
-                accountId: accountId,
-                freeInPlank: balance,
-                reservedInPlank: 0,
-                frozenInPlank: 0
-            )
-
-            models = [assetBalance]
+        if
+            let balance = getDummyBalance(
+                for: accountId,
+                chainId: chainId,
+                assetId: assetId
+            ) {
+            models = [balance]
         } else {
             models = []
         }
