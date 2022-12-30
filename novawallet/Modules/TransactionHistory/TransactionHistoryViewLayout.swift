@@ -33,6 +33,7 @@ final class TransactionHistoryViewLayout: UIView {
         $0.verticalMargin = Constants.loadingViewMargin
         let size = $0.intrinsicContentSize
         $0.frame = CGRect(origin: .zero, size: size)
+        $0.activityIndicatorView.color = R.color.colorIconSecondary()!
     }
 
     lazy var tableView: UITableView = {
