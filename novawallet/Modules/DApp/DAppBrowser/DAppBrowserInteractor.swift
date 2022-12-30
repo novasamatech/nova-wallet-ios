@@ -245,7 +245,9 @@ final class DAppBrowserInteractor {
                 }
                 do {
                     var result = try settingsOperation.extractNoCancellableResultData()
-                    if case let .dApp(model) = self.userQuery, model.desktopOnly == true {
+                    if case let .dApp(model) = self.userQuery,
+                       model.desktopOnly == true,
+                       !result.contains(where: { $0.identifier == model.identifier }) {
                         result.append(.init(
                             identifier: model.identifier,
                             desktopMode: true
@@ -360,14 +362,9 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     }
 
     func save(settings: DAppGlobalSettings) {
-        let saveOperation: Operation
-        if settings.desktopMode == false {
-            saveOperation = dAppGlobalSettingsRepository.saveOperation({ [] }, { [settings.identifier] })
-        } else {
-            saveOperation = dAppGlobalSettingsRepository.saveOperation({
-                [settings]
-            }, { [] })
-        }
+        let saveOperation = dAppGlobalSettingsRepository.saveOperation({
+            [settings]
+        }, { [] })
 
         let fetchOperation = provideSettingsOperation()
         fetchOperation.addDependency(saveOperation)
