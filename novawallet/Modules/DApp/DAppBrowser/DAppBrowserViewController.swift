@@ -304,19 +304,8 @@ extension DAppBrowserViewController: WKUIDelegate {
 extension DAppBrowserViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
         if dAppSettings?.desktopMode == true {
-            let width = UIScreen.main.bounds.width
-            let scale = UIScreen.main.scale
-            let viewPortScale = width / scale / Constants.viewPortWidthInPixels
-            let javaScript = """
-            document.querySelector('meta[name="viewport"]').setAttribute("content", "width=\(Constants.viewPortWidthInPixels)px initial-scale=\(viewPortScale)");
-            """
+            let javaScript = webView.viewportScript(targetWidthInPixels: WKWebView.desktopWidth)
             webView.evaluateJavaScript(javaScript)
         }
-    }
-}
-
-extension DAppBrowserViewController {
-    enum Constants {
-        static let viewPortWidthInPixels: CGFloat = 1100
     }
 }
