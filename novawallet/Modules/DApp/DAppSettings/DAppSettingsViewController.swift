@@ -5,8 +5,8 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
 
     let presenter: DAppSettingsPresenterProtocol
 
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, DAppSettingsViewModelRow>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, DAppSettingsViewModelRow>
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, DAppGlobalSettingsViewModel>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, DAppGlobalSettingsViewModel>
     private lazy var dataSource = createDataSource()
     private var titleModel: String = ""
 
@@ -65,7 +65,7 @@ extension DAppSettingsViewController: DAppSettingsViewProtocol {
         titleModel = title
     }
 
-    func update(viewModels: [DAppSettingsViewModelRow]) {
+    func update(viewModels: [DAppGlobalSettingsViewModel]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
