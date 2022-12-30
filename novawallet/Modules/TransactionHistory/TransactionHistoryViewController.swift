@@ -16,7 +16,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     }
 
     var emptyStateDataSource: EmptyStateDataSource {
-        emptyDatasource
+        self
     }
 
     weak var delegate: DraggableDelegate?
@@ -26,7 +26,7 @@ final class TransactionHistoryViewController: UIViewController, ViewHolder, Empt
     let presenter: TransactionHistoryPresenterProtocol
     private var draggableState: DraggableState = .compact
     private var didSetupLayout: Bool = false
-    private let emptyDatasource = WalletEmptyStateDataSource.history
+    private let walletEmptyStateDataSource = WalletEmptyStateDataSource.history
     private var fullInsets: UIEdgeInsets = .zero
     private var originNavigationItemState: NavigationItemState?
     private var cleanNavigationItemState: NavigationItemState = .init(leftBarItem: .init())
@@ -430,6 +430,40 @@ extension TransactionHistoryViewController: Localizable {
             reloadEmptyState(animated: false)
             view.setNeedsLayout()
         }
+    }
+}
+
+extension TransactionHistoryViewController: EmptyStateDataSource {
+    var viewForEmptyState: UIView? {
+        nil
+    }
+
+    var contentViewForEmptyState: UIView {
+        rootView.contentView
+    }
+
+    var imageForEmptyState: UIImage? {
+        walletEmptyStateDataSource.imageForEmptyState
+    }
+
+    var titleForEmptyState: String? {
+        walletEmptyStateDataSource.titleForEmptyState
+    }
+
+    var titleColorForEmptyState: UIColor? {
+        walletEmptyStateDataSource.titleColorForEmptyState
+    }
+
+    var titleFontForEmptyState: UIFont? {
+        walletEmptyStateDataSource.titleFontForEmptyState
+    }
+
+    var verticalSpacingForEmptyState: CGFloat? {
+        walletEmptyStateDataSource.verticalSpacingForEmptyState
+    }
+
+    var trimStrategyForEmptyState: EmptyStateView.TrimStrategy {
+        walletEmptyStateDataSource.trimStrategyForEmptyState
     }
 }
 
