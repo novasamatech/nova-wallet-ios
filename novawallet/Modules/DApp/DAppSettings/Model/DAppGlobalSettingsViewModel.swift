@@ -1,4 +1,4 @@
-enum DAppSettingsViewModelRow: Hashable {
+enum DAppGlobalSettingsViewModel: Hashable {
     case favorite(TitleIconViewModel)
     case desktopModel(DesktopModel)
 

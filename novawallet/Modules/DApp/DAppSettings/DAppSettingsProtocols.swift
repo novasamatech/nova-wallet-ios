@@ -1,6 +1,6 @@
 protocol DAppSettingsViewProtocol: ControllerBackedProtocol {
     func update(title: String)
-    func update(viewModels: [DAppSettingsViewModelRow])
+    func update(viewModels: [DAppGlobalSettingsViewModel])
 }
 
 protocol DAppSettingsPresenterProtocol: AnyObject {
