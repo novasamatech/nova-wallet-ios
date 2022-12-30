@@ -7,6 +7,6 @@ final class TransactionHistoryDataSource: UITableViewDiffableDataSource<Transact
             cell.bind(transactionModel: viewModel)
             return cell
         }
-        defaultRowAnimation = .bottom
+        defaultRowAnimation = .fade
     }
 }
