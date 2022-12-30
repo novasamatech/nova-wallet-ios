@@ -52,7 +52,7 @@ final class DAppSettingsViewController: UIViewController, ViewHolder {
 
                 cell.iconDetailsView.bind(viewModel: model.title)
                 cell.switchView.isOn = model.isOn
-                cell.switchView.delegate = self
+                cell.delegate = self
                 cell.selectionStyle = .none
                 return cell
             }
