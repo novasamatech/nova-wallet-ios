@@ -70,7 +70,7 @@ final class AnalyticsValidatorsInteractor {
 
     private func fetchEraStakers() {
         guard
-            let analyticsURL = chainAsset.chain.externalApi?.staking?.url,
+            let analyticsURL = chainAsset.chain.externalApis?.staking()?.first?.url,
             let stashAddress = stashItem?.stash,
             let nomination = nomination,
             let currentEra = currentEra
@@ -100,7 +100,7 @@ final class AnalyticsValidatorsInteractor {
 
     private func fetchRewards() {
         guard
-            let analyticsURL = chainAsset.chain.externalApi?.staking?.url,
+            let analyticsURL = chainAsset.chain.externalApis?.staking()?.first?.url,
             let stashAddress = stashItem?.stash
         else { return }
 

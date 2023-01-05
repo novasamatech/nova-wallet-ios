@@ -253,7 +253,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
 
     func getTotalReward(
         for address: AccountAddress,
-        api: ChainModel.ExternalApi,
+        api: LocalChainExternalApi,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
         AnySingleValueProvider(SingleValueProviderStub(item: totalReward))
