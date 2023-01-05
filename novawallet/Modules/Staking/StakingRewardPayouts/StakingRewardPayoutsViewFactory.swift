@@ -11,7 +11,7 @@ final class StakingRewardPayoutsViewFactory {
     ) -> StakingRewardPayoutsViewProtocol? {
         guard
             let chainAsset = state.settings.value,
-            let rewardsUrl = chainAsset.chain.externalApi?.staking?.url else {
+            let rewardsUrl = chainAsset.chain.externalApis?.staking()?.first?.url else {
             return nil
         }
 

@@ -44,7 +44,7 @@ class PayoutRewardsServiceTests: XCTestCase {
 
         guard
             let chainAsset = selectedChain.map({ ChainAsset(chain: $0, asset: $0.assets.first!) }),
-            let rewardUrl = selectedChain?.externalApi?.staking?.url else {
+            let rewardUrl = selectedChain?.externalApis?.staking()?.first?.url else {
             XCTFail("Unexpected empty reward api")
             return
         }
