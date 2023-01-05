@@ -196,7 +196,7 @@ class CrowdloanContributionConfirmTests: XCTestCase {
             return nil
         }
 
-        guard let crowdloanInfoUrl = chain.externalApi?.crowdloans?.url else {
+        guard let crowdloanInfoUrl = chain.externalApis?.crowdloans()?.first?.url else {
             return nil
         }
 

@@ -100,7 +100,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
     }
 
     private func subscribeToDisplayInfo() {
-        if let displayInfoUrl = chain.externalApi?.crowdloans?.url {
+        if let displayInfoUrl = chain.externalApis?.crowdloans()?.first?.url {
             displayInfoProvider = subscribeToCrowdloanDisplayInfo(
                 for: displayInfoUrl,
                 chainId: chain.chainId
