@@ -43,6 +43,12 @@ class DAppBrowserTests: XCTestCase {
             mapper: AnyCoreDataMapper(DAppSettingsMapper())
         )
 
+        let dAppGlobalSettingsRepository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(DAppGlobalSettingsMapper())
+        )
+
         let transport = DAppPolkadotExtensionTransport()
 
         let phishingVerifier = PhishingSiteVerifier.createSequentialVerifier(
@@ -65,6 +71,7 @@ class DAppBrowserTests: XCTestCase {
             chainRegistry: chainRegistry,
             securedLayer: SecurityLayerService.shared,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
+            dAppGlobalSettingsRepository: AnyDataProviderRepository(dAppGlobalSettingsRepository),
             dAppsLocalSubscriptionFactory: dAppLocalProviderFactory,
             dAppsFavoriteRepository: dAppsFavoriteRepository,
             operationQueue: OperationQueue(),
@@ -85,7 +92,7 @@ class DAppBrowserTests: XCTestCase {
         var loadedModel: DAppBrowserModel?
 
         let loadingExpectation = XCTestExpectation()
-        let favoritesExpectation = XCTestExpectation()
+        let globalSettingsExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceive(viewModel: any()).then { viewModel in
@@ -94,8 +101,8 @@ class DAppBrowserTests: XCTestCase {
                 loadingExpectation.fulfill()
             }
 
-            when(stub).didReceiveFavorite(flag: any()).then { _ in
-                favoritesExpectation.fulfill()
+            when(stub).didReceive(settings: any()).then { _ in
+                globalSettingsExpectation.fulfill()
             }
         }
 
@@ -105,7 +112,7 @@ class DAppBrowserTests: XCTestCase {
 
         // then
 
-        wait(for: [loadingExpectation, favoritesExpectation], timeout: 10)
+        wait(for: [loadingExpectation, globalSettingsExpectation], timeout: 10)
 
         XCTAssertEqual(loadedModel?.url, URL(string: dAppURL)!)
 
@@ -113,7 +120,6 @@ class DAppBrowserTests: XCTestCase {
             XCTFail("Waiting auth state expected after setup")
         }
 
-        verify(view, times(1)).didReceiveFavorite(flag: any())
         XCTAssertNotNil(presenter.favorites)
         XCTAssertNotNil(presenter.browserPage)
     }
