@@ -135,6 +135,14 @@ final class DAppBrowserInteractor {
         }
     }
 
+    func createGlobalSettingsOperation(for host: String?) -> BaseOperation<DAppGlobalSettings?> {
+        guard let host = host else {
+            return BaseOperation.createWithResult(nil)
+        }
+
+        return dAppGlobalSettingsRepository.fetchOperation(by: host, options: RepositoryFetchOptions())
+    }
+
     func provideModel() {
         guard let url = resolveUrl() else {
             presenter?.didReceive(error: DAppBrowserInteractorError.invalidUrl)
@@ -143,15 +151,24 @@ final class DAppBrowserInteractor {
 
         let wrappers = createTransportWrappers()
 
+        let globalSettingsOperation = createGlobalSettingsOperation(for: url.host)
+
+        let desktopOnly = userQuery.dApp?.desktopOnly ?? false
+
         let mapOperation = ClosureOperation<DAppBrowserModel> {
-            let tranportModels = try wrappers.map { wrapper in
+            let transportModels = try wrappers.map { wrapper in
                 try wrapper.targetOperation.extractNoCancellableResultData()
             }
 
-            return DAppBrowserModel(url: url, transports: tranportModels)
+            let dAppSettings = try globalSettingsOperation.extractNoCancellableResultData()
+
+            let isDesktop = dAppSettings?.desktopMode ?? desktopOnly
+
+            return DAppBrowserModel(url: url, isDesktop: isDesktop, transports: transportModels)
         }
 
         wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
+        mapOperation.addDependency(globalSettingsOperation)
 
         mapOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -164,7 +181,7 @@ final class DAppBrowserInteractor {
             }
         }
 
-        let dependencies = wrappers.flatMap(\.allOperations)
+        let dependencies = wrappers.flatMap(\.allOperations) + [globalSettingsOperation]
 
         dataSource.operationQueue.addOperations(dependencies + [mapOperation], waitUntilFinished: false)
     }
@@ -235,42 +252,6 @@ final class DAppBrowserInteractor {
             }
         }
     }
-
-    private func provideSettingsOperation() -> Operation {
-        let settingsOperation = dAppGlobalSettingsRepository.fetchAllOperation(with: .init())
-        settingsOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard let self = self else {
-                    return
-                }
-                do {
-                    var result = try settingsOperation.extractNoCancellableResultData()
-
-                    switch self.userQuery {
-                    case let .dApp(model):
-                        if
-                            let desktopOnly = model.desktopOnly,
-                            !result.contains(where: { $0.identifier == model.url.host }) {
-                            result.append(
-                                .init(
-                                    identifier: model.url.host ?? model.identifier,
-                                    desktopMode: desktopOnly
-                                )
-                            )
-                        }
-                    case .query:
-                        break
-                    }
-
-                    self.presenter?.didReceive(settings: result)
-                } catch {
-                    self.presenter?.didReceive(error: error)
-                }
-            }
-        }
-
-        return settingsOperation
-    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
@@ -278,7 +259,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
-        dataSource.operationQueue.addOperation(provideSettingsOperation())
     }
 
     func process(host: String) {
@@ -340,10 +320,15 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             [settings]
         }, { [] })
 
-        let fetchOperation = provideSettingsOperation()
-        fetchOperation.addDependency(saveOperation)
+        saveOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                if case .success = saveOperation.result {
+                    self?.presenter?.didChangeGlobal(settings: settings)
+                }
+            }
+        }
 
-        dataSource.operationQueue.addOperations([saveOperation, fetchOperation], waitUntilFinished: false)
+        dataSource.operationQueue.addOperation(saveOperation)
     }
 }
 

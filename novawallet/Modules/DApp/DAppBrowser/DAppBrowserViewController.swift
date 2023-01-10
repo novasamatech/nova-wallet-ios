@@ -13,7 +13,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var goBackObservation: NSKeyValueObservation?
     private var goForwardObservation: NSKeyValueObservation?
     private var titleObservation: NSKeyValueObservation?
-    private var dAppSettings: DAppGlobalSettings?
+    private var isDesktop: Bool = false
     private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
     private let localizationManager: LocalizationManagerProtocol
@@ -69,6 +69,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.webView.navigationDelegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
+        configureObservers()
+        configureHandlers()
+    }
+
+    private func configureObservers() {
         urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
             guard let newValue = change.newValue, let url = newValue else {
                 return
@@ -109,7 +114,9 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
             self?.didChangeTitle(title)
         }
+    }
 
+    private func configureHandlers() {
         rootView.goBackBarItem.target = self
         rootView.goBackBarItem.action = #selector(actionGoBack)
 
@@ -187,6 +194,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.goForwardBarItem.isEnabled = rootView.webView.canGoForward
     }
 
+    private func setupWebPreferences() {
+        let preferences = WKWebpagePreferences()
+        preferences.preferredContentMode = isDesktop ? .desktop : .mobile
+        rootView.webView.configuration.defaultWebpagePreferences = preferences
+    }
+
     private func didChangeGoBack(_ newValue: Bool) {
         rootView.goBackBarItem.isEnabled = newValue
     }
@@ -208,7 +221,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionSettings() {
-        presenter.showSettings()
+        presenter.showSettings(using: isDesktop)
     }
 
     @objc private func actionSearch() {
@@ -230,7 +243,10 @@ extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
 
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceive(viewModel: DAppBrowserModel) {
+        isDesktop = viewModel.isDesktop
+
         setupTransports(viewModel.transports)
+        setupWebPreferences()
         setupUrl(viewModel.url)
     }
 
@@ -247,16 +263,19 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         rootView.webView.evaluateJavaScript(script.content)
     }
 
-    func didReceive(settings: DAppGlobalSettings) {
-        guard dAppSettings != settings else {
+    func didSet(isDesktop: Bool) {
+        guard self.isDesktop != isDesktop else {
             return
         }
-        dAppSettings = settings
-        rootView.settingsBarButton.isEnabled = true
-        let preferences = WKWebpagePreferences()
-        preferences.preferredContentMode = settings.desktopMode ? .desktop : .mobile
-        rootView.webView.configuration.defaultWebpagePreferences = preferences
+
+        self.isDesktop = isDesktop
+
+        setupWebPreferences()
         rootView.webView.reload()
+    }
+
+    func didSet(canShowSettings: Bool) {
+        rootView.settingsBarButton.isEnabled = canShowSettings
     }
 }
 
@@ -303,7 +322,7 @@ extension DAppBrowserViewController: WKUIDelegate {
 
 extension DAppBrowserViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
-        if dAppSettings?.desktopMode == true {
+        if isDesktop {
             let javaScript = webView.viewportScript(targetWidthInPixels: WKWebView.desktopWidth)
             webView.evaluateJavaScript(javaScript)
         }
