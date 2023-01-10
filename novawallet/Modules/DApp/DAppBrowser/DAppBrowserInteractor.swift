@@ -245,20 +245,30 @@ final class DAppBrowserInteractor {
                 }
                 do {
                     var result = try settingsOperation.extractNoCancellableResultData()
-                    if case let .dApp(model) = self.userQuery,
-                       model.desktopOnly == true,
-                       !result.contains(where: { $0.identifier == model.identifier }) {
-                        result.append(.init(
-                            identifier: model.identifier,
-                            desktopMode: true
-                        ))
+
+                    switch self.userQuery {
+                    case let .dApp(model):
+                        if
+                            let desktopOnly = model.desktopOnly,
+                            !result.contains(where: { $0.identifier == model.url.host }) {
+                            result.append(
+                                .init(
+                                    identifier: model.url.host ?? model.identifier,
+                                    desktopMode: desktopOnly
+                                )
+                            )
+                        }
+                    case .query:
+                        break
                     }
+
                     self.presenter?.didReceive(settings: result)
                 } catch {
                     self.presenter?.didReceive(error: error)
                 }
             }
         }
+
         return settingsOperation
     }
 }
@@ -324,6 +334,17 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         transports.forEach { $0.stop() }
         completeSetupIfNeeded()
     }
+
+    func save(settings: DAppGlobalSettings) {
+        let saveOperation = dAppGlobalSettingsRepository.saveOperation({
+            [settings]
+        }, { [] })
+
+        let fetchOperation = provideSettingsOperation()
+        fetchOperation.addDependency(saveOperation)
+
+        dataSource.operationQueue.addOperations([saveOperation, fetchOperation], waitUntilFinished: false)
+    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
@@ -359,17 +380,6 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
         postExecutionScript: DAppScriptResponse
     ) {
         provideTransportUpdate(with: postExecutionScript)
-    }
-
-    func save(settings: DAppGlobalSettings) {
-        let saveOperation = dAppGlobalSettingsRepository.saveOperation({
-            [settings]
-        }, { [] })
-
-        let fetchOperation = provideSettingsOperation()
-        fetchOperation.addDependency(saveOperation)
-
-        dataSource.operationQueue.addOperations([saveOperation, fetchOperation], waitUntilFinished: false)
     }
 }
 

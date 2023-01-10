@@ -1,5 +1,5 @@
 struct DAppSettingsInput {
-    let identifier: String
+    let page: DAppBrowserPage
     let favorite: Bool
     let desktopMode: Bool
 }
