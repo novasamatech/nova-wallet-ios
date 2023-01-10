@@ -8,7 +8,7 @@ final class DAppBrowserInteractor {
         let underliningMessage: Any
     }
 
-    weak var presenter: DAppBrowserInteractorOutputProtocol!
+    weak var presenter: DAppBrowserInteractorOutputProtocol?
 
     private(set) var userQuery: DAppSearchResult
     let dataSource: DAppBrowserStateDataSource
@@ -137,7 +137,7 @@ final class DAppBrowserInteractor {
 
     func provideModel() {
         guard let url = resolveUrl() else {
-            presenter.didReceive(error: DAppBrowserInteractorError.invalidUrl)
+            presenter?.didReceive(error: DAppBrowserInteractorError.invalidUrl)
             return
         }
 
@@ -157,9 +157,9 @@ final class DAppBrowserInteractor {
             DispatchQueue.main.async {
                 do {
                     let model = try mapOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceiveDApp(model: model)
+                    self?.presenter?.didReceiveDApp(model: model)
                 } catch {
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
         }
@@ -184,12 +184,12 @@ final class DAppBrowserInteractor {
             DispatchQueue.main.async {
                 do {
                     let models = try mapOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceiveReplacement(
+                    self?.presenter?.didReceiveReplacement(
                         transports: models,
                         postExecution: postExecutionScript
                     )
                 } catch {
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
         }
@@ -217,7 +217,7 @@ final class DAppBrowserInteractor {
             .allSatisfy { !$0 }
 
         if !allPhishing {
-            presenter.didDetectPhishing(host: host)
+            presenter?.didDetectPhishing(host: host)
         }
     }
 
@@ -231,7 +231,7 @@ final class DAppBrowserInteractor {
 
                 completion?(isNotPhishing)
             case let .failure(error):
-                self?.presenter.didReceive(error: error)
+                self?.presenter?.didReceive(error: error)
             }
         }
     }
@@ -253,9 +253,9 @@ final class DAppBrowserInteractor {
                             desktopMode: true
                         ))
                     }
-                    self.presenter.didReceive(settings: result)
+                    self.presenter?.didReceive(settings: result)
                 } catch {
-                    self.presenter.didReceive(error: error)
+                    self.presenter?.didReceive(error: error)
                 }
             }
         }
@@ -331,11 +331,11 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
         _ transport: DAppBrowserTransportProtocol,
         didReceiveResponse response: DAppScriptResponse
     ) {
-        presenter.didReceive(response: response, forTransport: transport.name)
+        presenter?.didReceive(response: response, forTransport: transport.name)
     }
 
     func dAppTransport(_: DAppBrowserTransportProtocol, didReceiveAuth request: DAppAuthRequest) {
-        presenter.didReceiveAuth(request: request)
+        presenter?.didReceiveAuth(request: request)
     }
 
     func dAppTransport(
@@ -343,11 +343,11 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
         didReceiveConfirmation request: DAppOperationRequest,
         of type: DAppSigningType
     ) {
-        presenter.didReceiveConfirmation(request: request, type: type)
+        presenter?.didReceiveConfirmation(request: request, type: type)
     }
 
     func dAppTransport(_: DAppBrowserTransportProtocol, didReceive error: Error) {
-        presenter.didReceive(error: error)
+        presenter?.didReceive(error: error)
     }
 
     func dAppTransportAsksPopMessage(_: DAppBrowserTransportProtocol) {
@@ -377,7 +377,7 @@ extension DAppBrowserInteractor: DAppLocalStorageSubscriber, DAppLocalSubscripti
     func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {
         switch result {
         case let .success(changes):
-            presenter.didReceiveFavorite(changes: changes)
+            presenter?.didReceiveFavorite(changes: changes)
         case let .failure(error):
             logger?.error("Unexpected database error: \(error)")
         }
