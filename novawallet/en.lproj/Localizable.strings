@@ -740,6 +740,9 @@
 "dapp.remove.favorites.message" = "“%@” DApp will be removed from Favorites";
 "dapp.remove.favorites.title" = "Remove from Favorites?";
 "dapp.favorite.add.title" = "Add to favorites";
+"dapp.settings.title" = "Page settings";
+"dapp.settings.mode.desktop" = "Desktop mode";
+"dapp.settings.remove.favorite" = "Remove from Favorites";
 "common.title" = "Title";
 "dapp.remove.authorized.message" = "“%@” DApp will be removed from Authorized";
 "dapp.remove.authorized.title" = "Remove from Authorized?";

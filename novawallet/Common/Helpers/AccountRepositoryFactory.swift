@@ -16,6 +16,8 @@ protocol AccountRepositoryFactoryProtocol {
     func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>
 
     func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings>
+
+    func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>
 }
 
 extension AccountRepositoryFactoryProtocol {
@@ -71,6 +73,13 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
 
     func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite> {
         let mapper = DAppFavoriteMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings> {
+        let mapper = DAppGlobalSettingsMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         return AnyDataProviderRepository(repository)

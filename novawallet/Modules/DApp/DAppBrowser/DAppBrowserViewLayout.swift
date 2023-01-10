@@ -36,8 +36,15 @@ final class DAppBrowserViewLayout: UIView {
         return item
     }()
 
-    let favoriteBarButton: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconFavToolbar()!, style: .plain, target: nil, action: nil)
+    let settingsBarButton: UIBarButtonItem = {
+        let item = UIBarButtonItem(
+            image: R.image.iconMore(),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        item.tintColor = R.color.colorIconPrimary()
+        item.isEnabled = false
         return item
     }()
 
@@ -111,7 +118,7 @@ final class DAppBrowserViewLayout: UIView {
             flexibleSpace,
             refreshBarItem,
             flexibleSpace,
-            favoriteBarButton
+            settingsBarButton
         ]
     }
 }
