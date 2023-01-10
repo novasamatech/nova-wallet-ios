@@ -86,6 +86,33 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
+    func presentSettings(
+        from view: DAppBrowserViewProtocol?,
+        state: DAppSettingsInput,
+        delegate: DAppSettingsDelegate
+    ) {
+        guard let dappSettingsView = DAppSettingsViewFactory.createView(
+            state: state,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(
+            configuration: ModalSheetPresentationConfiguration.fearless
+        )
+        dappSettingsView.controller.modalTransitioningFactory = factory
+        dappSettingsView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(dappSettingsView.controller, animated: true, completion: nil)
+    }
+
+    func hideSettings(from view: DAppBrowserViewProtocol?) {
+        if view?.controller.topModalViewController is DAppSettingsViewProtocol {
+            view?.controller.topModalViewController.dismiss(animated: true)
+        }
+    }
+
     func close(view: DAppBrowserViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }
