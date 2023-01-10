@@ -59,14 +59,14 @@ extension DAppSettingsPresenter: DAppSettingsPresenterProtocol {
     }
 
     func changeDesktopMode(isOn: Bool) {
-        delegate?.desktopModeDidChanged(dAppIdentifier: state.identifier, isOn: isOn)
+        delegate?.desktopModeDidChanged(page: state.page, isOn: isOn)
     }
 
     func presentFavorite() {
         if state.favorite {
-            delegate?.removeFromFavorites(dAppIdentifier: state.identifier)
+            delegate?.removeFromFavorites(page: state.page)
         } else {
-            delegate?.addToFavorites(dAppIdentifier: state.identifier)
+            delegate?.addToFavorites(page: state.page)
         }
     }
 }

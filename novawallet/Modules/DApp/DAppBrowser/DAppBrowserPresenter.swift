@@ -52,8 +52,8 @@ final class DAppBrowserPresenter {
               let page = browserPage else {
             return
         }
-        let dAppSettings = settings[page.identifier] ?? .init(
-            identifier: page.identifier,
+        let dAppSettings = settings[page.domain] ?? .init(
+            identifier: page.domain,
             desktopMode: false
         )
 
@@ -93,10 +93,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
             return
         }
         let favorite = favorites[page.identifier] != nil
-        let desktopMode = settings[page.identifier]?.desktopMode ?? false
+        let desktopMode = settings[page.domain]?.desktopMode ?? false
 
         let input = DAppSettingsInput(
-            identifier: page.identifier,
+            page: page,
             favorite: favorite,
             desktopMode: desktopMode
         )
@@ -205,12 +205,8 @@ extension DAppBrowserPresenter: DAppPhishingViewDelegate {
 }
 
 extension DAppBrowserPresenter: DAppSettingsDelegate {
-    func addToFavorites(dAppIdentifier _: String) {
+    func addToFavorites(page: DAppBrowserPage) {
         wireframe.hideSettings(from: view)
-
-        guard let page = browserPage else {
-            return
-        }
 
         wireframe.presentAddToFavoriteForm(
             from: view,
@@ -218,10 +214,10 @@ extension DAppBrowserPresenter: DAppSettingsDelegate {
         )
     }
 
-    func removeFromFavorites(dAppIdentifier: String) {
+    func removeFromFavorites(page: DAppBrowserPage) {
         wireframe.hideSettings(from: view)
 
-        guard let favoriteDApp = favorites?[dAppIdentifier] else {
+        guard let favoriteDApp = favorites?[page.identifier] else {
             return
         }
 
@@ -235,9 +231,9 @@ extension DAppBrowserPresenter: DAppSettingsDelegate {
         }
     }
 
-    func desktopModeDidChanged(dAppIdentifier: String, isOn: Bool) {
+    func desktopModeDidChanged(page: DAppBrowserPage, isOn: Bool) {
         let settings = DAppGlobalSettings(
-            identifier: dAppIdentifier,
+            identifier: page.domain,
             desktopMode: isOn
         )
         interactor.save(settings: settings)
