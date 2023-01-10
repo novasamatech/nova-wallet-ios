@@ -10,7 +10,7 @@ protocol DAppSettingsPresenterProtocol: AnyObject {
 }
 
 protocol DAppSettingsDelegate: AnyObject {
-    func addToFavorites(dAppIdentifier: String)
-    func removeFromFavorites(dAppIdentifier: String)
-    func desktopModeDidChanged(dAppIdentifier: String, isOn: Bool)
+    func addToFavorites(page: DAppBrowserPage)
+    func removeFromFavorites(page: DAppBrowserPage)
+    func desktopModeDidChanged(page: DAppBrowserPage, isOn: Bool)
 }
