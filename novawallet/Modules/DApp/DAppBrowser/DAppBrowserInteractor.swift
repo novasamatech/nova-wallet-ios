@@ -91,7 +91,7 @@ final class DAppBrowserInteractor {
             var urlComponents = URLComponents(string: string)
 
             if urlComponents?.scheme == nil {
-                urlComponents?.scheme = "https"
+                urlComponents = URLComponents(string: "https://" + string)
             }
 
             let isValidUrl = NSPredicate.urlPredicate.evaluate(with: string)
