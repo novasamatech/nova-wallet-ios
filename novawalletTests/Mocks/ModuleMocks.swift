@@ -8653,16 +8653,31 @@ import RobinHood
     
     
     
-     func didReceive(settings: DAppGlobalSettings)  {
+     func didSet(isDesktop: Bool)  {
         
-    return cuckoo_manager.call("didReceive(settings: DAppGlobalSettings)",
-            parameters: (settings),
-            escapingParameters: (settings),
+    return cuckoo_manager.call("didSet(isDesktop: Bool)",
+            parameters: (isDesktop),
+            escapingParameters: (isDesktop),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(settings: settings))
+            defaultCall: __defaultImplStub!.didSet(isDesktop: isDesktop))
+        
+    }
+    
+    
+    
+     func didSet(canShowSettings: Bool)  {
+        
+    return cuckoo_manager.call("didSet(canShowSettings: Bool)",
+            parameters: (canShowSettings),
+            escapingParameters: (canShowSettings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didSet(canShowSettings: canShowSettings))
         
     }
     
@@ -8700,9 +8715,14 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppGlobalSettings)> where M1.MatchedType == DAppGlobalSettings {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(settings: DAppGlobalSettings)", parameterMatchers: matchers))
+	    func didSet<M1: Cuckoo.Matchable>(isDesktop: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didSet(isDesktop: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didSet<M1: Cuckoo.Matchable>(canShowSettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: canShowSettings) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didSet(canShowSettings: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -8750,9 +8770,15 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.__DoNotUse<(DAppGlobalSettings), Void> where M1.MatchedType == DAppGlobalSettings {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
-	        return cuckoo_manager.verify("didReceive(settings: DAppGlobalSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSet<M1: Cuckoo.Matchable>(isDesktop: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return cuckoo_manager.verify("didSet(isDesktop: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didSet<M1: Cuckoo.Matchable>(canShowSettings: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: canShowSettings) { $0 }]
+	        return cuckoo_manager.verify("didSet(canShowSettings: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -8802,7 +8828,13 @@ import RobinHood
     
     
     
-     func didReceive(settings: DAppGlobalSettings)   {
+     func didSet(isDesktop: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didSet(canShowSettings: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -8895,16 +8927,16 @@ import RobinHood
     
     
     
-     func showSettings()  {
+     func showSettings(using isDesktop: Bool)  {
         
-    return cuckoo_manager.call("showSettings()",
-            parameters: (),
-            escapingParameters: (),
+    return cuckoo_manager.call("showSettings(using: Bool)",
+            parameters: (isDesktop),
+            escapingParameters: (isDesktop),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showSettings())
+            defaultCall: __defaultImplStub!.showSettings(using: isDesktop))
         
     }
     
@@ -8952,9 +8984,9 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "activateSearch(with: String?)", parameterMatchers: matchers))
 	    }
 	    
-	    func showSettings() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "showSettings()", parameterMatchers: matchers))
+	    func showSettings<M1: Cuckoo.Matchable>(using isDesktop: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "showSettings(using: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	    func close() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -9003,9 +9035,9 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func showSettings() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("showSettings()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showSettings<M1: Cuckoo.Matchable>(using isDesktop: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return cuckoo_manager.verify("showSettings(using: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -9049,7 +9081,7 @@ import RobinHood
     
     
     
-     func showSettings()   {
+     func showSettings(using isDesktop: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -9557,16 +9589,16 @@ import RobinHood
     
     
     
-     func didReceive(settings: [DAppGlobalSettings])  {
+     func didChangeGlobal(settings: DAppGlobalSettings)  {
         
-    return cuckoo_manager.call("didReceive(settings: [DAppGlobalSettings])",
+    return cuckoo_manager.call("didChangeGlobal(settings: DAppGlobalSettings)",
             parameters: (settings),
             escapingParameters: (settings),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(settings: settings))
+            defaultCall: __defaultImplStub!.didChangeGlobal(settings: settings))
         
     }
     
@@ -9619,9 +9651,9 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppGlobalSettings])> where M1.MatchedType == [DAppGlobalSettings] {
-	        let matchers: [Cuckoo.ParameterMatcher<([DAppGlobalSettings])>] = [wrap(matchable: settings) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(settings: [DAppGlobalSettings])", parameterMatchers: matchers))
+	    func didChangeGlobal<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppGlobalSettings)> where M1.MatchedType == DAppGlobalSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didChangeGlobal(settings: DAppGlobalSettings)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -9689,9 +9721,9 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.__DoNotUse<([DAppGlobalSettings]), Void> where M1.MatchedType == [DAppGlobalSettings] {
-	        let matchers: [Cuckoo.ParameterMatcher<([DAppGlobalSettings])>] = [wrap(matchable: settings) { $0 }]
-	        return cuckoo_manager.verify("didReceive(settings: [DAppGlobalSettings])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didChangeGlobal<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.__DoNotUse<(DAppGlobalSettings), Void> where M1.MatchedType == DAppGlobalSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
+	        return cuckoo_manager.verify("didChangeGlobal(settings: DAppGlobalSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -9753,7 +9785,7 @@ import RobinHood
     
     
     
-     func didReceive(settings: [DAppGlobalSettings])   {
+     func didChangeGlobal(settings: DAppGlobalSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
