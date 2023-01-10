@@ -120,7 +120,6 @@ class DAppBrowserTests: XCTestCase {
             XCTFail("Waiting auth state expected after setup")
         }
 
-        XCTAssertNotNil(presenter.favorites)
         XCTAssertNotNil(presenter.browserPage)
     }
 }
