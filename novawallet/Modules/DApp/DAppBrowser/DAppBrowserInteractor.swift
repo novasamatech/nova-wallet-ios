@@ -294,6 +294,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         sequentialPhishingVerifier.cancelAll()
 
         userQuery = newQuery
+        dataSource.replace(dApp: userQuery.dApp)
 
         transports.forEach { $0.stop() }
         completeSetupIfNeeded()
