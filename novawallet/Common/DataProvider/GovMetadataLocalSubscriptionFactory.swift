@@ -64,8 +64,8 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         for option: GovernanceSelectedOption
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
         guard
-            let governanceApi = option.chain.externalApi?.governance,
-            let apiType = GovernanceOffchainApi(rawValue: governanceApi.type) else {
+            let governanceApi = option.chain.externalApis?.governance()?.first,
+            let apiType = GovernanceOffchainApi(rawValue: governanceApi.serviceType) else {
             return nil
         }
 
@@ -98,7 +98,7 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
 
         let source = ReferendumsMetadataPreviewProviderSource(
             operationFactory: operationFactory,
-            apiParameters: option.chain.externalApi?.governance?.parameters,
+            apiParameters: option.chain.externalApis?.governance()?.first?.parameters,
             repository: AnyDataProviderRepository(repository),
             operationQueue: operationQueue
         )
@@ -134,8 +134,8 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         referendumId: ReferendumIdLocal
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
         guard
-            let governanceApi = option.chain.externalApi?.governance,
-            let apiType = GovernanceOffchainApi(rawValue: governanceApi.type) else {
+            let governanceApi = option.chain.externalApis?.governance()?.first,
+            let apiType = GovernanceOffchainApi(rawValue: governanceApi.serviceType) else {
             return nil
         }
 
@@ -167,7 +167,7 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         let source = ReferendumMetadataDetailsProviderSource(
             chainId: chainId,
             referendumId: referendumId,
-            apiParameters: option.chain.externalApi?.governance?.parameters,
+            apiParameters: option.chain.externalApis?.governance()?.first?.parameters,
             operationFactory: operationFactory,
             repository: AnyDataProviderRepository(repository),
             operationQueue: operationQueue

@@ -227,7 +227,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func subscribeToDisplayInfo(for chain: ChainModel) {
         displayInfoProvider = nil
 
-        guard let crowdloanUrl = chain.externalApi?.crowdloans?.url else {
+        guard let crowdloanUrl = chain.externalApis?.crowdloans()?.first?.url else {
             presenter?.didReceiveDisplayInfo(result: .success([:]))
             return
         }

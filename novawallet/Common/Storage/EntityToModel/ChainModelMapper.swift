@@ -160,92 +160,6 @@ final class ChainModelMapper {
         entity.nodes = Set(nodeEntities) as NSSet
     }
 
-    private func updateTransactionHistoryApis(
-        for entity: CDChain,
-        from model: ChainModel,
-        context: NSManagedObjectContext
-    ) {
-        let optApiEntities: [CDTransactionHistoryApi]? = model.externalApi?.history?.map { api in
-            let apiEntity: CDTransactionHistoryApi
-
-            let maybeExistingEntity = entity.historyApis?.first { entity in
-                guard let historyEntity = entity as? CDTransactionHistoryApi else {
-                    return false
-                }
-
-                return historyEntity.url == api.url
-            } as? CDTransactionHistoryApi
-
-            if let existingEntity = maybeExistingEntity {
-                apiEntity = existingEntity
-            } else {
-                apiEntity = CDTransactionHistoryApi(context: context)
-            }
-
-            apiEntity.url = api.url
-            apiEntity.serviceType = api.serviceType
-            apiEntity.assetType = api.assetType
-
-            return apiEntity
-        }
-
-        let existingApiEntities = Set((model.externalApi?.history ?? []).map(\.url))
-
-        if let oldApis = entity.historyApis as? Set<CDTransactionHistoryApi> {
-            for oldApi in oldApis {
-                if !existingApiEntities.contains(oldApi.url!) {
-                    context.delete(oldApi)
-                }
-            }
-        }
-
-        if let apiEntities = optApiEntities {
-            entity.historyApis = Set(apiEntities) as NSSet
-        } else {
-            entity.historyApis = nil
-        }
-    }
-
-    private func updatingChainApi(
-        for entityApi: CDChainApi?,
-        from modelApi: ChainModel.ExternalApi?,
-        context: NSManagedObjectContext
-    ) throws -> CDChainApi? {
-        if let modelApi = modelApi {
-            let currentApi: CDChainApi
-
-            if let oldApi = entityApi {
-                currentApi = oldApi
-            } else {
-                currentApi = CDChainApi(context: context)
-            }
-
-            try updateExistingChainApi(for: currentApi, from: modelApi)
-
-            return currentApi
-        } else {
-            if let oldApi = entityApi {
-                context.delete(oldApi)
-            }
-
-            return nil
-        }
-    }
-
-    private func updateExistingChainApi(
-        for entity: CDChainApi,
-        from model: ChainModel.ExternalApi
-    ) throws {
-        entity.type = model.type
-        entity.url = model.url
-
-        if let params = model.parameters {
-            entity.parameters = try jsonEncoder.encode(params)
-        } else {
-            entity.parameters = nil
-        }
-    }
-
     private func createExplorers(from chain: CDChain) -> [ChainModel.Explorer]? {
         guard let data = chain.explorers else {
             return nil
@@ -262,86 +176,81 @@ final class ChainModelMapper {
         }
     }
 
-    private func createTransactionHistoryApi(from entity: CDTransactionHistoryApi) -> ChainModel.TransactionHistoryApi {
-        .init(serviceType: entity.serviceType ?? "", url: entity.url!, assetType: entity.assetType)
-    }
-
-    private func createChainApi(from entityApi: CDChainApi?) -> ChainModel.ExternalApi? {
-        guard let entityApi = entityApi else {
+    private func createExternalApis(from entityApis: NSSet?) -> LocalChainExternalApiSet? {
+        guard let entityApis = entityApis as? Set<CDChainApi>, !entityApis.isEmpty else {
             return nil
         }
 
-        let parameters: JSON?
+        let apis = entityApis.map {
+            let parameters: JSON?
 
-        if let rawParameters = entityApi.parameters {
-            parameters = try? jsonDecoder.decode(JSON.self, from: rawParameters)
-        } else {
-            parameters = nil
-        }
-
-        return .init(type: entityApi.type!, url: entityApi.url!, parameters: parameters)
-    }
-
-    private func createExternalApi(from entity: CDChain) -> ChainModel.ExternalApiSet? {
-        let staking = createChainApi(from: entity.stakingApi)
-
-        let history: [ChainModel.TransactionHistoryApi]?
-
-        if let apis = entity.historyApis, !(apis as Set).isEmpty {
-            history = apis.compactMap { anyApi in
-                guard let historyApi = anyApi as? CDTransactionHistoryApi else {
-                    return nil
-                }
-
-                return createTransactionHistoryApi(from: historyApi)
+            if let rawParameters = $0.parameters {
+                parameters = try? jsonDecoder.decode(JSON.self, from: rawParameters)
+            } else {
+                parameters = nil
             }
-        } else {
-            history = nil
-        }
 
-        let crowdloans = createChainApi(from: entity.crowdloanApi)
-
-        let governance = createChainApi(from: entity.governanceApi)
-
-        if staking != nil || history != nil || crowdloans != nil || governance != nil {
-            let historySet = history.map { Set($0) }
-            return ChainModel.ExternalApiSet(
-                staking: staking,
-                history: historySet,
-                crowdloans: crowdloans,
-                governance: governance
+            return LocalChainExternalApi(
+                apiType: $0.apiType!,
+                serviceType: $0.serviceType!,
+                url: $0.url!,
+                parameters: parameters
             )
-        } else {
-            return nil
         }
+
+        return .init(localApis: Set(apis))
     }
 
     private func updateExternalApis(
-        in entity: CDChain,
+        for entity: CDChain,
         from model: ChainModel,
         context: NSManagedObjectContext
-    ) throws {
-        updateTransactionHistoryApis(for: entity, from: model, context: context)
+    ) {
+        let optApiEntities: [CDChainApi]? = model.externalApis?.apis.map { apiModel in
+            let apiEntity: CDChainApi
 
-        let apis = model.externalApi
+            let maybeExistingEntity = entity.externalApis?.first { entity in
+                guard let entity = entity as? CDChainApi else {
+                    return false
+                }
 
-        entity.stakingApi = try updatingChainApi(
-            for: entity.stakingApi,
-            from: apis?.staking,
-            context: context
-        )
+                return entity.identifier == apiModel.identifier
+            } as? CDChainApi
 
-        entity.crowdloanApi = try updatingChainApi(
-            for: entity.crowdloanApi,
-            from: apis?.crowdloans,
-            context: context
-        )
+            if let existingEntity = maybeExistingEntity {
+                apiEntity = existingEntity
+            } else {
+                apiEntity = CDChainApi(context: context)
+            }
 
-        entity.governanceApi = try updatingChainApi(
-            for: entity.governanceApi,
-            from: apis?.governance,
-            context: context
-        )
+            apiEntity.apiType = apiModel.apiType
+            apiEntity.url = apiModel.url
+            apiEntity.serviceType = apiModel.serviceType
+
+            if let parameters = apiModel.parameters {
+                apiEntity.parameters = try? jsonEncoder.encode(parameters)
+            } else {
+                apiEntity.parameters = nil
+            }
+
+            return apiEntity
+        }
+
+        let existingApiEntities = Set((model.externalApis?.apis ?? []).map(\.identifier))
+
+        if let oldApis = entity.externalApis as? Set<CDChainApi> {
+            for oldApi in oldApis {
+                if !existingApiEntities.contains(oldApi.identifier) {
+                    context.delete(oldApi)
+                }
+            }
+        }
+
+        if let apiEntities = optApiEntities {
+            entity.externalApis = Set(apiEntities) as NSSet
+        } else {
+            entity.externalApis = nil
+        }
     }
 
     private func createChainOptions(from entity: CDChain) -> [ChainOptions]? {
@@ -397,7 +306,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             types = nil
         }
 
-        let externalApiSet = createExternalApi(from: entity)
+        let externalApiSet = createExternalApis(from: entity.externalApis)
         let explorers = createExplorers(from: entity)
 
         let options = createChainOptions(from: entity)
@@ -416,7 +325,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             types: types,
             icon: entity.icon!,
             options: options,
-            externalApi: externalApiSet,
+            externalApis: externalApiSet,
             explorers: explorers,
             order: entity.order,
             additional: additional
@@ -450,7 +359,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
 
         updateEntityNodes(for: entity, from: model, context: context)
 
-        try updateExternalApis(in: entity, from: model, context: context)
+        updateExternalApis(for: entity, from: model, context: context)
 
         updateExplorers(for: entity, from: model.explorers)
     }
