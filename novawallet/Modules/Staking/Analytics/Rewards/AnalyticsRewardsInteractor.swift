@@ -42,7 +42,7 @@ extension AnalyticsRewardsInteractor: AnalyticsRewardsInteractorInputProtocol {
     }
 
     func fetchRewards(stashAddress: AccountAddress) {
-        guard let analyticsURL = chainAsset.chain.externalApi?.staking?.url else { return }
+        guard let analyticsURL = chainAsset.chain.externalApis?.staking()?.first?.url else { return }
         let subqueryRewardsSource = SubqueryRewardsSource(address: stashAddress, url: analyticsURL)
         let fetchOperation = subqueryRewardsSource.fetchOperation()
 
