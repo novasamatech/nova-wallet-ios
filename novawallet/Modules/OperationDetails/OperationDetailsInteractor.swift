@@ -166,8 +166,8 @@ final class OperationDetailsInteractor: AccountFetching {
             return
         }
 
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let fee =  newFee ?? transaction.amountInPlankIntOrZero
+        let precision = Int16(bitPattern: chainAsset.assetDisplayInfo.assetPrecision)
+        let fee = newFee ?? transaction.feeInPlankIntOrZero
 
         let currentDisplayAddress = DisplayAddress(
             address: accountAddress,
@@ -203,9 +203,6 @@ final class OperationDetailsInteractor: AccountFetching {
         }
 
         let isOutgoing = transaction.type(for: accountAddress) == .outgoing
-
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
-
         let amount = transaction.amountInPlankIntOrZero
 
         let fee = newFee ?? transaction.feeInPlankIntOrZero
