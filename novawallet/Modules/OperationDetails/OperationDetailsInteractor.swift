@@ -166,7 +166,6 @@ final class OperationDetailsInteractor: AccountFetching {
             return
         }
 
-        let precision = Int16(bitPattern: chainAsset.assetDisplayInfo.assetPrecision)
         let fee = newFee ?? transaction.feeInPlankIntOrZero
 
         let currentDisplayAddress = DisplayAddress(
