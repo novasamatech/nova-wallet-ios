@@ -10,7 +10,6 @@ final class DAppBrowserPresenter {
     let localizationManager: LocalizationManager
 
     private(set) var favorites: [String: DAppFavorite]?
-    private(set) var settings: [String: DAppGlobalSettings]?
     private(set) var browserPage: DAppBrowserPage?
 
     init(
@@ -47,17 +46,10 @@ final class DAppBrowserPresenter {
         wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 
-    private func provideSettings() {
-        guard let settings = settings,
-              let page = browserPage else {
-            return
-        }
-        let dAppSettings = settings[page.domain] ?? .init(
-            identifier: page.domain,
-            desktopMode: false
-        )
+    private func updateSettingsState() {
+        let canShowSettings = browserPage != nil && favorites != nil
 
-        view?.didReceive(settings: dAppSettings)
+        view?.didSet(canShowSettings: canShowSettings)
     }
 }
 
@@ -75,7 +67,7 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         }
 
         interactor.process(host: newHost)
-        provideSettings()
+        updateSettingsState()
     }
 
     func process(message: Any, host: String, transport name: String) {
@@ -86,19 +78,17 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
     }
 
-    func showSettings() {
-        guard let page = browserPage,
-              let favorites = favorites,
-              let settings = settings else {
+    func showSettings(using isDesktop: Bool) {
+        guard let page = browserPage, let favorites = favorites else {
             return
         }
+
         let favorite = favorites[page.identifier] != nil
-        let desktopMode = settings[page.domain]?.desktopMode ?? false
 
         let input = DAppSettingsInput(
             page: page,
             favorite: favorite,
-            desktopMode: desktopMode
+            desktopMode: isDesktop
         )
 
         wireframe.presentSettings(
@@ -169,11 +159,11 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>]) {
         favorites = changes.mergeToDict(favorites ?? [:])
+        updateSettingsState()
     }
 
-    func didReceive(settings: [DAppGlobalSettings]) {
-        self.settings = settings.reduceToDict()
-        provideSettings()
+    func didChangeGlobal(settings: DAppGlobalSettings) {
+        view?.didSet(isDesktop: settings.desktopMode)
     }
 }
 
@@ -232,10 +222,7 @@ extension DAppBrowserPresenter: DAppSettingsDelegate {
     }
 
     func desktopModeDidChanged(page: DAppBrowserPage, isOn: Bool) {
-        let settings = DAppGlobalSettings(
-            identifier: page.domain,
-            desktopMode: isOn
-        )
+        let settings = DAppGlobalSettings(identifier: page.domain, desktopMode: isOn)
         interactor.save(settings: settings)
     }
 }
