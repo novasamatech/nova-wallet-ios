@@ -8,7 +8,7 @@ final class DAppBrowserInteractor {
         let underliningMessage: Any
     }
 
-    weak var presenter: DAppBrowserInteractorOutputProtocol!
+    weak var presenter: DAppBrowserInteractorOutputProtocol?
 
     private(set) var userQuery: DAppSearchResult
     let dataSource: DAppBrowserStateDataSource
@@ -17,6 +17,8 @@ final class DAppBrowserInteractor {
     let sequentialPhishingVerifier: PhishingSiteVerifing
     let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
     let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
+    let dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>
+    let securedLayer: SecurityLayerServiceProtocol
 
     private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
 
@@ -27,7 +29,9 @@ final class DAppBrowserInteractor {
         userQuery: DAppSearchResult,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        securedLayer: SecurityLayerServiceProtocol,
         dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
+        dAppGlobalSettingsRepository: AnyDataProviderRepository<DAppGlobalSettings>,
         dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
         dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
         operationQueue: OperationQueue,
@@ -47,6 +51,8 @@ final class DAppBrowserInteractor {
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
         self.dAppsFavoriteRepository = dAppsFavoriteRepository
         self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
+        self.dAppGlobalSettingsRepository = dAppGlobalSettingsRepository
+        self.securedLayer = securedLayer
     }
 
     private func subscribeChainRegistry() {
@@ -131,7 +137,7 @@ final class DAppBrowserInteractor {
 
     func provideModel() {
         guard let url = resolveUrl() else {
-            presenter.didReceive(error: DAppBrowserInteractorError.invalidUrl)
+            presenter?.didReceive(error: DAppBrowserInteractorError.invalidUrl)
             return
         }
 
@@ -151,9 +157,9 @@ final class DAppBrowserInteractor {
             DispatchQueue.main.async {
                 do {
                     let model = try mapOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceiveDApp(model: model)
+                    self?.presenter?.didReceiveDApp(model: model)
                 } catch {
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
         }
@@ -178,12 +184,12 @@ final class DAppBrowserInteractor {
             DispatchQueue.main.async {
                 do {
                     let models = try mapOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceiveReplacement(
+                    self?.presenter?.didReceiveReplacement(
                         transports: models,
                         postExecution: postExecutionScript
                     )
                 } catch {
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
         }
@@ -211,7 +217,7 @@ final class DAppBrowserInteractor {
             .allSatisfy { !$0 }
 
         if !allPhishing {
-            presenter.didDetectPhishing(host: host)
+            presenter?.didDetectPhishing(host: host)
         }
     }
 
@@ -225,9 +231,45 @@ final class DAppBrowserInteractor {
 
                 completion?(isNotPhishing)
             case let .failure(error):
-                self?.presenter.didReceive(error: error)
+                self?.presenter?.didReceive(error: error)
             }
         }
+    }
+
+    private func provideSettingsOperation() -> Operation {
+        let settingsOperation = dAppGlobalSettingsRepository.fetchAllOperation(with: .init())
+        settingsOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard let self = self else {
+                    return
+                }
+                do {
+                    var result = try settingsOperation.extractNoCancellableResultData()
+
+                    switch self.userQuery {
+                    case let .dApp(model):
+                        if
+                            let desktopOnly = model.desktopOnly,
+                            !result.contains(where: { $0.identifier == model.url.host }) {
+                            result.append(
+                                .init(
+                                    identifier: model.url.host ?? model.identifier,
+                                    desktopMode: desktopOnly
+                                )
+                            )
+                        }
+                    case .query:
+                        break
+                    }
+
+                    self.presenter?.didReceive(settings: result)
+                } catch {
+                    self.presenter?.didReceive(error: error)
+                }
+            }
+        }
+
+        return settingsOperation
     }
 }
 
@@ -236,25 +278,30 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
 
         favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
+        dataSource.operationQueue.addOperation(provideSettingsOperation())
     }
 
     func process(host: String) {
-        verifyPhishing(for: host, completion: nil)
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.verifyPhishing(for: host, completion: nil)
+        }
     }
 
     func process(message: Any, host: String, transport name: String) {
-        logger?.debug("Did receive \(name) message from \(host): \(message)")
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
-        verifyPhishing(for: host) { [weak self] isNotPhishing in
-            if isNotPhishing {
-                let queueMessage = QueueMessage(
-                    host: host,
-                    transportName: name,
-                    underliningMessage: message
-                )
-                self?.messageQueue.append(queueMessage)
+            self?.verifyPhishing(for: host) { [weak self] isNotPhishing in
+                if isNotPhishing {
+                    let queueMessage = QueueMessage(
+                        host: host,
+                        transportName: name,
+                        underliningMessage: message
+                    )
+                    self?.messageQueue.append(queueMessage)
 
-                self?.processMessageIfNeeded()
+                    self?.processMessageIfNeeded()
+                }
             }
         }
     }
@@ -273,7 +320,9 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func processAuth(response: DAppAuthResponse, forTransport name: String) {
-        transports.first(where: { $0.name == name })?.processAuth(response: response)
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.transports.first(where: { $0.name == name })?.processAuth(response: response)
+        }
     }
 
     func removeFromFavorites(record: DAppFavorite) {
@@ -285,6 +334,17 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         transports.forEach { $0.stop() }
         completeSetupIfNeeded()
     }
+
+    func save(settings: DAppGlobalSettings) {
+        let saveOperation = dAppGlobalSettingsRepository.saveOperation({
+            [settings]
+        }, { [] })
+
+        let fetchOperation = provideSettingsOperation()
+        fetchOperation.addDependency(saveOperation)
+
+        dataSource.operationQueue.addOperations([saveOperation, fetchOperation], waitUntilFinished: false)
+    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
@@ -292,11 +352,11 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
         _ transport: DAppBrowserTransportProtocol,
         didReceiveResponse response: DAppScriptResponse
     ) {
-        presenter.didReceive(response: response, forTransport: transport.name)
+        presenter?.didReceive(response: response, forTransport: transport.name)
     }
 
     func dAppTransport(_: DAppBrowserTransportProtocol, didReceiveAuth request: DAppAuthRequest) {
-        presenter.didReceiveAuth(request: request)
+        presenter?.didReceiveAuth(request: request)
     }
 
     func dAppTransport(
@@ -304,11 +364,11 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
         didReceiveConfirmation request: DAppOperationRequest,
         of type: DAppSigningType
     ) {
-        presenter.didReceiveConfirmation(request: request, type: type)
+        presenter?.didReceiveConfirmation(request: request, type: type)
     }
 
     func dAppTransport(_: DAppBrowserTransportProtocol, didReceive error: Error) {
-        presenter.didReceive(error: error)
+        presenter?.didReceive(error: error)
     }
 
     func dAppTransportAsksPopMessage(_: DAppBrowserTransportProtocol) {
@@ -327,7 +387,7 @@ extension DAppBrowserInteractor: DAppLocalStorageSubscriber, DAppLocalSubscripti
     func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {
         switch result {
         case let .success(changes):
-            presenter.didReceiveFavorite(changes: changes)
+            presenter?.didReceiveFavorite(changes: changes)
         case let .failure(error):
             logger?.error("Unexpected database error: \(error)")
         }

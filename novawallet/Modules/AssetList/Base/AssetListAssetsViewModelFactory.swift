@@ -172,7 +172,7 @@ extension AssetListAssetViewModelFactory: AssetListAssetViewModelFactoryProtocol
 
         let assetInfo = assetAccountInfo.assetInfo
 
-        let iconViewModel = assetInfo.icon.map { RemoteImageViewModel(url: $0) }
+        let iconViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: assetInfo.icon)
 
         return AssetListAssetViewModel(
             chainAssetId: ChainAssetId(chainId: chainId, assetId: assetAccountInfo.assetId),

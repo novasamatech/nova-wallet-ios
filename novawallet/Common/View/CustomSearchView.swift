@@ -54,5 +54,7 @@ final class CustomSearchView: UIView {
             make.bottom.equalToSuperview().inset(6)
             make.height.equalTo(36.0)
         }
+
+        cancelButton.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }

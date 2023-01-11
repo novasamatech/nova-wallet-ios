@@ -69,7 +69,7 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonAvailablePrefix(
             preferredLanguages: languages
         )
 
@@ -119,7 +119,7 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
                 preferredLanguages: selectedLocale.rLanguages
             )
 
-            rootView.actionButton.applyTranslucentDisabledStyle()
+            rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
         }
     }

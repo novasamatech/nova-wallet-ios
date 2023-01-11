@@ -55,7 +55,11 @@ class Gov2OperationFactoryTests: XCTestCase {
 
         // when
 
-        let operationFactory = Gov2OperationFactory(requestFactory: requestFactory, operationQueue: operationQueue)
+        let operationFactory = Gov2OperationFactory(
+            requestFactory: requestFactory,
+            commonOperationFactory: GovCommonOperationFactory(),
+            operationQueue: operationQueue
+        )
 
         let wrapper = operationFactory.fetchAccountVotesWrapper(
             for: accountId,
@@ -83,7 +87,11 @@ class Gov2OperationFactoryTests: XCTestCase {
 
         // when
 
-        let operationFactory = Gov2OperationFactory(requestFactory: requestFactory, operationQueue: operationQueue)
+        let operationFactory = Gov2OperationFactory(
+            requestFactory: requestFactory,
+            commonOperationFactory: GovCommonOperationFactory(),
+            operationQueue: operationQueue
+        )
 
         let wrapper = operationFactory.fetchVotersWrapper(
             for: ReferendumIdLocal(referendumIndex),
@@ -150,7 +158,11 @@ class Gov2OperationFactoryTests: XCTestCase {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        let operationFactory = Gov2OperationFactory(requestFactory: requestFactory, operationQueue: operationQueue)
+        let operationFactory = Gov2OperationFactory(
+            requestFactory: requestFactory,
+            commonOperationFactory: GovCommonOperationFactory(),
+            operationQueue: operationQueue
+        )
 
         let wrapper = operationFactory.fetchAllReferendumsWrapper(
             from: connection,

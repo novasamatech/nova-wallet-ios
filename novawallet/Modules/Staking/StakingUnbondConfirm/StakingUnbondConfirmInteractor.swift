@@ -23,7 +23,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var minBondedProvider: AnyDataProvider<DecodedBigUInt>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var nominationProvider: AnyDataProvider<DecodedNomination>?
     private var payeeProvider: AnyDataProvider<DecodedPayee>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -216,7 +216,7 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
     AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            clear(dataProvider: &accountInfoProvider)
+            clear(streamableProvider: &balanceProvider)
             clear(dataProvider: &ledgerProvider)
             clear(dataProvider: &payeeProvider)
             clear(dataProvider: &nominationProvider)
@@ -230,9 +230,10 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
             if let stashId = maybeStashId, let controllerId = maybeControllerId {
                 ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
 
-                accountInfoProvider = subscribeToAccountInfoProvider(
+                balanceProvider = subscribeToAssetBalanceProvider(
                     for: controllerId,
-                    chainId: chainAsset.chain.chainId
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
                 )
 
                 payeeProvider = subscribePayee(for: stashId, chainId: chainAsset.chain.chainId)
@@ -260,14 +261,14 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
                 }
             } else {
                 presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountInfo(result: .success(nil))
+                presenter.didReceiveAccountBalance(result: .success(nil))
                 presenter.didReceivePayee(result: .success(nil))
                 presenter.didReceiveNomination(result: .success(nil))
             }
 
         } catch {
             presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountInfo(result: .failure(error))
+            presenter.didReceiveAccountBalance(result: .failure(error))
             presenter.didReceiveStakingLedger(result: .failure(error))
             presenter.didReceivePayee(result: .failure(error))
             presenter.didReceiveNomination(result: .failure(error))
@@ -304,12 +305,13 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
 }
 
 extension StakingUnbondConfirmInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 

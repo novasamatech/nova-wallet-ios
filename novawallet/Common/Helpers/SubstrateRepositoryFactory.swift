@@ -6,6 +6,7 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository(filter: NSPredicate) -> AnyDataProviderRepository<ChainStorageItem>
 
     func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance>
+    func createAssetBalanceRepository(for chainAssetIds: Set<ChainAssetId>) -> AnyDataProviderRepository<AssetBalance>
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
@@ -17,6 +18,8 @@ protocol SubstrateRepositoryFactoryProtocol {
         for accountId: AccountId,
         chainAssetId: ChainAssetId
     ) -> AnyDataProviderRepository<AssetLock>
+
+    func createAssetLocksRepository(chainAssetIds: Set<ChainAssetId>) -> AnyDataProviderRepository<AssetLock>
 
     func createChainAddressTxRepository(
         for address: AccountAddress,
@@ -52,6 +55,10 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createCrowdloanContributionRepository(
         accountId: AccountId,
         chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<CrowdloanContributionData>
+
+    func createCrowdloanContributionRepository(
+        chainIds: Set<ChainModel.Id>
     ) -> AnyDataProviderRepository<CrowdloanContributionData>
 }
 
@@ -172,6 +179,21 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         return AnyDataProviderRepository(repository)
     }
 
+    func createAssetBalanceRepository(
+        for chainAssetIds: Set<ChainAssetId>
+    ) -> AnyDataProviderRepository<AssetBalance> {
+        let mapper = AssetBalanceMapper()
+        let filter = NSPredicate.assetBalance(chainAssetIds: chainAssetIds)
+
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        return AnyDataProviderRepository(repository)
+    }
+
     private func createTxRepository(
         for filter: NSPredicate
     ) -> AnyDataProviderRepository<TransactionHistoryItem> {
@@ -211,6 +233,10 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         createAssetLocksRepository(.assetLock(for: accountId, chainAssetId: chainAssetId))
     }
 
+    func createAssetLocksRepository(chainAssetIds: Set<ChainAssetId>) -> AnyDataProviderRepository<AssetLock> {
+        createAssetLocksRepository(.assetLock(chainAssetIds: chainAssetIds))
+    }
+
     private func createAssetLocksRepository(_ filter: NSPredicate) -> AnyDataProviderRepository<AssetLock> {
         let mapper = AssetLockMapper()
         let repository = storageFacade.createRepository(
@@ -244,6 +270,13 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             accountId: accountId
         )
 
+        return createCrowdloanContributionRepository(for: filter)
+    }
+
+    func createCrowdloanContributionRepository(
+        chainIds: Set<ChainModel.Id>
+    ) -> AnyDataProviderRepository<CrowdloanContributionData> {
+        let filter = NSPredicate.crowdloanContribution(chainIds: chainIds)
         return createCrowdloanContributionRepository(for: filter)
     }
 

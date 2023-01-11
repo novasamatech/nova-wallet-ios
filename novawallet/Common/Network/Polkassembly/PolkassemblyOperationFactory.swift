@@ -3,10 +3,11 @@ import RobinHood
 import SubstrateSdk
 
 protocol PolkassemblyOperationFactoryProtocol {
-    func createPreviewsOperation() -> BaseOperation<[ReferendumMetadataPreview]>
+    func createPreviewsOperation(for parameters: JSON?) -> BaseOperation<[ReferendumMetadataPreview]>
 
     func createDetailsOperation(
-        for referendumId: ReferendumIdLocal
+        for referendumId: ReferendumIdLocal,
+        parameters: JSON?
     ) -> BaseOperation<ReferendumMetadataLocal?>
 }
 
@@ -19,11 +20,11 @@ class BasePolkassemblyOperationFactory {
         self.url = url
     }
 
-    func createPreviewQuery() -> String {
+    func createPreviewQuery(for _: JSON?) -> String {
         fatalError("Must be overriden by subclass")
     }
 
-    func createDetailsQuery(for _: ReferendumIdLocal) -> String {
+    func createDetailsQuery(for _: ReferendumIdLocal, parameters _: JSON?) -> String {
         fatalError("Must be overriden by subclass")
     }
 
@@ -55,8 +56,8 @@ class BasePolkassemblyOperationFactory {
 }
 
 extension BasePolkassemblyOperationFactory: PolkassemblyOperationFactoryProtocol {
-    func createPreviewsOperation() -> BaseOperation<[ReferendumMetadataPreview]> {
-        let query = createPreviewQuery()
+    func createPreviewsOperation(for parameters: JSON?) -> BaseOperation<[ReferendumMetadataPreview]> {
+        let query = createPreviewQuery(for: parameters)
         let requestFactory = createRequestFactory(for: url, query: query)
         let resultFactory = createPreviewResultFactory(for: chainId)
 
@@ -64,9 +65,10 @@ extension BasePolkassemblyOperationFactory: PolkassemblyOperationFactoryProtocol
     }
 
     func createDetailsOperation(
-        for referendumId: ReferendumIdLocal
+        for referendumId: ReferendumIdLocal,
+        parameters: JSON?
     ) -> BaseOperation<ReferendumMetadataLocal?> {
-        let query = createDetailsQuery(for: referendumId)
+        let query = createDetailsQuery(for: referendumId, parameters: parameters)
         let requestFactory = createRequestFactory(for: url, query: query)
         let resultFactory = createDetailsResultFactory(for: chainId)
 

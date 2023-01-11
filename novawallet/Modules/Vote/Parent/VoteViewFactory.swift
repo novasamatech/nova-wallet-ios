@@ -14,7 +14,10 @@ enum VoteViewFactory {
 
         let wireframe = VoteWireframe()
 
-        let childPresenterFactory = VoteChildPresenterFactory(currencyManager: currencyManager)
+        let childPresenterFactory = VoteChildPresenterFactory(
+            currencyManager: currencyManager,
+            applicationHandler: SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
+        )
 
         let presenter = VotePresenter(
             interactor: interactor,

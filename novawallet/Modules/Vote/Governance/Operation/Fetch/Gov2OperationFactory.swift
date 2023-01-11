@@ -6,7 +6,7 @@ import BigInt
 final class Gov2OperationFactory {
     struct AdditionalInfo {
         let tracks: [Referenda.TrackId: Referenda.TrackInfo]
-        let totalIssuance: BigUInt
+        let electorate: BigUInt
         let undecidingTimeout: Moment
     }
 
@@ -27,10 +27,16 @@ final class Gov2OperationFactory {
     }
 
     let requestFactory: StorageRequestFactoryProtocol
+    let commonOperationFactory: GovCommonOperationFactoryProtocol
     let operationQueue: OperationQueue
 
-    init(requestFactory: StorageRequestFactoryProtocol, operationQueue: OperationQueue) {
+    init(
+        requestFactory: StorageRequestFactoryProtocol,
+        commonOperationFactory: GovCommonOperationFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
         self.requestFactory = requestFactory
+        self.commonOperationFactory = commonOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -142,15 +148,14 @@ final class Gov2OperationFactory {
             }
         }
 
-        let totalIssuanceWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BigUInt>>> =
-            requestFactory.queryItem(
-                engine: connection,
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .totalIssuance,
-                at: blockHash
-            )
+        let electorateWrapper = commonOperationFactory.createElectorateWrapper(
+            dependingOn: codingFactoryOperation,
+            requestFactory: requestFactory,
+            connection: connection,
+            blockHash: blockHash
+        )
 
-        let fetchOperations = [tracksOperation, undecidingTimeoutOperation] + totalIssuanceWrapper.allOperations
+        let fetchOperations = [tracksOperation, undecidingTimeoutOperation] + electorateWrapper.allOperations
         fetchOperations.forEach { $0.addDependency(codingFactoryOperation) }
 
         let mappingOperation = ClosureOperation<AdditionalInfo> {
@@ -160,11 +165,11 @@ final class Gov2OperationFactory {
 
             let undecidingTimeout = try undecidingTimeoutOperation.extractNoCancellableResultData()
 
-            let totalIssuance = try totalIssuanceWrapper.targetOperation.extractNoCancellableResultData().value
+            let electorate = try electorateWrapper.targetOperation.extractNoCancellableResultData()
 
             return AdditionalInfo(
                 tracks: tracks,
-                totalIssuance: totalIssuance?.value ?? 0,
+                electorate: electorate,
                 undecidingTimeout: undecidingTimeout
             )
         }

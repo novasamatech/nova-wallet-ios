@@ -142,6 +142,17 @@ class SelectValidatorsConfirmTests: XCTestCase {
 
         // when
 
+        // no way to wait balance receive in presenter
+        presenter.didReceiveAccountBalance(
+            result: .success(
+                walletLocalSubscriptionFactory.getDummyBalance(
+                    for: selectedAccount.chainAccount.accountId,
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
+                )
+            )
+        )
+
         presenter.proceed()
 
         // then

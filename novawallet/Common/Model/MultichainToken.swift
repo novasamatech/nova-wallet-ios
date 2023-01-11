@@ -47,9 +47,11 @@ extension MultichainToken {
 extension Array where Element == ChainModel {
     func createMultichainToken(for symbol: String) -> MultichainToken {
         reduce(MultichainToken(symbol: symbol, instances: [])) { token, chain in
-            let assets = chain.assets.filter { $0.symbol == symbol }.sorted { $0.assetId < $1.assetId }
+            let assets = chain.assets.filter {
+                MultichainToken.reserveTokensOf(symbol: $0.symbol).contains(symbol)
+            }.sorted { $0.assetId < $1.assetId }
 
-            return assets.reduce(token) { _, asset in
+            return assets.reduce(token) { accumToken, asset in
                 let instance = MultichainToken.Instance(
                     chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
                     chainName: chain.name,
@@ -57,35 +59,13 @@ extension Array where Element == ChainModel {
                     icon: asset.icon
                 )
 
-                return MultichainToken(symbol: symbol, instances: token.instances + [instance])
+                return MultichainToken(symbol: symbol, instances: accumToken.instances + [instance])
             }
         }
     }
 
     func createMultichainTokens() -> [MultichainToken] {
-        let mapping = reduce(into: [String: MultichainToken]()) { accum, chain in
-            let assets = chain.assets.sorted { $0.assetId < $1.assetId }
-            for asset in assets {
-                let instance = MultichainToken.Instance(
-                    chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
-                    chainName: chain.name,
-                    enabled: asset.enabled,
-                    icon: asset.icon
-                )
-
-                if let token = accum[asset.symbol] {
-                    accum[asset.symbol] = MultichainToken(
-                        symbol: asset.symbol,
-                        instances: token.instances + [instance]
-                    )
-                } else {
-                    accum[asset.symbol] = MultichainToken(
-                        symbol: asset.symbol,
-                        instances: [instance]
-                    )
-                }
-            }
-        }
+        let mapping = createMultichainTokenMapping()
 
         let chainOrders = enumerated().reduce(into: [ChainModel.Id: Int]()) { accum, chainOrder in
             accum[chainOrder.1.chainId] = chainOrder.0
@@ -106,6 +86,54 @@ extension Array where Element == ChainModel {
             } else {
                 return chainAssetId1.assetId < chainAssetId2.assetId
             }
+        }
+    }
+
+    private func createMultichainTokenMapping() -> [String: MultichainToken] {
+        let allSymbols = reduce(into: Set<String>()) { accum, chain in
+            for asset in chain.assets {
+                accum.insert(asset.symbol)
+            }
+        }
+
+        return reduce(into: [String: MultichainToken]()) { accum, chain in
+            let assets = chain.assets.sorted { $0.assetId < $1.assetId }
+            for asset in assets {
+                let instance = MultichainToken.Instance(
+                    chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+                    chainName: chain.name,
+                    enabled: asset.enabled,
+                    icon: asset.icon
+                )
+
+                let symbolExtensions = MultichainToken.reserveTokensOf(symbol: asset.symbol)
+                let tokenSymbol = symbolExtensions.first(where: { allSymbols.contains($0) }) ?? asset.symbol
+
+                if let token = accum[tokenSymbol] {
+                    accum[tokenSymbol] = MultichainToken(
+                        symbol: tokenSymbol,
+                        instances: token.instances + [instance]
+                    )
+                } else {
+                    accum[tokenSymbol] = MultichainToken(
+                        symbol: tokenSymbol,
+                        instances: [instance]
+                    )
+                }
+            }
+        }
+    }
+}
+
+extension MultichainToken {
+    static func reserveTokensOf(symbol: String) -> [String] {
+        let xcExtension = "xc"
+
+        if symbol.hasPrefix(xcExtension) {
+            let newSymbol = String(symbol.suffix(symbol.count - xcExtension.count))
+            return [newSymbol, symbol]
+        } else {
+            return [symbol]
         }
     }
 }

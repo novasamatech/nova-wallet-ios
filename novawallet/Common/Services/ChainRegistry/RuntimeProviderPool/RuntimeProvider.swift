@@ -4,6 +4,7 @@ import SubstrateSdk
 
 protocol RuntimeProviderProtocol: AnyObject, RuntimeCodingServiceProtocol {
     var chainId: ChainModel.Id { get }
+    var hasSnapshot: Bool { get }
 
     func setup()
     func replaceTypesUsage(_ newTypeUsage: ChainModel.TypesUsage)
@@ -32,6 +33,16 @@ final class RuntimeProvider {
     private(set) var pendingRequests: [UUID: PendingRequest] = [:]
     private(set) var currentWrapper: CompoundOperationWrapper<RuntimeSnapshot?>?
     private var mutex = NSLock()
+
+    var hasSnapshot: Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return snapshot != nil
+    }
 
     init(
         chainModel: ChainModel,

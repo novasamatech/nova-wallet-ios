@@ -13,7 +13,8 @@ final class DAppListGenerator {
                     name: "Polkadot JS",
                     url: URL(string: "https://polkadot.js/apps")!,
                     icon: nil,
-                    categories: ["staking"]
+                    categories: ["staking"],
+                    desktopOnly: nil
                 )
             ]
         )

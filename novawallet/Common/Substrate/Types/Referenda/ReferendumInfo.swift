@@ -27,7 +27,7 @@ enum ReferendumInfo: Decodable {
         }
 
         @StringCodable var since: Moment
-        let submissionDeposit: Referenda.Deposit
+        let submissionDeposit: Referenda.Deposit?
         let decisionDeposit: Referenda.Deposit?
     }
 
