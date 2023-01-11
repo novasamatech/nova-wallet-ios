@@ -14,6 +14,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var goForwardObservation: NSKeyValueObservation?
     private var titleObservation: NSKeyValueObservation?
     private var isDesktop: Bool = false
+    private var transports: [DAppTransportModel] = []
     private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
     private let localizationManager: LocalizationManagerProtocol
@@ -66,7 +67,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.closeBarItem.action = #selector(actionClose)
 
         rootView.webView.uiDelegate = self
-        rootView.webView.navigationDelegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         configureObservers()
@@ -158,24 +158,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         presenter.process(page: page)
     }
 
-    private func setupTransports(_ transports: [DAppTransportModel]) {
-        let contentController = rootView.webView.configuration.userContentController
-        contentController.removeAllUserScripts()
-
-        scriptMessageHandlers = transports.reduce(
-            into: scriptMessageHandlers
-        ) { handlers, transport in
-            let handler = handlers[transport.name] ?? DAppBrowserScriptHandler(
-                contentController: contentController,
-                delegate: self
-            )
-
-            handler.bind(viewModel: transport)
-
-            handlers[transport.name] = handler
-        }
-    }
-
     private func setupUrl(_ url: URL) {
         rootView.urlLabel.text = url.host
 
@@ -194,10 +176,51 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.goForwardBarItem.isEnabled = rootView.webView.canGoForward
     }
 
+    private func setupScripts() {
+        let contentController = rootView.webView.configuration.userContentController
+        contentController.removeAllUserScripts()
+
+        setupTransports(transports, contentController: contentController)
+        setupAdditionalUserScripts()
+    }
+
+    private func setupTransports(_ transports: [DAppTransportModel], contentController: WKUserContentController) {
+        scriptMessageHandlers = transports.reduce(
+            into: scriptMessageHandlers
+        ) { handlers, transport in
+            let handler = handlers[transport.name] ?? DAppBrowserScriptHandler(
+                contentController: contentController,
+                delegate: self
+            )
+
+            handler.bind(viewModel: transport)
+
+            handlers[transport.name] = handler
+        }
+    }
+
+    private func setupAdditionalUserScripts() {
+        if isDesktop {
+            let script = WKUserScript(
+                source: rootView.webView.viewportScript(targetWidthInPixels: WKWebView.desktopWidth),
+                injectionTime: .atDocumentEnd,
+                forMainFrameOnly: false
+            )
+
+            rootView.webView.configuration.userContentController.addUserScript(script)
+        }
+    }
+
     private func setupWebPreferences() {
         let preferences = WKWebpagePreferences()
         preferences.preferredContentMode = isDesktop ? .desktop : .mobile
         rootView.webView.configuration.defaultWebpagePreferences = preferences
+
+        if isDesktop {
+            rootView.webView.customUserAgent = WKWebView.deskstopUserAgent
+        } else {
+            rootView.webView.customUserAgent = nil
+        }
     }
 
     private func didChangeGoBack(_ newValue: Bool) {
@@ -244,8 +267,9 @@ extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceive(viewModel: DAppBrowserModel) {
         isDesktop = viewModel.isDesktop
+        transports = viewModel.transports
 
-        setupTransports(viewModel.transports)
+        setupScripts()
         setupWebPreferences()
         setupUrl(viewModel.url)
     }
@@ -258,7 +282,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
     ) {
-        setupTransports(transports)
+        self.transports = transports
+        setupScripts()
 
         rootView.webView.evaluateJavaScript(script.content)
     }
@@ -270,6 +295,7 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
         self.isDesktop = isDesktop
 
+        setupScripts()
         setupWebPreferences()
         rootView.webView.reload()
     }
@@ -317,14 +343,5 @@ extension DAppBrowserViewController: WKUIDelegate {
         alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
 
         present(alertController, animated: true, completion: nil)
-    }
-}
-
-extension DAppBrowserViewController: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
-        if isDesktop {
-            let javaScript = webView.viewportScript(targetWidthInPixels: WKWebView.desktopWidth)
-            webView.evaluateJavaScript(javaScript)
-        }
     }
 }
