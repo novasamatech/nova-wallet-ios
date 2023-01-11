@@ -35,7 +35,7 @@ protocol ControllerAccountInteractorOutputProtocol: AnyObject {
     func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>, address: AccountAddress)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
 }
 

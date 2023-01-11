@@ -15,8 +15,10 @@ enum ReferendumMetadataStatus: String {
 }
 
 enum ReferendumMetadataStatusV2: String {
+    case submitted = "Submitted"
     case ongoing = "Ongoing"
     case approved = "Approved"
+    case confirmed = "Confirmed"
     case rejected = "Rejected"
     case cancelled = "Cancelled"
     case timedOut = "TimedOut"
@@ -25,7 +27,7 @@ enum ReferendumMetadataStatusV2: String {
 
 struct ReferendumMetadataLocal: Equatable {
     struct TimelineItem: Equatable, Codable {
-        let block: BlockNumber
+        let time: Date
         let status: String
     }
 
@@ -37,7 +39,11 @@ struct ReferendumMetadataLocal: Equatable {
     let timeline: [TimelineItem]?
 
     func proposerAccountId(for chainFormat: ChainFormat) -> AccountId? {
-        try? proposer?.toAccountId(using: chainFormat)
+        if let chainAccountId = try? proposer?.toAccountId(using: chainFormat) {
+            return chainAccountId
+        } else {
+            return try? proposer?.toAccountId()
+        }
     }
 }
 
@@ -54,11 +60,13 @@ extension ReferendumMetadataLocal: Identifiable {
 extension ReferendumMetadataLocal.TimelineItem {
     var isStarted: Bool {
         status == ReferendumMetadataStatus.started.rawValue ||
+            status == ReferendumMetadataStatusV2.submitted.rawValue ||
             status == ReferendumMetadataStatusV2.ongoing.rawValue
     }
 
     var isApproved: Bool {
         status == ReferendumMetadataStatus.passed.rawValue ||
+            status == ReferendumMetadataStatusV2.confirmed.rawValue ||
             status == ReferendumMetadataStatusV2.approved.rawValue
     }
 

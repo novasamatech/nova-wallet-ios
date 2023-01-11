@@ -57,7 +57,7 @@ final class WalletRemoteSubscriptionWrapper {
             extras: extras,
             chainRegistry: chainRegistry,
             assetRepository: assetRepository,
-            chainRepository: chainItemRepository,
+            transactionSubscription: nil,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             logger: logger

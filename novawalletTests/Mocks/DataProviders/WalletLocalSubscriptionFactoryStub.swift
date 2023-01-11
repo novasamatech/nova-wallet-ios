@@ -6,43 +6,29 @@ import BigInt
 final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryProtocol {
     let balance: BigUInt?
 
-    init(balance: BigUInt? = nil) {
+    let operationQueue: OperationQueue
+
+    init(balance: BigUInt? = nil, operationQueue: OperationQueue = OperationQueue()) {
         self.balance = balance
+        self.operationQueue = operationQueue
     }
 
-    func getAccountProvider(
+    func getDummyBalance(
         for accountId: AccountId,
-        chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedAccountInfo> {
-        let localIdentifierFactory = LocalStorageKeyFactory()
-
-        let accountInfo = balance.map { value in
-            AccountInfo(
-                nonce: 0,
-                data: AccountData(
-                    free: value,
-                    reserved: 0,
-                    miscFrozen: 0,
-                    feeFrozen: 0
-                )
-            )
-        }
-
-        let accountInfoModel: DecodedAccountInfo = try {
-            let localKey = try localIdentifierFactory.createFromStoragePath(
-                .account,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> AssetBalance? {
+        if let balance = balance {
+            return AssetBalance(
+                chainAssetId: ChainAssetId(chainId: chainId, assetId: assetId),
                 accountId: accountId,
-                chainId: chainId
+                freeInPlank: balance,
+                reservedInPlank: 0,
+                frozenInPlank: 0
             )
-
-            if let accountInfo = accountInfo {
-                return DecodedAccountInfo(identifier: localKey, item: accountInfo)
-            } else {
-                return DecodedAccountInfo(identifier: localKey, item: nil)
-            }
-        }()
-
-        return AnyDataProvider(DataProviderStub(models: [accountInfoModel]))
+        } else {
+            return nil
+        }
     }
 
     func getAssetBalanceProvider(
@@ -50,7 +36,28 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) throws -> StreamableProvider<AssetBalance> {
-        throw CommonError.undefined
+        let models: [AssetBalance]
+
+        if
+            let balance = getDummyBalance(
+                for: accountId,
+                chainId: chainId,
+                assetId: assetId
+            ) {
+            models = [balance]
+        } else {
+            models = []
+        }
+
+        let repository = DataProviderRepositoryStub(models: models)
+        let repositoryObservable = DataProviderObservableStub<AssetBalance>()
+
+        return StreamableProvider(
+            source: AnyStreamableSource(EmptyStreamableSource()),
+            repository: AnyDataProviderRepository(repository),
+            observable: AnyDataProviderRepositoryObservable(repositoryObservable),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
     }
 
     func getAccountBalanceProvider(for accountId: AccountId) throws -> StreamableProvider<AssetBalance> {

@@ -39,7 +39,7 @@ class TextInputView: BackgroundedContentControl {
         return button
     }()
 
-    private let stackView: UIStackView = {
+    let stackView: UIStackView = {
         let view = UIStackView()
         view.spacing = 8.0
         view.axis = .horizontal
@@ -49,13 +49,11 @@ class TextInputView: BackgroundedContentControl {
 
     weak var delegate: TextInputViewDelegate?
 
-    let pasteboardService = PasteboardHandler(pasteboard: UIPasteboard.general)
-
     var roundedBackgroundView: RoundedView? {
         backgroundView as? RoundedView
     }
 
-    private var inputViewModel: InputViewModelProtocol?
+    private(set) var inputViewModel: InputViewModelProtocol?
 
     var completed: Bool {
         if let inputViewModel = inputViewModel {
@@ -65,7 +63,7 @@ class TextInputView: BackgroundedContentControl {
         }
     }
 
-    private var hasText: Bool {
+    var hasText: Bool {
         if let text = textField.text, !text.isEmpty {
             return true
         } else {
@@ -108,13 +106,17 @@ class TextInputView: BackgroundedContentControl {
         layoutContent()
     }
 
+    func applyingActionWidth(for currentWidth: CGFloat) -> CGFloat {
+        if !clearButton.isHidden {
+            return currentWidth + clearButton.intrinsicContentSize.width
+        } else {
+            return currentWidth
+        }
+    }
+
     private func layoutContent() {
         let buttonHeight: CGFloat = 32.0
-        var actionsWidth: CGFloat = 0
-
-        if !clearButton.isHidden {
-            actionsWidth += clearButton.intrinsicContentSize.width
-        }
+        let actionsWidth: CGFloat = applyingActionWidth(for: 0)
 
         stackView.frame = CGRect(
             x: bounds.maxX - contentInsets.right - actionsWidth,
@@ -147,7 +149,7 @@ class TextInputView: BackgroundedContentControl {
 
     // MARK: Configure
 
-    private func configure() {
+    func configure() {
         backgroundColor = UIColor.clear
 
         configureBackgroundViewIfNeeded()
@@ -169,7 +171,7 @@ class TextInputView: BackgroundedContentControl {
         }
     }
 
-    private func configureContentViewIfNeeded() {
+    func configureContentViewIfNeeded() {
         if contentView == nil {
             let contentView = UIView()
             contentView.backgroundColor = .clear
@@ -206,14 +208,18 @@ class TextInputView: BackgroundedContentControl {
         )
     }
 
-    private func updateControlsState() {
-        let oldStates = stackView.arrangedSubviews.map(\.isHidden)
-
+    func applyControlsState() {
         if hasText {
             clearButton.isHidden = false
         } else {
             clearButton.isHidden = true
         }
+    }
+
+    func updateControlsState() {
+        let oldStates = stackView.arrangedSubviews.map(\.isHidden)
+
+        applyControlsState()
 
         let newStates = stackView.arrangedSubviews.map(\.isHidden)
 

@@ -16,6 +16,8 @@ protocol EthereumOperationFactoryProtocol {
     func createSendTransactionOperation(
         for transactionDataClosure: @escaping () throws -> Data
     ) -> BaseOperation<String>
+
+    func createTransactionReceiptOperation(for transactionHash: String) -> BaseOperation<EthereumTransactionReceipt?>
 }
 
 enum EthereumBlock: String {
@@ -29,6 +31,7 @@ enum EthereumMethod: String {
     case gasPrice = "eth_gasPrice"
     case transactionCount = "eth_getTransactionCount"
     case sendRawTransaction = "eth_sendRawTransaction"
+    case transactionReceipt = "eth_getTransactionReceipt"
 }
 
 final class EthereumOperationFactory {

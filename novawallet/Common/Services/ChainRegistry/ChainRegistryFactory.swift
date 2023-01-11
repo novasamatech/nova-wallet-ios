@@ -69,7 +69,7 @@ final class ChainRegistryFactory {
 
         let connectionPool = ConnectionPool(
             connectionFactory: ConnectionFactory(logger: Logger.shared),
-            applicationHandler: ApplicationHandler(with: nil)
+            applicationHandler: SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
         )
 
         let mapper = ChainModelMapper()
@@ -85,7 +85,7 @@ final class ChainRegistryFactory {
             dataFetchFactory: dataFetchOperationFactory,
             repository: AnyDataProviderRepository(chainRepository),
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.runtimeBuildingQueue,
+            operationQueue: OperationManagerFacade.runtimeSyncQueue,
             logger: Logger.shared
         )
 
@@ -99,7 +99,7 @@ final class ChainRegistryFactory {
             filesOperationFactory: filesOperationFactory,
             dataOperationFactory: dataFetchOperationFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.runtimeBuildingQueue
+            operationQueue: OperationManagerFacade.runtimeSyncQueue
         )
 
         return ChainRegistry(

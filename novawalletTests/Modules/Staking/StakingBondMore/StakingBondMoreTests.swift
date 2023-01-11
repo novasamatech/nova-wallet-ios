@@ -19,7 +19,8 @@ class StakingBondMoreTests: XCTestCase {
             hasStaking: true
         )
 
-        let assetInfo = chain.assets.first!.displayInfo
+        let asset = chain.utilityAsset()!
+        let assetInfo = asset.displayInfo
 
         let dataValidator = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -51,21 +52,24 @@ class StakingBondMoreTests: XCTestCase {
         }
 
         // balance & fee is received
-        let accountInfo = AccountInfo(
-            nonce: 0,
-            data: AccountData(free: 100000000000000, reserved: 0, miscFrozen: 0, feeFrozen: 0)
+        let stashItem = StashItem(stash: WestendStub.address, controller: WestendStub.address)
+        let stashAccountId = try stashItem.stash.toAccountId()
+        let assetBalance = AssetBalance(
+            chainAssetId: chain.utilityChainAssetId()!,
+            accountId: stashAccountId,
+            freeInPlank: 100000000000000,
+            reservedInPlank: 0,
+            frozenInPlank: 0
         )
 
-        presenter.didReceiveAccountInfo(result: .success(accountInfo))
+        presenter.didReceiveAccountBalance(result: .success(assetBalance))
 
         let paymentInfo = RuntimeDispatchInfo(fee: "12600002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(paymentInfo))
 
-        let stashItem = StashItem(stash: WestendStub.address, controller: WestendStub.address)
         presenter.didReceiveStashItem(result: .success(stashItem))
 
         let publicKeyData = try stashItem.stash.toAccountId()
-        let stashAccountId = try stashItem.stash.toAccountId()
         let stashAccount = ChainAccountResponse(
             chainId: chain.chainId,
             accountId: stashAccountId,
@@ -96,7 +100,7 @@ class StakingBondMoreTests: XCTestCase {
             }
         }
         // empty balance & extra fee is received
-        presenter.didReceiveAccountInfo(result: .success(nil))
+        presenter.didReceiveAccountBalance(result: .success(nil))
         let paymentInfoWithExtraFee = RuntimeDispatchInfo(fee: "12600000000002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(paymentInfoWithExtraFee))
 

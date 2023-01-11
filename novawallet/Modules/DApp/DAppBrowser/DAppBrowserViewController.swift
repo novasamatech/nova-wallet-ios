@@ -13,7 +13,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var goBackObservation: NSKeyValueObservation?
     private var goForwardObservation: NSKeyValueObservation?
     private var titleObservation: NSKeyValueObservation?
-
+    private var dAppSettings: DAppGlobalSettings?
     private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
     private let localizationManager: LocalizationManagerProtocol
@@ -66,6 +66,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.closeBarItem.action = #selector(actionClose)
 
         rootView.webView.uiDelegate = self
+        rootView.webView.navigationDelegate = self
         rootView.webView.allowsBackForwardNavigationGestures = true
 
         urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
@@ -118,9 +119,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
 
-        rootView.favoriteBarButton.isEnabled = false
-        rootView.favoriteBarButton.target = self
-        rootView.favoriteBarButton.action = #selector(actionFavorite)
+        rootView.settingsBarButton.target = self
+        rootView.settingsBarButton.action = #selector(actionSettings)
 
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
     }
@@ -207,8 +207,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.webView.reload()
     }
 
-    @objc private func actionFavorite() {
-        presenter.toggleFavorite()
+    @objc private func actionSettings() {
+        presenter.showSettings()
     }
 
     @objc private func actionSearch() {
@@ -247,11 +247,16 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         rootView.webView.evaluateJavaScript(script.content)
     }
 
-    func didReceiveFavorite(flag: Bool) {
-        rootView.favoriteBarButton.isEnabled = true
-
-        let icon = flag ? R.image.iconFavToolbarSel() : R.image.iconFavToolbar()
-        rootView.favoriteBarButton.image = icon?.withRenderingMode(.alwaysOriginal)
+    func didReceive(settings: DAppGlobalSettings) {
+        guard dAppSettings != settings else {
+            return
+        }
+        dAppSettings = settings
+        rootView.settingsBarButton.isEnabled = true
+        let preferences = WKWebpagePreferences()
+        preferences.preferredContentMode = settings.desktopMode ? .desktop : .mobile
+        rootView.webView.configuration.defaultWebpagePreferences = preferences
+        rootView.webView.reload()
     }
 }
 
@@ -293,5 +298,14 @@ extension DAppBrowserViewController: WKUIDelegate {
         alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
 
         present(alertController, animated: true, completion: nil)
+    }
+}
+
+extension DAppBrowserViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+        if dAppSettings?.desktopMode == true {
+            let javaScript = webView.viewportScript(targetWidthInPixels: WKWebView.desktopWidth)
+            webView.evaluateJavaScript(javaScript)
+        }
     }
 }

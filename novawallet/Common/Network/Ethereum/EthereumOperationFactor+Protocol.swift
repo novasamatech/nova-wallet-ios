@@ -52,6 +52,28 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
+    func createTransactionReceiptOperation(for transactionHash: String) -> BaseOperation<EthereumTransactionReceipt?> {
+        let url = node
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.post.rawValue
+
+            let parameters = [transactionHash]
+
+            let method = EthereumMethod.transactionReceipt.rawValue
+            let jsonRequest = EthereumRpcRequest(method: method, params: parameters)
+            request.httpBody = try JSONEncoder().encode(jsonRequest)
+            request.setValue(HttpContentType.json.rawValue, forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
+
+            return request
+        }
+
+        let resultFactory: AnyNetworkResultFactory<EthereumTransactionReceipt?> = createResultFactory()
+
+        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+    }
+
     func createTransactionsCountOperation(
         for accountAddress: Data,
         block: EthereumBlock

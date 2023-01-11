@@ -18,8 +18,9 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
         let wireframe = StakingMainWireframe()
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
+        let applicationHandler = SecurityLayerService.shared.applicationHandlingProxy.addApplicationHandler()
         let presenter = StakingMainPresenter(
-            childPresenterFactory: StakingMainPresenterFactory(),
+            childPresenterFactory: StakingMainPresenterFactory(applicationHandler: applicationHandler),
             viewModelFactory: StakingMainViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory),
             accountManagementFilter: AccountManagementFilter(),
             logger: Logger.shared

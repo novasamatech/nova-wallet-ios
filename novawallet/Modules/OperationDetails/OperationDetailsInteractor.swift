@@ -158,6 +158,7 @@ final class OperationDetailsInteractor: AccountFetching {
     }
 
     private func extractExtrinsicOperationData(
+        newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {
@@ -166,7 +167,7 @@ final class OperationDetailsInteractor: AccountFetching {
         }
 
         let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let fee = transaction.amountInPlankIntOrZero
+        let fee =  newFee ?? transaction.amountInPlankIntOrZero
 
         let currentDisplayAddress = DisplayAddress(
             address: accountAddress,
@@ -185,6 +186,7 @@ final class OperationDetailsInteractor: AccountFetching {
     }
 
     private func extractTransferOperationData(
+        newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {
@@ -206,7 +208,7 @@ final class OperationDetailsInteractor: AccountFetching {
 
         let amount = transaction.amountInPlankIntOrZero
 
-        let fee = transaction.feeInPlankIntOrZero
+        let fee = newFee ?? transaction.feeInPlankIntOrZero
 
         let currentDisplayAddress = DisplayAddress(
             address: accountAddress,
@@ -245,6 +247,7 @@ final class OperationDetailsInteractor: AccountFetching {
     }
 
     private func extractOperationData(
+        replacingIfExists newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         guard let accountAddress = accountAddress else {
@@ -253,13 +256,13 @@ final class OperationDetailsInteractor: AccountFetching {
         }
         switch transaction.type(for: accountAddress) {
         case .incoming, .outgoing:
-            extractTransferOperationData(completion)
+            extractTransferOperationData(newFee: newFee, completion)
         case .reward:
             extractRewardOperationData(completion)
         case .slash:
             extractSlashOperationData(completion)
         case .extrinsic:
-            extractExtrinsicOperationData(completion)
+            extractExtrinsicOperationData(newFee: newFee, completion)
         case .none:
             completion(nil)
         }
@@ -281,8 +284,11 @@ final class OperationDetailsInteractor: AccountFetching {
         presenter?.didReceiveDetails(result: .success(details))
     }
 
-    private func provideModel(overridingBy newStatus: OperationDetailsModel.Status?) {
-        extractOperationData { [weak self] operationData in
+    private func provideModel(
+        overridingBy newStatus: OperationDetailsModel.Status?,
+        newFee: BigUInt?
+    ) {
+        extractOperationData(replacingIfExists: newFee) { [weak self] operationData in
             if let operationData = operationData {
                 self?.provideModel(for: operationData, overridingBy: newStatus)
             } else {
@@ -295,7 +301,7 @@ final class OperationDetailsInteractor: AccountFetching {
 
 extension OperationDetailsInteractor: OperationDetailsInteractorInputProtocol {
     func setup() {
-        provideModel(overridingBy: nil)
+        provideModel(overridingBy: nil, newFee: nil)
         transactionProvider = subscribeToTransaction(for: transaction.identifier, chainId: chain.chainId)
     }
 }
@@ -306,13 +312,14 @@ extension OperationDetailsInteractor: TransactionLocalStorageSubscriber,
         switch result {
         case let .success(changes):
             if let transaction = changes.reduceToLastChange() {
+                let newFee = transaction.fee.flatMap { BigUInt($0) }
                 switch transaction.status {
                 case .success:
-                    provideModel(overridingBy: .completed)
+                    provideModel(overridingBy: .completed, newFee: newFee)
                 case .failed:
-                    provideModel(overridingBy: .failed)
+                    provideModel(overridingBy: .failed, newFee: newFee)
                 case .pending:
-                    provideModel(overridingBy: .pending)
+                    provideModel(overridingBy: .pending, newFee: newFee)
                 }
             }
         case let .failure(error):

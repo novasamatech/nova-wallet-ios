@@ -80,7 +80,7 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
 
     private func updateAfterSelectedAccountChange() {
         clearAccountRemoteSubscription()
-        clear(dataProvider: &balanceProvider)
+        clear(streamableProvider: &balanceProvider)
         clearStashControllerSubscription()
 
         guard let selectedChain = selectedChainAsset?.chain,
