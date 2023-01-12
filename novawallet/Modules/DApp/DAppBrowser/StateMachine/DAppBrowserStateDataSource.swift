@@ -9,7 +9,7 @@ final class DAppBrowserStateDataSource {
     let chainRegistry: ChainRegistryProtocol
     let dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>
     let operationQueue: OperationQueue
-    let dApp: DApp?
+    private(set) var dApp: DApp?
 
     init(
         wallet: MetaAccountModel,
@@ -31,6 +31,10 @@ final class DAppBrowserStateDataSource {
 
     func set(chain: ChainModel?, for key: String) {
         chainStore[key] = chain
+    }
+
+    func replace(dApp: DApp?) {
+        self.dApp = dApp
     }
 
     func fetchAccountList() throws -> [PolkadotExtensionAccount] {
