@@ -36,6 +36,7 @@ struct DAppBrowserViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             securedLayer: SecurityLayerService.shared,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
+            dAppGlobalSettingsRepository: accountRepositoryFactory.createDAppsGlobalSettingsRepository(),
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
             dAppsFavoriteRepository: favoritesRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
