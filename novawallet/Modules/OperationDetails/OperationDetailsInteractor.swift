@@ -68,8 +68,6 @@ final class OperationDetailsInteractor: AccountFetching {
 
         let eventId = getEventId(from: context) ?? transaction.txHash
 
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
-
         let amount = transaction.amountInPlankIntOrZero
 
         if let validatorId = try? transaction.sender.toAccountId() {
@@ -114,7 +112,6 @@ final class OperationDetailsInteractor: AccountFetching {
 
         let eventId = getEventId(from: context) ?? transaction.txHash
 
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
         let amount = transaction.amountInPlankIntOrZero
 
         if let validatorId = try? transaction.sender.toAccountId() {
@@ -174,7 +171,7 @@ final class OperationDetailsInteractor: AccountFetching {
         )
 
         let model = OperationExtrinsicModel(
-            txHash: transaction.identifier,
+            txHash: transaction.txHash,
             call: transaction.callPath.callName,
             module: transaction.callPath.moduleName,
             sender: currentDisplayAddress,
@@ -211,7 +208,7 @@ final class OperationDetailsInteractor: AccountFetching {
             username: wallet.name
         )
 
-        let txId = transaction.identifier
+        let txId = transaction.txHash
 
         _ = fetchDisplayAddress(
             for: [peerId],

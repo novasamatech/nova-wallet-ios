@@ -15,7 +15,8 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         ) else {
             return
         }
-        present(purchaseView.controller, from: view)
+        purchaseView.controller.modalPresentationStyle = .fullScreen
+        view?.controller.present(purchaseView.controller, animated: true)
     }
 
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
