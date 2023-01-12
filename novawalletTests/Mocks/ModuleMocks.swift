@@ -8653,16 +8653,31 @@ import RobinHood
     
     
     
-     func didReceiveFavorite(flag: Bool)  {
+     func didSet(isDesktop: Bool)  {
         
-    return cuckoo_manager.call("didReceiveFavorite(flag: Bool)",
-            parameters: (flag),
-            escapingParameters: (flag),
+    return cuckoo_manager.call("didSet(isDesktop: Bool)",
+            parameters: (isDesktop),
+            escapingParameters: (isDesktop),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveFavorite(flag: flag))
+            defaultCall: __defaultImplStub!.didSet(isDesktop: isDesktop))
+        
+    }
+    
+    
+    
+     func didSet(canShowSettings: Bool)  {
+        
+    return cuckoo_manager.call("didSet(canShowSettings: Bool)",
+            parameters: (canShowSettings),
+            escapingParameters: (canShowSettings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didSet(canShowSettings: canShowSettings))
         
     }
     
@@ -8700,9 +8715,14 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveFavorite<M1: Cuckoo.Matchable>(flag: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: flag) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveFavorite(flag: Bool)", parameterMatchers: matchers))
+	    func didSet<M1: Cuckoo.Matchable>(isDesktop: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didSet(isDesktop: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didSet<M1: Cuckoo.Matchable>(canShowSettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: canShowSettings) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didSet(canShowSettings: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -8750,9 +8770,15 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func didReceiveFavorite<M1: Cuckoo.Matchable>(flag: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: flag) { $0 }]
-	        return cuckoo_manager.verify("didReceiveFavorite(flag: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didSet<M1: Cuckoo.Matchable>(isDesktop: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return cuckoo_manager.verify("didSet(isDesktop: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didSet<M1: Cuckoo.Matchable>(canShowSettings: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: canShowSettings) { $0 }]
+	        return cuckoo_manager.verify("didSet(canShowSettings: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -8802,7 +8828,13 @@ import RobinHood
     
     
     
-     func didReceiveFavorite(flag: Bool)   {
+     func didSet(isDesktop: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didSet(canShowSettings: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -8895,16 +8927,16 @@ import RobinHood
     
     
     
-     func toggleFavorite()  {
+     func showSettings(using isDesktop: Bool)  {
         
-    return cuckoo_manager.call("toggleFavorite()",
-            parameters: (),
-            escapingParameters: (),
+    return cuckoo_manager.call("showSettings(using: Bool)",
+            parameters: (isDesktop),
+            escapingParameters: (isDesktop),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.toggleFavorite())
+            defaultCall: __defaultImplStub!.showSettings(using: isDesktop))
         
     }
     
@@ -8952,9 +8984,9 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "activateSearch(with: String?)", parameterMatchers: matchers))
 	    }
 	    
-	    func toggleFavorite() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "toggleFavorite()", parameterMatchers: matchers))
+	    func showSettings<M1: Cuckoo.Matchable>(using isDesktop: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "showSettings(using: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	    func close() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -9003,9 +9035,9 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func toggleFavorite() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("toggleFavorite()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showSettings<M1: Cuckoo.Matchable>(using isDesktop: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isDesktop) { $0 }]
+	        return cuckoo_manager.verify("showSettings(using: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -9049,7 +9081,7 @@ import RobinHood
     
     
     
-     func toggleFavorite()   {
+     func showSettings(using isDesktop: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -9206,6 +9238,21 @@ import RobinHood
         
     }
     
+    
+    
+     func save(settings: DAppGlobalSettings)  {
+        
+    return cuckoo_manager.call("save(settings: DAppGlobalSettings)",
+            parameters: (settings),
+            escapingParameters: (settings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.save(settings: settings))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -9253,6 +9300,11 @@ import RobinHood
 	    func reload() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "reload()", parameterMatchers: matchers))
+	    }
+	    
+	    func save<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppGlobalSettings)> where M1.MatchedType == DAppGlobalSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "save(settings: DAppGlobalSettings)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -9319,6 +9371,12 @@ import RobinHood
 	        return cuckoo_manager.verify("reload()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func save<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.__DoNotUse<(DAppGlobalSettings), Void> where M1.MatchedType == DAppGlobalSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
+	        return cuckoo_manager.verify("save(settings: DAppGlobalSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -9373,6 +9431,12 @@ import RobinHood
     
     
      func reload()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func save(settings: DAppGlobalSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -9523,6 +9587,21 @@ import RobinHood
         
     }
     
+    
+    
+     func didChangeGlobal(settings: DAppGlobalSettings)  {
+        
+    return cuckoo_manager.call("didChangeGlobal(settings: DAppGlobalSettings)",
+            parameters: (settings),
+            escapingParameters: (settings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didChangeGlobal(settings: settings))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -9570,6 +9649,11 @@ import RobinHood
 	    func didReceiveFavorite<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<DAppFavorite>])> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
 	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
+	    }
+	    
+	    func didChangeGlobal<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppGlobalSettings)> where M1.MatchedType == DAppGlobalSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didChangeGlobal(settings: DAppGlobalSettings)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -9636,6 +9720,12 @@ import RobinHood
 	        return cuckoo_manager.verify("didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didChangeGlobal<M1: Cuckoo.Matchable>(settings: M1) -> Cuckoo.__DoNotUse<(DAppGlobalSettings), Void> where M1.MatchedType == DAppGlobalSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppGlobalSettings)>] = [wrap(matchable: settings) { $0 }]
+	        return cuckoo_manager.verify("didChangeGlobal(settings: DAppGlobalSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -9690,6 +9780,12 @@ import RobinHood
     
     
      func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didChangeGlobal(settings: DAppGlobalSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -9797,6 +9893,36 @@ import RobinHood
     
     
     
+     func presentSettings(from view: DAppBrowserViewProtocol?, state: DAppSettingsInput, delegate: DAppSettingsDelegate)  {
+        
+    return cuckoo_manager.call("presentSettings(from: DAppBrowserViewProtocol?, state: DAppSettingsInput, delegate: DAppSettingsDelegate)",
+            parameters: (view, state, delegate),
+            escapingParameters: (view, state, delegate),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSettings(from: view, state: state, delegate: delegate))
+        
+    }
+    
+    
+    
+     func hideSettings(from view: DAppBrowserViewProtocol?)  {
+        
+    return cuckoo_manager.call("hideSettings(from: DAppBrowserViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.hideSettings(from: view))
+        
+    }
+    
+    
+    
      func close(view: DAppBrowserViewProtocol?)  {
         
     return cuckoo_manager.call("close(view: DAppBrowserViewProtocol?)",
@@ -9842,6 +9968,16 @@ import RobinHood
 	    func presentAddToFavoriteForm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, page: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppBrowserPage)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppBrowserPage {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppBrowserPage)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: page) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentAddToFavoriteForm(from: DAppBrowserViewProtocol?, page: DAppBrowserPage)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, state: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppSettingsInput, DAppSettingsDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppSettingsInput, M3.MatchedType == DAppSettingsDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppSettingsInput, DAppSettingsDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: state) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentSettings(from: DAppBrowserViewProtocol?, state: DAppSettingsInput, delegate: DAppSettingsDelegate)", parameterMatchers: matchers))
+	    }
+	    
+	    func hideSettings<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?)> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "hideSettings(from: DAppBrowserViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?)> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
@@ -9896,6 +10032,18 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
+	    func presentSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, state: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppSettingsInput, DAppSettingsDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppSettingsInput, M3.MatchedType == DAppSettingsDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppSettingsInput, DAppSettingsDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: state) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return cuckoo_manager.verify("presentSettings(from: DAppBrowserViewProtocol?, state: DAppSettingsInput, delegate: DAppSettingsDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func hideSettings<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("hideSettings(from: DAppBrowserViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("close(view: DAppBrowserViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -9937,6 +10085,18 @@ import RobinHood
     
     
      func presentAddToFavoriteForm(from view: DAppBrowserViewProtocol?, page: DAppBrowserPage)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentSettings(from view: DAppBrowserViewProtocol?, state: DAppSettingsInput, delegate: DAppSettingsDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func hideSettings(from view: DAppBrowserViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
