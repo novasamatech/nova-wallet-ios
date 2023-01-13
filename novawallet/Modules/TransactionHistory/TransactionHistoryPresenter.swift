@@ -64,8 +64,7 @@ final class TransactionHistoryPresenter {
     }
 
     private func reloadView(
-        items: [String: TransactionHistoryItem],
-        animating: Bool = true
+        items: [String: TransactionHistoryItem]
     ) {
         guard let view = view, let accountAddress = accountAddress else {
             return
@@ -87,7 +86,7 @@ final class TransactionHistoryPresenter {
             )
         }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
-        view.didReceive(viewModel: sections, animating: animating)
+        view.didReceive(viewModel: sections)
     }
 
     private func reloadView() {
@@ -102,7 +101,7 @@ final class TransactionHistoryPresenter {
             )
         }.compactMap { $0 }.sorted(by: { $0.date > $1.date })
 
-        view.didReceive(viewModel: sections, animating: true)
+        view.didReceive(viewModel: sections)
     }
 }
 
@@ -168,7 +167,7 @@ extension TransactionHistoryPresenter: TransactionHistoryInteractorOutputProtoco
             state = .cacheLoaded
         }
         items = changes.mergeToDict(items)
-        reloadView(items: items, animating: false)
+        reloadView(items: items)
     }
 
     func didReceive(nextItems: [TransactionHistoryItem]) {

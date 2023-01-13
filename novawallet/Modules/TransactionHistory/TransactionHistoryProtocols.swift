@@ -4,7 +4,7 @@ import RobinHood
 protocol TransactionHistoryViewProtocol: ControllerBackedProtocol, Draggable {
     func startLoading()
     func stopLoading()
-    func didReceive(viewModel: [TransactionSectionModel], animating: Bool)
+    func didReceive(viewModel: [TransactionSectionModel])
 }
 
 protocol TransactionHistoryPresenterProtocol: AnyObject {
