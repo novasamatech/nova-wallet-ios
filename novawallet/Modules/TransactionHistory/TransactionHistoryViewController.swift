@@ -357,7 +357,7 @@ extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
         isLoading = false
     }
 
-    func didReceive(viewModel: [TransactionSectionModel], animating: Bool) {
+    func didReceive(viewModel: [TransactionSectionModel]) {
         isLoading = false
         self.viewModel = viewModel
         var snapshot = NSDiffableDataSourceSnapshot<TransactionSectionModel, TransactionItemViewModel>()
@@ -365,7 +365,7 @@ extension TransactionHistoryViewController: TransactionHistoryViewProtocol {
         viewModel.forEach { section in
             snapshot.appendItems(section.items, toSection: section)
         }
-        dataSource?.apply(snapshot, animatingDifferences: animating)
+        dataSource?.apply(snapshot, animatingDifferences: false)
         reloadEmptyState(animated: false)
     }
 }
