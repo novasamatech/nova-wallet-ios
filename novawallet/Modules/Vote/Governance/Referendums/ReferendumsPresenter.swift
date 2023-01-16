@@ -76,7 +76,6 @@ final class ReferendumsPresenter {
         maxStatusTimeInterval = nil
         timeModels = nil
 
-        view?.didReceiveUnlocks(viewModel: nil)
         view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
     }
 
@@ -98,33 +97,6 @@ final class ReferendumsPresenter {
         view?.didReceiveChainBalance(viewModel: viewModel)
     }
 
-    private func updateUnlocksView() {
-        guard
-            let totalLocked = voting?.value?.totalLocked(),
-            totalLocked > 0,
-            let displayInfo = chain?.utilityAssetDisplayInfo()
-        else {
-            view?.didReceiveUnlocks(viewModel: nil)
-            return
-        }
-
-        let totalLockedDecimal = Decimal.fromSubstrateAmount(totalLocked, precision: displayInfo.assetPrecision) ?? 0
-
-        let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: displayInfo)
-        let totalLockedString = tokenFormatter.value(for: selectedLocale).stringFromDecimal(totalLockedDecimal)
-
-        let hasUnlock: Bool
-
-        if let blockNumber = blockNumber, let unlockSchedule = unlockSchedule {
-            hasUnlock = unlockSchedule.availableUnlock(at: blockNumber).amount > 0
-        } else {
-            hasUnlock = false
-        }
-
-        let viewModel = ReferendumsUnlocksViewModel(totalLock: totalLockedString ?? "", hasUnlock: hasUnlock)
-        view?.didReceiveUnlocks(viewModel: viewModel)
-    }
-
     private func updateReferendumsView() {
         guard let view = view else {
             return
@@ -142,6 +114,8 @@ final class ReferendumsPresenter {
             metadataMapping: referendumsMetadata,
             votes: accountVotes?.votes ?? [:],
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
+            voting: voting?.value,
+            unlockSchedule: unlockSchedule,
             locale: selectedLocale
         ))
 
@@ -263,6 +237,10 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
 
         wireframe.showUnlocksDetails(from: view, initData: initData)
     }
+
+    func selectDelegations() {
+        wireframe.showDelegations(from: view)
+    }
 }
 
 extension ReferendumsPresenter: VoteChildPresenterProtocol {
@@ -293,7 +271,6 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
         self.voting = voting
         updateReferendumsView()
-        updateUnlocksView()
 
         if let tracksVoting = voting.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
@@ -354,7 +331,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule) {
         self.unlockSchedule = unlockSchedule
-        updateUnlocksView()
+        updateReferendumsView()
     }
 
     func didReceiveError(_ error: ReferendumsInteractorError) {
@@ -416,7 +393,6 @@ extension ReferendumsPresenter: Localizable {
             provideChainBalance()
 
             updateReferendumsView()
-            updateUnlocksView()
         }
     }
 }
