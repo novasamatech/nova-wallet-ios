@@ -51,4 +51,14 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
+
+    func showDelegations(from view: ControllerBackedProtocol?) {
+        guard let delegationsView = AddDelegationViewFactory.createView() else {
+            return
+        }
+
+        delegationsView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(delegationsView.controller, animated: true)
+    }
 }
