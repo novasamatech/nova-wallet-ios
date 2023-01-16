@@ -7,6 +7,8 @@ struct ReferendumsModelFactoryInput {
     let metadataMapping: [ReferendumIdLocal: ReferendumMetadataLocal]?
     let votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]
     let chainInfo: ChainInformation
+    let voting: ReferendumTracksVotingDistribution?
+    let unlockSchedule: GovernanceUnlockSchedule?
     let locale: Locale
 
     struct ChainInformation {
@@ -507,6 +509,66 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
     }
 
     func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection] {
+        var sections: [ReferendumsSection] = []
+        var actions: [ReferendumActions] = []
+        if let referendumsUnlocksViewModel = createReferendumsUnlocksViewModel(
+            chain: input.chainInfo.chain,
+            voting: input.voting,
+            blockNumber: input.chainInfo.currentBlock,
+            unlockSchedule: input.unlockSchedule,
+            locale: input.locale
+        ) {
+            actions.append(.locks(referendumsUnlocksViewModel))
+        }
+        actions.append(.delegations)
+        sections.append(.actions(actions))
+
+        let referendumsCellViewModels = createReferendumsCellViewModels(input: input)
+        if !referendumsCellViewModels.active.isEmpty || referendumsCellViewModels.completed.isEmpty {
+            // still add empty section to display empty state
+            let title = Strings.governanceReferendumsActive(preferredLanguages: input.locale.rLanguages)
+            sections.append(.active(.loaded(value: title), referendumsCellViewModels.active))
+        }
+        if !referendumsCellViewModels.completed.isEmpty {
+            let title = Strings.commonCompleted(preferredLanguages: input.locale.rLanguages)
+            sections.append(.completed(.loaded(value: title), referendumsCellViewModels.completed))
+        }
+        return sections
+    }
+
+    private func createReferendumsUnlocksViewModel(
+        chain: ChainModel,
+        voting: ReferendumTracksVotingDistribution?,
+        blockNumber: BlockNumber?,
+        unlockSchedule: GovernanceUnlockSchedule?,
+        locale: Locale
+    ) -> ReferendumsUnlocksViewModel? {
+        guard
+            let totalLocked = voting?.totalLocked(),
+            totalLocked > 0,
+            let displayInfo = chain.utilityAssetDisplayInfo()
+        else {
+            return nil
+        }
+
+        let totalLockedDecimal = Decimal.fromSubstrateAmount(totalLocked, precision: displayInfo.assetPrecision) ?? 0
+
+        let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: displayInfo)
+        let totalLockedString = tokenFormatter.value(for: locale).stringFromDecimal(totalLockedDecimal)
+
+        let hasUnlock: Bool
+
+        if let blockNumber = blockNumber, let unlockSchedule = unlockSchedule {
+            hasUnlock = unlockSchedule.availableUnlock(at: blockNumber).amount > 0
+        } else {
+            hasUnlock = false
+        }
+
+        return ReferendumsUnlocksViewModel(totalLock: totalLockedString ?? "", hasUnlock: hasUnlock)
+    }
+
+    private func createReferendumsCellViewModels(input: ReferendumsModelFactoryInput) ->
+        (active: [ReferendumsCellViewModel], completed: [ReferendumsCellViewModel]) {
         var active: [ReferendumsCellViewModel] = []
         var completed: [ReferendumsCellViewModel] = []
 
@@ -533,17 +595,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
             referendum.state.completed ? completed.append(viewModel) : active.append(viewModel)
         }
-        var sections: [ReferendumsSection] = []
-        if !active.isEmpty || completed.isEmpty {
-            // still add empty section to display empty state
-            let title = Strings.governanceReferendumsActive(preferredLanguages: input.locale.rLanguages)
-            sections.append(.active(.loaded(value: title), active))
-        }
-        if !completed.isEmpty {
-            let title = Strings.commonCompleted(preferredLanguages: input.locale.rLanguages)
-            sections.append(.completed(.loaded(value: title), completed))
-        }
-        return sections
+        return (active: active, completed: completed)
     }
 
     func createViewModel(
