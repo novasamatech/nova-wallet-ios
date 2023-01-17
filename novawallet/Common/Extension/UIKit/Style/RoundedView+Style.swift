@@ -92,6 +92,16 @@ extension RoundedView.Style {
         return chipsStyle
     }
 
+    static func rounded(radius: CGFloat) -> RoundedView.Style {
+        RoundedView.Style(
+            shadowOpacity: 0,
+            strokeWidth: 0,
+            fillColor: .clear,
+            highlightedFillColor: .clear,
+            rounding: .init(radius: radius, corners: .allCorners)
+        )
+    }
+
     static let container = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0.5,
