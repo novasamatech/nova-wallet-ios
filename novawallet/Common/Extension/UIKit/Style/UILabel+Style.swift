@@ -36,6 +36,11 @@ extension UILabel.Style {
         font: .caption1
     )
 
+    static let caption2Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .caption2
+    )
+
     static let regularSubhedlinePrimary = UILabel.Style(
         textColor: R.color.colorTextPrimary(),
         font: .regularSubheadline
