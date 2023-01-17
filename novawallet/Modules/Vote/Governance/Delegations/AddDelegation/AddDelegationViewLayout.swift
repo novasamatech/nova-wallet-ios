@@ -17,7 +17,12 @@ final class AddDelegationViewLayout: UIView {
         sortView
     ])
 
-    let tableView = UITableView()
+    let tableView: UITableView = .create {
+        $0.separatorStyle = .none
+        $0.backgroundColor = .clear
+        $0.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
+        $0.registerClassForCell(DelegateTableViewCell.self)
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
