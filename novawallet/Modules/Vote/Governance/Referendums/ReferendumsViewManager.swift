@@ -55,12 +55,15 @@ extension ReferendumsViewManager: UITableViewDataSource {
             switch personal {
             case let .locks(unlocksViewModel):
                 let unlocksCell: ReferendumsUnlocksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                unlocksCell.applyStyle()
+                unlocksCell.applyStyle(cornerCut: personalActivities.count > 1 ?
+                    [.topLeft, .topRight] : .allCorners)
                 unlocksCell.view.bind(viewModel: unlocksViewModel, locale: locale)
                 return unlocksCell
             case let .delegations(delegationsViewModel):
-                let delegationCell: ReferendumsDelegationsTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                delegationCell.applyStyle()
+                let delegationCell: ReferendumsDelegationsTableViewCell =
+                    tableView.dequeueReusableCell(for: indexPath)
+                delegationCell.applyStyle(cornerCut: personalActivities.count > 1 ?
+                    [.bottomLeft, .bottomRight] : .allCorners)
                 delegationCell.view.bind(viewModel: delegationsViewModel, locale: locale)
                 return delegationCell
             }
