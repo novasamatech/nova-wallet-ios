@@ -1673,6 +1673,21 @@ import RobinHood
         
     }
     
+    
+    
+     func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings> {
+        
+    return cuckoo_manager.call("createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createDAppsGlobalSettingsRepository())
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountRepositoryFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -1700,6 +1715,11 @@ import RobinHood
 	    func createAuthorizedDAppsRepository<M1: Cuckoo.Matchable>(for metaId: M1) -> Cuckoo.ProtocolStubFunction<(String), AnyDataProviderRepository<DAppSettings>> where M1.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: metaId) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createAuthorizedDAppsRepository(for: String) -> AnyDataProviderRepository<DAppSettings>", parameterMatchers: matchers))
+	    }
+	    
+	    func createDAppsGlobalSettingsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<DAppGlobalSettings>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1742,6 +1762,12 @@ import RobinHood
 	        return cuckoo_manager.verify("createAuthorizedDAppsRepository(for: String) -> AnyDataProviderRepository<DAppSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func createDAppsGlobalSettingsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<DAppGlobalSettings>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -1773,6 +1799,12 @@ import RobinHood
     
      func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppSettings>).self)
+    }
+    
+    
+    
+     func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>  {
+        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppGlobalSettings>).self)
     }
     
 }

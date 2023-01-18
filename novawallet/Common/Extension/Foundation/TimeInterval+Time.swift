@@ -15,6 +15,7 @@ extension TimeInterval {
 
     var seconds: TimeInterval { self / 1000 }
     var minutesFromSeconds: Int { Int(self / Self.secondsInMinute) }
+    var secondsFromMinutes: TimeInterval { self * Self.secondsInMinute }
     var daysFromSeconds: Int { Int(self / Self.secondsInDay) }
     var fractionDaysFromSeconds: Decimal { Decimal(self) / Decimal(Self.secondsInDay) }
     var secondsFromDays: TimeInterval { self * Self.secondsInDay }
