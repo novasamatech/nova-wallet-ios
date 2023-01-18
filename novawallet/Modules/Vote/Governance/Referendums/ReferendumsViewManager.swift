@@ -39,7 +39,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch referendumsViewModel.sections[section] {
-        case let .actions(actions):
+        case let .personalActivities(actions):
             return actions.count
         case let .active(_, cells), let .completed(_, cells):
             return !cells.isEmpty ? cells.count : 1
@@ -50,9 +50,9 @@ extension ReferendumsViewManager: UITableViewDataSource {
         let section = referendumsViewModel.sections[indexPath.section]
 
         switch section {
-        case let .actions(actions):
-            let action = actions[indexPath.row]
-            switch action {
+        case let .personalActivities(personalActivities):
+            let personal = personalActivities[indexPath.row]
+            switch personal {
             case let .locks(unlocksViewModel):
                 let unlocksCell: ReferendumsUnlocksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 unlocksCell.applyStyle()
@@ -89,7 +89,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[indexPath.section]
 
         switch section {
-        case let .actions(actions):
+        case let .personalActivities(actions):
             let action = actions[indexPath.row]
             switch action {
             case .locks:
@@ -109,7 +109,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .actions:
+        case .personalActivities:
             return nil
         case let .active(title, cells), let .completed(title, cells):
             let headerView: VoteStatusSectionView = tableView.dequeueReusableHeaderFooterView()
@@ -129,7 +129,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[section]
 
         switch section {
-        case .actions:
+        case .personalActivities:
             return 0
         case let .active(title, _), let .completed(title, _):
             switch title {
@@ -145,7 +145,7 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[indexPath.section]
 
         switch section {
-        case .actions:
+        case .personalActivities:
             return Constants.unlocksCellHeight
         case let .active(_, cells), let .completed(_, cells):
             switch cells[safe: indexPath.row]?.viewModel {
@@ -185,7 +185,7 @@ extension ReferendumsViewManager: ReferendumsViewProtocol {
             let section = referendumsViewModel.sections[indexPath.section]
 
             switch section {
-            case .actions:
+            case .personalActivities:
                 break
             case let .active(_, cells), let .completed(_, cells):
                 let cellModel = cells[indexPath.row]
