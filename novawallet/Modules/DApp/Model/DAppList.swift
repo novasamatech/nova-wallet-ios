@@ -15,7 +15,7 @@ struct DApp: Codable, Equatable {
     let url: URL
     let icon: URL?
     let categories: [String]
-
+    let desktopOnly: Bool?
     var identifier: String { url.absoluteString }
 }
 

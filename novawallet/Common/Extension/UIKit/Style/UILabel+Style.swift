@@ -50,4 +50,9 @@ extension UILabel.Style {
         textColor: R.color.colorTextPrimary()!,
         font: .boldTitle2
     )
+
+    static let bottomSheetTitle = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldBody
+    )
 }

@@ -85,9 +85,7 @@ extension AuthorizationPresentable {
             return
         }
 
-        guard let presentingController = UIApplication.shared.keyWindow?
-            .rootViewController?.topModalViewController
-        else {
+        guard let presentingController = UIApplication.shared.keyWindow?.rootViewController?.topModalViewController else {
             return
         }
 
@@ -103,7 +101,7 @@ extension AuthorizationPresentable {
         self.authorizationView = authorizationView
 
         authorizationView.controller.modalTransitionStyle = .crossDissolve
-        authorizationView.controller.modalPresentationStyle = .fullScreen
+        authorizationView.controller.modalPresentationStyle = .overFullScreen
         presentingController.present(authorizationView.controller, animated: animated, completion: nil)
     }
 }
