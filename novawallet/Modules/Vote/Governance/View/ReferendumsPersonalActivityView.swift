@@ -82,9 +82,10 @@ typealias ReferendumsUnlocksTableViewCell = BlurredTableViewCell<ReferendumsPers
 typealias ReferendumsDelegationsTableViewCell = BlurredTableViewCell<ReferendumsPersonalActivityView>
 
 extension BlurredTableViewCell where TContentView == ReferendumsPersonalActivityView {
-    func applyStyle() {
+    func applyStyle(cornerCut: UIRectCorner = .allCorners) {
         shouldApplyHighlighting = true
         contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         innerInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        backgroundBlurView.cornerCut = cornerCut
     }
 }
