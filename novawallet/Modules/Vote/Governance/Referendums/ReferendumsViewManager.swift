@@ -58,10 +58,10 @@ extension ReferendumsViewManager: UITableViewDataSource {
                 unlocksCell.applyStyle()
                 unlocksCell.view.bind(viewModel: unlocksViewModel, locale: locale)
                 return unlocksCell
-            case .delegations:
-                let delegationCell: ReferendumsUnlocksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            case let .delegations(delegationsViewModel):
+                let delegationCell: ReferendumsDelegationsTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 delegationCell.applyStyle()
-                delegationCell.view.titleLabel.text = "Add Delegation"
+                delegationCell.view.bind(viewModel: delegationsViewModel, locale: locale)
                 return delegationCell
             }
         case let .active(_, cells), let .completed(_, cells):
@@ -213,6 +213,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.delegate = self
         tableView.registerClassForCell(ReferendumTableViewCell.self)
         tableView.registerClassForCell(ReferendumsUnlocksTableViewCell.self)
+        tableView.registerClassForCell(ReferendumsDelegationsTableViewCell.self)
         tableView.registerClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
         tableView.registerHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
@@ -223,6 +224,7 @@ extension ReferendumsViewManager: VoteChildViewProtocol {
         tableView.delegate = nil
         tableView.unregisterClassForCell(ReferendumTableViewCell.self)
         tableView.unregisterClassForCell(ReferendumsUnlocksTableViewCell.self)
+        tableView.unregisterClassForCell(ReferendumsDelegationsTableViewCell.self)
         tableView.unregisterClassForCell(BlurredTableViewCell<CrowdloanEmptyView>.self)
         tableView.unregisterHeaderFooterView(withClass: VoteStatusSectionView.self)
         tableView.reloadData()
