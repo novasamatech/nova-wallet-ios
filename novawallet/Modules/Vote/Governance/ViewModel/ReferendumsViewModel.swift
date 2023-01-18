@@ -3,12 +3,12 @@ struct ReferendumsViewModel {
 }
 
 enum ReferendumsSection {
-    case actions([ReferendumActions])
+    case personalActivities([ReferendumPersonalActivity])
     case active(LoadableViewModelState<String>, [ReferendumsCellViewModel])
     case completed(LoadableViewModelState<String>, [ReferendumsCellViewModel])
 }
 
-enum ReferendumActions {
+enum ReferendumPersonalActivity {
     case locks(ReferendumsUnlocksViewModel)
     case delegations(ReferendumsDelegationViewModel)
 }
