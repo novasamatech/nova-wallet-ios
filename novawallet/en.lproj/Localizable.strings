@@ -1111,3 +1111,11 @@
 "add.token.contract.metadata.error.title" = "Metadata fetch failed";
 "add.token.contract.metadata.error.message" = "Contract metadata fetch failed";
 "add.token.invalid.decimals.message" = "Decimals must be at least 0, and not over %@.";
+"delegations.sort.title" = "Sort by";
+"delegations.sort.delegations" = "Delegations";
+"delegations.sort.delegatedVotes" = "Delegated votes";
+"delegations.sort.lastVoted" = "Voted last 30 days";
+"delegations.show.title" = "Show";
+"delegations.show.individuals" = "Individuals";
+"delegations.show.organizations" = "Organizations";
+"delegations.show.all" = "All accounts";
