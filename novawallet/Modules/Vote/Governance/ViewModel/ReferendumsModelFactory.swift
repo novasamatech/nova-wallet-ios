@@ -520,7 +520,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         ) {
             actions.append(.locks(referendumsUnlocksViewModel))
         }
-        actions.append(.delegations)
+        actions.append(.delegations(.addDelegation))
         sections.append(.actions(actions))
 
         let referendumsCellViewModels = createReferendumsCellViewModels(input: input)

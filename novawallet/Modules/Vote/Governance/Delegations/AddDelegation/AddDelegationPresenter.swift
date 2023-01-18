@@ -12,29 +12,10 @@ final class AddDelegationPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
     }
-    
 }
 
 extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     func setup() {}
-
-    func selectDelegate(_: DelegateTableViewCell.Model) {}
-
-    func closeBanner() {}
-
-    func showAddDelegateInformation() {}
-
-    func showSortOptions() {}
-
-    func showFilters() {
-        
-    }
 }
 
-extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
-    
-    func didReceive(delegators: Any) {
-        
-    }
-    
-}
+extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {}
