@@ -10,10 +10,8 @@ enum ReferendumsSection {
 
 enum ReferendumActions {
     case locks(ReferendumsUnlocksViewModel)
-    case delegations
+    case delegations(ReferendumsDelegationViewModel)
 }
-
-struct ReferendumsDelegationViewModel {}
 
 struct ReferendumsCellViewModel {
     var referendumIndex: UInt
