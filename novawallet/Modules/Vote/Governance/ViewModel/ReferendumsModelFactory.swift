@@ -510,7 +510,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
 
     func createSections(input: ReferendumsModelFactoryInput) -> [ReferendumsSection] {
         var sections: [ReferendumsSection] = []
-        var actions: [ReferendumActions] = []
+        var actions: [ReferendumPersonalActivity] = []
         if let referendumsUnlocksViewModel = createReferendumsUnlocksViewModel(
             chain: input.chainInfo.chain,
             voting: input.voting,
@@ -521,7 +521,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             actions.append(.locks(referendumsUnlocksViewModel))
         }
         actions.append(.delegations(.addDelegation))
-        sections.append(.actions(actions))
+        sections.append(.personalActivities(actions))
 
         let referendumsCellViewModels = createReferendumsCellViewModels(input: input)
         if !referendumsCellViewModels.active.isEmpty || referendumsCellViewModels.completed.isEmpty {
