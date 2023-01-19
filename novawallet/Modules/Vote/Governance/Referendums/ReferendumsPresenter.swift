@@ -9,6 +9,7 @@ final class ReferendumsPresenter {
     let interactor: ReferendumsInteractorInputProtocol
     let wireframe: ReferendumsWireframeProtocol
     let viewModelFactory: ReferendumsModelFactoryProtocol
+    let activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let sorting: ReferendumsSorting
@@ -36,6 +37,10 @@ final class ReferendumsPresenter {
         selectedOption?.type
     }
 
+    private var supportsDelegations: Bool {
+        governanceType == .governanceV2
+    }
+
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
     deinit {
@@ -46,6 +51,7 @@ final class ReferendumsPresenter {
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
         viewModelFactory: ReferendumsModelFactoryProtocol,
+        activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         sorting: ReferendumsSorting,
@@ -55,6 +61,7 @@ final class ReferendumsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.activityViewModelFactory = activityViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.sorting = sorting
@@ -109,17 +116,36 @@ final class ReferendumsPresenter {
         }
 
         let accountVotes = voting?.value?.votes
-        let sections = viewModelFactory.createSections(input: .init(
+        let referendumsSections = viewModelFactory.createSections(input: .init(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: accountVotes?.votes ?? [:],
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
-            voting: voting?.value,
-            unlockSchedule: unlockSchedule,
             locale: selectedLocale
         ))
 
-        view.update(model: .init(sections: sections))
+        let activitySection: ReferendumsSection
+
+        if supportsDelegations {
+            activitySection = activityViewModelFactory.createReferendumsActivitySection(
+                chain: chainModel,
+                voting: voting?.value,
+                blockNumber: currentBlock,
+                unlockSchedule: unlockSchedule,
+                locale: selectedLocale
+            )
+        } else {
+            activitySection = activityViewModelFactory.createReferendumsActivitySectionWithoutDelegations(
+                chain: chainModel,
+                voting: voting?.value,
+                blockNumber: currentBlock,
+                unlockSchedule: unlockSchedule,
+                locale: selectedLocale
+            )
+        }
+
+        let allSections = [activitySection] + referendumsSections
+        view.update(model: .init(sections: allSections))
     }
 
     private func updateTimeModels() {
