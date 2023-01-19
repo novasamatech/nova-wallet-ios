@@ -7,12 +7,12 @@ protocol ReferendumsViewProtocol: ControllerBackedProtocol {
     func didReceiveChainBalance(viewModel: ChainBalanceViewModel)
     func update(model: ReferendumsViewModel)
     func updateReferendums(time: [UInt: StatusTimeViewModel?])
-    func didReceiveUnlocks(viewModel: ReferendumsUnlocksViewModel?)
 }
 
 protocol ReferendumsPresenterProtocol: AnyObject {
     func select(referendumIndex: UInt)
     func selectUnlocks()
+    func selectDelegations()
 }
 
 protocol ReferendumsInteractorInputProtocol: AnyObject {
@@ -50,4 +50,6 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
     func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
 
     func showUnlocksDetails(from view: ControllerBackedProtocol?, initData: GovernanceUnlockInitData)
+
+    func showDelegations(from view: ControllerBackedProtocol?)
 }
