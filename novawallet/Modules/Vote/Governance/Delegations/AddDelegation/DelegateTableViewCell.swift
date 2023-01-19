@@ -1,9 +1,9 @@
 import UIKit
 import SoraUI
 
-final class DelegateTableViewCell: UITableViewCell {
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+final class DelegateView: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         setupLayout()
     }
@@ -13,7 +13,10 @@ final class DelegateTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    let avatarView = RoundedView()
+    let avatarView: DAppIconView = .create {
+        $0.contentInsets = .zero
+    }
+
     let nameLabel = UILabel(style: .regularSubhedlinePrimary)
     let typeView: BorderedIconLabelView = .create {
         $0.iconDetailsView.spacing = 6
@@ -28,21 +31,26 @@ final class DelegateTableViewCell: UITableViewCell {
     let votesValueLabel = UILabel(style: .footnotePrimary)
     let lastVotesTitleLabel = UILabel(style: .caption2Secondary)
     let lastVotesValueLabel = UILabel(style: .footnotePrimary)
-    let contentInsets = UIEdgeInsets(
-        top: 12,
-        left: 12,
-        bottom: 12,
-        right: 12
-    )
+
     var locale: Locale?
+    private var viewModel: Model?
 
     private func setupLayout() {
+        let lastVotes = UIView.vStack([
+            lastVotesTitleLabel,
+            lastVotesValueLabel
+        ])
+        lastVotes.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
         let contentView = UIView.vStack(spacing: 16, [
             .hStack(alignment: .center, spacing: 12, [
                 avatarView,
                 .vStack(spacing: 4, [
                     nameLabel,
-                    typeView
+                    .hStack([
+                        typeView,
+                        UIView()
+                    ])
                 ])
             ]),
             descriptionLabel,
@@ -57,16 +65,13 @@ final class DelegateTableViewCell: UITableViewCell {
                     votesValueLabel
                 ]),
                 Self.dividerView(),
-                .vStack([
-                    lastVotesTitleLabel,
-                    lastVotesValueLabel
-                ])
+                lastVotes
             ])
         ])
 
         addSubview(contentView)
         contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(contentInsets)
+            $0.edges.equalToSuperview()
         }
         avatarView.snp.makeConstraints {
             $0.size.equalTo(CGSize(width: 40, height: 40))
@@ -83,9 +88,25 @@ final class DelegateTableViewCell: UITableViewCell {
     }
 }
 
+typealias DelegateTableViewCell = BlurredTableViewCell<DelegateView>
+
 extension DelegateTableViewCell {
+    typealias Model = DelegateView.Model
+
+    func bind(viewModel: Model) {
+        view.bind(viewModel: viewModel)
+    }
+
+    func applyStyle() {
+        contentInsets = .init(top: 4, left: 0, bottom: 4, right: 0)
+        innerInsets = .init(top: 12, left: 12, bottom: 12, right: 12)
+        backgroundBlurView.sideLength = 12
+    }
+}
+
+extension DelegateView {
     struct Model: Hashable {
-        static func == (lhs: DelegateTableViewCell.Model, rhs: DelegateTableViewCell.Model) -> Bool {
+        static func == (lhs: DelegateView.Model, rhs: DelegateView.Model) -> Bool {
             lhs.id == rhs.id &&
                 lhs.name == rhs.name &&
                 lhs.type == rhs.type &&
@@ -117,7 +138,7 @@ extension DelegateTableViewCell {
     func bind(viewModel: Model) {
         switch viewModel.type {
         case .organization:
-            avatarView.apply(style: .roundedContainer(radius: 8))
+            avatarView.backgroundView.apply(style: .roundedContainer(radius: 8))
             typeView.apply(style: .organization)
             typeView.isHidden = false
             typeView.iconDetailsView.bind(viewModel: .init(
@@ -125,7 +146,7 @@ extension DelegateTableViewCell {
                 icon: R.image.iconOrganization()
             ))
         case .individual:
-            avatarView.apply(style: .rounded(radius: 20))
+            avatarView.backgroundView.apply(style: .rounded(radius: 20))
             typeView.apply(style: .individual)
             typeView.isHidden = false
             typeView.iconDetailsView.bind(viewModel: .init(
@@ -133,7 +154,7 @@ extension DelegateTableViewCell {
                 icon: R.image.iconIndividual()
             ))
         case .none:
-            avatarView.apply(style: .rounded(radius: 0))
+            avatarView.backgroundView.apply(style: .rounded(radius: 0))
             typeView.isHidden = true
             typeView.iconDetailsView.bind(viewModel: .init(
                 title: "",
@@ -141,6 +162,13 @@ extension DelegateTableViewCell {
             ))
         }
 
+        self.viewModel?.icon?.cancel(on: avatarView.imageView)
+        viewModel.icon?.loadImage(
+            on: avatarView.imageView,
+            targetSize: .init(width: 40, height: 40),
+            animated: true
+        )
+        nameLabel.text = viewModel.name
         descriptionLabel.text = viewModel.description
         delegationsTitleLabel.text = "Delegations"
         delegationsValueLabel.text = viewModel.delegations
@@ -148,10 +176,9 @@ extension DelegateTableViewCell {
         votesValueLabel.text = viewModel.votes
         lastVotesTitleLabel.text = "Voted last 30 days"
         lastVotesValueLabel.text = viewModel.lastVotes
+        self.viewModel = viewModel
     }
 }
-
-extension DelegateTableViewCell {}
 
 extension BorderedIconLabelView {
     struct Style {
@@ -174,8 +201,8 @@ extension BorderedIconLabelView.Style {
         background: .init(
             shadowOpacity: 0,
             strokeWidth: 0,
-            fillColor: R.color.colorOrganizationChipText()!,
-            highlightedFillColor: R.color.colorOrganizationChipText()!
+            fillColor: R.color.colorOrganizationChipBackground()!,
+            highlightedFillColor: R.color.colorOrganizationChipBackground()!
         )
     )
     static let individual = BorderedIconLabelView.Style(
@@ -186,8 +213,8 @@ extension BorderedIconLabelView.Style {
         background: .init(
             shadowOpacity: 0,
             strokeWidth: 0,
-            fillColor: R.color.colorIndividualChipText()!,
-            highlightedFillColor: R.color.colorIndividualChipText()!
+            fillColor: R.color.colorIndividualChipBackground()!,
+            highlightedFillColor: R.color.colorIndividualChipBackground()!
         )
     )
 }

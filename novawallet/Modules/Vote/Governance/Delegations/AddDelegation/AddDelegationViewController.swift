@@ -31,6 +31,7 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
 
         rootView.tableView.dataSource = dataSource
         rootView.tableView.delegate = self
+        rootView.bannerView.set(locale: selectedLocale)
         presenter.setup()
     }
 
@@ -43,6 +44,7 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
             let cell: DelegateTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             let cellModel = self.viewModel[indexPath.row]
             cell.bind(viewModel: cellModel)
+            cell.applyStyle()
             return cell
         }
     }
