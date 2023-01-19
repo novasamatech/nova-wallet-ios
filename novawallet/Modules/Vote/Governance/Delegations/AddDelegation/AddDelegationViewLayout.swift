@@ -11,12 +11,6 @@ final class AddDelegationViewLayout: UIView {
         $0.bind(title: "Sort by:", value: "Delegations")
     }
 
-    lazy var controlsView = UIView.hStack([
-        filterView,
-        FlexibleSpaceView(),
-        sortView
-    ])
-
     let tableView: UITableView = .create {
         $0.separatorStyle = .none
         $0.backgroundColor = .clear
@@ -36,20 +30,24 @@ final class AddDelegationViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(bannerView)
-        bannerView.snp.makeConstraints {
+        let topView = UIView.vStack(spacing: 16, [
+            bannerView,
+            UIView.hStack([
+                filterView,
+                UIView(),
+                sortView
+            ])
+        ])
+
+        sortView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        addSubview(topView)
+        topView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(12)
             $0.leading.trailing.equalToSuperview().inset(16)
         }
-        addSubview(controlsView)
-        controlsView.snp.makeConstraints {
-            $0.top.equalTo(bannerView.snp.bottom).offset(16)
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.height.equalTo(32)
-        }
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(controlsView.snp.bottom).offset(12)
+            $0.top.equalTo(topView.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(16)
             $0.bottom.equalToSuperview()
         }
@@ -75,23 +73,25 @@ final class DelegationsControlView: UIView {
     }
 
     private func setupLayout() {
-        let stack = UIView.hStack([
-            label,
-            control
-        ])
-        stack.spacing = 4
-        addSubview(stack)
-        label.setContentHuggingPriority(.required, for: .horizontal)
-        control.setContentHuggingPriority(.required, for: .horizontal)
-        stack.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        addSubview(label)
+        addSubview(control)
+
+        label.snp.makeConstraints {
+            $0.leading.top.bottom.equalToSuperview()
         }
+
+        control.snp.makeConstraints {
+            $0.leading.equalTo(label.snp.trailing)
+            $0.centerY.trailing.equalToSuperview()
+        }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        .init(width: label.intrinsicContentSize.width + control.intrinsicContentSize.width + 4, height: UIView.noIntrinsicMetric)
     }
 
     func bind(title: String, value: String) {
         label.text = title
         control.iconDetailsView.detailsLabel.text = value
-        control.invalidateLayout()
-        control.setNeedsLayout()
     }
 }
