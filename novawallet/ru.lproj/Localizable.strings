@@ -1036,6 +1036,8 @@
 "governance.referendums.status.approved" = "Одобрен";
 "governance.referendums.your.vote" = "Ваш голос: %@ голосов";
 "governance.referendums.threshold" = "Порог: %@ из %@";
+"governance.referendums.yourDelegations" = "Ваши делегации";
+"governance.referendums.addDelegation" = "Добавить делегацию";
 "gov.referendum.title.fallback" = "Референдум %@";
 "tabbar.governance.title" = "Демократия";
 "governance.to.pass.format" = "Для принятия: %@";

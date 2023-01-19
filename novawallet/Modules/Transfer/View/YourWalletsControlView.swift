@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 final class YourWalletsControl: BaseActionControl {
-    let color = R.color.colorButtonTextAccent()!
+    var color = R.color.colorButtonTextAccent()!
 
     lazy var iconDetailsView: YourWalletsIconDetailsView = .create {
         $0.detailsLabel.textColor = color
