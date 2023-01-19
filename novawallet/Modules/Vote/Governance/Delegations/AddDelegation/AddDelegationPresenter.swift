@@ -32,8 +32,7 @@ final class AddDelegationPresenter {
 
     func convertMetadata(_ delegateMetadata: DelegateMetadataLocal, chainAsset: AssetModel) -> DelegateTableViewCell.Model {
         let url = delegateMetadata.profileImageUrl
-            .map { URL(string: $0) }
-            .map { RemoteImageViewModel(url: $0) }
+            .map { RemoteImageViewModel(url: URL(string: $0)!) }
 
         return DelegateTableViewCell.Model(
             id: delegateMetadata.identifier,
