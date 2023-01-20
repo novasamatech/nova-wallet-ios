@@ -2,21 +2,6 @@ import UIKit
 import SoraUI
 
 final class DelegateView: UIView {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    let avatarView: DAppIconView = .create {
-        $0.contentInsets = .zero
-    }
-
     let nameLabel = UILabel(style: .regularSubhedlinePrimary)
     let typeView: BorderedIconLabelView = .create {
         $0.iconDetailsView.spacing = 6
@@ -31,9 +16,22 @@ final class DelegateView: UIView {
     let votesValueLabel = UILabel(style: .footnotePrimary)
     let lastVotesTitleLabel = UILabel(style: .caption2Secondary)
     let lastVotesValueLabel = UILabel(style: .footnotePrimary)
-
-    var locale: Locale?
     private var viewModel: Model?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setupLayout()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    let avatarView: DAppIconView = .create {
+        $0.contentInsets = .zero
+    }
 
     private func setupLayout() {
         let lastVotes = UIView.vStack([
@@ -88,46 +86,36 @@ final class DelegateView: UIView {
     }
 }
 
-typealias DelegateTableViewCell = BlurredTableViewCell<DelegateView>
-
-extension DelegateTableViewCell {
-    typealias Model = DelegateView.Model
-
-    func bind(viewModel: Model) {
-        view.bind(viewModel: viewModel)
-    }
-
-    func applyStyle() {
-        contentInsets = .init(top: 4, left: 0, bottom: 4, right: 0)
-        innerInsets = .init(top: 12, left: 12, bottom: 12, right: 12)
-        backgroundBlurView.sideLength = 12
-    }
-}
-
 extension DelegateView {
     struct Model: Hashable {
+        let id: String
+        let icon: ImageViewModelProtocol?
+        let name: String
+        let type: DelegateType?
+        let description: String?
+        let delegationsTitle: String
+        let delegations: String?
+        let votesTitle: String
+        let votes: String?
+        let lastVotesTitle: String
+        let lastVotes: String?
+
         static func == (lhs: DelegateView.Model, rhs: DelegateView.Model) -> Bool {
             lhs.id == rhs.id &&
                 lhs.name == rhs.name &&
                 lhs.type == rhs.type &&
                 lhs.description == rhs.description &&
                 lhs.delegations == rhs.delegations &&
+                lhs.delegationsTitle == rhs.delegationsTitle &&
                 lhs.votes == rhs.votes &&
-                lhs.lastVotes == rhs.lastVotes
+                lhs.votesTitle == rhs.votesTitle &&
+                lhs.lastVotes == rhs.lastVotes &&
+                lhs.lastVotesTitle == rhs.lastVotesTitle
         }
 
         func hash(into hasher: inout Hasher) {
             hasher.combine(id)
         }
-
-        let id: String
-        let icon: ImageViewModelProtocol?
-        let name: String
-        let type: DelegateType?
-        let description: String?
-        let delegations: String?
-        let votes: String?
-        let lastVotes: String?
     }
 
     enum DelegateType {
@@ -135,22 +123,44 @@ extension DelegateView {
         case individual
     }
 
-    func bind(viewModel: Model) {
-        switch viewModel.type {
+    func bind(viewModel: Model, locale: Locale) {
+        bind(type: viewModel.type, locale: locale)
+
+        self.viewModel?.icon?.cancel(on: avatarView.imageView)
+        viewModel.icon?.loadImage(
+            on: avatarView.imageView,
+            targetSize: .init(width: 40, height: 40),
+            animated: true
+        )
+        nameLabel.text = viewModel.name
+        descriptionLabel.text = viewModel.description
+        delegationsTitleLabel.text = viewModel.delegationsTitle
+        delegationsValueLabel.text = viewModel.delegations
+        votesTitleLabel.text = viewModel.votesTitle
+        votesValueLabel.text = viewModel.votes
+        lastVotesTitleLabel.text = viewModel.lastVotesTitle
+        lastVotesValueLabel.text = viewModel.lastVotes
+        self.viewModel = viewModel
+    }
+
+    private func bind(type: DelegateType?, locale: Locale) {
+        switch type {
         case .organization:
             avatarView.backgroundView.apply(style: .roundedContainer(radius: 8))
             typeView.apply(style: .organization)
             typeView.isHidden = false
+            let title = R.string.localizable.delegationsShowChipOrganization(preferredLanguages: locale.rLanguages).uppercased()
             typeView.iconDetailsView.bind(viewModel: .init(
-                title: "organization".uppercased(),
+                title: title,
                 icon: R.image.iconOrganization()
             ))
         case .individual:
             avatarView.backgroundView.apply(style: .rounded(radius: 20))
             typeView.apply(style: .individual)
             typeView.isHidden = false
+            let title = R.string.localizable.delegationsShowChipIndividual(preferredLanguages: locale.rLanguages).uppercased()
             typeView.iconDetailsView.bind(viewModel: .init(
-                title: "individual".uppercased(),
+                title: title,
                 icon: R.image.iconIndividual()
             ))
         case .none:
@@ -161,60 +171,5 @@ extension DelegateView {
                 icon: nil
             ))
         }
-
-        self.viewModel?.icon?.cancel(on: avatarView.imageView)
-        viewModel.icon?.loadImage(
-            on: avatarView.imageView,
-            targetSize: .init(width: 40, height: 40),
-            animated: true
-        )
-        nameLabel.text = viewModel.name
-        descriptionLabel.text = viewModel.description
-        delegationsTitleLabel.text = "Delegations"
-        delegationsValueLabel.text = viewModel.delegations
-        votesTitleLabel.text = "Delegated votes"
-        votesValueLabel.text = viewModel.votes
-        lastVotesTitleLabel.text = "Voted last 30 days"
-        lastVotesValueLabel.text = viewModel.lastVotes
-        self.viewModel = viewModel
     }
-}
-
-extension BorderedIconLabelView {
-    struct Style {
-        let text: UILabel.Style
-        let background: RoundedView.Style
-    }
-
-    func apply(style: Style) {
-        iconDetailsView.detailsLabel.apply(style: style.text)
-        backgroundView.apply(style: style.background)
-    }
-}
-
-extension BorderedIconLabelView.Style {
-    static let organization = BorderedIconLabelView.Style(
-        text: .init(
-            textColor: R.color.colorOrganizationChipText()!,
-            font: .semiBoldSmall
-        ),
-        background: .init(
-            shadowOpacity: 0,
-            strokeWidth: 0,
-            fillColor: R.color.colorOrganizationChipBackground()!,
-            highlightedFillColor: R.color.colorOrganizationChipBackground()!
-        )
-    )
-    static let individual = BorderedIconLabelView.Style(
-        text: .init(
-            textColor: R.color.colorIndividualChipText()!,
-            font: .semiBoldSmall
-        ),
-        background: .init(
-            shadowOpacity: 0,
-            strokeWidth: 0,
-            fillColor: R.color.colorIndividualChipBackground()!,
-            highlightedFillColor: R.color.colorIndividualChipBackground()!
-        )
-    )
 }

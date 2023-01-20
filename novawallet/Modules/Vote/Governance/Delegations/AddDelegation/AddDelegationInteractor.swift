@@ -8,63 +8,65 @@ final class AddDelegationInteractor {
         self.chain = chain
     }
 
-    private func loadDelegators() {
+    private func loadDelegates() {
         guard let precision = chain.utilityAsset()?.precision else {
             return
         }
 
-        let nova = DelegateMetadataLocal(
-            accountId: Data.random(of: 32)!,
-            name: "Novasama Technologies",
-            address: "",
-            shortDescription: "Company behind Nova Wallet",
-            longDescription: nil,
-            profileImageUrl: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg",
-            isOrganization: true,
-            stats: DelegateStatistic(
-                delegations: 1311,
-                delegatedVotesInPlank: Decimal(164_574.77).toSubstrateAmount(precision: Int16(precision)) ?? 0,
+        let nova = GovernanceDelegateLocal(
+            stats: .init(
+                address: "1",
+                delegationsCount: 1311,
+                delegatedVotes: Decimal(164_574.77).toSubstrateAmount(precision: Int16(precision)) ?? 0,
                 recentVotes: 49
+            ), metadata: .init(
+                address: "1",
+                name: "Novasama Technologies",
+                image: URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!,
+                shortDescription: "Company behind Nova Wallet",
+                longDescription: nil,
+                isOrganization: true
             )
         )
-        let day7 = DelegateMetadataLocal(
-            accountId: Data.random(of: 32)!,
-            name: "✨👍✨ Day7 ✨👍✨",
-            address: "",
-            shortDescription: "CEO @ Novasama Technologies & Nova Foundation",
-            longDescription: nil,
-            profileImageUrl: "https://static.tildacdn.com/tild3433-3038-4833-b464-396332313061/Frame_159.png",
-            isOrganization: false,
-            stats: DelegateStatistic(
-                delegations: 300,
-                delegatedVotesInPlank: Decimal(10000).toSubstrateAmount(precision: Int16(precision)) ?? 0,
+        let day7 = GovernanceDelegateLocal(
+            stats: .init(
+                address: "2",
+                delegationsCount: 300,
+                delegatedVotes: Decimal(10000).toSubstrateAmount(precision: Int16(precision)) ?? 0,
                 recentVotes: 93
+            ), metadata: .init(
+                address: "2",
+                name: "✨👍✨ Day7 ✨👍✨",
+                image: URL(string: "https://static.tildacdn.com/tild3433-3038-4833-b464-396332313061/Frame_159.png")!,
+                shortDescription: "CEO @ Novasama Technologies & Nova Foundation",
+                longDescription: nil,
+                isOrganization: false
             )
         )
-
-        let gwood = DelegateMetadataLocal(
-            accountId: Data.random(of: 32)!,
-            name: "Gavin Wood",
-            address: "",
-            shortDescription: "Founded Polkadot, Kusama, Ethereum, Parity, Web3 Foundation. Building Polkadot. All things Web 3.0",
-            longDescription: nil,
-            profileImageUrl: "https://static.tildacdn.com/tild3433-3038-4833-b464-396332313061/Frame_159.png",
-            isOrganization: false,
-            stats: DelegateStatistic(
-                delegations: 299,
-                delegatedVotesInPlank: Decimal(10000).toSubstrateAmount(precision: Int16(precision)) ?? 0,
+        let gwood = GovernanceDelegateLocal(
+            stats: .init(
+                address: "3",
+                delegationsCount: 299,
+                delegatedVotes: Decimal(10000).toSubstrateAmount(precision: Int16(precision)) ?? 0,
                 recentVotes: 13
+            ), metadata: .init(
+                address: "3",
+                name: "Gavin Wood",
+                image: URL(string: "https://static.tildacdn.com/tild3433-3038-4833-b464-396332313061/Frame_159.png")!,
+                shortDescription: "Founded Polkadot, Kusama, Ethereum, Parity, Web3 Foundation. Building Polkadot. All things Web 3.0",
+                longDescription: nil,
+                isOrganization: false
             )
         )
 
-        let delegators = [nova, day7, gwood]
-        presenter.didReceive(delegatorsChanges: delegators.map { .insert(newItem: $0) })
+        let delegates = [nova, day7, gwood]
+        presenter.didReceiveDelegates(changes: delegates.map { .insert(newItem: $0) })
     }
 }
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
         presenter.didReceive(chain: chain)
-        loadDelegators()
+        loadDelegates()
     }
 }

@@ -41,12 +41,12 @@ final class DelegateBanner: UIView {
             $0.trailing.equalToSuperview().inset(8)
             $0.top.equalToSuperview().inset(12)
         }
+        bannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
     }
 
-    func set(locale _: Locale) {
-        bannerView.infoView.titleLabel.text = "Are you a Delegate?"
-        bannerView.infoView.subtitleLabel.text = "Tell us more about yourself so Nova users get to know you better"
-        bannerView.linkButton?.imageWithTitleView?.title = "Describe yourself"
-        bannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
+    func set(locale: Locale) {
+        bannerView.infoView.titleLabel.text = R.string.localizable.delegationsAddBannerTitle(preferredLanguages: locale.rLanguages)
+        bannerView.infoView.subtitleLabel.text = R.string.localizable.delegationsAddBannerSubtitle(preferredLanguages: locale.rLanguages)
+        bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddBannerLink(preferredLanguages: locale.rLanguages)
     }
 }

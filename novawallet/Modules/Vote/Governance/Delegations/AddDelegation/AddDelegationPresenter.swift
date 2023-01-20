@@ -7,9 +7,10 @@ final class AddDelegationPresenter {
     weak var view: AddDelegationViewProtocol?
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
-    private var delegators: [String: DelegateMetadataLocal] = [:]
+    private var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
     let numberFormatter = NumberFormatter.quantity.localizableResource()
     var chain: ChainModel?
+    let lastVotedDays: Int = 30
 
     init(
         interactor: AddDelegationInteractorInputProtocol,
@@ -26,30 +27,39 @@ final class AddDelegationPresenter {
             return
         }
 
-        let viewModel = delegators.values.map { convertMetadata($0, chainAsset: chainAsset) }
+        let viewModel = delegates.values.map { convert(delegate: $0, chainAsset: chainAsset) }
         view?.update(viewModel: viewModel)
     }
 
-    func convertMetadata(_ delegateMetadata: DelegateMetadataLocal, chainAsset: AssetModel) -> DelegateTableViewCell.Model {
-        let url = delegateMetadata.profileImageUrl
-            .map { RemoteImageViewModel(url: URL(string: $0)!) }
+    private func convert(
+        delegate: GovernanceDelegateLocal,
+        chainAsset: AssetModel
+    ) -> DelegateTableViewCell.Model {
+        let icon = delegate.metadata.map { RemoteImageViewModel(url: $0.image) }
+        let numberFormatter = numberFormatter.value(for: selectedLocale)
+        let delegations = numberFormatter.string(from: NSNumber(value: delegate.stats.delegationsCount))
+        let totalVotes = formatVotes(
+            votesInPlank: delegate.stats.delegatedVotes,
+            precision: chainAsset.precision
+        )
+        let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
 
         return DelegateTableViewCell.Model(
-            id: delegateMetadata.identifier,
-            icon: url,
-            name: delegateMetadata.name,
-            type: delegateMetadata.isOrganization ? .organization : .individual,
-            description: delegateMetadata.shortDescription,
-            delegations: delegateMetadata.stats.map { self.numberFormatter.value(for: self.selectedLocale).string(from: NSNumber(value: $0.delegations)) ?? "" },
-            votes: delegateMetadata.stats.map { formatVotes(
-                votesInPlank: $0.delegatedVotesInPlank,
-                precision: chainAsset.precision
-            ) },
-            lastVotes: delegateMetadata.stats.map { self.numberFormatter.value(for: self.selectedLocale).string(from: NSNumber(value: $0.recentVotes)) ?? "" }
+            id: delegate.identifier,
+            icon: icon,
+            name: delegate.metadata?.name ?? delegate.stats.address,
+            type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
+            description: delegate.metadata?.shortDescription ?? "",
+            delegationsTitle: DelegatesSortOption.delegations.value(for: selectedLocale),
+            delegations: delegations,
+            votesTitle: DelegatesSortOption.delegatedVotes.value(for: selectedLocale),
+            votes: totalVotes,
+            lastVotesTitle: DelegatesSortOption.lastVoted(days: lastVotedDays).value(for: selectedLocale),
+            lastVotes: lastVotes
         )
     }
 
-    func formatVotes(votesInPlank: BigUInt, precision: UInt16) -> String {
+    private func formatVotes(votesInPlank: BigUInt, precision: UInt16) -> String {
         guard let votes = Decimal.fromSubstrateAmount(
             votesInPlank,
             precision: Int16(precision)
@@ -63,8 +73,8 @@ final class AddDelegationPresenter {
 extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     func setup() {
         interactor.setup()
-        view?.update(showValue: "All accounts")
-        view?.update(sortValue: "Delegations")
+        view?.update(showValue: .all)
+        view?.update(sortValue: .delegations)
     }
 
     func selectDelegate(_: DelegateTableViewCell.Model) {}
@@ -79,8 +89,8 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 }
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
-    func didReceive(delegatorsChanges: [DataProviderChange<DelegateMetadataLocal>]) {
-        delegators = delegatorsChanges.mergeToDict(delegators)
+    func didReceiveDelegates(changes: [DataProviderChange<GovernanceDelegateLocal>]) {
+        delegates = changes.mergeToDict(delegates)
         updateView()
     }
 
