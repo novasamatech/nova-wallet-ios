@@ -3,7 +3,8 @@ import UIKit
 
 final class ReferendumsViewManager: NSObject {
     private enum Constants {
-        static let unlocksCellHeight: CGFloat = 52
+        static let singleActivityCellHeight: CGFloat = 52
+        static let firstOrLastActivityCellHeight: CGFloat = 50
         static let referendumCellMinimumHeight: CGFloat = 185
         static let headerMinimumHeight: CGFloat = 56
     }
@@ -46,42 +47,62 @@ extension ReferendumsViewManager: UITableViewDataSource {
         }
     }
 
+    func personalActivityCell(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath,
+        activity: ReferendumPersonalActivity,
+        totalActivities: Int
+    ) -> UITableViewCell {
+        switch activity {
+        case let .locks(unlocksViewModel):
+            let unlocksCell: ReferendumsUnlocksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            unlocksCell.applyStyle(for: totalActivities > 1 ? .top : .single)
+            unlocksCell.view.bind(viewModel: unlocksViewModel, locale: locale)
+            return unlocksCell
+        case let .delegations(delegationsViewModel):
+            let delegationCell: ReferendumsDelegationsTableViewCell =
+                tableView.dequeueReusableCell(for: indexPath)
+            delegationCell.applyStyle(for: totalActivities > 1 ? .bottom : .single)
+            delegationCell.view.bind(viewModel: delegationsViewModel, locale: locale)
+            return delegationCell
+        }
+    }
+
+    func referendumCell(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath,
+        items: [ReferendumsCellViewModel]
+    ) -> UITableViewCell {
+        if items.isEmpty {
+            let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
+            let text = R.string.localizable.govEmptyList(preferredLanguages: locale.rLanguages)
+            cell.view.bind(image: R.image.iconEmptyHistory(), text: text)
+            cell.applyStyle()
+
+            return cell
+        } else {
+            let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.applyStyle()
+            let cellModel = items[indexPath.row].viewModel
+            cell.view.bind(viewModel: cellModel)
+            return cell
+        }
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let section = referendumsViewModel.sections[indexPath.section]
 
         switch section {
         case let .personalActivities(personalActivities):
-            let personal = personalActivities[indexPath.row]
-            switch personal {
-            case let .locks(unlocksViewModel):
-                let unlocksCell: ReferendumsUnlocksTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                unlocksCell.applyStyle(cornerCut: personalActivities.count > 1 ?
-                    [.topLeft, .topRight] : .allCorners)
-                unlocksCell.view.bind(viewModel: unlocksViewModel, locale: locale)
-                return unlocksCell
-            case let .delegations(delegationsViewModel):
-                let delegationCell: ReferendumsDelegationsTableViewCell =
-                    tableView.dequeueReusableCell(for: indexPath)
-                delegationCell.applyStyle(cornerCut: personalActivities.count > 1 ?
-                    [.bottomLeft, .bottomRight] : .allCorners)
-                delegationCell.view.bind(viewModel: delegationsViewModel, locale: locale)
-                return delegationCell
-            }
+            let activity = personalActivities[indexPath.row]
+            return personalActivityCell(
+                tableView,
+                cellForRowAt: indexPath,
+                activity: activity,
+                totalActivities: personalActivities.count
+            )
         case let .active(_, cells), let .completed(_, cells):
-            if cells.isEmpty {
-                let cell: BlurredTableViewCell<CrowdloanEmptyView> = tableView.dequeueReusableCell(for: indexPath)
-                let text = R.string.localizable.govEmptyList(preferredLanguages: locale.rLanguages)
-                cell.view.bind(image: R.image.iconEmptyHistory(), text: text)
-                cell.applyStyle()
-
-                return cell
-            } else {
-                let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                cell.applyStyle()
-                let cellModel = cells[indexPath.row].viewModel
-                cell.view.bind(viewModel: cellModel)
-                return cell
-            }
+            return referendumCell(tableView, cellForRowAt: indexPath, items: cells)
         }
     }
 }
@@ -148,8 +169,8 @@ extension ReferendumsViewManager: UITableViewDelegate {
         let section = referendumsViewModel.sections[indexPath.section]
 
         switch section {
-        case .personalActivities:
-            return Constants.unlocksCellHeight
+        case let .personalActivities(activities):
+            return activities.count > 1 ? Constants.firstOrLastActivityCellHeight : Constants.singleActivityCellHeight
         case let .active(_, cells), let .completed(_, cells):
             switch cells[safe: indexPath.row]?.viewModel {
             case .loaded, .cached, .none:
