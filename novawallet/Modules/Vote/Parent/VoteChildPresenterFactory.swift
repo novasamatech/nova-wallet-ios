@@ -183,10 +183,15 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
+        let activityViewModelFactory = ReferendumsActivityViewModelFactory(
+            assetBalanceFormatterFactory: assetBalanceFormatterFactory
+        )
+
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            activityViewModelFactory: activityViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             sorting: ReferendumsTimeSortingProvider(),
