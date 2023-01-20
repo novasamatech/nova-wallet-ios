@@ -11,6 +11,10 @@ extension DelegatesSortOption {
         R.string.localizable.delegationsSortTitle(preferredLanguages: locale.rLanguages) + ":"
     }
 
+    static func title(for locale: Locale) -> String {
+        R.string.localizable.delegationsSortTitle(preferredLanguages: locale.rLanguages)
+    }
+
     func value(for locale: Locale) -> String {
         switch self {
         case .delegations:

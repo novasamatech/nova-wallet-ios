@@ -83,9 +83,60 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
     func showAddDelegateInformation() {}
 
-    func showSortOptions() {}
+    func showSortOptions() {
+        let title = LocalizableResource {
+            DelegatesSortOption.title(for: $0)
+        }
+        let items = [DelegatesSortOption.delegations, .delegatedVotes, .lastVoted(days: lastVotedDays)]
+        let localizableItems = items.map { item in
+            LocalizableResource { locale in
+                SelectableTitleTableViewCell.Model(
+                    title: item.value(for: locale),
+                    selected: false
+                )
+            }
+        }
 
-    func showFilters() {}
+        // move to wireframe
+        guard let modal = ModalPickerFactory.createSelectionList(
+            title: title,
+            items: localizableItems,
+            delegate: ModalPickerDelegateWrapper(items: items, closure: { [weak self] in
+                self?.view?.update(sortValue: $0)
+            })
+        ) else {
+            return
+        }
+        view?.controller.present(modal, animated: true)
+    }
+
+    func showFilters() {
+        let title = LocalizableResource {
+            DelegatesShowOption.title(for: $0)
+        }
+        let items = DelegatesShowOption.allCases
+        let localizableItems = items.map { item in
+            LocalizableResource { locale in
+                SelectableTitleTableViewCell.Model(
+                    title: item.value(for: locale),
+                    selected: false
+                )
+            }
+        }
+
+        // move to wireframe
+        guard let modal = ModalPickerFactory.createSelectionList(
+            title: title,
+            items: localizableItems,
+            delegate: ModalPickerDelegateWrapper(items: items, closure: { [weak self] in
+                self?.view?.update(showValue: $0)
+            })
+        ) else {
+            return
+        }
+
+        view?.controller.present(modal, animated: true)
+    }
 }
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
@@ -105,5 +156,19 @@ extension AddDelegationPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+final class ModalPickerDelegateWrapper<Item>: ModalPickerViewControllerDelegate {
+    let closure: (Item) -> Void
+    let items: [Item]
+
+    init(items: [Item], closure: @escaping (Item) -> Void) {
+        self.items = items
+        self.closure = closure
+    }
+
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
+        closure(items[index])
     }
 }
