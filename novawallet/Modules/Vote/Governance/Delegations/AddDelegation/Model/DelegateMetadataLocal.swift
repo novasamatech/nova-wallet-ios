@@ -2,41 +2,29 @@ import Foundation
 import RobinHood
 import BigInt
 
-struct DelegateMetadataRemote {
-    let address: String
-    let name: String
-    let image: URL?
-    let shortDescription: String
-    let longDescription: String?
-    let isOrganization: Bool
+struct GovernanceDelegateLocal {
+    let stats: GovernanceDelegateStats
+    let metadata: GovernanceDelegateMetadataRemote?
 }
 
-struct OffChainDelegateMetadata {
-    let accountId: AccountId
-    let shortDescription: String
-    let longDescription: String?
-    let profileImageUrl: String?
-    let isOrganization: Bool
-    let name: String
-}
-
-struct DelegateMetadataLocal: Identifiable {
+extension GovernanceDelegateLocal: Identifiable {
     var identifier: String {
-        accountId.toHex()
+        stats.address
     }
-
-    let accountId: AccountId
-    let name: String
-    let address: String
-    let shortDescription: String
-    let longDescription: String?
-    let profileImageUrl: String?
-    let isOrganization: Bool
-    let stats: DelegateStatistic?
 }
 
-struct DelegateStatistic {
-    let delegations: Int
-    let delegatedVotesInPlank: BigUInt
-    let recentVotes: Int
+struct GovernanceDelegateMetadataRemote: Decodable {
+    let address: AccountAddress
+    let name: String
+    let image: URL
+    let shortDescription: String
+    let longDescription: String?
+    let isOrganization: Bool
+}
+
+struct GovernanceDelegateStats {
+    let address: AccountAddress
+    let delegationsCount: UInt64
+    let delegatedVotes: BigUInt
+    let recentVotes: UInt64
 }

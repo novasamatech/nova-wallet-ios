@@ -2396,6 +2396,11 @@
 		8836AF4828AA49AB00A94EDD /* Currency+btc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8836AF4728AA49AB00A94EDD /* Currency+btc.swift */; };
 		8836AF4A28AA4B9300A94EDD /* CurrencyRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8836AF4928AA4B9300A94EDD /* CurrencyRepositoryTests.swift */; };
 		8836AF4D28AA515900A94EDD /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 8836AF4B28AA4E4800A94EDD /* currencies.json */; };
+		883DB178297A411300EFB7D8 /* AddDelegationStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB177297A411300EFB7D8 /* AddDelegationStyles.swift */; };
+		883DB17A297A416400EFB7D8 /* DelegateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB179297A416400EFB7D8 /* DelegateView.swift */; };
+		883DB17C297A520300EFB7D8 /* DelegatesShowOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17B297A520300EFB7D8 /* DelegatesShowOption.swift */; };
+		883DB17E297A521900EFB7D8 /* DelegatesSortOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17D297A521900EFB7D8 /* DelegatesSortOption.swift */; };
+		883DB180297A546800EFB7D8 /* DelegationsControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17F297A546800EFB7D8 /* DelegationsControlView.swift */; };
 		884048D428C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */; };
 		8842104C289BBA6400306F2C /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 8842104B289BBA6400306F2C /* currencies.json */; };
 		88421055289BBA8D00306F2C /* CurrencyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */; };
@@ -5518,6 +5523,11 @@
 		8836AF4728AA49AB00A94EDD /* Currency+btc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Currency+btc.swift"; sourceTree = "<group>"; };
 		8836AF4928AA4B9300A94EDD /* CurrencyRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyRepositoryTests.swift; sourceTree = "<group>"; };
 		8836AF4B28AA4E4800A94EDD /* currencies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = currencies.json; sourceTree = "<group>"; };
+		883DB177297A411300EFB7D8 /* AddDelegationStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDelegationStyles.swift; sourceTree = "<group>"; };
+		883DB179297A416400EFB7D8 /* DelegateView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelegateView.swift; sourceTree = "<group>"; };
+		883DB17B297A520300EFB7D8 /* DelegatesShowOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatesShowOption.swift; sourceTree = "<group>"; };
+		883DB17D297A521900EFB7D8 /* DelegatesSortOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelegatesSortOption.swift; sourceTree = "<group>"; };
+		883DB17F297A546800EFB7D8 /* DelegationsControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsControlView.swift; sourceTree = "<group>"; };
 		884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlTokenSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		8842104B289BBA6400306F2C /* currencies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = currencies.json; sourceTree = "<group>"; };
 		8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyViewLayout.swift; sourceTree = "<group>"; };
@@ -13040,6 +13050,18 @@
 			path = Currency;
 			sourceTree = "<group>";
 		};
+		883DB176297A40F700EFB7D8 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				886CA9612977E9B200FC255A /* DelegateBanner.swift */,
+				886CA9602977E9B200FC255A /* DelegateTableViewCell.swift */,
+				883DB179297A416400EFB7D8 /* DelegateView.swift */,
+				883DB177297A411300EFB7D8 /* AddDelegationStyles.swift */,
+				883DB17F297A546800EFB7D8 /* DelegationsControlView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		8842104D289BBA8D00306F2C /* Currency */ = {
 			isa = PBXGroup;
 			children = (
@@ -13057,6 +13079,8 @@
 			isa = PBXGroup;
 			children = (
 				886CA96529785DC700FC255A /* DelegateMetadataLocal.swift */,
+				883DB17B297A520300EFB7D8 /* DelegatesShowOption.swift */,
+				883DB17D297A521900EFB7D8 /* DelegatesSortOption.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -14201,8 +14225,7 @@
 			isa = PBXGroup;
 			children = (
 				886CA96429785D9200FC255A /* Model */,
-				886CA9612977E9B200FC255A /* DelegateBanner.swift */,
-				886CA9602977E9B200FC255A /* DelegateTableViewCell.swift */,
+				883DB176297A40F700EFB7D8 /* View */,
 				85C12FF06C3E4D642221EDCD /* AddDelegationProtocols.swift */,
 				D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */,
 				68D44AF5C59681B54ECD7658 /* AddDelegationPresenter.swift */,
@@ -15298,6 +15321,7 @@
 				882AA13028AE64DC0093BC63 /* CrowdloanYourContributionsTotalCell.swift in Sources */,
 				849976B827B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift in Sources */,
 				844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */,
+				883DB17E297A521900EFB7D8 /* DelegatesSortOption.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
 				848E6BDD2762142300C91022 /* StakingStatusView.swift in Sources */,
@@ -15536,6 +15560,7 @@
 				8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */,
 				84EBC55B24F660F500459D15 /* SelectedAccountChanged.swift in Sources */,
 				840B3D6A2899CD2900DA1DA9 /* ParitySignerAddressScan.swift in Sources */,
+				883DB178297A411300EFB7D8 /* AddDelegationStyles.swift in Sources */,
 				841E2E522738444500F250C1 /* WalletDetailsUpdater.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				84452F9325D5EE7300F47EC5 /* DataOperationFactory.swift in Sources */,
@@ -16432,6 +16457,7 @@
 				84DD5F35263D86EF00425ACF /* AccountFetching.swift in Sources */,
 				84E172D128BF383B00DC85B6 /* Array+Dictionary.swift in Sources */,
 				84D8754028EB1A59004065BD /* ReferendumsInteractorError.swift in Sources */,
+				883DB17C297A520300EFB7D8 /* DelegatesShowOption.swift in Sources */,
 				849AFEB726DBC0BE00B65924 /* AssetTransactionData+HistoryItemData.swift in Sources */,
 				849014A624AA801B008F705E /* TextSharingSource.swift in Sources */,
 				840AD5FC26B4512100E09D6A /* SelectedLanguageMigrator.swift in Sources */,
@@ -17385,6 +17411,7 @@
 				84E2589F2892B5AF00DC8A51 /* WalletSwitchPresentable.swift in Sources */,
 				0AAFEFA17F249F4BEF051F6B /* ControllerAccountConfirmationPresenter.swift in Sources */,
 				135CEEC5363BE34130958578 /* ControllerAccountConfirmationInteractor.swift in Sources */,
+				883DB17A297A416400EFB7D8 /* DelegateView.swift in Sources */,
 				84FF26862849530E003EC78D /* AccountId+Dummy.swift in Sources */,
 				F4D6FF5226B3ECEB002313AF /* AnalyticsViewState.swift in Sources */,
 				4040F1394A73AC2FE598242C /* ControllerAccountConfirmationViewController.swift in Sources */,
@@ -17426,6 +17453,7 @@
 				84AE7AB327D399CF00495267 /* StackNetworkCell.swift in Sources */,
 				AEA0C8C32681186500F9666F /* ChangeTargetsCustomValidatorListWireframe.swift in Sources */,
 				8472072E277C203A00F593DD /* UICollectionView+Reuse.swift in Sources */,
+				883DB180297A546800EFB7D8 /* DelegationsControlView.swift in Sources */,
 				AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */,
 				842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
