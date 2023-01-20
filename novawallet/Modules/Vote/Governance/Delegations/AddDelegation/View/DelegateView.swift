@@ -34,12 +34,6 @@ final class DelegateView: UIView {
     }
 
     private func setupLayout() {
-        let lastVotes = UIView.vStack([
-            lastVotesTitleLabel,
-            lastVotesValueLabel
-        ])
-        lastVotes.setContentHuggingPriority(.defaultLow, for: .horizontal)
-
         let contentView = UIView.vStack(spacing: 16, [
             .hStack(alignment: .center, spacing: 12, [
                 avatarView,
@@ -63,9 +57,16 @@ final class DelegateView: UIView {
                     votesValueLabel
                 ]),
                 Self.dividerView(),
-                lastVotes
+                .vStack([
+                    lastVotesTitleLabel,
+                    lastVotesValueLabel
+                ])
             ])
         ])
+
+        delegationsTitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        votesTitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        lastVotesTitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
 
         addSubview(contentView)
         contentView.snp.makeConstraints {
