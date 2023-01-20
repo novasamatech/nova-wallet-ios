@@ -1114,8 +1114,13 @@
 "delegations.sort.title" = "Sort by";
 "delegations.sort.delegations" = "Delegations";
 "delegations.sort.delegatedVotes" = "Delegated votes";
-"delegations.sort.lastVoted" = "Voted last 30 days";
+"delegations.sort.lastVoted" = "Voted last %@";
 "delegations.show.title" = "Show";
 "delegations.show.individuals" = "Individuals";
 "delegations.show.organizations" = "Organizations";
 "delegations.show.all" = "All accounts";
+"delegations.add.banner.title" = "Are you a Delegate?";
+"delegations.add.banner.subtitle" = "Tell us more about yourself so Nova users get to know you better";
+"delegations.add.banner.link" = "Describe yourself";
+"delegations.show.chip.individual" = "Individual";
+"delegations.show.chip.organization" = "Organization";

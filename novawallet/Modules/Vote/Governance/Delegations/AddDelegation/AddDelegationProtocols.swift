@@ -2,8 +2,10 @@ import RobinHood
 
 protocol AddDelegationViewProtocol: ControllerBackedProtocol {
     func update(viewModel: [DelegateTableViewCell.Model])
-    func update(showValue: String)
-    func update(sortValue: String)
+    func update(showValue: DelegatesShowOption)
+    func update(sortValue: DelegatesSortOption)
+    func showBanner()
+    func hideBanner()
 }
 
 protocol AddDelegationPresenterProtocol: AnyObject {
@@ -20,7 +22,7 @@ protocol AddDelegationInteractorInputProtocol: AnyObject {
 }
 
 protocol AddDelegationInteractorOutputProtocol: AnyObject {
-    func didReceive(delegatorsChanges: [DataProviderChange<DelegateMetadataLocal>])
+    func didReceiveDelegates(changes: [DataProviderChange<GovernanceDelegateLocal>])
     func didReceive(chain: ChainModel)
 }
 

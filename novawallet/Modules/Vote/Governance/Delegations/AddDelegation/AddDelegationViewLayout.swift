@@ -3,13 +3,17 @@ import SnapKit
 
 final class AddDelegationViewLayout: UIView {
     let bannerView = DelegateBanner()
-    let filterView: DelegationsControlView = .create {
-        $0.bind(title: "Show:", value: "All accounts")
-    }
+    let filterView = DelegationsControlView()
+    let sortView = DelegationsControlView()
 
-    let sortView: DelegationsControlView = .create {
-        $0.bind(title: "Sort by:", value: "Delegations")
-    }
+    lazy var topView = UIView.vStack(spacing: 16, [
+        bannerView,
+        UIView.hStack([
+            filterView,
+            UIView(),
+            sortView
+        ])
+    ])
 
     let tableView: UITableView = .create {
         $0.separatorStyle = .none
@@ -30,15 +34,6 @@ final class AddDelegationViewLayout: UIView {
     }
 
     private func setupLayout() {
-        let topView = UIView.vStack(spacing: 16, [
-            bannerView,
-            UIView.hStack([
-                filterView,
-                UIView(),
-                sortView
-            ])
-        ])
-
         sortView.setContentCompressionResistancePriority(.required, for: .horizontal)
         addSubview(topView)
         topView.snp.makeConstraints {
@@ -51,47 +46,5 @@ final class AddDelegationViewLayout: UIView {
             $0.leading.trailing.equalToSuperview().inset(16)
             $0.bottom.equalToSuperview()
         }
-    }
-}
-
-final class DelegationsControlView: UIView {
-    let label = UILabel(style: .footnoteSecondary)
-    let control: YourWalletsControl = .create {
-        $0.color = R.color.colorTextPrimary()!
-        $0.iconDetailsView.detailsLabel.apply(style: .footnotePrimary)
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupLayout() {
-        addSubview(label)
-        addSubview(control)
-
-        label.snp.makeConstraints {
-            $0.leading.top.bottom.equalToSuperview()
-        }
-
-        control.snp.makeConstraints {
-            $0.leading.equalTo(label.snp.trailing)
-            $0.centerY.trailing.equalToSuperview()
-        }
-    }
-
-    override var intrinsicContentSize: CGSize {
-        .init(width: label.intrinsicContentSize.width + control.intrinsicContentSize.width + 4, height: UIView.noIntrinsicMetric)
-    }
-
-    func bind(title: String, value: String) {
-        label.text = title
-        control.iconDetailsView.detailsLabel.text = value
     }
 }
