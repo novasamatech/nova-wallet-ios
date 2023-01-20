@@ -8,7 +8,7 @@ final class AddDelegationViewLayout: UIView {
 
     lazy var topView = UIView.vStack(spacing: 16, [
         bannerView,
-        UIView.hStack([
+        UIView.hStack(distribution: .fillProportionally, [
             filterView,
             UIView(),
             sortView
@@ -34,7 +34,6 @@ final class AddDelegationViewLayout: UIView {
     }
 
     private func setupLayout() {
-        sortView.setContentCompressionResistancePriority(.required, for: .horizontal)
         addSubview(topView)
         topView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(12)

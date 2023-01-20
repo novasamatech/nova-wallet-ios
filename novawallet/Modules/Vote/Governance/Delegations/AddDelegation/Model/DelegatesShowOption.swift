@@ -1,6 +1,6 @@
 import Foundation
 
-enum DelegatesShowOption {
+enum DelegatesShowOption: CaseIterable {
     case individuals
     case organizations
     case all
@@ -9,6 +9,10 @@ enum DelegatesShowOption {
 extension DelegatesShowOption {
     func title(for locale: Locale) -> String {
         R.string.localizable.delegationsShowTitle(preferredLanguages: locale.rLanguages) + ":"
+    }
+
+    static func title(for locale: Locale) -> String {
+        R.string.localizable.delegationsShowTitle(preferredLanguages: locale.rLanguages)
     }
 
     func value(for locale: Locale) -> String {

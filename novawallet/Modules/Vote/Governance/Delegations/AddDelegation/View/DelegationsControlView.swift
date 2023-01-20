@@ -19,21 +19,24 @@ final class DelegationsControlView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(label)
-        addSubview(control)
+        let contentView = UIView.hStack(spacing: 4, [
+            label,
+            control
+        ])
 
-        label.snp.makeConstraints {
-            $0.leading.top.bottom.equalToSuperview()
-        }
+        control.iconDetailsView.iconWidth = 0
+        control.iconDetailsView.spacing = 0
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        label.setContentHuggingPriority(.required, for: .horizontal)
 
-        control.snp.makeConstraints {
-            $0.leading.equalTo(label.snp.trailing)
-            $0.centerY.trailing.equalToSuperview()
+        addSubview(contentView)
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
 
     func bind(title: String, value: String) {
         label.text = title
-        control.iconDetailsView.detailsLabel.text = value
+        control.bind(model: .init(name: value, image: nil))
     }
 }
