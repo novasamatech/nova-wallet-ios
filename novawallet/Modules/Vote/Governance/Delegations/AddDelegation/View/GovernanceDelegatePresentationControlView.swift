@@ -41,5 +41,7 @@ final class GovernanceDelegatePresentationControlView: UIView {
         label.text = title
 
         control.titleLabel.text = value
+
+        setNeedsLayout()
     }
 }
