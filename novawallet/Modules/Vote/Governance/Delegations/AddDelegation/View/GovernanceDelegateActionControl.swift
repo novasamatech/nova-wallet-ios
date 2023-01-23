@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class GovernanceDelegatePresentationControlView: UIView {
+final class GovernanceDelegateActionControl: UIView {
     let label = UILabel(style: .footnoteSecondary)
 
     let control: ActionTitleControl = .create {
@@ -12,6 +12,7 @@ final class GovernanceDelegatePresentationControlView: UIView {
         $0.activationIconAngle = -CGFloat.pi / 2.0
         $0.titleLabel.apply(style: .footnotePrimary)
         $0.horizontalSpacing = 0.0
+        $0.imageView.isUserInteractionEnabled = false
     }
 
     override init(frame: CGRect) {
@@ -41,6 +42,7 @@ final class GovernanceDelegatePresentationControlView: UIView {
         label.text = title
 
         control.titleLabel.text = value
+        control.invalidateLayout()
 
         setNeedsLayout()
     }
