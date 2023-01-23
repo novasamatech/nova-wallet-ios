@@ -18,6 +18,7 @@ final class GovernanceDelegateBanner: UIView {
         $0.roundedBackgroundView?.cornerRadius = 12
         $0.contentInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         $0.imageWithTitleView?.iconImage = R.image.iconClose()?.tinted(with: R.color.colorIconChip()!)
+        $0.changesContentOpacityWhenHighlighted = true
     }
 
     override init(frame: CGRect) {
@@ -45,8 +46,14 @@ final class GovernanceDelegateBanner: UIView {
     }
 
     func set(locale: Locale) {
-        gradientBannerView.infoView.titleLabel.text = R.string.localizable.delegationsAddBannerTitle(preferredLanguages: locale.rLanguages)
-        gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.delegationsAddBannerSubtitle(preferredLanguages: locale.rLanguages)
-        gradientBannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddBannerLink(preferredLanguages: locale.rLanguages)
+        gradientBannerView.infoView.titleLabel.text = R.string.localizable.delegationsAddBannerTitle(
+            preferredLanguages: locale.rLanguages
+        )
+        gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.delegationsAddBannerSubtitle(
+            preferredLanguages: locale.rLanguages
+        )
+        gradientBannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddBannerLink(
+            preferredLanguages: locale.rLanguages
+        )
     }
 }
