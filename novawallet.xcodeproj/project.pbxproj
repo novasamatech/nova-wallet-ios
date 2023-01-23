@@ -2435,7 +2435,6 @@
 		8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E7289D7CF400C0BF86 /* Atomic.swift */; };
 		886CA9622977E9B300FC255A /* GovernanceDelegateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886CA9602977E9B200FC255A /* GovernanceDelegateTableViewCell.swift */; };
 		886CA9632977E9B300FC255A /* GovernanceDelegateBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886CA9612977E9B200FC255A /* GovernanceDelegateBanner.swift */; };
-		886CA96629785DC700FC255A /* DelegateMetadataLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886CA96529785DC700FC255A /* DelegateMetadataLocal.swift */; };
 		886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62FA66143B25AA70B02CE461 /* ExportSeedViewFactory.swift */; };
 		887248082924F54900B0D2CC /* URL+Matchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887248072924F54900B0D2CC /* URL+Matchable.swift */; };
 		887A717C28FEF03E00B13C7E /* BaselinedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887A717B28FEF03E00B13C7E /* BaselinedView.swift */; };
@@ -2477,6 +2476,7 @@
 		88B560BC28F80DCB00A5EB59 /* VoteRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B560BB28F80DCB00A5EB59 /* VoteRowView.swift */; };
 		88BB21A028D34C660019C6B4 /* DataProviderChange+Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB219F28D34C660019C6B4 /* DataProviderChange+Identifier.swift */; };
 		88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C017E528C60A65003B2D28 /* AssetLockMapper.swift */; };
+		88C5F078297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C5F077297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift */; };
 		88C7165428C894510015D1E9 /* CollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */; };
 		88C7165628C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165528C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift */; };
 		88C7165828C8D3280015D1E9 /* LockCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7165728C8D3270015D1E9 /* LockCollectionViewCell.swift */; };
@@ -5573,7 +5573,6 @@
 		8860F3E7289D7CF400C0BF86 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		886CA9602977E9B200FC255A /* GovernanceDelegateTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateTableViewCell.swift; sourceTree = "<group>"; };
 		886CA9612977E9B200FC255A /* GovernanceDelegateBanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateBanner.swift; sourceTree = "<group>"; };
-		886CA96529785DC700FC255A /* DelegateMetadataLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegateMetadataLocal.swift; sourceTree = "<group>"; };
 		887248072924F54900B0D2CC /* URL+Matchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Matchable.swift"; sourceTree = "<group>"; };
 		88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel2.xcdatamodel; sourceTree = "<group>"; };
 		887A717B28FEF03E00B13C7E /* BaselinedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselinedView.swift; sourceTree = "<group>"; };
@@ -5617,6 +5616,7 @@
 		88B560BB28F80DCB00A5EB59 /* VoteRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteRowView.swift; sourceTree = "<group>"; };
 		88BB219F28D34C660019C6B4 /* DataProviderChange+Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+Identifier.swift"; sourceTree = "<group>"; };
 		88C017E528C60A65003B2D28 /* AssetLockMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetLockMapper.swift; sourceTree = "<group>"; };
+		88C5F077297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceDelegateLocal+Identifiable.swift"; sourceTree = "<group>"; };
 		88C7165328C894510015D1E9 /* CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewDelegate.swift; sourceTree = "<group>"; };
 		88C7165528C8CD050015D1E9 /* UICollectionViewDiffableDataSource+apply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewDiffableDataSource+apply.swift"; sourceTree = "<group>"; };
 		88C7165728C8D3270015D1E9 /* LockCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -13121,9 +13121,9 @@
 		886CA96429785D9200FC255A /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				886CA96529785DC700FC255A /* DelegateMetadataLocal.swift */,
 				883DB17B297A520300EFB7D8 /* GovernanceDelegatesFilter.swift */,
 				883DB17D297A521900EFB7D8 /* GovernanceDelegatesOrder.swift */,
+				88C5F077297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -15497,7 +15497,6 @@
 				8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */,
 				8428229C289BC9D300163031 /* AddAccount+ParitySignerAddressesWireframe.swift in Sources */,
 				84C6801424D7013500006BF5 /* SubtitleContentView.swift in Sources */,
-				886CA96629785DC700FC255A /* DelegateMetadataLocal.swift in Sources */,
 				F436BB962726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift in Sources */,
 				F452D89A273D237E008F7295 /* SettingsViewLayout.swift in Sources */,
 				8423B0E4251A774700B8687C /* SNAddressType+Chain.swift in Sources */,
@@ -15624,6 +15623,7 @@
 				84155DED2539817200A27058 /* ApplicationService.swift in Sources */,
 				84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */,
 				8460E71A284D3AF5002896E9 /* ParaStkMinDelegationParams.swift in Sources */,
+				88C5F078297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift in Sources */,
 				84532D5D28E41D8500EF4ADC /* ConvictionVoting+StoragePath.swift in Sources */,
 				842876A824AE049B00D91AD8 /* SelectionListViewController.swift in Sources */,
 				84786E1A25FA6A470089DFF7 /* StashItem.swift in Sources */,

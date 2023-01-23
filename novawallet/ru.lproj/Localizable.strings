@@ -1124,3 +1124,4 @@
 "delegations.add.banner.link" = "Добавить описание";
 "delegations.show.chip.individual" = "Индивидуальный";
 "delegations.show.chip.organization" = "Организация";
+"delegations.add.title" = "Добавить делегацию";
