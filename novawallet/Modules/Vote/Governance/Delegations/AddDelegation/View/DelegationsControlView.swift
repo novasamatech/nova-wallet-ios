@@ -38,5 +38,6 @@ final class DelegationsControlView: UIView {
     func bind(title: String, value: String) {
         label.text = title
         control.bind(model: .init(name: value, image: nil))
+        control.apply(state: .inactive)
     }
 }

@@ -7,10 +7,13 @@ final class AddDelegationPresenter {
     weak var view: AddDelegationViewProtocol?
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
-    private var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
     let numberFormatter = NumberFormatter.quantity.localizableResource()
     var chain: ChainModel?
     let lastVotedDays: Int = 30
+    private var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
+    private var selectedFilter = DelegatesShowOption.all
+    private var selectedOrder = DelegatesSortOption.delegations
+    private var shownPickerDelegate: ModalPickerViewControllerDelegate?
 
     init(
         interactor: AddDelegationInteractorInputProtocol,
@@ -73,8 +76,8 @@ final class AddDelegationPresenter {
 extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     func setup() {
         interactor.setup()
-        view?.update(showValue: .all)
-        view?.update(sortValue: .delegations)
+        view?.update(showValue: selectedFilter)
+        view?.update(sortValue: selectedOrder)
     }
 
     func selectDelegate(_: DelegateTableViewCell.Model) {}
@@ -89,53 +92,60 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
         }
         let items = [DelegatesSortOption.delegations, .delegatedVotes, .lastVoted(days: lastVotedDays)]
         let localizableItems = items.map { item in
-            LocalizableResource { locale in
+            LocalizableResource { [selectedOrder] locale in
                 SelectableTitleTableViewCell.Model(
                     title: item.value(for: locale),
-                    selected: false
+                    selected: item == selectedOrder
                 )
             }
         }
 
-        // move to wireframe
-        guard let modal = ModalPickerFactory.createSelectionList(
+        let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedOrder in
+            guard let self = self else { return }
+            selectedOrder.map { self.selectedOrder = $0 }
+            self.view?.update(sortValue: self.selectedOrder)
+            self.shownPickerDelegate = nil
+        }
+
+        shownPickerDelegate = delegate
+        wireframe.showPicker(
+            from: view,
             title: title,
             items: localizableItems,
-            delegate: ModalPickerDelegateWrapper(items: items, closure: { [weak self] in
-                self?.view?.update(sortValue: $0)
-            })
-        ) else {
-            return
-        }
-        view?.controller.present(modal, animated: true)
+            selectedIndex: items.firstIndex(of: selectedOrder) ?? 0,
+            delegate: delegate
+        )
     }
 
     func showFilters() {
         let title = LocalizableResource {
             DelegatesShowOption.title(for: $0)
         }
-        let items = DelegatesShowOption.allCases
+        let items: [DelegatesShowOption] = [.all, .organizations, .individuals]
         let localizableItems = items.map { item in
-            LocalizableResource { locale in
+            LocalizableResource { [selectedFilter] locale in
                 SelectableTitleTableViewCell.Model(
                     title: item.value(for: locale),
-                    selected: false
+                    selected: item == selectedFilter
                 )
             }
         }
 
-        // move to wireframe
-        guard let modal = ModalPickerFactory.createSelectionList(
-            title: title,
-            items: localizableItems,
-            delegate: ModalPickerDelegateWrapper(items: items, closure: { [weak self] in
-                self?.view?.update(showValue: $0)
-            })
-        ) else {
-            return
+        let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedFilter in
+            guard let self = self else { return }
+            selectedFilter.map { self.selectedFilter = $0 }
+            self.view?.update(showValue: self.selectedFilter)
+            self.shownPickerDelegate = nil
         }
 
-        view?.controller.present(modal, animated: true)
+        shownPickerDelegate = delegate
+        wireframe.showPicker(
+            from: view,
+            title: title,
+            items: localizableItems,
+            selectedIndex: items.firstIndex(of: selectedFilter) ?? 0,
+            delegate: delegate
+        )
     }
 }
 
@@ -156,19 +166,5 @@ extension AddDelegationPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
-    }
-}
-
-final class ModalPickerDelegateWrapper<Item>: ModalPickerViewControllerDelegate {
-    let closure: (Item) -> Void
-    let items: [Item]
-
-    init(items: [Item], closure: @escaping (Item) -> Void) {
-        self.items = items
-        self.closure = closure
-    }
-
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        closure(items[index])
     }
 }
