@@ -1,6 +1,6 @@
 import Foundation
 
-enum DelegatesShowOption: CaseIterable {
+enum DelegatesShowOption {
     case individuals
     case organizations
     case all

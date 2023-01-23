@@ -1,4 +1,5 @@
 import RobinHood
+import SoraFoundation
 
 protocol AddDelegationViewProtocol: ControllerBackedProtocol {
     func update(viewModel: [DelegateTableViewCell.Model])
@@ -26,4 +27,12 @@ protocol AddDelegationInteractorOutputProtocol: AnyObject {
     func didReceive(chain: ChainModel)
 }
 
-protocol AddDelegationWireframeProtocol: AnyObject {}
+protocol AddDelegationWireframeProtocol: AnyObject {
+    func showPicker(
+        from view: AddDelegationViewProtocol?,
+        title: LocalizableResource<String>?,
+        items: [LocalizableResource<SelectableTitleTableViewCell.Model>],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate
+    )
+}
