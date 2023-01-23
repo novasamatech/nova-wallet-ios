@@ -46,3 +46,17 @@ protocol GovernanceLockStateFactoryProtocol {
         blockHash: Data?
     ) -> CompoundOperationWrapper<GovernanceUnlockSchedule>
 }
+
+protocol GovernanceDelegateStatsFactoryProtocol {
+    func fetchStatsWrapper(for activityStartBlock: BlockNumber) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
+}
+
+protocol GovernanceDelegateListFactoryProtocol {
+    func fetchDelegateListWrapper(
+        for activityStartBlock: BlockNumber
+    ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
+}
+
+protocol GovernanceDelegateMetadataFactoryProtocol {
+    func fetchMetadataOperation(for chain: ChainModel) -> BaseOperation<[GovernanceDelegateMetadataRemote]>
+}
