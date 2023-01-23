@@ -2412,7 +2412,7 @@
 		883DB17A297A416400EFB7D8 /* GovernanceDelegateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB179297A416400EFB7D8 /* GovernanceDelegateView.swift */; };
 		883DB17C297A520300EFB7D8 /* GovernanceDelegatesFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17B297A520300EFB7D8 /* GovernanceDelegatesFilter.swift */; };
 		883DB17E297A521900EFB7D8 /* GovernanceDelegatesOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17D297A521900EFB7D8 /* GovernanceDelegatesOrder.swift */; };
-		883DB180297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17F297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift */; };
+		883DB180297A546800EFB7D8 /* GovernanceDelegateActionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17F297A546800EFB7D8 /* GovernanceDelegateActionControl.swift */; };
 		884048D428C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */; };
 		8842104C289BBA6400306F2C /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 8842104B289BBA6400306F2C /* currencies.json */; };
 		88421055289BBA8D00306F2C /* CurrencyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */; };
@@ -5552,7 +5552,7 @@
 		883DB179297A416400EFB7D8 /* GovernanceDelegateView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateView.swift; sourceTree = "<group>"; };
 		883DB17B297A520300EFB7D8 /* GovernanceDelegatesFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatesFilter.swift; sourceTree = "<group>"; };
 		883DB17D297A521900EFB7D8 /* GovernanceDelegatesOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatesOrder.swift; sourceTree = "<group>"; };
-		883DB17F297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatePresentationControlView.swift; sourceTree = "<group>"; };
+		883DB17F297A546800EFB7D8 /* GovernanceDelegateActionControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateActionControl.swift; sourceTree = "<group>"; };
 		884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlTokenSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		8842104B289BBA6400306F2C /* currencies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = currencies.json; sourceTree = "<group>"; };
 		8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyViewLayout.swift; sourceTree = "<group>"; };
@@ -13101,7 +13101,7 @@
 				886CA9602977E9B200FC255A /* GovernanceDelegateTableViewCell.swift */,
 				883DB179297A416400EFB7D8 /* GovernanceDelegateView.swift */,
 				883DB177297A411300EFB7D8 /* AddDelegationStyles.swift */,
-				883DB17F297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift */,
+				883DB17F297A546800EFB7D8 /* GovernanceDelegateActionControl.swift */,
 				88F9F695297B082F00F6550D /* SelectableTitleTableViewCell.swift */,
 			);
 			path = View;
@@ -17511,7 +17511,7 @@
 				84AE7AB327D399CF00495267 /* StackNetworkCell.swift in Sources */,
 				AEA0C8C32681186500F9666F /* ChangeTargetsCustomValidatorListWireframe.swift in Sources */,
 				8472072E277C203A00F593DD /* UICollectionView+Reuse.swift in Sources */,
-				883DB180297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift in Sources */,
+				883DB180297A546800EFB7D8 /* GovernanceDelegateActionControl.swift in Sources */,
 				AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */,
 				842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
