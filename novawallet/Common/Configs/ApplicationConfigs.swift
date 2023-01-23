@@ -199,4 +199,12 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     var learnRecommendedValidatorsURL: URL {
         URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Recommended-validators-in-Nova-Wallet")!
     }
+
+    var inAppUpdatesEntrypointURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json")!
+        #endif
+    }
 }
