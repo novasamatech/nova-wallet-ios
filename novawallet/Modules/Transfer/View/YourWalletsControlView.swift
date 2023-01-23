@@ -2,7 +2,12 @@ import UIKit
 import SoraUI
 
 final class YourWalletsControl: BaseActionControl {
-    var color = R.color.colorButtonTextAccent()!
+    var color = R.color.colorButtonTextAccent()! {
+        didSet {
+            iconDetailsView.detailsLabel.textColor = color
+            imageActionIndicator.image = R.image.iconLinkChevron()?.tinted(with: color)
+        }
+    }
 
     lazy var iconDetailsView: YourWalletsIconDetailsView = .create {
         $0.detailsLabel.textColor = color

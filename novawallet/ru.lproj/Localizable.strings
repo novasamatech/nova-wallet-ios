@@ -1111,3 +1111,17 @@
 "add.token.contract.metadata.error.title" = "Ошибка загрузки метаданных";
 "add.token.contract.metadata.error.message" = "Загрузка метаданных контракта завершилась с ошибкой.";
 "add.token.invalid.decimals.message" = "Число десятичных знаков должно быть не менее 0 и не более %@.";
+"delegations.sort.title" = "Сортировать по";
+"delegations.sort.delegations" = "Делегации";
+"delegations.sort.delegatedVotes" = "Делегированные голоса";
+"delegations.sort.lastVoted" = "Последние голоса за %@";
+"delegations.show.title" = "Показывать";
+"delegations.show.individuals" = "Индивидуальные аккаунты";
+"delegations.show.organizations" = "Организации";
+"delegations.show.all" = "Все аккаунты";
+"delegations.add.banner.title" = "Вы делегат?";
+"delegations.add.banner.subtitle" = "Расскажите нам о себе, чтобы пользователи Nova могли узнать вас лучше";
+"delegations.add.banner.link" = "Добавить описание";
+"delegations.show.chip.individual" = "Индивидуальный";
+"delegations.show.chip.organization" = "Организация";
+"delegations.add.title" = "Добавить делегацию";
