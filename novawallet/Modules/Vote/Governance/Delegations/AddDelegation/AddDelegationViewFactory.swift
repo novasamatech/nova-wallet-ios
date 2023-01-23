@@ -20,6 +20,7 @@ struct AddDelegationViewFactory {
             wireframe: wireframe,
             chain: chain,
             lastVotedDays: Self.lastVotedDays,
+            addressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )

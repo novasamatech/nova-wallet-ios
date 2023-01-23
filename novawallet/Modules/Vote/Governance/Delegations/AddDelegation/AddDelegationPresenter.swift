@@ -8,11 +8,13 @@ final class AddDelegationPresenter {
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
     let numberFormatter = NumberFormatter.quantity.localizableResource()
+    let addressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let chain: ChainModel
     let lastVotedDays: Int
     let logger: LoggerProtocol
 
-    private var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
+    private var allDelegates: [AccountAddress: GovernanceDelegateLocal] = [:]
+    private var targetDelegates: [GovernanceDelegateLocal] = []
     private var selectedFilter = GovernanceDelegatesFilter.all
     private var selectedOrder = GovernanceDelegatesOrder.delegations
     private var shownPickerHandler: ModalPickerViewControllerDelegate?
@@ -22,6 +24,7 @@ final class AddDelegationPresenter {
         wireframe: AddDelegationWireframeProtocol,
         chain: ChainModel,
         lastVotedDays: Int,
+        addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -29,8 +32,17 @@ final class AddDelegationPresenter {
         self.wireframe = wireframe
         self.chain = chain
         self.lastVotedDays = lastVotedDays
+        self.addressViewModelFactory = addressViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    private func updateTargetDelegates() {
+        targetDelegates = allDelegates.values.filter { delegate in
+            selectedFilter.matchesDelegate(delegate)
+        }.sorted { delegate1, delegate2 in
+            selectedOrder.isDescending(delegate1, delegate2: delegate2)
+        }
     }
 
     private func updateView() {
@@ -38,7 +50,7 @@ final class AddDelegationPresenter {
             return
         }
 
-        let viewModels = delegates.values.map { convert(delegate: $0, chainAsset: chainAsset) }
+        let viewModels = targetDelegates.map { convert(delegate: $0, chainAsset: chainAsset) }
         view?.didReceive(delegateViewModels: viewModels)
     }
 
@@ -46,19 +58,26 @@ final class AddDelegationPresenter {
         delegate: GovernanceDelegateLocal,
         chainAsset: AssetModel
     ) -> GovernanceDelegateTableViewCell.Model {
-        let icon = delegate.metadata.map { RemoteImageViewModel(url: $0.image) }
+        let name = delegate.identity?.displayName ?? delegate.metadata?.name
+
+        let addressViewModel = addressViewModelFactory.createViewModel(
+            from: delegate.stats.address,
+            name: name,
+            iconUrl: delegate.metadata?.image
+        )
+
         let numberFormatter = numberFormatter.value(for: selectedLocale)
         let delegations = numberFormatter.string(from: NSNumber(value: delegate.stats.delegationsCount))
+
         let totalVotes = formatVotes(
             votesInPlank: delegate.stats.delegatedVotes,
             precision: chainAsset.precision
         )
+
         let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
 
         return GovernanceDelegateTableViewCell.Model(
-            id: delegate.identifier,
-            icon: icon,
-            name: delegate.metadata?.name ?? delegate.stats.address,
+            addressViewModel: addressViewModel,
             type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
             description: delegate.metadata?.shortDescription ?? "",
             delegationsTitle: GovernanceDelegatesOrder.delegations.value(for: selectedLocale),
@@ -114,6 +133,9 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
             if let selectedOrder = selectedOrder {
                 self.selectedOrder = selectedOrder
                 self.view?.didReceive(order: selectedOrder)
+
+                self.updateTargetDelegates()
+                self.updateView()
             }
 
             self.shownPickerHandler = nil
@@ -149,6 +171,9 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
             if let selectedFilter = selectedFilter {
                 self.selectedFilter = selectedFilter
                 self.view?.didReceive(filter: selectedFilter)
+
+                self.updateTargetDelegates()
+                self.updateView()
             }
 
             self.shownPickerHandler = nil
@@ -167,10 +192,11 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
     func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal]) {
-        self.delegates = delegates.reduce(into: [AccountAddress: GovernanceDelegateLocal]()) {
+        allDelegates = delegates.reduce(into: [AccountAddress: GovernanceDelegateLocal]()) {
             $0[$1.stats.address] = $1
         }
 
+        updateTargetDelegates()
         updateView()
     }
 

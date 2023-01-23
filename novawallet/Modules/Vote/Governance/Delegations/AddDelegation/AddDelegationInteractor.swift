@@ -72,7 +72,7 @@ final class AddDelegationInteractor {
             return nil
         }
 
-        let blocksInPast = BlockNumber(TimeInterval(lastVotedDays).secondsFromDays / TimeInterval(blockTime))
+        let blocksInPast = BlockNumber(TimeInterval(lastVotedDays).secondsFromDays / TimeInterval(blockTime).seconds)
 
         guard blockNumber > blocksInPast else {
             return nil
@@ -88,6 +88,7 @@ final class AddDelegationInteractor {
 
         if
             let lastUsedBlockNumber = lastUsedBlockNumber,
+            activityBlockNumber > lastUsedBlockNumber,
             activityBlockNumber - lastUsedBlockNumber < fetchBlockTreshold {
             return
         }
