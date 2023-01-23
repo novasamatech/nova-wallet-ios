@@ -1124,3 +1124,4 @@
 "delegations.add.banner.link" = "Describe yourself";
 "delegations.show.chip.individual" = "Individual";
 "delegations.show.chip.organization" = "Organization";
+"delegations.add.title" = "Add delegation";
