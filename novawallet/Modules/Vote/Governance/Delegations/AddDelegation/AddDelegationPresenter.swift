@@ -8,25 +8,33 @@ final class AddDelegationPresenter {
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
     let numberFormatter = NumberFormatter.quantity.localizableResource()
-    var chain: ChainModel?
-    let lastVotedDays: Int = 30
+    let chain: ChainModel
+    let lastVotedDays: Int
+    let logger: LoggerProtocol
+
     private var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
     private var selectedFilter = GovernanceDelegatesFilter.all
     private var selectedOrder = GovernanceDelegatesOrder.delegations
-    private var shownPickerDelegate: ModalPickerViewControllerDelegate?
+    private var shownPickerHandler: ModalPickerViewControllerDelegate?
 
     init(
         interactor: AddDelegationInteractorInputProtocol,
         wireframe: AddDelegationWireframeProtocol,
-        localizationManager: LocalizationManagerProtocol
+        chain: ChainModel,
+        lastVotedDays: Int,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.chain = chain
+        self.lastVotedDays = lastVotedDays
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
     private func updateView() {
-        guard let chainAsset = chain?.utilityAsset() else {
+        guard let chainAsset = chain.utilityAsset() else {
             return
         }
 
@@ -102,12 +110,16 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
         let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedOrder in
             guard let self = self else { return }
-            selectedOrder.map { self.selectedOrder = $0 }
-            self.view?.didReceive(order: self.selectedOrder)
-            self.shownPickerDelegate = nil
+
+            if let selectedOrder = selectedOrder {
+                self.selectedOrder = selectedOrder
+                self.view?.didReceive(order: selectedOrder)
+            }
+
+            self.shownPickerHandler = nil
         }
 
-        shownPickerDelegate = delegate
+        shownPickerHandler = delegate
         wireframe.showPicker(
             from: view,
             title: title,
@@ -133,12 +145,16 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
         let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedFilter in
             guard let self = self else { return }
-            selectedFilter.map { self.selectedFilter = $0 }
-            self.view?.didReceive(filter: self.selectedFilter)
-            self.shownPickerDelegate = nil
+
+            if let selectedFilter = selectedFilter {
+                self.selectedFilter = selectedFilter
+                self.view?.didReceive(filter: selectedFilter)
+            }
+
+            self.shownPickerHandler = nil
         }
 
-        shownPickerDelegate = delegate
+        shownPickerHandler = delegate
         wireframe.showPicker(
             from: view,
             title: title,
@@ -150,14 +166,25 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 }
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
-    func didReceiveDelegates(changes: [DataProviderChange<GovernanceDelegateLocal>]) {
-        delegates = changes.mergeToDict(delegates)
+    func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal]) {
+        self.delegates = delegates.reduce(into: [AccountAddress: GovernanceDelegateLocal]()) {
+            $0[$1.stats.address] = $1
+        }
+
         updateView()
     }
 
-    func didReceive(chain: ChainModel) {
-        self.chain = chain
-        updateView()
+    func didReceiveError(_ error: AddDelegationInteractorError) {
+        logger.error("Did receive error: \(error)")
+
+        switch error {
+        case .blockSubscriptionFailed, .blockTimeFetchFailed:
+            interactor.remakeSubscriptions()
+        case .delegateListFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshDelegates()
+            }
+        }
     }
 }
 

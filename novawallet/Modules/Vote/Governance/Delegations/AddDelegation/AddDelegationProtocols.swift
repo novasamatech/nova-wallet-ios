@@ -19,14 +19,16 @@ protocol AddDelegationPresenterProtocol: AnyObject {
 
 protocol AddDelegationInteractorInputProtocol: AnyObject {
     func setup()
+    func remakeSubscriptions()
+    func refreshDelegates()
 }
 
 protocol AddDelegationInteractorOutputProtocol: AnyObject {
-    func didReceiveDelegates(changes: [DataProviderChange<GovernanceDelegateLocal>])
-    func didReceive(chain: ChainModel)
+    func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal])
+    func didReceiveError(_ error: AddDelegationInteractorError)
 }
 
-protocol AddDelegationWireframeProtocol: AnyObject {
+protocol AddDelegationWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
     func showPicker(
         from view: AddDelegationViewProtocol?,
         title: LocalizableResource<String>?,
