@@ -6,8 +6,25 @@ final class SelectableTitleTableViewCell: UITableViewCell, ModalPickerCellProtoc
         let selected: Bool
     }
 
-    let view = GenericTitleValueView<UILabel, RadioSelectorView>()
-    var checkmarked: Bool = false
+    var titleLabel: UILabel {
+        view.titleView
+    }
+
+    var selectorView: RadioSelectorView {
+        view.valueView
+    }
+
+    var checkmarked: Bool {
+        get {
+            selectorView.selected
+        }
+
+        set {
+            selectorView.selected = newValue
+        }
+    }
+
+    private let view = GenericTitleValueView<UILabel, RadioSelectorView>()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -24,8 +41,12 @@ final class SelectableTitleTableViewCell: UITableViewCell, ModalPickerCellProtoc
     private func setupLayout() {
         contentView.addSubview(view)
 
+        let inset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         view.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview().inset(inset)
+        }
+        selectorView.snp.makeConstraints {
+            $0.size.equalTo(2 * selectorView.outerRadius)
         }
     }
 
@@ -35,6 +56,7 @@ final class SelectableTitleTableViewCell: UITableViewCell, ModalPickerCellProtoc
     }
 
     func applyStyle() {
+        backgroundColor = .clear
         view.titleView.apply(style: .footnotePrimary)
     }
 }

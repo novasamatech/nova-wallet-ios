@@ -1,6 +1,6 @@
 import Foundation
 
-enum DelegatesSortOption {
+enum DelegatesSortOption: Equatable {
     case delegations
     case delegatedVotes
     case lastVoted(days: Int)

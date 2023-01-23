@@ -513,6 +513,7 @@ extension ModalPickerFactory {
     static func createSelectionList(
         title: LocalizableResource<String>?,
         items: [LocalizableResource<SelectableTitleTableViewCell.Model>],
+        selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?
     ) -> UIViewController? {
         let viewController: ModalPickerViewController<SelectableTitleTableViewCell, SelectableTitleTableViewCell.Model>
@@ -528,6 +529,7 @@ extension ModalPickerFactory {
         viewController.headerBorderType = []
         viewController.actionType = .none
         viewController.viewModels = items
+        viewController.selectedIndex = selectedIndex
 
         let factory = ModalSheetPresentationFactory(configuration: .fearless)
         viewController.modalTransitioningFactory = factory
