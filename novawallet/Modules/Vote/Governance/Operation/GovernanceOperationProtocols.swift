@@ -53,7 +53,10 @@ protocol GovernanceDelegateStatsFactoryProtocol {
 
 protocol GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
-        for activityStartBlock: BlockNumber
+        for activityStartBlock: BlockNumber,
+        chain: ChainModel,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
 }
 

@@ -1,72 +1,152 @@
 import UIKit
+import SubstrateSdk
+import RobinHood
 
 final class AddDelegationInteractor {
-    weak var presenter: AddDelegationInteractorOutputProtocol!
-    let chain: ChainModel
+    weak var presenter: AddDelegationInteractorOutputProtocol?
 
-    init(chain: ChainModel) {
+    let chain: ChainModel
+    let lastVotedDays: Int
+    let fetchBlockTreshold: BlockNumber
+    let delegateListOperationFactory: GovernanceDelegateListFactoryProtocol
+    let connection: JSONRPCEngine
+    let runtimeService: RuntimeCodingServiceProtocol
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let blockTimeService: BlockTimeEstimationServiceProtocol
+    let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let operationQueue: OperationQueue
+
+    private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
+    private var lastUsedBlockNumber: BlockNumber?
+    private var currentBlockNumber: BlockNumber?
+    private var currentBlockTime: BlockTime?
+
+    init(
+        chain: ChainModel,
+        lastVotedDays: Int,
+        fetchBlockTreshold: BlockNumber,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol,
+        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
+        blockTimeService: BlockTimeEstimationServiceProtocol,
+        blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        operationQueue: OperationQueue
+    ) {
         self.chain = chain
+        self.lastVotedDays = lastVotedDays
+        self.fetchBlockTreshold = fetchBlockTreshold
+        self.connection = connection
+        self.runtimeService = runtimeService
+        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
+        self.delegateListOperationFactory = delegateListOperationFactory
+        self.blockTimeService = blockTimeService
+        self.blockTimeFactory = blockTimeFactory
+        self.operationQueue = operationQueue
     }
 
-    private func loadDelegates() {
-        guard let precision = chain.utilityAsset()?.precision else {
+    private func updateBlockTime() {
+        let blockTimeUpdateWrapper = blockTimeFactory.createBlockTimeOperation(
+            from: runtimeService,
+            blockTimeEstimationService: blockTimeService
+        )
+
+        blockTimeUpdateWrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
+                    self?.currentBlockTime = blockTime
+
+                    self?.fetchDelegateListIfNeeded()
+                } catch {
+                    self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
+                }
+            }
+        }
+
+        operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
+    }
+
+    private func estimateStatsBlockNumber() -> BlockNumber? {
+        guard let blockNumber = currentBlockNumber, let blockTime = currentBlockTime, blockTime > 0 else {
+            return nil
+        }
+
+        let blocksInPast = BlockNumber(TimeInterval(lastVotedDays).secondsFromDays / TimeInterval(blockTime))
+
+        guard blockNumber > blocksInPast else {
+            return nil
+        }
+
+        return blockNumber - blocksInPast
+    }
+
+    private func fetchDelegateListIfNeeded() {
+        guard let activityBlockNumber = estimateStatsBlockNumber() else {
             return
         }
 
-        let nova = GovernanceDelegateLocal(
-            stats: .init(
-                address: "1",
-                delegationsCount: 1311,
-                delegatedVotes: Decimal(164_574.77).toSubstrateAmount(precision: Int16(precision)) ?? 0,
-                recentVotes: 49
-            ), metadata: .init(
-                address: "1",
-                name: "Novasama Technologies",
-                image: URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/icons/chains/white/Polkadot.svg")!,
-                shortDescription: "Company behind Nova Wallet",
-                longDescription: nil,
-                isOrganization: true
-            )
-        )
-        let day7 = GovernanceDelegateLocal(
-            stats: .init(
-                address: "2",
-                delegationsCount: 300,
-                delegatedVotes: Decimal(10000).toSubstrateAmount(precision: Int16(precision)) ?? 0,
-                recentVotes: 93
-            ), metadata: .init(
-                address: "2",
-                name: "✨👍✨ Day7 ✨👍✨",
-                image: URL(string: "https://static.tildacdn.com/tild3433-3038-4833-b464-396332313061/Frame_159.png")!,
-                shortDescription: "CEO @ Novasama Technologies & Nova Foundation",
-                longDescription: nil,
-                isOrganization: false
-            )
-        )
-        let gwood = GovernanceDelegateLocal(
-            stats: .init(
-                address: "3",
-                delegationsCount: 299,
-                delegatedVotes: Decimal(10000).toSubstrateAmount(precision: Int16(precision)) ?? 0,
-                recentVotes: 13
-            ), metadata: .init(
-                address: "3",
-                name: "Gavin Wood",
-                image: URL(string: "https://static.tildacdn.com/tild3433-3038-4833-b464-396332313061/Frame_159.png")!,
-                shortDescription: "Founded Polkadot, Kusama, Ethereum, Parity, Web3 Foundation. Building Polkadot. All things Web 3.0",
-                longDescription: nil,
-                isOrganization: false
-            )
+        if
+            let lastUsedBlockNumber = lastUsedBlockNumber,
+            activityBlockNumber - lastUsedBlockNumber < fetchBlockTreshold {
+            return
+        }
+
+        lastUsedBlockNumber = activityBlockNumber
+
+        let wrapper = delegateListOperationFactory.fetchDelegateListWrapper(
+            for: activityBlockNumber,
+            chain: chain,
+            connection: connection,
+            runtimeService: runtimeService
         )
 
-        let delegates = [nova, day7, gwood]
-        presenter.didReceiveDelegates(changes: delegates.map { .insert(newItem: $0) })
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let delegates = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveDelegates(delegates)
+                } catch {
+                    self?.presenter?.didReceiveError(.delegateListFetchFailed(error))
+                }
+            }
+        }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    private func subscribeBlockNumber() {
+        blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
     }
 }
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
-        presenter.didReceive(chain: chain)
-        loadDelegates()
+        subscribeBlockNumber()
+    }
+
+    func remakeSubscriptions() {
+        subscribeBlockNumber()
+    }
+
+    func refreshDelegates() {
+        lastUsedBlockNumber = nil
+
+        fetchDelegateListIfNeeded()
+    }
+}
+
+extension AddDelegationInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(blockNumber):
+            if let blockNumber = blockNumber {
+                currentBlockNumber = blockNumber
+
+                updateBlockTime()
+            }
+        case let .failure(error):
+            presenter?.didReceiveError(.blockSubscriptionFailed(error))
+        }
     }
 }
