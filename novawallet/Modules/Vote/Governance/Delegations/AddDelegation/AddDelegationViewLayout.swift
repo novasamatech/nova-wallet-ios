@@ -8,7 +8,7 @@ final class AddDelegationViewLayout: UIView {
 
     lazy var topView = UIView.vStack(spacing: 16, [
         bannerView,
-        UIView.hStack(distribution: .fillProportionally, [
+        UIView.hStack(distribution: .fill, [
             filterView,
             UIView(),
             sortView
@@ -20,10 +20,13 @@ final class AddDelegationViewLayout: UIView {
         $0.backgroundColor = .clear
         $0.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
         $0.registerClassForCell(GovernanceDelegateTableViewCell.self)
+        $0.rowHeight = UITableView.automaticDimension
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }
@@ -41,9 +44,15 @@ final class AddDelegationViewLayout: UIView {
         }
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(topView.snp.bottom).offset(12)
+            $0.top.equalTo(topView.snp.bottom).offset(0)
             $0.leading.trailing.equalToSuperview().inset(16)
             $0.bottom.equalToSuperview()
+        }
+
+        [filterView, sortView].forEach {
+            $0.snp.makeConstraints { make in
+                make.height.equalTo(32)
+            }
         }
     }
 }

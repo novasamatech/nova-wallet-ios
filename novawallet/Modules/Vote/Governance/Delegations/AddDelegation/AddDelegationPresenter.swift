@@ -79,7 +79,7 @@ final class AddDelegationPresenter {
         return GovernanceDelegateTableViewCell.Model(
             addressViewModel: addressViewModel,
             type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
-            description: delegate.metadata?.shortDescription ?? "",
+            description: delegate.metadata?.shortDescription,
             delegationsTitle: GovernanceDelegatesOrder.delegations.value(for: selectedLocale),
             delegations: delegations,
             votesTitle: GovernanceDelegatesOrder.delegatedVotes.value(for: selectedLocale),
@@ -139,6 +139,8 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
             }
 
             self.shownPickerHandler = nil
+
+            self.view?.didCompleteListConfiguration()
         }
 
         shownPickerHandler = delegate
@@ -177,6 +179,8 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
             }
 
             self.shownPickerHandler = nil
+
+            self.view?.didCompleteListConfiguration()
         }
 
         shownPickerHandler = delegate

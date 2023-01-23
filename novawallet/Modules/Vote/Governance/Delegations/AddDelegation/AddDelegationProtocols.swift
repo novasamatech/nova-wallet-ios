@@ -6,6 +6,7 @@ protocol AddDelegationViewProtocol: ControllerBackedProtocol {
     func didReceive(filter: GovernanceDelegatesFilter)
     func didReceive(order: GovernanceDelegatesOrder)
     func didChangeBannerState(isHidden: Bool)
+    func didCompleteListConfiguration()
 }
 
 protocol AddDelegationPresenterProtocol: AnyObject {

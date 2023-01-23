@@ -2,20 +2,32 @@ import UIKit
 import SoraUI
 
 final class GovernanceDelegateView: UIView {
-    let nameLabel = UILabel(style: .regularSubhedlinePrimary)
+    private enum Constants {
+        static let iconSize = CGSize(width: 40, height: 40)
+        static var iconRadius: CGFloat { iconSize.height / 2 }
+    }
+
+    let nameLabel = UILabel(style: .regularSubhedlinePrimary, numberOfLines: 1)
     let typeView: BorderedIconLabelView = .create {
         $0.iconDetailsView.spacing = 6
         $0.contentInsets = .init(top: 1, left: 4, bottom: 1, right: 6)
         $0.iconDetailsView.detailsLabel.numberOfLines = 1
     }
 
+    private var typeStack: UIStackView?
+
     let descriptionLabel = UILabel(style: .footnoteSecondary)
-    let delegationsTitleLabel = UILabel(style: .caption2Secondary)
-    let delegationsValueLabel = UILabel(style: .footnotePrimary)
-    let votesTitleLabel = UILabel(style: .caption2Secondary)
-    let votesValueLabel = UILabel(style: .footnotePrimary)
-    let lastVotesTitleLabel = UILabel(style: .caption2Secondary)
-    let lastVotesValueLabel = UILabel(style: .footnotePrimary)
+    let delegationsTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 1)
+    let delegationsValueLabel = UILabel(style: .footnotePrimary, numberOfLines: 1)
+    let votesTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 1)
+    let votesValueLabel = UILabel(style: .footnotePrimary, numberOfLines: 1)
+    let lastVotesTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 1)
+    let lastVotesValueLabel = UILabel(style: .footnotePrimary, numberOfLines: 1)
+
+    let avatarView: DAppIconView = .create {
+        $0.contentInsets = .zero
+    }
+
     private var viewModel: Model?
 
     override init(frame: CGRect) {
@@ -29,20 +41,18 @@ final class GovernanceDelegateView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    let avatarView: DAppIconView = .create {
-        $0.contentInsets = .zero
-    }
-
     private func setupLayout() {
+        let typeStack = UIView.hStack([
+            typeView,
+            UIView()
+        ])
+
         let contentView = UIView.vStack(spacing: 16, [
             .hStack(alignment: .center, spacing: 12, [
                 avatarView,
                 .vStack(spacing: 4, [
                     nameLabel,
-                    .hStack([
-                        typeView,
-                        UIView()
-                    ])
+                    typeStack
                 ])
             ]),
             descriptionLabel,
@@ -60,9 +70,12 @@ final class GovernanceDelegateView: UIView {
                 .vStack([
                     lastVotesTitleLabel,
                     lastVotesValueLabel
-                ])
+                ]),
+                UIView()
             ])
         ])
+
+        self.typeStack = typeStack
 
         delegationsTitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         votesTitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
@@ -73,7 +86,7 @@ final class GovernanceDelegateView: UIView {
             $0.edges.equalToSuperview()
         }
         avatarView.snp.makeConstraints {
-            $0.size.equalTo(CGSize(width: 40, height: 40))
+            $0.size.equalTo(Constants.iconSize)
         }
     }
 
@@ -127,16 +140,32 @@ extension GovernanceDelegateView {
 
         self.viewModel?.addressViewModel.imageViewModel?.cancel(on: avatarView.imageView)
 
-        viewModel.addressViewModel.imageViewModel?.loadImage(
-            on: avatarView.imageView,
-            targetSize: .init(width: 40, height: 40),
-            animated: true
-        )
+        if let iconRadius = extractIconRadius(for: viewModel.type) {
+            viewModel.addressViewModel.imageViewModel?.loadImage(
+                on: avatarView.imageView,
+                targetSize: Constants.iconSize,
+                cornerRadius: iconRadius,
+                animated: true
+            )
+        } else {
+            viewModel.addressViewModel.imageViewModel?.loadImage(
+                on: avatarView.imageView,
+                targetSize: Constants.iconSize,
+                animated: true
+            )
+        }
 
         nameLabel.lineBreakMode = viewModel.addressViewModel.lineBreakMode
         nameLabel.text = viewModel.addressViewModel.name ?? viewModel.addressViewModel.address
 
-        descriptionLabel.text = viewModel.description
+        if let description = viewModel.description {
+            descriptionLabel.isHidden = false
+
+            descriptionLabel.text = description
+        } else {
+            descriptionLabel.isHidden = true
+        }
+
         delegationsTitleLabel.text = viewModel.delegationsTitle
         delegationsValueLabel.text = viewModel.delegations
         votesTitleLabel.text = viewModel.votesTitle
@@ -146,12 +175,21 @@ extension GovernanceDelegateView {
         self.viewModel = viewModel
     }
 
+    private func extractIconRadius(for type: DelegateType?) -> CGFloat? {
+        switch type {
+        case .organization:
+            return nil
+        case .individual, .none:
+            return Constants.iconRadius
+        }
+    }
+
     private func bind(type: DelegateType?, locale: Locale) {
         switch type {
         case .organization:
             avatarView.backgroundView.apply(style: .roundedContainer(radius: 8))
             typeView.apply(style: .organization)
-            typeView.isHidden = false
+            typeStack?.isHidden = false
             let title = R.string.localizable.delegationsShowChipOrganization(
                 preferredLanguages: locale.rLanguages
             ).uppercased()
@@ -160,9 +198,9 @@ extension GovernanceDelegateView {
                 icon: R.image.iconOrganization()
             ))
         case .individual:
-            avatarView.backgroundView.apply(style: .rounded(radius: 20))
+            avatarView.backgroundView.apply(style: .clear)
             typeView.apply(style: .individual)
-            typeView.isHidden = false
+            typeStack?.isHidden = false
             let title = R.string.localizable.delegationsShowChipIndividual(
                 preferredLanguages: locale.rLanguages
             ).uppercased()
@@ -171,12 +209,8 @@ extension GovernanceDelegateView {
                 icon: R.image.iconIndividual()
             ))
         case .none:
-            avatarView.backgroundView.apply(style: .rounded(radius: 20))
-            typeView.isHidden = true
-            typeView.iconDetailsView.bind(viewModel: .init(
-                title: "",
-                icon: nil
-            ))
+            avatarView.backgroundView.apply(style: .clear)
+            typeStack?.isHidden = true
         }
     }
 }
