@@ -1,16 +1,12 @@
 import Foundation
 
-enum DelegatesSortOption: Equatable {
+enum GovernanceDelegatesOrder: Equatable {
     case delegations
     case delegatedVotes
     case lastVoted(days: Int)
 }
 
-extension DelegatesSortOption {
-    func title(for locale: Locale) -> String {
-        R.string.localizable.delegationsSortTitle(preferredLanguages: locale.rLanguages) + ":"
-    }
-
+extension GovernanceDelegatesOrder {
     static func title(for locale: Locale) -> String {
         R.string.localizable.delegationsSortTitle(preferredLanguages: locale.rLanguages)
     }
@@ -22,7 +18,10 @@ extension DelegatesSortOption {
         case .delegatedVotes:
             return R.string.localizable.delegationsSortDelegatedVotes(preferredLanguages: locale.rLanguages)
         case let .lastVoted(days):
-            let formattedDays = R.string.localizable.commonDaysFormat(format: days, preferredLanguages: locale.rLanguages)
+            let formattedDays = R.string.localizable.commonDaysFormat(
+                format: days,
+                preferredLanguages: locale.rLanguages
+            )
             return R.string.localizable.delegationsSortLastVoted(formattedDays, preferredLanguages: locale.rLanguages)
         }
     }

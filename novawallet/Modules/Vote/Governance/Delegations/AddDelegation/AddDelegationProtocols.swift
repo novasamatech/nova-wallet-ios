@@ -2,16 +2,15 @@ import RobinHood
 import SoraFoundation
 
 protocol AddDelegationViewProtocol: ControllerBackedProtocol {
-    func update(viewModel: [DelegateTableViewCell.Model])
-    func update(showValue: DelegatesShowOption)
-    func update(sortValue: DelegatesSortOption)
-    func showBanner()
-    func hideBanner()
+    func didReceive(delegateViewModels: [GovernanceDelegateTableViewCell.Model])
+    func didReceive(filter: GovernanceDelegatesFilter)
+    func didReceive(order: GovernanceDelegatesOrder)
+    func didChangeBannerState(isHidden: Bool)
 }
 
 protocol AddDelegationPresenterProtocol: AnyObject {
     func setup()
-    func selectDelegate(_: DelegateTableViewCell.Model)
+    func selectDelegate(_: GovernanceDelegateTableViewCell.Model)
     func closeBanner()
     func showAddDelegateInformation()
     func showSortOptions()

@@ -1,6 +1,6 @@
 import UIKit
 
-final class DelegationsControlView: UIView {
+final class GovernanceDelegatePresentationControlView: UIView {
     let label = UILabel(style: .footnoteSecondary)
     let control: YourWalletsControl = .create {
         $0.color = R.color.colorTextPrimary()!

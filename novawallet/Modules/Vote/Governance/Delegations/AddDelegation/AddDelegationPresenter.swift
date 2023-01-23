@@ -11,8 +11,8 @@ final class AddDelegationPresenter {
     var chain: ChainModel?
     let lastVotedDays: Int = 30
     private var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
-    private var selectedFilter = DelegatesShowOption.all
-    private var selectedOrder = DelegatesSortOption.delegations
+    private var selectedFilter = GovernanceDelegatesFilter.all
+    private var selectedOrder = GovernanceDelegatesOrder.delegations
     private var shownPickerDelegate: ModalPickerViewControllerDelegate?
 
     init(
@@ -30,14 +30,14 @@ final class AddDelegationPresenter {
             return
         }
 
-        let viewModel = delegates.values.map { convert(delegate: $0, chainAsset: chainAsset) }
-        view?.update(viewModel: viewModel)
+        let viewModels = delegates.values.map { convert(delegate: $0, chainAsset: chainAsset) }
+        view?.didReceive(delegateViewModels: viewModels)
     }
 
     private func convert(
         delegate: GovernanceDelegateLocal,
         chainAsset: AssetModel
-    ) -> DelegateTableViewCell.Model {
+    ) -> GovernanceDelegateTableViewCell.Model {
         let icon = delegate.metadata.map { RemoteImageViewModel(url: $0.image) }
         let numberFormatter = numberFormatter.value(for: selectedLocale)
         let delegations = numberFormatter.string(from: NSNumber(value: delegate.stats.delegationsCount))
@@ -47,17 +47,17 @@ final class AddDelegationPresenter {
         )
         let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
 
-        return DelegateTableViewCell.Model(
+        return GovernanceDelegateTableViewCell.Model(
             id: delegate.identifier,
             icon: icon,
             name: delegate.metadata?.name ?? delegate.stats.address,
             type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
             description: delegate.metadata?.shortDescription ?? "",
-            delegationsTitle: DelegatesSortOption.delegations.value(for: selectedLocale),
+            delegationsTitle: GovernanceDelegatesOrder.delegations.value(for: selectedLocale),
             delegations: delegations,
-            votesTitle: DelegatesSortOption.delegatedVotes.value(for: selectedLocale),
+            votesTitle: GovernanceDelegatesOrder.delegatedVotes.value(for: selectedLocale),
             votes: totalVotes,
-            lastVotesTitle: DelegatesSortOption.lastVoted(days: lastVotedDays).value(for: selectedLocale),
+            lastVotesTitle: GovernanceDelegatesOrder.lastVoted(days: lastVotedDays).value(for: selectedLocale),
             lastVotes: lastVotes
         )
     }
@@ -76,11 +76,11 @@ final class AddDelegationPresenter {
 extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     func setup() {
         interactor.setup()
-        view?.update(showValue: selectedFilter)
-        view?.update(sortValue: selectedOrder)
+        view?.didReceive(order: selectedOrder)
+        view?.didReceive(filter: selectedFilter)
     }
 
-    func selectDelegate(_: DelegateTableViewCell.Model) {}
+    func selectDelegate(_: GovernanceDelegateTableViewCell.Model) {}
 
     func closeBanner() {}
 
@@ -88,9 +88,9 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
     func showSortOptions() {
         let title = LocalizableResource {
-            DelegatesSortOption.title(for: $0)
+            GovernanceDelegatesOrder.title(for: $0)
         }
-        let items = [DelegatesSortOption.delegations, .delegatedVotes, .lastVoted(days: lastVotedDays)]
+        let items = [GovernanceDelegatesOrder.delegations, .delegatedVotes, .lastVoted(days: lastVotedDays)]
         let localizableItems = items.map { item in
             LocalizableResource { [selectedOrder] locale in
                 SelectableTitleTableViewCell.Model(
@@ -103,7 +103,7 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
         let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedOrder in
             guard let self = self else { return }
             selectedOrder.map { self.selectedOrder = $0 }
-            self.view?.update(sortValue: self.selectedOrder)
+            self.view?.didReceive(order: self.selectedOrder)
             self.shownPickerDelegate = nil
         }
 
@@ -119,9 +119,9 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
     func showFilters() {
         let title = LocalizableResource {
-            DelegatesShowOption.title(for: $0)
+            GovernanceDelegatesFilter.title(for: $0)
         }
-        let items: [DelegatesShowOption] = [.all, .organizations, .individuals]
+        let items: [GovernanceDelegatesFilter] = [.all, .organizations, .individuals]
         let localizableItems = items.map { item in
             LocalizableResource { [selectedFilter] locale in
                 SelectableTitleTableViewCell.Model(
@@ -134,7 +134,7 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
         let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedFilter in
             guard let self = self else { return }
             selectedFilter.map { self.selectedFilter = $0 }
-            self.view?.update(showValue: self.selectedFilter)
+            self.view?.didReceive(filter: self.selectedFilter)
             self.shownPickerDelegate = nil
         }
 
