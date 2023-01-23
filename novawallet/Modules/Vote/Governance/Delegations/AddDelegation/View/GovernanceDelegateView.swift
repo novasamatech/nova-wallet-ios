@@ -89,9 +89,7 @@ final class GovernanceDelegateView: UIView {
 
 extension GovernanceDelegateView {
     struct Model: Hashable {
-        let id: String
-        let icon: ImageViewModelProtocol?
-        let name: String
+        let addressViewModel: DisplayAddressViewModel
         let type: DelegateType?
         let description: String?
         let delegationsTitle: String
@@ -102,8 +100,8 @@ extension GovernanceDelegateView {
         let lastVotes: String?
 
         static func == (lhs: GovernanceDelegateView.Model, rhs: GovernanceDelegateView.Model) -> Bool {
-            lhs.id == rhs.id &&
-                lhs.name == rhs.name &&
+            lhs.addressViewModel.address == rhs.addressViewModel.address &&
+                lhs.addressViewModel.name == rhs.addressViewModel.name &&
                 lhs.type == rhs.type &&
                 lhs.description == rhs.description &&
                 lhs.delegations == rhs.delegations &&
@@ -115,7 +113,7 @@ extension GovernanceDelegateView {
         }
 
         func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
+            hasher.combine(addressViewModel.address)
         }
     }
 
@@ -127,13 +125,17 @@ extension GovernanceDelegateView {
     func bind(viewModel: Model, locale: Locale) {
         bind(type: viewModel.type, locale: locale)
 
-        self.viewModel?.icon?.cancel(on: avatarView.imageView)
-        viewModel.icon?.loadImage(
+        self.viewModel?.addressViewModel.imageViewModel?.cancel(on: avatarView.imageView)
+
+        viewModel.addressViewModel.imageViewModel?.loadImage(
             on: avatarView.imageView,
             targetSize: .init(width: 40, height: 40),
             animated: true
         )
-        nameLabel.text = viewModel.name
+
+        nameLabel.lineBreakMode = viewModel.addressViewModel.lineBreakMode
+        nameLabel.text = viewModel.addressViewModel.name ?? viewModel.addressViewModel.address
+
         descriptionLabel.text = viewModel.description
         delegationsTitleLabel.text = viewModel.delegationsTitle
         delegationsValueLabel.text = viewModel.delegations
@@ -150,30 +152,31 @@ extension GovernanceDelegateView {
             avatarView.backgroundView.apply(style: .roundedContainer(radius: 8))
             typeView.apply(style: .organization)
             typeView.isHidden = false
-            let title = R.string.localizable.delegationsShowChipOrganization(preferredLanguages: locale.rLanguages).uppercased()
+            let title = R.string.localizable.delegationsShowChipOrganization(
+                preferredLanguages: locale.rLanguages
+            ).uppercased()
             typeView.iconDetailsView.bind(viewModel: .init(
                 title: title,
                 icon: R.image.iconOrganization()
             ))
-            nameLabel.lineBreakMode = .byTruncatingTail
         case .individual:
             avatarView.backgroundView.apply(style: .rounded(radius: 20))
             typeView.apply(style: .individual)
             typeView.isHidden = false
-            let title = R.string.localizable.delegationsShowChipIndividual(preferredLanguages: locale.rLanguages).uppercased()
+            let title = R.string.localizable.delegationsShowChipIndividual(
+                preferredLanguages: locale.rLanguages
+            ).uppercased()
             typeView.iconDetailsView.bind(viewModel: .init(
                 title: title,
                 icon: R.image.iconIndividual()
             ))
-            nameLabel.lineBreakMode = .byTruncatingTail
         case .none:
-            avatarView.backgroundView.apply(style: .rounded(radius: 0))
+            avatarView.backgroundView.apply(style: .rounded(radius: 20))
             typeView.isHidden = true
             typeView.iconDetailsView.bind(viewModel: .init(
                 title: "",
                 icon: nil
             ))
-            nameLabel.lineBreakMode = .byTruncatingMiddle
         }
     }
 }
