@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class DelegateView: UIView {
+final class GovernanceDelegateView: UIView {
     let nameLabel = UILabel(style: .regularSubhedlinePrimary)
     let typeView: BorderedIconLabelView = .create {
         $0.iconDetailsView.spacing = 6
@@ -87,7 +87,7 @@ final class DelegateView: UIView {
     }
 }
 
-extension DelegateView {
+extension GovernanceDelegateView {
     struct Model: Hashable {
         let id: String
         let icon: ImageViewModelProtocol?
@@ -101,7 +101,7 @@ extension DelegateView {
         let lastVotesTitle: String
         let lastVotes: String?
 
-        static func == (lhs: DelegateView.Model, rhs: DelegateView.Model) -> Bool {
+        static func == (lhs: GovernanceDelegateView.Model, rhs: GovernanceDelegateView.Model) -> Bool {
             lhs.id == rhs.id &&
                 lhs.name == rhs.name &&
                 lhs.type == rhs.type &&
@@ -155,6 +155,7 @@ extension DelegateView {
                 title: title,
                 icon: R.image.iconOrganization()
             ))
+            nameLabel.lineBreakMode = .byTruncatingTail
         case .individual:
             avatarView.backgroundView.apply(style: .rounded(radius: 20))
             typeView.apply(style: .individual)
@@ -164,6 +165,7 @@ extension DelegateView {
                 title: title,
                 icon: R.image.iconIndividual()
             ))
+            nameLabel.lineBreakMode = .byTruncatingTail
         case .none:
             avatarView.backgroundView.apply(style: .rounded(radius: 0))
             typeView.isHidden = true
@@ -171,6 +173,7 @@ extension DelegateView {
                 title: "",
                 icon: nil
             ))
+            nameLabel.lineBreakMode = .byTruncatingMiddle
         }
     }
 }

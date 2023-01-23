@@ -1,16 +1,12 @@
 import Foundation
 
-enum DelegatesShowOption {
+enum GovernanceDelegatesFilter {
     case individuals
     case organizations
     case all
 }
 
-extension DelegatesShowOption {
-    func title(for locale: Locale) -> String {
-        R.string.localizable.delegationsShowTitle(preferredLanguages: locale.rLanguages) + ":"
-    }
-
+extension GovernanceDelegatesFilter {
     static func title(for locale: Locale) -> String {
         R.string.localizable.delegationsShowTitle(preferredLanguages: locale.rLanguages)
     }

@@ -2,9 +2,9 @@ import UIKit
 import SnapKit
 
 final class AddDelegationViewLayout: UIView {
-    let bannerView = DelegateBanner()
-    let filterView = DelegationsControlView()
-    let sortView = DelegationsControlView()
+    let bannerView = GovernanceDelegateBanner()
+    let filterView = GovernanceDelegatePresentationControlView()
+    let sortView = GovernanceDelegatePresentationControlView()
 
     lazy var topView = UIView.vStack(spacing: 16, [
         bannerView,
@@ -19,7 +19,7 @@ final class AddDelegationViewLayout: UIView {
         $0.separatorStyle = .none
         $0.backgroundColor = .clear
         $0.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
-        $0.registerClassForCell(DelegateTableViewCell.self)
+        $0.registerClassForCell(GovernanceDelegateTableViewCell.self)
     }
 
     override init(frame: CGRect) {

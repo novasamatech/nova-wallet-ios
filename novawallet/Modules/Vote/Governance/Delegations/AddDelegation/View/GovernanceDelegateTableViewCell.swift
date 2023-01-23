@@ -1,10 +1,10 @@
 import UIKit
 import SoraUI
 
-typealias DelegateTableViewCell = BlurredTableViewCell<DelegateView>
+typealias GovernanceDelegateTableViewCell = BlurredTableViewCell<GovernanceDelegateView>
 
-extension DelegateTableViewCell {
-    typealias Model = DelegateView.Model
+extension GovernanceDelegateTableViewCell {
+    typealias Model = GovernanceDelegateView.Model
 
     func bind(viewModel: Model, locale: Locale) {
         view.bind(viewModel: viewModel, locale: locale)
