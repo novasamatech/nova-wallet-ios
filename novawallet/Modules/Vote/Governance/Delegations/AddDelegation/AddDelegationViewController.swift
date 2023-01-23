@@ -5,12 +5,11 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
     typealias RootViewType = AddDelegationViewLayout
 
     let presenter: AddDelegationPresenterProtocol
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, DelegateTableViewCell.Model>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, DelegateTableViewCell.Model>
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, GovernanceDelegateTableViewCell.Model>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, GovernanceDelegateTableViewCell.Model>
     private lazy var dataSource = createDataSource()
-    private var viewModel: [DelegateTableViewCell.Model] = []
-    private var showValue: DelegatesShowOption?
-    private var sortValue: DelegatesSortOption?
+    private var selectedFilter: GovernanceDelegatesFilter?
+    private var selectedOrder: GovernanceDelegatesOrder?
 
     init(presenter: AddDelegationPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -40,14 +39,13 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
     }
 
     private func createDataSource() -> DataSource {
-        .init(tableView: rootView.tableView) { [weak self] tableView, indexPath, _ -> UITableViewCell? in
+        .init(tableView: rootView.tableView) { [weak self] tableView, indexPath, model -> UITableViewCell? in
             guard let self = self else {
                 return nil
             }
 
-            let cell: DelegateTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            let cellModel = self.viewModel[indexPath.row]
-            cell.bind(viewModel: cellModel, locale: self.selectedLocale)
+            let cell: GovernanceDelegateTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.bind(viewModel: model, locale: self.selectedLocale)
             cell.applyStyle()
             return cell
         }
@@ -64,7 +62,7 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
             action: #selector(didTapOnSort),
             for: .touchUpInside
         )
-        rootView.bannerView.bannerView.linkButton?.addTarget(
+        rootView.bannerView.gradientBannerView.linkButton?.addTarget(
             self,
             action: #selector(didTapOnBannerLink),
             for: .touchUpInside
@@ -94,15 +92,15 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         rootView.bannerView.set(locale: selectedLocale)
-        showValue.map {
+        selectedFilter.map {
             rootView.filterView.bind(
-                title: $0.title(for: selectedLocale),
+                title: GovernanceDelegatesFilter.title(for: selectedLocale),
                 value: $0.value(for: selectedLocale)
             )
         }
-        sortValue.map {
+        selectedOrder.map {
             rootView.sortView.bind(
-                title: $0.title(for: selectedLocale),
+                title: GovernanceDelegatesOrder.title(for: selectedLocale),
                 value: $0.value(for: selectedLocale)
             )
         }
@@ -111,39 +109,33 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
 }
 
 extension AddDelegationViewController: AddDelegationViewProtocol {
-    func update(viewModel: [DelegateTableViewCell.Model]) {
-        self.viewModel = viewModel
-
+    func didReceive(delegateViewModels: [GovernanceDelegateTableViewCell.Model]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
-        snapshot.appendItems(viewModel)
+        snapshot.appendItems(delegateViewModels)
         dataSource.apply(snapshot, animatingDifferences: false)
     }
 
-    func update(showValue: DelegatesShowOption) {
-        self.showValue = showValue
+    func didReceive(filter: GovernanceDelegatesFilter) {
+        selectedFilter = filter
 
         rootView.filterView.bind(
-            title: showValue.title(for: selectedLocale),
-            value: showValue.value(for: selectedLocale)
+            title: GovernanceDelegatesFilter.title(for: selectedLocale),
+            value: filter.value(for: selectedLocale)
         )
     }
 
-    func update(sortValue: DelegatesSortOption) {
-        self.sortValue = sortValue
+    func didReceive(order: GovernanceDelegatesOrder) {
+        selectedOrder = order
+
         rootView.sortView.bind(
-            title: sortValue.title(for: selectedLocale),
-            value: sortValue.value(for: selectedLocale)
+            title: GovernanceDelegatesOrder.title(for: selectedLocale),
+            value: order.value(for: selectedLocale)
         )
     }
 
-    func showBanner() {
-        rootView.bannerView.isHidden = false
-        rootView.bannerView.set(locale: selectedLocale)
-    }
-
-    func hideBanner() {
-        rootView.bannerView.isHidden = true
+    func didChangeBannerState(isHidden: Bool) {
+        rootView.bannerView.isHidden = isHidden
     }
 }
 
@@ -151,8 +143,11 @@ extension AddDelegationViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        let cellModel = viewModel[indexPath.row]
-        presenter.selectDelegate(cellModel)
+        guard let selectedItem = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        presenter.selectDelegate(selectedItem)
     }
 }
 

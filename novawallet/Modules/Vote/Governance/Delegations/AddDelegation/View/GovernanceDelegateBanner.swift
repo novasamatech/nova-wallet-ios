@@ -2,8 +2,8 @@ import UIKit
 import SnapKit
 import SoraUI
 
-final class DelegateBanner: UIView {
-    let bannerView: GradientBannerView = .create {
+final class GovernanceDelegateBanner: UIView {
+    let gradientBannerView: GradientBannerView = .create {
         $0.infoView.imageView.image = R.image.iconDelegateBadges()
         $0.stackView.setCustomSpacing(16, after: $0.infoView)
         $0.bind(model: .stakingController())
@@ -31,8 +31,8 @@ final class DelegateBanner: UIView {
     }
 
     private func setupLayout() {
-        addSubview(bannerView)
-        bannerView.snp.makeConstraints {
+        addSubview(gradientBannerView)
+        gradientBannerView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
         addSubview(closeButton)
@@ -41,12 +41,12 @@ final class DelegateBanner: UIView {
             $0.trailing.equalToSuperview().inset(8)
             $0.top.equalToSuperview().inset(12)
         }
-        bannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
+        gradientBannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
     }
 
     func set(locale: Locale) {
-        bannerView.infoView.titleLabel.text = R.string.localizable.delegationsAddBannerTitle(preferredLanguages: locale.rLanguages)
-        bannerView.infoView.subtitleLabel.text = R.string.localizable.delegationsAddBannerSubtitle(preferredLanguages: locale.rLanguages)
-        bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddBannerLink(preferredLanguages: locale.rLanguages)
+        gradientBannerView.infoView.titleLabel.text = R.string.localizable.delegationsAddBannerTitle(preferredLanguages: locale.rLanguages)
+        gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.delegationsAddBannerSubtitle(preferredLanguages: locale.rLanguages)
+        gradientBannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddBannerLink(preferredLanguages: locale.rLanguages)
     }
 }
