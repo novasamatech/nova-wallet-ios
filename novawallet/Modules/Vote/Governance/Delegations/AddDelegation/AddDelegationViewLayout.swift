@@ -2,9 +2,7 @@ import UIKit
 import SnapKit
 
 final class AddDelegationViewLayout: UIView {
-    let bannerView: GovernanceDelegateBanner = .create {
-        $0.isHidden = true
-    }
+    let bannerView = GovernanceDelegateBanner()
 
     let filterView = GovernanceDelegatePresentationControlView()
     let sortView = GovernanceDelegatePresentationControlView()
@@ -32,11 +30,17 @@ final class AddDelegationViewLayout: UIView {
         backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
+        setBanner(isHidden: true)
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setBanner(isHidden: Bool) {
+        bannerView.isHidden = isHidden
+        bannerView.alpha = isHidden ? 0 : 1
     }
 
     private func setupLayout() {
