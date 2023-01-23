@@ -22,3 +22,16 @@ extension GovernanceDelegatesFilter {
         }
     }
 }
+
+extension GovernanceDelegatesFilter {
+    func matchesDelegate(_ delegate: GovernanceDelegateLocal) -> Bool {
+        switch self {
+        case .all:
+            return true
+        case .organizations:
+            return delegate.metadata?.isOrganization == true
+        case .individuals:
+            return delegate.metadata?.isOrganization == false
+        }
+    }
+}
