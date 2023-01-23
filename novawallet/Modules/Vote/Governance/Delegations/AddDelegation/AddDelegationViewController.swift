@@ -138,6 +138,11 @@ extension AddDelegationViewController: AddDelegationViewProtocol {
     func didChangeBannerState(isHidden: Bool) {
         rootView.bannerView.isHidden = isHidden
     }
+
+    func didCompleteListConfiguration() {
+        rootView.filterView.control.deactivate(animated: true)
+        rootView.sortView.control.deactivate(animated: true)
+    }
 }
 
 extension AddDelegationViewController: UITableViewDelegate {
