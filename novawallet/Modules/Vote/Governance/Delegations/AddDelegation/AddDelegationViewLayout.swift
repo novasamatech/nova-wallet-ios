@@ -4,8 +4,8 @@ import SnapKit
 final class AddDelegationViewLayout: UIView {
     let bannerView = GovernanceDelegateBanner()
 
-    let filterView = GovernanceDelegatePresentationControlView()
-    let sortView = GovernanceDelegatePresentationControlView()
+    let filterView = GovernanceDelegateActionControl()
+    let sortView = GovernanceDelegateActionControl()
 
     lazy var topView = UIView.vStack(spacing: 16, [
         bannerView,
