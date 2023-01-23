@@ -142,12 +142,12 @@ extension AddDelegationViewController: AddDelegationViewProtocol {
         if animated {
             bannerAnimator.animate(
                 block: {
-                    self.rootView.bannerView.isHidden = isHidden
+                    self.rootView.setBanner(isHidden: isHidden)
                 },
                 completionBlock: nil
             )
         } else {
-            rootView.bannerView.isHidden = isHidden
+            rootView.setBanner(isHidden: isHidden)
         }
     }
 
