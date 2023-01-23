@@ -2,7 +2,10 @@ import UIKit
 import SnapKit
 
 final class AddDelegationViewLayout: UIView {
-    let bannerView = GovernanceDelegateBanner()
+    let bannerView: GovernanceDelegateBanner = .create {
+        $0.isHidden = true
+    }
+
     let filterView = GovernanceDelegatePresentationControlView()
     let sortView = GovernanceDelegatePresentationControlView()
 

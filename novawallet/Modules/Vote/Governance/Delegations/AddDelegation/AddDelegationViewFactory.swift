@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import SubstrateSdk
+import SoraKeystore
 
 struct AddDelegationViewFactory {
     static let lastVotedDays: Int = 30
@@ -20,6 +21,7 @@ struct AddDelegationViewFactory {
             wireframe: wireframe,
             chain: chain,
             lastVotedDays: Self.lastVotedDays,
+            learnDelegateMetadata: ApplicationConfig.shared.learnGovernanceDelegateMetadata,
             addressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
@@ -81,6 +83,7 @@ struct AddDelegationViewFactory {
             delegateListOperationFactory: delegateListOperationFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,
+            settings: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

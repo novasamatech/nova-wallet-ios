@@ -11,6 +11,7 @@ final class AddDelegationPresenter {
     let addressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let chain: ChainModel
     let lastVotedDays: Int
+    let learnDelegateMetadata: URL
     let logger: LoggerProtocol
 
     private var allDelegates: [AccountAddress: GovernanceDelegateLocal] = [:]
@@ -24,6 +25,7 @@ final class AddDelegationPresenter {
         wireframe: AddDelegationWireframeProtocol,
         chain: ChainModel,
         lastVotedDays: Int,
+        learnDelegateMetadata: URL,
         addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -32,6 +34,7 @@ final class AddDelegationPresenter {
         self.wireframe = wireframe
         self.chain = chain
         self.lastVotedDays = lastVotedDays
+        self.learnDelegateMetadata = learnDelegateMetadata
         self.addressViewModelFactory = addressViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
@@ -109,9 +112,16 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
     func selectDelegate(_: GovernanceDelegateTableViewCell.Model) {}
 
-    func closeBanner() {}
+    func closeBanner() {
+        view?.didChangeBannerState(isHidden: true, animated: true)
+        interactor.saveCloseBanner()
+    }
 
-    func showAddDelegateInformation() {}
+    func showAddDelegateInformation() {
+        if let view = view {
+            wireframe.showWeb(url: learnDelegateMetadata, from: view, style: .automatic)
+        }
+    }
 
     func showSortOptions() {
         let title = LocalizableResource {
@@ -195,6 +205,10 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 }
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
+    func didReceiveShouldDisplayBanner(_ isHidden: Bool) {
+        view?.didChangeBannerState(isHidden: isHidden, animated: false)
+    }
+
     func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal]) {
         allDelegates = delegates.reduce(into: [AccountAddress: GovernanceDelegateLocal]()) {
             $0[$1.stats.address] = $1

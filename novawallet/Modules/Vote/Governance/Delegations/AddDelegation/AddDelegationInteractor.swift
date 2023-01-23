@@ -1,6 +1,7 @@
 import UIKit
 import SubstrateSdk
 import RobinHood
+import SoraKeystore
 
 final class AddDelegationInteractor {
     weak var presenter: AddDelegationInteractorOutputProtocol?
@@ -12,6 +13,7 @@ final class AddDelegationInteractor {
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    private(set) var settings: SettingsManagerProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -31,6 +33,7 @@ final class AddDelegationInteractor {
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        settings: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
@@ -42,6 +45,7 @@ final class AddDelegationInteractor {
         self.delegateListOperationFactory = delegateListOperationFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
+        self.settings = settings
         self.operationQueue = operationQueue
     }
 
@@ -119,11 +123,16 @@ final class AddDelegationInteractor {
     private func subscribeBlockNumber() {
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
     }
+
+    private func provideSettings() {
+        presenter?.didReceiveShouldDisplayBanner(settings.governanceDelegateInfoSeen)
+    }
 }
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
+        provideSettings()
     }
 
     func remakeSubscriptions() {
@@ -134,6 +143,10 @@ extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
         lastUsedBlockNumber = nil
 
         fetchDelegateListIfNeeded()
+    }
+
+    func saveCloseBanner() {
+        settings.governanceDelegateInfoSeen = true
     }
 }
 
