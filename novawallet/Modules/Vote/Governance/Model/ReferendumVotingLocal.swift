@@ -123,4 +123,14 @@ struct ReferendumTracksVotingDistribution {
     func totalLocked() -> BigUInt {
         trackLocks.reduce(BigUInt(0)) { max($0, $1.amount) }
     }
+
+    func totalDelegated() -> BigUInt? {
+        guard !votes.delegatings.isEmpty else {
+            return nil
+        }
+
+        return votes.delegatings.reduce(BigUInt(0)) { total, keyValue in
+            max(total, keyValue.value.balance)
+        }
+    }
 }
