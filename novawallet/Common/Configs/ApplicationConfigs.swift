@@ -207,4 +207,12 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json")!
         #endif
     }
+
+    var inAppUpdatesChangelogsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
+        #endif
+    }
 }

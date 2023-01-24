@@ -7,6 +7,7 @@ struct InAppUpdatesViewFactory {
             repository: InAppUpdatesRepository(),
             currentVersion: ApplicationConfig.shared.version,
             settings: SettingsManager.shared,
+            securityLayerService: SecurityLayerService.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
         let wireframe = InAppUpdatesWireframe()

@@ -1,10 +1,14 @@
-protocol InAppUpdatesViewProtocol: AnyObject {}
+protocol InAppUpdatesViewProtocol: ControllerBackedProtocol {}
 
 protocol InAppUpdatesPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol InAppUpdatesInteractorInputProtocol: AnyObject {}
+protocol InAppUpdatesInteractorInputProtocol: AnyObject {
+    func setup()
+    func loadAllChangeLogs()
+    func loadLastVersionChangeLog()
+}
 
 protocol InAppUpdatesInteractorOutputProtocol: AnyObject {}
 

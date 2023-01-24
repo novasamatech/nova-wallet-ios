@@ -1,7 +1,11 @@
-struct Version: Decodable {
+struct Version: Decodable, Hashable {
     let major: UInt
     let minor: UInt
     let patch: UInt
+
+    var id: String {
+        [major, minor, patch].map { String($0) }.joined(separator: ".")
+    }
 
     init(major: UInt, minor: UInt, patch: UInt) {
         self.major = major
