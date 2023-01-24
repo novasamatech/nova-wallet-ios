@@ -163,6 +163,15 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorInputBackground()!,
         rounding: .init(radius: 12, corners: .allCorners)
     )
+
+    static let clear = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0,
+        strokeColor: .clear,
+        highlightedStrokeColor: .clear,
+        fillColor: .clear,
+        highlightedFillColor: .clear
+    )
 }
 
 extension RoundedView.Style {

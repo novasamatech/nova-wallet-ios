@@ -1,10 +1,18 @@
 import UIKit
+import SoraUI
 
-final class GovernanceDelegatePresentationControlView: UIView {
+final class GovernanceDelegateActionControl: UIView {
     let label = UILabel(style: .footnoteSecondary)
-    let control: YourWalletsControl = .create {
-        $0.color = R.color.colorTextPrimary()!
-        $0.iconDetailsView.detailsLabel.apply(style: .footnotePrimary)
+
+    let control: ActionTitleControl = .create {
+        let tintColor = R.color.colorTextPrimary()!
+        $0.titleLabel.apply(style: .footnotePrimary)
+        $0.imageView.image = R.image.iconLinkChevron()?.tinted(with: tintColor)
+        $0.identityIconAngle = CGFloat.pi / 2.0
+        $0.activationIconAngle = -CGFloat.pi / 2.0
+        $0.titleLabel.apply(style: .footnotePrimary)
+        $0.horizontalSpacing = 0.0
+        $0.imageView.isUserInteractionEnabled = false
     }
 
     override init(frame: CGRect) {
@@ -24,11 +32,6 @@ final class GovernanceDelegatePresentationControlView: UIView {
             control
         ])
 
-        control.iconDetailsView.iconWidth = 0
-        control.iconDetailsView.spacing = 0
-        label.setContentCompressionResistancePriority(.required, for: .horizontal)
-        label.setContentHuggingPriority(.required, for: .horizontal)
-
         addSubview(contentView)
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -37,7 +40,10 @@ final class GovernanceDelegatePresentationControlView: UIView {
 
     func bind(title: String, value: String) {
         label.text = title
-        control.bind(model: .init(name: value, image: nil))
-        control.apply(state: .inactive)
+
+        control.titleLabel.text = value
+        control.invalidateLayout()
+
+        setNeedsLayout()
     }
 }

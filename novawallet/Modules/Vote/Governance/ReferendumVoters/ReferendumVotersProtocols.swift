@@ -18,4 +18,5 @@ protocol ReferendumVotersInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: ReferendumVotersInteractorError)
 }
 
-protocol ReferendumVotersWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, AddressOptionsPresentable {}
+protocol ReferendumVotersWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
+    AddressOptionsPresentable {}
