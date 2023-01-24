@@ -39,7 +39,7 @@ final class GovernanceDelegateActionControl: UIView {
     }
 
     func bind(title: String, value: String) {
-        label.text = title
+        label.text = title + ":"
 
         control.titleLabel.text = value
         control.invalidateLayout()
