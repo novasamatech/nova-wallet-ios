@@ -18,4 +18,12 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     func setup() {}
 }
 
-extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutputProtocol {}
+extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutputProtocol {
+    func didReceiveDetails(_: GovernanceDelegateDetails?) {}
+
+    func didReceiveMetadata(_: GovernanceDelegateMetadataRemote?) {}
+
+    func didReceiveIdentity(_: AccountIdentity?) {}
+
+    func didReceiveError(_: GovernanceDelegateInfoError) {}
+}
