@@ -61,7 +61,7 @@
     <entity name="CDChainApi" representedClassName="CDChainApi" syncable="YES" codeGenerationType="class">
         <attribute name="apiType" optional="YES" attributeType="String"/>
         <attribute name="parameters" optional="YES" attributeType="Binary"/>
-        <attribute name="serviceType" attributeType="String"/>
+        <attribute name="serviceType" attributeType="String" defaultValueString=""/>
         <attribute name="url" attributeType="URI"/>
         <relationship name="chain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="externalApis" inverseEntity="CDChain"/>
     </entity>
