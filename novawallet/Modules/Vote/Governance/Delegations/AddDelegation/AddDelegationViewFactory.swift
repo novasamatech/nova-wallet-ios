@@ -4,9 +4,6 @@ import SubstrateSdk
 import SoraKeystore
 
 struct AddDelegationViewFactory {
-    static let lastVotedDays: Int = 30
-    static let fetchBlockThreshold: BlockNumber = 10
-
     static func createView(state: GovernanceSharedState) -> AddDelegationViewProtocol? {
         guard let interactor = createInteractor(for: state), let chain = state.settings.value?.chain else {
             return nil
@@ -14,13 +11,13 @@ struct AddDelegationViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let wireframe = AddDelegationWireframe()
+        let wireframe = AddDelegationWireframe(state: state)
 
         let presenter = AddDelegationPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
-            lastVotedDays: Self.lastVotedDays,
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             learnDelegateMetadata: ApplicationConfig.shared.learnGovernanceDelegateMetadata,
             addressViewModelFactory: DisplayAddressViewModelFactory(),
             localizationManager: localizationManager,
@@ -75,8 +72,8 @@ struct AddDelegationViewFactory {
 
         return AddDelegationInteractor(
             chain: chain,
-            lastVotedDays: Self.lastVotedDays,
-            fetchBlockTreshold: Self.fetchBlockThreshold,
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
+            fetchBlockTreshold: GovernanceDelegationConstants.delegateFetchBlockThreshold,
             connection: connection,
             runtimeService: runtimeProvider,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
