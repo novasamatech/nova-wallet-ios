@@ -21,4 +21,12 @@ final class AddDelegationWireframe: AddDelegationWireframeProtocol {
 
         view?.controller.present(pickerView, animated: true)
     }
+
+    func showInfo(from view: AddDelegationViewProtocol?, delegate: GovernanceDelegateLocal) {
+        guard let infoView = GovernanceDelegateInfoViewFactory.createView(for: delegate) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(infoView.controller, animated: true)
+    }
 }
