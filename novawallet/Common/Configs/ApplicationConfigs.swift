@@ -31,6 +31,7 @@ protocol ApplicationConfigProtocol {
     var ledgerGuideURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
+    var learnGovernanceDelegateMetadata: URL { get }
 }
 
 final class ApplicationConfig {
@@ -197,6 +198,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var learnRecommendedValidatorsURL: URL {
+        URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Recommended-validators-in-Nova-Wallet")!
+    }
+
+    var learnGovernanceDelegateMetadata: URL {
+        // TODO: Set actual link when ready
         URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Recommended-validators-in-Nova-Wallet")!
     }
 }
