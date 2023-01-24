@@ -110,7 +110,13 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
         view?.didReceive(filter: selectedFilter)
     }
 
-    func selectDelegate(_: GovernanceDelegateTableViewCell.Model) {}
+    func selectDelegate(_ viewModel: GovernanceDelegateTableViewCell.Model) {
+        guard let delegate = allDelegates[viewModel.addressViewModel.address] else {
+            return
+        }
+
+        wireframe.showInfo(from: view, delegate: delegate)
+    }
 
     func closeBanner() {
         view?.didChangeBannerState(isHidden: true, animated: true)
