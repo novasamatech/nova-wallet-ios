@@ -60,4 +60,41 @@ final class Gov2DelegationTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+
+    func testDelegationDetailsFetch() {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = KnowChainId.kusama
+        let recentBlockNumber: BlockNumber = 1000
+        let delegate: AccountAddress = "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE"
+
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+            return
+        }
+
+        let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: delegationApi.url)
+
+        // when
+
+        let wrapper = statsOperationFactory.fetchDetailsWrapper(
+            for: delegate,
+            activityStartBlock: recentBlockNumber
+        )
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        // then
+
+        do {
+            let delegate = try wrapper.targetOperation.extractNoCancellableResultData()
+            XCTAssertNotNil(delegate)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
 }
