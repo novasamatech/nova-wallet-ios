@@ -11,7 +11,7 @@ protocol AddDelegationViewProtocol: ControllerBackedProtocol {
 
 protocol AddDelegationPresenterProtocol: AnyObject {
     func setup()
-    func selectDelegate(_: GovernanceDelegateTableViewCell.Model)
+    func selectDelegate(_ viewModel: GovernanceDelegateTableViewCell.Model)
     func closeBanner()
     func showAddDelegateInformation()
     func showSortOptions()
@@ -39,4 +39,6 @@ protocol AddDelegationWireframeProtocol: AlertPresentable, ErrorPresentable, Com
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate
     )
+
+    func showInfo(from view: AddDelegationViewProtocol?, delegate: GovernanceDelegateLocal)
 }
