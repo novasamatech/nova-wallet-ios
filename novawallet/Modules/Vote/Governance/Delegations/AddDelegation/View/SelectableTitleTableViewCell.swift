@@ -57,6 +57,10 @@ final class SelectableTitleTableViewCell: UITableViewCell, ModalPickerCellProtoc
 
     func applyStyle() {
         backgroundColor = .clear
+
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()
+
         view.titleView.apply(style: .footnotePrimary)
     }
 }
