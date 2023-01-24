@@ -12,6 +12,7 @@ enum SettingsKey: String {
     case selectedCurrency
     case governanceChainId
     case governanceType
+    case governanceDelegateInfoSeen
 }
 
 extension SettingsManagerProtocol {
@@ -123,6 +124,16 @@ extension SettingsManagerProtocol {
             } else {
                 removeValue(for: SettingsKey.selectedCurrency.rawValue)
             }
+        }
+    }
+
+    var governanceDelegateInfoSeen: Bool {
+        get {
+            bool(for: SettingsKey.governanceDelegateInfoSeen.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.governanceDelegateInfoSeen.rawValue)
         }
     }
 }

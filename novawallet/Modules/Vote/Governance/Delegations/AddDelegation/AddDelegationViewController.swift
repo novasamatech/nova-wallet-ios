@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class AddDelegationViewController: UIViewController, ViewHolder {
     typealias RootViewType = AddDelegationViewLayout
@@ -10,6 +11,8 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
     private lazy var dataSource = createDataSource()
     private var selectedFilter: GovernanceDelegatesFilter?
     private var selectedOrder: GovernanceDelegatesOrder?
+
+    private lazy var bannerAnimator = BlockViewAnimator()
 
     init(presenter: AddDelegationPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -135,8 +138,22 @@ extension AddDelegationViewController: AddDelegationViewProtocol {
         )
     }
 
-    func didChangeBannerState(isHidden: Bool) {
-        rootView.bannerView.isHidden = isHidden
+    func didChangeBannerState(isHidden: Bool, animated: Bool) {
+        if animated {
+            bannerAnimator.animate(
+                block: {
+                    self.rootView.setBanner(isHidden: isHidden)
+                },
+                completionBlock: nil
+            )
+        } else {
+            rootView.setBanner(isHidden: isHidden)
+        }
+    }
+
+    func didCompleteListConfiguration() {
+        rootView.filterView.control.deactivate(animated: true)
+        rootView.sortView.control.deactivate(animated: true)
     }
 }
 

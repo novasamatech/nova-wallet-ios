@@ -569,6 +569,7 @@
 		8427495728FEBFA400B2B70B /* ConvictionVoting+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8427495628FEBFA400B2B70B /* ConvictionVoting+ConstantPath.swift */; };
 		84274B8127A19AFF00A26657 /* OrmlTokenTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84274B8027A19AFF00A26657 /* OrmlTokenTransfer.swift */; };
 		84276687297AB22B0063E08E /* TableViewCellPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84276686297AB22B0063E08E /* TableViewCellPosition.swift */; };
+		84276689297E73380063E08E /* AddDelegationInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84276688297E73380063E08E /* AddDelegationInteractorError.swift */; };
 		842806F32847A51400702F3A /* AccountDetailsSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842806F22847A51400702F3A /* AccountDetailsSelectionView.swift */; };
 		842806F52847A82500702F3A /* StackAccountSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842806F42847A82500702F3A /* StackAccountSelectionCell.swift */; };
 		84282288289AC80600163031 /* MultiValueView+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84282287289AC80600163031 /* MultiValueView+Factory.swift */; };
@@ -2411,7 +2412,7 @@
 		883DB17A297A416400EFB7D8 /* GovernanceDelegateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB179297A416400EFB7D8 /* GovernanceDelegateView.swift */; };
 		883DB17C297A520300EFB7D8 /* GovernanceDelegatesFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17B297A520300EFB7D8 /* GovernanceDelegatesFilter.swift */; };
 		883DB17E297A521900EFB7D8 /* GovernanceDelegatesOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17D297A521900EFB7D8 /* GovernanceDelegatesOrder.swift */; };
-		883DB180297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17F297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift */; };
+		883DB180297A546800EFB7D8 /* GovernanceDelegateActionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883DB17F297A546800EFB7D8 /* GovernanceDelegateActionControl.swift */; };
 		884048D428C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */; };
 		8842104C289BBA6400306F2C /* currencies.json in Resources */ = {isa = PBXBuildFile; fileRef = 8842104B289BBA6400306F2C /* currencies.json */; };
 		88421055289BBA8D00306F2C /* CurrencyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */; };
@@ -3681,6 +3682,7 @@
 		8427495628FEBFA400B2B70B /* ConvictionVoting+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConvictionVoting+ConstantPath.swift"; sourceTree = "<group>"; };
 		84274B8027A19AFF00A26657 /* OrmlTokenTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlTokenTransfer.swift; sourceTree = "<group>"; };
 		84276686297AB22B0063E08E /* TableViewCellPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCellPosition.swift; sourceTree = "<group>"; };
+		84276688297E73380063E08E /* AddDelegationInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDelegationInteractorError.swift; sourceTree = "<group>"; };
 		842806F22847A51400702F3A /* AccountDetailsSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsSelectionView.swift; sourceTree = "<group>"; };
 		842806F42847A82500702F3A /* StackAccountSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackAccountSelectionCell.swift; sourceTree = "<group>"; };
 		84282287289AC80600163031 /* MultiValueView+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultiValueView+Factory.swift"; sourceTree = "<group>"; };
@@ -5550,7 +5552,7 @@
 		883DB179297A416400EFB7D8 /* GovernanceDelegateView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateView.swift; sourceTree = "<group>"; };
 		883DB17B297A520300EFB7D8 /* GovernanceDelegatesFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatesFilter.swift; sourceTree = "<group>"; };
 		883DB17D297A521900EFB7D8 /* GovernanceDelegatesOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatesOrder.swift; sourceTree = "<group>"; };
-		883DB17F297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatePresentationControlView.swift; sourceTree = "<group>"; };
+		883DB17F297A546800EFB7D8 /* GovernanceDelegateActionControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateActionControl.swift; sourceTree = "<group>"; };
 		884048D328C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlTokenSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		8842104B289BBA6400306F2C /* currencies.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = currencies.json; sourceTree = "<group>"; };
 		8842104E289BBA8D00306F2C /* CurrencyViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyViewLayout.swift; sourceTree = "<group>"; };
@@ -13099,7 +13101,7 @@
 				886CA9602977E9B200FC255A /* GovernanceDelegateTableViewCell.swift */,
 				883DB179297A416400EFB7D8 /* GovernanceDelegateView.swift */,
 				883DB177297A411300EFB7D8 /* AddDelegationStyles.swift */,
-				883DB17F297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift */,
+				883DB17F297A546800EFB7D8 /* GovernanceDelegateActionControl.swift */,
 				88F9F695297B082F00F6550D /* SelectableTitleTableViewCell.swift */,
 			);
 			path = View;
@@ -14277,6 +14279,7 @@
 				D74FF4FE525ADD8E7805481E /* AddDelegationViewLayout.swift */,
 				ACE1E9C7AE1788A0E4A45A88 /* AddDelegationViewFactory.swift */,
 				8814E857297E35D600A722FF /* GoveranaceDelegatePicker.swift */,
+				84276688297E73380063E08E /* AddDelegationInteractorError.swift */,
 			);
 			path = AddDelegation;
 			sourceTree = "<group>";
@@ -17508,7 +17511,7 @@
 				84AE7AB327D399CF00495267 /* StackNetworkCell.swift in Sources */,
 				AEA0C8C32681186500F9666F /* ChangeTargetsCustomValidatorListWireframe.swift in Sources */,
 				8472072E277C203A00F593DD /* UICollectionView+Reuse.swift in Sources */,
-				883DB180297A546800EFB7D8 /* GovernanceDelegatePresentationControlView.swift in Sources */,
+				883DB180297A546800EFB7D8 /* GovernanceDelegateActionControl.swift in Sources */,
 				AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */,
 				842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
@@ -17685,6 +17688,7 @@
 				882C29AC28DC7B7F009CA4B6 /* SubstrateStorageVersion.swift in Sources */,
 				84BC7045289EFF44008A9758 /* TransactionDisplayCode.swift in Sources */,
 				1D1DC32EFF13F41677A084B7 /* DAppOperationConfirmProtocols.swift in Sources */,
+				84276689297E73380063E08E /* AddDelegationInteractorError.swift in Sources */,
 				841E5561282E9CC700C8438F /* ParaStkStateMachineProtocols.swift in Sources */,
 				84720732277C370600F593DD /* DAppCategoriesView.swift in Sources */,
 				8892284A28F35410003F8B9E /* ReferendumsViewModel.swift in Sources */,

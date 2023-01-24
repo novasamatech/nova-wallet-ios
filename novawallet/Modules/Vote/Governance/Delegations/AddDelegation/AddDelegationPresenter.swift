@@ -8,29 +8,52 @@ final class AddDelegationPresenter {
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
     let numberFormatter = NumberFormatter.quantity.localizableResource()
-    var chain: ChainModel?
-    let lastVotedDays: Int = 30
-    private var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
+    let addressViewModelFactory: DisplayAddressViewModelFactoryProtocol
+    let chain: ChainModel
+    let lastVotedDays: Int
+    let learnDelegateMetadata: URL
+    let logger: LoggerProtocol
+
+    private var allDelegates: [AccountAddress: GovernanceDelegateLocal] = [:]
+    private var targetDelegates: [GovernanceDelegateLocal] = []
     private var selectedFilter = GovernanceDelegatesFilter.all
     private var selectedOrder = GovernanceDelegatesOrder.delegations
-    private var shownPickerDelegate: ModalPickerViewControllerDelegate?
+    private var shownPickerHandler: ModalPickerViewControllerDelegate?
 
     init(
         interactor: AddDelegationInteractorInputProtocol,
         wireframe: AddDelegationWireframeProtocol,
-        localizationManager: LocalizationManagerProtocol
+        chain: ChainModel,
+        lastVotedDays: Int,
+        learnDelegateMetadata: URL,
+        addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.chain = chain
+        self.lastVotedDays = lastVotedDays
+        self.learnDelegateMetadata = learnDelegateMetadata
+        self.addressViewModelFactory = addressViewModelFactory
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
+    private func updateTargetDelegates() {
+        targetDelegates = allDelegates.values.filter { delegate in
+            selectedFilter.matchesDelegate(delegate)
+        }.sorted { delegate1, delegate2 in
+            selectedOrder.isDescending(delegate1, delegate2: delegate2)
+        }
+    }
+
     private func updateView() {
-        guard let chainAsset = chain?.utilityAsset() else {
+        guard let chainAsset = chain.utilityAsset() else {
             return
         }
 
-        let viewModels = delegates.values.map { convert(delegate: $0, chainAsset: chainAsset) }
+        let viewModels = targetDelegates.map { convert(delegate: $0, chainAsset: chainAsset) }
         view?.didReceive(delegateViewModels: viewModels)
     }
 
@@ -38,21 +61,28 @@ final class AddDelegationPresenter {
         delegate: GovernanceDelegateLocal,
         chainAsset: AssetModel
     ) -> GovernanceDelegateTableViewCell.Model {
-        let icon = delegate.metadata.map { RemoteImageViewModel(url: $0.image) }
+        let name = delegate.identity?.displayName ?? delegate.metadata?.name
+
+        let addressViewModel = addressViewModelFactory.createViewModel(
+            from: delegate.stats.address,
+            name: name,
+            iconUrl: delegate.metadata?.image
+        )
+
         let numberFormatter = numberFormatter.value(for: selectedLocale)
         let delegations = numberFormatter.string(from: NSNumber(value: delegate.stats.delegationsCount))
+
         let totalVotes = formatVotes(
             votesInPlank: delegate.stats.delegatedVotes,
             precision: chainAsset.precision
         )
+
         let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
 
         return GovernanceDelegateTableViewCell.Model(
-            id: delegate.identifier,
-            icon: icon,
-            name: delegate.metadata?.name ?? delegate.stats.address,
+            addressViewModel: addressViewModel,
             type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
-            description: delegate.metadata?.shortDescription ?? "",
+            description: delegate.metadata?.shortDescription,
             delegationsTitle: GovernanceDelegatesOrder.delegations.value(for: selectedLocale),
             delegations: delegations,
             votesTitle: GovernanceDelegatesOrder.delegatedVotes.value(for: selectedLocale),
@@ -82,9 +112,16 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
     func selectDelegate(_: GovernanceDelegateTableViewCell.Model) {}
 
-    func closeBanner() {}
+    func closeBanner() {
+        view?.didChangeBannerState(isHidden: true, animated: true)
+        interactor.saveCloseBanner()
+    }
 
-    func showAddDelegateInformation() {}
+    func showAddDelegateInformation() {
+        if let view = view {
+            wireframe.showWeb(url: learnDelegateMetadata, from: view, style: .automatic)
+        }
+    }
 
     func showSortOptions() {
         let title = LocalizableResource {
@@ -102,12 +139,21 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
         let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedOrder in
             guard let self = self else { return }
-            selectedOrder.map { self.selectedOrder = $0 }
-            self.view?.didReceive(order: self.selectedOrder)
-            self.shownPickerDelegate = nil
+
+            if let selectedOrder = selectedOrder {
+                self.selectedOrder = selectedOrder
+                self.view?.didReceive(order: selectedOrder)
+
+                self.updateTargetDelegates()
+                self.updateView()
+            }
+
+            self.shownPickerHandler = nil
+
+            self.view?.didCompleteListConfiguration()
         }
 
-        shownPickerDelegate = delegate
+        shownPickerHandler = delegate
         wireframe.showPicker(
             from: view,
             title: title,
@@ -133,12 +179,21 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 
         let delegate = GoveranaceDelegatePicker(items: items) { [weak self] selectedFilter in
             guard let self = self else { return }
-            selectedFilter.map { self.selectedFilter = $0 }
-            self.view?.didReceive(filter: self.selectedFilter)
-            self.shownPickerDelegate = nil
+
+            if let selectedFilter = selectedFilter {
+                self.selectedFilter = selectedFilter
+                self.view?.didReceive(filter: selectedFilter)
+
+                self.updateTargetDelegates()
+                self.updateView()
+            }
+
+            self.shownPickerHandler = nil
+
+            self.view?.didCompleteListConfiguration()
         }
 
-        shownPickerDelegate = delegate
+        shownPickerHandler = delegate
         wireframe.showPicker(
             from: view,
             title: title,
@@ -150,14 +205,30 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
 }
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
-    func didReceiveDelegates(changes: [DataProviderChange<GovernanceDelegateLocal>]) {
-        delegates = changes.mergeToDict(delegates)
+    func didReceiveShouldDisplayBanner(_ isHidden: Bool) {
+        view?.didChangeBannerState(isHidden: isHidden, animated: false)
+    }
+
+    func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal]) {
+        allDelegates = delegates.reduce(into: [AccountAddress: GovernanceDelegateLocal]()) {
+            $0[$1.stats.address] = $1
+        }
+
+        updateTargetDelegates()
         updateView()
     }
 
-    func didReceive(chain: ChainModel) {
-        self.chain = chain
-        updateView()
+    func didReceiveError(_ error: AddDelegationInteractorError) {
+        logger.error("Did receive error: \(error)")
+
+        switch error {
+        case .blockSubscriptionFailed, .blockTimeFetchFailed:
+            interactor.remakeSubscriptions()
+        case .delegateListFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshDelegates()
+            }
+        }
     }
 }
 

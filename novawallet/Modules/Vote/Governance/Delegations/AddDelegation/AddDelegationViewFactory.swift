@@ -1,18 +1,31 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
+import SoraKeystore
 
 struct AddDelegationViewFactory {
+    static let lastVotedDays: Int = 30
+    static let fetchBlockThreshold: BlockNumber = 10
+
     static func createView(state: GovernanceSharedState) -> AddDelegationViewProtocol? {
-        guard let stateOption = state.settings.value, let wallet = SelectedWalletSettings.shared.value else {
+        guard let interactor = createInteractor(for: state), let chain = state.settings.value?.chain else {
             return nil
         }
-        let chain = stateOption.chain
+
         let localizationManager = LocalizationManager.shared
 
-        let interactor = AddDelegationInteractor(chain: chain)
         let wireframe = AddDelegationWireframe()
 
-        let presenter = AddDelegationPresenter(interactor: interactor, wireframe: wireframe, localizationManager: localizationManager)
+        let presenter = AddDelegationPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chain: chain,
+            lastVotedDays: Self.lastVotedDays,
+            learnDelegateMetadata: ApplicationConfig.shared.learnGovernanceDelegateMetadata,
+            addressViewModelFactory: DisplayAddressViewModelFactory(),
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
         let view = AddDelegationViewController(presenter: presenter, localizationManager: localizationManager)
 
@@ -20,5 +33,58 @@ struct AddDelegationViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(for state: GovernanceSharedState) -> AddDelegationInteractor? {
+        guard
+            let chain = state.settings.value?.chain,
+            let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url
+        else {
+            return nil
+        }
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let blockTimeService = state.blockTimeService else {
+            return nil
+        }
+
+        let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: statsUrl)
+        let delegateMetadataFactory = GovernanceDelegateMetadataFactory()
+
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        let identityOperationFactory = IdentityOperationFactory(
+            requestFactory: storageRequestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
+
+        let delegateListOperationFactory = GovernanceDelegateListOperationFactory(
+            statsOperationFactory: statsOperationFactory,
+            metadataOperationFactory: delegateMetadataFactory,
+            identityOperationFactory: identityOperationFactory
+        )
+
+        let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
+
+        return AddDelegationInteractor(
+            chain: chain,
+            lastVotedDays: Self.lastVotedDays,
+            fetchBlockTreshold: Self.fetchBlockThreshold,
+            connection: connection,
+            runtimeService: runtimeProvider,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            delegateListOperationFactory: delegateListOperationFactory,
+            blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeOperationFactory,
+            settings: SettingsManager.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
     }
 }
