@@ -34,14 +34,16 @@ final class InAppUpdatesInteractor {
 
         let operation = repository.fetchChangeLogOperation(for: lastRelease.version)
         operation.completionBlock = { [weak self] in
-            do {
-                let changelog = try operation.extractNoCancellableResultData()
-                self?.presenter.didReceiveLastVersion(changelog: .init(
-                    release: lastRelease,
-                    content: changelog
-                ))
-            } catch {
-                self?.presenter.didReceive(error: .fetchLastVersionChangeLog(error))
+            DispatchQueue.main.async {
+                do {
+                    let changelog = try operation.extractNoCancellableResultData()
+                    self?.presenter.didReceiveLastVersion(changelog: .init(
+                        release: lastRelease,
+                        content: changelog
+                    ))
+                } catch {
+                    self?.presenter.didReceive(error: .fetchLastVersionChangeLog(error))
+                }
             }
         }
         operationQueue.addOperation(operation)
@@ -67,11 +69,13 @@ final class InAppUpdatesInteractor {
         }
 
         mergeOperation.completionBlock = { [weak self] in
-            do {
-                let changelogs = try mergeOperation.extractNoCancellableResultData()
-                self?.presenter.didReceiveAllVersions(changelogs: changelogs)
-            } catch {
-                self?.presenter.didReceive(error: .fetchAllChangeLogs(error))
+            DispatchQueue.main.async {
+                do {
+                    let changelogs = try mergeOperation.extractNoCancellableResultData()
+                    self?.presenter.didReceiveAllVersions(changelogs: changelogs)
+                } catch {
+                    self?.presenter.didReceive(error: .fetchAllChangeLogs(error))
+                }
             }
         }
 
@@ -82,7 +86,17 @@ final class InAppUpdatesInteractor {
 extension InAppUpdatesInteractor: InAppUpdatesInteractorInputProtocol {
     func setup() {
         securityLayerService.scheduleExecutionIfAuthorized { [weak self] in
-            self?.fetchLastVersionChangeLog()
+            guard let self = self else {
+                return
+            }
+            self.fetchLastVersionChangeLog()
+            DispatchQueue.main.async {
+                let releasesContainsCriticalVersion = self.versions.first(where: { $0.severity == .critical }) != nil
+                self.presenter.didReceive(
+                    releasesContainsCriticalVersion: releasesContainsCriticalVersion,
+                    canLoadMoreReleaseChangeLogs: self.versions.count > 1
+                )
+            }
         }
     }
 

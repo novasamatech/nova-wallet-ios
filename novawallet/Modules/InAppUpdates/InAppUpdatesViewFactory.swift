@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 import SoraKeystore
 
 struct InAppUpdatesViewFactory {
@@ -15,13 +16,18 @@ struct InAppUpdatesViewFactory {
         )
 
         let wireframe = InAppUpdatesWireframe()
+        let localizationManager = LocalizationManager.shared
 
         let presenter = InAppUpdatesPresenter(
             interactor: interactor,
+            localizationManager: localizationManager,
             wireframe: wireframe
         )
 
-        let view = InAppUpdatesViewController(presenter: presenter)
+        let view = InAppUpdatesViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

@@ -5,7 +5,13 @@ protocol InAppUpdatesRepositoryProtocol {
     func fetchChangeLogOperation(for version: Version) -> BaseOperation<String>
 }
 
-final class InAppUpdatesRepository: JsonFileRepository<[Release]> {}
+final class InAppUpdatesRepository: JsonFileRepository<[Release]> {
+    init() {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        super.init(decoder: decoder)
+    }
+}
 
 extension InAppUpdatesRepository: InAppUpdatesRepositoryProtocol {
     func fetchReleasesWrapper() -> CompoundOperationWrapper<[Release]> {

@@ -45,7 +45,9 @@ final class InAppUpdatesService: BaseSyncService {
             })
 
         if showUpdates {
-            wireframe.showUpdates(notInstalledVersions: notInstalledVersions)
+            DispatchQueue.main.async {
+                self.wireframe.showUpdates(notInstalledVersions: notInstalledVersions)
+            }
         }
     }
 

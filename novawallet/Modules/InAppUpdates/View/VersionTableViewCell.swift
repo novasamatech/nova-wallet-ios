@@ -40,7 +40,7 @@ final class VersionTableViewCell: UITableViewCell {
         ])
 
         content.setCustomSpacing(12, after: dateLabel)
-        addSubview(content)
+        contentView.addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
@@ -48,7 +48,7 @@ final class VersionTableViewCell: UITableViewCell {
 }
 
 extension VersionTableViewCell {
-    struct Model {
+    struct Model: Hashable {
         let title: String
         let isLatest: Bool
         let severity: ReleaseSeverity
@@ -56,9 +56,9 @@ extension VersionTableViewCell {
         let markdownText: String
     }
 
-    func bind(model: Model) {
+    func bind(model: Model, locale: Locale) {
         titleLabel.text = model.title
-        bind(severity: model.severity)
+        bind(severity: model.severity, locale: locale)
         latestLabel.isHidden = !model.isLatest
         dateLabel.text = model.date
         changelogView.load(from: model.markdownText) { [weak self] model in
@@ -68,7 +68,7 @@ extension VersionTableViewCell {
         }
     }
 
-    func bind(severity: ReleaseSeverity) {
+    func bind(severity: ReleaseSeverity, locale _: Locale) {
         switch severity {
         case .normal:
             severityLabel.isHidden = true
