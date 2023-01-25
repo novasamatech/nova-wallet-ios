@@ -3,7 +3,7 @@ import SubstrateSdk
 import BigInt
 
 extension Democracy {
-    typealias Proposal = SupportPallet.Bounded<RuntimeCall<JSON>>
+    typealias Proposal = SupportPallet.Bounded<BytesCodable>
 
     struct Tally: Decodable {
         /// The number of aye votes, expressed in terms of post-conviction lock-vote.
