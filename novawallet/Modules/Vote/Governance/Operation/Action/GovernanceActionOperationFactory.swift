@@ -48,7 +48,6 @@ class GovernanceActionOperationFactory {
     private func createCallFetchWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         referendum: ReferendumLocal,
-        requestFactory _: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<ReferendumActionLocal.Call<RuntimeCall<JSON>>?> {
         let callDecodingService = OperationCombiningService<ReferendumActionLocal.Call<RuntimeCall<JSON>>?>(
@@ -183,7 +182,6 @@ extension GovernanceActionOperationFactory: ReferendumActionOperationFactoryProt
         let callFetchWrapper = createCallFetchWrapper(
             dependingOn: codingFactoryOperation,
             referendum: referendum,
-            requestFactory: requestFactory,
             connection: connection
         )
 
