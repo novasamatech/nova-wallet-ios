@@ -1,4 +1,4 @@
 struct ChangeLog {
-    let version: Version
+    let release: Release
     let content: String
 }

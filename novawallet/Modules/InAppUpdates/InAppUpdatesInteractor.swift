@@ -4,89 +4,59 @@ import SoraKeystore
 
 final class InAppUpdatesInteractor {
     weak var presenter: InAppUpdatesInteractorOutputProtocol!
-    private let operationQueue: OperationQueue
 
     let repository: InAppUpdatesRepositoryProtocol
-    let currentVersion: String
-    let lastSkippedVersion: Version?
+    let settings: SettingsManagerProtocol
     let securityLayerService: SecurityLayerServiceProtocol
-    private var notInstalledVersions: [Release] = []
+    let versions: [Release]
+    private let operationQueue: OperationQueue
 
     init(
         repository: InAppUpdatesRepositoryProtocol,
-        currentVersion: String,
         settings: SettingsManagerProtocol,
         securityLayerService: SecurityLayerServiceProtocol,
+        versions: [Release],
         operationQueue: OperationQueue
     ) {
-        self.operationQueue = operationQueue
         self.repository = repository
-        self.currentVersion = currentVersion
+        self.settings = settings
         self.securityLayerService = securityLayerService
-
-        if let lastSkippedUpdateVersion = settings.skippedUpdateVersion {
-            lastSkippedVersion = Version.parse(from: lastSkippedUpdateVersion)
-        } else {
-            lastSkippedVersion = nil
+        self.versions = versions.sorted {
+            $0.version > $1.version
         }
+        self.operationQueue = operationQueue
     }
 
-    private func showUpdatesIfNeeded(releases: [Release]) {
-        guard let currentVersion = Version.parse(from: currentVersion) else {
+    private func fetchLastVersionChangeLog() {
+        guard let lastRelease = versions.first else {
             return
         }
 
-        notInstalledVersions = releases
-            .filter { $0.version > currentVersion }
-            .sorted { $0.version > $1.version }
-        let showUpdates = notInstalledVersions
-            .contains(where: {
-                isCriticalUpdate($0) || isNotInstalledMajorUpdate($0)
-            })
-
-        if showUpdates {
-            // presenter show updates
-        }
-    }
-
-    private func isCriticalUpdate(_ release: Release) -> Bool {
-        release.severity == .critical
-    }
-
-    private func isNotInstalledMajorUpdate(_ release: Release) -> Bool {
-        guard release.severity == .major else {
-            return false
-        }
-        guard let lastSkippedVersion = lastSkippedVersion else {
-            return true
-        }
-        return release.version > lastSkippedVersion
-    }
-
-    private func fetchChangeLog(for version: Version) {
-        let operation = repository.fetchChangeLogOperation(for: version)
+        let operation = repository.fetchChangeLogOperation(for: lastRelease.version)
         operation.completionBlock = { [weak self] in
             do {
                 let changelog = try operation.extractNoCancellableResultData()
-                // presenter.didReceive(for: version, changelog: changelog)
+                self?.presenter.didReceiveLastVersion(changelog: .init(
+                    release: lastRelease,
+                    content: changelog
+                ))
             } catch {
-                // presenter.didReceive(error: Error)
+                self?.presenter.didReceive(error: .fetchLastVersionChangeLog(error))
             }
         }
         operationQueue.addOperation(operation)
     }
 
-    private func fetchChangeLogs(versions: [Version]) {
-        let operationsMap = versions.reduce(into: [Version: BaseOperation<String>]()) { result, version in
-            result[version] = repository.fetchChangeLogOperation(for: version)
-        }
+    private func fetchChangeLogs() {
+        let operationsMap = versions
+            .reduce(into: [Release: BaseOperation<String>]()) { result, release in
+                result[release] = repository.fetchChangeLogOperation(for: release.version)
+            }
 
         let mergeOperation = ClosureOperation<[ChangeLog]> {
-            operationsMap.compactMap { version, operation in
-                guard let content = try? operation.extractNoCancellableResultData() else {
-                    return nil
-                }
-                return ChangeLog(version: version, content: content)
+            try operationsMap.compactMap { release, operation in
+                let content = try operation.extractNoCancellableResultData()
+                return ChangeLog(release: release, content: content)
             }
         }
 
@@ -98,51 +68,27 @@ final class InAppUpdatesInteractor {
 
         mergeOperation.completionBlock = { [weak self] in
             do {
-                let changelog = try mergeOperation.extractNoCancellableResultData()
-                // presenter.didReceive(for: version, changelog: changelog)
+                let changelogs = try mergeOperation.extractNoCancellableResultData()
+                self?.presenter.didReceiveAllVersions(changelogs: changelogs)
             } catch {
-                // presenter.didReceive(error: Error)
+                self?.presenter.didReceive(error: .fetchAllChangeLogs(error))
             }
         }
 
         operationQueue.addOperations(fetchOperations + [mergeOperation], waitUntilFinished: false)
-    }
-
-    private func fetchReleases() {
-        let wrapper = repository.fetchReleasesWrapper()
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            guard let releases = try? wrapper.targetOperation.extractNoCancellableResultData() else {
-                // show error
-                return
-            }
-            self?.showUpdatesIfNeeded(releases: releases)
-        }
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
 
 extension InAppUpdatesInteractor: InAppUpdatesInteractorInputProtocol {
     func setup() {
         securityLayerService.scheduleExecutionIfAuthorized { [weak self] in
-            self?.fetchReleases()
+            self?.fetchLastVersionChangeLog()
         }
     }
 
-    func loadLastVersionChangeLog() {
-        guard let lastRelease = notInstalledVersions.first else {
-            return
-        }
+    func loadChangeLogs() {
         securityLayerService.scheduleExecutionIfAuthorized { [weak self] in
-            self?.fetchChangeLog(for: lastRelease.version)
-        }
-    }
-
-    func loadAllChangeLogs() {
-        securityLayerService.scheduleExecutionIfAuthorized { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.fetchChangeLogs(versions: self.notInstalledVersions.map(\.version))
+            self?.fetchChangeLogs()
         }
     }
 }

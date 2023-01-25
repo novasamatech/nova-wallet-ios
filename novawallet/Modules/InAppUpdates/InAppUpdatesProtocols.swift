@@ -6,10 +6,13 @@ protocol InAppUpdatesPresenterProtocol: AnyObject {
 
 protocol InAppUpdatesInteractorInputProtocol: AnyObject {
     func setup()
-    func loadAllChangeLogs()
-    func loadLastVersionChangeLog()
+    func loadChangeLogs()
 }
 
-protocol InAppUpdatesInteractorOutputProtocol: AnyObject {}
+protocol InAppUpdatesInteractorOutputProtocol: AnyObject {
+    func didReceive(error: InAppUpdatesInteractorError)
+    func didReceiveLastVersion(changelog: ChangeLog)
+    func didReceiveAllVersions(changelogs: [ChangeLog])
+}
 
 protocol InAppUpdatesWireframeProtocol: AnyObject {}

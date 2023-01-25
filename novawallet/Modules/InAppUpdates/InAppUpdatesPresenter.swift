@@ -15,7 +15,21 @@ final class InAppUpdatesPresenter {
 }
 
 extension InAppUpdatesPresenter: InAppUpdatesPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 }
 
-extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {}
+extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
+    func didReceive(error _: InAppUpdatesInteractorError) {
+        print("Error")
+    }
+
+    func didReceiveLastVersion(changelog _: ChangeLog) {
+        print("didReceiveLastVersion")
+    }
+
+    func didReceiveAllVersions(changelogs _: [ChangeLog]) {
+        print("didReceiveAllVersions")
+    }
+}

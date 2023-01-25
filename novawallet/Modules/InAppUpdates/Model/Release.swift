@@ -1,6 +1,6 @@
 import Foundation
 
-struct Release: Decodable {
+struct Release: Decodable, Hashable {
     let version: Version
     let severity: ReleaseSeverity
     let time: Date

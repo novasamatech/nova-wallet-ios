@@ -2,14 +2,18 @@ import Foundation
 import SoraKeystore
 
 struct InAppUpdatesViewFactory {
-    static func createView() -> InAppUpdatesViewProtocol? {
+    static func createView(versions: [Release]) -> InAppUpdatesViewProtocol? {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 10
+
         let interactor = InAppUpdatesInteractor(
             repository: InAppUpdatesRepository(),
-            currentVersion: ApplicationConfig.shared.version,
             settings: SettingsManager.shared,
             securityLayerService: SecurityLayerService.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            versions: versions,
+            operationQueue: operationQueue
         )
+
         let wireframe = InAppUpdatesWireframe()
 
         let presenter = InAppUpdatesPresenter(
