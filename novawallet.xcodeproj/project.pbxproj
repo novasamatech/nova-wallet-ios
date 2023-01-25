@@ -1372,6 +1372,9 @@
 		84880C462902781E00CADB06 /* ReferendumVotingLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84880C452902781E00CADB06 /* ReferendumVotingLocal.swift */; };
 		848841C128D1229000D750E9 /* ParaStkYieldBoostStopError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848841C028D1229000D750E9 /* ParaStkYieldBoostStopError.swift */; };
 		84884B5F27A1336500FAC549 /* OrmlAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */; };
+		8488D5D6298154CF0019B388 /* GovernanceDelegateInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488D5D5298154CF0019B388 /* GovernanceDelegateInfoViewModel.swift */; };
+		8488D5D8298165280019B388 /* GovernanceDelegateProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488D5D7298165280019B388 /* GovernanceDelegateProfileView.swift */; };
+		8488D5DB298167D10019B388 /* GovernanceDelegateTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488D5DA298167D10019B388 /* GovernanceDelegateTypeView.swift */; };
 		8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */; };
 		8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECDE258CE118004591CC /* PurchaseCompleted.swift */; };
 		8488ECEA258CE456004591CC /* PurchaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECE9258CE456004591CC /* PurchaseViewController.swift */; };
@@ -4503,6 +4506,9 @@
 		84880C452902781E00CADB06 /* ReferendumVotingLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingLocal.swift; sourceTree = "<group>"; };
 		848841C028D1229000D750E9 /* ParaStkYieldBoostStopError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostStopError.swift; sourceTree = "<group>"; };
 		84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAssetExtras.swift; sourceTree = "<group>"; };
+		8488D5D5298154CF0019B388 /* GovernanceDelegateInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInfoViewModel.swift; sourceTree = "<group>"; };
+		8488D5D7298165280019B388 /* GovernanceDelegateProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateProfileView.swift; sourceTree = "<group>"; };
+		8488D5DA298167D10019B388 /* GovernanceDelegateTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateTypeView.swift; sourceTree = "<group>"; };
 		8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompletionHandler.swift; sourceTree = "<group>"; };
 		8488ECDE258CE118004591CC /* PurchaseCompleted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompleted.swift; sourceTree = "<group>"; };
 		8488ECE9258CE456004591CC /* PurchaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchaseViewController.swift; sourceTree = "<group>"; };
@@ -6702,6 +6708,7 @@
 		33BE54EA1945C89D7742E6DB /* DelegateInfo */ = {
 			isa = PBXGroup;
 			children = (
+				8488D5D42981548D0019B388 /* View */,
 				43AC83139115B51457C9961F /* GovernanceDelegateInfoProtocols.swift */,
 				F8C16637ADA10892106DD304 /* GovernanceDelegateInfoWireframe.swift */,
 				DDB1A69B90DCA16C219BF087 /* GovernanceDelegateInfoPresenter.swift */,
@@ -9424,6 +9431,23 @@
 				84F1D66A29051A730050F4E3 /* ReferendumLockReuseViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		8488D5D42981548D0019B388 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8488D5D5298154CF0019B388 /* GovernanceDelegateInfoViewModel.swift */,
+				8488D5D7298165280019B388 /* GovernanceDelegateProfileView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		8488D5D9298167C10019B388 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8488D5DA298167D10019B388 /* GovernanceDelegateTypeView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		84893BFA24D9B0D1008F6A3F /* Extensions */ = {
@@ -13134,6 +13158,7 @@
 		881ED964297507E7000C0457 /* Delegations */ = {
 			isa = PBXGroup;
 			children = (
+				8488D5D9298167C10019B388 /* View */,
 				849FFFCE298020B400A17471 /* Model */,
 				E8A61B9F062344AB1C1A7C32 /* AddDelegation */,
 				33BE54EA1945C89D7742E6DB /* DelegateInfo */,
@@ -16373,6 +16398,7 @@
 				F402BC83273ACDC30075F803 /* AstarBonusService.swift in Sources */,
 				84205897260C795B007D26C6 /* NominatorState+Status.swift in Sources */,
 				AE8B883226733BAD00AB0AA9 /* CustomValidatorListHeaderView.swift in Sources */,
+				8488D5DB298167D10019B388 /* GovernanceDelegateTypeView.swift in Sources */,
 				84CC726228AF8C7A003429E7 /* LedgerApplicationRequest.swift in Sources */,
 				849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */,
 				84CFF1E426526FBC00DB7CF7 /* StakingBondMorePresenter.swift in Sources */,
@@ -17231,6 +17257,7 @@
 				847449512891F3B00042FD80 /* WalletSwitchControl.swift in Sources */,
 				AE3983A2272C08AE00BC8A85 /* BaseAccountImportPresenter.swift in Sources */,
 				8496ADE0276B152500306B24 /* NSDictionary+Map.swift in Sources */,
+				8488D5D6298154CF0019B388 /* GovernanceDelegateInfoViewModel.swift in Sources */,
 				84300B2826C107AD00D64514 /* ConnectionAutobalancing.swift in Sources */,
 				BD571417BD18C711B76E1D62 /* ExportSeedWireframe.swift in Sources */,
 				88107D6129015FAB001AB0B0 /* TrackTagsView.swift in Sources */,
@@ -18203,6 +18230,7 @@
 				700FF90CE433E3405A710E9A /* TokensManageViewController.swift in Sources */,
 				E3765FB9E68018936E951FBD /* TokensManageViewLayout.swift in Sources */,
 				60DBAD14156415802730C7D7 /* TokensManageViewFactory.swift in Sources */,
+				8488D5D8298165280019B388 /* GovernanceDelegateProfileView.swift in Sources */,
 				BCC42525D716872B7E6CD72B /* TokenManageSingleProtocols.swift in Sources */,
 				9ECB28EA7E1D2C79869ED54F /* TokenManageSinglePresenter.swift in Sources */,
 				B8349266F061AEFFA9802237 /* TokenManageSingleViewController.swift in Sources */,

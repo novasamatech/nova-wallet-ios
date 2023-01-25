@@ -1,4 +1,9 @@
-protocol GovernanceDelegateInfoViewProtocol: ControllerBackedProtocol {}
+protocol GovernanceDelegateInfoViewProtocol: ControllerBackedProtocol {
+    func didReceiveDelegate(viewModel: GovernanceDelegateInfoViewModel.Delegate)
+    func didReceiveStats(viewModel: GovernanceDelegateInfoViewModel.Stats)
+    func didReceiveYourDelegation(viewModel: GovernanceDelegateInfoViewModel.YourDelegation?)
+    func didReceiveIdentity(items: [ValidatorInfoViewModel.IdentityItem]?)
+}
 
 protocol GovernanceDelegateInfoPresenterProtocol: AnyObject {
     func setup()
