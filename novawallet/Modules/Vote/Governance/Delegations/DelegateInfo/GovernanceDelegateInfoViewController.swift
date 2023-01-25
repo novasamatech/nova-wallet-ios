@@ -26,4 +26,12 @@ final class GovernanceDelegateInfoViewController: UIViewController {
     }
 }
 
-extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtocol {}
+extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtocol {
+    func didReceiveDelegate(viewModel _: GovernanceDelegateInfoViewModel.Delegate) {}
+
+    func didReceiveStats(viewModel _: GovernanceDelegateInfoViewModel.Stats) {}
+
+    func didReceiveYourDelegation(viewModel _: GovernanceDelegateInfoViewModel.YourDelegation?) {}
+
+    func didReceiveIdentity(items _: [ValidatorInfoViewModel.IdentityItem]?) {}
+}
