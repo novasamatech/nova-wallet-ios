@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 struct GovernanceDelegateInfoViewFactory {
     static func createView(
@@ -10,9 +11,17 @@ struct GovernanceDelegateInfoViewFactory {
             return nil
         }
 
-        let wireframe = GovernanceDelegateInfoWireframe()
+        let wireframe = GovernanceDelegateInfoWireframe(state: state)
 
-        let presenter = GovernanceDelegateInfoPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = GovernanceDelegateInfoPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            initDelegate: delegate,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
         let view = GovernanceDelegateInfoViewController(presenter: presenter)
 
