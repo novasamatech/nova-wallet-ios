@@ -7,7 +7,6 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
         view.stackView.alignment = .fill
-        view.stackView.spacing = 12.0
         return view
     }()
 
@@ -49,6 +48,8 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         } else {
             let profileView = GovernanceDelegateProfileView(size: CGSize(width: 64, height: 64))
             stackView.insertArrangedSubview(profileView, at: 0)
+            stackView.setCustomSpacing(16, after: profileView)
+
             self.profileView = profileView
             view = profileView
         }
@@ -77,7 +78,8 @@ final class GovernanceDelegateInfoViewLayout: UIView {
                 stackView.insertArrangedSubview(addressView, at: 0)
             }
 
-            stackView.addArrangedSubview(addressView)
+            stackView.setCustomSpacing(8, after: addressView)
+
             addressView.snp.makeConstraints { make in
                 make.height.equalTo(56)
             }
@@ -145,6 +147,8 @@ final class GovernanceDelegateInfoViewLayout: UIView {
             } else {
                 stackView.insertSubview(descriptionStackView, at: 0)
             }
+
+            stackView.setCustomSpacing(24, after: descriptionStackView)
         }
 
         return optReadMoreButton
@@ -163,7 +167,11 @@ final class GovernanceDelegateInfoViewLayout: UIView {
 
         if let identityTable = identityTable {
             stackView.insertArranged(view: table, before: identityTable)
+        } else {
+            stackView.addArrangedSubview(table)
         }
+
+        stackView.setCustomSpacing(8, after: table)
 
         statsTable = table
 
