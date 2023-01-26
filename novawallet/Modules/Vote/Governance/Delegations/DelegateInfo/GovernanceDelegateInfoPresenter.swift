@@ -50,8 +50,7 @@ final class GovernanceDelegateInfoPresenter {
         let viewModel = infoViewModelFactory.createDelegateViewModel(
             from: delegateAddress,
             metadata: metadata,
-            identity: identity,
-            locale: selectedLocale
+            identity: identity
         )
 
         view?.didReceiveDelegate(viewModel: viewModel)

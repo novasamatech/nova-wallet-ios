@@ -129,6 +129,8 @@ extension GovernanceDelegateView {
     func bind(viewModel: Model, locale: Locale) {
         bind(type: viewModel.type, locale: locale)
 
+        typeView.locale = locale
+
         self.viewModel?.addressViewModel.imageViewModel?.cancel(on: avatarView.imageView)
 
         if let iconRadius = extractIconRadius(for: viewModel.type) {
