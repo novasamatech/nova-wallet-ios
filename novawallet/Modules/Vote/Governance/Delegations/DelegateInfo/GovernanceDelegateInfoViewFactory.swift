@@ -23,7 +23,10 @@ struct GovernanceDelegateInfoViewFactory {
             logger: Logger.shared
         )
 
-        let view = GovernanceDelegateInfoViewController(presenter: presenter)
+        let view = GovernanceDelegateInfoViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

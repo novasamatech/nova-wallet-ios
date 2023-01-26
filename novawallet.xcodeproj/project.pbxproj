@@ -1197,6 +1197,7 @@
 		846F758927B5584100536547 /* EthereumRpcResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758827B5584100536547 /* EthereumRpcResponse.swift */; };
 		846FB02C28C74F9700CA5444 /* ParaStkYieldBoostState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */; };
 		846FB02E28C7524200CA5444 /* StakingParachainInteractor+Provide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846FB02D28C7524200CA5444 /* StakingParachainInteractor+Provide.swift */; };
+		847012662982AE5700F29C87 /* StackTableView+Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847012652982AE5700F29C87 /* StackTableView+Cell.swift */; };
 		8470D6CD253E3170009E9A5D /* AccountInfoSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */; };
 		8470D6D0253E321C009E9A5D /* StorageSubscriptionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */; };
 		8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */; };
@@ -4331,6 +4332,7 @@
 		846F758827B5584100536547 /* EthereumRpcResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumRpcResponse.swift; sourceTree = "<group>"; };
 		846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostState.swift; sourceTree = "<group>"; };
 		846FB02D28C7524200CA5444 /* StakingParachainInteractor+Provide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingParachainInteractor+Provide.swift"; sourceTree = "<group>"; };
+		847012652982AE5700F29C87 /* StackTableView+Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StackTableView+Cell.swift"; sourceTree = "<group>"; };
 		8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoSubscription.swift; sourceTree = "<group>"; };
 		8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionProtocols.swift; sourceTree = "<group>"; };
 		8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionContainer.swift; sourceTree = "<group>"; };
@@ -9087,6 +9089,25 @@
 			path = Ethereum;
 			sourceTree = "<group>";
 		};
+		847012642982ADCF00F29C87 /* StackTable */ = {
+			isa = PBXGroup;
+			children = (
+				84AE7AA427D35A9800495267 /* StackTableView.swift */,
+				84AE7AA827D3700E00495267 /* StackTableCell.swift */,
+				84AE7AAA27D373A200495267 /* StackInfoTableCell.swift */,
+				84AE7AB227D399CF00495267 /* StackNetworkCell.swift */,
+				8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */,
+				8489A6CF27FD5B9E0040C066 /* StackActionView.swift */,
+				8489A6D127FD5FB80040C066 /* StackActionCell.swift */,
+				844D2A3F281B0ED70049CF5E /* StackTableHeaderCell.swift */,
+				844D2A41281B24510049CF5E /* StackUrlCell.swift */,
+				844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */,
+				845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */,
+				847012652982AE5700F29C87 /* StackTableView+Cell.swift */,
+			);
+			path = StackTable;
+			sourceTree = "<group>";
+		};
 		8470D6CE253E31FB009E9A5D /* StorageSubscription */ = {
 			isa = PBXGroup;
 			children = (
@@ -10208,6 +10229,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				847012642982ADCF00F29C87 /* StackTable */,
 				84C2063628D1BEBD006D0D52 /* AccountDetailsSelection */,
 				8422F2EC2887E3B100C7B840 /* TextInputView */,
 				84C5ADE02813E8A2006D7388 /* GradientBanner */,
@@ -10265,17 +10287,10 @@
 				847F2D5827AB201200AFD476 /* GradientIconView.swift */,
 				84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */,
 				8456C08327CFA4A7001282DE /* ImagePlaceholderView.swift */,
-				84AE7AA427D35A9800495267 /* StackTableView.swift */,
-				84AE7AA827D3700E00495267 /* StackTableCell.swift */,
-				84AE7AAA27D373A200495267 /* StackInfoTableCell.swift */,
-				84AE7AB227D399CF00495267 /* StackNetworkCell.swift */,
 				84D1ABDF27E1CB870073C631 /* TitleHorizontalMultiValueView.swift */,
-				8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */,
 				8466781227EC5446007935D3 /* MultilineBalanceView.swift */,
 				8487580627EDEB9600495306 /* BorderedIconLabelView.swift */,
 				8487580827EDEDB200495306 /* RawChainView.swift */,
-				8489A6CF27FD5B9E0040C066 /* StackActionView.swift */,
-				8489A6D127FD5FB80040C066 /* StackActionCell.swift */,
 				84D17ECD2804290700F7BAFF /* RadioSelectorView.swift */,
 				84FEF3E428089FFB0042CBE7 /* TextInputField.swift */,
 				84C5ADE528141D21006D7388 /* LinkView.swift */,
@@ -10287,9 +10302,6 @@
 				8446F5EF2817279600B7A86C /* HintListView.swift */,
 				8446F5F72819235B00B7A86C /* AssetIconView+Style.swift */,
 				8446F5F928192FF500B7A86C /* ListLoadingView.swift */,
-				844D2A3F281B0ED70049CF5E /* StackTableHeaderCell.swift */,
-				844D2A41281B24510049CF5E /* StackUrlCell.swift */,
-				844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */,
 				8479607D283B60AA0084E779 /* ActionLoadingView.swift */,
 				8479607F283B63240084E779 /* LoadableActionView.swift */,
 				842806F42847A82500702F3A /* StackAccountSelectionCell.swift */,
@@ -10308,7 +10320,6 @@
 				84E63C1628FFC69A0093534A /* DiscreteGradientSlider.swift */,
 				84F76ED729006BC400D7206C /* DiscreteGradientSlider+Style.swift */,
 				845AADA02902D02400B5AE96 /* TitleValueDiffView.swift */,
-				845AADA22902D1EA00B5AE96 /* StackTitleValueDiffCell.swift */,
 				84BAD20C293A1B6E00C55C49 /* TopCustomSearchView.swift */,
 			);
 			path = View;
@@ -15532,6 +15543,7 @@
 				8425EA9525EA82CE00C307C9 /* AccountIdentity.swift in Sources */,
 				841BFD6527BA332F000A16CE /* DAppListState.swift in Sources */,
 				845BB8DB25E462B100E5FCDC /* SubstrateConstansts.swift in Sources */,
+				847012662982AE5700F29C87 /* StackTableView+Cell.swift in Sources */,
 				849014C824AA8A28008F705E /* BiometryAuth.swift in Sources */,
 				84690797264154E80030E693 /* SlashesOperationFactory.swift in Sources */,
 				84350ACE2845709D0031EF24 /* IdentityAccountView.swift in Sources */,

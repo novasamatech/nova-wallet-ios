@@ -7,6 +7,16 @@ final class GovernanceDelegateProfileView: UIView {
         $0.contentInsets = .zero
     }
 
+    var locale: Locale {
+        get {
+            typeView.locale
+        }
+
+        set {
+            typeView.locale = newValue
+        }
+    }
+
     let typeView = GovernanceDelegateTypeView()
 
     let iconSize: CGSize
@@ -14,34 +24,25 @@ final class GovernanceDelegateProfileView: UIView {
     private var imageViewModel: ImageViewModelProtocol?
 
     init(size: CGSize) {
-        self.iconSize = size
+        iconSize = size
 
         super.init(frame: CGRect(origin: .zero, size: size))
 
         setupLayout()
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: GovernanceDelegateInfoViewModel, locale: Locale) {
+    func bind(viewModel: GovernanceDelegateProfileView.Model) {
         nameLabel.text = viewModel.name
-        typeView.bind(type: viewModel.type, locale: locale)
+        typeView.bind(type: viewModel.type)
 
         imageViewModel?.cancel(on: avatarView.imageView)
 
-        if let iconRadius = extractIconRadius(for: viewModel.type) {
-
-        } else {
-            viewModel.addressViewModel.imageViewModel?.loadImage(
-                on: avatarView.imageView,
-                targetSize: Constants.iconSize,
-                animated: true
-            )
-        }
-
-        imageViewModel = viewModel.addressViewModel.imageViewModel
+        imageViewModel = viewModel.imageViewModel
 
         switch viewModel.type {
         case .individual:
@@ -64,7 +65,7 @@ final class GovernanceDelegateProfileView: UIView {
             )
         }
     }
-    
+
     private func setupLayout() {
         let contentView = UIView.vStack(spacing: 16, [
             .hStack(alignment: .center, spacing: 12, [

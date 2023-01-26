@@ -47,4 +47,18 @@ extension RoundedButton {
     func applyDisabledSecondaryStyle() {
         imageWithTitleView?.titleColor = R.color.colorButtonTextInactive()!
     }
+
+    func applyLinkStyle() {
+        applyIconStyle()
+
+        let color = R.color.colorButtonTextAccent()!
+        imageWithTitleView?.titleColor = color
+        imageWithTitleView?.titleFont = .regularFootnote
+
+        imageWithTitleView?.iconImage = R.image.iconLinkChevron()?.tinted(with: color)
+        imageWithTitleView?.layoutType = .horizontalLabelFirst
+        contentInsets = .zero
+
+        imageWithTitleView?.spacingBetweenLabelAndIcon = 4.0
+    }
 }
