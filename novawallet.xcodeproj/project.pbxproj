@@ -1198,6 +1198,8 @@
 		846FB02C28C74F9700CA5444 /* ParaStkYieldBoostState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */; };
 		846FB02E28C7524200CA5444 /* StakingParachainInteractor+Provide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846FB02D28C7524200CA5444 /* StakingParachainInteractor+Provide.swift */; };
 		847012662982AE5700F29C87 /* StackTableView+Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847012652982AE5700F29C87 /* StackTableView+Cell.swift */; };
+		847012682983072A00F29C87 /* GovernanceDelegateInfoViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847012672983072A00F29C87 /* GovernanceDelegateInfoViewModelFactory.swift */; };
+		8470126A2983114300F29C87 /* IdentityViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847012692983114300F29C87 /* IdentityViewModelFactory.swift */; };
 		8470D6CD253E3170009E9A5D /* AccountInfoSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */; };
 		8470D6D0253E321C009E9A5D /* StorageSubscriptionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */; };
 		8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */; };
@@ -4333,6 +4335,8 @@
 		846FB02B28C74F9700CA5444 /* ParaStkYieldBoostState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostState.swift; sourceTree = "<group>"; };
 		846FB02D28C7524200CA5444 /* StakingParachainInteractor+Provide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingParachainInteractor+Provide.swift"; sourceTree = "<group>"; };
 		847012652982AE5700F29C87 /* StackTableView+Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StackTableView+Cell.swift"; sourceTree = "<group>"; };
+		847012672983072A00F29C87 /* GovernanceDelegateInfoViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInfoViewModelFactory.swift; sourceTree = "<group>"; };
+		847012692983114300F29C87 /* IdentityViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityViewModelFactory.swift; sourceTree = "<group>"; };
 		8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoSubscription.swift; sourceTree = "<group>"; };
 		8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionProtocols.swift; sourceTree = "<group>"; };
 		8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionContainer.swift; sourceTree = "<group>"; };
@@ -9459,6 +9463,7 @@
 			children = (
 				8488D5D5298154CF0019B388 /* GovernanceDelegateInfoViewModel.swift */,
 				8488D5D7298165280019B388 /* GovernanceDelegateProfileView.swift */,
+				847012672983072A00F29C87 /* GovernanceDelegateInfoViewModelFactory.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10538,6 +10543,7 @@
 				84D8754128EB5D66004065BD /* ChainBalanceViewModel.swift */,
 				84D8754328EB5E6D004065BD /* ChainBalanceViewModelFactory.swift */,
 				849F144E29445A4600D9F9BA /* EvmInputViewModel+Handler.swift */,
+				847012692983114300F29C87 /* IdentityViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -18055,6 +18061,7 @@
 				63185C6D67EAEB2867069AB9 /* ParitySignerWelcomeProtocols.swift in Sources */,
 				AB49401A71CB6DA561C6A32A /* ParitySignerWelcomeWireframe.swift in Sources */,
 				2F6FA089995FD12FB2AA814B /* ParitySignerWelcomePresenter.swift in Sources */,
+				847012682983072A00F29C87 /* GovernanceDelegateInfoViewModelFactory.swift in Sources */,
 				012AE9F8BDA682C691B6F9FD /* ParitySignerWelcomeViewController.swift in Sources */,
 				DC2867A7DC1415052D090C53 /* ParitySignerWelcomeViewLayout.swift in Sources */,
 				845B07F5291627A3005785D3 /* Gov1OperationFactory+Protocol.swift in Sources */,
@@ -18241,6 +18248,7 @@
 				363F8BBFDE9BF834BDEC346E /* TokensManageInteractor.swift in Sources */,
 				700FF90CE433E3405A710E9A /* TokensManageViewController.swift in Sources */,
 				E3765FB9E68018936E951FBD /* TokensManageViewLayout.swift in Sources */,
+				8470126A2983114300F29C87 /* IdentityViewModelFactory.swift in Sources */,
 				60DBAD14156415802730C7D7 /* TokensManageViewFactory.swift in Sources */,
 				8488D5D8298165280019B388 /* GovernanceDelegateProfileView.swift in Sources */,
 				BCC42525D716872B7E6CD72B /* TokenManageSingleProtocols.swift in Sources */,
