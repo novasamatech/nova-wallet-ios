@@ -13,6 +13,7 @@ final class InAppUpdatesServiceWireframe: InAppUpdatesServiceWireframeProtocol {
             return
         }
 
-        topViewController.present(view.controller, animated: true)
+        let navigationController = FearlessNavigationController(rootViewController: view.controller)
+        topViewController.present(navigationController, animated: true)
     }
 }

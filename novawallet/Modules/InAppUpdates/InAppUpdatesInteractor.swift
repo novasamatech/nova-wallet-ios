@@ -34,15 +34,16 @@ final class InAppUpdatesInteractor {
 
         let operation = repository.fetchChangeLogOperation(for: lastRelease.version)
         operation.completionBlock = { [weak self] in
+            guard let self = self else { return }
             DispatchQueue.main.async {
                 do {
                     let changelog = try operation.extractNoCancellableResultData()
-                    self?.presenter.didReceiveLastVersion(changelog: .init(
+                    self.presenter.didReceiveLastVersion(changelog: .init(
                         release: lastRelease,
                         content: changelog
-                    ))
+                    ), canLoadMoreReleaseChangeLogs: self.versions.count > 1)
                 } catch {
-                    self?.presenter.didReceive(error: .fetchLastVersionChangeLog(error))
+                    self.presenter.didReceive(error: .fetchLastVersionChangeLog(error))
                 }
             }
         }
@@ -72,6 +73,7 @@ final class InAppUpdatesInteractor {
             DispatchQueue.main.async {
                 do {
                     let changelogs = try mergeOperation.extractNoCancellableResultData()
+                        .sorted(by: { $0.release.version > $1.release.version })
                     self?.presenter.didReceiveAllVersions(changelogs: changelogs)
                 } catch {
                     self?.presenter.didReceive(error: .fetchAllChangeLogs(error))
@@ -93,8 +95,7 @@ extension InAppUpdatesInteractor: InAppUpdatesInteractorInputProtocol {
             DispatchQueue.main.async {
                 let releasesContainsCriticalVersion = self.versions.first(where: { $0.severity == .critical }) != nil
                 self.presenter.didReceive(
-                    releasesContainsCriticalVersion: releasesContainsCriticalVersion,
-                    canLoadMoreReleaseChangeLogs: self.versions.count > 1
+                    releasesContainsCriticalVersion: releasesContainsCriticalVersion
                 )
             }
         }
@@ -104,5 +105,12 @@ extension InAppUpdatesInteractor: InAppUpdatesInteractorInputProtocol {
         securityLayerService.scheduleExecutionIfAuthorized { [weak self] in
             self?.fetchChangeLogs()
         }
+    }
+
+    func skipVersion() {
+        guard let lastVersion = versions.first?.version.id else {
+            return
+        }
+        settings.skippedUpdateVersion = lastVersion
     }
 }

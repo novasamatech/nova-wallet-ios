@@ -8,6 +8,7 @@ final class InAppUpdatesViewLayout: UIView {
         view.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
         view.registerClassForCell(VersionTableViewCell.self)
         view.registerHeaderFooterView(withClass: GradientBannerHeaderView.self)
+        view.registerHeaderFooterView(withClass: LoadMoreFooterView.self)
         view.rowHeight = UITableView.automaticDimension
         return view
     }()
@@ -33,7 +34,7 @@ final class InAppUpdatesViewLayout: UIView {
     private func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalToSuperview()
+            $0.top.equalTo(safeAreaLayoutGuide.snp.top).inset(12)
             $0.leading.trailing.equalToSuperview().inset(16)
         }
 

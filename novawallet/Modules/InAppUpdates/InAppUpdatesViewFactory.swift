@@ -7,7 +7,8 @@ struct InAppUpdatesViewFactory {
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 10
 
-        let urlProvider = InAppUpdatesUrlProvider(applicationConfig: ApplicationConfig.shared)
+        let applicationConfig = ApplicationConfig.shared
+        let urlProvider = InAppUpdatesUrlProvider(applicationConfig: applicationConfig)
         let interactor = InAppUpdatesInteractor(
             repository: InAppUpdatesRepository(urlProvider: urlProvider),
             settings: SettingsManager.shared,
@@ -22,6 +23,8 @@ struct InAppUpdatesViewFactory {
         let presenter = InAppUpdatesPresenter(
             interactor: interactor,
             localizationManager: localizationManager,
+            applicationConfig: applicationConfig,
+            dateFormatter: DateFormatter.shortDate,
             wireframe: wireframe
         )
 

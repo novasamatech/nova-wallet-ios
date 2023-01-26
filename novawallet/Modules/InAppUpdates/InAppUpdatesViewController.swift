@@ -9,6 +9,7 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, VersionTableViewCell.Model>
     private var dataSource: DataSource?
     private var isCriticalBanner: Bool = false
+    private var isAvailableMoreVersions: Bool = false
 
     init(
         presenter: InAppUpdatesPresenterProtocol,
@@ -31,10 +32,12 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let dataSource = createDataSource()
+        dataSource = createDataSource()
         rootView.tableView.dataSource = dataSource
         rootView.tableView.delegate = self
-        self.dataSource = dataSource
+
+        setupNavigationItem()
+        setupInstallButton()
 
         presenter.setup()
     }
@@ -51,19 +54,55 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func setupLocalization() {}
+    private func setupNavigationItem() {
+        navigationItem.title = "Update available"
+        navigationItem.rightBarButtonItem = .init(
+            title: "Skip",
+            style: .plain,
+            target: self,
+            action: #selector(didTapOnSkipButton)
+        )
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.rightBarButtonItem?.tintColor = R.color.colorButtonTextAccent()
+    }
+
+    private func setupInstallButton() {
+        rootView.installButton.imageWithTitleView?.title = "Install"
+        rootView.installButton.addTarget(self, action: #selector(didTapOnInstallButton), for: .touchUpInside)
+    }
+
+    private func setupLocalization() {
+        navigationItem.title = "Update available"
+        navigationItem.rightBarButtonItem?.title = "Skip"
+        rootView.installButton.imageWithTitleView?.title = "Install"
+        rootView.tableView.reloadData()
+    }
+
+    @objc private func didTapOnSkipButton() {
+        presenter.skip()
+    }
+
+    @objc private func didTapOnLoadMoreVersions() {
+        presenter.loadMoreVersions()
+    }
+
+    @objc private func didTapOnInstallButton() {
+        presenter.installLastVersion()
+    }
 }
 
 extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
-    func didReceive(versionModels: [VersionTableViewCell.Model]) {
+    func didReceive(versionModels: [VersionTableViewCell.Model], isAvailableMoreVersions: Bool) {
+        self.isAvailableMoreVersions = isAvailableMoreVersions
+
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(versionModels)
         dataSource?.apply(snapshot, animatingDifferences: true)
     }
 
-    func didReceiveBannerState(isCritical: Bool) {
-        isCriticalBanner = isCritical
+    func didReceive(isCriticalBanner: Bool) {
+        self.isCriticalBanner = isCriticalBanner
         rootView.tableView.reloadData()
     }
 }
@@ -83,8 +122,22 @@ extension InAppUpdatesViewController: UITableViewDelegate {
         return view
     }
 
+    func tableView(_ tableView: UITableView, viewForFooterInSection _: Int) -> UIView? {
+        guard isAvailableMoreVersions else {
+            return nil
+        }
+        let view: LoadMoreFooterView = tableView.dequeueReusableHeaderFooterView()
+        view.bind(text: "See all available updates")
+        view.moreButton.addTarget(self, action: #selector(didTapOnLoadMoreVersions), for: .touchUpInside)
+        return view
+    }
+
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
         132
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection _: Int) -> CGFloat {
+        34
     }
 }
 
