@@ -34,24 +34,32 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     func setup() {
         interactor.setup()
     }
+
+    func presentFullDescription() {}
+
+    func presentDelegations() {}
+
+    func presentRecentVotes() {}
+
+    func presentAllVotes() {}
+
+    func presentIdentityItem(_: ValidatorInfoViewModel.IdentityItemValue) {}
+
+    func presentAccountOptions() {}
+
+    func addDelegation() {}
 }
 
 extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutputProtocol {
     func didReceiveDetails(_ details: GovernanceDelegateDetails?) {
-        logger.debug("Did receive details: \(details)")
-
         self.details = details
     }
 
     func didReceiveMetadata(_ metadata: GovernanceDelegateMetadataRemote?) {
-        logger.debug("Did receive metadata: \(metadata)")
-
         self.metadata = metadata
     }
 
     func didReceiveIdentity(_ identity: AccountIdentity?) {
-        logger.debug("Did receive identity: \(identity)")
-
         self.identity = identity
     }
 
