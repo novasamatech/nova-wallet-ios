@@ -30,4 +30,25 @@ protocol GovernanceDelegateInfoInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: GovernanceDelegateInfoError)
 }
 
-protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
+    AddressOptionsPresentable, WebPresentable, IdentityPresentable {
+    func showFullDescription(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        longDescription: String
+    )
+
+    func showDelegations(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress: AccountAddress
+    )
+
+    func showRecentVotes(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress: AccountAddress
+    )
+
+    func showAllVotes(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress: AccountAddress
+    )
+}
