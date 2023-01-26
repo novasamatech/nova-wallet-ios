@@ -1,7 +1,7 @@
 import Foundation
 
 struct Release: Decodable, Hashable {
-    let version: Version
+    let version: ReleaseVersion
     let severity: ReleaseSeverity
     let time: Date
 }

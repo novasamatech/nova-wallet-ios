@@ -6,8 +6,8 @@ final class InAppUpdatesPresenter {
     let wireframe: InAppUpdatesWireframeProtocol
     let interactor: InAppUpdatesInteractorInputProtocol
     let dateFormatter = DateFormatter.shortDate
-    private var latestReleaseChangelog: ChangeLog?
-    private var releases: [ChangeLog]?
+    private var latestReleaseChangelog: ReleaseChangeLog?
+    private var releases: [ReleaseChangeLog]?
 
     init(
         interactor: InAppUpdatesInteractorInputProtocol,
@@ -19,7 +19,7 @@ final class InAppUpdatesPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func convert(changelog: ChangeLog) -> VersionTableViewCell.Model {
+    private func convert(changelog: ReleaseChangeLog) -> VersionTableViewCell.Model {
         let date = dateFormatter.value(for: selectedLocale).string(from: changelog.release.time)
         return VersionTableViewCell.Model(
             title: changelog.release.version.id,
@@ -48,7 +48,7 @@ extension InAppUpdatesPresenter: InAppUpdatesPresenterProtocol {
 
 extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
     func didReceive(error _: InAppUpdatesInteractorError) {
-        print("Error")
+        // TODO:
     }
 
     func didReceive(
@@ -58,12 +58,12 @@ extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
         view?.didReceiveBannerState(isCritical: releasesContainsCriticalVersion)
     }
 
-    func didReceiveLastVersion(changelog: ChangeLog) {
+    func didReceiveLastVersion(changelog: ReleaseChangeLog) {
         latestReleaseChangelog = changelog
         view?.didReceive(versionModels: [convert(changelog: changelog)])
     }
 
-    func didReceiveAllVersions(changelogs: [ChangeLog]) {
+    func didReceiveAllVersions(changelogs: [ReleaseChangeLog]) {
         releases = changelogs
         let viewModels = changelogs.map(convert)
         view?.didReceive(versionModels: viewModels)

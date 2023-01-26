@@ -3,11 +3,13 @@ import UIKit
 final class VersionTableViewCell: UITableViewCell {
     let titleLabel = UILabel(style: .secondaryScreenTitle, numberOfLines: 1)
     let severityLabel: BorderedLabelView = .create {
+        $0.setContentHuggingPriority(.defaultLow, for: .vertical)
         $0.isHidden = true
     }
 
     let latestLabel: BorderedLabelView = .create {
         $0.apply(style: .latest)
+        $0.setContentHuggingPriority(.defaultLow, for: .vertical)
         $0.isHidden = true
     }
 
@@ -19,6 +21,7 @@ final class VersionTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = .clear
         setupLayout()
     }
 
@@ -28,22 +31,31 @@ final class VersionTableViewCell: UITableViewCell {
     }
 
     func setupLayout() {
-        let content = UIView.vStack(spacing: 4, [
-            .hStack([
-                titleLabel,
-                severityLabel,
-                latestLabel,
-                UIView()
-            ]),
-            dateLabel,
-            changelogView
+        let titleView = UIView.hStack(spacing: 8, [
+            titleLabel,
+            severityLabel,
+            latestLabel,
+            UIView()
         ])
 
-        content.setCustomSpacing(12, after: dateLabel)
-        contentView.addSubview(content)
-        content.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        contentView.addSubview(titleView)
+        contentView.addSubview(dateLabel)
+        contentView.addSubview(changelogView)
+
+        titleView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview().inset(16)
+            $0.height.equalTo(28)
         }
+        dateLabel.snp.makeConstraints {
+            $0.top.equalTo(titleView.snp.bottom).offset(4)
+            $0.leading.trailing.equalToSuperview().inset(16)
+        }
+        changelogView.snp.makeConstraints {
+            $0.top.equalTo(dateLabel.snp.bottom).offset(12)
+            $0.leading.trailing.bottom.equalToSuperview().inset(16)
+        }
+        changelogView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        changelogView.setContentCompressionResistancePriority(.required, for: .vertical)
     }
 }
 
@@ -60,9 +72,12 @@ extension VersionTableViewCell {
         titleLabel.text = model.title
         bind(severity: model.severity, locale: locale)
         latestLabel.isHidden = !model.isLatest
+        latestLabel.titleLabel.text = "latest".uppercased()
         dateLabel.text = model.date
         changelogView.load(from: model.markdownText) { [weak self] model in
             if model != nil {
+                self?.setNeedsLayout()
+                self?.layoutIfNeeded()
                 // self?.activityIndicator.stopAnimating()
             }
         }

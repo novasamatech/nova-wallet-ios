@@ -19,14 +19,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let securedLayer = SecurityLayerService.shared
 
         let serviceCoordinator = ServiceCoordinator.createDefault()
-        let inAppUpdatesService = InAppUpdatesService(
-            repository: InAppUpdatesRepository(),
-            currentVersion: ApplicationConfig.shared.version,
-            settings: SettingsManager.shared,
-            securityLayerService: securedLayer,
-            wireframe: InAppUpdatesServiceWireframe(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
+        let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
 
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,

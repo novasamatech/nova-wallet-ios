@@ -2,35 +2,29 @@ import RobinHood
 
 protocol InAppUpdatesRepositoryProtocol {
     func fetchReleasesWrapper() -> CompoundOperationWrapper<[Release]>
-    func fetchChangeLogOperation(for version: Version) -> BaseOperation<String>
+    func fetchChangeLogOperation(for version: ReleaseVersion) -> BaseOperation<String>
 }
 
 final class InAppUpdatesRepository: JsonFileRepository<[Release]> {
-    init() {
+    let urlProvider: InAppUpdatesUrlProviderProtocol
+
+    init(urlProvider: InAppUpdatesUrlProviderProtocol) {
+        self.urlProvider = urlProvider
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
+
         super.init(decoder: decoder)
     }
 }
 
 extension InAppUpdatesRepository: InAppUpdatesRepositoryProtocol {
     func fetchReleasesWrapper() -> CompoundOperationWrapper<[Release]> {
-        let url = ApplicationConfig.shared.inAppUpdatesEntrypointURL
+        let url = urlProvider.releaseURL
         return fetchOperationWrapper(by: url, defaultValue: [])
     }
 
-    func fetchChangeLogOperation(for version: Version) -> BaseOperation<String> {
-        let changelogURL = ApplicationConfig.shared.inAppUpdatesChangelogsURL
-        let fileName = [
-            version.major,
-            version.minor,
-            version.patch
-        ]
-        .map { String($0) }
-        .joined(separator: "_")
-        .appending(".md")
-
-        let url = changelogURL.appendingPathComponent(fileName)
+    func fetchChangeLogOperation(for version: ReleaseVersion) -> BaseOperation<String> {
+        let url = urlProvider.versionURL(version)
 
         let fetchOperation = ClosureOperation<String> {
             let data = try Data(contentsOf: url)

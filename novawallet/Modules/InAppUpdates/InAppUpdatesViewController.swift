@@ -59,7 +59,7 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(versionModels)
-        dataSource?.apply(snapshot, animatingDifferences: false)
+        dataSource?.apply(snapshot, animatingDifferences: true)
     }
 
     func didReceiveBannerState(isCritical: Bool) {

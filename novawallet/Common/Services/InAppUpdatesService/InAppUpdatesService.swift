@@ -4,7 +4,7 @@ import RobinHood
 final class InAppUpdatesService: BaseSyncService {
     let repository: InAppUpdatesRepositoryProtocol
     let currentVersion: String
-    let lastSkippedVersion: Version?
+    let lastSkippedVersion: ReleaseVersion?
     let securityLayerService: SecurityLayerServiceProtocol
     let wireframe: InAppUpdatesServiceWireframeProtocol
     let operationManager: OperationManagerProtocol
@@ -24,14 +24,14 @@ final class InAppUpdatesService: BaseSyncService {
         self.wireframe = wireframe
         self.operationManager = operationManager
         if let lastSkippedUpdateVersion = settings.skippedUpdateVersion {
-            lastSkippedVersion = Version.parse(from: lastSkippedUpdateVersion)
+            lastSkippedVersion = ReleaseVersion.parse(from: lastSkippedUpdateVersion)
         } else {
             lastSkippedVersion = nil
         }
     }
 
     private func showUpdatesIfNeeded(releases: [Release]) {
-        guard let currentVersion = Version.parse(from: currentVersion) else {
+        guard let currentVersion = ReleaseVersion.parse(from: currentVersion) else {
             return
         }
 

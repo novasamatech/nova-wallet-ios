@@ -7,8 +7,9 @@ struct InAppUpdatesViewFactory {
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 10
 
+        let urlProvider = InAppUpdatesUrlProvider(applicationConfig: ApplicationConfig.shared)
         let interactor = InAppUpdatesInteractor(
-            repository: InAppUpdatesRepository(),
+            repository: InAppUpdatesRepository(urlProvider: urlProvider),
             settings: SettingsManager.shared,
             securityLayerService: SecurityLayerService.shared,
             versions: versions,

@@ -55,10 +55,10 @@ final class InAppUpdatesInteractor {
                 result[release] = repository.fetchChangeLogOperation(for: release.version)
             }
 
-        let mergeOperation = ClosureOperation<[ChangeLog]> {
+        let mergeOperation = ClosureOperation<[ReleaseChangeLog]> {
             try operationsMap.compactMap { release, operation in
                 let content = try operation.extractNoCancellableResultData()
-                return ChangeLog(release: release, content: content)
+                return ReleaseChangeLog(release: release, content: content)
             }
         }
 

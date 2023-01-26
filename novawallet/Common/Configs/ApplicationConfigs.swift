@@ -31,6 +31,8 @@ protocol ApplicationConfigProtocol {
     var ledgerGuideURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
+    var inAppUpdatesEntrypointURL: URL { get }
+    var inAppUpdatesChangelogsURL: URL { get }
 }
 
 final class ApplicationConfig {

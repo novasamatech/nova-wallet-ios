@@ -1,10 +1,12 @@
-struct Version: Decodable, Hashable {
+struct ReleaseVersion: Decodable, Hashable {
     let major: UInt
     let minor: UInt
     let patch: UInt
 
+    static let separator = "."
+
     var id: String {
-        [major, minor, patch].map { String($0) }.joined(separator: ".")
+        [major, minor, patch].map { String($0) }.joined(separator: ReleaseVersion.separator)
     }
 
     init(major: UInt, minor: UInt, patch: UInt) {
@@ -14,7 +16,7 @@ struct Version: Decodable, Hashable {
     }
 
     init(from decoder: Decoder) throws {
-        var container = try decoder.singleValueContainer()
+        let container = try decoder.singleValueContainer()
         let version = try container.decode(String.self)
         guard let version = Self.parse(from: version) else {
             throw DecodingError.dataCorruptedError(
@@ -27,8 +29,8 @@ struct Version: Decodable, Hashable {
         patch = version.patch
     }
 
-    static func parse(from string: String, separator _: String = ".") -> Self? {
-        let versionComponents = string.split(separator: ".")
+    static func parse(from string: String) -> Self? {
+        let versionComponents = string.split(separator: Character(ReleaseVersion.separator))
         guard
             let major = UInt(versionComponents[0]),
             let minor = UInt(versionComponents[safe: 1] ?? "0"),
@@ -36,12 +38,12 @@ struct Version: Decodable, Hashable {
             return nil
         }
 
-        return Version(major: major, minor: minor, patch: patch)
+        return ReleaseVersion(major: major, minor: minor, patch: patch)
     }
 }
 
-extension Version: Comparable {
-    static func < (lhs: Version, rhs: Version) -> Bool {
+extension ReleaseVersion: Comparable {
+    static func < (lhs: ReleaseVersion, rhs: ReleaseVersion) -> Bool {
         guard lhs.major == rhs.major else {
             return lhs.major < rhs.major
         }

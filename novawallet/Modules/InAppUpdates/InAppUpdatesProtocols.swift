@@ -14,8 +14,8 @@ protocol InAppUpdatesInteractorInputProtocol: AnyObject {
 
 protocol InAppUpdatesInteractorOutputProtocol: AnyObject {
     func didReceive(error: InAppUpdatesInteractorError)
-    func didReceiveLastVersion(changelog: ChangeLog)
-    func didReceiveAllVersions(changelogs: [ChangeLog])
+    func didReceiveLastVersion(changelog: ReleaseChangeLog)
+    func didReceiveAllVersions(changelogs: [ReleaseChangeLog])
     func didReceive(
         releasesContainsCriticalVersion: Bool,
         canLoadMoreReleaseChangeLogs: Bool
