@@ -7,7 +7,9 @@ struct GovernanceDelegateInfoViewFactory {
         for state: GovernanceSharedState,
         delegate: GovernanceDelegateLocal
     ) -> GovernanceDelegateInfoViewProtocol? {
-        guard let interactor = createInteractor(for: state, delegate: delegate) else {
+        guard
+            let interactor = createInteractor(for: state, delegate: delegate),
+            let chain = state.settings.value?.chain else {
             return nil
         }
 
@@ -18,7 +20,10 @@ struct GovernanceDelegateInfoViewFactory {
         let presenter = GovernanceDelegateInfoPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            chain: chain,
             initDelegate: delegate,
+            infoViewModelFactory: GovernanceDelegateInfoViewModelFactory(),
+            identityViewModelFactory: IdentityViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )

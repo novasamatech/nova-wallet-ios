@@ -7,45 +7,171 @@ final class GovernanceDelegateInfoPresenter {
     let interactor: GovernanceDelegateInfoInteractorInputProtocol
     let logger: LoggerProtocol
 
+    let infoViewModelFactory: GovernanceDelegateInfoViewModelFactoryProtocol
+    let identityViewModelFactory: IdentityViewModelFactoryProtocol
     let initStats: GovernanceDelegateStats?
+    let chain: ChainModel
 
     private var details: GovernanceDelegateDetails?
     private var metadata: GovernanceDelegateMetadataRemote?
     private var identity: AccountIdentity?
 
+    var delegateAddress: AccountAddress? {
+        details?.stats.address ?? initStats?.address
+    }
+
     init(
         interactor: GovernanceDelegateInfoInteractorInputProtocol,
         wireframe: GovernanceDelegateInfoWireframeProtocol,
+        chain: ChainModel,
         initDelegate: GovernanceDelegateLocal?,
+        infoViewModelFactory: GovernanceDelegateInfoViewModelFactoryProtocol,
+        identityViewModelFactory: IdentityViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.chain = chain
+        self.infoViewModelFactory = infoViewModelFactory
+        self.identityViewModelFactory = identityViewModelFactory
         initStats = initDelegate?.stats
         metadata = initDelegate?.metadata
         identity = initDelegate?.identity
         self.logger = logger
         self.localizationManager = localizationManager
     }
+
+    private func provideDelegateViewModel() {
+        guard let delegateAddress = delegateAddress else {
+            return
+        }
+
+        let viewModel = infoViewModelFactory.createDelegateViewModel(
+            from: delegateAddress,
+            metadata: metadata,
+            identity: identity,
+            locale: selectedLocale
+        )
+
+        view?.didReceiveDelegate(viewModel: viewModel)
+    }
+
+    private func provideStatsViewModel() {
+        let optViewModel: GovernanceDelegateInfoViewModel.Stats?
+
+        if let details = details {
+            optViewModel = infoViewModelFactory.createStatsViewModel(
+                from: details,
+                chain: chain,
+                locale: selectedLocale
+            )
+        } else if let stats = initStats {
+            optViewModel = infoViewModelFactory.createStatsViewModel(
+                using: stats,
+                chain: chain,
+                locale: selectedLocale
+            )
+        } else {
+            optViewModel = nil
+        }
+
+        guard let viewModel = optViewModel else {
+            return
+        }
+
+        view?.didReceiveStats(viewModel: viewModel)
+    }
+
+    private func provideYourDelegations() {
+        view?.didReceiveYourDelegation(viewModel: nil)
+    }
+
+    private func provideIdentity() {
+        if let identity = identity {
+            let viewModel = identityViewModelFactory.createIdentityViewModel(
+                from: identity,
+                locale: selectedLocale
+            )
+
+            view?.didReceiveIdentity(items: viewModel)
+        } else {
+            view?.didReceiveIdentity(items: nil)
+        }
+    }
+
+    private func provideViewModels() {
+        provideDelegateViewModel()
+        provideStatsViewModel()
+        provideYourDelegations()
+        provideIdentity()
+    }
 }
 
 extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtocol {
     func setup() {
+        provideViewModels()
+
         interactor.setup()
     }
 
-    func presentFullDescription() {}
+    func presentFullDescription() {
+        guard let longDescription = metadata?.longDescription else {
+            return
+        }
 
-    func presentDelegations() {}
+        wireframe.showFullDescription(from: view, longDescription: longDescription)
+    }
 
-    func presentRecentVotes() {}
+    func presentDelegations() {
+        guard let address = delegateAddress else {
+            return
+        }
 
-    func presentAllVotes() {}
+        wireframe.showDelegations(from: view, delegateAddress: address)
+    }
 
-    func presentIdentityItem(_: ValidatorInfoViewModel.IdentityItemValue) {}
+    func presentRecentVotes() {
+        guard let address = delegateAddress else {
+            return
+        }
 
-    func presentAccountOptions() {}
+        wireframe.showRecentVotes(from: view, delegateAddress: address)
+    }
+
+    func presentAllVotes() {
+        guard let address = delegateAddress else {
+            return
+        }
+
+        wireframe.showAllVotes(from: view, delegateAddress: address)
+    }
+
+    func presentIdentityItem(_ item: ValidatorInfoViewModel.IdentityItemValue) {
+        guard case let .link(value, tag) = item, let view = view else {
+            return
+        }
+
+        wireframe.presentIdentityItem(
+            from: view,
+            tag: tag,
+            value: value,
+            locale: selectedLocale
+        )
+    }
+
+    func presentAccountOptions() {
+        guard let address = delegateAddress, let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
+    }
 
     func addDelegation() {}
 }
@@ -53,14 +179,22 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
 extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutputProtocol {
     func didReceiveDetails(_ details: GovernanceDelegateDetails?) {
         self.details = details
+
+        provideDelegateViewModel()
+        provideStatsViewModel()
     }
 
     func didReceiveMetadata(_ metadata: GovernanceDelegateMetadataRemote?) {
         self.metadata = metadata
+
+        provideDelegateViewModel()
     }
 
     func didReceiveIdentity(_ identity: AccountIdentity?) {
         self.identity = identity
+
+        provideDelegateViewModel()
+        provideIdentity()
     }
 
     func didReceiveError(_ error: GovernanceDelegateInfoError) {
@@ -83,6 +217,8 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutpu
 
 extension GovernanceDelegateInfoPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {}
+        if let view = view, view.isSetup {
+            provideViewModels()
+        }
     }
 }
