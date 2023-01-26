@@ -166,7 +166,7 @@ extension GovernanceDelegateView {
         self.viewModel = viewModel
     }
 
-    private func extractIconRadius(for type: DelegateType?) -> CGFloat? {
+    private func extractIconRadius(for type: GovernanceDelegateTypeView.Model?) -> CGFloat? {
         switch type {
         case .organization:
             return nil
@@ -175,16 +175,16 @@ extension GovernanceDelegateView {
         }
     }
 
-    private func bind(type: GovernanceDelegateTypeView.Model?, locale: Locale) {
+    private func bind(type: GovernanceDelegateTypeView.Model?, locale _: Locale) {
         switch type {
         case .organization:
             avatarView.backgroundView.apply(style: .roundedContainer(radius: 8))
             typeStack?.isHidden = false
-            typeView.bind(type: .organization, locale: locale)
+            typeView.bind(type: .organization)
         case .individual:
             avatarView.backgroundView.apply(style: .clear)
             typeStack?.isHidden = false
-            typeView.bind(type: .individual, locale: locale)
+            typeView.bind(type: .individual)
         case .none:
             avatarView.backgroundView.apply(style: .clear)
             typeStack?.isHidden = true

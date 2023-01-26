@@ -1,6 +1,14 @@
 import UIKit
 
 final class GovernanceDelegateTypeView: BorderedIconLabelView {
+    var locale = Locale.current {
+        didSet {
+            applyLocale()
+        }
+    }
+
+    private var type: GovernanceDelegateTypeView.Model?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -13,10 +21,26 @@ final class GovernanceDelegateTypeView: BorderedIconLabelView {
         iconDetailsView.detailsLabel.numberOfLines = 1
     }
 
-    func bind(type: GovernanceDelegateTypeView.Model, locale: Locale) {
+    func bind(type: GovernanceDelegateTypeView.Model) {
         switch type {
         case .individual:
             apply(style: .individual)
+        case .organization:
+            apply(style: .organization)
+        }
+
+        self.type = type
+
+        applyLocale()
+    }
+
+    private func applyLocale() {
+        guard let type = type else {
+            return
+        }
+
+        switch type {
+        case .individual:
             let title = R.string.localizable.delegationsShowChipIndividual(
                 preferredLanguages: locale.rLanguages
             ).uppercased()
@@ -25,7 +49,6 @@ final class GovernanceDelegateTypeView: BorderedIconLabelView {
                 icon: R.image.iconIndividual()
             ))
         case .organization:
-            apply(style: .organization)
             let title = R.string.localizable.delegationsShowChipOrganization(
                 preferredLanguages: locale.rLanguages
             ).uppercased()

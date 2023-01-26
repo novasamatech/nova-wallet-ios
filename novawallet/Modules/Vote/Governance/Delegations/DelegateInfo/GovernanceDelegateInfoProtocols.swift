@@ -7,6 +7,13 @@ protocol GovernanceDelegateInfoViewProtocol: ControllerBackedProtocol {
 
 protocol GovernanceDelegateInfoPresenterProtocol: AnyObject {
     func setup()
+    func presentFullDescription()
+    func presentDelegations()
+    func presentRecentVotes()
+    func presentAllVotes()
+    func presentIdentityItem(_ item: ValidatorInfoViewModel.IdentityItemValue)
+    func presentAccountOptions()
+    func addDelegation()
 }
 
 protocol GovernanceDelegateInfoInteractorInputProtocol: AnyObject {
