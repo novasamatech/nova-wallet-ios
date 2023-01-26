@@ -8,29 +8,29 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
     }
 
     func showFullDescription(
-        from view: GovernanceDelegateInfoViewProtocol?,
-        longDescription: String
+        from _: GovernanceDelegateInfoViewProtocol?,
+        longDescription _: String
     ) {
         // TODO: Task #860pmdtfg
     }
 
     func showDelegations(
-        from view: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress: AccountAddress
+        from _: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress _: AccountAddress
     ) {
         // TODO: Task #860pmdtg1
     }
 
     func showRecentVotes(
-        from view: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress: AccountAddress
+        from _: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress _: AccountAddress
     ) {
         // TODO: Task #860pmdtg6
     }
 
     func showAllVotes(
-        from view: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress: AccountAddress
+        from _: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress _: AccountAddress
     ) {
         // TODO: Task #860pmdtg6
     }

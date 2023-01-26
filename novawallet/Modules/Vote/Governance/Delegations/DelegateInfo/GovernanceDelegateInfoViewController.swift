@@ -153,10 +153,14 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
             for item in items {
                 switch item.value {
                 case let .link(url, _):
-                    let cell = table.addTitleValueCell(for: item.title, value: url)
-                    linkPairs.append(.init(view: cell, item: item))
+                    let cell = table.addLinkCell(for: item.title, url: url)
+                    linkPairs.append(.init(view: cell.actionButton, item: item))
 
-                    cell.addTarget(self, action: #selector(actionIdentityItem), for: .touchUpInside)
+                    cell.actionButton.addTarget(
+                        self,
+                        action: #selector(actionIdentityItem),
+                        for: .touchUpInside
+                    )
                 case let .text(value):
                     let cell = table.addTitleValueCell(for: item.title, value: value)
                     linkPairs.append(.init(view: cell, item: item))

@@ -93,7 +93,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         return view
     }
 
-    func addDescription(from viewModel: GovernanceDelegateInfoViewModel.Delegate, locale _: Locale) -> RoundedButton? {
+    func addDescription(from viewModel: GovernanceDelegateInfoViewModel.Delegate, locale: Locale) -> RoundedButton? {
         if descriptionStackView != nil {
             descriptionStackView?.removeFromSuperview()
             descriptionStackView = nil
@@ -118,6 +118,9 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         if viewModel.hasFullDescription {
             optReadMoreButton = RoundedButton()
             optReadMoreButton?.applyLinkStyle()
+            optReadMoreButton?.imageWithTitleView?.title = R.string.localizable.commonReadMore(
+                preferredLanguages: locale.rLanguages
+            )
         } else {
             optReadMoreButton = nil
         }

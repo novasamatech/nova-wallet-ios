@@ -18,8 +18,7 @@ protocol GovernanceDelegateInfoViewModelFactoryProtocol {
     func createDelegateViewModel(
         from address: AccountAddress,
         metadata: GovernanceDelegateMetadataRemote?,
-        identity: AccountIdentity?,
-        locale: Locale
+        identity: AccountIdentity?
     ) -> GovernanceDelegateInfoViewModel.Delegate
 }
 
@@ -125,8 +124,7 @@ extension GovernanceDelegateInfoViewModelFactory: GovernanceDelegateInfoViewMode
     func createDelegateViewModel(
         from address: AccountAddress,
         metadata: GovernanceDelegateMetadataRemote?,
-        identity: AccountIdentity?,
-        locale: Locale
+        identity: AccountIdentity?
     ) -> GovernanceDelegateInfoViewModel.Delegate {
         let addressViewModel = displayAddressViewModelFactory.createViewModel(
             from: address,
@@ -134,7 +132,7 @@ extension GovernanceDelegateInfoViewModelFactory: GovernanceDelegateInfoViewMode
             iconUrl: metadata?.image
         )
 
-        let type: GovernanceDelegateTypeView.Model = metadata.map {
+        let type: GovernanceDelegateTypeView.Model? = metadata.map {
             $0.isOrganization ? .organization : .individual
         }
 
