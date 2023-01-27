@@ -180,7 +180,7 @@ extension GovernanceDelegateView {
     private func bind(type: GovernanceDelegateTypeView.Model?, locale _: Locale) {
         switch type {
         case .organization:
-            avatarView.backgroundView.apply(style: .roundedContainer(radius: 8))
+            avatarView.backgroundView.apply(style: .roundedContainerWithShadow(radius: 8))
             typeStack?.isHidden = false
             typeView.bind(type: .organization)
         case .individual:

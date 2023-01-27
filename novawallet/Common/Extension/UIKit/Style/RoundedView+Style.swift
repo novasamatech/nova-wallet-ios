@@ -111,6 +111,20 @@ extension RoundedView.Style {
         highlightedFillColor: R.color.colorContainerBackground()!
     )
 
+    static let containerWithShadow = RoundedView.Style(
+        shadow: .init(
+            shadowOpacity: 1,
+            shadowColor: R.color.colorIconBackgroundShadow()!,
+            shadowRadius: 12,
+            shadowOffset: CGSize(width: 0, height: 2)
+        ),
+        strokeWidth: 0.5,
+        strokeColor: R.color.colorContainerBorder(),
+        highlightedStrokeColor: R.color.colorContainerBorder(),
+        fillColor: R.color.colorContainerBackground()!,
+        highlightedFillColor: R.color.colorContainerBackground()!
+    )
+
     static func selectableContainer(radius: CGFloat) -> RoundedView.Style {
         RoundedView.Style(
             shadowOpacity: 0,
@@ -125,6 +139,12 @@ extension RoundedView.Style {
 
     static func roundedContainer(radius: CGFloat) -> RoundedView.Style {
         var containerStyle = RoundedView.Style.container
+        containerStyle.rounding = .init(radius: radius, corners: .allCorners)
+        return containerStyle
+    }
+
+    static func roundedContainerWithShadow(radius: CGFloat) -> RoundedView.Style {
+        var containerStyle = RoundedView.Style.containerWithShadow
         containerStyle.rounding = .init(radius: radius, corners: .allCorners)
         return containerStyle
     }
