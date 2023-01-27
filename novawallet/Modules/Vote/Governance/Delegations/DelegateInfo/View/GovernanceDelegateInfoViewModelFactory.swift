@@ -67,13 +67,16 @@ final class GovernanceDelegateInfoViewModelFactory {
         _ votes: UInt64?,
         locale: Locale
     ) -> GovernanceDelegateInfoViewModel.RecentVotes? {
-        guard
-            let votesString = formatNonzeroQuantity(votes, locale: locale),
-            let period = formatNonzeroQuantity(UInt64(recentVotesInDays), locale: locale) else {
+        guard let votesString = formatNonzeroQuantity(votes, locale: locale) else {
             return nil
         }
 
-        return .init(period: period, value: votesString)
+        let periodInDays = R.string.localizable.commonDaysFormat(
+            format: recentVotesInDays,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return .init(period: periodInDays, value: votesString)
     }
 
     private func createInternalStatsViewModel(
