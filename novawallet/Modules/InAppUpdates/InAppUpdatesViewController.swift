@@ -50,7 +50,7 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
 
             switch model {
             case let .banner(isCritical):
-                let view: GradientBannerHeaderView = tableView.dequeueReusableCell(for: indexPath)
+                let view: GradientBannerTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 view.bind(isCritical: isCritical, locale: self.selectedLocale)
                 return view
             case let .version(viewModel):
@@ -132,14 +132,6 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
 }
 
 extension InAppUpdatesViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-
-        guard let selectedItem = dataSource?.itemIdentifier(for: indexPath) else {
-            return
-        }
-    }
-
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         guard showFooter(for: section) else {
             return nil

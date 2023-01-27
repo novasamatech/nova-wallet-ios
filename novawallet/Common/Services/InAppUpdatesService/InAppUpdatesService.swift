@@ -8,12 +8,15 @@ final class InAppUpdatesService: BaseSyncService {
     let securityLayerService: SecurityLayerServiceProtocol
     let wireframe: InAppUpdatesServiceWireframeProtocol
     let operationManager: OperationManagerProtocol
+    let sessionStorage: SessionStorageProtocol
+
     private var executingOperationWrapper: CompoundOperationWrapper<[Release]>?
 
     init(
         repository: InAppUpdatesRepositoryProtocol,
         currentVersion: String,
         settings: SettingsManagerProtocol,
+        sessionStorage: SessionStorageProtocol,
         securityLayerService: SecurityLayerServiceProtocol,
         wireframe: InAppUpdatesServiceWireframeProtocol,
         operationManager: OperationManagerProtocol
@@ -23,6 +26,7 @@ final class InAppUpdatesService: BaseSyncService {
         self.securityLayerService = securityLayerService
         self.wireframe = wireframe
         self.operationManager = operationManager
+        self.sessionStorage = sessionStorage
         if let lastSkippedUpdateVersion = settings.skippedUpdateVersion {
             lastSkippedVersion = ReleaseVersion.parse(from: lastSkippedUpdateVersion)
         } else {
@@ -46,6 +50,7 @@ final class InAppUpdatesService: BaseSyncService {
 
         if showUpdates {
             DispatchQueue.main.async {
+                self.sessionStorage.inAppUpdatesWasShown = true
                 self.wireframe.showUpdates(notInstalledVersions: notInstalledVersions)
             }
         }
@@ -85,8 +90,25 @@ final class InAppUpdatesService: BaseSyncService {
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
+    private func finishWithoutSync() {
+        let emptyOperation = ClosureOperation<[Release]>.createWithResult([])
+        let wrapper = CompoundOperationWrapper(targetOperation: emptyOperation)
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            self?.complete(nil)
+        }
+        executingOperationWrapper = wrapper
+        operationManager.enqueue(
+            operations: [wrapper.targetOperation],
+            in: .transient
+        )
+    }
+
     override func performSyncUp() {
-        fetchReleases()
+        if sessionStorage.inAppUpdatesWasShown {
+            finishWithoutSync()
+        } else {
+            fetchReleases()
+        }
     }
 
     override func stopSyncUp() {

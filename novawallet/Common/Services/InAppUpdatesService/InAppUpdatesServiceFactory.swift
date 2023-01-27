@@ -12,6 +12,7 @@ final class InAppUpdatesServiceFactory: InAppUpdatesServiceFactoryProtocol {
             repository: InAppUpdatesRepository(urlProvider: urlProvider),
             currentVersion: ApplicationConfig.shared.version,
             settings: SettingsManager.shared,
+            sessionStorage: SessionStorage.shared,
             securityLayerService: SecurityLayerService.shared,
             wireframe: InAppUpdatesServiceWireframe(),
             operationManager: OperationManagerFacade.sharedManager

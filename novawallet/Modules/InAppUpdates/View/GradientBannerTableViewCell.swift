@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class GradientBannerHeaderView: UITableViewCell {
+final class GradientBannerTableViewCell: UITableViewCell {
     let gradientBannerView: GradientBannerView = .create {
         $0.infoView.imageView.image = R.image.iconBannerCriticalUpdate()
         $0.stackView.setCustomSpacing(8, after: $0.infoView)
