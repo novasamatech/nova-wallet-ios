@@ -5,8 +5,8 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     typealias RootViewType = InAppUpdatesViewLayout
 
     let presenter: InAppUpdatesPresenterProtocol
-    typealias DataSource = UITableViewDiffableDataSource<Section, VersionTableViewCell.Model>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, VersionTableViewCell.Model>
+    typealias DataSource = UITableViewDiffableDataSource<Section, Row>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
     private var isCriticalBanner: Bool = false
     private var isAvailableMoreVersions: Bool = false
@@ -48,9 +48,16 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
                 return nil
             }
 
-            let cell: VersionTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.bind(model: model, locale: self.selectedLocale)
-            return cell
+            switch model {
+            case let .banner(isCritical):
+                let view: GradientBannerHeaderView = tableView.dequeueReusableCell(for: indexPath)
+                view.bind(isCritical: isCritical, locale: self.selectedLocale)
+                return view
+            case let .version(viewModel):
+                let cell: VersionTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                cell.bind(model: viewModel, locale: self.selectedLocale)
+                return cell
+            }
         }
     }
 
@@ -89,6 +96,19 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     @objc private func didTapOnInstallButton() {
         presenter.installLastVersion()
     }
+
+    private func showFooter(for section: Int) -> Bool {
+        if #available(iOS 15.0, *) {
+            switch dataSource?.sectionIdentifier(for: section) {
+            case .banner, .none:
+                return false
+            case let .main(showFooter):
+                return showFooter
+            }
+        } else {
+            return isAvailableMoreVersions && section == 1
+        }
+    }
 }
 
 extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
@@ -98,15 +118,16 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
         isAvailableMoreVersions: Bool
     ) {
         self.isAvailableMoreVersions = isAvailableMoreVersions
-        if isCriticalBanner != self.isCriticalBanner {
-            rootView.tableView.reloadData()
-        } else {
-            var snapshot = Snapshot()
-            snapshot.appendSections([.main(showFooter: isAvailableMoreVersions)])
-            snapshot.appendItems(versionModels)
-            dataSource?.apply(snapshot, animatingDifferences: false)
-        }
-        self.isCriticalBanner = isCriticalBanner
+        let bannerSection = Section.banner
+        let mainSection = Section.main(showFooter: isAvailableMoreVersions)
+        let versionsViewModels = versionModels.map { Row.version($0) }
+        let bannerViewModel = Row.banner(isCritical: isCriticalBanner)
+
+        var snapshot = Snapshot()
+        snapshot.appendSections([bannerSection, mainSection])
+        snapshot.appendItems([bannerViewModel], toSection: bannerSection)
+        snapshot.appendItems(versionsViewModels, toSection: mainSection)
+        dataSource?.apply(snapshot, animatingDifferences: true)
     }
 }
 
@@ -119,28 +140,19 @@ extension InAppUpdatesViewController: UITableViewDelegate {
         }
     }
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
-        let view: GradientBannerHeaderView = tableView.dequeueReusableHeaderFooterView()
-        view.bind(isCritical: isCriticalBanner, locale: selectedLocale)
-        return view
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection _: Int) -> UIView? {
-        guard isAvailableMoreVersions else {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        guard showFooter(for: section) else {
             return nil
         }
+
         let view: LoadMoreFooterView = tableView.dequeueReusableHeaderFooterView()
         view.bind(text: "See all available updates")
         view.moreButton.addTarget(self, action: #selector(didTapOnLoadMoreVersions), for: .touchUpInside)
         return view
     }
 
-    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        132
-    }
-
-    func tableView(_: UITableView, heightForFooterInSection _: Int) -> CGFloat {
-        34
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        showFooter(for: section) ? 34 : 0
     }
 }
 
@@ -154,6 +166,12 @@ extension InAppUpdatesViewController: Localizable {
 
 extension InAppUpdatesViewController {
     enum Section: Hashable {
+        case banner
         case main(showFooter: Bool)
+    }
+
+    enum Row: Hashable {
+        case banner(isCritical: Bool)
+        case version(VersionTableViewCell.Model)
     }
 }

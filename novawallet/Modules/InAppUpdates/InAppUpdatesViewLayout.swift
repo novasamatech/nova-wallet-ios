@@ -7,7 +7,7 @@ final class InAppUpdatesViewLayout: UIView {
         view.backgroundColor = .clear
         view.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
         view.registerClassForCell(VersionTableViewCell.self)
-        view.registerHeaderFooterView(withClass: GradientBannerHeaderView.self)
+        view.registerClassForCell(GradientBannerHeaderView.self)
         view.registerHeaderFooterView(withClass: LoadMoreFooterView.self)
         view.rowHeight = UITableView.automaticDimension
         return view

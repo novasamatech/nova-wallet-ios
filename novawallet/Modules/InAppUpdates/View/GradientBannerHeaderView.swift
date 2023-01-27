@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class GradientBannerHeaderView: UITableViewHeaderFooterView {
+final class GradientBannerHeaderView: UITableViewCell {
     let gradientBannerView: GradientBannerView = .create {
         $0.infoView.imageView.image = R.image.iconBannerCriticalUpdate()
         $0.stackView.setCustomSpacing(8, after: $0.infoView)
@@ -10,9 +10,10 @@ final class GradientBannerHeaderView: UITableViewHeaderFooterView {
         $0.bind(model: .criticalUpdate())
     }
 
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = .clear
         setupLayout()
     }
 
