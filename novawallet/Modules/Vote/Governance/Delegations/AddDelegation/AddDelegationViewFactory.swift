@@ -20,6 +20,8 @@ struct AddDelegationViewFactory {
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             learnDelegateMetadata: ApplicationConfig.shared.learnGovernanceDelegateMetadata,
             addressViewModelFactory: DisplayAddressViewModelFactory(),
+            votesDisplayFactory: ReferendumDisplayStringFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
