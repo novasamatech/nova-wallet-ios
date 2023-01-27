@@ -83,6 +83,7 @@ final class GovernanceDelegateInfoPresenter {
     }
 
     private func provideYourDelegations() {
+        // TODO: #860pmdth8
         view?.didReceiveYourDelegation(viewModel: nil)
     }
 
@@ -172,7 +173,9 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
         )
     }
 
-    func addDelegation() {}
+    func addDelegation() {
+        wireframe.showAddDelegation(from: view)
+    }
 }
 
 extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutputProtocol {
@@ -184,16 +187,20 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutpu
     }
 
     func didReceiveMetadata(_ metadata: GovernanceDelegateMetadataRemote?) {
-        self.metadata = metadata
+        if metadata != self.metadata {
+            self.metadata = metadata
 
-        provideDelegateViewModel()
+            provideDelegateViewModel()
+        }
     }
 
     func didReceiveIdentity(_ identity: AccountIdentity?) {
-        self.identity = identity
+        if self.identity != identity {
+            self.identity = identity
 
-        provideDelegateViewModel()
-        provideIdentity()
+            provideDelegateViewModel()
+            provideIdentity()
+        }
     }
 
     func didReceiveError(_ error: GovernanceDelegateInfoError) {

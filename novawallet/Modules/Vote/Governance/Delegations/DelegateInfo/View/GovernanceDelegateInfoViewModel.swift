@@ -2,9 +2,9 @@ import Foundation
 
 enum GovernanceDelegateInfoViewModel {
     struct Delegate {
+        let profileViewModel: GovernanceDelegateProfileView.Model?
         let addressViewModel: DisplayAddressViewModel
         let details: String?
-        let type: GovernanceDelegateTypeView.Model?
         let hasFullDescription: Bool
     }
 
