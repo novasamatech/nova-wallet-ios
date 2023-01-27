@@ -60,7 +60,7 @@ final class GovernanceDelegateInfoViewModelFactory {
             return nil
         }
 
-        return stringDisplayFactory.createVotes(from: votes, chain: chain, locale: locale)
+        return stringDisplayFactory.createVotesValue(from: votes, chain: chain, locale: locale)
     }
 
     private func formatRecentVotesCount(
