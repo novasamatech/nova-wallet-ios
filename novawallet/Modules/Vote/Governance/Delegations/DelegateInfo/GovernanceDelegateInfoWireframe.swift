@@ -34,4 +34,8 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
     ) {
         // TODO: Task #860pmdtg6
     }
+
+    func showAddDelegation(from _: GovernanceDelegateInfoViewProtocol?) {
+        // TODO: Task #860pmdtgh
+    }
 }

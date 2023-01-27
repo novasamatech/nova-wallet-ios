@@ -70,15 +70,8 @@ final class GovernanceDelegateInfoViewController: UIViewController, ViewHolder {
 
 extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtocol {
     func didReceiveDelegate(viewModel: GovernanceDelegateInfoViewModel.Delegate) {
-        if let type = viewModel.type {
-            rootView.addProfileView(
-                for: .init(
-                    name: viewModel.addressViewModel.name ?? viewModel.addressViewModel.address,
-                    type: type,
-                    imageViewModel: viewModel.addressViewModel.imageViewModel
-                ),
-                locale: selectedLocale
-            )
+        if let profile = viewModel.profileViewModel {
+            rootView.addProfileView(for: profile, locale: selectedLocale)
         }
 
         let readMoreButton = rootView.addDescription(from: viewModel, locale: selectedLocale)

@@ -130,10 +130,16 @@ extension GovernanceDelegateInfoViewModelFactory: GovernanceDelegateInfoViewMode
         identity: AccountIdentity?
     ) -> GovernanceDelegateInfoViewModel.Delegate {
         let addressViewModel = displayAddressViewModelFactory.createViewModel(
-            from: address,
-            name: identity?.displayName ?? metadata?.name,
-            iconUrl: metadata?.image
+            from: DisplayAddress(address: address, username: identity?.displayName ?? "")
         )
+
+        let profileViewModel = metadata.map {
+            GovernanceDelegateProfileView.Model(
+                name: $0.name,
+                type: $0.isOrganization ? .organization : .individual,
+                imageViewModel: RemoteImageViewModel(url: $0.image)
+            )
+        }
 
         let type: GovernanceDelegateTypeView.Model? = metadata.map {
             $0.isOrganization ? .organization : .individual
@@ -142,9 +148,9 @@ extension GovernanceDelegateInfoViewModelFactory: GovernanceDelegateInfoViewMode
         let hasFullDescription = !(metadata?.longDescription ?? "").isEmpty
 
         return .init(
+            profileViewModel: profileViewModel,
             addressViewModel: addressViewModel,
             details: metadata?.shortDescription,
-            type: type,
             hasFullDescription: hasFullDescription
         )
     }
