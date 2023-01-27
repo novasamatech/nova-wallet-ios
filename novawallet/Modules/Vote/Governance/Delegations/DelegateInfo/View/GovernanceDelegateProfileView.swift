@@ -56,7 +56,7 @@ final class GovernanceDelegateProfileView: UIView {
             )
         case .organization:
             let iconRadius = floor(iconSize.height / 5.0)
-            avatarView.backgroundView.apply(style: .roundedContainer(radius: iconRadius))
+            avatarView.backgroundView.apply(style: .roundedContainerWithShadow(radius: iconRadius))
 
             imageViewModel?.loadImage(
                 on: avatarView.imageView,
