@@ -19,7 +19,7 @@ final class GovernanceDelegateTypeView: BorderedIconLabelView {
         iconDetailsView.spacing = 6
         contentInsets = .init(top: 1, left: 4, bottom: 1, right: 6)
         iconDetailsView.detailsLabel.numberOfLines = 1
-        backgroundView.cornerRadius = 6
+        backgroundView.cornerRadius = 5
     }
 
     func bind(type: GovernanceDelegateTypeView.Model) {

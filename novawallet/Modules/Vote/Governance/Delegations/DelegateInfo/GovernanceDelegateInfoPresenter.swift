@@ -180,10 +180,12 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
 
 extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutputProtocol {
     func didReceiveDetails(_ details: GovernanceDelegateDetails?) {
-        self.details = details
+        if self.details != details {
+            self.details = details
 
-        provideDelegateViewModel()
-        provideStatsViewModel()
+            provideDelegateViewModel()
+            provideStatsViewModel()
+        }
     }
 
     func didReceiveMetadata(_ metadata: GovernanceDelegateMetadataRemote?) {
