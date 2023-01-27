@@ -61,8 +61,10 @@ extension ServiceCoordinator {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let logger = Logger.shared
 
-        let assetsOperationQueue = OperationManagerFacade.assetsSyncQueue
-        let assetsOperationManager = OperationManager(operationQueue: assetsOperationQueue)
+        let assetsSyncOperationQueue = OperationManagerFacade.assetsSyncQueue
+        let assetsSyncOperationManager = OperationManager(operationQueue: assetsSyncOperationQueue)
+
+        let assetsRepositoryOperationQueue = OperationManagerFacade.assetsRepositoryQueue
 
         let walletSettings = SelectedWalletSettings.shared
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
@@ -72,7 +74,7 @@ extension ServiceCoordinator {
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: assetsOperationManager
+            operationManager: assetsSyncOperationManager
         )
 
         let accountInfoService = AccountInfoUpdatingService(
@@ -82,7 +84,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: assetsOperationQueue,
+            operationQueue: assetsRepositoryOperationQueue,
             logger: logger
         )
 
@@ -93,7 +95,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: assetsOperationQueue,
+            operationQueue: assetsRepositoryOperationQueue,
             logger: logger
         )
 
@@ -101,7 +103,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             chainRegistry: chainRegistry,
             eventCenter: EventCenter.shared,
-            operationQueue: assetsOperationQueue,
+            operationQueue: assetsSyncOperationQueue,
             logger: logger
         )
 
