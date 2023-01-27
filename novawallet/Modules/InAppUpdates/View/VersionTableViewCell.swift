@@ -61,11 +61,27 @@ final class VersionTableViewCell: UITableViewCell {
 
 extension VersionTableViewCell {
     struct Model: Hashable {
+        static func == (lhs: VersionTableViewCell.Model, rhs: VersionTableViewCell.Model) -> Bool {
+            lhs.title == rhs.title &&
+                lhs.isLatest == rhs.isLatest &&
+                lhs.severity == rhs.severity &&
+                lhs.date == rhs.date &&
+                lhs.markdownText.value == rhs.markdownText.value
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(title)
+            hasher.combine(isLatest)
+            hasher.combine(severity)
+            hasher.combine(date)
+            hasher.combine(markdownText.value ?? "")
+        }
+
         let title: String
         let isLatest: Bool
         let severity: ReleaseSeverity
         let date: String
-        let markdownText: String
+        let markdownText: LoadableViewModelState<String>
     }
 
     func bind(model: Model, locale: Locale) {
@@ -74,13 +90,7 @@ extension VersionTableViewCell {
         latestLabel.isHidden = !model.isLatest
         latestLabel.titleLabel.text = "latest".uppercased()
         dateLabel.text = model.date
-        changelogView.load(from: model.markdownText) { [weak self] model in
-            if model != nil {
-                self?.setNeedsLayout()
-                self?.layoutIfNeeded()
-                // self?.activityIndicator.stopAnimating()
-            }
-        }
+        bind(markdown: model.markdownText)
     }
 
     func bind(severity: ReleaseSeverity, locale _: Locale) {
@@ -95,6 +105,21 @@ extension VersionTableViewCell {
             severityLabel.isHidden = false
             severityLabel.apply(style: .critical)
             severityLabel.titleLabel.text = "critical".uppercased()
+        }
+    }
+
+    func bind(markdown: LoadableViewModelState<String>) {
+        switch markdown {
+        case let .cached(value), let .loaded(value):
+            changelogView.load(from: value) { [weak self] model in
+                if model != nil {
+                    self?.contentView.setNeedsLayout()
+                    self?.contentView.layoutIfNeeded()
+                    // self?.activityIndicator.stopAnimating()
+                }
+            }
+        case .loading: break
+            // self?.activityIndicator.startAnimating()
         }
     }
 }

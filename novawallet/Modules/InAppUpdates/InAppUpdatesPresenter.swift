@@ -8,9 +8,10 @@ final class InAppUpdatesPresenter {
     let dateFormatter: LocalizableResource<DateFormatter>
     let applicationConfig: ApplicationConfigProtocol
 
-    private var latestReleaseChangelog: ReleaseChangeLog?
-    private var releases: [ReleaseChangeLog]?
+    private var changelogs: [ReleaseChangeLog] = []
+    private var lastRelease: Release?
     private var canLoadMoreReleaseChangeLogs: Bool = false
+    private var releasesContainsCriticalVersion: Bool = false
 
     init(
         interactor: InAppUpdatesInteractorInputProtocol,
@@ -29,21 +30,34 @@ final class InAppUpdatesPresenter {
     private func convert(changelog: ReleaseChangeLog) -> VersionTableViewCell.Model {
         let date = dateFormatter.value(for: selectedLocale).string(from: changelog.release.time)
         return VersionTableViewCell.Model(
-            title: changelog.release.version.id,
-            isLatest: changelog.release.version == latestReleaseChangelog?.release.version,
+            title: changelog.release.title,
+            isLatest: changelog.release.version == lastRelease?.version,
             severity: changelog.release.severity,
             date: date,
-            markdownText: changelog.content
+            markdownText: .loaded(value: changelog.content)
         )
     }
 
     private func updateView() {
-        if let releases = releases {
-            let viewModels = releases.map(convert)
-            view?.didReceive(versionModels: viewModels, isAvailableMoreVersions: false)
-        } else if let latestRelease = latestReleaseChangelog {
+        if !changelogs.isEmpty {
+            let viewModels = changelogs.map(convert)
             view?.didReceive(
-                versionModels: [convert(changelog: latestRelease)],
+                versionModels: viewModels,
+                isCriticalBanner: releasesContainsCriticalVersion,
+                isAvailableMoreVersions: canLoadMoreReleaseChangeLogs
+            )
+        } else if let release = lastRelease {
+            let date = dateFormatter.value(for: selectedLocale).string(from: release.time)
+            let model = VersionTableViewCell.Model(
+                title: release.title,
+                isLatest: true,
+                severity: release.severity,
+                date: date,
+                markdownText: .loading
+            )
+            view?.didReceive(
+                versionModels: [model],
+                isCriticalBanner: releasesContainsCriticalVersion,
                 isAvailableMoreVersions: canLoadMoreReleaseChangeLogs
             )
         }
@@ -70,25 +84,26 @@ extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
         // TODO:
     }
 
-    func didReceive(
-        releasesContainsCriticalVersion: Bool
+    func didReceiveLastVersion(
+        release: Release,
+        releasesContainsCriticalVersion: Bool,
+        canLoadMoreReleaseChangeLogs: Bool
     ) {
-        view?.didReceive(isCriticalBanner: releasesContainsCriticalVersion)
+        self.releasesContainsCriticalVersion = releasesContainsCriticalVersion
+        self.canLoadMoreReleaseChangeLogs = canLoadMoreReleaseChangeLogs
+        lastRelease = release
+        updateView()
     }
 
-    func didReceiveLastVersion(changelog: ReleaseChangeLog, canLoadMoreReleaseChangeLogs: Bool) {
-        latestReleaseChangelog = changelog
-        self.canLoadMoreReleaseChangeLogs = canLoadMoreReleaseChangeLogs
-        view?.didReceive(
-            versionModels: [convert(changelog: changelog)],
-            isAvailableMoreVersions: canLoadMoreReleaseChangeLogs
-        )
+    func didReceiveLastVersion(changelog: ReleaseChangeLog) {
+        changelogs = [changelog]
+        updateView()
     }
 
     func didReceiveAllVersions(changelogs: [ReleaseChangeLog]) {
-        releases = changelogs
-        let viewModels = changelogs.map(convert)
-        view?.didReceive(versionModels: viewModels, isAvailableMoreVersions: false)
+        canLoadMoreReleaseChangeLogs = false
+        self.changelogs = changelogs
+        updateView()
     }
 
     func installLastVersion() {
@@ -105,4 +120,8 @@ extension InAppUpdatesPresenter: Localizable {
             updateView()
         }
     }
+}
+
+extension Release {
+    var title: String { ["Version", version.id].joined(separator: " ") }
 }

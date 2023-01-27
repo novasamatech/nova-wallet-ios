@@ -41,7 +41,7 @@ final class InAppUpdatesInteractor {
                     self.presenter.didReceiveLastVersion(changelog: .init(
                         release: lastRelease,
                         content: changelog
-                    ), canLoadMoreReleaseChangeLogs: self.versions.count > 1)
+                    ))
                 } catch {
                     self.presenter.didReceive(error: .fetchLastVersionChangeLog(error))
                 }
@@ -92,10 +92,15 @@ extension InAppUpdatesInteractor: InAppUpdatesInteractorInputProtocol {
                 return
             }
             self.fetchLastVersionChangeLog()
+            let releasesContainsCriticalVersion = self.versions.first(where: { $0.severity == .critical }) != nil
+            guard let lastRelease = self.versions.first else {
+                return
+            }
             DispatchQueue.main.async {
-                let releasesContainsCriticalVersion = self.versions.first(where: { $0.severity == .critical }) != nil
-                self.presenter.didReceive(
-                    releasesContainsCriticalVersion: releasesContainsCriticalVersion
+                self.presenter.didReceiveLastVersion(
+                    release: lastRelease,
+                    releasesContainsCriticalVersion: releasesContainsCriticalVersion,
+                    canLoadMoreReleaseChangeLogs: self.versions.count > 1
                 )
             }
         }

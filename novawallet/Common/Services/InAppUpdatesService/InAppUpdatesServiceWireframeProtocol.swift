@@ -14,6 +14,7 @@ final class InAppUpdatesServiceWireframe: InAppUpdatesServiceWireframeProtocol {
         }
 
         let navigationController = FearlessNavigationController(rootViewController: view.controller)
+        navigationController.barSettings = .defaultSettings.bySettingCloseButton(false)
         topViewController.present(navigationController, animated: true)
     }
 }

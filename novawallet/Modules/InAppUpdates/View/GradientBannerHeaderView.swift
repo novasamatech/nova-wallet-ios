@@ -6,6 +6,7 @@ final class GradientBannerHeaderView: UITableViewHeaderFooterView {
         $0.infoView.imageView.image = R.image.iconBannerCriticalUpdate()
         $0.stackView.setCustomSpacing(8, after: $0.infoView)
         $0.showsLink = false
+        $0.contentInsets = UIEdgeInsets(top: 16, left: 16, bottom: 36, right: 0)
         $0.bind(model: .criticalUpdate())
     }
 

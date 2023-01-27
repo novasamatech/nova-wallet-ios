@@ -1,8 +1,11 @@
 import Foundation
 
 protocol InAppUpdatesViewProtocol: ControllerBackedProtocol {
-    func didReceive(versionModels: [VersionTableViewCell.Model], isAvailableMoreVersions: Bool)
-    func didReceive(isCriticalBanner: Bool)
+    func didReceive(
+        versionModels: [VersionTableViewCell.Model],
+        isCriticalBanner: Bool,
+        isAvailableMoreVersions: Bool
+    )
 }
 
 protocol InAppUpdatesPresenterProtocol: AnyObject {
@@ -20,9 +23,13 @@ protocol InAppUpdatesInteractorInputProtocol: AnyObject {
 
 protocol InAppUpdatesInteractorOutputProtocol: AnyObject {
     func didReceive(error: InAppUpdatesInteractorError)
-    func didReceiveLastVersion(changelog: ReleaseChangeLog, canLoadMoreReleaseChangeLogs: Bool)
+    func didReceiveLastVersion(
+        release: Release,
+        releasesContainsCriticalVersion: Bool,
+        canLoadMoreReleaseChangeLogs: Bool
+    )
+    func didReceiveLastVersion(changelog: ReleaseChangeLog)
     func didReceiveAllVersions(changelogs: [ReleaseChangeLog])
-    func didReceive(releasesContainsCriticalVersion: Bool)
 }
 
 protocol InAppUpdatesWireframeProtocol: AnyObject {

@@ -5,8 +5,8 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     typealias RootViewType = InAppUpdatesViewLayout
 
     let presenter: InAppUpdatesPresenterProtocol
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, VersionTableViewCell.Model>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, VersionTableViewCell.Model>
+    typealias DataSource = UITableViewDiffableDataSource<Section, VersionTableViewCell.Model>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, VersionTableViewCell.Model>
     private var dataSource: DataSource?
     private var isCriticalBanner: Bool = false
     private var isAvailableMoreVersions: Bool = false
@@ -92,18 +92,21 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
 }
 
 extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
-    func didReceive(versionModels: [VersionTableViewCell.Model], isAvailableMoreVersions: Bool) {
+    func didReceive(
+        versionModels: [VersionTableViewCell.Model],
+        isCriticalBanner: Bool,
+        isAvailableMoreVersions: Bool
+    ) {
         self.isAvailableMoreVersions = isAvailableMoreVersions
-
-        var snapshot = Snapshot()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(versionModels)
-        dataSource?.apply(snapshot, animatingDifferences: true)
-    }
-
-    func didReceive(isCriticalBanner: Bool) {
+        if isCriticalBanner != self.isCriticalBanner {
+            rootView.tableView.reloadData()
+        } else {
+            var snapshot = Snapshot()
+            snapshot.appendSections([.main(showFooter: isAvailableMoreVersions)])
+            snapshot.appendItems(versionModels)
+            dataSource?.apply(snapshot, animatingDifferences: false)
+        }
         self.isCriticalBanner = isCriticalBanner
-        rootView.tableView.reloadData()
     }
 }
 
@@ -146,5 +149,11 @@ extension InAppUpdatesViewController: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+extension InAppUpdatesViewController {
+    enum Section: Hashable {
+        case main(showFooter: Bool)
     }
 }
