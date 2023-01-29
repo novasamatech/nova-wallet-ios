@@ -57,7 +57,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var appStoreURL: URL {
-        URL(string: "https://apps.apple.com/us/app/id1597119355")!
+        URL(string: "itms-apps://apps.apple.com/app/id1597119355")!
     }
 
     var socialURL: URL {

@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import StoreKit
 
 final class InAppUpdatesWireframe: InAppUpdatesWireframeProtocol, WebPresentable {
     func finish(view: InAppUpdatesViewProtocol?) {
@@ -7,15 +8,10 @@ final class InAppUpdatesWireframe: InAppUpdatesWireframeProtocol, WebPresentable
     }
 
     func show(url: URL, from view: InAppUpdatesViewProtocol?) {
-        guard let view = view, let presentingController = view.controller.presentingViewController else {
-            return
-        }
-        view.controller.dismiss(animated: true) { [weak self] in
-            self?.showWeb(
-                url: url,
-                from: presentingController,
-                style: .automatic
-            )
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url, options: [:]) { [weak view] _ in
+                view?.controller.dismiss(animated: true)
+            }
         }
     }
 }

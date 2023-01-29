@@ -5,12 +5,15 @@ final class InAppUpdatesViewLayout: UIView {
         let view = UITableView(frame: .zero, style: .grouped)
         view.separatorStyle = .none
         view.backgroundColor = .clear
-        view.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
+        view.contentInset = .zero
         view.registerClassForCell(VersionTableViewCell.self)
         view.registerClassForCell(GradientBannerTableViewCell.self)
         view.registerHeaderFooterView(withClass: LoadMoreFooterView.self)
         view.rowHeight = UITableView.automaticDimension
         view.allowsSelection = false
+        view.showsVerticalScrollIndicator = false
+        view.contentInsetAdjustmentBehavior = .never
+        view.tableHeaderView = .init(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNonzeroMagnitude))
         return view
     }()
 

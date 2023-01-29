@@ -35,10 +35,8 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
         dataSource = createDataSource()
         rootView.tableView.dataSource = dataSource
         rootView.tableView.delegate = self
-
         setupNavigationItem()
         setupInstallButton()
-
         presenter.setup()
     }
 

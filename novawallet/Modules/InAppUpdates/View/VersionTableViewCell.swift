@@ -4,6 +4,7 @@ final class VersionTableViewCell: UITableViewCell {
     let titleLabel = UILabel(style: .secondaryScreenTitle, numberOfLines: 1)
     let severityLabel: BorderedLabelView = .create {
         $0.setContentHuggingPriority(.defaultLow, for: .vertical)
+        $0.contentInsets = .init(top: 1, left: 6, bottom: 1, right: 6)
         $0.isHidden = true
     }
 
@@ -17,6 +18,9 @@ final class VersionTableViewCell: UITableViewCell {
     let changelogView = MarkdownViewContainer(
         preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset
     )
+    let activityIndicator: UIActivityIndicatorView = .create {
+        $0.hidesWhenStopped = true
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -31,7 +35,7 @@ final class VersionTableViewCell: UITableViewCell {
     }
 
     func setupLayout() {
-        let titleView = UIView.hStack(spacing: 8, [
+        let titleView = UIView.hStack(alignment: .center, spacing: 8, [
             titleLabel,
             severityLabel,
             latestLabel,
@@ -41,6 +45,7 @@ final class VersionTableViewCell: UITableViewCell {
         contentView.addSubview(titleView)
         contentView.addSubview(dateLabel)
         contentView.addSubview(changelogView)
+        contentView.addSubview(activityIndicator)
 
         titleView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview().inset(16)
@@ -53,6 +58,9 @@ final class VersionTableViewCell: UITableViewCell {
         changelogView.snp.makeConstraints {
             $0.top.equalTo(dateLabel.snp.bottom).offset(12)
             $0.leading.trailing.bottom.equalToSuperview().inset(16)
+        }
+        activityIndicator.snp.makeConstraints {
+            $0.center.equalTo(changelogView.snp.center)
         }
         changelogView.setContentHuggingPriority(.defaultLow, for: .vertical)
         changelogView.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -113,13 +121,14 @@ extension VersionTableViewCell {
         case let .cached(value), let .loaded(value):
             changelogView.load(from: value) { [weak self] model in
                 if model != nil {
-                    self?.contentView.setNeedsLayout()
-                    self?.contentView.layoutIfNeeded()
-                    // self?.activityIndicator.stopAnimating()
+                    self?.activityIndicator.stopAnimating()
+                    self?.invalidateIntrinsicContentSize()
+                    self?.setNeedsDisplay()
+                    self?.setNeedsLayout()
                 }
             }
-        case .loading: break
-            // self?.activityIndicator.startAnimating()
+        case .loading:
+            activityIndicator.startAnimating()
         }
     }
 }
