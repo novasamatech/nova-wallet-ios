@@ -1109,3 +1109,14 @@
 "add.token.contract.metadata.error.title" = "Metadata fetch failed";
 "add.token.contract.metadata.error.message" = "Contract metadata fetch failed";
 "add.token.invalid.decimals.message" = "Decimals must be at least 0, and not over %@.";
+"in.app.updates.title" = "Update available";
+"in.app.updates.install.button.title" = "Install";
+"in.app.updates.banner.major.title" = "Major update";
+"in.app.updates.banner.major.subtitle" = "Lots of amazing new features are available for Nova Wallet! Make sure to update your application to access them";
+"in.app.updates.banner.critical.title" = "Critical update";
+"in.app.updates.banner.critical.subtitle" = "To avoid any issues, and improve your user experience, we strongly recommend that you install recent updates as soon as possible";
+"in.app.updates.severity.major" = "Major";
+"in.app.updates.severity.critical" = "Critical";
+"in.app.updates.latest" = "Latest";
+"in.app.updates.button.show.more.title" = "See all available updates";
+"in.app.updates.version.title" = "Version %@";

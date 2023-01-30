@@ -29,17 +29,19 @@ final class GradientBannerTableViewCell: UITableViewCell {
         }
     }
 
-    func bind(isCritical: Bool, locale _: Locale) {
+    func bind(isCritical: Bool, locale: Locale) {
         if isCritical {
             gradientBannerView.infoView.imageView.image = R.image.iconBannerCriticalUpdate()
             gradientBannerView.bind(model: .criticalUpdate())
-            gradientBannerView.infoView.titleLabel.text = "Critical update"
-            gradientBannerView.infoView.subtitleLabel.text = "To avoid any issues, and improve your user experience, we strongly recommend that you install recent updates as soon as possible"
+            gradientBannerView.infoView.titleLabel.text =
+                R.string.localizable.inAppUpdatesBannerCriticalTitle(preferredLanguages: locale.rLanguages)
+            gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.inAppUpdatesBannerCriticalSubtitle(preferredLanguages: locale.rLanguages)
         } else {
             gradientBannerView.infoView.imageView.image = R.image.iconBannerMajorUpdate()
             gradientBannerView.bind(model: .majorUpdate())
-            gradientBannerView.infoView.titleLabel.text = "Major update"
-            gradientBannerView.infoView.subtitleLabel.text = "Lots of amazing new features are available for Nova Wallet with the recent updates! Make sure to update your application to access them!"
+            gradientBannerView.infoView.titleLabel.text =
+                R.string.localizable.inAppUpdatesBannerMajorTitle(preferredLanguages: locale.rLanguages)
+            gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.inAppUpdatesBannerMajorSubtitle(preferredLanguages: locale.rLanguages)
         }
     }
 }

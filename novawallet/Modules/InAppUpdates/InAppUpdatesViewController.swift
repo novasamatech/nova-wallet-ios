@@ -60,9 +60,10 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     }
 
     private func setupNavigationItem() {
-        navigationItem.title = "Update available"
+        navigationItem.title = R.string.localizable.inAppUpdatesTitle(preferredLanguages: selectedLocale.rLanguages)
+        let skipButtonTitle = R.string.localizable.commonSkip(preferredLanguages: selectedLocale.rLanguages)
         navigationItem.rightBarButtonItem = .init(
-            title: "Skip",
+            title: skipButtonTitle,
             style: .plain,
             target: self,
             action: #selector(didTapOnSkipButton)
@@ -72,14 +73,14 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     }
 
     private func setupInstallButton() {
-        rootView.installButton.imageWithTitleView?.title = "Install"
+        rootView.installButton.imageWithTitleView?.title = R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: selectedLocale.rLanguages)
         rootView.installButton.addTarget(self, action: #selector(didTapOnInstallButton), for: .touchUpInside)
     }
 
     private func setupLocalization() {
-        navigationItem.title = "Update available"
-        navigationItem.rightBarButtonItem?.title = "Skip"
-        rootView.installButton.imageWithTitleView?.title = "Install"
+        navigationItem.title = R.string.localizable.inAppUpdatesTitle(preferredLanguages: selectedLocale.rLanguages)
+        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonSkip(preferredLanguages: selectedLocale.rLanguages)
+        rootView.installButton.imageWithTitleView?.title = R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: selectedLocale.rLanguages)
         rootView.tableView.reloadData()
     }
 
@@ -136,7 +137,8 @@ extension InAppUpdatesViewController: UITableViewDelegate {
         }
 
         let view: LoadMoreFooterView = tableView.dequeueReusableHeaderFooterView()
-        view.bind(text: "See all available updates")
+        let showMoreTitle = R.string.localizable.inAppUpdatesButtonShowMoreTitle(preferredLanguages: selectedLocale.rLanguages)
+        view.bind(text: showMoreTitle)
         view.moreButton.addTarget(self, action: #selector(didTapOnLoadMoreVersions), for: .touchUpInside)
         return view
     }

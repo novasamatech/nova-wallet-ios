@@ -1,19 +1,19 @@
 import SoraKeystore
 import RobinHood
 
-final class InAppUpdatesService: BaseSyncService {
-    let repository: InAppUpdatesRepositoryProtocol
+final class InAppUpdatesService: BaseSyncService, AnyCancellableCleaning {
+    let repository: InAppUpdatesReleasesRepositoryProtocol
     let currentVersion: String
-    let lastSkippedVersion: ReleaseVersion?
     let securityLayerService: SecurityLayerServiceProtocol
     let wireframe: InAppUpdatesServiceWireframeProtocol
     let operationManager: OperationManagerProtocol
     let sessionStorage: SessionStorageProtocol
+    let settings: SettingsManagerProtocol
 
-    private var executingOperationWrapper: CompoundOperationWrapper<[Release]>?
+    @Atomic(defaultValue: nil) private var executingOperation: CancellableCall?
 
     init(
-        repository: InAppUpdatesRepositoryProtocol,
+        repository: InAppUpdatesReleasesRepositoryProtocol,
         currentVersion: String,
         settings: SettingsManagerProtocol,
         sessionStorage: SessionStorageProtocol,
@@ -27,17 +27,14 @@ final class InAppUpdatesService: BaseSyncService {
         self.wireframe = wireframe
         self.operationManager = operationManager
         self.sessionStorage = sessionStorage
-        if let lastSkippedUpdateVersion = settings.skippedUpdateVersion {
-            lastSkippedVersion = ReleaseVersion.parse(from: lastSkippedUpdateVersion)
-        } else {
-            lastSkippedVersion = nil
-        }
+        self.settings = settings
     }
 
     private func showUpdatesIfNeeded(releases: [Release]) {
         guard let currentVersion = ReleaseVersion.parse(from: currentVersion) else {
             return
         }
+        let lastSkippedVersion = settings.skippedUpdateVersion.map(ReleaseVersion.parse) ?? nil
 
         let notInstalledVersions = releases
             .filter { $0.version > currentVersion }
@@ -45,7 +42,7 @@ final class InAppUpdatesService: BaseSyncService {
 
         let showUpdates = notInstalledVersions
             .contains(where: {
-                isCriticalUpdate($0) || isNotInstalledMajorUpdate($0)
+                isCriticalUpdate($0) || isNotInstalledMajorUpdate($0, lastSkippedVersion: lastSkippedVersion)
             })
 
         if showUpdates {
@@ -60,7 +57,10 @@ final class InAppUpdatesService: BaseSyncService {
         release.severity == .critical
     }
 
-    private func isNotInstalledMajorUpdate(_ release: Release) -> Bool {
+    private func isNotInstalledMajorUpdate(
+        _ release: Release,
+        lastSkippedVersion: ReleaseVersion?
+    ) -> Bool {
         guard release.severity == .major else {
             return false
         }
@@ -73,9 +73,10 @@ final class InAppUpdatesService: BaseSyncService {
     private func fetchReleases() {
         let wrapper = repository.fetchReleasesWrapper()
         wrapper.targetOperation.completionBlock = { [weak self] in
-            guard let self = self else {
+            guard let self = self, self.executingOperation === wrapper else {
                 return
             }
+            self.executingOperation = nil
             do {
                 let releases = try wrapper.targetOperation.extractNoCancellableResultData()
                 self.showUpdatesIfNeeded(releases: releases)
@@ -83,10 +84,9 @@ final class InAppUpdatesService: BaseSyncService {
             } catch {
                 self.complete(error)
             }
-            self.executingOperationWrapper = nil
         }
 
-        executingOperationWrapper = wrapper
+        executingOperation = wrapper
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
@@ -94,9 +94,13 @@ final class InAppUpdatesService: BaseSyncService {
         let emptyOperation = ClosureOperation<[Release]>.createWithResult([])
         let wrapper = CompoundOperationWrapper(targetOperation: emptyOperation)
         wrapper.targetOperation.completionBlock = { [weak self] in
-            self?.complete(nil)
+            guard let self = self, self.executingOperation === wrapper else {
+                return
+            }
+            self.executingOperation = nil
+            self.complete(nil)
         }
-        executingOperationWrapper = wrapper
+        executingOperation = wrapper
         operationManager.enqueue(
             operations: [wrapper.targetOperation],
             in: .transient
@@ -104,15 +108,19 @@ final class InAppUpdatesService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        if sessionStorage.inAppUpdatesWasShown {
-            finishWithoutSync()
-        } else {
-            fetchReleases()
+        securityLayerService.scheduleExecutionIfAuthorized { [weak self] in
+            guard let self = self else {
+                return
+            }
+            if self.sessionStorage.inAppUpdatesWasShown {
+                self.finishWithoutSync()
+            } else {
+                self.fetchReleases()
+            }
         }
     }
 
     override func stopSyncUp() {
-        executingOperationWrapper?.cancel()
-        executingOperationWrapper = nil
+        clear(cancellable: &executingOperation)
     }
 }

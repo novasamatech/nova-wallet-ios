@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import StoreKit
 
-final class InAppUpdatesWireframe: InAppUpdatesWireframeProtocol, WebPresentable {
+final class InAppUpdatesWireframe: InAppUpdatesWireframeProtocol {
     func finish(view: InAppUpdatesViewProtocol?) {
         view?.controller.dismiss(animated: true)
     }

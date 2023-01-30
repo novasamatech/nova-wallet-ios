@@ -1,7 +1,10 @@
 import RobinHood
 
-protocol InAppUpdatesRepositoryProtocol {
+protocol InAppUpdatesReleasesRepositoryProtocol {
     func fetchReleasesWrapper() -> CompoundOperationWrapper<[Release]>
+}
+
+protocol InAppUpdatesChangeLogsRepositoryProtocol {
     func fetchChangeLogOperation(for version: ReleaseVersion) -> BaseOperation<String>
 }
 
@@ -10,19 +13,17 @@ final class InAppUpdatesRepository: JsonFileRepository<[Release]> {
 
     init(urlProvider: InAppUpdatesUrlProviderProtocol) {
         self.urlProvider = urlProvider
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        super.init(decoder: decoder)
     }
 }
 
-extension InAppUpdatesRepository: InAppUpdatesRepositoryProtocol {
+extension InAppUpdatesRepository: InAppUpdatesReleasesRepositoryProtocol {
     func fetchReleasesWrapper() -> CompoundOperationWrapper<[Release]> {
         let url = urlProvider.releaseURL
         return fetchOperationWrapper(by: url, defaultValue: [])
     }
+}
 
+extension InAppUpdatesRepository: InAppUpdatesChangeLogsRepositoryProtocol {
     func fetchChangeLogOperation(for version: ReleaseVersion) -> BaseOperation<String> {
         let url = urlProvider.versionURL(version)
 

@@ -4,7 +4,7 @@ final class VersionTableViewCell: UITableViewCell {
     let titleLabel = UILabel(style: .secondaryScreenTitle, numberOfLines: 1)
     let severityLabel: BorderedLabelView = .create {
         $0.setContentHuggingPriority(.defaultLow, for: .vertical)
-        $0.contentInsets = .init(top: 1, left: 6, bottom: 1, right: 6)
+        $0.contentInsets = .init(top: 2, left: 6, bottom: 2, right: 6)
         $0.isHidden = true
     }
 
@@ -96,23 +96,23 @@ extension VersionTableViewCell {
         titleLabel.text = model.title
         bind(severity: model.severity, locale: locale)
         latestLabel.isHidden = !model.isLatest
-        latestLabel.titleLabel.text = "latest".uppercased()
+        latestLabel.titleLabel.text = R.string.localizable.inAppUpdatesLatest(preferredLanguages: locale.rLanguages).uppercased()
         dateLabel.text = model.date
         bind(markdown: model.markdownText)
     }
 
-    func bind(severity: ReleaseSeverity, locale _: Locale) {
+    func bind(severity: ReleaseSeverity, locale: Locale) {
         switch severity {
         case .normal:
             severityLabel.isHidden = true
         case .major:
             severityLabel.isHidden = false
             severityLabel.apply(style: .major)
-            severityLabel.titleLabel.text = "major".uppercased()
+            severityLabel.titleLabel.text = R.string.localizable.inAppUpdatesSeverityMajor(preferredLanguages: locale.rLanguages).uppercased()
         case .critical:
             severityLabel.isHidden = false
             severityLabel.apply(style: .critical)
-            severityLabel.titleLabel.text = "critical".uppercased()
+            severityLabel.titleLabel.text = R.string.localizable.inAppUpdatesSeverityCritical(preferredLanguages: locale.rLanguages).uppercased()
         }
     }
 

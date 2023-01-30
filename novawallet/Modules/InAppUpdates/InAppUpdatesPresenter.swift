@@ -30,7 +30,7 @@ final class InAppUpdatesPresenter {
     private func convert(changelog: ReleaseChangeLog) -> VersionTableViewCell.Model {
         let date = dateFormatter.value(for: selectedLocale).string(from: changelog.release.time)
         return VersionTableViewCell.Model(
-            title: changelog.release.title,
+            title: title(for: changelog.release),
             isLatest: changelog.release.version == lastRelease?.version,
             severity: changelog.release.severity,
             date: date,
@@ -49,7 +49,7 @@ final class InAppUpdatesPresenter {
         } else if let release = lastRelease {
             let date = dateFormatter.value(for: selectedLocale).string(from: release.time)
             let model = VersionTableViewCell.Model(
-                title: release.title,
+                title: title(for: release),
                 isLatest: true,
                 severity: release.severity,
                 date: date,
@@ -61,6 +61,13 @@ final class InAppUpdatesPresenter {
                 isAvailableMoreVersions: canLoadMoreReleaseChangeLogs
             )
         }
+    }
+
+    private func title(for release: Release) -> String {
+        R.string.localizable.inAppUpdatesVersionTitle(
+            release.version.id,
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 }
 
@@ -120,8 +127,4 @@ extension InAppUpdatesPresenter: Localizable {
             updateView()
         }
     }
-}
-
-extension Release {
-    var title: String { ["Version", version.id].joined(separator: " ") }
 }

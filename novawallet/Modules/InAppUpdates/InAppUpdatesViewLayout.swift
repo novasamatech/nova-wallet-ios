@@ -6,14 +6,14 @@ final class InAppUpdatesViewLayout: UIView {
         view.separatorStyle = .none
         view.backgroundColor = .clear
         view.contentInset = .zero
-        view.registerClassForCell(VersionTableViewCell.self)
-        view.registerClassForCell(GradientBannerTableViewCell.self)
-        view.registerHeaderFooterView(withClass: LoadMoreFooterView.self)
         view.rowHeight = UITableView.automaticDimension
         view.allowsSelection = false
         view.showsVerticalScrollIndicator = false
         view.contentInsetAdjustmentBehavior = .never
         view.tableHeaderView = .init(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNonzeroMagnitude))
+        view.registerClassForCell(VersionTableViewCell.self)
+        view.registerClassForCell(GradientBannerTableViewCell.self)
+        view.registerHeaderFooterView(withClass: LoadMoreFooterView.self)
         return view
     }()
 

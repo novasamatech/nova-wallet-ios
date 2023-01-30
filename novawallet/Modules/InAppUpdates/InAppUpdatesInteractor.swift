@@ -5,14 +5,14 @@ import SoraKeystore
 final class InAppUpdatesInteractor {
     weak var presenter: InAppUpdatesInteractorOutputProtocol!
 
-    let repository: InAppUpdatesRepositoryProtocol
+    let repository: InAppUpdatesChangeLogsRepositoryProtocol
     let settings: SettingsManagerProtocol
     let securityLayerService: SecurityLayerServiceProtocol
     let versions: [Release]
     private let operationQueue: OperationQueue
 
     init(
-        repository: InAppUpdatesRepositoryProtocol,
+        repository: InAppUpdatesChangeLogsRepositoryProtocol,
         settings: SettingsManagerProtocol,
         securityLayerService: SecurityLayerServiceProtocol,
         versions: [Release],

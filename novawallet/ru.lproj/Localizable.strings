@@ -1109,3 +1109,14 @@
 "add.token.contract.metadata.error.title" = "Ошибка загрузки метаданных";
 "add.token.contract.metadata.error.message" = "Загрузка метаданных контракта завершилась с ошибкой.";
 "add.token.invalid.decimals.message" = "Число десятичных знаков должно быть не менее 0 и не более %@.";
+"in.app.updates.title" = "Доступно обновление";
+"in.app.updates.install.button.title" = "Установить";
+"in.app.updates.banner.major.title" = "Крупное обновление";
+"in.app.updates.banner.major.subtitle" = "Новый потрясающий функционал уже доступен для Nova Wallet! Обязательно обновите приложение и наслаждайтесь им";
+"in.app.updates.banner.critical.title" = "Критичное обновление";
+"in.app.updates.banner.critical.subtitle" = "Чтобы избежать каких-либо проблем и улучшить ваш пользовательский опыт, мы настоятельно рекомендуем как можно скорее установить последние обновления";
+"in.app.updates.severity.major" = "Важная";
+"in.app.updates.severity.critical" = "Критичная";
+"in.app.updates.latest" = "Последняя";
+"in.app.updates.button.show.more.title" = "Посмотреть все доступные обновления";
+"in.app.updates.version.title" = "Версия %@";
