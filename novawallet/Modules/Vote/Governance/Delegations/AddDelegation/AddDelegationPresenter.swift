@@ -54,10 +54,6 @@ final class AddDelegationPresenter {
     }
 
     private func updateView() {
-        guard let chainAsset = chain.utilityAsset() else {
-            return
-        }
-
         let viewModels = targetDelegates.map { convert(delegate: $0) }
         view?.didReceive(delegateViewModels: viewModels)
     }
