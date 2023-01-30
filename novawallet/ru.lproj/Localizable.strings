@@ -1128,3 +1128,15 @@
 "delegations.title" = "Делегирование";
 "delegations.info.title" = "Информация о делегате";
 "delegations.info.voted.all" = "Голоса за все время";
+"in.app.updates.title" = "Доступно обновление";
+"in.app.updates.install.button.title" = "Установить";
+"in.app.updates.banner.major.title" = "Крупное обновление";
+"in.app.updates.banner.major.subtitle" = "Новый потрясающий функционал уже доступен для Nova Wallet! Обязательно обновите приложение и наслаждайтесь им";
+"in.app.updates.banner.critical.title" = "Критичное обновление";
+"in.app.updates.banner.critical.subtitle" = "Чтобы избежать каких-либо проблем и улучшить ваш пользовательский опыт, мы настоятельно рекомендуем как можно скорее установить последние обновления";
+"in.app.updates.severity.major" = "Важная";
+"in.app.updates.severity.critical" = "Критичная";
+"in.app.updates.latest" = "Последняя";
+"in.app.updates.button.show.more.title" = "Посмотреть все доступные обновления";
+"in.app.updates.version.title" = "Версия %@";
+"in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";

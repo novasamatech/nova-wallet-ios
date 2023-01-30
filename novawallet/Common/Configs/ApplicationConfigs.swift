@@ -32,6 +32,8 @@ protocol ApplicationConfigProtocol {
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
     var learnGovernanceDelegateMetadata: URL { get }
+    var inAppUpdatesEntrypointURL: URL { get }
+    var inAppUpdatesChangelogsURL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -56,7 +58,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var appStoreURL: URL {
-        URL(string: "https://apps.apple.com/us/app/id1597119355")!
+        URL(string: "itms-apps://apple.com/app/id1597119355")!
     }
 
     var socialURL: URL {
@@ -203,5 +205,21 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var learnGovernanceDelegateMetadata: URL {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
+    }
+
+    var inAppUpdatesEntrypointURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_release.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json")!
+        #endif
+    }
+
+    var inAppUpdatesChangelogsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/release")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
+        #endif
     }
 }
