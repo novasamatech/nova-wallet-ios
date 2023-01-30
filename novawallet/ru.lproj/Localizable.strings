@@ -1125,3 +1125,6 @@
 "delegations.show.chip.individual" = "Индивидуальный";
 "delegations.show.chip.organization" = "Организация";
 "delegations.add.title" = "Добавить делегацию";
+"delegations.title" = "Делегирование";
+"delegations.info.title" = "Информация о делегате";
+"delegations.info.voted.all" = "Голоса за все время";

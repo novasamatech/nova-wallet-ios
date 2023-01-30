@@ -202,7 +202,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var learnGovernanceDelegateMetadata: URL {
-        // TODO: Set actual link when ready
-        URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Recommended-validators-in-Nova-Wallet")!
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
     }
 }

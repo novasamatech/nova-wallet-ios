@@ -7,7 +7,8 @@ final class AddDelegationPresenter {
     weak var view: AddDelegationViewProtocol?
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
-    let numberFormatter = NumberFormatter.quantity.localizableResource()
+    let quantityFormatter: LocalizableResource<NumberFormatter>
+    let votesDisplayFactory: ReferendumDisplayStringFactoryProtocol
     let addressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     let chain: ChainModel
     let lastVotedDays: Int
@@ -27,6 +28,8 @@ final class AddDelegationPresenter {
         lastVotedDays: Int,
         learnDelegateMetadata: URL,
         addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
+        votesDisplayFactory: ReferendumDisplayStringFactoryProtocol,
+        quantityFormatter: LocalizableResource<NumberFormatter>,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,6 +39,8 @@ final class AddDelegationPresenter {
         self.lastVotedDays = lastVotedDays
         self.learnDelegateMetadata = learnDelegateMetadata
         self.addressViewModelFactory = addressViewModelFactory
+        self.votesDisplayFactory = votesDisplayFactory
+        self.quantityFormatter = quantityFormatter
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -49,18 +54,11 @@ final class AddDelegationPresenter {
     }
 
     private func updateView() {
-        guard let chainAsset = chain.utilityAsset() else {
-            return
-        }
-
-        let viewModels = targetDelegates.map { convert(delegate: $0, chainAsset: chainAsset) }
+        let viewModels = targetDelegates.map { convert(delegate: $0) }
         view?.didReceive(delegateViewModels: viewModels)
     }
 
-    private func convert(
-        delegate: GovernanceDelegateLocal,
-        chainAsset: AssetModel
-    ) -> GovernanceDelegateTableViewCell.Model {
+    private func convert(delegate: GovernanceDelegateLocal) -> GovernanceDelegateTableViewCell.Model {
         let name = delegate.identity?.displayName ?? delegate.metadata?.name
 
         let addressViewModel = addressViewModelFactory.createViewModel(
@@ -69,12 +67,13 @@ final class AddDelegationPresenter {
             iconUrl: delegate.metadata?.image
         )
 
-        let numberFormatter = numberFormatter.value(for: selectedLocale)
+        let numberFormatter = quantityFormatter.value(for: selectedLocale)
         let delegations = numberFormatter.string(from: NSNumber(value: delegate.stats.delegationsCount))
 
-        let totalVotes = formatVotes(
-            votesInPlank: delegate.stats.delegatedVotes,
-            precision: chainAsset.precision
+        let totalVotes = votesDisplayFactory.createVotesValue(
+            from: delegate.stats.delegatedVotes,
+            chain: chain,
+            locale: selectedLocale
         )
 
         let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
@@ -90,16 +89,6 @@ final class AddDelegationPresenter {
             lastVotesTitle: GovernanceDelegatesOrder.lastVoted(days: lastVotedDays).value(for: selectedLocale),
             lastVotes: lastVotes
         )
-    }
-
-    private func formatVotes(votesInPlank: BigUInt, precision: UInt16) -> String {
-        guard let votes = Decimal.fromSubstrateAmount(
-            votesInPlank,
-            precision: Int16(precision)
-        ) else {
-            return ""
-        }
-        return numberFormatter.value(for: selectedLocale).stringFromDecimal(votes) ?? ""
     }
 }
 

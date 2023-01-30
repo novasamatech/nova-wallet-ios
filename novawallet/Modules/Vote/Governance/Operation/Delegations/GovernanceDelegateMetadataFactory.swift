@@ -4,7 +4,7 @@ import RobinHood
 final class GovernanceDelegateMetadataFactory: BaseFetchOperationFactory {
     static let baseUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/opengov-delegate-registry/master/registry/")!
 
-    private func createUrl(for chain: ChainModel) -> URL {
+    func createUrl(for chain: ChainModel) -> URL {
         let normalizedName = chain.name.lowercased()
         let path = normalizedName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ??
             normalizedName
