@@ -1,6 +1,6 @@
 import Foundation
 
-struct GovernanceDelegateMetadataRemote: Decodable {
+struct GovernanceDelegateMetadataRemote: Codable, Equatable {
     let address: AccountAddress
     let name: String
     let image: URL

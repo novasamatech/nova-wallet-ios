@@ -8,11 +8,7 @@ final class GovernanceDelegateView: UIView {
     }
 
     let nameLabel = UILabel(style: .regularSubhedlinePrimary, numberOfLines: 1)
-    let typeView: BorderedIconLabelView = .create {
-        $0.iconDetailsView.spacing = 6
-        $0.contentInsets = .init(top: 1, left: 4, bottom: 1, right: 6)
-        $0.iconDetailsView.detailsLabel.numberOfLines = 1
-    }
+    let typeView = GovernanceDelegateTypeView()
 
     private var typeStack: UIStackView?
 
@@ -103,7 +99,7 @@ final class GovernanceDelegateView: UIView {
 extension GovernanceDelegateView {
     struct Model: Hashable {
         let addressViewModel: DisplayAddressViewModel
-        let type: DelegateType?
+        let type: GovernanceDelegateTypeView.Model?
         let description: String?
         let delegationsTitle: String
         let delegations: String?
@@ -130,13 +126,10 @@ extension GovernanceDelegateView {
         }
     }
 
-    enum DelegateType {
-        case organization
-        case individual
-    }
-
     func bind(viewModel: Model, locale: Locale) {
         bind(type: viewModel.type, locale: locale)
+
+        typeView.locale = locale
 
         self.viewModel?.addressViewModel.imageViewModel?.cancel(on: avatarView.imageView)
 
@@ -175,7 +168,7 @@ extension GovernanceDelegateView {
         self.viewModel = viewModel
     }
 
-    private func extractIconRadius(for type: DelegateType?) -> CGFloat? {
+    private func extractIconRadius(for type: GovernanceDelegateTypeView.Model?) -> CGFloat? {
         switch type {
         case .organization:
             return nil
@@ -184,30 +177,16 @@ extension GovernanceDelegateView {
         }
     }
 
-    private func bind(type: DelegateType?, locale: Locale) {
+    private func bind(type: GovernanceDelegateTypeView.Model?, locale _: Locale) {
         switch type {
         case .organization:
-            avatarView.backgroundView.apply(style: .roundedContainer(radius: 8))
-            typeView.apply(style: .organization)
+            avatarView.backgroundView.apply(style: .roundedContainerWithShadow(radius: 8))
             typeStack?.isHidden = false
-            let title = R.string.localizable.delegationsShowChipOrganization(
-                preferredLanguages: locale.rLanguages
-            ).uppercased()
-            typeView.iconDetailsView.bind(viewModel: .init(
-                title: title,
-                icon: R.image.iconOrganization()
-            ))
+            typeView.bind(type: .organization)
         case .individual:
             avatarView.backgroundView.apply(style: .clear)
-            typeView.apply(style: .individual)
             typeStack?.isHidden = false
-            let title = R.string.localizable.delegationsShowChipIndividual(
-                preferredLanguages: locale.rLanguages
-            ).uppercased()
-            typeView.iconDetailsView.bind(viewModel: .init(
-                title: title,
-                icon: R.image.iconIndividual()
-            ))
+            typeView.bind(type: .individual)
         case .none:
             avatarView.backgroundView.apply(style: .clear)
             typeStack?.isHidden = true

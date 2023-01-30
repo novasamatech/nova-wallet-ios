@@ -2,6 +2,12 @@ import Foundation
 import SoraFoundation
 
 final class AddDelegationWireframe: AddDelegationWireframeProtocol {
+    let state: GovernanceSharedState
+
+    init(state: GovernanceSharedState) {
+        self.state = state
+    }
+
     func showPicker(
         from view: AddDelegationViewProtocol?,
         title: LocalizableResource<String>?,
@@ -23,7 +29,7 @@ final class AddDelegationWireframe: AddDelegationWireframeProtocol {
     }
 
     func showInfo(from view: AddDelegationViewProtocol?, delegate: GovernanceDelegateLocal) {
-        guard let infoView = GovernanceDelegateInfoViewFactory.createView(for: delegate) else {
+        guard let infoView = GovernanceDelegateInfoViewFactory.createView(for: state, delegate: delegate) else {
             return
         }
 

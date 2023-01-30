@@ -2,6 +2,8 @@ import Foundation
 import BigInt
 
 protocol ReferendumDisplayStringFactoryProtocol {
+    func createVotesValue(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String?
+
     func createVotes(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String?
 
     func createVotesDetails(
@@ -96,7 +98,7 @@ final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtoc
         self.formatterFactory = formatterFactory
     }
 
-    func createVotes(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
+    func createVotesValue(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
         guard let asset = chain.utilityAsset() else {
             return nil
         }
@@ -107,11 +109,15 @@ final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtoc
 
         let displayFormatter = formatterFactory.createDisplayFormatter(for: displayInfo).value(for: locale)
 
-        if let votesValueString = displayFormatter.stringFromDecimal(votesDecimal) {
-            return R.string.localizable.govCommonVotesFormat(votesValueString, preferredLanguages: locale.rLanguages)
-        } else {
+        return displayFormatter.stringFromDecimal(votesDecimal)
+    }
+
+    func createVotes(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
+        guard let votesValueString = createVotesValue(from: votes, chain: chain, locale: locale) else {
             return nil
         }
+
+        return R.string.localizable.govCommonVotesFormat(votesValueString, preferredLanguages: locale.rLanguages)
     }
 
     func createVotesDetails(
