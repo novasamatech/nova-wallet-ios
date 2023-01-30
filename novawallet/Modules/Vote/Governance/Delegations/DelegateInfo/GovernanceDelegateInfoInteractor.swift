@@ -135,16 +135,11 @@ final class GovernanceDelegateInfoInteractor {
 
     private func subscribeMetadata(for delegate: AccountId) {
         let updateClosure: ([DataProviderChange<[GovernanceDelegateMetadataRemote]>]) -> Void = { [weak self] changes in
-            if let result = changes.reduceToLastChange() {
-                let metadata = result.first {
-                    let accountId = try? $0.address.toAccountId()
-                    return accountId == delegate
-                }
-
-                self?.presenter?.didReceiveMetadata(metadata)
-            } else {
-                self?.presenter?.didReceiveMetadata(nil)
+            let metadata = changes.reduceToLastChange()?.first {
+                (try? $0.address.toAccountId()) == delegate
             }
+
+            self?.presenter?.didReceiveMetadata(metadata)
         }
 
         let failureClosure: (Error) -> Void = { [weak self] error in
