@@ -47,7 +47,7 @@ final class InAppUpdatesViewLayout: UIView {
             $0.top.equalTo(tableView.snp.bottom)
             $0.height.equalTo(52)
             $0.leading.trailing.equalToSuperview().inset(18)
-            $0.bottom.equalTo(safeAreaLayoutGuide)
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(16)
         }
     }
 }

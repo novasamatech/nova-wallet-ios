@@ -144,7 +144,7 @@ extension InAppUpdatesViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        showFooter(for: section) ? 34 : 0
+        showFooter(for: section) ? 34 : .leastNormalMagnitude
     }
 }
 

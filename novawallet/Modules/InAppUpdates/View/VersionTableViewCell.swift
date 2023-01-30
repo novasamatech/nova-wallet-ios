@@ -22,6 +22,8 @@ final class VersionTableViewCell: UITableViewCell {
         $0.hidesWhenStopped = true
     }
 
+    let separatorView: UIView = .createSeparator()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -46,18 +48,25 @@ final class VersionTableViewCell: UITableViewCell {
         contentView.addSubview(dateLabel)
         contentView.addSubview(changelogView)
         contentView.addSubview(activityIndicator)
+        contentView.addSubview(separatorView)
 
         titleView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview().inset(16)
+            $0.top.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(28)
         }
         dateLabel.snp.makeConstraints {
             $0.top.equalTo(titleView.snp.bottom).offset(4)
-            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview()
         }
         changelogView.snp.makeConstraints {
             $0.top.equalTo(dateLabel.snp.bottom).offset(12)
-            $0.leading.trailing.bottom.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(16)
+        }
+        separatorView.snp.makeConstraints {
+            $0.leading.trailing.bottom.equalToSuperview()
+            $0.height.equalTo(1)
         }
         activityIndicator.snp.makeConstraints {
             $0.center.equalTo(changelogView.snp.center)
