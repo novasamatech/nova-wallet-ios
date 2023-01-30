@@ -5,7 +5,7 @@ import SoraFoundation
 final class RootPresenterFactory: RootPresenterFactoryProtocol {
     static func createPresenter(with view: UIWindow) -> RootPresenterProtocol {
         let presenter = RootPresenter()
-        let wireframe = RootWireframe()
+        let wireframe = RootWireframe(inAppUpdatesServiceFactory: InAppUpdatesServiceFactory())
         let keychain = Keychain()
         let settings = SettingsManager.shared
 

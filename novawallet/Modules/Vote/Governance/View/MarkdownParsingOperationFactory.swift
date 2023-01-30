@@ -18,6 +18,11 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
         let textParagraphStyle = NSMutableParagraphStyle()
         textParagraphStyle.paragraphSpacing = 8
         textParagraphStyle.paragraphSpacingBefore = 8
+        let listParagraphStyle = NSMutableParagraphStyle()
+        listParagraphStyle.paragraphSpacing = 2
+        listParagraphStyle.paragraphSpacingBefore = 0
+        listParagraphStyle.firstLineHeadIndent = 0
+        listParagraphStyle.lineSpacing = 0
 
         let parser = CDMarkdownParser(
             font: CDFont.systemFont(ofSize: 15),
@@ -32,6 +37,7 @@ final class MarkdownParsingOperationFactory: MarkdownParsingOperationFactoryProt
         parser.header.backgroundColor = nil
         parser.list.color = R.color.colorTextSecondary()!
         parser.list.backgroundColor = nil
+        parser.list.paragraphStyle = listParagraphStyle
         parser.quote.color = R.color.colorTextSecondary()
         parser.quote.backgroundColor = nil
         parser.link.color = R.color.colorButtonTextAccent()!
