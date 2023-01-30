@@ -63,11 +63,8 @@ final class InAppUpdatesInteractor {
             }
         }
 
-        var fetchOperations: [Operation] = []
-        operationsMap.values.forEach {
-            mergeOperation.addDependency($0)
-            fetchOperations.append($0)
-        }
+        let fetchOperations: [Operation] = Array(operationsMap.values)
+        fetchOperations.forEach(mergeOperation.addDependency)
 
         mergeOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

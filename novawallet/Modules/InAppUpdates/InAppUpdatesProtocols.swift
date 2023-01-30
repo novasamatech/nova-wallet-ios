@@ -32,7 +32,7 @@ protocol InAppUpdatesInteractorOutputProtocol: AnyObject {
     func didReceiveAllVersions(changelogs: [ReleaseChangeLog])
 }
 
-protocol InAppUpdatesWireframeProtocol: AnyObject {
+protocol InAppUpdatesWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable {
     func finish(view: InAppUpdatesViewProtocol?)
     func show(url: URL, from view: InAppUpdatesViewProtocol?)
 }

@@ -7,6 +7,7 @@ final class InAppUpdatesPresenter {
     let interactor: InAppUpdatesInteractorInputProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let applicationConfig: ApplicationConfigProtocol
+    let logger: LoggerProtocol?
 
     private var changelogs: [ReleaseChangeLog] = []
     private var lastRelease: Release?
@@ -18,12 +19,14 @@ final class InAppUpdatesPresenter {
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
-        wireframe: InAppUpdatesWireframeProtocol
+        wireframe: InAppUpdatesWireframeProtocol,
+        logger: LoggerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.dateFormatter = dateFormatter
         self.applicationConfig = applicationConfig
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
@@ -69,9 +72,28 @@ final class InAppUpdatesPresenter {
             preferredLanguages: selectedLocale.rLanguages
         )
     }
+
+    private func handle(error: Error, retryAction: @escaping () -> Void) {
+        logger?.error(error.localizedDescription)
+        let message = R.string.localizable.inAppUpdatesFetchChangeLogsError(preferredLanguages: selectedLocale.rLanguages)
+        let cancelAction = R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        wireframe.presentRequestStatus(
+            on: view,
+            title: "",
+            message: message,
+            cancelAction: cancelAction,
+            locale: selectedLocale,
+            retryAction: retryAction
+        )
+    }
 }
 
 extension InAppUpdatesPresenter: InAppUpdatesPresenterProtocol {
+    func setup() {
+        interactor.setup()
+    }
+
     func skip() {
         interactor.skipVersion()
         wireframe.finish(view: view)
@@ -81,14 +103,26 @@ extension InAppUpdatesPresenter: InAppUpdatesPresenterProtocol {
         interactor.loadChangeLogs()
     }
 
-    func setup() {
-        interactor.setup()
+    func installLastVersion() {
+        wireframe.show(
+            url: applicationConfig.appStoreURL,
+            from: view
+        )
     }
 }
 
 extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
-    func didReceive(error _: InAppUpdatesInteractorError) {
-        // TODO:
+    func didReceive(error: InAppUpdatesInteractorError) {
+        switch error {
+        case let .fetchAllChangeLogs(error):
+            handle(error: error, retryAction: { [weak self] in
+                self?.interactor.loadChangeLogs()
+            })
+        case let .fetchLastVersionChangeLog(error):
+            handle(error: error, retryAction: { [weak self] in
+                self?.interactor.setup()
+            })
+        }
     }
 
     func didReceiveLastVersion(
@@ -111,13 +145,6 @@ extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
         canLoadMoreReleaseChangeLogs = false
         self.changelogs = changelogs
         updateView()
-    }
-
-    func installLastVersion() {
-        wireframe.show(
-            url: applicationConfig.appStoreURL,
-            from: view
-        )
     }
 }
 

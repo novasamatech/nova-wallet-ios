@@ -1120,3 +1120,4 @@
 "in.app.updates.latest" = "Последняя";
 "in.app.updates.button.show.more.title" = "Посмотреть все доступные обновления";
 "in.app.updates.version.title" = "Версия %@";
+"in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";

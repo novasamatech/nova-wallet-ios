@@ -1120,3 +1120,4 @@
 "in.app.updates.latest" = "Latest";
 "in.app.updates.button.show.more.title" = "See all available updates";
 "in.app.updates.version.title" = "Version %@";
+"in.app.updates.fetch.change.logs.error" = "Change logs can't be loaded";

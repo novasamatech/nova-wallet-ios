@@ -25,7 +25,8 @@ struct InAppUpdatesViewFactory {
             localizationManager: localizationManager,
             applicationConfig: applicationConfig,
             dateFormatter: DateFormatter.shortDate,
-            wireframe: wireframe
+            wireframe: wireframe,
+            logger: Logger.shared
         )
 
         let view = InAppUpdatesViewController(
