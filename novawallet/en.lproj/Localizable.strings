@@ -1125,3 +1125,6 @@
 "delegations.show.chip.individual" = "Individual";
 "delegations.show.chip.organization" = "Organization";
 "delegations.add.title" = "Add delegation";
+"delegations.title" = "Delegations";
+"delegations.info.title" = "Delegate Info";
+"delegations.info.voted.all" = "Voted for all time";

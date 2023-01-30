@@ -49,6 +49,10 @@ protocol GovernanceLockStateFactoryProtocol {
 
 protocol GovernanceDelegateStatsFactoryProtocol {
     func fetchStatsWrapper(for activityStartBlock: BlockNumber) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
+    func fetchDetailsWrapper(
+        for delegate: AccountAddress,
+        activityStartBlock: BlockNumber
+    ) -> CompoundOperationWrapper<GovernanceDelegateDetails?>
 }
 
 protocol GovernanceDelegateListFactoryProtocol {
