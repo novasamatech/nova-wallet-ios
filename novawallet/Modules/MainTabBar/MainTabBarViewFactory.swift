@@ -16,14 +16,17 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         }
 
         let localizationManager = LocalizationManager.shared
+        let securedLayer = SecurityLayerService.shared
 
         let serviceCoordinator = ServiceCoordinator.createDefault()
+        let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
 
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
             serviceCoordinator: serviceCoordinator,
             keystoreImportService: keystoreImportService,
-            securedLayer: SecurityLayerService.shared
+            securedLayer: securedLayer,
+            inAppUpdatesService: inAppUpdatesService
         )
 
         guard let walletController = createWalletController(for: localizationManager) else {

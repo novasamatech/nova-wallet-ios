@@ -12,6 +12,7 @@ enum SettingsKey: String {
     case selectedCurrency
     case governanceChainId
     case governanceType
+    case skippedUpdateVersion
 }
 
 extension SettingsManagerProtocol {
@@ -122,6 +123,20 @@ extension SettingsManagerProtocol {
                 set(value: existingValue, for: SettingsKey.selectedCurrency.rawValue)
             } else {
                 removeValue(for: SettingsKey.selectedCurrency.rawValue)
+            }
+        }
+    }
+
+    var skippedUpdateVersion: String? {
+        get {
+            string(for: SettingsKey.skippedUpdateVersion.rawValue)
+        }
+
+        set {
+            if let existingValue = newValue {
+                set(value: existingValue, for: SettingsKey.skippedUpdateVersion.rawValue)
+            } else {
+                removeValue(for: SettingsKey.skippedUpdateVersion.rawValue)
             }
         }
     }
