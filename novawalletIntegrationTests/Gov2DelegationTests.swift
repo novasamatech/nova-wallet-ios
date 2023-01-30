@@ -97,4 +97,43 @@ final class Gov2DelegationTests: XCTestCase {
         }
     }
 
+    func testFetchAccountCastingVotes() {
+        performFetchAccountTest(for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE")
+    }
+
+    func testFetchAccountDelegatedVotes() {
+        performFetchAccountTest(for: "FZsMKYHoQG1dAVhXBMyC7aYFYpASoBrrMYsAn1gJJUAueZX")
+    }
+
+    private func performFetchAccountTest(for address: AccountAddress) {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = KnowChainId.kusama
+
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+            return
+        }
+
+        let statsOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
+
+        // when
+
+        let wrapper = statsOperationFactory.createVotingFetchOperation(for: address)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        // then
+
+        do {
+            let voting = try wrapper.targetOperation.extractNoCancellableResultData()
+            XCTAssertTrue(!voting.votes.isEmpty)
+            XCTAssertEqual(address, voting.address)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 }
