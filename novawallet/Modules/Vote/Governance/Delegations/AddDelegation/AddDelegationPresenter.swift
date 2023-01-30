@@ -58,14 +58,11 @@ final class AddDelegationPresenter {
             return
         }
 
-        let viewModels = targetDelegates.map { convert(delegate: $0, chainAsset: chainAsset) }
+        let viewModels = targetDelegates.map { convert(delegate: $0) }
         view?.didReceive(delegateViewModels: viewModels)
     }
 
-    private func convert(
-        delegate: GovernanceDelegateLocal,
-        chainAsset _: AssetModel
-    ) -> GovernanceDelegateTableViewCell.Model {
+    private func convert(delegate: GovernanceDelegateLocal) -> GovernanceDelegateTableViewCell.Model {
         let name = delegate.identity?.displayName ?? delegate.metadata?.name
 
         let addressViewModel = addressViewModelFactory.createViewModel(
