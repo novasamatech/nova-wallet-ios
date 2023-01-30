@@ -13,6 +13,7 @@ enum SettingsKey: String {
     case governanceChainId
     case governanceType
     case governanceDelegateInfoSeen
+    case skippedUpdateVersion
 }
 
 extension SettingsManagerProtocol {
@@ -134,6 +135,20 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.governanceDelegateInfoSeen.rawValue)
+        }
+    }
+
+    var skippedUpdateVersion: String? {
+        get {
+            string(for: SettingsKey.skippedUpdateVersion.rawValue)
+        }
+
+        set {
+            if let existingValue = newValue {
+                set(value: existingValue, for: SettingsKey.skippedUpdateVersion.rawValue)
+            } else {
+                removeValue(for: SettingsKey.skippedUpdateVersion.rawValue)
+            }
         }
     }
 }

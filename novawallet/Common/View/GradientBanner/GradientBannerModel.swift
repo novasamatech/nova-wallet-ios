@@ -28,6 +28,16 @@ extension GradientBannerModel {
         return createModel(with: color)
     }
 
+    static func criticalUpdate() -> GradientBannerModel {
+        let color = R.color.colorGradientCriticalBanner()!
+        return createModel(with: color)
+    }
+
+    static func majorUpdate() -> GradientBannerModel {
+        let color = R.color.colorGradientMajorBanner()!
+        return createModel(with: color)
+    }
+
     static func stakingUnpaidRewards() -> GradientBannerModel {
         let color = UIColor(
             red: 226.0 / 255.0,
