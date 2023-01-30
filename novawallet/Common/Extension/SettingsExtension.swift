@@ -135,6 +135,7 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.governanceDelegateInfoSeen.rawValue)
+        }
     }
 
     var skippedUpdateVersion: String? {
