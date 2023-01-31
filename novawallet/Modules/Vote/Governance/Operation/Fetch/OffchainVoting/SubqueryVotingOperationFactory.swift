@@ -9,7 +9,7 @@ final class SubqueryVotingOperationFactory {
         self.url = url
     }
 
-    private func prepareVotesQuery(for address: AccountAddress) -> String {
+    private func prepareCastingAndDelegatorVotesQuery(for address: AccountAddress) -> String {
         """
         {
             castingVotings(filter: { voter: {equalTo: "\(address)"}}) {
@@ -34,16 +34,54 @@ final class SubqueryVotingOperationFactory {
         }
         """
     }
-}
 
-extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtocol {
-    func createVotingFetchOperation(
-        for address: AccountAddress
-    ) -> CompoundOperationWrapper<GovernanceOffchainVoting> {
-        let query = prepareVotesQuery(for: address)
+    private func prepareAllVotingActityQuery(for address: AccountAddress) -> String {
+        """
+        {
+            castingVotings(filter: { voter: {equalTo: "\(address)"}}) {
+                nodes {
+                    referendumId
+                    standardVote
+                    splitVote
+                    splitAbstainVote
+                }
+            }
+        }
+        """
+    }
 
-        let requestFactory = BlockNetworkRequestFactory {
-            var request = URLRequest(url: self.url)
+    private func prepareBoundedVotingActivityQuery(
+        for address: AccountAddress,
+        from block: BlockNumber
+    ) -> String {
+        """
+        {
+            castingVotings(filter: { voter: {equalTo: "\(address)"}, at: {greaterThanOrEqualTo: \(block)}}) {
+                nodes {
+                    referendumId
+                    standardVote
+                    splitVote
+                    splitAbstainVote
+                }
+            }
+        }
+        """
+    }
+
+    private func prepareVotingActivityQuery(
+        for address: AccountAddress,
+        from block: BlockNumber?
+    ) -> String {
+        if let block = block {
+            return prepareBoundedVotingActivityQuery(for: address, from: block)
+        } else {
+            return prepareAllVotingActityQuery(for: address)
+        }
+    }
+
+    private func createRequestFactory(for query: String, url: URL) -> BlockNetworkRequestFactory {
+        BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
 
             let body = JSON.dictionaryValue(["query": JSON.stringValue(query)])
             request.httpBody = try JSONEncoder().encode(body)
@@ -55,10 +93,20 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
             request.httpMethod = HttpMethod.post.rawValue
             return request
         }
+    }
+}
+
+extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtocol {
+    func createAllVotesFetchOperation(
+        for address: AccountAddress
+    ) -> CompoundOperationWrapper<GovernanceOffchainVoting> {
+        let query = prepareCastingAndDelegatorVotesQuery(for: address)
+
+        let requestFactory = createRequestFactory(for: query, url: url)
 
         let resultFactory = AnyNetworkResultFactory<GovernanceOffchainVoting> { data in
             let response = try JSONDecoder().decode(
-                SubqueryResponse<SubqueryVotingResponse>.self,
+                SubqueryResponse<SubqueryVotingResponse.CastingAndDelegatorResponse>.self,
                 from: data
             )
 
@@ -75,6 +123,39 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
                 return response.delegatorVotings.nodes.reduce(voting) { accum, delegatedVote in
                     accum.insertingSubquery(delegatedVote: delegatedVote)
                 }
+            }
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func createDirectVotesFetchOperation(
+        for address: AccountAddress,
+        from block: BlockNumber?
+    ) -> CompoundOperationWrapper<GovernanceOffchainVotes> {
+        let query = prepareVotingActivityQuery(for: address, from: block)
+
+        let requestFactory = createRequestFactory(for: query, url: url)
+
+        let resultFactory = AnyNetworkResultFactory<GovernanceOffchainVotes> { data in
+            let response = try JSONDecoder().decode(
+                SubqueryResponse<SubqueryVotingResponse.CastingResponse>.self,
+                from: data
+            )
+
+            switch response {
+            case let .errors(error):
+                throw error
+            case let .data(response):
+                let voting = response.castingVotings.nodes.reduce(
+                    GovernanceOffchainVoting(address: address, votes: [:])
+                ) { accum, castingVote in
+                    accum.insertingSubquery(castingVote: castingVote)
+                }
+
+                return voting.getAllDirectVotes()
             }
         }
 
