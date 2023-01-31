@@ -11,6 +11,7 @@ final class VersionTableViewCell: UITableViewCell {
 
     let latestLabel: BorderedLabelView = .create {
         $0.apply(style: .latest)
+        $0.contentInsets = .init(top: 2, left: 6, bottom: 2, right: 6)
         $0.backgroundView.cornerRadius = 5
         $0.setContentHuggingPriority(.defaultLow, for: .vertical)
         $0.isHidden = true
