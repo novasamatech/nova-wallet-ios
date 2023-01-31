@@ -21,7 +21,7 @@ abstract_target 'novawalletAll' do
   pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :tag => '3.0.0'
   pod 'Charts'
   pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
-  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.7'
+  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.5'
   pod 'CDMarkdownKit', :git => 'https://github.com/nova-wallet/CDMarkdownKit.git', :tag => '2.4.0'
   pod 'web3swift', :git => 'https://github.com/web3swift-team/web3swift.git', :tag => '3.0.6'
   
@@ -37,7 +37,7 @@ abstract_target 'novawalletAll' do
     pod 'RobinHood', '~> 2.6.0'
     pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :tag => '1.16.0'
     pod 'Sourcery', '~> 1.4'
-    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.7'
+    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.5'
 
   end
 

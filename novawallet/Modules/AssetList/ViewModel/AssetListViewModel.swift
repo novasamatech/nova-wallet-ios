@@ -76,3 +76,5 @@ struct AssetListAssetViewModel {
     let balanceAmount: LoadableViewModelState<String>
     let balanceValue: LoadableViewModelState<String>
 }
+
+extension LoadableViewModelState: Hashable, Equatable where T == String {}

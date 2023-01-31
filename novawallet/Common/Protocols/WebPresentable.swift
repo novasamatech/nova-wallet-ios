@@ -12,12 +12,15 @@ protocol WebPresentable: AnyObject {
 }
 
 extension WebPresentable {
+    var supportedSafariScheme: [String] {
+        ["https", "http"]
+    }
+
     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle) {
         showWeb(url: url, from: view.controller, style: style)
     }
 
     func showWeb(url: URL, from viewController: UIViewController, style: WebPresentableStyle) {
-        let supportedSafariScheme = ["https", "http"]
         guard let scheme = url.scheme, supportedSafariScheme.contains(scheme) else {
             return
         }
