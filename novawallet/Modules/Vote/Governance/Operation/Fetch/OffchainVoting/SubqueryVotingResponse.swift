@@ -49,8 +49,14 @@ struct SubqueryVotingResponse: Decodable {
         let nodes: [CastingVoting]
     }
 
-    let delegatorVotings: DelegatorVotings
-    let castingVotings: CastingVotings
+    struct CastingAndDelegatorResponse: Decodable {
+        let delegatorVotings: DelegatorVotings
+        let castingVotings: CastingVotings
+    }
+
+    struct CastingResponse: Decodable {
+        let castingVotings: CastingVotings
+    }
 }
 
 extension ConvictionVoting.Conviction {
