@@ -1,7 +1,7 @@
 import SoraUI
 import UIKit
 
-final class LoadMoreFooterView: UITableViewHeaderFooterView {
+final class LoadMoreFooterView: UIView {
     let moreButton: RoundedButton = .create { button in
         button.applyIconStyle()
         let color = R.color.colorButtonTextAccent()!
@@ -13,8 +13,8 @@ final class LoadMoreFooterView: UITableViewHeaderFooterView {
         $0.hidesWhenStopped = true
     }
 
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         setupLayout()
     }
@@ -24,21 +24,26 @@ final class LoadMoreFooterView: UITableViewHeaderFooterView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var intrinsicContentSize: CGSize {
+        .init(width: UIView.noIntrinsicMetric, height: 34)
+    }
+
     func setupLayout() {
-        contentView.addSubview(moreButton)
-        contentView.addSubview(activityIndicator)
+        addSubview(moreButton)
+        addSubview(activityIndicator)
         moreButton.snp.makeConstraints {
             $0.top.bottom.equalToSuperview().inset(8)
             $0.centerX.equalToSuperview()
         }
         activityIndicator.snp.makeConstraints {
-            $0.edges.equalTo(moreButton)
+            $0.center.equalToSuperview()
         }
     }
 
     func bind(text: LoadableViewModelState<String>) {
         switch text {
         case .loading:
+            moreButton.imageWithTitleView?.title = ""
             activityIndicator.startAnimating()
         case let .loaded(value), let .cached(value):
             activityIndicator.stopAnimating()
