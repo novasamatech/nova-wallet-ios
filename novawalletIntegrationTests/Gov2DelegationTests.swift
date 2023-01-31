@@ -97,15 +97,33 @@ final class Gov2DelegationTests: XCTestCase {
         }
     }
 
-    func testFetchAccountCastingVotes() {
-        performFetchAccountTest(for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE")
+    func testFetchAccountCastingAndDelegatedVotesWhenOnlyCastingVotes() {
+        performFetchAccountCastingAndDelegatedVotesTest(for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE")
     }
 
-    func testFetchAccountDelegatedVotes() {
-        performFetchAccountTest(for: "FZsMKYHoQG1dAVhXBMyC7aYFYpASoBrrMYsAn1gJJUAueZX")
+    func testFetchAccountCastingAndDelegatedVotesWhenOnlyDelegatedVotes() {
+        performFetchAccountCastingAndDelegatedVotesTest(for: "FZsMKYHoQG1dAVhXBMyC7aYFYpASoBrrMYsAn1gJJUAueZX")
     }
 
-    private func performFetchAccountTest(for address: AccountAddress) {
+    func testFetchAccountAllCastingVotes() {
+        performFetchAccountDirectVotesActivityTest(
+            for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE",
+            block: nil
+        )
+    }
+
+    func testFetchAccountBoundedCastingVotes() {
+        performFetchAccountDirectVotesActivityTest(
+            for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE",
+            block: 1000
+        )
+    }
+
+    func testFetchDelegations() {
+        performFetchDelegationsTest(for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE")
+    }
+
+    private func performFetchAccountCastingAndDelegatedVotesTest(for address: AccountAddress) {
         // given
 
         let storageFacade = SubstrateStorageTestFacade()
@@ -122,7 +140,7 @@ final class Gov2DelegationTests: XCTestCase {
 
         // when
 
-        let wrapper = statsOperationFactory.createVotingFetchOperation(for: address)
+        let wrapper = statsOperationFactory.createAllVotesFetchOperation(for: address)
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
@@ -132,6 +150,68 @@ final class Gov2DelegationTests: XCTestCase {
             let voting = try wrapper.targetOperation.extractNoCancellableResultData()
             XCTAssertTrue(!voting.votes.isEmpty)
             XCTAssertEqual(address, voting.address)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    private func performFetchAccountDirectVotesActivityTest(for address: AccountAddress, block: BlockNumber?) {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = KnowChainId.kusama
+
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+            return
+        }
+
+        let statsOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
+
+        // when
+
+        let wrapper = statsOperationFactory.createDirectVotesFetchOperation(for: address, from: block)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        // then
+
+        do {
+            let votes = try wrapper.targetOperation.extractNoCancellableResultData()
+            XCTAssertTrue(!votes.isEmpty)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    private func performFetchDelegationsTest(for address: AccountAddress) {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = KnowChainId.kusama
+
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+            return
+        }
+
+        let operationFactory = SubqueryDelegationsOperationFactory(url: delegationApi.url)
+
+        // when
+
+        let wrapper = operationFactory.createDelegationsFetchWrapper(for: address)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        // then
+
+        do {
+            let delegations = try wrapper.targetOperation.extractNoCancellableResultData()
+            XCTAssertTrue(!delegations.isEmpty)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
