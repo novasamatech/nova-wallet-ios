@@ -1,16 +1,21 @@
 import SoraUI
 import UIKit
 
-final class LoadMoreFooterView: UITableViewHeaderFooterView {
+final class LoadMoreFooterView: UIView {
     let moreButton: RoundedButton = .create { button in
         button.applyIconStyle()
         let color = R.color.colorButtonTextAccent()!
         button.imageWithTitleView?.titleColor = color
         button.imageWithTitleView?.titleFont = .regularFootnote
+        button.contentInsets = .zero
     }
 
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
+    let activityIndicator: UIActivityIndicatorView = .create {
+        $0.hidesWhenStopped = true
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         setupLayout()
     }
@@ -20,15 +25,29 @@ final class LoadMoreFooterView: UITableViewHeaderFooterView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var intrinsicContentSize: CGSize {
+        .init(width: UIView.noIntrinsicMetric, height: 34)
+    }
+
     func setupLayout() {
-        contentView.addSubview(moreButton)
+        addSubview(moreButton)
+        addSubview(activityIndicator)
         moreButton.snp.makeConstraints {
-            $0.top.bottom.equalToSuperview().inset(8)
-            $0.centerX.equalToSuperview()
+            $0.edges.equalToSuperview()
+        }
+        activityIndicator.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
     }
 
-    func bind(text: String) {
-        moreButton.imageWithTitleView?.title = text
+    func bind(text: LoadableViewModelState<String>) {
+        switch text {
+        case .loading:
+            moreButton.imageWithTitleView?.title = ""
+            activityIndicator.startAnimating()
+        case let .loaded(value), let .cached(value):
+            activityIndicator.stopAnimating()
+            moreButton.imageWithTitleView?.title = value
+        }
     }
 }
