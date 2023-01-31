@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-struct SubqueryVotingResponse: Decodable {
+enum SubqueryVotingResponse {
     struct SplitAbstainVote: Decodable {
         let ayeAmount: String
         let nayAmount: String
