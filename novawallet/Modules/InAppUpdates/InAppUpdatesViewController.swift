@@ -41,7 +41,7 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     }
 
     private func createDataSource() -> DataSource {
-        .init(tableView: rootView.tableView) { [weak self] tableView, indexPath, model -> UITableViewCell? in
+        let dataSource = DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, model in
             guard let self = self else {
                 return nil
             }
@@ -57,6 +57,9 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
                 return cell
             }
         }
+
+        dataSource.defaultRowAnimation = .fade
+        return dataSource
     }
 
     private func setupNavigationItem() {
