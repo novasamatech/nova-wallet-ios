@@ -13,7 +13,7 @@ final class GradientBannerTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
     }
 
@@ -35,13 +35,15 @@ final class GradientBannerTableViewCell: UITableViewCell {
             gradientBannerView.bind(model: .criticalUpdate())
             gradientBannerView.infoView.titleLabel.text =
                 R.string.localizable.inAppUpdatesBannerCriticalTitle(preferredLanguages: locale.rLanguages)
-            gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.inAppUpdatesBannerCriticalSubtitle(preferredLanguages: locale.rLanguages)
+            let subtitle = R.string.localizable.inAppUpdatesBannerCriticalSubtitle(preferredLanguages: locale.rLanguages)
+            gradientBannerView.infoView.subtitleLabel.text = subtitle
         } else {
             gradientBannerView.infoView.imageView.image = R.image.iconBannerMajorUpdate()
             gradientBannerView.bind(model: .majorUpdate())
             gradientBannerView.infoView.titleLabel.text =
                 R.string.localizable.inAppUpdatesBannerMajorTitle(preferredLanguages: locale.rLanguages)
-            gradientBannerView.infoView.subtitleLabel.text = R.string.localizable.inAppUpdatesBannerMajorSubtitle(preferredLanguages: locale.rLanguages)
+            let subtitle = R.string.localizable.inAppUpdatesBannerMajorSubtitle(preferredLanguages: locale.rLanguages)
+            gradientBannerView.infoView.subtitleLabel.text = subtitle
         }
     }
 }
