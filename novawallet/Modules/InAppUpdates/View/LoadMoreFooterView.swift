@@ -9,6 +9,10 @@ final class LoadMoreFooterView: UITableViewHeaderFooterView {
         button.imageWithTitleView?.titleFont = .regularFootnote
     }
 
+    let activityIndicator: UIActivityIndicatorView = .create {
+        $0.hidesWhenStopped = true
+    }
+
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
@@ -22,13 +26,23 @@ final class LoadMoreFooterView: UITableViewHeaderFooterView {
 
     func setupLayout() {
         contentView.addSubview(moreButton)
+        contentView.addSubview(activityIndicator)
         moreButton.snp.makeConstraints {
             $0.top.bottom.equalToSuperview().inset(8)
             $0.centerX.equalToSuperview()
         }
+        activityIndicator.snp.makeConstraints {
+            $0.edges.equalTo(moreButton)
+        }
     }
 
-    func bind(text: String) {
-        moreButton.imageWithTitleView?.title = text
+    func bind(text: LoadableViewModelState<String>) {
+        switch text {
+        case .loading:
+            activityIndicator.startAnimating()
+        case let .loaded(value), let .cached(value):
+            activityIndicator.stopAnimating()
+            moreButton.imageWithTitleView?.title = value
+        }
     }
 }

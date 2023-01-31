@@ -5,11 +5,13 @@ final class VersionTableViewCell: UITableViewCell {
     let severityLabel: BorderedLabelView = .create {
         $0.setContentHuggingPriority(.defaultLow, for: .vertical)
         $0.contentInsets = .init(top: 2, left: 6, bottom: 2, right: 6)
+        $0.backgroundView.cornerRadius = 5
         $0.isHidden = true
     }
 
     let latestLabel: BorderedLabelView = .create {
         $0.apply(style: .latest)
+        $0.backgroundView.cornerRadius = 5
         $0.setContentHuggingPriority(.defaultLow, for: .vertical)
         $0.isHidden = true
     }
@@ -18,16 +20,12 @@ final class VersionTableViewCell: UITableViewCell {
     let changelogView = MarkdownViewContainer(
         preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset
     )
-    let activityIndicator: UIActivityIndicatorView = .create {
-        $0.hidesWhenStopped = true
-    }
-
     let separatorView: UIView = .createSeparator()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
     }
 
@@ -47,7 +45,6 @@ final class VersionTableViewCell: UITableViewCell {
         contentView.addSubview(titleView)
         contentView.addSubview(dateLabel)
         contentView.addSubview(changelogView)
-        contentView.addSubview(activityIndicator)
         contentView.addSubview(separatorView)
 
         titleView.snp.makeConstraints {
@@ -68,9 +65,6 @@ final class VersionTableViewCell: UITableViewCell {
             $0.leading.trailing.bottom.equalToSuperview()
             $0.height.equalTo(1)
         }
-        activityIndicator.snp.makeConstraints {
-            $0.center.equalTo(changelogView.snp.center)
-        }
         changelogView.setContentHuggingPriority(.defaultLow, for: .vertical)
         changelogView.setContentCompressionResistancePriority(.required, for: .vertical)
     }
@@ -83,22 +77,18 @@ extension VersionTableViewCell {
                 lhs.isLatest == rhs.isLatest &&
                 lhs.severity == rhs.severity &&
                 lhs.date == rhs.date &&
-                lhs.markdownText.value == rhs.markdownText.value
+                lhs.markdownText == rhs.markdownText
         }
 
         func hash(into hasher: inout Hasher) {
             hasher.combine(title)
-            hasher.combine(isLatest)
-            hasher.combine(severity)
-            hasher.combine(date)
-            hasher.combine(markdownText.value ?? "")
         }
 
         let title: String
         let isLatest: Bool
         let severity: ReleaseSeverity
         let date: String
-        let markdownText: LoadableViewModelState<String>
+        let markdownText: String
     }
 
     func bind(model: Model, locale: Locale) {
@@ -111,33 +101,30 @@ extension VersionTableViewCell {
     }
 
     func bind(severity: ReleaseSeverity, locale: Locale) {
+        let strings = R.string.localizable.self
         switch severity {
         case .normal:
             severityLabel.isHidden = true
         case .major:
             severityLabel.isHidden = false
             severityLabel.apply(style: .major)
-            severityLabel.titleLabel.text = R.string.localizable.inAppUpdatesSeverityMajor(preferredLanguages: locale.rLanguages).uppercased()
+            let title = strings.inAppUpdatesSeverityMajor(preferredLanguages: locale.rLanguages)
+            severityLabel.titleLabel.text = title.uppercased()
         case .critical:
             severityLabel.isHidden = false
             severityLabel.apply(style: .critical)
-            severityLabel.titleLabel.text = R.string.localizable.inAppUpdatesSeverityCritical(preferredLanguages: locale.rLanguages).uppercased()
+            let title = strings.inAppUpdatesSeverityCritical(preferredLanguages: locale.rLanguages)
+            severityLabel.titleLabel.text = title.uppercased()
         }
     }
 
-    func bind(markdown: LoadableViewModelState<String>) {
-        switch markdown {
-        case let .cached(value), let .loaded(value):
-            changelogView.load(from: value) { [weak self] model in
-                if model != nil {
-                    self?.activityIndicator.stopAnimating()
-                    self?.invalidateIntrinsicContentSize()
-                    self?.setNeedsDisplay()
-                    self?.setNeedsLayout()
-                }
+    func bind(markdown: String) {
+        changelogView.load(from: markdown) { [weak self] model in
+            if model != nil {
+                self?.invalidateIntrinsicContentSize()
+                self?.setNeedsDisplay()
+                self?.setNeedsLayout()
             }
-        case .loading:
-            activityIndicator.startAnimating()
         }
     }
 }
