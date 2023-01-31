@@ -4,7 +4,7 @@ protocol InAppUpdatesViewProtocol: ControllerBackedProtocol {
     func didReceive(
         versionModels: [VersionTableViewCell.Model],
         isCriticalBanner: Bool,
-        isAvailableMoreVersions: Bool
+        isAvailableMoreVersionsModel: LoadableViewModelState<String>
     )
 }
 
