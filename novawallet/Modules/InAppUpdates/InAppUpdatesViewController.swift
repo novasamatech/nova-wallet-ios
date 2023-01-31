@@ -8,8 +8,6 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     typealias DataSource = UITableViewDiffableDataSource<Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
-    private var isCriticalBanner: Bool = false
-    private var isAvailableMoreVersionsModel: LoadableViewModelState<String> = .cached(value: "")
 
     init(
         presenter: InAppUpdatesPresenterProtocol,
