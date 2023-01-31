@@ -7,6 +7,7 @@ final class LoadMoreFooterView: UIView {
         let color = R.color.colorButtonTextAccent()!
         button.imageWithTitleView?.titleColor = color
         button.imageWithTitleView?.titleFont = .regularFootnote
+        button.contentInsets = .zero
     }
 
     let activityIndicator: UIActivityIndicatorView = .create {
@@ -32,8 +33,7 @@ final class LoadMoreFooterView: UIView {
         addSubview(moreButton)
         addSubview(activityIndicator)
         moreButton.snp.makeConstraints {
-            $0.top.bottom.equalToSuperview().inset(8)
-            $0.centerX.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
         activityIndicator.snp.makeConstraints {
             $0.center.equalToSuperview()

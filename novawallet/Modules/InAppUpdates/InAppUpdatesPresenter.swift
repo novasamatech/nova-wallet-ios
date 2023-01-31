@@ -75,6 +75,9 @@ final class InAppUpdatesPresenter {
 
     private func handle(error: Error, retryAction: @escaping () -> Void) {
         logger?.error(error.localizedDescription)
+        loadMoreReleaseChangeLogsTitle = .cached(value: loadMoreButtonText)
+        updateView()
+
         let message = R.string.localizable.inAppUpdatesFetchChangeLogsError(preferredLanguages: selectedLocale.rLanguages)
         let cancelAction = R.string.localizable.commonCancel(preferredLanguages: selectedLocale.rLanguages)
 
@@ -86,6 +89,11 @@ final class InAppUpdatesPresenter {
             locale: selectedLocale,
             retryAction: retryAction
         )
+    }
+
+    private var loadMoreButtonText: String {
+        R.string.localizable.inAppUpdatesButtonShowMoreTitle(
+            preferredLanguages: selectedLocale.rLanguages)
     }
 }
 
@@ -115,9 +123,6 @@ extension InAppUpdatesPresenter: InAppUpdatesPresenterProtocol {
 
 extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
     func didReceive(error: InAppUpdatesInteractorError) {
-        let loadMoreText = R.string.localizable.inAppUpdatesButtonShowMoreTitle(
-            preferredLanguages: selectedLocale.rLanguages)
-        loadMoreReleaseChangeLogsTitle = .cached(value: loadMoreText)
         switch error {
         case let .fetchAllChangeLogs(error):
             handle(error: error, retryAction: { [weak self] in
@@ -136,10 +141,7 @@ extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
         canLoadMoreReleaseChangeLogs: Bool
     ) {
         self.releasesContainsCriticalVersion = releasesContainsCriticalVersion
-        let loadMoreText = canLoadMoreReleaseChangeLogs ?
-            R.string.localizable.inAppUpdatesButtonShowMoreTitle(
-                preferredLanguages: selectedLocale.rLanguages) : ""
-        loadMoreReleaseChangeLogsTitle = .loaded(value: loadMoreText)
+        loadMoreReleaseChangeLogsTitle = .loaded(value: canLoadMoreReleaseChangeLogs ? loadMoreButtonText : "")
         lastRelease = release
         updateView()
     }

@@ -12,7 +12,7 @@ final class InAppUpdatesViewLayout: UIView {
         view.contentInsetAdjustmentBehavior = .never
         view.tableHeaderView = .init(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNonzeroMagnitude))
         view.sectionHeaderHeight = 0
-        view.sectionFooterHeight = 0
+        view.sectionFooterHeight = 8
         loadMoreFooter.frame = .init(origin: .zero, size: loadMoreFooter.intrinsicContentSize)
         view.tableFooterView = loadMoreFooter
         view.registerClassForCell(VersionTableViewCell.self)
