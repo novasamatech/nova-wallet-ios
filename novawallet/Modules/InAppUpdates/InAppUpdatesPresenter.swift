@@ -11,7 +11,7 @@ final class InAppUpdatesPresenter {
 
     private var changelogs: [ReleaseChangeLog] = []
     private var lastRelease: Release?
-    private var canLoadMoreReleaseChangeLogs: Bool = false
+    private var loadMoreReleaseChangeLogsTitle: LoadableViewModelState<String> = .cached(value: "")
     private var releasesContainsCriticalVersion: Bool = false
 
     init(
@@ -37,7 +37,7 @@ final class InAppUpdatesPresenter {
             isLatest: changelog.release.version == lastRelease?.version,
             severity: changelog.release.severity,
             date: date,
-            markdownText: .loaded(value: changelog.content)
+            markdownText: changelog.content
         )
     }
 
@@ -47,7 +47,7 @@ final class InAppUpdatesPresenter {
             view?.didReceive(
                 versionModels: viewModels,
                 isCriticalBanner: releasesContainsCriticalVersion,
-                isAvailableMoreVersions: canLoadMoreReleaseChangeLogs
+                isAvailableMoreVersionsModel: loadMoreReleaseChangeLogsTitle
             )
         } else if let release = lastRelease {
             let date = dateFormatter.value(for: selectedLocale).string(from: release.time)
@@ -56,12 +56,12 @@ final class InAppUpdatesPresenter {
                 isLatest: true,
                 severity: release.severity,
                 date: date,
-                markdownText: .loading
+                markdownText: ""
             )
             view?.didReceive(
                 versionModels: [model],
                 isCriticalBanner: releasesContainsCriticalVersion,
-                isAvailableMoreVersions: canLoadMoreReleaseChangeLogs
+                isAvailableMoreVersionsModel: loadMoreReleaseChangeLogsTitle
             )
         }
     }
@@ -100,6 +100,8 @@ extension InAppUpdatesPresenter: InAppUpdatesPresenterProtocol {
     }
 
     func loadMoreVersions() {
+        loadMoreReleaseChangeLogsTitle = .loading
+        updateView()
         interactor.loadChangeLogs()
     }
 
@@ -113,10 +115,13 @@ extension InAppUpdatesPresenter: InAppUpdatesPresenterProtocol {
 
 extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
     func didReceive(error: InAppUpdatesInteractorError) {
+        let loadMoreText = R.string.localizable.inAppUpdatesButtonShowMoreTitle(
+            preferredLanguages: selectedLocale.rLanguages)
+        loadMoreReleaseChangeLogsTitle = .cached(value: loadMoreText)
         switch error {
         case let .fetchAllChangeLogs(error):
             handle(error: error, retryAction: { [weak self] in
-                self?.interactor.loadChangeLogs()
+                self?.loadMoreVersions()
             })
         case let .fetchLastVersionChangeLog(error):
             handle(error: error, retryAction: { [weak self] in
@@ -131,7 +136,10 @@ extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
         canLoadMoreReleaseChangeLogs: Bool
     ) {
         self.releasesContainsCriticalVersion = releasesContainsCriticalVersion
-        self.canLoadMoreReleaseChangeLogs = canLoadMoreReleaseChangeLogs
+        let loadMoreText = canLoadMoreReleaseChangeLogs ?
+            R.string.localizable.inAppUpdatesButtonShowMoreTitle(
+                preferredLanguages: selectedLocale.rLanguages) : ""
+        loadMoreReleaseChangeLogsTitle = .loaded(value: loadMoreText)
         lastRelease = release
         updateView()
     }
@@ -142,7 +150,7 @@ extension InAppUpdatesPresenter: InAppUpdatesInteractorOutputProtocol {
     }
 
     func didReceiveAllVersions(changelogs: [ReleaseChangeLog]) {
-        canLoadMoreReleaseChangeLogs = false
+        loadMoreReleaseChangeLogsTitle = .loaded(value: "")
         self.changelogs = changelogs
         updateView()
     }
