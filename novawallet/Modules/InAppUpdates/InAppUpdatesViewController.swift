@@ -32,9 +32,7 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        dataSource = createDataSource()
-        rootView.tableView.dataSource = dataSource
-        rootView.tableView.delegate = self
+        setupTableView()
         setupNavigationItem()
         setupInstallButton()
         presenter.setup()
@@ -60,6 +58,16 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
 
         dataSource.defaultRowAnimation = .fade
         return dataSource
+    }
+
+    private func setupTableView() {
+        dataSource = createDataSource()
+        rootView.tableView.dataSource = dataSource
+        rootView.loadMoreFooter.moreButton.addTarget(
+            self,
+            action: #selector(didTapOnLoadMoreVersions),
+            for: .touchUpInside
+        )
     }
 
     private func setupNavigationItem() {
@@ -103,19 +111,6 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     @objc private func didTapOnInstallButton() {
         presenter.installLastVersion()
     }
-
-    private func footerViewModel(for section: Int) -> LoadableViewModelState<String>? {
-        if #available(iOS 15.0, *) {
-            switch dataSource?.sectionIdentifier(for: section) {
-            case .banner, .none:
-                return nil
-            case let .main(footer):
-                return footer.value?.isEmpty == true ? nil : footer
-            }
-        } else {
-            return section == 1 ? isAvailableMoreVersionsModel : nil
-        }
-    }
 }
 
 extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
@@ -124,9 +119,8 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
         isCriticalBanner: Bool,
         isAvailableMoreVersionsModel: LoadableViewModelState<String>
     ) {
-        self.isAvailableMoreVersionsModel = isAvailableMoreVersionsModel
         let bannerSection = Section.banner
-        let mainSection = Section.main(footer: isAvailableMoreVersionsModel)
+        let mainSection = Section.main
         let versionsViewModels = versionModels.map { Row.version($0) }
         let bannerViewModel = Row.banner(isCritical: isCriticalBanner)
 
@@ -135,23 +129,7 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
         snapshot.appendItems([bannerViewModel], toSection: bannerSection)
         snapshot.appendItems(versionsViewModels, toSection: mainSection)
         dataSource?.apply(snapshot, animatingDifferences: versionModels.count > 1)
-    }
-}
-
-extension InAppUpdatesViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard let footerViewModel = footerViewModel(for: section) else {
-            return nil
-        }
-
-        let view: LoadMoreFooterView = tableView.dequeueReusableHeaderFooterView()
-        view.bind(text: footerViewModel)
-        view.moreButton.addTarget(self, action: #selector(didTapOnLoadMoreVersions), for: .touchUpInside)
-        return view
-    }
-
-    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        footerViewModel(for: section) == nil ? .leastNormalMagnitude : 34
+        rootView.loadMoreFooter.bind(text: isAvailableMoreVersionsModel)
     }
 }
 
@@ -166,7 +144,7 @@ extension InAppUpdatesViewController: Localizable {
 extension InAppUpdatesViewController {
     enum Section: Hashable {
         case banner
-        case main(footer: LoadableViewModelState<String>)
+        case main
     }
 
     enum Row: Hashable {
