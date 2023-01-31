@@ -9,7 +9,7 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
     private var isCriticalBanner: Bool = false
-    private var isAvailableMoreVersions: Bool = false
+    private var isAvailableMoreVersionsModel: LoadableViewModelState<String> = .cached(value: "")
 
     init(
         presenter: InAppUpdatesPresenterProtocol,
@@ -76,14 +76,19 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     }
 
     private func setupInstallButton() {
-        rootView.installButton.imageWithTitleView?.title = R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+        let preferredLanguages = selectedLocale.rLanguages
+        rootView.installButton.imageWithTitleView?.title =
+            R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: preferredLanguages)
         rootView.installButton.addTarget(self, action: #selector(didTapOnInstallButton), for: .touchUpInside)
     }
 
     private func setupLocalization() {
-        navigationItem.title = R.string.localizable.inAppUpdatesTitle(preferredLanguages: selectedLocale.rLanguages)
-        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonSkip(preferredLanguages: selectedLocale.rLanguages)
-        rootView.installButton.imageWithTitleView?.title = R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+        let strings = R.string.localizable.self
+        let preferredLanguages = selectedLocale.rLanguages
+        navigationItem.title = strings.inAppUpdatesTitle(preferredLanguages: preferredLanguages)
+        navigationItem.rightBarButtonItem?.title = strings.commonSkip(preferredLanguages: preferredLanguages)
+        rootView.installButton.imageWithTitleView?.title =
+            strings.inAppUpdatesInstallButtonTitle(preferredLanguages: preferredLanguages)
         rootView.tableView.reloadData()
     }
 
@@ -99,16 +104,16 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
         presenter.installLastVersion()
     }
 
-    private func showFooter(for section: Int) -> Bool {
+    private func footerViewModel(for section: Int) -> LoadableViewModelState<String>? {
         if #available(iOS 15.0, *) {
             switch dataSource?.sectionIdentifier(for: section) {
             case .banner, .none:
-                return false
-            case let .main(showFooter):
-                return showFooter
+                return nil
+            case let .main(footer):
+                return footer.value?.isEmpty == true ? nil : footer
             }
         } else {
-            return isAvailableMoreVersions && section == 1
+            return section == 1 ? isAvailableMoreVersionsModel : nil
         }
     }
 }
@@ -117,11 +122,11 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
     func didReceive(
         versionModels: [VersionTableViewCell.Model],
         isCriticalBanner: Bool,
-        isAvailableMoreVersions: Bool
+        isAvailableMoreVersionsModel: LoadableViewModelState<String>
     ) {
-        self.isAvailableMoreVersions = isAvailableMoreVersions
+        self.isAvailableMoreVersionsModel = isAvailableMoreVersionsModel
         let bannerSection = Section.banner
-        let mainSection = Section.main(showFooter: isAvailableMoreVersions)
+        let mainSection = Section.main(footer: isAvailableMoreVersionsModel)
         let versionsViewModels = versionModels.map { Row.version($0) }
         let bannerViewModel = Row.banner(isCritical: isCriticalBanner)
 
@@ -129,25 +134,24 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
         snapshot.appendSections([bannerSection, mainSection])
         snapshot.appendItems([bannerViewModel], toSection: bannerSection)
         snapshot.appendItems(versionsViewModels, toSection: mainSection)
-        dataSource?.apply(snapshot, animatingDifferences: true)
+        dataSource?.apply(snapshot, animatingDifferences: versionModels.count > 1)
     }
 }
 
 extension InAppUpdatesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard showFooter(for: section) else {
+        guard let footerViewModel = footerViewModel(for: section) else {
             return nil
         }
 
         let view: LoadMoreFooterView = tableView.dequeueReusableHeaderFooterView()
-        let showMoreTitle = R.string.localizable.inAppUpdatesButtonShowMoreTitle(preferredLanguages: selectedLocale.rLanguages)
-        view.bind(text: showMoreTitle)
+        view.bind(text: footerViewModel)
         view.moreButton.addTarget(self, action: #selector(didTapOnLoadMoreVersions), for: .touchUpInside)
         return view
     }
 
     func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        showFooter(for: section) ? 34 : .leastNormalMagnitude
+        footerViewModel(for: section) == nil ? .leastNormalMagnitude : 34
     }
 }
 
@@ -162,7 +166,7 @@ extension InAppUpdatesViewController: Localizable {
 extension InAppUpdatesViewController {
     enum Section: Hashable {
         case banner
-        case main(showFooter: Bool)
+        case main(footer: LoadableViewModelState<String>)
     }
 
     enum Row: Hashable {
