@@ -58,6 +58,17 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         }
     }
 
+    func show(url: URL, from view: ControllerBackedProtocol?) {
+        guard let view = view, let scheme = url.scheme else {
+            return
+        }
+        if supportedSafariScheme.contains(scheme) {
+            showWeb(url: url, from: view, style: .automatic)
+        } else if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {
