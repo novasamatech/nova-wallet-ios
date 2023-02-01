@@ -184,11 +184,14 @@ final class ReferendumDetailsPresenter {
         )
 
         let referendumViewModel = referendumViewModelFactory.createViewModel(
-            from: referendum,
-            metadata: referendumMetadata,
-            vote: accountVotes,
-            chainInfo: chainInfo,
-            selectedLocale: selectedLocale
+            input: .init(
+                referendum: referendum,
+                metadata: referendumMetadata,
+                onchainVotes: accountVotes,
+                offchainVotes: nil,
+                chainInfo: chainInfo,
+                selectedLocale: selectedLocale
+            )
         )
 
         let votingProgress = referendumViewModel.progress

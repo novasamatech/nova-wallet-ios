@@ -21,6 +21,7 @@ final class ReferendumsPresenter {
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private var offchainVoting: GovernanceOffchainVotesLocal = .init(model: [:], identities: [:], metadata: [:])
     private var unlockSchedule: GovernanceUnlockSchedule?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
@@ -120,6 +121,7 @@ final class ReferendumsPresenter {
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: accountVotes?.votes ?? [:],
+            offchainVotes: offchainVoting,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
             locale: selectedLocale
         ))
@@ -319,6 +321,32 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         updateReferendumsView()
     }
 
+    func didReceiveDelegationsMetadata(_ metadata: [GovernanceDelegateMetadataRemote]) {
+        let indexedMetadata = metadata.reduce(
+            into: [AccountId: GovernanceDelegateMetadataRemote]()
+        ) { accum, item in
+            guard let accountId = try? item.address.toAccountId() else {
+                return
+            }
+
+            accum[accountId] = item
+        }
+
+        offchainVoting = offchainVoting.byReplacing(metadata: indexedMetadata)
+
+        if !offchainVoting.model.isEmpty {
+            updateReferendumsView()
+        }
+    }
+
+    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVoting?, identities: [AccountId: AccountIdentity]) {
+        offchainVoting = offchainVoting
+            .byReplacing(model: voting?.votes ?? [:])
+            .byReplacing(identities: identities)
+
+        updateReferendumsView()
+    }
+
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
@@ -379,7 +407,8 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                 self?.interactor.refresh()
             }
         case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
-             .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
+             .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed,
+             .delegationMetadataSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
@@ -390,6 +419,10 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         case .unlockScheduleFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshUnlockSchedule()
+            }
+        case .offchainVotingFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryOffchainVotingFetch()
             }
         }
     }
