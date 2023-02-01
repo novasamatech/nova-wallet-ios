@@ -13,6 +13,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
+    let identityOperationFactory: IdentityOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
@@ -36,6 +37,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        identityOperationFactory: IdentityOperationFactoryProtocol,
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -49,6 +51,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
+        self.identityOperationFactory = identityOperationFactory
         self.currencyManager = currencyManager
     }
 
@@ -64,6 +67,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         clearBlockTimeService()
         clearSubscriptionFactory()
+        clearOffchainServices()
 
         blockNumberSubscription = nil
 
@@ -83,6 +87,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func clearSubscriptionFactory() {
         governanceState.replaceGovernanceFactory(for: nil)
+    }
+
+    private func clearOffchainServices() {
+        governanceState.replaceGovernanceOffchainServices(for: nil)
     }
 
     private func continueSetup() {
@@ -113,6 +121,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         provideBlockTime()
 
         setupSubscriptionFactory(for: option)
+        setupOffchainServices(for: option)
 
         subscribeToBlockNumber(for: option.chain)
         subscribeToMetadata(for: option)
@@ -138,6 +147,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func setupSubscriptionFactory(for option: GovernanceSelectedOption) {
         governanceState.replaceGovernanceFactory(for: option)
+    }
+
+    private func setupOffchainServices(for option: GovernanceSelectedOption) {
+        governanceState.replaceGovernanceOffchainServices(for: option)
     }
 
     private func subscribeToBlockNumber(for chain: ChainModel) {
