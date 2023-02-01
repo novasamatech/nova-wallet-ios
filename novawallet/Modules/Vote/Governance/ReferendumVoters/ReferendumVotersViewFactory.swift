@@ -37,7 +37,6 @@ struct ReferendumVotersViewFactory {
 
         let view = ReferendumVotersViewController(
             presenter: presenter,
-            votersType: type,
             quantityFormatter: NumberFormatter.quantity.localizableResource(),
             localizationManager: localizationManager
         )

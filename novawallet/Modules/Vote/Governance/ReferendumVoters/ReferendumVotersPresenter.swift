@@ -109,12 +109,33 @@ final class ReferendumVotersPresenter {
 
         view?.didReceiveViewModels(.loaded(value: viewModels))
     }
+
+    private var title: LocalizableResource<String> {
+        switch type {
+        case .ayes:
+            return LocalizableResource { locale in
+                R.string.localizable.govVotersAye(preferredLanguages: locale.rLanguages)
+            }
+
+        case .nays:
+            return LocalizableResource { locale in
+                R.string.localizable.govVotersNay(preferredLanguages: locale.rLanguages)
+            }
+        }
+    }
+
+    private var emptyViewTitle: LocalizableResource<String> {
+        LocalizableResource { locale in
+            R.string.localizable.govVotersEmpty(preferredLanguages: locale.rLanguages)
+        }
+    }
 }
 
 extension ReferendumVotersPresenter: ReferendumVotersPresenterProtocol {
     func setup() {
         view?.didReceiveViewModels(.loading)
-
+        view?.didReceive(title: title)
+        view?.didReceiveEmptyView(title: emptyViewTitle)
         interactor.setup()
     }
 

@@ -1,5 +1,7 @@
 protocol ReferendumVotersViewProtocol: ControllerBackedProtocol {
     func didReceiveViewModels(_ viewModels: LoadableViewModelState<[ReferendumVotersViewModel]>)
+    func didReceive(title: LocalizableResource<String>)
+    func didReceiveEmptyView(title: LocalizableResource<String>)
 }
 
 protocol ReferendumVotersPresenterProtocol: AnyObject {
