@@ -59,8 +59,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
 
             metadataProvider?.refresh()
 
-            governanceState.delegationsMetadataProvider?.refresh()
-            provideOffchainVoting()
+            provideOffchainVotingIfNeeded()
         }
     }
 
@@ -118,7 +117,7 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
     }
 
     func retryOffchainVotingFetch() {
-        provideOffchainVoting()
+        provideOffchainVotingIfNeeded()
     }
 }
 

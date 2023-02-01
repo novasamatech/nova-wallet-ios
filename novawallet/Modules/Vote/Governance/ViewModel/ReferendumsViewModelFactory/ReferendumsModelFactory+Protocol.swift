@@ -6,7 +6,7 @@ struct ReferendumsModelFactoryInput {
     let referendums: [ReferendumLocal]
     let metadataMapping: [ReferendumIdLocal: ReferendumMetadataLocal]?
     let votes: [ReferendumIdLocal: ReferendumAccountVoteLocal]
-    let offchainVotes: GovernanceOffchainVotesLocal
+    let offchainVotes: GovernanceOffchainVotesLocal?
     let chainInfo: ChainInformation
     let locale: Locale
 
@@ -74,7 +74,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
                 metadata: metadata,
                 chainInfo: input.chainInfo,
                 onchainVotes: input.votes[referendum.index],
-                offchainVotes: input.offchainVotes.fetchVotes(for: referendum.index)
+                offchainVotes: input.offchainVotes?.fetchVotes(for: referendum.index)
             )
 
             let model = createReferendumCellViewModel(

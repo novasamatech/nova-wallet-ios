@@ -21,7 +21,7 @@ final class ReferendumsPresenter {
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
-    private var offchainVoting: GovernanceOffchainVotesLocal = .init(model: [:], identities: [:], metadata: [:])
+    private var offchainVoting: GovernanceOffchainVotesLocal?
     private var unlockSchedule: GovernanceUnlockSchedule?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
@@ -247,7 +247,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
             votesResult: voting,
-            offchainVoting: offchainVoting.fetchVotes(for: referendum.index),
+            offchainVoting: offchainVoting?.fetchVotes(for: referendum.index),
             blockNumber: blockNumber,
             blockTime: blockTime,
             metadata: referendumsMetadata?[referendum.index]
@@ -322,30 +322,12 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         updateReferendumsView()
     }
 
-    func didReceiveDelegationsMetadata(_ metadata: [GovernanceDelegateMetadataRemote]) {
-        let indexedMetadata = metadata.reduce(
-            into: [AccountId: GovernanceDelegateMetadataRemote]()
-        ) { accum, item in
-            guard let accountId = try? item.address.toAccountId() else {
-                return
-            }
+    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotesLocal) {
+        if offchainVoting != voting {
+            offchainVoting = voting
 
-            accum[accountId] = item
-        }
-
-        offchainVoting = offchainVoting.byReplacing(metadata: indexedMetadata)
-
-        if !offchainVoting.model.isEmpty {
             updateReferendumsView()
         }
-    }
-
-    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVoting?, identities: [AccountId: AccountIdentity]) {
-        offchainVoting = offchainVoting
-            .byReplacing(model: voting?.votes ?? [:])
-            .byReplacing(identities: identities)
-
-        updateReferendumsView()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
@@ -408,8 +390,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                 self?.interactor.refresh()
             }
         case .blockNumberSubscriptionFailed, .priceSubscriptionFailed, .balanceSubscriptionFailed,
-             .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed,
-             .delegationMetadataSubscriptionFailed:
+             .metadataSubscriptionFailed, .blockTimeServiceFailed, .votingSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
