@@ -11,6 +11,7 @@ final class DelegateInfoDetailsPresenter {
 
 extension DelegateInfoDetailsPresenter: DelegateInfoDetailsPresenterProtocol {
     func setup() {
-        view?.didReceive(viewModel: state)
+        view?.didReceive(delegateName: state.name)
+        view?.didReceive(delegateInfo: state.longDescription)
     }
 }

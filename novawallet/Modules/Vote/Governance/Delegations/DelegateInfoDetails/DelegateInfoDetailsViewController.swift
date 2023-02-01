@@ -27,10 +27,13 @@ final class DelegateInfoDetailsViewController: UIViewController, ViewHolder {
 }
 
 extension DelegateInfoDetailsViewController: DelegateInfoDetailsViewProtocol {
-    func didReceive(viewModel: DelegateInfoDetailsState) {
-        navigationItem.title = viewModel.name
+    func didReceive(delegateName name: String) {
+        navigationItem.title = name
+    }
+
+    func didReceive(delegateInfo: String) {
         rootView.activityIndicator.startAnimating()
-        rootView.descriptionView.load(from: viewModel.longDescription) { [weak self] text in
+        rootView.descriptionView.load(from: delegateInfo) { [weak self] text in
             guard text != nil else {
                 return
             }

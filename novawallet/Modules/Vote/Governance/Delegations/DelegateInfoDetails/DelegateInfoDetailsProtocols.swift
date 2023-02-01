@@ -1,5 +1,6 @@
 protocol DelegateInfoDetailsViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModel: DelegateInfoDetailsState)
+    func didReceive(delegateName: String)
+    func didReceive(delegateInfo: String)
 }
 
 protocol DelegateInfoDetailsPresenterProtocol: AnyObject {

@@ -13,6 +13,7 @@ final class DelegateInfoDetailsViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        backgroundColor = R.color.colorSecondaryScreenBackground()
         setupLayout()
     }
 
@@ -25,7 +26,8 @@ final class DelegateInfoDetailsViewLayout: UIView {
         addSubview(descriptionView)
         addSubview(activityIndicator)
         descriptionView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(UIConstants.horizontalInset)
+            $0.top.equalTo(safeAreaLayoutGuide.snp.top).inset(UIConstants.horizontalInset)
+            $0.leading.trailing.bottom.equalToSuperview().inset(UIConstants.horizontalInset)
         }
         activityIndicator.snp.makeConstraints {
             $0.edges.equalTo(descriptionView)
