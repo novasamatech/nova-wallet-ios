@@ -247,6 +247,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
             votesResult: voting,
+            offchainVoting: offchainVoting.fetchVotes(for: referendum.index),
             blockNumber: blockNumber,
             blockTime: blockTime,
             metadata: referendumsMetadata?[referendum.index]
