@@ -1,6 +1,6 @@
 import Foundation
 
-typealias GovernanceOffchainVotesLocal = GovernanceDelegationAdditions<[ReferendumIdLocal: GovernanceOffchainVoting.VoteType]>
+typealias GovernanceOffchainVotesLocal = GovernanceDelegationAdditions<GovernanceOffchainVoting>
 
 extension GovernanceOffchainVotesLocal {
     struct Single {
@@ -10,7 +10,7 @@ extension GovernanceOffchainVotesLocal {
     }
 
     func fetchVotes(for referendumId: ReferendumIdLocal) -> Single? {
-        guard let voteType = model[referendumId] else {
+        guard let voteType = model.votes[referendumId] else {
             return nil
         }
 

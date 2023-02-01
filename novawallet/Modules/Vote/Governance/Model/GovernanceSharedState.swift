@@ -7,8 +7,6 @@ final class GovernanceSharedState {
     let settings: GovernanceChainSettings
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
-    let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
-    let applicationConfig: ApplicationConfigProtocol
     let requestFactory: StorageRequestFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -17,9 +15,6 @@ final class GovernanceSharedState {
     private(set) var referendumsOperationFactory: ReferendumsOperationFactoryProtocol?
     private(set) var locksOperationFactory: GovernanceLockStateFactoryProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
-
-    private(set) var delegationsMetadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
-    private(set) var offchainVotingFactory: GovernanceOffchainVotingFactoryProtocol?
 
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
@@ -31,8 +26,6 @@ final class GovernanceSharedState {
             remoteFactory: StorageKeyFactory(),
             operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue)
         ),
-        jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared,
-        applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared,
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -57,9 +50,6 @@ final class GovernanceSharedState {
                 logger: Logger.shared
             )
         }
-
-        self.jsonDataProviderFactory = jsonDataProviderFactory
-        self.applicationConfig = applicationConfig
 
         self.requestFactory = requestFactory
         self.operationQueue = operationQueue
@@ -124,30 +114,6 @@ final class GovernanceSharedState {
         }
     }
 
-    func replaceGovernanceOffchainServices(for option: GovernanceSelectedOption?) {
-        delegationsMetadataProvider = nil
-        offchainVotingFactory = nil
-
-        guard let option = option else {
-            return
-        }
-
-        let chainId = option.chain.chainId
-
-        switch option.type {
-        case .governanceV2:
-            if let offchainApi = option.chain.externalApis?.governanceDelegations()?.first {
-                offchainVotingFactory = SubqueryVotingOperationFactory(url: offchainApi.url)
-            }
-
-            let url = GovernanceDelegateMetadataFactory().createUrl(for: option.chain)
-            delegationsMetadataProvider = jsonDataProviderFactory.getJson(for: url)
-
-        case .governanceV1:
-            break
-        }
-    }
-
     func createExtrinsicFactory(
         for option: GovernanceSelectedOption
     ) -> GovernanceExtrinsicFactoryProtocol {
@@ -197,5 +163,30 @@ final class GovernanceSharedState {
         }
 
         return BlockTimeOperationFactory(chain: chain)
+    }
+
+    func createOffchainAllVotesFactory(
+        for option: GovernanceSelectedOption
+    ) -> GovernanceOffchainVotingWrapperFactoryProtocol? {
+        switch option.type {
+        case .governanceV1:
+            return nil
+        case .governanceV2:
+            guard let delegationApi = option.chain.externalApis?.governanceDelegations()?.first else {
+                return nil
+            }
+
+            let identityOperationFactory = IdentityOperationFactory(
+                requestFactory: requestFactory,
+                emptyIdentitiesWhenNoStorage: true
+            )
+
+            let fetchOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
+
+            return GovernanceOffchainVotingWrapperFactory(
+                operationFactory: fetchOperationFactory,
+                identityOperationFactory: identityOperationFactory
+            )
+        }
     }
 }
