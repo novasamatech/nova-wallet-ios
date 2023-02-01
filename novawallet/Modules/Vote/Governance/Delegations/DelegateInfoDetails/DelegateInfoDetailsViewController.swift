@@ -1,6 +1,6 @@
 import UIKit
 
-final class DelegateInfoDetailsViewController: UIViewController {
+final class DelegateInfoDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = DelegateInfoDetailsViewLayout
 
     let presenter: DelegateInfoDetailsPresenterProtocol
@@ -26,4 +26,15 @@ final class DelegateInfoDetailsViewController: UIViewController {
     }
 }
 
-extension DelegateInfoDetailsViewController: DelegateInfoDetailsViewProtocol {}
+extension DelegateInfoDetailsViewController: DelegateInfoDetailsViewProtocol {
+    func didReceive(viewModel: DelegateInfoDetailsState) {
+        navigationItem.title = viewModel.name
+        rootView.activityIndicator.startAnimating()
+        rootView.descriptionView.load(from: viewModel.longDescription) { [weak self] text in
+            guard text != nil else {
+                return
+            }
+            self?.rootView.activityIndicator.stopAnimating()
+        }
+    }
+}

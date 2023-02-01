@@ -2,20 +2,15 @@ import Foundation
 
 final class DelegateInfoDetailsPresenter {
     weak var view: DelegateInfoDetailsViewProtocol?
-    let wireframe: DelegateInfoDetailsWireframeProtocol
-    let interactor: DelegateInfoDetailsInteractorInputProtocol
+    let state: DelegateInfoDetailsState
 
-    init(
-        interactor: DelegateInfoDetailsInteractorInputProtocol,
-        wireframe: DelegateInfoDetailsWireframeProtocol
-    ) {
-        self.interactor = interactor
-        self.wireframe = wireframe
+    init(state: DelegateInfoDetailsState) {
+        self.state = state
     }
 }
 
 extension DelegateInfoDetailsPresenter: DelegateInfoDetailsPresenterProtocol {
-    func setup() {}
+    func setup() {
+        view?.didReceive(viewModel: state)
+    }
 }
-
-extension DelegateInfoDetailsPresenter: DelegateInfoDetailsInteractorOutputProtocol {}

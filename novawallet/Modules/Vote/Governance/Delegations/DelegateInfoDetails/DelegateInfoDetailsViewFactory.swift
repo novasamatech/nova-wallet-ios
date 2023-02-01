@@ -1,16 +1,11 @@
 import Foundation
 
 struct DelegateInfoDetailsViewFactory {
-    static func createView() -> DelegateInfoDetailsViewProtocol? {
-        let interactor = DelegateInfoDetailsInteractor()
-        let wireframe = DelegateInfoDetailsWireframe()
-
-        let presenter = DelegateInfoDetailsPresenter(interactor: interactor, wireframe: wireframe)
+    static func createView(state: DelegateInfoDetailsState) -> DelegateInfoDetailsViewProtocol {
+        let presenter = DelegateInfoDetailsPresenter(state: state)
 
         let view = DelegateInfoDetailsViewController(presenter: presenter)
-
         presenter.view = view
-        interactor.presenter = presenter
 
         return view
     }

@@ -1,11 +1,7 @@
-protocol DelegateInfoDetailsViewProtocol: class {}
-
-protocol DelegateInfoDetailsPresenterProtocol: class {
-    func setup()
+protocol DelegateInfoDetailsViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: DelegateInfoDetailsState)
 }
 
-protocol DelegateInfoDetailsInteractorInputProtocol: class {}
-
-protocol DelegateInfoDetailsInteractorOutputProtocol: class {}
-
-protocol DelegateInfoDetailsWireframeProtocol: class {}
+protocol DelegateInfoDetailsPresenterProtocol: AnyObject {
+    func setup()
+}
