@@ -8,10 +8,22 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
     }
 
     func showFullDescription(
-        from _: GovernanceDelegateInfoViewProtocol?,
-        longDescription _: String
+        from view: GovernanceDelegateInfoViewProtocol?,
+        name: String,
+        longDescription: String
     ) {
-        // TODO: Task #860pmdtfg
+        guard let view = view,
+              let navigationController = view.controller.navigationController else {
+            return
+        }
+
+        let state = DelegateInfoDetailsState(name: name, longDescription: longDescription)
+        let delegateInfoDetailsViewController = DelegateInfoDetailsViewFactory.createView(state: state)
+
+        navigationController.pushViewController(
+            delegateInfoDetailsViewController.controller,
+            animated: true
+        )
     }
 
     func showDelegations(

@@ -15,6 +15,7 @@ final class GovernanceDelegateInfoPresenter {
     private var details: GovernanceDelegateDetails?
     private var metadata: GovernanceDelegateMetadataRemote?
     private var identity: AccountIdentity?
+    private var delegateProfileViewModel: GovernanceDelegateProfileView.Model?
 
     var delegateAddress: AccountAddress? {
         details?.stats.address ?? initStats?.address
@@ -53,6 +54,7 @@ final class GovernanceDelegateInfoPresenter {
             identity: identity
         )
 
+        delegateProfileViewModel = viewModel.profileViewModel
         view?.didReceiveDelegate(viewModel: viewModel)
     }
 
@@ -116,11 +118,16 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     }
 
     func presentFullDescription() {
-        guard let longDescription = metadata?.longDescription else {
+        guard let delegateProfileViewModel = delegateProfileViewModel,
+              let longDescription = metadata?.longDescription else {
             return
         }
 
-        wireframe.showFullDescription(from: view, longDescription: longDescription)
+        wireframe.showFullDescription(
+            from: view,
+            name: delegateProfileViewModel.name,
+            longDescription: longDescription
+        )
     }
 
     func presentDelegations() {
