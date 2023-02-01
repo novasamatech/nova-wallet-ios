@@ -53,7 +53,7 @@ extension ReferendumDisplayStringFactoryProtocol {
         return ReferendumVotesViewModel(ayes: aye, nays: nay)
     }
 
-    func createYourVotesViewModel(
+    func createDirectVotesViewModel(
         from vote: ReferendumAccountVoteLocal,
         chain: ChainModel,
         locale: Locale
@@ -87,6 +87,39 @@ extension ReferendumDisplayStringFactoryProtocol {
         return YourVoteRow.Model(
             vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
             amount: .init(topValue: votesString ?? "", bottomValue: convictionString)
+        )
+    }
+
+    func createDelegateVotesViewModel(
+        from vote: GovernanceOffchainVoting.DelegateVote,
+        delegateName: String?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> YourVoteRow.Model {
+        let votesValue = vote.delegateVote.vote.conviction.votes(for: vote.delegateVote.balance) ?? 0
+
+        let votesString = createVotes(
+            from: votesValue,
+            chain: chain,
+            locale: locale
+        )
+
+        let voteSideString: String
+        let voteSideStyle: YourVoteView.Style
+
+        if vote.delegateVote.vote.aye {
+            voteSideString = R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages)
+            voteSideStyle = .ayeInverse
+        } else {
+            voteSideString = R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages)
+            voteSideStyle = .nayInverse
+        }
+
+        let voteDescription = delegateName ?? vote.delegateAddress
+
+        return YourVoteRow.Model(
+            vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
+            amount: .init(topValue: votesString ?? "", bottomValue: nil)
         )
     }
 }
