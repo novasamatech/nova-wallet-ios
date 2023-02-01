@@ -1,6 +1,6 @@
 import Foundation
 
-struct GovernanceDelegationAdditions<M> {
+struct GovernanceDelegationAdditions<M: Equatable>: Equatable {
     let model: M
     let identities: [AccountId: AccountIdentity]
     let metadata: [AccountId: GovernanceDelegateMetadataRemote]

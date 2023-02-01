@@ -7,7 +7,7 @@ enum ConvictionVoting {
 
     static var lockId: String = "pyconvot"
 
-    enum Conviction: UInt8, Decodable {
+    enum Conviction: UInt8, Decodable, Equatable {
         /// 0.1x votes, unlocked.
         case none
         /// 1x votes, locked for an enactment period following a successful vote.
@@ -113,7 +113,7 @@ enum ConvictionVoting {
         }
     }
 
-    struct Vote: Codable {
+    struct Vote: Codable, Equatable {
         static let ayeMask: UInt8 = 1 << 7
         static var voteMask: UInt8 { ~ayeMask }
 
@@ -145,12 +145,12 @@ enum ConvictionVoting {
         }
     }
 
-    struct AccountVoteStandard: Codable {
+    struct AccountVoteStandard: Codable, Equatable {
         let vote: Vote
         @StringCodable var balance: BigUInt
     }
 
-    struct AccountVoteSplit: Codable {
+    struct AccountVoteSplit: Codable, Equatable {
         @StringCodable var aye: BigUInt
         @StringCodable var nay: BigUInt
     }

@@ -13,7 +13,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let serviceFactory: GovernanceServiceFactoryProtocol
-    let identityOperationFactory: IdentityOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
@@ -38,7 +37,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol,
         serviceFactory: GovernanceServiceFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -52,7 +50,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.applicationHandler = applicationHandler
-        self.identityOperationFactory = identityOperationFactory
         self.currencyManager = currencyManager
     }
 
@@ -68,7 +65,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
         clearBlockTimeService()
         clearSubscriptionFactory()
-        clearOffchainServices()
 
         clearBlockNumberSubscription()
 
@@ -89,10 +85,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func clearSubscriptionFactory() {
         governanceState.replaceGovernanceFactory(for: nil)
-    }
-
-    private func clearOffchainServices() {
-        governanceState.replaceGovernanceOffchainServices(for: nil)
     }
 
     func clearBlockNumberSubscription() {
@@ -128,11 +120,9 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         provideBlockTime()
 
         setupSubscriptionFactory(for: option)
-        setupOffchainServices(for: option)
 
         subscribeToBlockNumber(for: option.chain)
         subscribeToMetadata(for: option)
-        subscribeToDelegationMetadataIfNeeded()
 
         if let accountId = accountId {
             subscribeAccountVotes(for: accountId)
@@ -155,10 +145,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     private func setupSubscriptionFactory(for option: GovernanceSelectedOption) {
         governanceState.replaceGovernanceFactory(for: option)
-    }
-
-    private func setupOffchainServices(for option: GovernanceSelectedOption) {
-        governanceState.replaceGovernanceOffchainServices(for: option)
     }
 
     func subscribeToBlockNumber(for chain: ChainModel) {
@@ -195,34 +181,6 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         if metadataProvider == nil {
             presenter?.didReceiveReferendumsMetadata([])
         }
-    }
-
-    private func subscribeToDelegationMetadataIfNeeded() {
-        guard let delegationMetadataProvider = governanceState.delegationsMetadataProvider else {
-            return
-        }
-
-        delegationMetadataProvider.removeObserver(self)
-
-        let updateClosure: ([DataProviderChange<[GovernanceDelegateMetadataRemote]>]) -> Void = { [weak self] changes in
-            if let metadata = changes.reduceToLastChange() {
-                self?.presenter?.didReceiveDelegationsMetadata(metadata)
-            }
-        }
-
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.presenter?.didReceiveError(.delegationMetadataSubscriptionFailed(error))
-        }
-
-        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
-
-        delegationMetadataProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
     }
 
     func handleOptionChange(for newOption: GovernanceSelectedOption) {
@@ -346,45 +304,34 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
     }
 
     func provideOffchainVotingIfNeeded() {
-        if offchainVotingCancellable == nil {
-            provideOffchainVoting()
+        if offchainVotingCancellable == nil, let option = governanceState.settings.value {
+            provideOffchainVoting(for: option)
         }
     }
 
-    func provideOffchainVoting() {
+    func provideOffchainVoting(for option: GovernanceSelectedOption) {
         guard
-            let offchainOperationFactory = governanceState.offchainVotingFactory,
-            let chain = governanceState.settings.value?.chain,
-            let address = selectedMetaAccount.fetch(for: chain.accountRequest())?.toAddress(),
-            let connection = governanceState.chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = governanceState.chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            let offchainOperationFactory = governanceState.createOffchainAllVotesFactory(
+                for: option
+            ),
+            let address = selectedMetaAccount.fetch(for: option.chain.accountRequest())?.toAddress(),
+            let connection = governanceState.chainRegistry.getConnection(for: option.chain.chainId),
+            let runtimeProvider = governanceState.chainRegistry.getRuntimeProvider(for: option.chain.chainId) else {
             return
         }
 
         clear(cancellable: &offchainVotingCancellable)
 
-        let votingWrapper = offchainOperationFactory.createAllVotesFetchOperation(for: address)
-
-        let identityWrapper = identityOperationFactory.createIdentityWrapperByAccountId(
-            for: {
-                let delegates = try votingWrapper.targetOperation.extractNoCancellableResultData().getAllDelegates()
-                return Array(delegates)
-            },
-            engine: connection,
-            runtimeService: runtimeProvider,
-            chainFormat: chain.chainFormat
+        let votingWrapper = offchainOperationFactory.createWrapper(
+            for: address,
+            chain: option.chain,
+            connection: connection,
+            runtimeService: runtimeProvider
         )
 
-        identityWrapper.addDependency(wrapper: votingWrapper)
-
-        let cancellableWrapper = CompoundOperationWrapper(
-            targetOperation: identityWrapper.targetOperation,
-            dependencies: votingWrapper.allOperations + identityWrapper.dependencies
-        )
-
-        identityWrapper.targetOperation.completionBlock = { [weak self] in
+        votingWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard self?.offchainVotingCancellable === cancellableWrapper else {
+                guard self?.offchainVotingCancellable === votingWrapper else {
                     return
                 }
 
@@ -392,17 +339,16 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
                 do {
                     let voting = try votingWrapper.targetOperation.extractNoCancellableResultData()
-                    let identities = try identityWrapper.targetOperation.extractNoCancellableResultData()
 
-                    self?.presenter?.didReceiveOffchainVoting(voting, identities: identities)
+                    self?.presenter?.didReceiveOffchainVoting(voting)
                 } catch {
                     self?.presenter?.didReceiveError(.offchainVotingFetchFailed(error))
                 }
             }
         }
 
-        offchainVotingCancellable = cancellableWrapper
+        offchainVotingCancellable = votingWrapper
 
-        operationQueue.addOperations(cancellableWrapper.allOperations, waitUntilFinished: false)
+        operationQueue.addOperations(votingWrapper.allOperations, waitUntilFinished: false)
     }
 }

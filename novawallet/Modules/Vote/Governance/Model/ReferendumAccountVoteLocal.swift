@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-enum ReferendumAccountVoteLocal {
+enum ReferendumAccountVoteLocal: Equatable {
     case split(ConvictionVoting.AccountVoteSplit)
     case standard(ConvictionVoting.AccountVoteStandard)
 

@@ -111,18 +111,12 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
-        let identityOperationFactory = IdentityOperationFactory(
-            requestFactory: state.requestFactory,
-            emptyIdentitiesWhenNoStorage: true
-        )
-
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
-            identityOperationFactory: identityOperationFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,
