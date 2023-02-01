@@ -8,8 +8,6 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     typealias DataSource = UITableViewDiffableDataSource<Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
-    private var isCriticalBanner: Bool = false
-    private var isAvailableMoreVersions: Bool = false
 
     init(
         presenter: InAppUpdatesPresenterProtocol,
@@ -32,16 +30,14 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        dataSource = createDataSource()
-        rootView.tableView.dataSource = dataSource
-        rootView.tableView.delegate = self
+        setupTableView()
         setupNavigationItem()
         setupInstallButton()
         presenter.setup()
     }
 
     private func createDataSource() -> DataSource {
-        .init(tableView: rootView.tableView) { [weak self] tableView, indexPath, model -> UITableViewCell? in
+        let dataSource = DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, model in
             guard let self = self else {
                 return nil
             }
@@ -57,6 +53,19 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
                 return cell
             }
         }
+
+        dataSource.defaultRowAnimation = .fade
+        return dataSource
+    }
+
+    private func setupTableView() {
+        dataSource = createDataSource()
+        rootView.tableView.dataSource = dataSource
+        rootView.loadMoreFooter.moreButton.addTarget(
+            self,
+            action: #selector(didTapOnLoadMoreVersions),
+            for: .touchUpInside
+        )
     }
 
     private func setupNavigationItem() {
@@ -73,14 +82,19 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     }
 
     private func setupInstallButton() {
-        rootView.installButton.imageWithTitleView?.title = R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+        let preferredLanguages = selectedLocale.rLanguages
+        rootView.installButton.imageWithTitleView?.title =
+            R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: preferredLanguages)
         rootView.installButton.addTarget(self, action: #selector(didTapOnInstallButton), for: .touchUpInside)
     }
 
     private func setupLocalization() {
-        navigationItem.title = R.string.localizable.inAppUpdatesTitle(preferredLanguages: selectedLocale.rLanguages)
-        navigationItem.rightBarButtonItem?.title = R.string.localizable.commonSkip(preferredLanguages: selectedLocale.rLanguages)
-        rootView.installButton.imageWithTitleView?.title = R.string.localizable.inAppUpdatesInstallButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+        let strings = R.string.localizable.self
+        let preferredLanguages = selectedLocale.rLanguages
+        navigationItem.title = strings.inAppUpdatesTitle(preferredLanguages: preferredLanguages)
+        navigationItem.rightBarButtonItem?.title = strings.commonSkip(preferredLanguages: preferredLanguages)
+        rootView.installButton.imageWithTitleView?.title =
+            strings.inAppUpdatesInstallButtonTitle(preferredLanguages: preferredLanguages)
         rootView.tableView.reloadData()
     }
 
@@ -95,30 +109,16 @@ final class InAppUpdatesViewController: UIViewController, ViewHolder {
     @objc private func didTapOnInstallButton() {
         presenter.installLastVersion()
     }
-
-    private func showFooter(for section: Int) -> Bool {
-        if #available(iOS 15.0, *) {
-            switch dataSource?.sectionIdentifier(for: section) {
-            case .banner, .none:
-                return false
-            case let .main(showFooter):
-                return showFooter
-            }
-        } else {
-            return isAvailableMoreVersions && section == 1
-        }
-    }
 }
 
 extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
     func didReceive(
         versionModels: [VersionTableViewCell.Model],
         isCriticalBanner: Bool,
-        isAvailableMoreVersions: Bool
+        isAvailableMoreVersionsModel: LoadableViewModelState<String>
     ) {
-        self.isAvailableMoreVersions = isAvailableMoreVersions
         let bannerSection = Section.banner
-        let mainSection = Section.main(showFooter: isAvailableMoreVersions)
+        let mainSection = Section.main
         let versionsViewModels = versionModels.map { Row.version($0) }
         let bannerViewModel = Row.banner(isCritical: isCriticalBanner)
 
@@ -126,25 +126,8 @@ extension InAppUpdatesViewController: InAppUpdatesViewProtocol {
         snapshot.appendSections([bannerSection, mainSection])
         snapshot.appendItems([bannerViewModel], toSection: bannerSection)
         snapshot.appendItems(versionsViewModels, toSection: mainSection)
-        dataSource?.apply(snapshot, animatingDifferences: true)
-    }
-}
-
-extension InAppUpdatesViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        guard showFooter(for: section) else {
-            return nil
-        }
-
-        let view: LoadMoreFooterView = tableView.dequeueReusableHeaderFooterView()
-        let showMoreTitle = R.string.localizable.inAppUpdatesButtonShowMoreTitle(preferredLanguages: selectedLocale.rLanguages)
-        view.bind(text: showMoreTitle)
-        view.moreButton.addTarget(self, action: #selector(didTapOnLoadMoreVersions), for: .touchUpInside)
-        return view
-    }
-
-    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        showFooter(for: section) ? 34 : .leastNormalMagnitude
+        dataSource?.apply(snapshot, animatingDifferences: versionModels.count > 1)
+        rootView.loadMoreFooter.bind(text: isAvailableMoreVersionsModel)
     }
 }
 
@@ -159,7 +142,7 @@ extension InAppUpdatesViewController: Localizable {
 extension InAppUpdatesViewController {
     enum Section: Hashable {
         case banner
-        case main(showFooter: Bool)
+        case main
     }
 
     enum Row: Hashable {
