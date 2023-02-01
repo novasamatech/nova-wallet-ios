@@ -34,6 +34,7 @@ protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresent
     AddressOptionsPresentable, WebPresentable, IdentityPresentable {
     func showFullDescription(
         from view: GovernanceDelegateInfoViewProtocol?,
+        name: String,
         longDescription: String
     )
 
