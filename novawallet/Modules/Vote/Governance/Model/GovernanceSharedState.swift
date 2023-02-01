@@ -32,7 +32,7 @@ final class GovernanceSharedState {
             operationManager: OperationManager(operationQueue: OperationManagerFacade.sharedDefaultQueue)
         ),
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared,
-        applicationConfig: ApplicationConfigProtocol,
+        applicationConfig: ApplicationConfigProtocol = ApplicationConfig.shared,
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
