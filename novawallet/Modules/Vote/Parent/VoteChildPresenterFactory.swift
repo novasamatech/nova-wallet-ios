@@ -111,12 +111,18 @@ final class VoteChildPresenterFactory {
             logger: logger
         )
 
+        let identityOperationFactory = IdentityOperationFactory(
+            requestFactory: state.requestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
+
         return ReferendumsInteractor(
             selectedMetaAccount: wallet,
             governanceState: state,
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceProviderFactory,
+            identityOperationFactory: identityOperationFactory,
             serviceFactory: serviceFactory,
             applicationHandler: applicationHandler,
             operationQueue: operationQueue,
@@ -178,6 +184,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
+            stringDisplayViewModelFactory: ReferendumDisplayStringFactory(),
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()

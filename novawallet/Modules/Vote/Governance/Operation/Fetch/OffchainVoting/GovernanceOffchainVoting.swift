@@ -32,6 +32,19 @@ struct GovernanceOffchainVoting {
         }
     }
 
+    func getAllDelegates() -> Set<AccountId> {
+        let accountIds: [AccountId] = votes.values.compactMap { voteType in
+            switch voteType {
+            case .direct:
+                return nil
+            case let .delegated(vote):
+                return try? vote.delegateAddress.toAccountId()
+            }
+        }
+
+        return Set(accountIds)
+    }
+
     func insertingDirect(
         vote: ReferendumAccountVoteLocal,
         referendumId: ReferendumIdLocal

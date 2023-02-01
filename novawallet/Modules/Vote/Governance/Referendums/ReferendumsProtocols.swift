@@ -24,12 +24,15 @@ protocol ReferendumsInteractorInputProtocol: AnyObject {
     func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?)
     func remakeSubscriptions()
     func retryBlockTime()
+    func retryOffchainVotingFetch()
 }
 
 protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>])
+    func didReceiveDelegationsMetadata(_ metadata: [GovernanceDelegateMetadataRemote])
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
+    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVoting?, identities: [AccountId: AccountIdentity])
     func didReceiveSelectedOption(_ option: GovernanceSelectedOption)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
