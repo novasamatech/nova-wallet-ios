@@ -1,19 +1,19 @@
 import Foundation
 import BigInt
 
-struct GovernanceOffchainVoting {
-    enum VoteType {
+struct GovernanceOffchainVoting: Equatable {
+    enum VoteType: Equatable {
         case direct(ReferendumAccountVoteLocal)
         case delegated(DelegateVote)
     }
 
-    struct DelegateVote {
+    struct DelegateVote: Equatable {
         let delegateAddress: AccountAddress
         let delegateVote: ConvictionVoting.AccountVoteStandard
         let delegatorPower: DelegatorPower
     }
 
-    struct DelegatorPower {
+    struct DelegatorPower: Equatable {
         let balance: BigUInt
         let conviction: ConvictionVoting.Conviction
     }
@@ -30,6 +30,19 @@ struct GovernanceOffchainVoting {
                 return nil
             }
         }
+    }
+
+    func getAllDelegates() -> Set<AccountId> {
+        let accountIds: [AccountId] = votes.values.compactMap { voteType in
+            switch voteType {
+            case .direct:
+                return nil
+            case let .delegated(vote):
+                return try? vote.delegateAddress.toAccountId()
+            }
+        }
+
+        return Set(accountIds)
     }
 
     func insertingDirect(

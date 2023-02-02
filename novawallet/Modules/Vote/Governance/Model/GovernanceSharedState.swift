@@ -164,4 +164,29 @@ final class GovernanceSharedState {
 
         return BlockTimeOperationFactory(chain: chain)
     }
+
+    func createOffchainAllVotesFactory(
+        for option: GovernanceSelectedOption
+    ) -> GovernanceOffchainVotingWrapperFactoryProtocol? {
+        switch option.type {
+        case .governanceV1:
+            return nil
+        case .governanceV2:
+            guard let delegationApi = option.chain.externalApis?.governanceDelegations()?.first else {
+                return nil
+            }
+
+            let identityOperationFactory = IdentityOperationFactory(
+                requestFactory: requestFactory,
+                emptyIdentitiesWhenNoStorage: true
+            )
+
+            let fetchOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
+
+            return GovernanceOffchainVotingWrapperFactory(
+                operationFactory: fetchOperationFactory,
+                identityOperationFactory: identityOperationFactory
+            )
+        }
+    }
 }

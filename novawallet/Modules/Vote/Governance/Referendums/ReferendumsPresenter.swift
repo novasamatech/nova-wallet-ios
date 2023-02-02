@@ -21,6 +21,7 @@ final class ReferendumsPresenter {
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private var offchainVoting: GovernanceOffchainVotesLocal?
     private var unlockSchedule: GovernanceUnlockSchedule?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
@@ -120,6 +121,7 @@ final class ReferendumsPresenter {
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: accountVotes?.votes ?? [:],
+            offchainVotes: offchainVoting,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
             locale: selectedLocale
         ))
@@ -245,6 +247,7 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
             votesResult: voting,
+            offchainVoting: offchainVoting?.fetchVotes(for: referendum.index),
             blockNumber: blockNumber,
             blockTime: blockTime,
             metadata: referendumsMetadata?[referendum.index]
@@ -319,6 +322,14 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         updateReferendumsView()
     }
 
+    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotesLocal) {
+        if offchainVoting != voting {
+            offchainVoting = voting
+
+            updateReferendumsView()
+        }
+    }
+
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
@@ -390,6 +401,10 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
         case .unlockScheduleFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshUnlockSchedule()
+            }
+        case .offchainVotingFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryOffchainVotingFetch()
             }
         }
     }
