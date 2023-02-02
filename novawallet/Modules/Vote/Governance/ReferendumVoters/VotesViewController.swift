@@ -157,6 +157,7 @@ extension VotesViewController: VotesViewProtocol {
 
     func didReceive(title: LocalizableResource<String>) {
         localizableTitle = title
+        setupLocalization()
     }
 
     func didReceiveEmptyView(title: LocalizableResource<String>) {

@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 import SoraFoundation
 
 struct DelegationListViewFactory {
@@ -12,11 +13,38 @@ struct DelegationListViewFactory {
             return nil
         }
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+        let identityOperationFactory = IdentityOperationFactory(
+            requestFactory: requestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
+
+        let subquery = SubqueryDelegationsOperationFactory(url: delegationApi.url)
+
+        let governanceOffchainDelegationsFactory = DelegationListWrapperFactory(
+            operationFactory: subquery,
+            identityOperationFactory: identityOperationFactory
+        )
         let interactor = DelegationListInteractor(
             accountAddress: accountAddress,
-            governanceOffchainDelegationsFactory: SubqueryDelegationsOperationFactory(url: delegationApi.url),
+            chain: chain,
+            connection: connection,
+            runtimeService: runtimeProvider,
+            governanceOffchainDelegationsFactory: governanceOffchainDelegationsFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
+
         let wireframe = DelegationListWireframe()
         let localizationManager = LocalizationManager.shared
         let referendumDisplayStringFactory = ReferendumDisplayStringFactory(

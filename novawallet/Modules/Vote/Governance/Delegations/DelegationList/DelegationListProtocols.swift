@@ -10,11 +10,11 @@ protocol DelegationListInteractorInputProtocol: AnyObject {
 }
 
 protocol DelegationListInteractorOutputProtocol: AnyObject {
-    func didReceive(delegations: [AccountAddress: [GovernanceOffchainDelegation]])
+    func didReceive(delegations: GovernanceOffchainDelegationsLocal)
     func didReceive(error: DelegationListError)
 }
 
-protocol DelegationListWireframeProtocol: AnyObject {}
+protocol DelegationListWireframeProtocol: AddressOptionsPresentable {}
 
 enum DelegationListError: Error {
     case fetchFailed(Error)

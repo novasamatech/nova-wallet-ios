@@ -80,16 +80,17 @@ final class DelegationListPresenter {
     private func createViewModel(
         delegator: AccountAddress,
         delegations: [GovernanceOffchainDelegation],
-        identites: [AccountAddress: AccountIdentity]
-    ) -> VotesViewModel? {
+        identites: [AccountId: AccountIdentity]
+    ) -> (votes: BigUInt, viewModel: VotesViewModel)? {
         let displayAddressViewModel: DisplayAddressViewModel
-        let address = delegator
-
-        if let displayName = identites[address]?.displayName {
-            let displayAddress = DisplayAddress(address: address, username: displayName)
+        guard let accountId = try? delegator.toAccountId() else {
+            return nil
+        }
+        if let displayName = identites[accountId]?.displayName {
+            let displayAddress = DisplayAddress(address: delegator, username: displayName)
             displayAddressViewModel = displayAddressFactory.createViewModel(from: displayAddress)
         } else {
-            displayAddressViewModel = displayAddressFactory.createViewModel(from: address)
+            displayAddressViewModel = displayAddressFactory.createViewModel(from: delegator)
         }
 
         guard !delegations.isEmpty else {
@@ -117,16 +118,28 @@ final class DelegationListPresenter {
             )
         }
 
-        return VotesViewModel(
+        let viewModel = VotesViewModel(
             displayAddress: displayAddressViewModel,
             votes: votesString ?? "",
             preConviction: details ?? ""
         )
+        return (votes: votes, viewModel: viewModel)
     }
 }
 
 extension DelegationListPresenter: DelegationListPresenterProtocol {
-    func select(viewModel _: VotesViewModel) {}
+    func select(viewModel: VotesViewModel) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: viewModel.displayAddress.address,
+            chain: chain,
+            locale: selectedLocale
+        )
+    }
 
     func setup() {
         interactor.setup()
@@ -137,14 +150,19 @@ extension DelegationListPresenter: DelegationListPresenterProtocol {
 }
 
 extension DelegationListPresenter: DelegationListInteractorOutputProtocol {
-    func didReceive(delegations: [AccountAddress: [GovernanceOffchainDelegation]]) {
-        let viewModels = delegations.compactMap {
+    func didReceive(delegations: GovernanceOffchainDelegationsLocal) {
+        let delegationsMap = Dictionary(
+            grouping: delegations.model,
+            by: { $0.delegator }
+        )
+
+        let viewModels = delegationsMap.compactMap {
             createViewModel(
                 delegator: $0.key,
                 delegations: $0.value,
-                identites: [:]
+                identites: delegations.identities
             )
-        }
+        }.sorted(by: { $0.votes > $1.votes }).map(\.viewModel)
 
         view?.didReceiveViewModels(.loaded(value: viewModels))
     }
