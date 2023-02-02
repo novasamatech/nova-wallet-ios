@@ -35,7 +35,9 @@ final class GradientBannerTableViewCell: UITableViewCell {
             gradientBannerView.bind(model: .criticalUpdate())
             gradientBannerView.infoView.titleLabel.text =
                 R.string.localizable.inAppUpdatesBannerCriticalTitle(preferredLanguages: locale.rLanguages)
-            let subtitle = R.string.localizable.inAppUpdatesBannerCriticalSubtitle(preferredLanguages: locale.rLanguages)
+            let subtitle = R.string.localizable.inAppUpdatesBannerCriticalSubtitle(
+                preferredLanguages: locale.rLanguages
+            )
             gradientBannerView.infoView.subtitleLabel.text = subtitle
         } else {
             gradientBannerView.infoView.imageView.image = R.image.iconBannerMajorUpdate()
