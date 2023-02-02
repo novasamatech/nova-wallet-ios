@@ -48,7 +48,7 @@ final class VotesTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: ReferendumVotersViewModel) {
+    func bind(viewModel: VotesViewModel) {
         iconViewModel?.cancel(on: iconView)
         iconViewModel = viewModel.displayAddress.imageViewModel
 

@@ -1,6 +1,6 @@
 protocol DelegationListViewProtocol: AnyObject {}
 
-protocol DelegationListPresenterProtocol: AnyObject {
+protocol DelegationListPresenterProtocol: VotesPresenterProtocol {
     func setup()
 }
 

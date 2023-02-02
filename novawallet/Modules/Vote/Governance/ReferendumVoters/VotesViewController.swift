@@ -2,20 +2,17 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-protocol ReferendumVotersWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-    AddressOptionsPresentable {}
-
 final class VotesViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumVotersViewLayout
     private let quantityFormatter: LocalizableResource<NumberFormatter>
-    private var state: LoadableViewModelState<[ReferendumVotersViewModel]>?
+    private var state: LoadableViewModelState<[VotesViewModel]>?
     var localizableTitle: LocalizableResource<String>?
     var emptyViewTitle: LocalizableResource<String>?
 
-    let presenter: ReferendumVotersPresenterProtocol
+    let presenter: VotesPresenterProtocol
 
     init(
-        presenter: ReferendumVotersPresenterProtocol,
+        presenter: VotesPresenterProtocol,
         quantityFormatter: LocalizableResource<NumberFormatter>,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -91,7 +88,7 @@ extension VotesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithType(ReferendumVotersTableViewCell.self)!
+        let cell: VotesTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 
         if let viewModel = state?.value?[indexPath.row] {
             cell.bind(viewModel: viewModel)
@@ -109,7 +106,7 @@ extension VotesViewController: UITableViewDelegate {
             return
         }
 
-        presenter.selectVoter(for: viewModels[indexPath.row])
+        presenter.select(viewModel: viewModels[indexPath.row])
     }
 }
 
@@ -141,8 +138,8 @@ extension VotesViewController: EmptyStateDelegate {
     }
 }
 
-extension VotesViewController: ReferendumVotersViewProtocol {
-    func didReceiveViewModels(_ viewModels: LoadableViewModelState<[ReferendumVotersViewModel]>) {
+extension VotesViewController: VotesViewProtocol {
+    func didReceiveViewModels(_ viewModels: LoadableViewModelState<[VotesViewModel]>) {
         state = viewModels
         rootView.tableView.reloadData()
 
@@ -173,4 +170,21 @@ extension VotesViewController: Localizable {
             setupLocalization()
         }
     }
+}
+
+protocol VotesViewProtocol: ControllerBackedProtocol {
+    func didReceiveViewModels(_ viewModels: LoadableViewModelState<[VotesViewModel]>)
+    func didReceive(title: LocalizableResource<String>)
+    func didReceiveEmptyView(title: LocalizableResource<String>)
+}
+
+protocol VotesPresenterProtocol: AnyObject {
+    func setup()
+    func select(viewModel: VotesViewModel)
+}
+
+struct VotesViewModel {
+    let displayAddress: DisplayAddressViewModel
+    let votes: String
+    let preConviction: String
 }

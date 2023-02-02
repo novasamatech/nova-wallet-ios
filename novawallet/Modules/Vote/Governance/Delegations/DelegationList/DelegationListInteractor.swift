@@ -7,7 +7,7 @@ final class DelegationListInteractor {
 
     let governanceOffchainDelegationsFactory: GovernanceOffchainDelegationsFactoryProtocol
     let accountAddress: AccountAddress
-    let cancellableCall: CancellableCall?
+    private var cancellableCall: CancellableCall?
     let operationQueue: OperationQueue
 
     init(
@@ -23,17 +23,17 @@ final class DelegationListInteractor {
     private func fetchDelegations() {
         let wrapper = governanceOffchainDelegationsFactory.createDelegationsFetchWrapper(for: accountAddress)
         wrapper.targetOperation.completionBlock = { [weak self] in
-            guard let self = self, cancellableCall === wrapper else {
+            guard let self = self, self.cancellableCall === wrapper else {
                 return
             }
             do {
                 let delegations = try wrapper.targetOperation.extractNoCancellableResultData()
-                delegations.reduce(into: Delegations()) { result, delegation in
+                let mapDelegations = delegations.reduce(into: Delegations()) { result, delegation in
                     var delegations = result[delegation.delegator] ?? []
                     delegations.append(delegation)
                     result[delegation.delegator] = delegations
                 }
-                self.notifyPresenter(result: .success(delegations))
+                self.notifyPresenter(result: .success(mapDelegations))
             } catch {
                 self.notifyPresenter(result: .failure(.fetchFailed(error)))
             }
