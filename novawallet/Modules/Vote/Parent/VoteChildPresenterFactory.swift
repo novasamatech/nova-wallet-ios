@@ -178,6 +178,7 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
+            stringDisplayViewModelFactory: ReferendumDisplayStringFactory(),
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()
