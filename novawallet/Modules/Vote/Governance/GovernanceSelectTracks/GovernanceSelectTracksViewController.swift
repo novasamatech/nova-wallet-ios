@@ -123,6 +123,7 @@ class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
 
         if !newTracks.isEmpty {
             rootView.clearEmptyStateView()
+            rootView.setGroupsContainer(hidden: false)
 
             for track in newTracks {
                 let trackView = rootView.addTrackRow(for: track.viewModel)
@@ -133,6 +134,7 @@ class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
         } else {
             rootView.addEmptyStateView()
             updateEmptyStateLocalization()
+            rootView.setGroupsContainer(hidden: true)
         }
     }
 }

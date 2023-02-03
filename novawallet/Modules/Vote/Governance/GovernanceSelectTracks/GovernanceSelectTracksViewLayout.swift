@@ -124,8 +124,14 @@ class GovernanceSelectTracksViewLayout: UIView {
 
         emptyStateView.snp.makeConstraints { make in
             make.width.equalTo(self).offset(-32)
-            make.height.equalTo(self).offset(-150)
+            make.height.equalTo(self).offset(-275)
         }
+
+        self.emptyStateView = emptyStateView
+    }
+
+    func setGroupsContainer(hidden: Bool) {
+        tracksGroupContainerView.isHidden = hidden
     }
 
     private func createTrackRow(
@@ -151,9 +157,9 @@ class GovernanceSelectTracksViewLayout: UIView {
     private func createEmptyStateView() -> EmptyStateView {
         let view = EmptyStateView()
 
-        view.image = R.image.iconEmptyHistory()?.tinted(with: R.color.colorIconSecondary()!)
-        view.verticalSpacing = 16
-        view.titleColor = R.color.colorTextSecondary()
+        view.image = R.image.iconHistoryEmptyDark()
+        view.verticalSpacing = 0
+        view.titleColor = R.color.colorTextSecondary()!
         view.titleFont = .regularFootnote
 
         return view
