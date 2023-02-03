@@ -1141,3 +1141,6 @@
 "in.app.updates.version.title" = "Версия %@";
 "in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";
 "delegate.vote.by" = "%@ от %@";
+"gov.track.group.treasury" = "Казна";
+"gov.track.group.governance" = "Краудлоуны";
+"gov.track.group.fellowship" = "Управление";

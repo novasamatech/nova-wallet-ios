@@ -247,3 +247,8 @@ struct GovernanceTrackLocal {
     let name: String
     let totalTracksCount: Int
 }
+
+struct GovernanceTrackInfoLocal {
+    let trackId: UInt16
+    let name: String
+}
