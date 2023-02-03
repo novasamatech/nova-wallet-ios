@@ -48,6 +48,12 @@ class GovBaseEditDelegationViewController: GovernanceSelectTracksViewController 
         editDelegationLayout?.unavailableTracksButton.invalidateLayout()
     }
 
+    override func updateEmptyStateLocalization() {
+        editDelegationLayout?.emptyStateView?.title = R.string.localizable.govAddDelegationTracksEmpty(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
     private func setupHandlers() {
         editDelegationLayout?.unavailableTracksButton.addTarget(
             self,
