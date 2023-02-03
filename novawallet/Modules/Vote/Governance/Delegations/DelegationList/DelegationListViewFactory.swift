@@ -80,7 +80,7 @@ struct DelegationListViewFactory {
             operationFactory: subquery,
             identityOperationFactory: identityOperationFactory
         )
-        let interactor = DelegationListInteractor(
+        return DelegationListInteractor(
             accountAddress: accountAddress,
             chain: chain,
             connection: connection,
