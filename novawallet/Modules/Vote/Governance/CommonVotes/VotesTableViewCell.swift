@@ -60,7 +60,7 @@ final class VotesTableViewCell: UITableViewCell {
         nameLabel.lineBreakMode = viewModel.displayAddress.lineBreakMode
 
         votesLabel.text = viewModel.votes
-        detailsLabel.text = viewModel.preConviction
+        detailsLabel.text = viewModel.votesDetails
 
         setNeedsLayout()
     }

@@ -7,9 +7,53 @@ struct DelegationListViewFactory {
         accountAddress: AccountAddress,
         state: GovernanceSharedState
     ) -> VotesViewController? {
-        guard
-            let chain = state.settings.value?.chain,
-            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+        guard let chain = state.settings.value?.chain else {
+            return nil
+        }
+
+        guard let interactor = createInteractor(
+            accountAddress: accountAddress,
+            chain: chain,
+            state: state
+        ) else {
+            return nil
+        }
+
+        let wireframe = DelegationListWireframe()
+        let localizationManager = LocalizationManager.shared
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory(
+            formatterFactory: AssetBalanceFormatterFactory()
+        )
+        let stringViewModelFactory = DelegationsDisplayStringFactory(
+            referendumDisplayStringFactory: referendumDisplayStringFactory)
+
+        let presenter = DelegationListPresenter(
+            interactor: interactor,
+            chain: chain,
+            stringFactory: stringViewModelFactory,
+            wireframe: wireframe,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
+
+        let view = VotesViewController(
+            presenter: presenter,
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            localizationManager: localizationManager
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
+
+        return view
+    }
+
+    private static func createInteractor(
+        accountAddress: AccountAddress,
+        chain: ChainModel,
+        state _: GovernanceSharedState
+    ) -> DelegationListInteractor? {
+        guard let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
             return nil
         }
 
@@ -32,7 +76,7 @@ struct DelegationListViewFactory {
 
         let subquery = SubqueryDelegationsOperationFactory(url: delegationApi.url)
 
-        let governanceOffchainDelegationsFactory = DelegationListWrapperFactory(
+        let governanceOffchainDelegationsFactory = GovernanceDelegationsLocalWrapperFactory(
             operationFactory: subquery,
             identityOperationFactory: identityOperationFactory
         )
@@ -44,32 +88,5 @@ struct DelegationListViewFactory {
             governanceOffchainDelegationsFactory: governanceOffchainDelegationsFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
-
-        let wireframe = DelegationListWireframe()
-        let localizationManager = LocalizationManager.shared
-        let referendumDisplayStringFactory = ReferendumDisplayStringFactory(
-            formatterFactory: AssetBalanceFormatterFactory()
-        )
-        let stringViewModelFactory = DelegationsDisplayStringFactory(
-            referendumDisplayStringFactory: referendumDisplayStringFactory)
-
-        let presenter = DelegationListPresenter(
-            interactor: interactor,
-            chain: chain,
-            stringFactory: stringViewModelFactory,
-            wireframe: wireframe,
-            localizationManager: localizationManager
-        )
-
-        let view = VotesViewController(
-            presenter: presenter,
-            quantityFormatter: NumberFormatter.quantity.localizableResource(),
-            localizationManager: localizationManager
-        )
-
-        presenter.view = view
-        interactor.presenter = presenter
-
-        return view
     }
 }

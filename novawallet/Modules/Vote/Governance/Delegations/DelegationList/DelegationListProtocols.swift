@@ -14,7 +14,8 @@ protocol DelegationListInteractorOutputProtocol: AnyObject {
     func didReceive(error: DelegationListError)
 }
 
-protocol DelegationListWireframeProtocol: AddressOptionsPresentable {}
+protocol DelegationListWireframeProtocol: AddressOptionsPresentable, AlertPresentable, ErrorPresentable,
+    CommonRetryable {}
 
 enum DelegationListError: Error {
     case fetchFailed(Error)

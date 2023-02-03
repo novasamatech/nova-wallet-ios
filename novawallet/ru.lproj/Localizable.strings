@@ -1141,3 +1141,5 @@
 "in.app.updates.version.title" = "Версия %@";
 "in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";
 "delegate.vote.by" = "%@ от %@";
+"delegations.list.multiple.tracks" = "В %@ треках";
+"delegations.list.empty" = "Список делегаций появится здесь";

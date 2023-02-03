@@ -1141,3 +1141,5 @@
 "in.app.updates.version.title" = "Version %@";
 "in.app.updates.fetch.change.logs.error" = "Change logs can't be loaded";
 "delegate.vote.by" = "%@ by %@";
+"delegations.list.multiple.tracks" = "Across %@ tracks";
+"delegations.list.empty" = "List of delegations will appear here";

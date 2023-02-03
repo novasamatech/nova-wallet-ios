@@ -3,11 +3,12 @@ import SoraFoundation
 import SoraUI
 
 final class VotesViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ReferendumVotersViewLayout
+    typealias RootViewType = VotesViewLayout
+
     private let quantityFormatter: LocalizableResource<NumberFormatter>
     private var state: LoadableViewModelState<[VotesViewModel]>?
-    var localizableTitle: LocalizableResource<String>?
-    var emptyViewTitle: LocalizableResource<String>?
+    private var localizableTitle: LocalizableResource<String>?
+    private var emptyViewTitle: LocalizableResource<String>?
 
     let presenter: VotesPresenterProtocol
 
@@ -30,7 +31,7 @@ final class VotesViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ReferendumVotersViewLayout()
+        view = VotesViewLayout()
     }
 
     override func viewDidLoad() {
@@ -38,6 +39,7 @@ final class VotesViewController: UIViewController, ViewHolder {
 
         setupLocalization()
         configureTableView()
+        setupHandlers()
 
         presenter.setup()
     }
@@ -54,10 +56,10 @@ final class VotesViewController: UIViewController, ViewHolder {
     }
 
     private func configureTableView() {
-        rootView.tableView.registerClassForCell(ReferendumVotersTableViewCell.self)
+        rootView.tableView.registerClassForCell(VotesTableViewCell.self)
         rootView.tableView.delegate = self
         rootView.tableView.dataSource = self
-        rootView.tableView.rowHeight = ReferendumVotersTableViewCell.Constants.rowHeight
+        rootView.tableView.rowHeight = VotesTableViewCell.Constants.rowHeight
     }
 
     private func setupCounter(value: Int?) {
@@ -79,6 +81,19 @@ final class VotesViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = localizableTitle?.value(for: selectedLocale)
+    }
+
+    private func setupHandlers() {
+        rootView.refreshControl.addTarget(
+            self,
+            action: #selector(pullToRefreshAction),
+            for: .valueChanged
+        )
+    }
+
+    @objc private func pullToRefreshAction() {
+        rootView.refreshControl.endRefreshing()
+        presenter.refresh()
     }
 }
 
@@ -163,6 +178,10 @@ extension VotesViewController: VotesViewProtocol {
     func didReceiveEmptyView(title: LocalizableResource<String>) {
         emptyViewTitle = title
     }
+
+    func didReceiveRefreshState(isAvailable: Bool) {
+        rootView.updateRefreshControlState(isAvailable: isAvailable)
+    }
 }
 
 extension VotesViewController: Localizable {
@@ -171,21 +190,4 @@ extension VotesViewController: Localizable {
             setupLocalization()
         }
     }
-}
-
-protocol VotesViewProtocol: ControllerBackedProtocol {
-    func didReceiveViewModels(_ viewModels: LoadableViewModelState<[VotesViewModel]>)
-    func didReceive(title: LocalizableResource<String>)
-    func didReceiveEmptyView(title: LocalizableResource<String>)
-}
-
-protocol VotesPresenterProtocol: AnyObject {
-    func setup()
-    func select(viewModel: VotesViewModel)
-}
-
-struct VotesViewModel {
-    let displayAddress: DisplayAddressViewModel
-    let votes: String
-    let preConviction: String
 }

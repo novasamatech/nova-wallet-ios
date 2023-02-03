@@ -1,11 +1,12 @@
 import UIKit
+import SubstrateSdk
 import RobinHood
 
 final class DelegationListInteractor {
     weak var presenter: DelegationListInteractorOutputProtocol!
     typealias Delegations = [AccountAddress: [GovernanceOffchainDelegation]]
 
-    let governanceOffchainDelegationsFactory: DelegationListWrapperFactoryProtocol
+    let governanceOffchainDelegationsFactory: GovernanceDelegationsLocalWrapperFactoryProtocol
     let accountAddress: AccountAddress
     let chain: ChainModel
     let connection: JSONRPCEngine
@@ -18,7 +19,7 @@ final class DelegationListInteractor {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        governanceOffchainDelegationsFactory: DelegationListWrapperFactoryProtocol,
+        governanceOffchainDelegationsFactory: GovernanceDelegationsLocalWrapperFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.governanceOffchainDelegationsFactory = governanceOffchainDelegationsFactory
@@ -75,41 +76,3 @@ extension DelegationListInteractor: DelegationListInteractorInputProtocol {
         fetchDelegations()
     }
 }
-
-import SubstrateSdk
-
-typealias GovernanceOffchainDelegationsLocal = GovernanceDelegationAdditions<[GovernanceOffchainDelegation]>
-
-protocol DelegationListWrapperFactoryProtocol {
-    func createWrapper(
-        for params: AccountAddress,
-        chain: ChainModel,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<GovernanceOffchainDelegationsLocal>
-}
-
-final class DelegationListWrapperFactory: GovOffchainModelWrapperFactory<
-    AccountAddress, [GovernanceOffchainDelegation]
-> {
-    let operationFactory: GovernanceOffchainDelegationsFactoryProtocol
-
-    init(
-        operationFactory: GovernanceOffchainDelegationsFactoryProtocol,
-        identityOperationFactory: IdentityOperationFactoryProtocol
-    ) {
-        self.operationFactory = operationFactory
-
-        super.init(
-            identityParams: .init(operationFactory: identityOperationFactory) { delegations in
-                delegations.compactMap { try? $0.delegator.toAccountId() }
-            }
-        )
-    }
-
-    override func createModelWrapper(for params: AccountAddress, chain _: ChainModel) -> CompoundOperationWrapper<[GovernanceOffchainDelegation]> {
-        operationFactory.createDelegationsFetchWrapper(for: params)
-    }
-}
-
-extension DelegationListWrapperFactory: DelegationListWrapperFactoryProtocol {}

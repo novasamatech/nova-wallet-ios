@@ -78,7 +78,7 @@ final class ReferendumVotersPresenter {
         return VotesViewModel(
             displayAddress: displayAddressViewModel,
             votes: votesString ?? "",
-            preConviction: details ?? ""
+            votesDetails: details ?? ""
         )
     }
 
