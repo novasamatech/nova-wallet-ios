@@ -5,7 +5,10 @@ import SoraFoundation
 class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
     typealias RootViewType = GovernanceSelectTracksViewLayout
 
-    typealias TracksPair = ViewModelViewPair<GovernanceSelectTrackViewModel.Track, RowView<GovernanceSelectableTrackView>>
+    typealias TracksPair = ViewModelViewPair<
+        GovernanceSelectTrackViewModel.Track, RowView<GovernanceSelectableTrackView>
+    >
+
     typealias GroupsPair = ViewModelViewPair<GovernanceSelectTrackViewModel.Group, RoundedButton>
 
     let basePresenter: GovernanceSelectTracksPresenterProtocol
