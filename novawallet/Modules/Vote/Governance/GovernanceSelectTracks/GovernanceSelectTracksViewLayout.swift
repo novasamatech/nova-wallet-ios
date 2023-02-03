@@ -25,6 +25,8 @@ class GovernanceSelectTracksViewLayout: UIView {
         return view
     }()
 
+    private(set) var emptyStateView: EmptyStateView?
+
     private(set) var proceedButton: TriangularedButton = .create {
         $0.applyDefaultStyle()
     }
@@ -110,6 +112,22 @@ class GovernanceSelectTracksViewLayout: UIView {
         return trackRow
     }
 
+    func clearEmptyStateView() {
+        emptyStateView?.removeFromSuperview()
+        emptyStateView = nil
+    }
+
+    func addEmptyStateView() {
+        let emptyStateView = createEmptyStateView()
+
+        contentView.stackView.addArrangedSubview(emptyStateView)
+
+        emptyStateView.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-32)
+            make.height.equalTo(self).offset(-150)
+        }
+    }
+
     private func createTrackRow(
         for viewModel: SelectableViewModel<ReferendumInfoView.Track>
     ) -> RowView<GovernanceSelectableTrackView> {
@@ -128,5 +146,16 @@ class GovernanceSelectTracksViewLayout: UIView {
         button.imageWithTitleView?.title = title
 
         return button
+    }
+
+    private func createEmptyStateView() -> EmptyStateView {
+        let view = EmptyStateView()
+
+        view.image = R.image.iconEmptyHistory()?.tinted(with: R.color.colorIconSecondary()!)
+        view.verticalSpacing = 16
+        view.titleColor = R.color.colorTextSecondary()
+        view.titleFont = .regularFootnote
+
+        return view
     }
 }
