@@ -55,6 +55,14 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
         return .init(targetOperation: mapOperation, dependencies: dependencies)
     }
 
+    func fetchAllTracks(
+        runtimeProvider _: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[GovernanceTrackInfoLocal]> {
+        let track = GovernanceTrackInfoLocal(trackId: Self.trackId, name: Self.trackName)
+
+        return CompoundOperationWrapper.createWithResult([track])
+    }
+
     func fetchReferendumWrapper(
         for remoteReferendum: Democracy.ReferendumInfo,
         index: ReferendumIdLocal,
