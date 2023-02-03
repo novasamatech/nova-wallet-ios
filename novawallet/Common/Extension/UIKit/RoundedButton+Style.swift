@@ -10,6 +10,7 @@ extension RoundedButton {
         roundedBackgroundView?.highlightedStrokeColor = .clear
 
         imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()!
+        imageWithTitleView?.titleFont = .semiBoldFootnote
 
         changesContentOpacityWhenHighlighted = true
     }
