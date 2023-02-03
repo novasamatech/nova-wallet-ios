@@ -5,7 +5,7 @@ class GovernanceSelectTracksViewLayout: UIView {
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
         view.stackView.alignment = .center
         return view
     }()
@@ -50,11 +50,19 @@ class GovernanceSelectTracksViewLayout: UIView {
 
         contentView.stackView.addArrangedSubview(titleLabel)
 
+        titleLabel.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+        }
+
+        contentView.stackView.setCustomSpacing(8, after: titleLabel)
+
         contentView.stackView.addArrangedSubview(tracksGroupContainerView)
         tracksGroupContainerView.snp.makeConstraints { make in
             make.height.equalTo(32.0)
             make.width.equalTo(self)
         }
+
+        contentView.stackView.setCustomSpacing(12, after: tracksGroupContainerView)
 
         addSubview(proceedButton)
 
@@ -95,6 +103,10 @@ class GovernanceSelectTracksViewLayout: UIView {
 
         contentView.stackView.addArrangedSubview(trackRow)
 
+        trackRow.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+        }
+
         return trackRow
     }
 
@@ -104,6 +116,7 @@ class GovernanceSelectTracksViewLayout: UIView {
         let rowView = RowView(contentView: GovernanceSelectableTrackView(), preferredHeight: 44)
         rowView.roundedBackgroundView.highlightedFillColor = .clear
         rowView.rowContentView.bind(viewModel: viewModel)
+        rowView.contentInsets = .zero
         return rowView
     }
 

@@ -9,6 +9,7 @@ class GovernanceBaseEditDelegationLayout: GovernanceSelectTracksViewLayout {
 
     let availabilityView: GenericTitleValueView<UILabel, LinkView> = .create {
         $0.titleView.apply(style: .footnoteSecondary)
+        $0.valueView.isHidden = true
     }
 
     var availableTracksLabel: UILabel {
@@ -27,6 +28,18 @@ class GovernanceBaseEditDelegationLayout: GovernanceSelectTracksViewLayout {
         super.setupLayout()
 
         contentView.stackView.insertArranged(view: descriptionLabel, after: titleLabel)
+        contentView.stackView.setCustomSpacing(8, after: descriptionLabel)
+
+        descriptionLabel.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+        }
+
         contentView.stackView.insertArranged(view: availabilityView, after: descriptionLabel)
+        contentView.stackView.setCustomSpacing(8, after: availabilityView)
+
+        availabilityView.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+            make.height.equalTo(32)
+        }
     }
 }
