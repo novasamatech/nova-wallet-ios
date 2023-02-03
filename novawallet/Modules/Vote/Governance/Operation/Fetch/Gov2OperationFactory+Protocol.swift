@@ -81,7 +81,10 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
 
         let mapOperation = ClosureOperation<[GovernanceTrackInfoLocal]> {
             try tracksOperation.extractNoCancellableResultData().map { track in
-                GovernanceTrackInfoLocal(trackId: track.trackId, name: track.info.name)
+                GovernanceTrackInfoLocal(
+                    trackId: TrackIdLocal(track.trackId),
+                    name: track.info.name
+                )
             }
         }
 

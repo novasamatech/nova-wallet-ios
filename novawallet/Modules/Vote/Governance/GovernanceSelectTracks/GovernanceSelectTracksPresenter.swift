@@ -1,27 +1,27 @@
 import Foundation
 import SoraFoundation
 
-final class GovernanceSelectTracksPresenter {
-    weak var view: GovernanceSelectTracksViewProtocol?
-    let wireframe: GovernanceSelectTracksWireframeProtocol
+class GovernanceSelectTracksPresenter {
+    weak var baseView: GovernanceSelectTracksViewProtocol?
+    let baseWireframe: GovernanceSelectTracksWireframeProtocol
     let interactor: GovernanceSelectTracksInteractorInputProtocol
     let chain: ChainModel
     let logger: LoggerProtocol
 
-    private var tracks: [GovernanceTrackInfoLocal]?
-    private var votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
-    private var availableTrackIds: Set<UInt16>?
-    private var selectedTracks: Set<ReferendumTrackType>?
+    private(set) var tracks: [GovernanceTrackInfoLocal]?
+    private(set) var votingResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    var availableTrackIds: Set<TrackIdLocal>?
+    var selectedTracks: Set<ReferendumTrackType>?
 
     init(
         interactor: GovernanceSelectTracksInteractorInputProtocol,
-        wireframe: GovernanceSelectTracksWireframeProtocol,
+        baseWireframe: GovernanceSelectTracksWireframeProtocol,
         chain: ChainModel,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
-        self.wireframe = wireframe
+        self.baseWireframe = baseWireframe
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -62,15 +62,23 @@ final class GovernanceSelectTracksPresenter {
     private func createGroupViewModels(
         from availableTrackTypes: Set<ReferendumTrackType>
     ) -> [GovernanceSelectTrackViewModel.Group] {
+        let selectAllViewModel = GovernanceSelectTrackViewModel.Group.all(
+            title: R.string.localizable.commonSelectAll(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        )
+
         let allTrackGroups = ReferendumTrackGroup.groupsByPriority()
 
-        return allTrackGroups.filter { group in
+        let concreteViewModels = allTrackGroups.filter { group in
             !Set(group.trackTypes).isDisjoint(with: availableTrackTypes)
         }.map { trackGroup in
             let title = trackGroup.title(for: selectedLocale)
 
-            return .concrete(trackGroup: trackGroup, title: title)
+            return GovernanceSelectTrackViewModel.Group.concrete(trackGroup: trackGroup, title: title)
         }
+
+        return [selectAllViewModel] + concreteViewModels
     }
 
     func setupAvailableTracks() {
@@ -108,7 +116,7 @@ final class GovernanceSelectTracksPresenter {
             availableTracks: availableTracksViewModel
         )
 
-        view?.didReceiveTracks(viewModel: viewModel)
+        baseView?.didReceiveTracks(viewModel: viewModel)
     }
 
     private func performSelectAll() {
@@ -137,8 +145,16 @@ extension GovernanceSelectTracksPresenter: GovernanceSelectTracksPresenterProtoc
         interactor.setup()
     }
 
-    func select(track: GovernanceSelectTrackViewModel.Track) {
-        selectedTracks?.insert(track.type)
+    func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track) {
+        guard let selectedTracks = selectedTracks else {
+            return
+        }
+
+        if !selectedTracks.contains(track.type) {
+            selectedTracks.insert(track.type)
+        } else {
+            selectedTracks.remove(track.type)
+        }
 
         updateTracksView()
     }
@@ -152,7 +168,21 @@ extension GovernanceSelectTracksPresenter: GovernanceSelectTracksPresenterProtoc
         }
     }
 
-    func proceed() {}
+    func proceed() {
+        guard let selectedTrackTypes = selectedTracks, let allTracks = tracks else {
+            return
+        }
+
+        let selectedTracks = allTracks.filter { track in
+            guard let trackType = ReferendumTrackType(rawValue: track.name) else {
+                return false
+            }
+
+            return selectedTrackTypes.contains(trackType)
+        }
+
+        baseWireframe.proceed(from: baseView, tracks: selectedTracks)
+    }
 }
 
 extension GovernanceSelectTracksPresenter: GovernanceSelectTracksInteractorOutputProtocol {
@@ -177,11 +207,11 @@ extension GovernanceSelectTracksPresenter: GovernanceSelectTracksInteractorOutpu
 
         switch error {
         case .tracksFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: nil) { [weak self] in
+            baseWireframe.presentRequestStatus(on: baseView, locale: nil) { [weak self] in
                 self?.interactor.retryTracksFetch()
             }
         case .votesSubsctiptionFailed:
-            wireframe.presentRequestStatus(on: view, locale: nil) { [weak self] in
+            baseWireframe.presentRequestStatus(on: baseView, locale: nil) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
         }
@@ -190,7 +220,7 @@ extension GovernanceSelectTracksPresenter: GovernanceSelectTracksInteractorOutpu
 
 extension GovernanceSelectTracksPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {
+        if let view = baseView, view.isSetup {
             updateView()
         }
     }
