@@ -4,9 +4,8 @@ import RobinHood
 
 final class DelegationListInteractor {
     weak var presenter: DelegationListInteractorOutputProtocol!
-    typealias Delegations = [AccountAddress: [GovernanceOffchainDelegation]]
 
-    let governanceOffchainDelegationsFactory: GovernanceDelegationsLocalWrapperFactoryProtocol
+    let delegationsLocalWrapperFactoryProtocol: GovernanceDelegationsLocalWrapperFactoryProtocol
     let accountAddress: AccountAddress
     let chain: ChainModel
     let connection: JSONRPCEngine
@@ -19,10 +18,10 @@ final class DelegationListInteractor {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        governanceOffchainDelegationsFactory: GovernanceDelegationsLocalWrapperFactoryProtocol,
+        delegationsLocalWrapperFactoryProtocol: GovernanceDelegationsLocalWrapperFactoryProtocol,
         operationQueue: OperationQueue
     ) {
-        self.governanceOffchainDelegationsFactory = governanceOffchainDelegationsFactory
+        self.delegationsLocalWrapperFactoryProtocol = delegationsLocalWrapperFactoryProtocol
         self.accountAddress = accountAddress
         self.chain = chain
         self.connection = connection
@@ -31,7 +30,7 @@ final class DelegationListInteractor {
     }
 
     private func fetchDelegations() {
-        let wrapper = governanceOffchainDelegationsFactory.createWrapper(
+        let wrapper = delegationsLocalWrapperFactoryProtocol.createWrapper(
             for: accountAddress,
             chain: chain,
             connection: connection,

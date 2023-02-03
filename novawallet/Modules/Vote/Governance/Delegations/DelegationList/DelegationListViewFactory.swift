@@ -76,7 +76,7 @@ struct DelegationListViewFactory {
 
         let subquery = SubqueryDelegationsOperationFactory(url: delegationApi.url)
 
-        let governanceOffchainDelegationsFactory = GovernanceDelegationsLocalWrapperFactory(
+        let delegationsLocalWrapperFactoryProtocol = GovernanceDelegationsLocalWrapperFactory(
             operationFactory: subquery,
             identityOperationFactory: identityOperationFactory
         )
@@ -85,7 +85,7 @@ struct DelegationListViewFactory {
             chain: chain,
             connection: connection,
             runtimeService: runtimeProvider,
-            governanceOffchainDelegationsFactory: governanceOffchainDelegationsFactory,
+            delegationsLocalWrapperFactoryProtocol: delegationsLocalWrapperFactoryProtocol,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
