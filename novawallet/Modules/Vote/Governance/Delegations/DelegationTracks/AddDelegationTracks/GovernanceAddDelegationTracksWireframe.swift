@@ -3,11 +3,11 @@ import Foundation
 final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWireframe,
     GovernanceBaseEditDelegationWireframeProtocol {
     let state: GovernanceSharedState
-    let delegate: AccountId
+    let delegateId: AccountId
 
     init(state: GovernanceSharedState, delegate: AccountId) {
         self.state = state
-        self.delegate = delegate
+        delegateId = delegate
     }
 
     func presentUnavailableTracks(
@@ -15,6 +15,6 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
         votedTracks _: [GovernanceTrackInfoLocal],
         delegatedTracks _: [GovernanceTrackInfoLocal]
     ) {
-        // TODO:
+        // TODO: #860pmdtgx
     }
 }
