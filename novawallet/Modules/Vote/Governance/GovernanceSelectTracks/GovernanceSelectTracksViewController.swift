@@ -46,7 +46,11 @@ class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
 
     func setupLocalization() {
         updateActionButtonState()
+
+        updateEmptyStateLocalization()
     }
+
+    func updateEmptyStateLocalization() {}
 
     private func setupHandlers() {
         rootView.proceedButton.addTarget(
@@ -117,11 +121,18 @@ class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
         rootView.clearTrackRows(tracks.map(\.view))
         tracks = []
 
-        for track in newTracks {
-            let trackView = rootView.addTrackRow(for: track.viewModel)
-            tracks.append(.init(viewModel: track, view: trackView))
+        if !newTracks.isEmpty {
+            rootView.clearEmptyStateView()
 
-            trackView.addTarget(self, action: #selector(actionTrackTap), for: .touchUpInside)
+            for track in newTracks {
+                let trackView = rootView.addTrackRow(for: track.viewModel)
+                tracks.append(.init(viewModel: track, view: trackView))
+
+                trackView.addTarget(self, action: #selector(actionTrackTap), for: .touchUpInside)
+            }
+        } else {
+            rootView.addEmptyStateView()
+            updateEmptyStateLocalization()
         }
     }
 }

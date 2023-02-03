@@ -1150,3 +1150,4 @@
 "gov.add.delegation.tracks.details" = "Please select the tracks in which you would like to delegate your voting power.";
 "gov.tracks.selection.hint" = "Select at least 1 track...";
 "common.select.all" = "Select all";
+"gov.add.delegation.tracks.empty" = "No tracks available to delegate";
