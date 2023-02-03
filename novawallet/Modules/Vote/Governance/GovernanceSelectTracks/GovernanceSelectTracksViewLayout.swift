@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class GovernanceSelectTracksViewLayout: UIView {
+class GovernanceSelectTracksViewLayout: UIView {
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
@@ -25,6 +25,10 @@ final class GovernanceSelectTracksViewLayout: UIView {
         return view
     }()
 
+    private(set) var proceedButton: TriangularedButton = .create {
+        $0.applyDefaultStyle()
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -38,7 +42,7 @@ final class GovernanceSelectTracksViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -51,6 +55,21 @@ final class GovernanceSelectTracksViewLayout: UIView {
             make.height.equalTo(32.0)
             make.width.equalTo(self)
         }
+
+        addSubview(proceedButton)
+
+        proceedButton.snp.makeConstraints { make in
+            make.height.equalTo(UIConstants.actionHeight)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+        }
+
+        contentView.scrollView.contentInset = UIEdgeInsets(
+            top: 0,
+            left: 0,
+            bottom: UIConstants.actionHeight + 2 * UIConstants.actionBottomInset,
+            right: 0
+        )
     }
 
     func clearGroupButtons(_ buttons: [RoundedButton]) {
