@@ -58,7 +58,10 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
     func fetchAllTracks(
         runtimeProvider _: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[GovernanceTrackInfoLocal]> {
-        let track = GovernanceTrackInfoLocal(trackId: Self.trackId, name: Self.trackName)
+        let track = GovernanceTrackInfoLocal(
+            trackId: TrackIdLocal(Self.trackId),
+            name: Self.trackName
+        )
 
         return CompoundOperationWrapper.createWithResult([track])
     }

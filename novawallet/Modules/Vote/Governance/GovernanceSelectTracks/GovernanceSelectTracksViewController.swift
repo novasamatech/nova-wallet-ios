@@ -1,17 +1,26 @@
 import UIKit
 import SoraUI
+import SoraFoundation
 
-final class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
+class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
     typealias RootViewType = GovernanceSelectTracksViewLayout
 
-    let presenter: GovernanceSelectTracksPresenterProtocol
+    typealias TracksPair = ViewModelViewPair<GovernanceSelectTrackViewModel.Track, RowView<GovernanceSelectableTrackView>>
+    typealias GroupsPair = ViewModelViewPair<GovernanceSelectTrackViewModel.Group, RoundedButton>
 
-    private var tracks: [ViewModelViewPair<GovernanceSelectTrackViewModel.Track, RowView<GovernanceSelectableTrackView>>] = []
-    private var groups: [ViewModelViewPair<GovernanceSelectTrackViewModel.Group, RoundedButton>] = []
+    let basePresenter: GovernanceSelectTracksPresenterProtocol
 
-    init(presenter: GovernanceSelectTracksPresenterProtocol) {
-        self.presenter = presenter
+    private var tracks: [TracksPair] = []
+    private var groups: [GroupsPair] = []
+
+    init(
+        basePresenter: GovernanceSelectTracksPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.basePresenter = basePresenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -26,7 +35,26 @@ final class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.setup()
+        setupHandlers()
+        setupLocalization()
+
+        basePresenter.setup()
+    }
+
+    func setupLocalization() {
+        updateActionButtonState()
+    }
+
+    private func setupHandlers() {
+        rootView.proceedButton.addTarget(
+            self,
+            action: #selector(actionProceed),
+            for: .touchUpInside
+        )
+    }
+
+    @objc private func actionProceed() {
+        basePresenter.proceed()
     }
 
     @objc private func actionGroupTap(sender: AnyObject) {
@@ -34,7 +62,7 @@ final class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
             return
         }
 
-        presenter.select(group: viewModel)
+        basePresenter.select(group: viewModel)
     }
 
     @objc private func actionTrackTap(sender: AnyObject) {
@@ -42,7 +70,32 @@ final class GovernanceSelectTracksViewController: UIViewController, ViewHolder {
             return
         }
 
-        presenter.select(track: viewModel)
+        basePresenter.toggleTrackSelection(track: viewModel)
+    }
+
+    private func updateActionButtonState() {
+        let hasSelectedTracks = tracks.contains { $0.viewModel.viewModel.selectable }
+
+        let title: String
+
+        if hasSelectedTracks {
+            rootView.proceedButton.applyEnabledStyle()
+            rootView.proceedButton.isUserInteractionEnabled = true
+
+            title = R.string.localizable.commonContinue(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            rootView.proceedButton.applyDisabledStyle()
+            rootView.proceedButton.isUserInteractionEnabled = false
+
+            title = R.string.localizable.govTracksSelectionHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        rootView.proceedButton.imageWithTitleView?.title = title
+        rootView.proceedButton.invalidateLayout()
     }
 
     private func apply(newGroups: [GovernanceSelectTrackViewModel.Group]) {
@@ -74,5 +127,15 @@ extension GovernanceSelectTracksViewController: GovernanceSelectTracksViewProtoc
     func didReceiveTracks(viewModel: GovernanceSelectTrackViewModel) {
         apply(newGroups: viewModel.trackGroups)
         apply(newTracks: viewModel.availableTracks)
+
+        updateActionButtonState()
+    }
+}
+
+extension GovernanceSelectTracksViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }

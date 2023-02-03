@@ -1144,3 +1144,9 @@
 "gov.track.group.treasury" = "Treasury";
 "gov.track.group.governance" = "Governance";
 "gov.track.group.fellowship" = "Fellowship";
+"gov.available.tracks" = "Available tracks";
+"gov.unavailable.tracks" = "Unavailable tracks";
+"gov.add.delegation.tracks.title" = "Select tracks to add delegation";
+"gov.add.delegation.tracks.details" = "Please select the tracks in which you would like to delegate your voting power.";
+"gov.tracks.selection.hint" = "Select at least 1 track...";
+"common.select.all" = "Select all";

@@ -4,7 +4,7 @@ protocol GovernanceSelectTracksViewProtocol: ControllerBackedProtocol {
 
 protocol GovernanceSelectTracksPresenterProtocol: AnyObject {
     func setup()
-    func select(track: GovernanceSelectTrackViewModel.Track)
+    func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track)
     func select(group: GovernanceSelectTrackViewModel.Group)
     func proceed()
 }
@@ -21,4 +21,9 @@ protocol GovernanceSelectTracksInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: GovernanceSelectTracksInteractorError)
 }
 
-protocol GovernanceSelectTracksWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol GovernanceSelectTracksWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+    func proceed(
+        from view: ControllerBackedProtocol?,
+        tracks: [GovernanceTrackInfoLocal]
+    )
+}
