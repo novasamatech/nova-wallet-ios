@@ -3,12 +3,12 @@ import SoraFoundation
 
 final class GovernanceAddDelegationTracksPresenter: GovernanceSelectTracksPresenter {
     var view: GovernanceBaseEditDelegationViewProtocol? {
-        set {
-            baseView = newValue
-        }
-
         get {
             baseView as? GovernanceBaseEditDelegationViewProtocol
+        }
+
+        set {
+            baseView = newValue
         }
     }
 
@@ -38,6 +38,8 @@ final class GovernanceAddDelegationTracksPresenter: GovernanceSelectTracksPresen
         }
 
         let hasUnavailableTracks = tracks.count != availableTrackIds.count
+
+        view?.didReceive(hasUnavailableTracks: hasUnavailableTracks)
     }
 
     private func getUnavailableTrackIds() -> Set<TrackIdLocal>? {

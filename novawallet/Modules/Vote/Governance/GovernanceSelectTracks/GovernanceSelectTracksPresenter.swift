@@ -48,7 +48,7 @@ class GovernanceSelectTracksPresenter {
             let selected = selectedTracks.contains(type)
 
             let viewModel = ReferendumInfoView.Track(
-                title: type.title(for: selectedLocale) ?? "",
+                title: type.title(for: selectedLocale)?.uppercased() ?? "",
                 icon: type.imageViewModel(for: chain)
             )
 
@@ -146,14 +146,10 @@ extension GovernanceSelectTracksPresenter: GovernanceSelectTracksPresenterProtoc
     }
 
     func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track) {
-        guard let selectedTracks = selectedTracks else {
-            return
-        }
-
-        if !selectedTracks.contains(track.type) {
-            selectedTracks.insert(track.type)
+        if selectedTracks?.contains(track.type) != true {
+            selectedTracks?.insert(track.type)
         } else {
-            selectedTracks.remove(track.type)
+            selectedTracks?.remove(track.type)
         }
 
         updateTracksView()
