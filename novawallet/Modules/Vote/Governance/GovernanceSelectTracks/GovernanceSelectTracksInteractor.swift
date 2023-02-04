@@ -1,8 +1,8 @@
 import UIKit
 import SubstrateSdk
 
-final class GovernanceSelectTracksInteractor {
-    weak var presenter: GovernanceSelectTracksInteractorOutputProtocol?
+class GovernanceSelectTracksInteractor: GovernanceSelectTracksInteractorInputProtocol {
+    weak var basePresenter: GovernanceSelectTracksInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
@@ -31,9 +31,9 @@ final class GovernanceSelectTracksInteractor {
             DispatchQueue.main.async {
                 do {
                     let tracks = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveTracks(tracks)
+                    self?.basePresenter?.didReceiveTracks(tracks)
                 } catch {
-                    self?.presenter?.didReceiveError(
+                    self?.basePresenter?.didReceiveError(
                         GovernanceSelectTracksInteractorError.tracksFetchFailed(error)
                     )
                 }
@@ -52,17 +52,15 @@ final class GovernanceSelectTracksInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(votingResult):
-                self?.presenter?.didReceiveVotingResult(votingResult)
+                self?.basePresenter?.didReceiveVotingResult(votingResult)
             case let .failure(error):
-                self?.presenter?.didReceiveError(GovernanceSelectTracksInteractorError.votesSubsctiptionFailed(error))
+                self?.basePresenter?.didReceiveError(GovernanceSelectTracksInteractorError.votesSubsctiptionFailed(error))
             case .none:
                 break
             }
         }
     }
-}
 
-extension GovernanceSelectTracksInteractor: GovernanceSelectTracksInteractorInputProtocol {
     func setup() {
         provideTracks()
         subscribeAccountVotes()
