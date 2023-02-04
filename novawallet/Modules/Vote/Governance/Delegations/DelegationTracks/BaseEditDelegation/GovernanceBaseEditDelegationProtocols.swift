@@ -11,6 +11,7 @@ protocol GovernanceBaseEditDelegationPresenterProtocol: GovernanceSelectTracksPr
 protocol GovernanceBaseEditDelegationWireframeProtocol: GovernanceSelectTracksWireframeProtocol {
     func presentUnavailableTracks(
         from view: ControllerBackedProtocol?,
+        delegate: GovernanceUnavailableTracksDelegate,
         votedTracks: [GovernanceTrackInfoLocal],
         delegatedTracks: [GovernanceTrackInfoLocal]
     )
