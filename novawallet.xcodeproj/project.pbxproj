@@ -1112,6 +1112,12 @@
 		84644A3525672F6D004EAA4B /* ChainStorageIdFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84644A3425672F6D004EAA4B /* ChainStorageIdFactory.swift */; };
 		84644AC52567EC05004EAA4B /* MultilineTriangularedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84644AC42567EC05004EAA4B /* MultilineTriangularedView.swift */; };
 		84644B3325685915004EAA4B /* WalletHistoryBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84644B3225685915004EAA4B /* WalletHistoryBackgroundView.swift */; };
+		8465DA35298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8465DA34298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift */; };
+		8465DA37298EC7A300C7CFF1 /* TitleDetailsSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8465DA36298EC7A300C7CFF1 /* TitleDetailsSheetViewController.swift */; };
+		8465DA39298EC86E00C7CFF1 /* TitleDetailsSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8465DA38298EC86E00C7CFF1 /* TitleDetailsSheetViewModel.swift */; };
+		8465DA3B298EC97D00C7CFF1 /* TitleDetailsSheetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8465DA3A298EC97D00C7CFF1 /* TitleDetailsSheetViewFactory.swift */; };
+		8465DA3D298ECF2500C7CFF1 /* GovernanceAddDelegationTracksProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8465DA3C298ECF2500C7CFF1 /* GovernanceAddDelegationTracksProtocols.swift */; };
+		8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8465DA3E298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift */; };
 		8466780F27EB2939007935D3 /* OnChainTransferPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466780E27EB2939007935D3 /* OnChainTransferPresenter.swift */; };
 		8466781127EB4078007935D3 /* StackNetworkFeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */; };
 		8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781227EC5446007935D3 /* MultilineBalanceView.swift */; };
@@ -4312,6 +4318,12 @@
 		84644A3425672F6D004EAA4B /* ChainStorageIdFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainStorageIdFactory.swift; sourceTree = "<group>"; };
 		84644AC42567EC05004EAA4B /* MultilineTriangularedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTriangularedView.swift; sourceTree = "<group>"; };
 		84644B3225685915004EAA4B /* WalletHistoryBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryBackgroundView.swift; sourceTree = "<group>"; };
+		8465DA34298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleDetailsSheetLayout.swift; sourceTree = "<group>"; };
+		8465DA36298EC7A300C7CFF1 /* TitleDetailsSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleDetailsSheetViewController.swift; sourceTree = "<group>"; };
+		8465DA38298EC86E00C7CFF1 /* TitleDetailsSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleDetailsSheetViewModel.swift; sourceTree = "<group>"; };
+		8465DA3A298EC97D00C7CFF1 /* TitleDetailsSheetViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleDetailsSheetViewFactory.swift; sourceTree = "<group>"; };
+		8465DA3C298ECF2500C7CFF1 /* GovernanceAddDelegationTracksProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceAddDelegationTracksProtocols.swift; sourceTree = "<group>"; };
+		8465DA3E298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceAddDelegationTracksInteractor.swift; sourceTree = "<group>"; };
 		8466780E27EB2939007935D3 /* OnChainTransferPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnChainTransferPresenter.swift; sourceTree = "<group>"; };
 		8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackNetworkFeeCell.swift; sourceTree = "<group>"; };
 		8466781227EC5446007935D3 /* MultilineBalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineBalanceView.swift; sourceTree = "<group>"; };
@@ -8021,6 +8033,8 @@
 				8434B603298D474D00FACF4C /* GovernanceAddDelegationTracksPresenter.swift */,
 				8434B605298D4E0E00FACF4C /* GovernanceAddDelegationTracksViewFactory.swift */,
 				8434B607298D4FD500FACF4C /* GovernanceAddDelegationTracksWireframe.swift */,
+				8465DA3C298ECF2500C7CFF1 /* GovernanceAddDelegationTracksProtocols.swift */,
+				8465DA3E298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift */,
 			);
 			path = AddDelegationTracks;
 			sourceTree = "<group>";
@@ -8925,6 +8939,34 @@
 				84C2063F28D1EAD2006D0D52 /* AccountAssetBalanceTrigger.swift */,
 			);
 			path = Triggers;
+			sourceTree = "<group>";
+		};
+		8465DA32298EC5A800C7CFF1 /* Compound */ = {
+			isa = PBXGroup;
+			children = (
+				0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */,
+				14383723F0B56C91A0B3016E /* MessageSheetWireframe.swift */,
+				6C3AD523C06AD4FD58B7B3CC /* MessageSheetPresenter.swift */,
+				C0A2F34329579E12A2836E77 /* MessageSheetViewController.swift */,
+				2A719A9FC28373296AB195CB /* MessageSheetViewLayout.swift */,
+				57535268534B154B42ED51CE /* MessageSheetViewFactory.swift */,
+				844B6EC628A3B05300A8BE83 /* MessageSheetViewModel.swift */,
+				84355CED28B614A7004E5C5E /* MessageSheetImageGraphicsView.swift */,
+				846A835E28B8D94300D92892 /* MessageSheetNoContentView.swift */,
+				84E172CE28BE468D00DC85B6 /* MessageSheetPresentable.swift */,
+			);
+			path = Compound;
+			sourceTree = "<group>";
+		};
+		8465DA33298EC5D900C7CFF1 /* TitleDetails */ = {
+			isa = PBXGroup;
+			children = (
+				8465DA34298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift */,
+				8465DA36298EC7A300C7CFF1 /* TitleDetailsSheetViewController.swift */,
+				8465DA38298EC86E00C7CFF1 /* TitleDetailsSheetViewModel.swift */,
+				8465DA3A298EC97D00C7CFF1 /* TitleDetailsSheetViewFactory.swift */,
+			);
+			path = TitleDetails;
 			sourceTree = "<group>";
 		};
 		8466780D27EB28FF007935D3 /* BaseTransfer */ = {
@@ -13698,16 +13740,8 @@
 		95ED25232B568F2C7DA953CC /* MessageSheet */ = {
 			isa = PBXGroup;
 			children = (
-				0C797A5B5863A026E84062AE /* MessageSheetProtocols.swift */,
-				14383723F0B56C91A0B3016E /* MessageSheetWireframe.swift */,
-				6C3AD523C06AD4FD58B7B3CC /* MessageSheetPresenter.swift */,
-				C0A2F34329579E12A2836E77 /* MessageSheetViewController.swift */,
-				2A719A9FC28373296AB195CB /* MessageSheetViewLayout.swift */,
-				57535268534B154B42ED51CE /* MessageSheetViewFactory.swift */,
-				844B6EC628A3B05300A8BE83 /* MessageSheetViewModel.swift */,
-				84355CED28B614A7004E5C5E /* MessageSheetImageGraphicsView.swift */,
-				846A835E28B8D94300D92892 /* MessageSheetNoContentView.swift */,
-				84E172CE28BE468D00DC85B6 /* MessageSheetPresentable.swift */,
+				8465DA33298EC5D900C7CFF1 /* TitleDetails */,
+				8465DA32298EC5A800C7CFF1 /* Compound */,
 			);
 			path = MessageSheet;
 			sourceTree = "<group>";
@@ -16693,6 +16727,7 @@
 				84A6AB64290B021E001B57B2 /* CopyPresentable.swift in Sources */,
 				841AAC2126F6860B00F0A25E /* AssetBalanceFormatterFactory.swift in Sources */,
 				8418167528251BBC0007684A /* StorageListSyncResult.swift in Sources */,
+				8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */,
 				88D997B028ABC8C0006135A5 /* BlurredTableViewCell.swift in Sources */,
 				849ABE5B2627739400011A2A /* ListReducing.swift in Sources */,
 				88C5F07C297EE79C001CCADE /* Release.swift in Sources */,
@@ -16841,6 +16876,7 @@
 				846CD24D2656FEB800A2E4B6 /* StorageKeysQueryService.swift in Sources */,
 				846AF8402525B94D00868F37 /* WalletNetworkFacade+Protocol.swift in Sources */,
 				F40966FF26B29A58008CD244 /* FWBarChartView.swift in Sources */,
+				8465DA39298EC86E00C7CFF1 /* TitleDetailsSheetViewModel.swift in Sources */,
 				8468B86C24F63CEF00B76BC6 /* AddAccount+AccountConfirmInteractor.swift in Sources */,
 				887A717C28FEF03E00B13C7E /* BaselinedView.swift in Sources */,
 				84BD388D28A25CB800A9918E /* UILabel+ExpirationTimer.swift in Sources */,
@@ -17123,6 +17159,7 @@
 				849E17DE279093B4002D1744 /* DAppSearchDAppTableViewCell.swift in Sources */,
 				847F2D4D27AA68DD00AFD476 /* AssetListAssetModel.swift in Sources */,
 				84E258A32892CEA100DC8A51 /* AccountManagementHeaderView.swift in Sources */,
+				8465DA37298EC7A300C7CFF1 /* TitleDetailsSheetViewController.swift in Sources */,
 				84BEE22325646AC000D05EB3 /* SelectedUsernameChanged.swift in Sources */,
 				8467FD4124ED3C72005D486C /* AlignableContentControl.swift in Sources */,
 				84C2063C28D1D25C006D0D52 /* ModalPickerFactory+YieldBoost.swift in Sources */,
@@ -17877,6 +17914,7 @@
 				843E9B2827C83985009C143A /* AssetListNftsCell.swift in Sources */,
 				3E1462D9E1C0D490E81FD288 /* StakingUnbondConfirmViewFactory.swift in Sources */,
 				9B4BE26140C63E07C256CC97 /* StakingRedeemProtocols.swift in Sources */,
+				8465DA35298EC5FB00C7CFF1 /* TitleDetailsSheetLayout.swift in Sources */,
 				AEE5FB1C264A610C002B8FDC /* StakingRewardDestSetupLayout.swift in Sources */,
 				84350ADB28461E5B0031EF24 /* ParaStkYourCollatorsViewModelFactory.swift in Sources */,
 				B7CF31A548C02AD7AAC16A8D /* StakingRedeemWireframe.swift in Sources */,
@@ -18193,6 +18231,7 @@
 				E9625CE429290F5504728D62 /* NftListWireframe.swift in Sources */,
 				841816712824F4F30007684A /* ParachainStakingCollatorSnapshot.swift in Sources */,
 				5B54978244C37502DD592486 /* NftListPresenter.swift in Sources */,
+				8465DA3D298ECF2500C7CFF1 /* GovernanceAddDelegationTracksProtocols.swift in Sources */,
 				6797F109D7C270DE4877B435 /* NftListInteractor.swift in Sources */,
 				845B811528F43C350040CE84 /* Treasury.swift in Sources */,
 				84C3420B283187D800156569 /* BlockTimeEstimationService.swift in Sources */,
@@ -18517,6 +18556,7 @@
 				C19EF49636E698D87D5D18FA /* ParaStkYieldBoostSetupViewLayout.swift in Sources */,
 				B3E567D46F54E8E735792FE1 /* ParaStkYieldBoostSetupViewFactory.swift in Sources */,
 				E221892A5B6A41A944B88336 /* ParaStkYieldBoostStartProtocols.swift in Sources */,
+				8465DA3B298EC97D00C7CFF1 /* TitleDetailsSheetViewFactory.swift in Sources */,
 				8F131D86B269B7FAB96CF3B5 /* ParaStkYieldBoostStartWireframe.swift in Sources */,
 				EEDDE41F8445C0CB2E99AFE4 /* ParaStkYieldBoostStartPresenter.swift in Sources */,
 				84A1742728ED607B0096F943 /* GovernanceOperationProtocols.swift in Sources */,

@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct GovernanceAddDelegationTracksViewFactory {
     static func createView(
@@ -7,7 +8,7 @@ struct GovernanceAddDelegationTracksViewFactory {
         delegate: AccountId
     ) -> GovernanceSelectTracksViewProtocol? {
         guard
-            let interactor = GovernanceSelectTracksViewFactory.createInteractor(for: state),
+            let interactor = createInteractor(for: state),
             let chain = state.settings.value?.chain else {
             return nil
         }
@@ -34,5 +35,25 @@ struct GovernanceAddDelegationTracksViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    static func createInteractor(for state: GovernanceSharedState) -> GovAddDelegationTracksInteractor? {
+        guard
+            let chain = state.settings.value?.chain,
+            let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: chain.accountRequest()),
+            let runtimeProvider = ChainRegistryFacade.sharedRegistry.getRuntimeProvider(for: chain.chainId),
+            let subscriptionFactory = state.subscriptionFactory,
+            let referendumsFactory = state.referendumsOperationFactory else {
+            return nil
+        }
+
+        return GovAddDelegationTracksInteractor(
+            selectedAccount: selectedAccount,
+            subscriptionFactory: subscriptionFactory,
+            fetchOperationFactory: referendumsFactory,
+            runtimeProvider: runtimeProvider,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            settings: SettingsManager.shared
+        )
     }
 }
