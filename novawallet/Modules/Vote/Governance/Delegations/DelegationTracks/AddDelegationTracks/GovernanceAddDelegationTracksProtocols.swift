@@ -10,7 +10,7 @@ protocol GovAddDelegationTracksWireframeProtocol: GovernanceBaseEditDelegationWi
 
     func showRemoveVotes(
         from view: ControllerBackedProtocol?,
-        trackIds: Set<TrackIdLocal>
+        tracks: [GovernanceTrackInfoLocal]
     )
 }
 

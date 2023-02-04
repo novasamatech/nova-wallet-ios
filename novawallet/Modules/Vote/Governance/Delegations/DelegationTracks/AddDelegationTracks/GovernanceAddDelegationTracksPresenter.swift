@@ -38,6 +38,20 @@ final class GovernanceAddDelegationTracksPresenter: GovernanceSelectTracksPresen
         )
     }
 
+    private func showRemoveVotes() {
+        guard let voting = votingResult?.value, let tracks = tracks else {
+            return
+        }
+
+        let votedTrackIds = Set(voting.votes.votedTracks.keys)
+        let votedTracks = tracks.filter { votedTrackIds.contains($0.trackId) }
+
+        wireframe?.showRemoveVotes(
+            from: view,
+            tracks: votedTracks
+        )
+    }
+
     private func showRemoveVotesHintIfNeeded() {
         if
             isRemoveVotesHintAllowed,
@@ -51,10 +65,7 @@ final class GovernanceAddDelegationTracksPresenter: GovernanceSelectTracksPresen
                 skipClosure: { [weak self] in
                     self?.interactor?.saveRemoveVotesSkipped()
                 }, removeVotesClosure: { [weak self] in
-                    self?.wireframe?.showRemoveVotes(
-                        from: self?.view,
-                        trackIds: Set(votedTracks)
-                    )
+                    self?.showRemoveVotes()
                 }
             )
         }
@@ -132,9 +143,16 @@ extension GovernanceAddDelegationTracksPresenter: GovernanceBaseEditDelegationPr
 
         wireframe?.presentUnavailableTracks(
             from: view,
+            delegate: self,
             votedTracks: votedTracks,
             delegatedTracks: delegatedTracks
         )
+    }
+}
+
+extension GovernanceAddDelegationTracksPresenter: GovernanceUnavailableTracksDelegate {
+    func unavailableTracksDidDecideRemoveVotes() {
+        showRemoveVotes()
     }
 }
 

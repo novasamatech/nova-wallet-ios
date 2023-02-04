@@ -13,11 +13,27 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
     }
 
     func presentUnavailableTracks(
-        from _: ControllerBackedProtocol?,
-        votedTracks _: [GovernanceTrackInfoLocal],
-        delegatedTracks _: [GovernanceTrackInfoLocal]
+        from view: ControllerBackedProtocol?,
+        delegate: GovernanceUnavailableTracksDelegate,
+        votedTracks: [GovernanceTrackInfoLocal],
+        delegatedTracks: [GovernanceTrackInfoLocal]
     ) {
-        // TODO: #860pmdtgx
+        guard
+            let presentingView = GovernanceUnavailableTracksViewFactory.createView(
+                for: state,
+                delegate: delegate,
+                votedTracks: votedTracks,
+                delegatedTracks: delegatedTracks
+            ) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+
+        presentingView.controller.modalTransitioningFactory = factory
+        presentingView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(presentingView.controller, animated: true)
     }
 
     func showRemoveVotesRequest(
@@ -79,7 +95,7 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
 
     func showRemoveVotes(
         from _: ControllerBackedProtocol?,
-        trackIds _: Set<TrackIdLocal>
+        tracks _: [GovernanceTrackInfoLocal]
     ) {
         // TODO: #860pmdtgt
     }
