@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 final class GovernanceUnavailableTracksViewLayout: UIView {
-    private struct Constants {
+    private enum Constants {
         static let contentInsets = UIEdgeInsets(top: 10, left: 16, bottom: 0, right: 16)
         static let tracksOffset: CGFloat = 10
         static let actionOffset: CGFloat = 8
@@ -167,12 +167,14 @@ extension GovernanceUnavailableTracksViewLayout {
 
         if !delegatedTracks.isEmpty {
             height += titleHeight
-            height += 2 * Constants.sectionInset + (delegatedTracks.count - 1) * trackHeight
+            height += 2 * Constants.sectionInset + CGFloat(delegatedTracks.count - 1) *
+                (trackHeight + Constants.trackSpacing)
         }
 
         if !votedTracks.isEmpty {
             height += 2 * titleHeight + Constants.actionOffset
-            height += 2 * Constants.sectionInset + (votedTracks.count - 1) * trackHeight
+            height += 2 * Constants.sectionInset + CGFloat(votedTracks.count - 1) *
+                (trackHeight + Constants.trackSpacing)
         }
 
         return height
