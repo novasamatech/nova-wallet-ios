@@ -31,6 +31,17 @@ struct GovernanceUnavailableTracksViewFactory {
             localizationManager: localizationManager
         )
 
+        let maxHeight = ModalSheetPresentationConfiguration.maximumContentHeight
+        let estimatedContentHeight = GovUnavailableTracksViewController.estimatePreferredHeight(
+            for: votedTracks,
+            delegatedTracks: delegatedTracks
+        )
+
+        view.preferredContentSize = .init(
+            width: 0,
+            height: min(estimatedContentHeight, maxHeight)
+        )
+
         presenter.view = view
 
         return view
