@@ -27,7 +27,13 @@ final class GovUnavailableTracksViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupScrollView()
+
         presenter.setup()
+    }
+
+    private func setupScrollView() {
+        rootView.contentView.scrollView.delegate = self
     }
 
     private func setupLocalization() {
@@ -78,6 +84,12 @@ extension GovUnavailableTracksViewController: GovernanceUnavailableTracksViewPro
         )
 
         setupLocalization()
+    }
+}
+
+extension GovUnavailableTracksViewController: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        scrollView.bounces = scrollView.contentOffset.y > UIConstants.bouncesOffset
     }
 }
 
