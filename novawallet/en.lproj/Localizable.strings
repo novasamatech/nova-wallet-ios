@@ -1140,7 +1140,8 @@
 "in.app.updates.button.show.more.title" = "See all available updates";
 "in.app.updates.version.title" = "Version %@";
 "in.app.updates.fetch.change.logs.error" = "Change logs can't be loaded";
-"delegate.vote.by" = "%@ by %@";
+"delegate.vote.by" = "Your votes: %@ via %@";
+"delegator.votes.via.delegate" = "Your votes via %@";
 "gov.track.group.treasury" = "Treasury";
 "gov.track.group.governance" = "Governance";
 "gov.track.group.fellowship" = "Fellowship";
