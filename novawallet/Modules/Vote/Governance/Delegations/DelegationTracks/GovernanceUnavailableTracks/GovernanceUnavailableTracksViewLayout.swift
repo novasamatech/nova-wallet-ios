@@ -2,10 +2,18 @@ import UIKit
 import SoraUI
 
 final class GovernanceUnavailableTracksViewLayout: UIView {
+    private struct Constants {
+        static let contentInsets = UIEdgeInsets(top: 10, left: 16, bottom: 0, right: 16)
+        static let tracksOffset: CGFloat = 10
+        static let actionOffset: CGFloat = 8
+        static let sectionInset: CGFloat = 19
+        static let trackSpacing: CGFloat = 22
+    }
+
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 0, right: 16)
+        view.stackView.layoutMargins = Constants.contentInsets
         view.stackView.alignment = .leading
         return view
     }()
@@ -49,11 +57,11 @@ final class GovernanceUnavailableTracksViewLayout: UIView {
 
     func addVotedTracks(_ tracks: [ReferendumInfoView.Track]) {
         let sectionLabel = addSectionLabel()
-        contentView.stackView.setCustomSpacing(8, after: sectionLabel)
+        contentView.stackView.setCustomSpacing(Constants.actionOffset, after: sectionLabel)
         votedTracksTitleLabel = sectionLabel
 
         let linkButton = addLinkButton()
-        contentView.stackView.setCustomSpacing(19, after: linkButton)
+        contentView.stackView.setCustomSpacing(Constants.sectionInset, after: linkButton)
         removeVotesButton = linkButton
 
         addTrackViews(for: tracks)
@@ -61,7 +69,7 @@ final class GovernanceUnavailableTracksViewLayout: UIView {
 
     func addDelegatedTracks(_ tracks: [ReferendumInfoView.Track]) {
         let sectionLabel = addSectionLabel()
-        contentView.stackView.setCustomSpacing(19, after: sectionLabel)
+        contentView.stackView.setCustomSpacing(Constants.sectionInset, after: sectionLabel)
         delegatedTracksTitleLabel = sectionLabel
 
         addTrackViews(for: tracks)
@@ -95,11 +103,11 @@ final class GovernanceUnavailableTracksViewLayout: UIView {
     private func addTrackViews(for viewModels: [ReferendumInfoView.Track]) {
         for viewModel in viewModels {
             let trackView = addTrackView(for: viewModel)
-            contentView.stackView.setCustomSpacing(22, after: trackView)
+            contentView.stackView.setCustomSpacing(Constants.trackSpacing, after: trackView)
         }
 
-        if let lastTrackView = tracks {
-            contentView.stackView.setCustomSpacing(19, after: lastTrackView)
+        if let lastTrackView = trackViews.last {
+            contentView.stackView.setCustomSpacing(Constants.sectionInset, after: lastTrackView)
         }
     }
 
@@ -117,7 +125,7 @@ final class GovernanceUnavailableTracksViewLayout: UIView {
 
         trackViews.append(trackView)
 
-        trackView.iconDetailsView.detailsLabel.text = viewModel.underlyingViewModel.title
+        trackView.iconDetailsView.detailsLabel.text = viewModel.title
 
         let iconSize = trackView.iconDetailsView.iconWidth
         let imageSettings = ImageViewModelSettings(
@@ -142,6 +150,31 @@ final class GovernanceUnavailableTracksViewLayout: UIView {
         }
 
         contentView.stackView.addArrangedSubview(titleLabel)
-        contentView.stackView.setCustomSpacing(10, after: titleLabel)
+        contentView.stackView.setCustomSpacing(Constants.tracksOffset, after: titleLabel)
+    }
+}
+
+extension GovernanceUnavailableTracksViewLayout {
+    static func estimatePreferredHeight(
+        for votedTracks: [GovernanceTrackInfoLocal],
+        delegatedTracks: [GovernanceTrackInfoLocal]
+    ) -> CGFloat {
+        let titleHeight: CGFloat = 22
+
+        var height = Constants.contentInsets.top + titleHeight + Constants.tracksOffset
+
+        let trackHeight: CGFloat = 22
+
+        if !delegatedTracks.isEmpty {
+            height += titleHeight
+            height += 2 * Constants.sectionInset + (delegatedTracks.count - 1) * trackHeight
+        }
+
+        if !votedTracks.isEmpty {
+            height += 2 * titleHeight + Constants.actionOffset
+            height += 2 * Constants.sectionInset + (votedTracks.count - 1) * trackHeight
+        }
+
+        return height
     }
 }

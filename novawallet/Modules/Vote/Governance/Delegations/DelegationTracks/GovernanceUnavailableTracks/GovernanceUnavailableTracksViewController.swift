@@ -88,3 +88,15 @@ extension GovUnavailableTracksViewController: Localizable {
         }
     }
 }
+
+extension GovUnavailableTracksViewController {
+    static func estimatePreferredHeight(
+        for votedTracks: [GovernanceTrackInfoLocal],
+        delegatedTracks: [GovernanceTrackInfoLocal]
+    ) -> CGFloat {
+        RootViewType.estimatePreferredHeight(
+            for: votedTracks,
+            delegatedTracks: delegatedTracks
+        )
+    }
+}
