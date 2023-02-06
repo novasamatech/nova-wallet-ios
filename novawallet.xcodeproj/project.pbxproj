@@ -376,6 +376,7 @@
 		83DCE6BEEAD957D9C7588DB5 /* ParitySignerTxScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817E84903F4A2CD5333518DE /* ParitySignerTxScanViewController.swift */; };
 		84002A972990491A00A80672 /* GovernanceRemoveVotesInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84002A962990491A00A80672 /* GovernanceRemoveVotesInteractorError.swift */; };
 		84002A9A29904A2C00A80672 /* GovernanceRemoveVoteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84002A9929904A2C00A80672 /* GovernanceRemoveVoteRequest.swift */; };
+		84002A9C299188F700A80672 /* GovernanceTracksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84002A9B299188F700A80672 /* GovernanceTracksViewModel.swift */; };
 		8400F0BA252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8400F0B9252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift */; };
 		8401620625E130D60087A5F3 /* ViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401620525E130D60087A5F3 /* ViewAction.swift */; };
 		8401620B25E144D50087A5F3 /* AmountInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401620A25E144D50087A5F3 /* AmountInputAccessoryView.swift */; };
@@ -3589,6 +3590,7 @@
 		83AB0AD3A7CECD061611F60C /* AssetSelectionInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetSelectionInteractor.swift; sourceTree = "<group>"; };
 		84002A962990491A00A80672 /* GovernanceRemoveVotesInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceRemoveVotesInteractorError.swift; sourceTree = "<group>"; };
 		84002A9929904A2C00A80672 /* GovernanceRemoveVoteRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceRemoveVoteRequest.swift; sourceTree = "<group>"; };
+		84002A9B299188F700A80672 /* GovernanceTracksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceTracksViewModel.swift; sourceTree = "<group>"; };
 		8400F0B9252BBD2200E6B4CB /* WalletCommandFactoryProtocolMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCommandFactoryProtocolMock.swift; sourceTree = "<group>"; };
 		8401620525E130D60087A5F3 /* ViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAction.swift; sourceTree = "<group>"; };
 		8401620A25E144D50087A5F3 /* AmountInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountInputAccessoryView.swift; sourceTree = "<group>"; };
@@ -8749,6 +8751,7 @@
 				84033054290FD745009C18E6 /* ReferendumsUnlocksViewModel.swift */,
 				88D42CF32977AA9600DDE01E /* ReferendumsDelegationViewModel.swift */,
 				8463781E2979DACB0034162B /* ReferendumsActivityViewModelFactory.swift */,
+				84002A9B299188F700A80672 /* GovernanceTracksViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -18443,6 +18446,7 @@
 				2F95EEA6CBFDF483124ECF8F /* ParaStkUnstakePresenter.swift in Sources */,
 				84EBFCEB285E7E130006327E /* XcmWeightLimit.swift in Sources */,
 				D7B4AE688B93EC562F452F4E /* ParaStkUnstakeInteractor.swift in Sources */,
+				84002A9C299188F700A80672 /* GovernanceTracksViewModel.swift in Sources */,
 				5FD7B3463822BC69AF5E3C72 /* ParaStkUnstakeViewController.swift in Sources */,
 				8442002728E6FFBA00C49C4A /* VoteViewController.swift in Sources */,
 				3E6215E91AE1C1F78246A43C /* ParaStkUnstakeViewLayout.swift in Sources */,

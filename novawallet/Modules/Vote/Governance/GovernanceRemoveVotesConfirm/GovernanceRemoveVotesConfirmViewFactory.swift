@@ -18,7 +18,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
         else {
             return nil
         }
-        let wireframe = GovernanceRemoveVotesConfirmWireframe()
+        let wireframe = GovRemoveVotesConfirmWireframe()
 
         let localizationManager = LocalizationManager.shared
 
@@ -46,7 +46,10 @@ struct GovernanceRemoveVotesConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let view = GovRemoveVotesConfirmViewController(presenter: presenter)
+        let view = GovRemoveVotesConfirmViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter
