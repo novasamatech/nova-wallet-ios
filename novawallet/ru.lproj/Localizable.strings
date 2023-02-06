@@ -1156,5 +1156,5 @@
 "gov.remove.votes.ask.details" = "Вы ранее голосовали в референдумах в %@. Для того, чтобы сделать эти треки доступными для делегирования вам необходимо удалить голоса.";
 "gov.remove.votes" = "Удалить голоса";
 "gov.unavailable.tracks.delegated" = "Треки, в которые вы уже делегировали голоса";
-"gov.unavailable.tracks.voted" = "Треки в которых вы голосовали";
+"gov.unavailable.tracks.voted" = "Треки, в которых вы голосовали";
 "gov.unavailable.tracks.remove.votes" = "Удалить голоса для делегации в этих треках";
