@@ -27,10 +27,20 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
     }
 
     func showDelegations(
-        from _: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress _: AccountAddress
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress: AccountAddress
     ) {
-        // TODO: Task #860pmdtg1
+        guard let delegationListView = DelegationListViewFactory.createView(
+            accountAddress: delegateAddress,
+            state: state
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            delegationListView.controller,
+            animated: true
+        )
     }
 
     func showRecentVotes(

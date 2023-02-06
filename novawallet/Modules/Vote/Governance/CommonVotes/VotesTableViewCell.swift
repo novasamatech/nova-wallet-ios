@@ -1,6 +1,6 @@
 import UIKit
 
-final class ReferendumVotersTableViewCell: UITableViewCell {
+final class VotesTableViewCell: UITableViewCell {
     enum Constants {
         static let rowHeight: CGFloat = 44.0
         static let titleValueSpacing: CGFloat = 32.0
@@ -48,7 +48,7 @@ final class ReferendumVotersTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: ReferendumVotersViewModel) {
+    func bind(viewModel: VotesViewModel) {
         iconViewModel?.cancel(on: iconView)
         iconViewModel = viewModel.displayAddress.imageViewModel
 
@@ -60,7 +60,7 @@ final class ReferendumVotersTableViewCell: UITableViewCell {
         nameLabel.lineBreakMode = viewModel.displayAddress.lineBreakMode
 
         votesLabel.text = viewModel.votes
-        detailsLabel.text = viewModel.preConviction
+        detailsLabel.text = viewModel.votesDetails
 
         setNeedsLayout()
     }
