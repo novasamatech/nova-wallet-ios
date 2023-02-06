@@ -96,8 +96,12 @@ final class GovernanceRemoveVotesConfirmPresenter {
                 from: NSNumber(value: tracks.count - 1)
             )
 
+            let name = ReferendumTrackType(rawValue: firstTrack.name)?.title(
+                for: selectedLocale
+            ) ?? firstTrack.name
+
             let details = R.string.localizable.govRemoveVotesTracksFormat(
-                firstTrack.name,
+                name.firstLetterCapitalized(),
                 otherTracks ?? "",
                 preferredLanguages: selectedLocale.rLanguages
             )
@@ -112,6 +116,7 @@ final class GovernanceRemoveVotesConfirmPresenter {
 
     private func updateViews() {
         updateWalletView()
+        updateAccountView()
         updateFeeView()
         updateTracksView()
     }
