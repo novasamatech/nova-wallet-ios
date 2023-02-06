@@ -49,7 +49,13 @@ final class AddDelegationPresenter {
         targetDelegates = allDelegates.values.filter { delegate in
             selectedFilter.matchesDelegate(delegate)
         }.sorted { delegate1, delegate2 in
-            selectedOrder.isDescending(delegate1, delegate2: delegate2)
+            if delegate1.metadata != nil, delegate2.metadata == nil {
+                return true
+            } else if delegate1.metadata == nil, delegate2.metadata != nil {
+                return false
+            } else {
+                return selectedOrder.isDescending(delegate1, delegate2: delegate2)
+            }
         }
     }
 
