@@ -94,9 +94,20 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
     }
 
     func showRemoveVotes(
-        from _: ControllerBackedProtocol?,
-        tracks _: [GovernanceTrackInfoLocal]
+        from view: ControllerBackedProtocol?,
+        tracks: [GovernanceTrackInfoLocal]
     ) {
-        // TODO: #860pmdtgt
+        guard
+            let removeVotesView = GovernanceRemoveVotesConfirmViewFactory.createView(
+                for: state,
+                tracks: tracks
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            removeVotesView.controller,
+            animated: true
+        )
     }
 }
