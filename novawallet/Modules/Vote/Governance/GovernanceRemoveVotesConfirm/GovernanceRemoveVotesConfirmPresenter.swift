@@ -171,7 +171,9 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmPre
         )
     }
 
-    func showTracks() {}
+    func showTracks() {
+        wireframe.showTracks(from: view, tracks: tracks)
+    }
 
     func confirm() {
         let requests = createRemoveVoteRequests()
@@ -198,7 +200,7 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmPre
             )
         ]).runValidation { [weak self] in
             self?.view?.didStartLoading()
-            self?.interactor.estimateFee(for: requests)
+            self?.interactor.submit(requests: requests)
         }
     }
 }
