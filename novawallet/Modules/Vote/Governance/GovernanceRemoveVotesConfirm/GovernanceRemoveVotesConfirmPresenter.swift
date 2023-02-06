@@ -91,24 +91,24 @@ final class GovernanceRemoveVotesConfirmPresenter {
 
         let viewModel: GovernanceTracksViewModel
 
+        let trackName = ReferendumTrackType(rawValue: firstTrack.name)?.title(
+            for: selectedLocale
+        )?.firstLetterCapitalized() ?? firstTrack.name
+
         if tracks.count > 1 {
             let otherTracks = quantityFormatter.value(for: selectedLocale).string(
                 from: NSNumber(value: tracks.count - 1)
             )
 
-            let name = ReferendumTrackType(rawValue: firstTrack.name)?.title(
-                for: selectedLocale
-            ) ?? firstTrack.name
-
             let details = R.string.localizable.govRemoveVotesTracksFormat(
-                name.firstLetterCapitalized(),
+                trackName,
                 otherTracks ?? "",
                 preferredLanguages: selectedLocale.rLanguages
             )
 
             viewModel = .init(details: details, canExpand: true)
         } else {
-            viewModel = .init(details: firstTrack.name, canExpand: false)
+            viewModel = .init(details: trackName, canExpand: false)
         }
 
         view?.didReceiveTracks(viewModel: viewModel)
