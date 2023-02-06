@@ -54,7 +54,9 @@ class GovernanceSelectTracksInteractor: GovernanceSelectTracksInteractorInputPro
             case let .success(votingResult):
                 self?.basePresenter?.didReceiveVotingResult(votingResult)
             case let .failure(error):
-                self?.basePresenter?.didReceiveError(GovernanceSelectTracksInteractorError.votesSubsctiptionFailed(error))
+                self?.basePresenter?.didReceiveError(
+                    GovernanceSelectTracksInteractorError.votesSubsctiptionFailed(error)
+                )
             case .none:
                 break
             }
