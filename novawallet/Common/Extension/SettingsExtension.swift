@@ -14,6 +14,7 @@ enum SettingsKey: String {
     case governanceType
     case governanceDelegateInfoSeen
     case skippedUpdateVersion
+    case skippedAddDelegationTracksHint
 }
 
 extension SettingsManagerProtocol {
@@ -149,6 +150,16 @@ extension SettingsManagerProtocol {
             } else {
                 removeValue(for: SettingsKey.skippedUpdateVersion.rawValue)
             }
+        }
+    }
+
+    var skippedAddDelegationTracksHint: Bool {
+        get {
+            bool(for: SettingsKey.skippedAddDelegationTracksHint.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.skippedAddDelegationTracksHint.rawValue)
         }
     }
 }

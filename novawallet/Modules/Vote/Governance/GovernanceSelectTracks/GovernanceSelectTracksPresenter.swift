@@ -4,7 +4,7 @@ import SoraFoundation
 class GovernanceSelectTracksPresenter {
     weak var baseView: GovernanceSelectTracksViewProtocol?
     let baseWireframe: GovernanceSelectTracksWireframeProtocol
-    let interactor: GovernanceSelectTracksInteractorInputProtocol
+    let baseInteractor: GovernanceSelectTracksInteractorInputProtocol
     let chain: ChainModel
     let logger: LoggerProtocol
 
@@ -14,13 +14,13 @@ class GovernanceSelectTracksPresenter {
     var selectedTracks: Set<ReferendumTrackType>?
 
     init(
-        interactor: GovernanceSelectTracksInteractorInputProtocol,
+        baseInteractor: GovernanceSelectTracksInteractorInputProtocol,
         baseWireframe: GovernanceSelectTracksWireframeProtocol,
         chain: ChainModel,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
-        self.interactor = interactor
+        self.baseInteractor = baseInteractor
         self.baseWireframe = baseWireframe
         self.chain = chain
         self.logger = logger
@@ -142,7 +142,7 @@ class GovernanceSelectTracksPresenter {
 
 extension GovernanceSelectTracksPresenter: GovernanceSelectTracksPresenterProtocol {
     func setup() {
-        interactor.setup()
+        baseInteractor.setup()
     }
 
     func toggleTrackSelection(track: GovernanceSelectTrackViewModel.Track) {
@@ -204,11 +204,11 @@ extension GovernanceSelectTracksPresenter: GovernanceSelectTracksInteractorOutpu
         switch error {
         case .tracksFetchFailed:
             baseWireframe.presentRequestStatus(on: baseView, locale: nil) { [weak self] in
-                self?.interactor.retryTracksFetch()
+                self?.baseInteractor.retryTracksFetch()
             }
         case .votesSubsctiptionFailed:
             baseWireframe.presentRequestStatus(on: baseView, locale: nil) { [weak self] in
-                self?.interactor.remakeSubscriptions()
+                self?.baseInteractor.remakeSubscriptions()
             }
         }
     }

@@ -90,13 +90,13 @@ extension ReferendumDisplayStringFactoryProtocol {
         )
     }
 
-    func createDelegateVotesViewModel(
+    func createDelegatorVotesViaDelegateViewModel(
         from vote: GovernanceOffchainVoting.DelegateVote,
         delegateName: String?,
         chain: ChainModel,
         locale: Locale
     ) -> YourVoteRow.Model {
-        let votesValue = vote.delegateVote.vote.conviction.votes(for: vote.delegateVote.balance) ?? 0
+        let votesValue = vote.delegatorPower.conviction.votes(for: vote.delegatorPower.balance) ?? 0
 
         let votesString = createVotes(
             from: votesValue,
@@ -115,7 +115,12 @@ extension ReferendumDisplayStringFactoryProtocol {
             voteSideStyle = .nayInverse
         }
 
-        let voteDescription = delegateName ?? vote.delegateAddress
+        let delegateName = delegateName ?? vote.delegateAddress
+
+        let voteDescription = R.string.localizable.delegatorVotesViaDelegate(
+            delegateName,
+            preferredLanguages: locale.rLanguages
+        )
 
         return YourVoteRow.Model(
             vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),

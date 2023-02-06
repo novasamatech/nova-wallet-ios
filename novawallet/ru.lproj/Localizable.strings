@@ -1140,7 +1140,8 @@
 "in.app.updates.button.show.more.title" = "Посмотреть все доступные обновления";
 "in.app.updates.version.title" = "Версия %@";
 "in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";
-"delegate.vote.by" = "%@ от %@";
+"delegate.vote.by" = "Ваш голос: %@ через %@";
+"delegator.votes.via.delegate" = "Ваш голос через %@";
 "gov.track.group.treasury" = "Казна";
 "gov.track.group.governance" = "Краудлоуны";
 "gov.track.group.fellowship" = "Управление";
@@ -1151,3 +1152,9 @@
 "gov.tracks.selection.hint" = "Выберите хотя бы 1 трек...";
 "common.select.all" = "Выбрать все";
 "gov.add.delegation.tracks.empty" = "Нет доступных треков для делегирования";
+"gov.remove.votes.ask.title" = "Удалить историю ваших голосов?";
+"gov.remove.votes.ask.details" = "Вы ранее голосовали в референдумах в %@. Для того, чтобы сделать эти треки доступными для делегирования вам необходимо удалить голоса.";
+"gov.remove.votes" = "Удалить голоса";
+"gov.unavailable.tracks.delegated" = "Треки, в которые вы уже делегировали голоса";
+"gov.unavailable.tracks.voted" = "Треки, в которых вы голосовали";
+"gov.unavailable.tracks.remove.votes" = "Удалить голоса для делегации в этих треках";
