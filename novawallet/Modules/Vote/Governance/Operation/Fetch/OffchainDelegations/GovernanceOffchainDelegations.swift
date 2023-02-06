@@ -1,6 +1,6 @@
 import Foundation
 
-struct GovernanceOffchainDelegation {
+struct GovernanceOffchainDelegation: Equatable {
     let delegator: AccountAddress
     let power: GovernanceOffchainVoting.DelegatorPower
 }

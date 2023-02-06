@@ -8,7 +8,7 @@ struct ReferendumVotersViewFactory {
         state: GovernanceSharedState,
         referendum: ReferendumLocal,
         type: ReferendumVotersType
-    ) -> ReferendumVotersViewProtocol? {
+    ) -> VotesViewProtocol? {
         guard
             let interactor = createInteractor(for: state, referendum: referendum),
             let chain = state.settings.value?.chain
@@ -35,9 +35,8 @@ struct ReferendumVotersViewFactory {
             logger: Logger.shared
         )
 
-        let view = ReferendumVotersViewController(
+        let view = VotesViewController(
             presenter: presenter,
-            votersType: type,
             quantityFormatter: NumberFormatter.quantity.localizableResource(),
             localizationManager: localizationManager
         )
