@@ -1,6 +1,6 @@
 import UIKit
 
-final class GovernanceRemoveVotesConfirmViewController: UIViewController {
+final class GovRemoveVotesConfirmViewController: UIViewController {
     typealias RootViewType = GovernanceRemoveVotesConfirmViewLayout
 
     let presenter: GovernanceRemoveVotesConfirmPresenterProtocol
@@ -26,4 +26,12 @@ final class GovernanceRemoveVotesConfirmViewController: UIViewController {
     }
 }
 
-extension GovernanceRemoveVotesConfirmViewController: GovernanceRemoveVotesConfirmViewProtocol {}
+extension GovRemoveVotesConfirmViewController: GovernanceRemoveVotesConfirmViewProtocol {
+    func didReceiveWallet(viewModel _: StackCellViewModel) {}
+
+    func didReceiveAccount(viewModel _: DisplayAddressViewModel) {}
+
+    func didReceiveFee(viewModel _: BalanceViewModelProtocol?) {}
+
+    func didReceiveTracks(viewModel _: String) {}
+}

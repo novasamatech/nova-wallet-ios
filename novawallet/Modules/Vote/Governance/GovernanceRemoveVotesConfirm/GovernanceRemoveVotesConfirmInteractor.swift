@@ -97,7 +97,7 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
                 return builder
             }
 
-            return try requests.reduce(builder) { accum, request in
+            return try requests.reduce(builder) { accum, _ in
                 try strongSelf.extrinsicFactory.unlock(
                     with: Set(actions),
                     accountId: strongSelf.selectedAccount.accountId,
@@ -112,6 +112,7 @@ extension GovernanceRemoveVotesConfirmInteractor: GovernanceRemoveVotesConfirmIn
     func setup() {
         clearAndSubscribeBalance()
         subscribeAccountVotes()
+        clearAndSubscribePrice()
     }
 
     func estimateFee(for requests: [GovernanceRemoveVoteRequest]) {
@@ -128,7 +129,7 @@ extension GovernanceRemoveVotesConfirmInteractor: GovernanceRemoveVotesConfirmIn
             }
         }
     }
-    
+
     func submit(requests: [GovernanceRemoveVoteRequest]) {
         let closure = createExtrinsicBuilderClosure(for: requests)
 
@@ -145,6 +146,7 @@ extension GovernanceRemoveVotesConfirmInteractor: GovernanceRemoveVotesConfirmIn
     func remakeSubscriptions() {
         clearAndSubscribeBalance()
         subscribeAccountVotes()
+        clearAndSubscribePrice()
     }
 }
 
@@ -170,7 +172,7 @@ extension GovernanceRemoveVotesConfirmInteractor: PriceLocalSubscriptionHandler,
         case let .success(price):
             presenter?.didReceivePrice(price)
         case let .failure(error):
-            presenter?.didReceiveBaseError(.priceSubscriptionFailed(error))
+            presenter?.didReceiveError(.priceSubscriptionFailed(error))
         }
     }
 }

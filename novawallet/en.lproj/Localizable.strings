@@ -1158,3 +1158,4 @@
 "gov.unavailable.tracks.delegated" = "Tracks that you have already delegated votes to";
 "gov.unavailable.tracks.voted" = "Tracks which you have existing votes in";
 "gov.unavailable.tracks.remove.votes" = "Remove votes in order to delegate in these tracks";
+"gov.remove.votes.tracks.format" = "%@ (+%@ more)";

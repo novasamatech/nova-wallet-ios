@@ -5,4 +5,5 @@ enum GovernanceRemoveVotesInteractorError: Error {
     case feeFetchFailed(Error)
     case removeVotesFailed(Error)
     case balanceSubscriptionFailed(Error)
+    case priceSubscriptionFailed(Error)
 }
