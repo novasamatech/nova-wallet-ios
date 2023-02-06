@@ -89,20 +89,22 @@ final class GovernanceRemoveVotesConfirmPresenter {
             return
         }
 
-        let viewModel: String
+        let viewModel: GovernanceTracksViewModel
 
         if tracks.count > 1 {
             let otherTracks = quantityFormatter.value(for: selectedLocale).string(
                 from: NSNumber(value: tracks.count - 1)
             )
 
-            viewModel = R.string.localizable.govRemoveVotesTracksFormat(
+            let details = R.string.localizable.govRemoveVotesTracksFormat(
                 firstTrack.name,
                 otherTracks ?? "",
                 preferredLanguages: selectedLocale.rLanguages
             )
+
+            viewModel = .init(details: details, canExpand: true)
         } else {
-            viewModel = firstTrack.name
+            viewModel = .init(details: firstTrack.name, canExpand: false)
         }
 
         view?.didReceiveTracks(viewModel: viewModel)
@@ -147,6 +149,52 @@ extension GovernanceRemoveVotesConfirmPresenter: GovernanceRemoveVotesConfirmPre
         updateViews()
 
         interactor.setup()
+    }
+
+    func showAccountOptions() {
+        guard
+            let address = try? selectedAccount.chainAccount.accountId.toAddress(using: chain.chainFormat),
+            let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: selectedLocale
+        )
+    }
+
+    func showTracks() {}
+
+    func confirm() {
+        let requests = createRemoveVoteRequests()
+
+        guard
+            !requests.isEmpty,
+            let assetDisplayInfo = chain.utilityAssetDisplayInfo() else {
+            return
+        }
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: assetDisplayInfo.assetPrecision
+            ) { [weak self] in
+                self?.refreshFee()
+            },
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: assetBalance?.transferable,
+                fee: fee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            self?.view?.didStartLoading()
+            self?.interactor.estimateFee(for: requests)
+        }
     }
 }
 

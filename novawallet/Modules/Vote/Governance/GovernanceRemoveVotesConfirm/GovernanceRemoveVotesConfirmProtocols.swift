@@ -5,11 +5,14 @@ protocol GovernanceRemoveVotesConfirmViewProtocol: ControllerBackedProtocol, Loa
     func didReceiveWallet(viewModel: StackCellViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveTracks(viewModel: String)
+    func didReceiveTracks(viewModel: GovernanceTracksViewModel)
 }
 
 protocol GovernanceRemoveVotesConfirmPresenterProtocol: AnyObject {
     func setup()
+    func showAccountOptions()
+    func showTracks()
+    func confirm()
 }
 
 protocol GovernanceRemoveVotesConfirmInteractorInputProtocol: AnyObject {
@@ -30,4 +33,9 @@ protocol GovernanceRemoveVotesConfirmInteractorOutputProtocol: AnyObject {
 
 protocol GovernanceRemoveVotesConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {}
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {
+    func showTracks(
+        from view: GovernanceRemoveVotesConfirmViewProtocol?,
+        tracks: [GovernanceTrackInfoLocal]
+    )
+}
