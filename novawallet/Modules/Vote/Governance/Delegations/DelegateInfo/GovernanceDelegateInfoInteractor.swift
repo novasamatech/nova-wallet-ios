@@ -84,7 +84,7 @@ final class GovernanceDelegateInfoInteractor {
         let blocksInPast = BlockNumber(TimeInterval(lastVotedDays).secondsFromDays / TimeInterval(blockTime).seconds)
 
         guard blockNumber > blocksInPast else {
-            return nil
+            return 0
         }
 
         return blockNumber - blocksInPast
