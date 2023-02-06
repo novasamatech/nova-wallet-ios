@@ -1,3 +1,3 @@
 import Foundation
 
-final class GovernanceRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWireframeProtocol {}
+final class GovernanceRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWireframeProtocol, ModalAlertPresenting {}
