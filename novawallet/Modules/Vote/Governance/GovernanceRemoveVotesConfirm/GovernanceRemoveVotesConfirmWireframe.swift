@@ -6,6 +6,6 @@ final class GovRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWirefram
         from _: GovernanceRemoveVotesConfirmViewProtocol?,
         tracks _: [GovernanceTrackInfoLocal]
     ) {
-        // TODO:
+        // TODO: #860pmdth7
     }
 }
