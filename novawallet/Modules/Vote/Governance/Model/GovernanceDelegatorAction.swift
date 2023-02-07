@@ -1,13 +1,13 @@
 import Foundation
 import BigInt
 
-struct GovernanceDelegatorAction {
-    enum ActionType {
+struct GovernanceDelegatorAction: Hashable {
+    enum ActionType: Hashable {
         case undelegate
         case delegate(Delegate)
     }
 
-    struct Delegate {
+    struct Delegate: Hashable {
         let balance: BigUInt
         let conviction: ConvictionVoting.Conviction
     }

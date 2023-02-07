@@ -7,7 +7,7 @@ enum ConvictionVoting {
 
     static var lockId: String = "pyconvot"
 
-    enum Conviction: UInt8, Decodable, Equatable {
+    enum Conviction: UInt8, Codable, Equatable {
         /// 0.1x votes, unlocked.
         case none
         /// 1x votes, locked for an enactment period following a successful vote.
@@ -110,6 +110,38 @@ enum ConvictionVoting {
             default:
                 self = .unknown
             }
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = try encoder.unkeyedContainer()
+            let type: String
+
+            switch self {
+            case .none:
+                type = "None"
+            case .locked1x:
+                type = "Locked1x"
+            case .locked2x:
+                type = "Locked2x"
+            case .locked3x:
+                type = "Locked3x"
+            case .locked4x:
+                type = "Locked4x"
+            case .locked5x:
+                type = "Locked5x"
+            case .locked6x:
+                type = "Locked6x"
+            case .unknown:
+                throw EncodingError.invalidValue(
+                    self,
+                    EncodingError.Context(
+                        codingPath: container.codingPath,
+                        debugDescription: "Can't encode unknown value"
+                    )
+                )
+            }
+
+            try container.encode(type)
         }
     }
 
