@@ -1,12 +1,6 @@
-protocol ReferendumVotersViewProtocol: ControllerBackedProtocol {
-    func didReceiveViewModels(_ viewModels: LoadableViewModelState<[ReferendumVotersViewModel]>)
-}
+protocol ReferendumVotersViewProtocol: ControllerBackedProtocol, VotesViewProtocol {}
 
-protocol ReferendumVotersPresenterProtocol: AnyObject {
-    func setup()
-
-    func selectVoter(for viewModel: ReferendumVotersViewModel)
-}
+protocol ReferendumVotersPresenterProtocol: AnyObject, VotesPresenterProtocol {}
 
 protocol ReferendumVotersInteractorInputProtocol: AnyObject {
     func setup()

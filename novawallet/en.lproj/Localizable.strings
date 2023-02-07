@@ -1160,3 +1160,6 @@
 "gov.unavailable.tracks.remove.votes" = "Remove votes in order to delegate in these tracks";
 "gov.remove.votes.tracks.format" = "%@ (+%@ more)";
 "gov.tracks" = "Tracks";
+"delegate.vote.by" = "%@ by %@";
+"delegations.list.multiple.tracks" = "Across %@ tracks";
+"delegations.list.empty" = "List of delegations will appear here";
