@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class ReferendumVotersViewLayout: UIView, AdaptiveDesignable {
+final class VotesViewLayout: UIView, AdaptiveDesignable {
     var skeletonView: SkrullableView?
 
     let totalVotersLabel: BorderedLabelView = .create { view in
@@ -10,6 +10,8 @@ final class ReferendumVotersViewLayout: UIView, AdaptiveDesignable {
         view.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8)
         view.backgroundView.cornerRadius = 6
     }
+
+    let refreshControl = UIRefreshControl()
 
     let tableView: UITableView = .create { view in
         view.separatorStyle = .none
@@ -38,11 +40,16 @@ final class ReferendumVotersViewLayout: UIView, AdaptiveDesignable {
             make.leading.trailing.bottom.equalToSuperview()
         }
     }
+
+    func updateRefreshControlState(isAvailable: Bool) {
+        let refreshControl = isAvailable ? refreshControl : nil
+        tableView.refreshControl = refreshControl
+    }
 }
 
-extension ReferendumVotersViewLayout: SkeletonableView {
+extension VotesViewLayout: SkeletonableView {
     var skeletonSpaceSize: CGSize {
-        CGSize(width: frame.width, height: ReferendumVotersTableViewCell.Constants.rowHeight)
+        CGSize(width: frame.width, height: VotesTableViewCell.Constants.rowHeight)
     }
 
     var skeletonReplica: SkeletonableViewReplica {
@@ -63,11 +70,11 @@ extension ReferendumVotersViewLayout: SkeletonableView {
         let imageSize = CGSize(width: 22.0, height: 22.0)
 
         let nameSize = CGSize(width: 120.0, height: 14)
-        let nameOffsetX = insetX + imageSize.width + ReferendumVotersTableViewCell.Constants.addressNameSpacing
+        let nameOffsetX = insetX + imageSize.width + VotesTableViewCell.Constants.addressNameSpacing
 
         let indicatorSize = CGSize(width: 12, height: 12)
         let indicatorOffsetX = nameOffsetX + nameSize.width +
-            ReferendumVotersTableViewCell.Constants.addressIndicatorSpacing
+            VotesTableViewCell.Constants.addressIndicatorSpacing
 
         let votesSize = CGSize(width: 60, height: 14)
 
