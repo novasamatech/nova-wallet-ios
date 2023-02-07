@@ -99,8 +99,16 @@ class GovernanceLockStateFactory {
         trackVotes: ReferendumTracksVotingDistribution,
         additions: GovUnlockCalculationInfo
     ) -> Moment? {
-        let optCurrentPeriod: Moment? = trackVotes.votes.delegatings.values.reduce(nil) { period, delegation in
-            let optNewPeriod = delegation.conviction.conviction(for: additions.voteLockingPeriod)
+        let optCurrentPeriod: Moment? = trackVotes.votes.delegatings.reduce(nil) { period, keyValue in
+
+            let trackId = keyValue.key
+            let oldDelegation = keyValue.value
+
+            guard delegation?.trackIds.contains(keyValue.key) == false else {
+                return period
+            }
+
+            let optNewPeriod = oldDelegation.conviction.conviction(for: additions.voteLockingPeriod)
 
             if let period = period, let newPeriod = optNewPeriod {
                 return max(period, newPeriod)

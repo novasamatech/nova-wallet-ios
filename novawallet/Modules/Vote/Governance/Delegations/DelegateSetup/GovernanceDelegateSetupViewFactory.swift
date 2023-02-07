@@ -1,17 +1,155 @@
 import Foundation
+import SoraFoundation
+import RobinHood
 
 struct GovernanceDelegateSetupViewFactory {
-    static func createView() -> GovernanceDelegateSetupViewProtocol? {
-        let interactor = GovernanceDelegateSetupInteractor()
-        let wireframe = GovernanceDelegateSetupWireframe()
+    static func createAddDelegationView(
+        for state: GovernanceSharedState,
+        delegateId: AccountId,
+        tracks: [GovernanceTrackInfoLocal]
+    ) -> GovernanceDelegateSetupViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.governanceReferendumsAddDelegation(
+                preferredLanguages: locale.rLanguages
+            )
+        }
 
-        let presenter = GovernanceDelegateSetupPresenter(interactor: interactor, wireframe: wireframe)
+        return createModule(
+            for: state,
+            delegateId: delegateId,
+            tracks: tracks,
+            title: title
+        )
+    }
 
-        let view = GovernanceDelegateSetupViewController(presenter: presenter)
+    private static func createModule(
+        for state: GovernanceSharedState,
+        delegateId: AccountId,
+        tracks: [GovernanceTrackInfoLocal],
+        title: LocalizableResource<String>
+    ) -> GovernanceDelegateSetupViewProtocol? {
+        guard let interactor = createInteractor(for: state), let option = state.settings.value else {
+            return nil
+        }
+
+        let chain = option.chain
+
+        guard let assetInfo = chain.utilityAssetDisplayInfo(), let currencyManager = CurrencyManager.shared else {
+            return nil
+        }
+
+        let wireframe = GovernanceDelegateSetupWireframe(state: state)
+
+        let votingLockId = state.governanceId(for: option)
+
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: assetInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+        )
+
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+
+        let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
+            assetDisplayInfo: assetInfo,
+            votingLockId: votingLockId
+        )
+
+        let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
+
+        let localizationManager = LocalizationManager.shared
+
+        let dataValidatingFactory = createDataValidatorFactory(for: wireframe)
+
+        let presenter = GovernanceDelegateSetupPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chain: chain,
+            delegateId: delegateId,
+            tracks: tracks,
+            dataValidatingFactory: dataValidatingFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
+            referendumStringsViewModelFactory: referendumStringsViewModelFactory,
+            lockChangeViewModelFactory: lockChangeViewModelFactory,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
+
+        let view = GovernanceDelegateSetupViewController(
+            presenter: presenter,
+            delegateTitle: title,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
+    }
+
+    private static func createDataValidatorFactory(
+        for wireframe: GovernanceDelegateSetupWireframeProtocol
+    ) -> GovernanceValidatorFactory {
+        GovernanceValidatorFactory(
+            presentable: wireframe,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
+    }
+
+    private static func createInteractor(
+        for state: GovernanceSharedState
+    ) -> GovernanceDelegateSetupInteractor? {
+        guard let option = state.settings.value else {
+            return nil
+        }
+
+        let chain = option.chain
+
+        guard
+            let subscriptionFactory = state.subscriptionFactory,
+            let blockTimeService = state.blockTimeService,
+            let lockStateFactory = state.locksOperationFactory,
+            let wallet = SelectedWalletSettings.shared.value,
+            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
+            let blockTimeOperationFactory = state.createBlockTimeOperationFactory(),
+            let currencyManager = CurrencyManager.shared,
+            let connection = state.chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId)
+        else {
+            return nil
+        }
+
+        let extrinsicFactory = state.createExtrinsicFactory(for: option)
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let operationManager = OperationManager(operationQueue: operationQueue)
+
+        let extrinsicService = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: operationManager
+        ).createService(account: selectedAccount.chainAccount, chain: chain)
+
+        return .init(
+            selectedAccount: selectedAccount,
+            chain: chain,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            referendumsSubscriptionFactory: subscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeOperationFactory,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            currencyManager: currencyManager,
+            extrinsicFactory: extrinsicFactory,
+            extrinsicService: extrinsicService,
+            feeProxy: ExtrinsicFeeProxy(),
+            lockStateFactory: lockStateFactory,
+            operationQueue: operationQueue
+        )
     }
 }

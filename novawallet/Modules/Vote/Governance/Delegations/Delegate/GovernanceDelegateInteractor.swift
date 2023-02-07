@@ -214,7 +214,7 @@ extension GovernanceDelegateInteractor {
         )
     }
 
-    func refreshLockDiff(
+    func refreshDelegateStateDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
         newDelegation: GovernanceNewDelegation?,
         blockHash: Data?
@@ -239,7 +239,7 @@ extension GovernanceDelegateInteractor {
 
                 do {
                     let stateDiff = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.basePresenter?.didReceiveLockStateDiff(stateDiff)
+                    self?.basePresenter?.didReceiveDelegateStateDiff(stateDiff)
                 } catch {
                     self?.basePresenter?.didReceiveBaseError(.stateDiffFailed(error))
                 }
