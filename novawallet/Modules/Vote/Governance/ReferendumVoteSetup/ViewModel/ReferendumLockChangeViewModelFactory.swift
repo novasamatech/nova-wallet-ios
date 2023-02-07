@@ -45,7 +45,7 @@ extension ReferendumLockChangeViewModelFactoryProtocol {
         )
     }
 
-    func createAmountViewModel(
+    func createAmountTransitionAfterVotingViewModel(
         from diff: GovernanceLockStateDiff,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel? {
@@ -56,7 +56,7 @@ extension ReferendumLockChangeViewModelFactoryProtocol {
         )
     }
 
-    func createPeriodViewModel(
+    func createPeriodTransitionAfterVotingViewModel(
         from diff: GovernanceLockStateDiff,
         blockNumber: BlockNumber,
         blockTime: BlockTime,
@@ -72,6 +72,40 @@ extension ReferendumLockChangeViewModelFactoryProtocol {
 
         return createPeriodViewModel(
             initLockedUntil: diff.before.lockedUntil ?? blockNumber,
+            resultLockedUntil: resultLockedUntil,
+            blockNumber: blockNumber,
+            blockTime: blockTime,
+            locale: locale
+        )
+    }
+
+    func createAmountTransitionAfterDelegatingViewModel(
+        from diff: GovernanceDelegateStateDiff,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel? {
+        createAmountViewModel(
+            initLocked: diff.before.maxLockedAmount,
+            resultLocked: diff.after?.maxLockedAmount,
+            locale: locale
+        )
+    }
+
+    func createPeriodTransitionAfterDelegatingViewModel(
+        from diff: GovernanceDelegateStateDiff,
+        blockNumber: BlockNumber,
+        blockTime: BlockTime,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel? {
+        let resultLockedUntil: BlockNumber?
+
+        if let toState = diff.after {
+            resultLockedUntil = toState.delegatedUntil ?? blockNumber
+        } else {
+            resultLockedUntil = nil
+        }
+
+        return createPeriodViewModel(
+            initLockedUntil: diff.before.delegatedUntil ?? blockNumber,
             resultLockedUntil: resultLockedUntil,
             blockNumber: blockNumber,
             blockTime: blockTime,
