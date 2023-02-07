@@ -43,4 +43,34 @@ extension ConvictionVoting {
             RuntimeCall(moduleName: "ConvictionVoting", callName: "unlock", args: self)
         }
     }
+
+    struct DelegateCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case track = "class"
+            case delegate = "to"
+            case conviction
+            case balance
+        }
+
+        @StringCodable var track: Referenda.TrackId
+        let delegate: MultiAddress
+        let conviction: ConvictionVoting.Conviction
+        @StringCodable var balance: BigUInt
+
+        var runtimeCall: RuntimeCall<Self> {
+            RuntimeCall(moduleName: "ConvictionVoting", callName: "delegate", args: self)
+        }
+    }
+
+    struct UndelegateCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case track = "class"
+        }
+
+        @StringCodable var track: Referenda.TrackId
+
+        var runtimeCall: RuntimeCall<Self> {
+            RuntimeCall(moduleName: "ConvictionVoting", callName: "undelegate", args: self)
+        }
+    }
 }

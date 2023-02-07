@@ -2229,6 +2229,7 @@
 		84E25BF627E9A51D00290BF1 /* LeaseParam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BF527E9A51D00290BF1 /* LeaseParam.swift */; };
 		84E25BF827E9A6A200290BF1 /* UInt32+CrowdloanAccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E25BF727E9A6A200290BF1 /* UInt32+CrowdloanAccountId.swift */; };
 		84E2ABC82992724600A5D3C1 /* GovernanceDelegatorAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2ABC72992724600A5D3C1 /* GovernanceDelegatorAction.swift */; };
+		84E2ABCA2992891300A5D3C1 /* GovernanceDelegateInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2ABC92992891300A5D3C1 /* GovernanceDelegateInteractor.swift */; };
 		84E493252731C064000534F2 /* AssetListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E493242731C064000534F2 /* AssetListViewModel.swift */; };
 		84E4932727325D4E000534F2 /* AssetListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E4932627325D4E000534F2 /* AssetListViewModelFactory.swift */; };
 		84E58C7D275E125100BD441A /* PublicSans-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84E58C7C275E124A00BD441A /* PublicSans-ExtraLight.otf */; };
@@ -5485,6 +5486,7 @@
 		84E25BF527E9A51D00290BF1 /* LeaseParam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaseParam.swift; sourceTree = "<group>"; };
 		84E25BF727E9A6A200290BF1 /* UInt32+CrowdloanAccountId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt32+CrowdloanAccountId.swift"; sourceTree = "<group>"; };
 		84E2ABC72992724600A5D3C1 /* GovernanceDelegatorAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatorAction.swift; sourceTree = "<group>"; };
+		84E2ABC92992891300A5D3C1 /* GovernanceDelegateInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInteractor.swift; sourceTree = "<group>"; };
 		84E493242731C064000534F2 /* AssetListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListViewModel.swift; sourceTree = "<group>"; };
 		84E4932627325D4E000534F2 /* AssetListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListViewModelFactory.swift; sourceTree = "<group>"; };
 		84E58C7C275E124A00BD441A /* PublicSans-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-ExtraLight.otf"; sourceTree = "<group>"; };
@@ -7418,6 +7420,7 @@
 			children = (
 				84002AA029924F9E00A80672 /* GovernanceDelegateProtocols.swift */,
 				84002AA22992508600A80672 /* GovernanceDelegateInteractorError.swift */,
+				84E2ABC92992891300A5D3C1 /* GovernanceDelegateInteractor.swift */,
 			);
 			path = Delegate;
 			sourceTree = "<group>";
@@ -18212,6 +18215,7 @@
 				840D92A3278EDB2E0007B979 /* DAppParsedCall.swift in Sources */,
 				90A3F46EF181DC2B821CC80C /* CrowdloanContributionConfirmViewFactory.swift in Sources */,
 				8407715628CB7D6B007DBD24 /* ParaStkYieldBoostScheduleInteractor.swift in Sources */,
+				84E2ABCA2992891300A5D3C1 /* GovernanceDelegateInteractor.swift in Sources */,
 				84D1ABDC27E1B4FE0073C631 /* ChainAssetViewModel.swift in Sources */,
 				AEE0C442272A9AF7009F9AD5 /* BaseChainAccountConfirmInteractor.swift in Sources */,
 				848CCB462832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift in Sources */,

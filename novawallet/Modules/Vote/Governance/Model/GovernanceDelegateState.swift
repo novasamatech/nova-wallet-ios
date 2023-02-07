@@ -8,6 +8,6 @@ struct GovernanceDelegateState {
 
 struct GovernanceDelegateStateDiff {
     let before: GovernanceDelegateState
-    let vote: GovernanceNewDelegation?
+    let delegation: GovernanceNewDelegation?
     let after: GovernanceDelegateState?
 }
