@@ -296,7 +296,7 @@ final class GovernanceDelegateSetupPresenter {
             return
         }
 
-        interactor.refreshLockDiff(
+        interactor.refreshDelegateStateDiff(
             for: trackVoting,
             newDelegation: newDelegation,
             blockHash: votesResult?.blockHash
@@ -400,7 +400,7 @@ extension GovernanceDelegateSetupPresenter: GovernanceDelegateSetupInteractorOut
         provideAmountInputViewModelIfRate()
     }
 
-    func didReceiveLockStateDiff(_ stateDiff: GovernanceDelegateStateDiff) {
+    func didReceiveDelegateStateDiff(_ stateDiff: GovernanceDelegateStateDiff) {
         lockDiff = stateDiff
 
         updateLockedAmountView()

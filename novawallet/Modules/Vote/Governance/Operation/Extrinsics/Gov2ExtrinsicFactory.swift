@@ -60,13 +60,13 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
         with actions: [GovernanceDelegatorAction],
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        actions.reduce(builder) { _, action in
+        try actions.reduce(builder) { _, action in
             switch action.type {
             case let .delegate(model):
                 return try builder.adding(
                     call: ConvictionVoting.DelegateCall(
                         track: Referenda.TrackId(action.trackId),
-                        delegate: .accoundId(action.delegateId),
+                        delegateAddress: .accoundId(action.delegateId),
                         conviction: model.conviction,
                         balance: model.balance
                     ).runtimeCall

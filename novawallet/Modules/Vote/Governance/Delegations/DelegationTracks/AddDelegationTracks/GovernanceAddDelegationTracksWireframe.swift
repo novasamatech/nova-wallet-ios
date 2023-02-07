@@ -110,4 +110,23 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
             animated: true
         )
     }
+
+    override func proceed(
+        from view: ControllerBackedProtocol?,
+        tracks: [GovernanceTrackInfoLocal]
+    ) {
+        guard
+            let setupView = GovernanceDelegateSetupViewFactory.createAddDelegationView(
+                for: state,
+                delegateId: delegateId,
+                tracks: tracks
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            setupView.controller,
+            animated: true
+        )
+    }
 }
