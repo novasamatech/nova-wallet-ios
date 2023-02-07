@@ -1,7 +1,15 @@
 import UIKit
 
-final class GovernanceDelegateSetupInteractor {
-    weak var presenter: GovernanceDelegateSetupInteractorOutputProtocol?
+final class GovernanceDelegateSetupInteractor: GovernanceDelegateInteractor {
+    var presenter: GovernanceDelegateSetupInteractorOutputProtocol? {
+        get {
+            basePresenter as? GovernanceDelegateSetupInteractorOutputProtocol
+        }
+
+        set {
+            basePresenter = newValue
+        }
+    }
 }
 
 extension GovernanceDelegateSetupInteractor: GovernanceDelegateSetupInteractorInputProtocol {}

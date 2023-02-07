@@ -43,6 +43,14 @@ protocol GovernanceLockStateFactoryProtocol {
         blockHash: Data?
     ) -> CompoundOperationWrapper<GovernanceLockStateDiff>
 
+    func calculateDelegateStateDiff(
+        for trackVotes: ReferendumTracksVotingDistribution,
+        newDelegation: GovernanceNewDelegation?,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol,
+        blockHash: Data?
+    ) -> CompoundOperationWrapper<GovernanceDelegateStateDiff>
+
     func buildUnlockScheduleWrapper(
         for tracksVoting: ReferendumTracksVotingDistribution,
         from connection: JSONRPCEngine,
