@@ -2,24 +2,22 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class ReferendumVotersViewController: UIViewController, ViewHolder {
-    typealias RootViewType = ReferendumVotersViewLayout
+final class VotesViewController: UIViewController, ViewHolder {
+    typealias RootViewType = VotesViewLayout
 
-    private let votersType: ReferendumVotersType
     private let quantityFormatter: LocalizableResource<NumberFormatter>
+    private var state: LoadableViewModelState<[VotesViewModel]>?
+    private var localizableTitle: LocalizableResource<String>?
+    private var emptyViewTitle: LocalizableResource<String>?
 
-    private var state: LoadableViewModelState<[ReferendumVotersViewModel]>?
-
-    let presenter: ReferendumVotersPresenterProtocol
+    let presenter: VotesPresenterProtocol
 
     init(
-        presenter: ReferendumVotersPresenterProtocol,
-        votersType: ReferendumVotersType,
+        presenter: VotesPresenterProtocol,
         quantityFormatter: LocalizableResource<NumberFormatter>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.votersType = votersType
         self.quantityFormatter = quantityFormatter
 
         super.init(nibName: nil, bundle: nil)
@@ -33,7 +31,7 @@ final class ReferendumVotersViewController: UIViewController, ViewHolder {
     }
 
     override func loadView() {
-        view = ReferendumVotersViewLayout()
+        view = VotesViewLayout()
     }
 
     override func viewDidLoad() {
@@ -41,6 +39,7 @@ final class ReferendumVotersViewController: UIViewController, ViewHolder {
 
         setupLocalization()
         configureTableView()
+        setupHandlers()
 
         presenter.setup()
     }
@@ -57,19 +56,10 @@ final class ReferendumVotersViewController: UIViewController, ViewHolder {
     }
 
     private func configureTableView() {
-        rootView.tableView.registerClassForCell(ReferendumVotersTableViewCell.self)
+        rootView.tableView.registerClassForCell(VotesTableViewCell.self)
         rootView.tableView.delegate = self
         rootView.tableView.dataSource = self
-        rootView.tableView.rowHeight = ReferendumVotersTableViewCell.Constants.rowHeight
-    }
-
-    private func setupLocalization() {
-        switch votersType {
-        case .ayes:
-            title = R.string.localizable.govVotersAye(preferredLanguages: selectedLocale.rLanguages)
-        case .nays:
-            title = R.string.localizable.govVotersNay(preferredLanguages: selectedLocale.rLanguages)
-        }
+        rootView.tableView.rowHeight = VotesTableViewCell.Constants.rowHeight
     }
 
     private func setupCounter(value: Int?) {
@@ -88,15 +78,32 @@ final class ReferendumVotersViewController: UIViewController, ViewHolder {
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.totalVotersLabel)
     }
+
+    private func setupLocalization() {
+        title = localizableTitle?.value(for: selectedLocale)
+    }
+
+    private func setupHandlers() {
+        rootView.refreshControl.addTarget(
+            self,
+            action: #selector(pullToRefreshAction),
+            for: .valueChanged
+        )
+    }
+
+    @objc private func pullToRefreshAction() {
+        rootView.refreshControl.endRefreshing()
+        presenter.refresh()
+    }
 }
 
-extension ReferendumVotersViewController: UITableViewDataSource {
+extension VotesViewController: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         state?.value?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithType(ReferendumVotersTableViewCell.self)!
+        let cell: VotesTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 
         if let viewModel = state?.value?[indexPath.row] {
             cell.bind(viewModel: viewModel)
@@ -106,7 +113,7 @@ extension ReferendumVotersViewController: UITableViewDataSource {
     }
 }
 
-extension ReferendumVotersViewController: UITableViewDelegate {
+extension VotesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -114,28 +121,28 @@ extension ReferendumVotersViewController: UITableViewDelegate {
             return
         }
 
-        presenter.selectVoter(for: viewModels[indexPath.row])
+        presenter.select(viewModel: viewModels[indexPath.row])
     }
 }
 
-extension ReferendumVotersViewController: EmptyStateViewOwnerProtocol {
+extension VotesViewController: EmptyStateViewOwnerProtocol {
     var emptyStateDelegate: EmptyStateDelegate { self }
     var emptyStateDataSource: EmptyStateDataSource { self }
     var contentViewForEmptyState: UIView { rootView }
 }
 
-extension ReferendumVotersViewController: EmptyStateDataSource {
+extension VotesViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
         emptyView.image = R.image.iconEmptyHistory()
-        emptyView.title = R.string.localizable.govVotersEmpty(preferredLanguages: selectedLocale.rLanguages)
+        emptyView.title = emptyViewTitle?.value(for: selectedLocale) ?? ""
         emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView
     }
 }
 
-extension ReferendumVotersViewController: EmptyStateDelegate {
+extension VotesViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         switch state {
         case let .loaded(value), let .cached(value):
@@ -146,8 +153,8 @@ extension ReferendumVotersViewController: EmptyStateDelegate {
     }
 }
 
-extension ReferendumVotersViewController: ReferendumVotersViewProtocol {
-    func didReceiveViewModels(_ viewModels: LoadableViewModelState<[ReferendumVotersViewModel]>) {
+extension VotesViewController: VotesViewProtocol {
+    func didReceiveViewModels(_ viewModels: LoadableViewModelState<[VotesViewModel]>) {
         state = viewModels
         rootView.tableView.reloadData()
 
@@ -162,9 +169,22 @@ extension ReferendumVotersViewController: ReferendumVotersViewProtocol {
 
         reloadEmptyState(animated: false)
     }
+
+    func didReceive(title: LocalizableResource<String>) {
+        localizableTitle = title
+        setupLocalization()
+    }
+
+    func didReceiveEmptyView(title: LocalizableResource<String>) {
+        emptyViewTitle = title
+    }
+
+    func didReceiveRefreshState(isAvailable: Bool) {
+        rootView.updateRefreshControlState(isAvailable: isAvailable)
+    }
 }
 
-extension ReferendumVotersViewController: Localizable {
+extension VotesViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
