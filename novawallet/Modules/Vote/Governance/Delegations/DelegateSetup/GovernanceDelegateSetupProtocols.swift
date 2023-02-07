@@ -28,4 +28,4 @@ protocol GovernanceDelegateSetupInteractorInputProtocol: GovernanceDelegateInter
 
 protocol GovernanceDelegateSetupInteractorOutputProtocol: GovernanceDelegateInteractorOutputProtocol {}
 
-protocol GovernanceDelegateSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable {}
+protocol GovernanceDelegateSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable, GovernanceErrorPresentable {}

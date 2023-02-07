@@ -113,7 +113,7 @@ enum ConvictionVoting {
         }
 
         func encode(to encoder: Encoder) throws {
-            var container = try encoder.unkeyedContainer()
+            var container = encoder.unkeyedContainer()
             let type: String
 
             switch self {

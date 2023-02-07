@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 extension ConvictionVoting {
     struct VoteCall: Codable {
@@ -47,13 +48,13 @@ extension ConvictionVoting {
     struct DelegateCall: Codable {
         enum CodingKeys: String, CodingKey {
             case track = "class"
-            case delegate = "to"
+            case delegateAddress = "to"
             case conviction
             case balance
         }
 
         @StringCodable var track: Referenda.TrackId
-        let delegate: MultiAddress
+        let delegateAddress: MultiAddress
         let conviction: ConvictionVoting.Conviction
         @StringCodable var balance: BigUInt
 
