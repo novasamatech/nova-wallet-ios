@@ -142,6 +142,7 @@ enum ConvictionVoting {
             }
 
             try container.encode(type)
+            try container.encodeNil()
         }
     }
 

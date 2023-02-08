@@ -1163,3 +1163,5 @@
 "delegate.vote.by" = "%@ by %@";
 "delegations.list.multiple.tracks" = "Across %@ tracks";
 "delegations.list.empty" = "List of delegations will appear here";
+"gov.add.delegate.hint1" = "Your votes will automatically vote alongside your delegates' vote";
+"gov.add.delegate.hint2" = "Undelegating period will start after you revoke a delegation";

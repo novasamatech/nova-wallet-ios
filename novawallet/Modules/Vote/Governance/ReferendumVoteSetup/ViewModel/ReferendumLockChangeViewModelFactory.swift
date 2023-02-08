@@ -24,6 +24,13 @@ protocol ReferendumLockChangeViewModelFactoryProtocol {
         locale: Locale
     ) -> ReferendumLockTransitionViewModel?
 
+    func createDelegatedPeriodViewModel(
+        fromDelegatedPeriod: Moment?,
+        toDelegatedPeriod: Moment?,
+        blockTime: BlockTime,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel
+
     func createRemainedOtherLocksViewModel(
         locks: AssetLocks,
         locale: Locale
@@ -92,22 +99,12 @@ extension ReferendumLockChangeViewModelFactoryProtocol {
 
     func createPeriodTransitionAfterDelegatingViewModel(
         from diff: GovernanceDelegateStateDiff,
-        blockNumber: BlockNumber,
         blockTime: BlockTime,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel? {
-        let resultLockedUntil: BlockNumber?
-
-        if let toState = diff.after {
-            resultLockedUntil = toState.delegatedUntil ?? blockNumber
-        } else {
-            resultLockedUntil = nil
-        }
-
-        return createPeriodViewModel(
-            initLockedUntil: diff.before.delegatedUntil ?? blockNumber,
-            resultLockedUntil: resultLockedUntil,
-            blockNumber: blockNumber,
+        createDelegatedPeriodViewModel(
+            fromDelegatedPeriod: diff.before.undelegatingPeriod,
+            toDelegatedPeriod: diff.after?.undelegatingPeriod,
             blockTime: blockTime,
             locale: locale
         )
@@ -262,6 +259,66 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
         }
 
         return .init(fromValue: fromAmountString, toValue: toAmountString, change: change)
+    }
+
+    func createDelegatedPeriodViewModel(
+        fromDelegatedPeriod: Moment?,
+        toDelegatedPeriod: Moment?,
+        blockTime: BlockTime,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel {
+        let change: ReferendumLockTransitionViewModel.Change?
+        let fromPeriodString: String?
+        let toPeriodString: String?
+
+        if let fromDelegatedPeriod = fromDelegatedPeriod, let toDelegatedPeriod = toDelegatedPeriod {
+            let fromTimeInterval = fromDelegatedPeriod.seconds(from: blockTime)
+            fromPeriodString = fromTimeInterval.localizedFractionDays(
+                for: locale,
+                shouldAnnotate: false
+            )
+
+            let toTimeInterval = toDelegatedPeriod.seconds(from: blockTime)
+            toPeriodString = toTimeInterval.localizedFractionDays(
+                for: locale,
+                shouldAnnotate: true
+            )
+
+            if
+                fromTimeInterval < toTimeInterval,
+                (toTimeInterval - fromTimeInterval).hoursFromSeconds > 0 {
+                change = .init(
+                    isIncrease: true,
+                    value: R.string.localizable.commonMaximum(
+                        (toTimeInterval - fromTimeInterval).localizedDaysHoursIncludingZero(for: locale),
+                        preferredLanguages: locale.rLanguages
+                    )
+                )
+            } else if
+                fromTimeInterval > toTimeInterval,
+                (fromTimeInterval - toTimeInterval).hoursFromSeconds > 0 {
+                change = .init(
+                    isIncrease: false,
+                    value: R.string.localizable.commonMaximum(
+                        (fromTimeInterval - toTimeInterval).localizedDaysHoursIncludingZero(for: locale),
+                        preferredLanguages: locale.rLanguages
+                    )
+                )
+            } else {
+                change = nil
+            }
+        } else {
+            let period = (toDelegatedPeriod ?? fromDelegatedPeriod)?.seconds(from: blockTime)
+            toPeriodString = period?.localizedFractionDays(for: locale, shouldAnnotate: true)
+            fromPeriodString = nil
+            change = nil
+        }
+
+        return .init(
+            fromValue: fromPeriodString ?? "",
+            toValue: toPeriodString ?? "",
+            change: change
+        )
     }
 
     func createPeriodViewModel(
