@@ -6,4 +6,8 @@ final class GovernanceDelegateSetupWireframe: GovernanceDelegateSetupWireframePr
     init(state: GovernanceSharedState) {
         self.state = state
     }
+
+    func showConfirm(from _: GovernanceDelegateSetupViewProtocol?, delegation _: GovernanceNewDelegation) {
+        // TODO:
+    }
 }
