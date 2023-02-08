@@ -28,4 +28,7 @@ protocol GovernanceDelegateSetupInteractorInputProtocol: GovernanceDelegateInter
 
 protocol GovernanceDelegateSetupInteractorOutputProtocol: GovernanceDelegateInteractorOutputProtocol {}
 
-protocol GovernanceDelegateSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable, GovernanceErrorPresentable {}
+protocol GovernanceDelegateSetupWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
+    FeeRetryable, GovernanceErrorPresentable {
+    func showConfirm(from view: GovernanceDelegateSetupViewProtocol?, delegation: GovernanceNewDelegation)
+}

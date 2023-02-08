@@ -7,6 +7,7 @@ final class GovernanceDelegateSetupPresenter {
     let wireframe: GovernanceDelegateSetupWireframeProtocol
     let interactor: GovernanceDelegateSetupInteractorInputProtocol
 
+    let selectedAccountId: AccountId
     let chain: ChainModel
     let delegateId: AccountId
     let tracks: [GovernanceTrackInfoLocal]
@@ -32,6 +33,7 @@ final class GovernanceDelegateSetupPresenter {
     init(
         interactor: GovernanceDelegateSetupInteractorInputProtocol,
         wireframe: GovernanceDelegateSetupWireframeProtocol,
+        selectedAccountId: AccountId,
         chain: ChainModel,
         delegateId: AccountId,
         tracks: [GovernanceTrackInfoLocal],
@@ -45,6 +47,7 @@ final class GovernanceDelegateSetupPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.selectedAccountId = selectedAccountId
         self.chain = chain
         self.delegateId = delegateId
         self.tracks = tracks
@@ -206,6 +209,13 @@ final class GovernanceDelegateSetupPresenter {
         view?.didReceiveLockReuse(viewModel: viewModel)
     }
 
+    private func updateHintView() {
+        let hint1 = R.string.localizable.govAddDelegateHint1(preferredLanguages: selectedLocale.rLanguages)
+        let hint2 = R.string.localizable.govAddDelegateHint2(preferredLanguages: selectedLocale.rLanguages)
+
+        view?.didReceiveHints(viewModel: [hint1, hint2])
+    }
+
     private func updateView() {
         updateAvailableBalanceView()
         provideAmountInputViewModel()
@@ -215,6 +225,7 @@ final class GovernanceDelegateSetupPresenter {
         updateLockedAmountView()
         updateUndelegatingView()
         provideReuseLocksViewModel()
+        updateHintView()
     }
 
     private func deriveNewDelegation() -> GovernanceNewDelegation? {
@@ -369,7 +380,35 @@ extension GovernanceDelegateSetupPresenter: GovernanceDelegateSetupPresenterProt
     }
 
     func proceed() {
-        // TODO:
+        guard let assetInfo = chain.utilityAssetDisplayInfo() else {
+            return
+        }
+
+        let optNewDelegation = deriveNewDelegation()
+
+        let params = GovernanceDelegateValidatingParams(
+            assetBalance: assetBalance,
+            newDelegation: optNewDelegation,
+            fee: fee,
+            votes: votesResult?.value?.votes,
+            assetInfo: assetInfo,
+            selfAccountId: selectedAccountId
+        )
+
+        DataValidationRunner.validateDelegate(
+            factory: dataValidatingFactory,
+            params: params,
+            selectedLocale: selectedLocale,
+            feeErrorClosure: { [weak self] in
+                self?.refreshFee()
+            }, successClosure: { [weak self] in
+                guard let delegation = optNewDelegation else {
+                    return
+                }
+
+                self?.wireframe.showConfirm(from: self?.view, delegation: delegation)
+            }
+        )
     }
 }
 
