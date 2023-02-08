@@ -34,6 +34,10 @@ struct GovernanceDelegateSetupViewFactory {
 
         let chain = option.chain
 
+        guard let selectedAccount = SelectedWalletSettings.shared.value?.fetch(for: chain.accountRequest()) else {
+            return nil
+        }
+
         guard let assetInfo = chain.utilityAssetDisplayInfo(), let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -64,6 +68,7 @@ struct GovernanceDelegateSetupViewFactory {
         let presenter = GovernanceDelegateSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            selectedAccountId: selectedAccount.accountId,
             chain: chain,
             delegateId: delegateId,
             tracks: tracks,

@@ -1165,3 +1165,8 @@
 "delegations.list.empty" = "Список делегаций появится здесь";
 "gov.add.delegate.hint1" = "Ваши голоса будут автоматически применятся вместе с голосами делегата";
 "gov.add.delegate.hint2" = "Отсчет период отмены делегации начнется после отзыва делегации";
+"gov.add.delegate.voting.error.title" = "Вы уже голосовали";
+"gov.add.delegate.voting.error.message" = "Пожалуйста, удалить голоса в выбранных треках для начала делегирования";
+"gov.add.delegate.self.error.title" = "Нельзя делегировать себе";
+"gov.add.delegate.self.error.message" = "Вы не можете делегировать голоса себе";
+"gov.undelegating.period" = "Период отзыва делегации";
