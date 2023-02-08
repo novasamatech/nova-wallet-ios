@@ -518,6 +518,8 @@
 		841AAC2926F6A59C00F0A25E /* MultiassetCryptoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2826F6A59C00F0A25E /* MultiassetCryptoType.swift */; };
 		841AAC2D26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2C26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift */; };
 		841AAC2F26F73E0C00F0A25E /* LocalStorageKeyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2E26F73E0C00F0A25E /* LocalStorageKeyFactory.swift */; };
+		841AB78D2993C87800A362E8 /* GovernanceDelegateSetupPresenter+UpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AB78C2993C87800A362E8 /* GovernanceDelegateSetupPresenter+UpdateView.swift */; };
+		841AB78F2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AB78E2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift */; };
 		841B45292603D91800C08693 /* EraValidatorsServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841B45282603D91800C08693 /* EraValidatorsServiceStub.swift */; };
 		841BFD6527BA332F000A16CE /* DAppListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6427BA332F000A16CE /* DAppListState.swift */; };
 		841BFD6727BA4865000A16CE /* EthereumSerializationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */; };
@@ -3755,6 +3757,8 @@
 		841AAC2826F6A59C00F0A25E /* MultiassetCryptoType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiassetCryptoType.swift; sourceTree = "<group>"; };
 		841AAC2C26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanRemoteSubscriptionService.swift; sourceTree = "<group>"; };
 		841AAC2E26F73E0C00F0A25E /* LocalStorageKeyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageKeyFactory.swift; sourceTree = "<group>"; };
+		841AB78C2993C87800A362E8 /* GovernanceDelegateSetupPresenter+UpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceDelegateSetupPresenter+UpdateView.swift"; sourceTree = "<group>"; };
+		841AB78E2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceDelegateSetupPresenter+Protocols.swift"; sourceTree = "<group>"; };
 		841B45282603D91800C08693 /* EraValidatorsServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorsServiceStub.swift; sourceTree = "<group>"; };
 		841BFD6427BA332F000A16CE /* DAppListState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListState.swift; sourceTree = "<group>"; };
 		841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumSerializationFactory.swift; sourceTree = "<group>"; };
@@ -7623,6 +7627,16 @@
 				84FBECFE2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift */,
 			);
 			path = RemoteSubscription;
+			sourceTree = "<group>";
+		};
+		841AB78B2993C85000A362E8 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				E6DDBA4DD86CEFAAE236B23B /* GovernanceDelegateSetupPresenter.swift */,
+				841AB78C2993C87800A362E8 /* GovernanceDelegateSetupPresenter+UpdateView.swift */,
+				841AB78E2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift */,
+			);
+			path = Presenter;
 			sourceTree = "<group>";
 		};
 		841E5543282D78ED00C8438F /* Parachain */ = {
@@ -14701,9 +14715,9 @@
 		D1528A226899CD67BDCE0764 /* DelegateSetup */ = {
 			isa = PBXGroup;
 			children = (
+				841AB78B2993C85000A362E8 /* Presenter */,
 				123EC3706DD70AC132ECEACB /* GovernanceDelegateSetupProtocols.swift */,
 				09E4E9A052F9F04A92F158D6 /* GovernanceDelegateSetupWireframe.swift */,
-				E6DDBA4DD86CEFAAE236B23B /* GovernanceDelegateSetupPresenter.swift */,
 				15E1472817503D3FB44BDC46 /* GovernanceDelegateSetupInteractor.swift */,
 				AC3903A0A93FB8068071F9BD /* GovernanceDelegateSetupViewController.swift */,
 				CD7A6C62EC06FC3B2693FB43 /* GovernanceDelegateSetupViewLayout.swift */,
@@ -16907,6 +16921,7 @@
 				2A028D28275688AF0061CB4C /* AddChainAccount.swift in Sources */,
 				F4CE0FF3273453E30094CD8A /* AcalaContributionSetupWireframe.swift in Sources */,
 				8479607E283B60AA0084E779 /* ActionLoadingView.swift in Sources */,
+				841AB78D2993C87800A362E8 /* GovernanceDelegateSetupPresenter+UpdateView.swift in Sources */,
 				84466B3A28B7653E00FA1E0D /* LedgerPerformOperationProtocols.swift in Sources */,
 				8430AB1726023D2D005B1066 /* BaseStashNextState.swift in Sources */,
 				84A6AB64290B021E001B57B2 /* CopyPresentable.swift in Sources */,
@@ -18574,6 +18589,7 @@
 				DECE047E7BBE2B9251A09353 /* ParaStkUnstakeConfirmViewController.swift in Sources */,
 				A748D64F6048192E16E5BE44 /* ParaStkUnstakeConfirmViewLayout.swift in Sources */,
 				A14308E2633921838166C843 /* ParaStkUnstakeConfirmViewFactory.swift in Sources */,
+				841AB78F2993C95200A362E8 /* GovernanceDelegateSetupPresenter+Protocols.swift in Sources */,
 				135E979B52DC1BD29A5FC389 /* ParaStkRedeemProtocols.swift in Sources */,
 				88F34FDD28FFE6E400712BDE /* MultiValueView+Model.swift in Sources */,
 				54D334605E9A7C71A4873CFC /* ParaStkRedeemWireframe.swift in Sources */,

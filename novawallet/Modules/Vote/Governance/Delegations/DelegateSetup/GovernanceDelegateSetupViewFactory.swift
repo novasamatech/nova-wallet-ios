@@ -81,17 +81,24 @@ struct GovernanceDelegateSetupViewFactory {
             logger: Logger.shared
         )
 
-        let view = GovernanceDelegateSetupViewController(
-            presenter: presenter,
-            delegateTitle: title,
-            localizationManager: localizationManager
-        )
+        let view = createView(from: presenter, title: title)
 
         presenter.view = view
         interactor.presenter = presenter
         dataValidatingFactory.view = view
 
         return view
+    }
+
+    private static func createView(
+        from presenter: GovernanceDelegateSetupPresenterProtocol,
+        title: LocalizableResource<String>
+    ) -> GovernanceDelegateSetupViewController {
+        GovernanceDelegateSetupViewController(
+            presenter: presenter,
+            delegateTitle: title,
+            localizationManager: LocalizationManager.shared
+        )
     }
 
     private static func createDataValidatorFactory(
