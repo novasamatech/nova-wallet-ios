@@ -94,38 +94,6 @@ class GovernanceLockStateFactory {
         }
     }
 
-    func calculateMaxUndelegatingPeriod(
-        delegation: GovernanceNewDelegation?,
-        trackVotes: ReferendumTracksVotingDistribution,
-        additions: GovUnlockCalculationInfo
-    ) -> Moment? {
-        let optCurrentPeriod: Moment? = trackVotes.votes.delegatings.reduce(nil) { period, keyValue in
-
-            let trackId = keyValue.key
-            let oldDelegation = keyValue.value
-
-            guard delegation?.trackIds.contains(trackId) == false else {
-                return period
-            }
-
-            let optNewPeriod = oldDelegation.conviction.conviction(for: additions.voteLockingPeriod)
-
-            if let period = period, let newPeriod = optNewPeriod {
-                return max(period, newPeriod)
-            } else {
-                return optNewPeriod
-            }
-        }
-
-        if
-            let delegation = delegation,
-            let newPeriod = delegation.conviction.conviction(for: additions.voteLockingPeriod) {
-            return max(optCurrentPeriod ?? newPeriod, newPeriod)
-        } else {
-            return optCurrentPeriod
-        }
-    }
-
     func createStateDiffOperation(
         for trackVotes: ReferendumTracksVotingDistribution,
         newVote: ReferendumNewVote?,
@@ -184,7 +152,7 @@ class GovernanceLockStateFactory {
 
     func createDelegateStateDiffOperation(
         for trackVotes: ReferendumTracksVotingDistribution,
-        newDelegation: GovernanceNewDelegation?,
+        newDelegation: GovernanceNewDelegation,
         additionalInfoOperation: BaseOperation<GovUnlockCalculationInfo>
     ) -> BaseOperation<GovernanceDelegateStateDiff> {
         ClosureOperation<GovernanceDelegateStateDiff> {
@@ -192,11 +160,9 @@ class GovernanceLockStateFactory {
 
             let oldAmount = trackVotes.trackLocks.map(\.amount).max() ?? 0
 
-            let oldPeriod = self.calculateMaxUndelegatingPeriod(
-                delegation: nil,
-                trackVotes: trackVotes,
-                additions: additions
-            )
+            let oldPeriod = trackVotes.votes.delegatings.values.compactMap { delegation in
+                delegation.conviction.conviction(for: additions.voteLockingPeriod)
+            }.max()
 
             let oldState = GovernanceDelegateState(
                 maxLockedAmount: oldAmount,
@@ -205,22 +171,11 @@ class GovernanceLockStateFactory {
 
             let newState: GovernanceDelegateState?
 
-            if let newDelegation = newDelegation {
-                let newAmount = max(oldAmount, newDelegation.balance)
+            let newAmount = max(oldAmount, newDelegation.balance)
 
-                let newPeriod = self.calculateMaxUndelegatingPeriod(
-                    delegation: newDelegation,
-                    trackVotes: trackVotes,
-                    additions: additions
-                )
+            let newPeriod = newDelegation.conviction.conviction(for: additions.voteLockingPeriod)
 
-                newState = GovernanceDelegateState(
-                    maxLockedAmount: newAmount,
-                    undelegatingPeriod: newPeriod
-                )
-            } else {
-                newState = nil
-            }
+            newState = GovernanceDelegateState(maxLockedAmount: newAmount, undelegatingPeriod: newPeriod)
 
             return GovernanceDelegateStateDiff(
                 before: oldState,
@@ -278,10 +233,9 @@ extension GovernanceLockStateFactory: GovernanceLockStateFactoryProtocol {
 
     func calculateDelegateStateDiff(
         for trackVotes: ReferendumTracksVotingDistribution,
-        newDelegation: GovernanceNewDelegation?,
+        newDelegation: GovernanceNewDelegation,
         connection _: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
-        blockHash _: Data?
+        runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<GovernanceDelegateStateDiff> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 

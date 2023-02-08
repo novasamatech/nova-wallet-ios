@@ -7,8 +7,7 @@ protocol GovernanceDelegateInteractorInputProtocol: AnyObject {
     func estimateFee(for actions: [GovernanceDelegatorAction])
     func refreshDelegateStateDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newDelegation: GovernanceNewDelegation?,
-        blockHash: Data?
+        newDelegation: GovernanceNewDelegation
     )
     func refreshBlockTime()
 }
