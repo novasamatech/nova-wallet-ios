@@ -42,12 +42,12 @@ final class GovernanceDelegateSetupViewLayout: UIView {
     }
 
     var undelegatingPeriodTitleLabel: UILabel {
-        undelegatingPeriodView.titleView.detailsLabel
+        undelegatingPeriodView.titleLabel
     }
 
-    let undelegatingPeriodView: TitleValueDiffView = .create { view in
-        view.applyDefaultStyle()
-        view.titleView.imageView.image = R.image.iconGovPeriodLock()
+    let undelegatingPeriodView: IconTitleValueView = .create {
+        $0.borderView.borderType = .none
+        $0.imageView.image = R.image.iconGovPeriodLock()
     }
 
     let hintView = HintListView()

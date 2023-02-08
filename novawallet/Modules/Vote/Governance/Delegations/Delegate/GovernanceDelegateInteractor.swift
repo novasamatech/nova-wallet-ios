@@ -216,8 +216,7 @@ extension GovernanceDelegateInteractor {
 
     func refreshDelegateStateDiff(
         for trackVoting: ReferendumTracksVotingDistribution,
-        newDelegation: GovernanceNewDelegation?,
-        blockHash: Data?
+        newDelegation: GovernanceNewDelegation
     ) {
         clear(cancellable: &lockDiffCancellable)
 
@@ -225,8 +224,7 @@ extension GovernanceDelegateInteractor {
             for: trackVoting,
             newDelegation: newDelegation,
             connection: connection,
-            runtimeProvider: runtimeProvider,
-            blockHash: blockHash
+            runtimeProvider: runtimeProvider
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
