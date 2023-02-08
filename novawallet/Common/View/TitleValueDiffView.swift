@@ -26,6 +26,14 @@ extension TitleValueDiffView: BindableView {
             viewBottom.isHidden = true
         }
 
+        let mappingView = valueView.fView
+
+        if viewModel.fromValue.isEmpty || viewModel.toValue.isEmpty {
+            mappingView.fView.imageView.image = nil
+        } else {
+            mappingView.fView.imageView.image = R.image.iconGovLockTransition()
+        }
+
         setNeedsLayout()
     }
 

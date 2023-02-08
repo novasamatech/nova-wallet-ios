@@ -3,7 +3,7 @@ import BigInt
 
 struct GovernanceDelegateState {
     let maxLockedAmount: BigUInt
-    let delegatedUntil: BlockNumber?
+    let undelegatingPeriod: Moment?
 }
 
 struct GovernanceDelegateStateDiff {
