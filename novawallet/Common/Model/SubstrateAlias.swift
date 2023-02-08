@@ -31,7 +31,7 @@ extension AccountId {
 }
 
 extension BlockNumber {
-    func secondsTo(block: BlockNumber, blockDuration: UInt64) -> TimeInterval {
+    func secondsTo(block: BlockNumber, blockDuration: BlockTime) -> TimeInterval {
         let durationInSeconds = TimeInterval(blockDuration).seconds
         let diffBlock = TimeInterval(Int(block) - Int(self))
         let seconds = diffBlock * durationInSeconds
@@ -44,6 +44,13 @@ extension BlockNumber {
         return Data(
             Data(bytes: &blockNumber, count: MemoryLayout<UInt32>.size).reversed()
         ).toHex(includePrefix: true)
+    }
+}
+
+extension Moment {
+    func seconds(from blockDuration: BlockTime) -> TimeInterval {
+        let durationInSeconds = TimeInterval(blockDuration).seconds
+        return TimeInterval(self) * durationInSeconds
     }
 }
 

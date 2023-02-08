@@ -149,11 +149,9 @@ final class GovernanceDelegateSetupPresenter {
     private func updateUndelegatingView() {
         guard
             let lockDiff = lockDiff,
-            let blockNumber = blockNumber,
             let blockTime = blockTime,
             let viewModel = lockChangeViewModelFactory.createPeriodTransitionAfterDelegatingViewModel(
                 from: lockDiff,
-                blockNumber: blockNumber,
                 blockTime: blockTime,
                 locale: selectedLocale
             ) else {

@@ -104,7 +104,7 @@ class GovernanceLockStateFactory {
             let trackId = keyValue.key
             let oldDelegation = keyValue.value
 
-            guard delegation?.trackIds.contains(keyValue.key) == false else {
+            guard delegation?.trackIds.contains(trackId) == false else {
                 return period
             }
 
@@ -198,7 +198,10 @@ class GovernanceLockStateFactory {
                 additions: additions
             )
 
-            let oldState = GovernanceDelegateState(maxLockedAmount: oldAmount, delegatedUntil: oldPeriod)
+            let oldState = GovernanceDelegateState(
+                maxLockedAmount: oldAmount,
+                undelegatingPeriod: oldPeriod
+            )
 
             let newState: GovernanceDelegateState?
 
@@ -211,7 +214,10 @@ class GovernanceLockStateFactory {
                     additions: additions
                 )
 
-                newState = GovernanceDelegateState(maxLockedAmount: newAmount, delegatedUntil: newPeriod)
+                newState = GovernanceDelegateState(
+                    maxLockedAmount: newAmount,
+                    undelegatingPeriod: newPeriod
+                )
             } else {
                 newState = nil
             }
