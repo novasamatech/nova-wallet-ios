@@ -77,7 +77,9 @@ final class GovernanceDelegateSetupViewController: UIViewController, ViewHolder 
         )
 
         rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(preferredLanguages: languages)
-        rootView.undelegatingPeriodTitleLabel.text = R.string.localizable.commonLockingPeriod(preferredLanguages: languages)
+        rootView.undelegatingPeriodTitleLabel.text = R.string.localizable.govUndelegatingPeriod(
+            preferredLanguages: languages
+        )
 
         rootView.proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: languages
@@ -148,8 +150,8 @@ extension GovernanceDelegateSetupViewController: GovernanceDelegateSetupViewProt
         rootView.lockedAmountView.bind(viewModel: viewModel)
     }
 
-    func didReceiveUndelegatingPeriod(viewModel: ReferendumLockTransitionViewModel) {
-        rootView.undelegatingPeriodView.bind(viewModel: viewModel)
+    func didReceiveUndelegatingPeriod(viewModel: String) {
+        rootView.undelegatingPeriodView.valueLabel.text = viewModel
     }
 
     func didReceiveLockReuse(viewModel: ReferendumLockReuseViewModel) {

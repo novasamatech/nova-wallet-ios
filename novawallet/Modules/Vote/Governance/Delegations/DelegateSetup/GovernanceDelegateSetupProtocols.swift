@@ -9,7 +9,7 @@ protocol GovernanceDelegateSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveVotes(viewModel: String)
     func didReceiveConviction(viewModel: UInt)
     func didReceiveLockedAmount(viewModel: ReferendumLockTransitionViewModel)
-    func didReceiveUndelegatingPeriod(viewModel: ReferendumLockTransitionViewModel)
+    func didReceiveUndelegatingPeriod(viewModel: String)
     func didReceiveLockReuse(viewModel: ReferendumLockReuseViewModel)
     func didReceiveHints(viewModel: [String])
 }

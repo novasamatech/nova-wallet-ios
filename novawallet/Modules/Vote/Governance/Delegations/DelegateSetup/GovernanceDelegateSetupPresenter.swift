@@ -152,14 +152,15 @@ final class GovernanceDelegateSetupPresenter {
     private func updateUndelegatingView() {
         guard
             let lockDiff = lockDiff,
-            let blockTime = blockTime,
-            let viewModel = lockChangeViewModelFactory.createPeriodTransitionAfterDelegatingViewModel(
-                from: lockDiff,
-                blockTime: blockTime,
-                locale: selectedLocale
-            ) else {
+            let blockTime = blockTime else {
             return
         }
+
+        let viewModel = lockChangeViewModelFactory.createPeriodTransitionAfterDelegatingViewModel(
+            from: lockDiff,
+            blockTime: blockTime,
+            locale: selectedLocale
+        )
 
         view?.didReceiveUndelegatingPeriod(viewModel: viewModel)
     }
@@ -305,11 +306,7 @@ final class GovernanceDelegateSetupPresenter {
             return
         }
 
-        interactor.refreshDelegateStateDiff(
-            for: trackVoting,
-            newDelegation: newDelegation,
-            blockHash: votesResult?.blockHash
-        )
+        interactor.refreshDelegateStateDiff(for: trackVoting, newDelegation: newDelegation)
     }
 
     private func updateAfterAmountChanged() {
