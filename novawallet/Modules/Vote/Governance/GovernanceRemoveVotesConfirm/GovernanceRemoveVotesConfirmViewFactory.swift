@@ -40,6 +40,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
             selectedAccount: selectedAccount,
             chain: chain,
             balanceViewModelFactory: balanceViewModelFactory,
+            trackViewModelFactory: GovernanceTrackViewModelFactory(),
             dataValidatingFactory: dataValidatingFactory,
             quantityFormatter: NumberFormatter.quantity.localizableResource(),
             localizationManager: localizationManager,
