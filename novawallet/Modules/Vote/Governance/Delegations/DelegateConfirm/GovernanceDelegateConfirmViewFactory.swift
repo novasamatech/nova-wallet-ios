@@ -33,8 +33,9 @@ struct GovernanceDelegateConfirmViewFactory {
         }
 
         let chain = option.chain
+        let optAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(for: chain.accountRequest())
 
-        guard let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(for: chain.accountRequest()) else {
+        guard let selectedAccount = optAccount else {
             return nil
         }
 
@@ -52,7 +53,6 @@ struct GovernanceDelegateConfirmViewFactory {
         )
 
         let networkViewModelFactory = NetworkViewModelFactory()
-        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
 
         let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
             assetDisplayInfo: assetInfo,
@@ -60,8 +60,6 @@ struct GovernanceDelegateConfirmViewFactory {
         )
 
         let referendumStringsViewModelFactory = ReferendumDisplayStringFactory()
-
-        let localizationManager = LocalizationManager.shared
 
         let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 
@@ -104,22 +102,17 @@ struct GovernanceDelegateConfirmViewFactory {
     private static func createInteractor(
         for state: GovernanceSharedState
     ) -> GovernanceDelegateConfirmInteractor? {
-        guard let option = state.settings.value else {
-            return nil
-        }
-
-        let chain = option.chain
-
         guard
+            let option = state.settings.value,
             let subscriptionFactory = state.subscriptionFactory,
             let blockTimeService = state.blockTimeService,
             let lockStateFactory = state.locksOperationFactory,
             let wallet = SelectedWalletSettings.shared.value,
-            let selectedAccount = wallet.fetchMetaChainAccount(for: chain.accountRequest()),
+            let selectedAccount = wallet.fetchMetaChainAccount(for: option.chain.accountRequest()),
             let blockTimeOperationFactory = state.createBlockTimeOperationFactory(),
             let currencyManager = CurrencyManager.shared,
-            let connection = state.chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId)
+            let connection = state.chainRegistry.getConnection(for: option.chain.chainId),
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: option.chain.chainId)
         else {
             return nil
         }
@@ -133,16 +126,13 @@ struct GovernanceDelegateConfirmViewFactory {
             runtimeRegistry: runtimeProvider,
             engine: connection,
             operationManager: operationManager
-        ).createService(account: selectedAccount.chainAccount, chain: chain)
+        ).createService(account: selectedAccount.chainAccount, chain: option.chain)
 
-        let signer = SigningWrapperFactory().createSigningWrapper(
-            for: selectedAccount.metaId,
-            accountResponse: selectedAccount.chainAccount
-        )
+        let signer = SigningWrapperFactory.createSigner(from: selectedAccount)
 
         return .init(
             selectedAccount: selectedAccount,
-            chain: chain,
+            chain: option.chain,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             referendumsSubscriptionFactory: subscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

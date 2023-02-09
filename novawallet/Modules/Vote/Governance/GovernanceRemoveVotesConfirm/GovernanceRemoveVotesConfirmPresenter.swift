@@ -12,6 +12,7 @@ final class GovernanceRemoveVotesConfirmPresenter {
     let tracks: [GovernanceTrackInfoLocal]
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: GovernanceValidatorFactoryProtocol
+    let trackViewModelFactory: GovernanceTrackViewModelFactoryProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
     let logger: LoggerProtocol
 
@@ -30,6 +31,7 @@ final class GovernanceRemoveVotesConfirmPresenter {
         selectedAccount: MetaChainAccountResponse,
         chain: ChainModel,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        trackViewModelFactory: GovernanceTrackViewModelFactoryProtocol,
         dataValidatingFactory: GovernanceValidatorFactoryProtocol,
         quantityFormatter: LocalizableResource<NumberFormatter>,
         localizationManager: LocalizationManagerProtocol,
@@ -41,6 +43,7 @@ final class GovernanceRemoveVotesConfirmPresenter {
         self.selectedAccount = selectedAccount
         self.chain = chain
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.trackViewModelFactory = trackViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.quantityFormatter = quantityFormatter
         self.logger = logger
@@ -85,30 +88,13 @@ final class GovernanceRemoveVotesConfirmPresenter {
     }
 
     private func updateTracksView() {
-        guard let firstTrack = tracks.first else {
+        guard
+            let viewModel = trackViewModelFactory.createTracksRowViewModel(
+                from: tracks,
+                chain: chain,
+                locale: selectedLocale
+            ) else {
             return
-        }
-
-        let viewModel: GovernanceTracksViewModel
-
-        let trackName = ReferendumTrackType(rawValue: firstTrack.name)?.title(
-            for: selectedLocale
-        )?.firstLetterCapitalized() ?? firstTrack.name
-
-        if tracks.count > 1 {
-            let otherTracks = quantityFormatter.value(for: selectedLocale).string(
-                from: NSNumber(value: tracks.count - 1)
-            )
-
-            let details = R.string.localizable.govRemoveVotesTracksFormat(
-                trackName,
-                otherTracks ?? "",
-                preferredLanguages: selectedLocale.rLanguages
-            )
-
-            viewModel = .init(details: details, canExpand: true)
-        } else {
-            viewModel = .init(details: trackName, canExpand: false)
         }
 
         view?.didReceiveTracks(viewModel: viewModel)

@@ -32,4 +32,6 @@ protocol GovernanceDelegateConfirmInteractorOutputProtocol: GovernanceDelegateIn
 
 protocol GovernanceDelegateConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
     MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {}
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {
+    func showTracks(from view: GovernanceDelegateConfirmViewProtocol?, tracks: [GovernanceTrackInfoLocal])
+}
