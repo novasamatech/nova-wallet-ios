@@ -1,5 +1,6 @@
 import UIKit
 import SubstrateSdk
+import RobinHood
 
 final class GovernanceDelegateConfirmInteractor: GovernanceDelegateInteractor {
     var presenter: GovernanceDelegateConfirmInteractorOutputProtocol? {

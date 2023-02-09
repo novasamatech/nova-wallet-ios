@@ -1,3 +1,3 @@
 import Foundation
 
-final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWireframeProtocol {}
+final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWireframeProtocol, ModalAlertPresenting {}

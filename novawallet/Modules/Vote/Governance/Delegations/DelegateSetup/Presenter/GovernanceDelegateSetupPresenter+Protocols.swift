@@ -132,15 +132,6 @@ extension GovernanceDelegateSetupPresenter: GovernanceDelegateSetupInteractorOut
         refreshLockDiff()
     }
 
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
-        self.blockNumber = blockNumber
-
-        interactor.refreshBlockTime()
-
-        updateLockedAmountView()
-        updateUndelegatingView()
-    }
-
     func didReceiveBlockTime(_ blockTime: BlockTime) {
         self.blockTime = blockTime
 

@@ -23,7 +23,6 @@ final class GovernanceDelegateSetupPresenter {
     var fee: BigUInt?
     var priceData: PriceData?
     var votesResult: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
-    var blockNumber: BlockNumber?
     var blockTime: BlockTime?
     var lockDiff: GovernanceDelegateStateDiff?
 
@@ -107,41 +106,12 @@ final class GovernanceDelegateSetupPresenter {
         return ReferendumReuseLockModel(governance: governanceLockDecimal, all: allLockDecimal)
     }
 
-    func deriveDelegatorRequest(
-        from newDelegate: GovernanceNewDelegation,
-        voting: ReferendumTracksVotingDistribution
-    ) -> [GovernanceDelegatorAction] {
-        newDelegate.trackIds.map { trackId in
-            var actions: [GovernanceDelegatorAction] = []
-
-            if voting.votes.delegatings[trackId] != nil {
-                actions.append(
-                    .init(
-                        delegateId: newDelegate.delegateId,
-                        trackId: trackId,
-                        type: .undelegate
-                    )
-                )
-            }
-
-            actions.append(
-                .init(
-                    delegateId: newDelegate.delegateId,
-                    trackId: trackId,
-                    type: .delegate(.init(balance: newDelegate.balance, conviction: newDelegate.conviction))
-                )
-            )
-
-            return actions
-        }.flatMap { $0 }
-    }
-
     func refreshFee() {
         guard let newDelegation = deriveNewDelegation(), let voting = votesResult?.value else {
             return
         }
 
-        let actions = deriveDelegatorRequest(from: newDelegation, voting: voting)
+        let actions = newDelegation.createActions(from: voting)
 
         interactor.estimateFee(for: actions)
     }

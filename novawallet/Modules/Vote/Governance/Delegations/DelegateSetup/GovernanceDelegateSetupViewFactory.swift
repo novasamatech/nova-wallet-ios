@@ -63,7 +63,7 @@ struct GovernanceDelegateSetupViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let dataValidatingFactory = createDataValidatorFactory(for: wireframe)
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 
         let presenter = GovernanceDelegateSetupPresenter(
             interactor: interactor,
@@ -98,16 +98,6 @@ struct GovernanceDelegateSetupViewFactory {
             presenter: presenter,
             delegateTitle: title,
             localizationManager: LocalizationManager.shared
-        )
-    }
-
-    private static func createDataValidatorFactory(
-        for wireframe: GovernanceDelegateSetupWireframeProtocol
-    ) -> GovernanceValidatorFactory {
-        GovernanceValidatorFactory(
-            presentable: wireframe,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
     }
 
