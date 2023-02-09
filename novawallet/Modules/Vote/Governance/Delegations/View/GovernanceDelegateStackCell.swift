@@ -34,6 +34,7 @@ final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, 
         delegateIconView.contentInsets = .zero
 
         rowContentView.valueView.mode = .detailsIcon
+        rowContentView.valueView.detailsView.makeHorizontal()
         rowContentView.valueView.detailsView.spacing = 8
         rowContentView.valueView.spacing = 8
         rowContentView.valueView.imageView.image = R.image.iconInfoFilled()?

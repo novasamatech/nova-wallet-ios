@@ -3,7 +3,7 @@ import UIKit
 final class GovernanceDelegateConfirmViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 0.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
@@ -29,7 +29,9 @@ final class GovernanceDelegateConfirmViewLayout: UIView {
 
     private(set) var tracksCell: StackTableViewCellProtocol?
 
-    let yourDelegationCell = StackTitleMultiValueCell()
+    let yourDelegationCell: StackTitleMultiValueCell = .create {
+        $0.canSelect = false
+    }
 
     let changesTableView = StackTableView()
 
@@ -118,7 +120,7 @@ final class GovernanceDelegateConfirmViewLayout: UIView {
         }
 
         containerView.stackView.addArrangedSubview(amountView)
-        containerView.stackView.setCustomSpacing(20.0, after: amountView)
+        containerView.stackView.setCustomSpacing(24.0, after: amountView)
 
         containerView.stackView.addArrangedSubview(senderTableView)
         containerView.stackView.setCustomSpacing(12.0, after: senderTableView)

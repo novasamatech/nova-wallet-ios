@@ -181,9 +181,15 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     }
 
     func addDelegation() {
-        guard let delegate = try? delegateAddress?.toAccountId() else {
+        guard let delegateId = try? delegateAddress?.toAccountId() else {
             return
         }
+
+        let delegate: GovernanceDelegateFlowDisplayInfo<AccountId> = .init(
+            additions: delegateId,
+            delegateMetadata: metadata,
+            delegateIdentity: identity
+        )
 
         wireframe.showAddDelegation(from: view, delegate: delegate)
     }

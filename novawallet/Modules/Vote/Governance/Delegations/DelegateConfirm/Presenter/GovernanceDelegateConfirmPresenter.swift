@@ -10,7 +10,7 @@ final class GovernanceDelegateConfirmPresenter {
     let chain: ChainModel
     let selectedAccount: MetaChainAccountResponse
     let delegation: GovernanceNewDelegation
-    let delegationInfo: GovernanceDelegateFlowDisplayInfo
+    let delegationInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol
@@ -37,7 +37,7 @@ final class GovernanceDelegateConfirmPresenter {
         chain: ChainModel,
         selectedAccount: MetaChainAccountResponse,
         delegation: GovernanceNewDelegation,
-        delegationInfo: GovernanceDelegateFlowDisplayInfo,
+        delegationInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         referendumStringsViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         lockChangeViewModelFactory: ReferendumLockChangeViewModelFactoryProtocol,

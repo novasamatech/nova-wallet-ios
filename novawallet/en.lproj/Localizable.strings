@@ -1170,3 +1170,4 @@
 "gov.add.delegate.self.error.title" = "Cannot delegate to self";
 "gov.add.delegate.self.error.message" = "You cannot delegate votes to yourself";
 "gov.undelegating.period" = "Undelegating period";
+"gov.delegate" = "Delegate";

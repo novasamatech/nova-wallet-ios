@@ -4,7 +4,11 @@ import BigInt
 
 extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmPresenterProtocol {
     func setup() {
+        updateView()
+
         interactor.setup()
+
+        refreshFee()
     }
 
     func presentSenderAccount() {
@@ -38,7 +42,7 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmPresenter
     }
 
     func presentTracks() {
-        wireframe.showTracks(from: view, tracks: delegationInfo.selectedTracks)
+        wireframe.showTracks(from: view, tracks: delegationInfo.additions)
     }
 
     func confirm() {
