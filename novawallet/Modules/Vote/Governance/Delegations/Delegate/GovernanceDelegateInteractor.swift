@@ -299,7 +299,7 @@ extension GovernanceDelegateInteractor: GeneralLocalStorageSubscriber, GeneralLo
         switch result {
         case let .success(blockNumber):
             if let blockNumber = blockNumber {
-                basePresenter?.didReceiveBlockNumber(blockNumber)
+                provideBlockTime()
             }
         case let .failure(error):
             basePresenter?.didReceiveBaseError(.blockNumberSubscriptionFailed(error))
