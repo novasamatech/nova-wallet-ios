@@ -3,7 +3,7 @@ protocol GovernanceDelegateConfirmViewProtocol: ControllerBackedProtocol, Loadab
     func didReceiveWallet(viewModel: StackCellViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
-    func didReceiveDelegate(viewModel: GovernanceDelegateCell.Model)
+    func didReceiveDelegate(viewModel: GovernanceDelegateStackCell.Model)
     func didReceiveTracks(viewModel: GovernanceTracksViewModel)
     func didReceiveYourDelegation(viewModel: GovernanceYourDelegationViewModel)
     func didReceiveTransferableAmount(viewModel: ReferendumLockTransitionViewModel)
@@ -30,4 +30,6 @@ protocol GovernanceDelegateConfirmInteractorOutputProtocol: GovernanceDelegateIn
     func didReceiveError(_ error: GovernanceDelegateConfirmInteractorError)
 }
 
-protocol GovernanceDelegateConfirmWireframeProtocol: AnyObject {}
+protocol GovernanceDelegateConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
+    MessageSheetPresentable, AddressOptionsPresentable,
+    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {}

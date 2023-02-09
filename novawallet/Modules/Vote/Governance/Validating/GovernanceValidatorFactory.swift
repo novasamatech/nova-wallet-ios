@@ -271,3 +271,13 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
         })
     }
 }
+
+extension GovernanceValidatorFactory {
+    static func createFromPresentable(_ presentable: GovernanceErrorPresentable) -> GovernanceValidatorFactory {
+        GovernanceValidatorFactory(
+            presentable: presentable,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
+    }
+}

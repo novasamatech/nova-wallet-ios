@@ -2,7 +2,7 @@ import UIKit
 
 typealias GovernanceDelegateCellValueView = IconDetailsGenericView<GenericPairValueView<DAppIconView, UILabel>>
 
-final class GovernanceDelegateCell: RowView<GenericTitleValueView<UILabel, GovernanceDelegateCellValueView>> {
+final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, GovernanceDelegateCellValueView>> {
     var titleLabel: UILabel {
         rowContentView.titleView
     }
@@ -15,7 +15,7 @@ final class GovernanceDelegateCell: RowView<GenericTitleValueView<UILabel, Gover
         rowContentView.valueView.detailsView.fView
     }
 
-    let iconSize: CGSize = CGSize(width: 20, height: 20)
+    let iconSize = CGSize(width: 20, height: 20)
 
     convenience init() {
         self.init(frame: CGRect(origin: .zero, size: CGSize(width: 340, height: 44.0)))
@@ -47,7 +47,7 @@ final class GovernanceDelegateCell: RowView<GenericTitleValueView<UILabel, Gover
         }
     }
 
-    func bind(viewModel: GovernanceDelegateCell.Model) {
+    func bind(viewModel: GovernanceDelegateStackCell.Model) {
         delegateLabel.lineBreakMode = viewModel.addressViewModel.lineBreakMode
 
         let cellViewModel = viewModel.addressViewModel.cellViewModel
@@ -77,9 +77,9 @@ final class GovernanceDelegateCell: RowView<GenericTitleValueView<UILabel, Gover
     }
 }
 
-extension GovernanceDelegateCell: StackTableViewCellProtocol {}
+extension GovernanceDelegateStackCell: StackTableViewCellProtocol {}
 
-extension GovernanceDelegateCell {
+extension GovernanceDelegateStackCell {
     struct Model {
         let addressViewModel: DisplayAddressViewModel
         let type: GovernanceDelegateTypeView.Model?

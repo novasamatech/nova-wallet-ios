@@ -25,7 +25,7 @@ final class GovernanceDelegateConfirmViewLayout: UIView {
 
     let delegateTableView = StackTableView()
 
-    let delegateCell = GovernanceDelegateCell()
+    let delegateCell = GovernanceDelegateStackCell()
 
     private(set) var tracksCell: StackTableViewCellProtocol?
 

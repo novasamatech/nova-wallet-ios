@@ -9,6 +9,7 @@ protocol GovernanceDelegateInteractorInputProtocol: AnyObject {
         for trackVoting: ReferendumTracksVotingDistribution,
         newDelegation: GovernanceNewDelegation
     )
+
     func refreshBlockTime()
 }
 
@@ -20,7 +21,6 @@ protocol GovernanceDelegateInteractorOutputProtocol: AnyObject {
     func didReceiveAccountVotes(
         _ votes: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>
     )
-    func didReceiveBlockNumber(_ number: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveBaseError(_ error: GovernanceDelegateInteractorError)
 }

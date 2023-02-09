@@ -57,15 +57,11 @@ final class GovernanceDelegateConfirmViewController: UIViewController, ViewHolde
             action: #selector(actionDelegateOptions),
             for: .touchUpInside
         )
-
-        rootView.tracksCell.addTarget(
-            self,
-            action: #selector(actionTracks),
-            for: .touchUpInside
-        )
     }
 
     private func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+
         title = delegateTitle.value(for: selectedLocale)
 
         rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
@@ -106,7 +102,7 @@ extension GovernanceDelegateConfirmViewController: GovernanceDelegateConfirmView
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
     }
-    
+
     func didReceiveWallet(viewModel: StackCellViewModel) {
         rootView.walletCell.bind(viewModel: viewModel)
     }
@@ -119,15 +115,19 @@ extension GovernanceDelegateConfirmViewController: GovernanceDelegateConfirmView
         rootView.feeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    func didReceiveDelegate(viewModel: GovernanceDelegateCell.Model) {
+    func didReceiveDelegate(viewModel: GovernanceDelegateStackCell.Model) {
         rootView.delegateCell.bind(viewModel: viewModel)
     }
 
     func didReceiveTracks(viewModel: GovernanceTracksViewModel) {
-        rootView.addTracksCell(
-            for: R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages),
-            viewModel: viewModel
-        )
+
+        if
+            let cell = rootView.addTracksCell(
+                for: R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages),
+                viewModel: viewModel
+            ) {
+            cell.addTarget(self, action: #selector(actionTracks), for: .touchUpInside)
+        }
     }
 
     func didReceiveYourDelegation(viewModel: GovernanceYourDelegationViewModel) {
