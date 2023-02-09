@@ -6,7 +6,7 @@ struct GovernanceDelegateConfirmViewFactory {
     static func createAddDelegationView(
         for state: GovernanceSharedState,
         delegation: GovernanceNewDelegation,
-        delegationDisplayInfo: GovernanceDelegateFlowDisplayInfo
+        delegationDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateConfirmViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.governanceReferendumsAddDelegation(
@@ -25,7 +25,7 @@ struct GovernanceDelegateConfirmViewFactory {
     private static func createModule(
         for state: GovernanceSharedState,
         delegation: GovernanceNewDelegation,
-        delegationDisplayInfo: GovernanceDelegateFlowDisplayInfo,
+        delegationDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>,
         title: LocalizableResource<String>
     ) -> GovernanceDelegateConfirmViewProtocol? {
         guard let interactor = createInteractor(for: state), let option = state.settings.value else {

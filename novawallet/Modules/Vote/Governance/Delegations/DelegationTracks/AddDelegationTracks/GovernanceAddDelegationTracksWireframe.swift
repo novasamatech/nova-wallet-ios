@@ -5,11 +5,11 @@ import SoraUI
 final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWireframe,
     GovAddDelegationTracksWireframeProtocol {
     let state: GovernanceSharedState
-    let delegateId: AccountId
+    let delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<AccountId>
 
-    init(state: GovernanceSharedState, delegate: AccountId) {
+    init(state: GovernanceSharedState, delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<AccountId>) {
         self.state = state
-        delegateId = delegate
+        self.delegateDisplayInfo = delegateDisplayInfo
     }
 
     func presentUnavailableTracks(
@@ -115,11 +115,17 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
         from view: ControllerBackedProtocol?,
         tracks: [GovernanceTrackInfoLocal]
     ) {
+        let newDelegateInfo = GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>(
+            additions: tracks,
+            delegateMetadata: delegateDisplayInfo.delegateMetadata,
+            delegateIdentity: delegateDisplayInfo.delegateIdentity
+        )
+
         guard
             let setupView = GovernanceDelegateSetupViewFactory.createAddDelegationView(
                 for: state,
-                delegateId: delegateId,
-                tracks: tracks
+                delegateId: delegateDisplayInfo.additions,
+                delegateDisplayInfo: newDelegateInfo
             ) else {
             return
         }

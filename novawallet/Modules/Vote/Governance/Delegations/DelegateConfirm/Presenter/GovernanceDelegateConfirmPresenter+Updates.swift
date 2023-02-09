@@ -89,7 +89,7 @@ extension GovernanceDelegateConfirmPresenter {
     func provideTracksViewModel() {
         guard
             let viewModel = trackViewModelFactory.createTracksRowViewModel(
-                from: delegationInfo.selectedTracks,
+                from: delegationInfo.additions,
                 chain: chain,
                 locale: selectedLocale
             ) else {
@@ -164,6 +164,13 @@ extension GovernanceDelegateConfirmPresenter {
         view?.didReceiveUndelegatingPeriod(viewModel: viewModel)
     }
 
+    func provideHints() {
+        let hint1 = R.string.localizable.govAddDelegateHint1(preferredLanguages: selectedLocale.rLanguages)
+        let hint2 = R.string.localizable.govAddDelegateHint2(preferredLanguages: selectedLocale.rLanguages)
+
+        view?.didReceiveHints(viewModel: [hint1, hint2])
+    }
+
     func refreshFee() {
         guard let voting = votesResult?.value else {
             return
@@ -187,8 +194,12 @@ extension GovernanceDelegateConfirmPresenter {
         provideWalletViewModel()
         provideAccountViewModel()
         provideFeeViewModel()
+        provideDelegateViewModel()
+        provideTracksViewModel()
+        provideYourDelegation()
         provideTransferableAmountViewModel()
         provideLockedAmountViewModel()
         provideUndelegatingPeriodViewModel()
+        provideHints()
     }
 }
