@@ -6,7 +6,7 @@ struct GovernanceDelegateSetupViewFactory {
     static func createAddDelegationView(
         for state: GovernanceSharedState,
         delegateId: AccountId,
-        tracks: [GovernanceTrackInfoLocal]
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateSetupViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.governanceReferendumsAddDelegation(
@@ -17,7 +17,7 @@ struct GovernanceDelegateSetupViewFactory {
         return createModule(
             for: state,
             delegateId: delegateId,
-            tracks: tracks,
+            delegateDisplayInfo: delegateDisplayInfo,
             title: title
         )
     }
@@ -25,7 +25,7 @@ struct GovernanceDelegateSetupViewFactory {
     private static func createModule(
         for state: GovernanceSharedState,
         delegateId: AccountId,
-        tracks: [GovernanceTrackInfoLocal],
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>,
         title: LocalizableResource<String>
     ) -> GovernanceDelegateSetupViewProtocol? {
         guard let interactor = createInteractor(for: state), let option = state.settings.value else {
@@ -42,7 +42,7 @@ struct GovernanceDelegateSetupViewFactory {
             return nil
         }
 
-        let wireframe = GovernanceDelegateSetupWireframe(state: state)
+        let wireframe = GovernanceDelegateSetupWireframe(state: state, delegateDisplayInfo: delegateDisplayInfo)
 
         let votingLockId = state.governanceId(for: option)
 
@@ -71,7 +71,7 @@ struct GovernanceDelegateSetupViewFactory {
             selectedAccountId: selectedAccount.accountId,
             chain: chain,
             delegateId: delegateId,
-            tracks: tracks,
+            tracks: delegateDisplayInfo.additions,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,

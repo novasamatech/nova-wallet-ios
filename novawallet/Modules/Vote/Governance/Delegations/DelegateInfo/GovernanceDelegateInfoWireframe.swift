@@ -59,7 +59,7 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
 
     func showAddDelegation(
         from view: GovernanceDelegateInfoViewProtocol?,
-        delegate: AccountId
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
     ) {
         guard
             let tracksView = GovernanceAddDelegationTracksViewFactory.createView(

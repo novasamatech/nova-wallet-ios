@@ -69,12 +69,22 @@ final class GovernanceDelegateConfirmViewController: UIViewController, ViewHolde
 
         rootView.feeCell.rowContentView.locale = selectedLocale
 
+        rootView.delegateCell.titleLabel.text = R.string.localizable.govDelegate(
+            preferredLanguages: languages
+        )
+
+        rootView.yourDelegationCell.titleLabel.text = R.string.localizable.governanceReferendumsYourDelegations(
+            preferredLanguages: languages
+        )
+
         rootView.transferableTitleLabel.text = R.string.localizable.walletBalanceAvailable(
             preferredLanguages: languages
         )
 
         rootView.lockAmountTitleLabel.text = R.string.localizable.commonGovLock(preferredLanguages: languages)
-        rootView.undelegatingPeriodTitleLabel.text = R.string.localizable.govUndelegatingPeriod(preferredLanguages: languages)
+        rootView.undelegatingPeriodTitleLabel.text = R.string.localizable.govUndelegatingPeriod(
+            preferredLanguages: languages
+        )
 
         rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: selectedLocale.rLanguages
