@@ -120,7 +120,6 @@ extension GovernanceDelegateConfirmViewController: GovernanceDelegateConfirmView
     }
 
     func didReceiveTracks(viewModel: GovernanceTracksViewModel) {
-
         if
             let cell = rootView.addTracksCell(
                 for: R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages),

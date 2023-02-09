@@ -1692,6 +1692,8 @@
 		8499FEE227C0AF4700712589 /* ChainModel+Nft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEE127C0AF4700712589 /* ChainModel+Nft.swift */; };
 		8499FEE427C1059700712589 /* RMRKV1SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEE327C1059700712589 /* RMRKV1SyncService.swift */; };
 		8499FEE627C105DB00712589 /* RMRKV2SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEE527C105DB00712589 /* RMRKV2SyncService.swift */; };
+		849A16452995229F00E235FE /* GovernanceDelegateConfirmPresenter+Updates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A16442995229F00E235FE /* GovernanceDelegateConfirmPresenter+Updates.swift */; };
+		849A1647299523C500E235FE /* GovernanceDelegateConfirmPresenter+Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A1646299523C500E235FE /* GovernanceDelegateConfirmPresenter+Protocols.swift */; };
 		849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */; };
 		849A4EF4279A7AC600AB6709 /* AssetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF3279A7AC600AB6709 /* AssetType.swift */; };
 		849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */; };
@@ -4955,6 +4957,8 @@
 		8499FEE127C0AF4700712589 /* ChainModel+Nft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Nft.swift"; sourceTree = "<group>"; };
 		8499FEE327C1059700712589 /* RMRKV1SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV1SyncService.swift; sourceTree = "<group>"; };
 		8499FEE527C105DB00712589 /* RMRKV2SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV2SyncService.swift; sourceTree = "<group>"; };
+		849A16442995229F00E235FE /* GovernanceDelegateConfirmPresenter+Updates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceDelegateConfirmPresenter+Updates.swift"; sourceTree = "<group>"; };
+		849A1646299523C500E235FE /* GovernanceDelegateConfirmPresenter+Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceDelegateConfirmPresenter+Protocols.swift"; sourceTree = "<group>"; };
 		849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsUpdatingService.swift; sourceTree = "<group>"; };
 		849A4EF3279A7AC600AB6709 /* AssetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetType.swift; sourceTree = "<group>"; };
 		849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateminAssetExtras.swift; sourceTree = "<group>"; };
@@ -7365,9 +7369,9 @@
 		7AB59A4F1F37D584D6F49A3E /* DelegateConfirm */ = {
 			isa = PBXGroup;
 			children = (
+				849A16432995227900E235FE /* Presenter */,
 				172A76B6B50406CEA464FAC6 /* GovernanceDelegateConfirmProtocols.swift */,
 				A43F25AF006B7B19281AC7B1 /* GovernanceDelegateConfirmWireframe.swift */,
-				534173384708B3CF8F47E4DA /* GovernanceDelegateConfirmPresenter.swift */,
 				A27FB20961F2F221A96624A6 /* GovernanceDelegateConfirmInteractor.swift */,
 				5BA3C305F49A4E609C7A5C14 /* GovernanceDelegateConfirmViewController.swift */,
 				19BFAC4CDCC826720CA1010A /* GovernanceDelegateConfirmViewLayout.swift */,
@@ -11203,6 +11207,16 @@
 				843E9B3527C8B915009C143A /* NftFileDownloadService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		849A16432995227900E235FE /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				534173384708B3CF8F47E4DA /* GovernanceDelegateConfirmPresenter.swift */,
+				849A16442995229F00E235FE /* GovernanceDelegateConfirmPresenter+Updates.swift */,
+				849A1646299523C500E235FE /* GovernanceDelegateConfirmPresenter+Protocols.swift */,
+			);
+			path = Presenter;
 			sourceTree = "<group>";
 		};
 		849AFEB826DCCCA900B65924 /* Wallet */ = {
@@ -17648,6 +17662,7 @@
 				84FAB0632542C8D600319F74 /* ContactItem.swift in Sources */,
 				06590486EED4050BADDD32C5 /* AccountManagementPresenter.swift in Sources */,
 				846A68292746234100D1A47A /* ChainConnection.swift in Sources */,
+				849A16452995229F00E235FE /* GovernanceDelegateConfirmPresenter+Updates.swift in Sources */,
 				846F758327B54D7A00536547 /* EthereumOperationFactor+Protocol.swift in Sources */,
 				8487584127F0842D00495306 /* AddressQRMatcher.swift in Sources */,
 				84906FEF28B2C7090049B57D /* LedgerErrorPresentable.swift in Sources */,
@@ -18708,6 +18723,7 @@
 				8425D0E028FE738D003B782A /* ReferendumVoteSetupInteractorError.swift in Sources */,
 				5443122935BBFDD55AE9E6FD /* ParitySignerAddressesProtocols.swift in Sources */,
 				6A2B6DF2D6AE912D5FA62D94 /* ParitySignerAddressesWireframe.swift in Sources */,
+				849A1647299523C500E235FE /* GovernanceDelegateConfirmPresenter+Protocols.swift in Sources */,
 				65083CD11AE1998A1F4D98F1 /* ParitySignerAddressesPresenter.swift in Sources */,
 				3AD7635AFA1F7E66A3C00F56 /* ParitySignerAddressesInteractor.swift in Sources */,
 				940DA38E4586A27D7F3E0C67 /* ParitySignerAddressesViewController.swift in Sources */,
