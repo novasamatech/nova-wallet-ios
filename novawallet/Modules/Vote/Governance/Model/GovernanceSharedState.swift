@@ -190,7 +190,9 @@ final class GovernanceSharedState {
         }
     }
 
-    func createOffchainDelegateListFactory(for _: GovernanceSelectedOption) -> GovernanceDelegateListFactoryProtocol? {
+    func createOffchainDelegateListFactory(
+        for option: GovernanceSelectedOption
+    ) -> GovernanceDelegateListFactoryProtocol? {
         switch option.type {
         case .governanceV1:
             return nil
@@ -202,13 +204,8 @@ final class GovernanceSharedState {
             let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: delegationApi.url)
             let delegateMetadataFactory = GovernanceDelegateMetadataFactory()
 
-            let storageRequestFactory = StorageRequestFactory(
-                remoteFactory: requestFactory,
-                operationManager: OperationManager(operationQueue: operationQueue)
-            )
-
             let identityOperationFactory = IdentityOperationFactory(
-                requestFactory: storageRequestFactory,
+                requestFactory: requestFactory,
                 emptyIdentitiesWhenNoStorage: true
             )
 

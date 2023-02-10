@@ -46,7 +46,7 @@ extension BlockNumber {
         ).toHex(includePrefix: true)
     }
 
-    func blockBackInDays(_ days: Int, blockTime: BlockTime?) -> BlockNumber {
+    func blockBackInDays(_ days: Int, blockTime: BlockTime?) -> BlockNumber? {
         guard let blockTime = blockTime else {
             return nil
         }
@@ -58,7 +58,7 @@ extension BlockNumber {
         let blocksInPast = BlockNumber(TimeInterval(days).secondsFromDays / TimeInterval(blockTime).seconds)
 
         guard self > blocksInPast else {
-            return self
+            return 0
         }
 
         return self - blocksInPast
