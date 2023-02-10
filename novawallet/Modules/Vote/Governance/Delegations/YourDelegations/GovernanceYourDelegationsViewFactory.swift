@@ -1,14 +1,30 @@
 import Foundation
+import SoraFoundation
 
 struct GovernanceYourDelegationsViewFactory {
     static func createView(for state: GovernanceSharedState) -> GovernanceYourDelegationsViewProtocol? {
-        guard let interactor = createInteractor(for: state) else {
+        guard let interactor = createInteractor(for: state), let chain = state.settings.value?.chain else {
             return nil
         }
 
-        let wireframe = GovernanceYourDelegationsWireframe()
+        let wireframe = GovernanceYourDelegationsWireframe(state: state)
 
-        let presenter = GovernanceYourDelegationsPresenter(interactor: interactor, wireframe: wireframe)
+        let viewModelFactory = GovernanceYourDelegationsViewModelFactory(
+            votesDisplayFactory: ReferendumDisplayStringFactory(),
+            addressViewModelFactory: DisplayAddressViewModelFactory(),
+            tracksViewModelFactory: GovernanceTrackViewModelFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays
+        )
+
+        let presenter = GovernanceYourDelegationsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chain: chain,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
 
         let view = GovernanceYourDelegationsViewController(presenter: presenter)
 

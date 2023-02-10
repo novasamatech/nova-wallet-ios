@@ -7,11 +7,8 @@ final class AddDelegationPresenter {
     weak var view: AddDelegationViewProtocol?
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
-    let quantityFormatter: LocalizableResource<NumberFormatter>
-    let votesDisplayFactory: ReferendumDisplayStringFactoryProtocol
-    let addressViewModelFactory: DisplayAddressViewModelFactoryProtocol
+    let viewModelFactory: GovernanceDelegateViewModelFactoryProtocol
     let chain: ChainModel
-    let lastVotedDays: Int
     let learnDelegateMetadata: URL
     let logger: LoggerProtocol
 
@@ -25,22 +22,16 @@ final class AddDelegationPresenter {
         interactor: AddDelegationInteractorInputProtocol,
         wireframe: AddDelegationWireframeProtocol,
         chain: ChainModel,
-        lastVotedDays: Int,
+        viewModelFactory: GovernanceDelegateViewModelFactoryProtocol,
         learnDelegateMetadata: URL,
-        addressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
-        votesDisplayFactory: ReferendumDisplayStringFactoryProtocol,
-        quantityFormatter: LocalizableResource<NumberFormatter>,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
-        self.lastVotedDays = lastVotedDays
+        self.viewModelFactory = viewModelFactory
         self.learnDelegateMetadata = learnDelegateMetadata
-        self.addressViewModelFactory = addressViewModelFactory
-        self.votesDisplayFactory = votesDisplayFactory
-        self.quantityFormatter = quantityFormatter
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -60,41 +51,15 @@ final class AddDelegationPresenter {
     }
 
     private func updateView() {
-        let viewModels = targetDelegates.map { convert(delegate: $0) }
+        let viewModels = targetDelegates.map {
+            viewModelFactory.createAnyDelegateViewModel(
+                from: $0,
+                chain: chain,
+                locale: locale
+            )
+        }
+
         view?.didReceive(delegateViewModels: viewModels)
-    }
-
-    private func convert(delegate: GovernanceDelegateLocal) -> GovernanceDelegateTableViewCell.Model {
-        let name = delegate.identity?.displayName ?? delegate.metadata?.name
-
-        let addressViewModel = addressViewModelFactory.createViewModel(
-            from: delegate.stats.address,
-            name: name,
-            iconUrl: delegate.metadata?.image
-        )
-
-        let numberFormatter = quantityFormatter.value(for: selectedLocale)
-        let delegations = numberFormatter.string(from: NSNumber(value: delegate.stats.delegationsCount))
-
-        let totalVotes = votesDisplayFactory.createVotesValue(
-            from: delegate.stats.delegatedVotes,
-            chain: chain,
-            locale: selectedLocale
-        )
-
-        let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
-
-        return GovernanceDelegateTableViewCell.Model(
-            addressViewModel: addressViewModel,
-            type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
-            description: delegate.metadata?.shortDescription,
-            delegationsTitle: GovernanceDelegatesOrder.delegations.value(for: selectedLocale),
-            delegations: delegations,
-            votesTitle: GovernanceDelegatesOrder.delegatedVotes.value(for: selectedLocale),
-            votes: totalVotes,
-            lastVotesTitle: GovernanceDelegatesOrder.lastVoted(days: lastVotedDays).value(for: selectedLocale),
-            lastVotes: lastVotes
-        )
     }
 }
 
