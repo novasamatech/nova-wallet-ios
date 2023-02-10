@@ -32,8 +32,8 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     init(
         selectedAccountId: AccountId,
         chain: ChainModel,
-        lastVotedDays _: Int,
-        fetchBlockTreshold _: BlockNumber,
+        lastVotedDays: Int,
+        fetchBlockTreshold: BlockNumber,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
         offchainOperationFactory: GovernanceDelegateListFactoryProtocol,
@@ -46,6 +46,8 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     ) {
         self.selectedAccountId = selectedAccountId
         self.chain = chain
+        self.lastVotedDays = lastVotedDays
+        self.fetchBlockTreshold = fetchBlockTreshold
         self.subscriptionFactory = subscriptionFactory
         self.referendumsOperationFactory = referendumsOperationFactory
         self.offchainOperationFactory = offchainOperationFactory

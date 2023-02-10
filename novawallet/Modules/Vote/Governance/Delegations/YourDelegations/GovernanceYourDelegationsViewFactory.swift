@@ -32,7 +32,7 @@ struct GovernanceYourDelegationsViewFactory {
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let subscriptionFactory = state.subscriptionFactory,
-            let referendumOperationFactory = state.referendumsOperationFactory,
+            let referendumsOperationFactory = state.referendumsOperationFactory,
             let offchainOperationFactory = state.createOffchainDelegateListFactory(for: option),
             let blockTimeService = state.blockTimeService
         else {
@@ -45,7 +45,7 @@ struct GovernanceYourDelegationsViewFactory {
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             fetchBlockTreshold: GovernanceDelegationConstants.delegateFetchBlockThreshold,
             subscriptionFactory: subscriptionFactory,
-            referendumsOperationFactory: state.referendumsOperationFactory,
+            referendumsOperationFactory: referendumsOperationFactory,
             offchainOperationFactory: offchainOperationFactory,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
