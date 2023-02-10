@@ -1,4 +1,6 @@
-protocol GovernanceYourDelegationsViewProtocol: ControllerBackedProtocol {}
+protocol GovernanceYourDelegationsViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModels: [GovernanceYourDelegationCell.Model])
+}
 
 protocol GovernanceYourDelegationsPresenterProtocol: AnyObject {
     func setup()
@@ -18,4 +20,4 @@ protocol GovernanceYourDelegationsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: GovernanceYourDelegationsInteractorError)
 }
 
-protocol GovernanceYourDelegationsWireframeProtocol: AnyObject {}
+protocol GovernanceYourDelegationsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
