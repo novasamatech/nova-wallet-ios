@@ -78,7 +78,11 @@ final class GovernanceDelegateInfoInteractor {
 
     private func fetchDetailsIfNeeded() {
         do {
-            guard let activityBlockNumber = currentBlockNumber?.blockBackInDays(lastVotedDays, blockTime: blockTime) else {
+            guard
+                let activityBlockNumber = currentBlockNumber?.blockBackInDays(
+                    lastVotedDays,
+                    blockTime: currentBlockTime
+                ) else {
                 return
             }
 
