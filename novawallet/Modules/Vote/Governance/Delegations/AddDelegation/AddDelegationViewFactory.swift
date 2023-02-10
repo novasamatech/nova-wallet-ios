@@ -36,11 +36,13 @@ struct AddDelegationViewFactory {
 
     private static func createInteractor(for state: GovernanceSharedState) -> AddDelegationInteractor? {
         guard
-            let chain = state.settings.value?.chain,
-            let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url
+            let option = state.settings.value,
+            let statsUrl = option.chain.externalApis?.governanceDelegations()?.first?.url
         else {
             return nil
         }
+
+        let chain = option.chain
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -51,24 +53,7 @@ struct AddDelegationViewFactory {
             return nil
         }
 
-        let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: statsUrl)
-        let delegateMetadataFactory = GovernanceDelegateMetadataFactory()
-
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let identityOperationFactory = IdentityOperationFactory(
-            requestFactory: storageRequestFactory,
-            emptyIdentitiesWhenNoStorage: true
-        )
-
-        let delegateListOperationFactory = GovernanceDelegateListOperationFactory(
-            statsOperationFactory: statsOperationFactory,
-            metadataOperationFactory: delegateMetadataFactory,
-            identityOperationFactory: identityOperationFactory
-        )
+        guard let delegateListOperationFactory = state.createOffchainDelegateListFactory(for: option)
 
         let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
 

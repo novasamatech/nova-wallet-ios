@@ -5,7 +5,7 @@ import RobinHood
 final class GovernanceDelegateInfoInteractor {
     weak var presenter: GovernanceDelegateInfoInteractorOutputProtocol?
 
-    let delegate: AccountId
+    let delegateId: AccountId
     let chain: ChainModel
     let lastVotedDays: Int
     let fetchBlockTreshold: BlockNumber
@@ -39,7 +39,7 @@ final class GovernanceDelegateInfoInteractor {
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
-        self.delegate = delegate
+        delegateId = delegate
         self.chain = chain
         self.lastVotedDays = lastVotedDays
         self.fetchBlockTreshold = fetchBlockTreshold
@@ -76,23 +76,9 @@ final class GovernanceDelegateInfoInteractor {
         operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func estimateStatsBlockNumber() -> BlockNumber? {
-        guard let blockNumber = currentBlockNumber, let blockTime = currentBlockTime, blockTime > 0 else {
-            return nil
-        }
-
-        let blocksInPast = BlockNumber(TimeInterval(lastVotedDays).secondsFromDays / TimeInterval(blockTime).seconds)
-
-        guard blockNumber > blocksInPast else {
-            return 0
-        }
-
-        return blockNumber - blocksInPast
-    }
-
     private func fetchDetailsIfNeeded() {
         do {
-            guard let activityBlockNumber = estimateStatsBlockNumber() else {
+            guard let activityBlockNumber = currentBlockNumber?.blockBackInDays(lastVotedDays, blockTime: blockTime) else {
                 return
             }
 
@@ -105,7 +91,7 @@ final class GovernanceDelegateInfoInteractor {
 
             lastUsedBlockNumber = activityBlockNumber
 
-            let delegateAddress = try delegate.toAddress(using: chain.chainFormat)
+            let delegateAddress = try delegateId.toAddress(using: chain.chainFormat)
 
             let wrapper = detailsOperationFactory.fetchDetailsWrapper(
                 for: delegateAddress,
@@ -187,8 +173,8 @@ final class GovernanceDelegateInfoInteractor {
 extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
-        subscribeMetadata(for: delegate)
-        provideIdentity(for: delegate)
+        subscribeMetadata(for: delegateId)
+        provideIdentity(for: delegateId)
     }
 
     func refreshDetails() {
@@ -200,11 +186,11 @@ extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInpu
         subscribeBlockNumber()
 
         clearMetadataSubscription()
-        subscribeMetadata(for: delegate)
+        subscribeMetadata(for: delegateId)
     }
 
     func refreshIdentity() {
-        provideIdentity(for: delegate)
+        provideIdentity(for: delegateId)
     }
 }
 
