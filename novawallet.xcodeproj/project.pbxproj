@@ -1640,6 +1640,8 @@
 		84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */; };
 		84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */; };
 		84953F72293630080033F47D /* AssetHistoryServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F71293630080033F47D /* AssetHistoryServiceType.swift */; };
+		849628C8299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849628C7299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift */; };
+		849628CB299684D70073F143 /* GovernanceYourDelegationGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849628CA299684D70073F143 /* GovernanceYourDelegationGroup.swift */; };
 		849632072555CE9D00B8E316 /* ExportSeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849632062555CE9D00B8E316 /* ExportSeedData.swift */; };
 		84963D6C26F91810003FE8E4 /* RemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84963D6B26F91810003FE8E4 /* RemoteSubscriptionService.swift */; };
 		84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84963D6D26F91826003FE8E4 /* RemoteSubscriptionRequests.swift */; };
@@ -1979,6 +1981,9 @@
 		84C11F1F2842D5D5007F7C05 /* ParaStkCollatorsSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C11F1E2842D5D5007F7C05 /* ParaStkCollatorsSearchViewModel.swift */; };
 		84C11F232844A802007F7C05 /* ParaStkCollatorInfoViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C11F222844A802007F7C05 /* ParaStkCollatorInfoViewModelFactory.swift */; };
 		84C1706629961FAD00CBE531 /* GovernanceYourDelegationsInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1706529961FAD00CBE531 /* GovernanceYourDelegationsInteractorError.swift */; };
+		84C1706929963E3800CBE531 /* GovernanceDelegationCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1706829963E3800CBE531 /* GovernanceDelegationCellView.swift */; };
+		84C1706D2996424800CBE531 /* GovernanceYourDelegationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1706C2996424800CBE531 /* GovernanceYourDelegationCell.swift */; };
+		84C1706F299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1706E299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift */; };
 		84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1B98524F5424700FE5470 /* ChainAccountViewModelFactory.swift */; };
 		84C1B98B24F55E8200FE5470 /* AccountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1B98A24F55E8200FE5470 /* AccountTableViewCell.swift */; };
 		84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */; };
@@ -4912,6 +4917,8 @@
 		84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanHistoryContext.swift; sourceTree = "<group>"; };
 		84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryFactoryFacade.swift; sourceTree = "<group>"; };
 		84953F71293630080033F47D /* AssetHistoryServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryServiceType.swift; sourceTree = "<group>"; };
+		849628C7299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationsViewModelFactory.swift; sourceTree = "<group>"; };
+		849628CA299684D70073F143 /* GovernanceYourDelegationGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationGroup.swift; sourceTree = "<group>"; };
 		849632062555CE9D00B8E316 /* ExportSeedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSeedData.swift; sourceTree = "<group>"; };
 		84963D6B26F91810003FE8E4 /* RemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSubscriptionService.swift; sourceTree = "<group>"; };
 		84963D6D26F91826003FE8E4 /* RemoteSubscriptionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSubscriptionRequests.swift; sourceTree = "<group>"; };
@@ -5254,6 +5261,9 @@
 		84C11F1E2842D5D5007F7C05 /* ParaStkCollatorsSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorsSearchViewModel.swift; sourceTree = "<group>"; };
 		84C11F222844A802007F7C05 /* ParaStkCollatorInfoViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorInfoViewModelFactory.swift; sourceTree = "<group>"; };
 		84C1706529961FAD00CBE531 /* GovernanceYourDelegationsInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationsInteractorError.swift; sourceTree = "<group>"; };
+		84C1706829963E3800CBE531 /* GovernanceDelegationCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegationCellView.swift; sourceTree = "<group>"; };
+		84C1706C2996424800CBE531 /* GovernanceYourDelegationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationCell.swift; sourceTree = "<group>"; };
+		84C1706E299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateViewModelFactory.swift; sourceTree = "<group>"; };
 		84C1B98524F5424700FE5470 /* ChainAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountViewModelFactory.swift; sourceTree = "<group>"; };
 		84C1B98A24F55E8200FE5470 /* AccountTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTableViewCell.swift; sourceTree = "<group>"; };
 		84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountTableViewCell.xib; sourceTree = "<group>"; };
@@ -7070,6 +7080,8 @@
 		358A2822B179B70E639A96B9 /* YourDelegations */ = {
 			isa = PBXGroup;
 			children = (
+				849628C9299684BF0073F143 /* Model */,
+				84C1706729963E1700CBE531 /* View */,
 				A2FCBFC59ED9D7E6F046D2A1 /* GovernanceYourDelegationsProtocols.swift */,
 				7186BB5CB39B28A78D35D635 /* GovernanceYourDelegationsWireframe.swift */,
 				21621DCC39234CC4B0A1433B /* GovernanceYourDelegationsPresenter.swift */,
@@ -11095,6 +11107,14 @@
 			path = Etherscan;
 			sourceTree = "<group>";
 		};
+		849628C9299684BF0073F143 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				849628CA299684D70073F143 /* GovernanceYourDelegationGroup.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		8496ADD8276AFF3400306B24 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -12458,6 +12478,16 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		84C1706729963E1700CBE531 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84C1706829963E3800CBE531 /* GovernanceDelegationCellView.swift */,
+				84C1706C2996424800CBE531 /* GovernanceYourDelegationCell.swift */,
+				849628C7299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		84C1B98224F5244000FE5470 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -13729,6 +13759,7 @@
 				883DB177297A411300EFB7D8 /* AddDelegationStyles.swift */,
 				883DB17F297A546800EFB7D8 /* GovernanceDelegateActionControl.swift */,
 				88F9F695297B082F00F6550D /* SelectableTitleTableViewCell.swift */,
+				84C1706E299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -16138,6 +16169,7 @@
 				8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */,
 				8472C39E298BE5F600043061 /* ReferendumTrackGroup.swift in Sources */,
 				8445F41628C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift in Sources */,
+				84C1706F299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift in Sources */,
 				84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */,
 				84A1742428ED3CF70096F943 /* ReferendumLocal.swift in Sources */,
 				841AB7922993D01A00A362E8 /* GovernanceDelegateConfirmInteractorError.swift in Sources */,
@@ -16256,6 +16288,7 @@
 				84BF12A328D06604007AA576 /* ParaStkYieldBoostCommonInteractor.swift in Sources */,
 				8490142D24A935FE008F705E /* WebPresentable.swift in Sources */,
 				849D755D27577602007726C3 /* AccountExportPasswordViewLayout.swift in Sources */,
+				849628CB299684D70073F143 /* GovernanceYourDelegationGroup.swift in Sources */,
 				8860F3E0289D241E00C0BF86 /* CurrencyViewSectionModel.swift in Sources */,
 				842806F32847A51400702F3A /* AccountDetailsSelectionView.swift in Sources */,
 				840B3D652899BBF100DA1DA9 /* ParitySignerScanViewFactory.swift in Sources */,
@@ -16545,6 +16578,7 @@
 				8401AE8D2641EF7B000B03E3 /* NetworkFeeConfirmView.swift in Sources */,
 				841AAC2F26F73E0C00F0A25E /* LocalStorageKeyFactory.swift in Sources */,
 				843C49DF24DF3CB300B71DDA /* AccountImportMetadata.swift in Sources */,
+				84C1706929963E3800CBE531 /* GovernanceDelegationCellView.swift in Sources */,
 				88A0C52128D49A090083A524 /* CrowdloanOffChainSyncService.swift in Sources */,
 				8436E94226C840C8003D4EA7 /* RuntimeCoderEvents.swift in Sources */,
 				8461CC8A26BD2F07007460E4 /* RuntimeProviderPool.swift in Sources */,
@@ -17067,6 +17101,7 @@
 				844CB57026F9CB3300396E13 /* CrowdloanLocalSubscriptionHandler.swift in Sources */,
 				84C11F232844A802007F7C05 /* ParaStkCollatorInfoViewModelFactory.swift in Sources */,
 				843910B9253EFB8100E3C217 /* StorageKeyFactory+Implicit.swift in Sources */,
+				849628C8299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift in Sources */,
 				849ABE562627738900011A2A /* Mapping.swift in Sources */,
 				84329ECE28322E150020BC1C /* BlockTimeOperationFactory.swift in Sources */,
 				8428765B24ADDE0200D91AD8 /* SettingsWireframe.swift in Sources */,
@@ -17766,6 +17801,7 @@
 				F40966C726B297D6008CD244 /* AnalyticsRewardsViewFactory.swift in Sources */,
 				846AF83E2525B85100868F37 /* WalletNetworkFacade.swift in Sources */,
 				84DD49F428EE91ED00B804F3 /* Gov2LocalMappingFactory.swift in Sources */,
+				84C1706D2996424800CBE531 /* GovernanceYourDelegationCell.swift in Sources */,
 				84E0EE04292D336C008B2953 /* GovernanceType.swift in Sources */,
 				8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */,
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,

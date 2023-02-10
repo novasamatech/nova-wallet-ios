@@ -13,15 +13,19 @@ struct AddDelegationViewFactory {
 
         let wireframe = AddDelegationWireframe(state: state)
 
+        let viewModelFactory = GovernanceDelegateViewModelFactory(
+            votesDisplayFactory: ReferendumDisplayStringFactory(),
+            addressViewModelFactory: DisplayAddressViewModelFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays
+        )
+
         let presenter = AddDelegationPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
-            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
+            viewModelFactory: viewModelFactory,
             learnDelegateMetadata: ApplicationConfig.shared.learnGovernanceDelegateMetadata,
-            addressViewModelFactory: DisplayAddressViewModelFactory(),
-            votesDisplayFactory: ReferendumDisplayStringFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )

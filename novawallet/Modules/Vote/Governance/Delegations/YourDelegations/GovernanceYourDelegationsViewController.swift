@@ -26,4 +26,6 @@ final class GovernanceYourDelegationsViewController: UIViewController {
     }
 }
 
-extension GovernanceYourDelegationsViewController: GovernanceYourDelegationsViewProtocol {}
+extension GovernanceYourDelegationsViewController: GovernanceYourDelegationsViewProtocol {
+    func didReceive(viewModels _: [GovernanceYourDelegationCell.Model]) {}
+}
