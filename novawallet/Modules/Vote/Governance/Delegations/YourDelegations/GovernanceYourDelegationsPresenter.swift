@@ -71,7 +71,7 @@ extension GovernanceYourDelegationsPresenter: GovernanceYourDelegationsPresenter
     }
 
     func selectDelegate(for address: AccountAddress) {
-        guard let group = groups?.first(where: { $0.delegateModel.stats.address }) else {
+        guard let group = groups?.first(where: { $0.delegateModel.stats.address == address }) else {
             return
         }
 

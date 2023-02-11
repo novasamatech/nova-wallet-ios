@@ -63,7 +63,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
     }
 
     func showYourDelegations(from view: ControllerBackedProtocol?) {
-        guard let delegationsView = GovernanceYourDelegationsViewFactory.createView(state: state) else {
+        guard let delegationsView = GovernanceYourDelegationsViewFactory.createView(for: state) else {
             return
         }
 
