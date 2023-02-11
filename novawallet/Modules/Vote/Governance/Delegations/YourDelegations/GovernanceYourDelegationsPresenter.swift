@@ -12,6 +12,7 @@ final class GovernanceYourDelegationsPresenter {
     private var delegations: [TrackIdLocal: ReferendumDelegatingLocal]?
     private var delegates: [GovernanceDelegateLocal]?
     private var tracks: [GovernanceTrackInfoLocal]?
+    private var groups: [GovernanceYourDelegationGroup]?
 
     let logger: LoggerProtocol
 
@@ -46,6 +47,8 @@ final class GovernanceYourDelegationsPresenter {
             chain: chain
         )
 
+        self.groups = groups
+
         let viewModels = groups.compactMap {
             viewModelFactory.createYourDelegateViewModel(
                 from: $0,
@@ -61,6 +64,18 @@ final class GovernanceYourDelegationsPresenter {
 extension GovernanceYourDelegationsPresenter: GovernanceYourDelegationsPresenterProtocol {
     func setup() {
         interactor.setup()
+    }
+
+    func addDelegation() {
+        wireframe.showAddDelegation(from: view)
+    }
+
+    func selectDelegate(for address: AccountAddress) {
+        guard let group = groups?.first(where: { $0.delegateModel.stats.address }) else {
+            return
+        }
+
+        wireframe.showDelegateInfo(from: view, delegate: group.delegateModel)
     }
 }
 
