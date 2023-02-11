@@ -1,3 +1,5 @@
+import Foundation
+
 protocol GovernanceDelegateConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol)
     func didReceiveWallet(viewModel: StackCellViewModel)
@@ -32,6 +34,7 @@ protocol GovernanceDelegateConfirmInteractorOutputProtocol: GovernanceDelegateIn
 
 protocol GovernanceDelegateConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
     MessageSheetPresentable, AddressOptionsPresentable,
-    ExtrinsicSubmissionPresenting, GovernanceErrorPresentable {
+    GovernanceErrorPresentable {
     func showTracks(from view: GovernanceDelegateConfirmViewProtocol?, tracks: [GovernanceTrackInfoLocal])
+    func complete(on view: GovernanceDelegateConfirmViewProtocol?, locale: Locale)
 }
