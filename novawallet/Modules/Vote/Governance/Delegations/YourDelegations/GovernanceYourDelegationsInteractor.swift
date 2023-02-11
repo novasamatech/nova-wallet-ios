@@ -91,7 +91,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func fetchDelegatesIfNeeded() {
+    private func fetchDelegatesIfNeeded(_ forced: Bool = false) {
         guard
             let activityBlockNumber = currentBlockNumber?.blockBackInDays(
                 lastVotedDays, blockTime: currentBlockTime
@@ -100,6 +100,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         }
 
         if
+            !forced,
             let lastUsedBlockNumber = lastUsedBlockNumber,
             activityBlockNumber > lastUsedBlockNumber,
             activityBlockNumber - lastUsedBlockNumber < fetchBlockTreshold {
@@ -181,7 +182,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
 
         presenter?.didReceiveDelegations(delegations)
 
-        fetchDelegatesIfNeeded()
+        fetchDelegatesIfNeeded(true)
     }
 
     private func subscribeAccountVotes() {
