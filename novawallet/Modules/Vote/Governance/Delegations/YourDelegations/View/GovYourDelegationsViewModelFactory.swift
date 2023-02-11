@@ -10,7 +10,7 @@ protocol GovernanceYourDelegationsViewModelFactoryProtocol {
     ) -> GovernanceYourDelegationCell.Model?
 }
 
-class GovernanceYourDelegationsViewModelFactory: GovernanceDelegateViewModelFactory {
+class GovYourDelegationsViewModelFactory: GovernanceDelegateViewModelFactory {
     let tracksViewModelFactory: GovernanceTrackViewModelFactoryProtocol
 
     init(
@@ -31,7 +31,9 @@ class GovernanceYourDelegationsViewModelFactory: GovernanceDelegateViewModelFact
     }
 
     private func createTracksViewModel(
-        from tracks: [GovernanceTrackInfoLocal]
+        from tracks: [GovernanceTrackInfoLocal],
+        chain: ChainModel,
+        locale: Locale
     ) -> GovernanceDelegationCellView.Track? {
         guard let firstTrack = tracks.first else {
             return nil
@@ -56,17 +58,20 @@ class GovernanceYourDelegationsViewModelFactory: GovernanceDelegateViewModelFact
         return .init(trackViewModel: trackViewModel, tracksCount: tracksCount)
     }
 
-    private func createVotesViewModel(from delegations: [ReferendumDelegatingLocal]) -> GovernanceDelegationCellView.Votes {
-        let totalVotes = delegations.reductions(BigUInt(0)) { accum, delegation in
-            let votes = delegation.conviction.votes(for: delegation.balance) ?? 0
-            return accum + votes
-        }
-
-        let votesTitle: String = votesDisplayFactory.createVotes(from: totalVotes, chain: chain, locale: locale)
+    private func createVotesViewModel(
+        from group: GovernanceYourDelegationGroup,
+        chain: ChainModel,
+        locale: Locale
+    ) -> GovernanceDelegationCellView.Votes {
+        let votesTitle = votesDisplayFactory.createVotes(
+            from: group.totalVotes(),
+            chain: chain,
+            locale: locale
+        ) ?? ""
 
         let votesDetails: String
 
-        if delegations.count == 1, let delegation = delegations.first {
+        if group.delegations.count == 1, let delegation = group.delegations.first {
             votesDetails = votesDisplayFactory.createVotesDetails(
                 from: delegation.balance,
                 conviction: delegation.conviction.decimalValue,
@@ -74,7 +79,9 @@ class GovernanceYourDelegationsViewModelFactory: GovernanceDelegateViewModelFact
                 locale: locale
             ) ?? ""
         } else {
-            let tracksCount = quantityFormatter.value(for: locale).string(from: NSNumber(value: delegations.count)) ?? ""
+            let tracksCount = quantityFormatter.value(for: locale).string(
+                from: NSNumber(value: group.delegations.count)
+            ) ?? ""
             votesDetails = R.string.localizable.delegationsListMultipleTracks(
                 tracksCount,
                 preferredLanguages: locale.rLanguages
@@ -85,27 +92,27 @@ class GovernanceYourDelegationsViewModelFactory: GovernanceDelegateViewModelFact
     }
 }
 
-extension GovernanceYourDelegationsViewModelFactory: GovernanceYourDelegationsViewModelFactoryProtocol {
+extension GovYourDelegationsViewModelFactory: GovernanceYourDelegationsViewModelFactoryProtocol {
     func createYourDelegateViewModel(
         from group: GovernanceYourDelegationGroup,
         chain: ChainModel,
         locale: Locale
     ) -> GovernanceYourDelegationCell.Model? {
-        guard let firstTrack = group.tracks.first, group.tracks.count == group.delegations.count else {
+        guard !group.tracks.isEmpty, group.tracks.count == group.delegations.count else {
             return nil
         }
 
         let delegateViewModel = createAnyDelegateViewModel(
-            from: group.delegate,
+            from: group.delegateModel,
             chain: chain,
             locale: locale
         )
 
-        guard let trackViewModel = createTracksViewModel(from: group.tracks) else {
+        guard let trackViewModel = createTracksViewModel(from: group.tracks, chain: chain, locale: locale) else {
             return nil
         }
 
-        let votesViewModel = createVotesViewModel(from: group.delegations)
+        let votesViewModel = createVotesViewModel(from: group, chain: chain, locale: locale)
 
         let delegationViewModel = GovernanceDelegationCellView.Model(track: trackViewModel, votes: votesViewModel)
 
