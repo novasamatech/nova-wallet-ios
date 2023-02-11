@@ -24,6 +24,7 @@ struct AddDelegationViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             viewModelFactory: viewModelFactory,
             learnDelegateMetadata: ApplicationConfig.shared.learnGovernanceDelegateMetadata,
             localizationManager: localizationManager,

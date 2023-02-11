@@ -9,7 +9,7 @@ struct GovernanceYourDelegationsViewFactory {
 
         let wireframe = GovernanceYourDelegationsWireframe(state: state)
 
-        let viewModelFactory = GovernanceYourDelegationsViewModelFactory(
+        let viewModelFactory = GovYourDelegationsViewModelFactory(
             votesDisplayFactory: ReferendumDisplayStringFactory(),
             addressViewModelFactory: DisplayAddressViewModelFactory(),
             tracksViewModelFactory: GovernanceTrackViewModelFactory(),
@@ -26,7 +26,10 @@ struct GovernanceYourDelegationsViewFactory {
             logger: Logger.shared
         )
 
-        let view = GovernanceYourDelegationsViewController(presenter: presenter)
+        let view = GovernanceYourDelegationsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

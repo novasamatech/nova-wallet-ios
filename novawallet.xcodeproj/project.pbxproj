@@ -1640,7 +1640,7 @@
 		84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */; };
 		84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */; };
 		84953F72293630080033F47D /* AssetHistoryServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F71293630080033F47D /* AssetHistoryServiceType.swift */; };
-		849628C8299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849628C7299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift */; };
+		849628C8299673A40073F143 /* GovYourDelegationsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849628C7299673A40073F143 /* GovYourDelegationsViewModelFactory.swift */; };
 		849628CB299684D70073F143 /* GovernanceYourDelegationGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849628CA299684D70073F143 /* GovernanceYourDelegationGroup.swift */; };
 		849632072555CE9D00B8E316 /* ExportSeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849632062555CE9D00B8E316 /* ExportSeedData.swift */; };
 		84963D6C26F91810003FE8E4 /* RemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84963D6B26F91810003FE8E4 /* RemoteSubscriptionService.swift */; };
@@ -4917,7 +4917,7 @@
 		84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanHistoryContext.swift; sourceTree = "<group>"; };
 		84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryFactoryFacade.swift; sourceTree = "<group>"; };
 		84953F71293630080033F47D /* AssetHistoryServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryServiceType.swift; sourceTree = "<group>"; };
-		849628C7299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationsViewModelFactory.swift; sourceTree = "<group>"; };
+		849628C7299673A40073F143 /* GovYourDelegationsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovYourDelegationsViewModelFactory.swift; sourceTree = "<group>"; };
 		849628CA299684D70073F143 /* GovernanceYourDelegationGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationGroup.swift; sourceTree = "<group>"; };
 		849632062555CE9D00B8E316 /* ExportSeedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportSeedData.swift; sourceTree = "<group>"; };
 		84963D6B26F91810003FE8E4 /* RemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSubscriptionService.swift; sourceTree = "<group>"; };
@@ -12483,7 +12483,7 @@
 			children = (
 				84C1706829963E3800CBE531 /* GovernanceDelegationCellView.swift */,
 				84C1706C2996424800CBE531 /* GovernanceYourDelegationCell.swift */,
-				849628C7299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift */,
+				849628C7299673A40073F143 /* GovYourDelegationsViewModelFactory.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -17101,7 +17101,7 @@
 				844CB57026F9CB3300396E13 /* CrowdloanLocalSubscriptionHandler.swift in Sources */,
 				84C11F232844A802007F7C05 /* ParaStkCollatorInfoViewModelFactory.swift in Sources */,
 				843910B9253EFB8100E3C217 /* StorageKeyFactory+Implicit.swift in Sources */,
-				849628C8299673A40073F143 /* GovernanceYourDelegationsViewModelFactory.swift in Sources */,
+				849628C8299673A40073F143 /* GovYourDelegationsViewModelFactory.swift in Sources */,
 				849ABE562627738900011A2A /* Mapping.swift in Sources */,
 				84329ECE28322E150020BC1C /* BlockTimeOperationFactory.swift in Sources */,
 				8428765B24ADDE0200D91AD8 /* SettingsWireframe.swift in Sources */,

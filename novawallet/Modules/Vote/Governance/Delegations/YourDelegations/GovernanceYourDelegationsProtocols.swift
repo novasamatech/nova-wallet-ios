@@ -4,6 +4,8 @@ protocol GovernanceYourDelegationsViewProtocol: ControllerBackedProtocol {
 
 protocol GovernanceYourDelegationsPresenterProtocol: AnyObject {
     func setup()
+    func addDelegation()
+    func selectDelegate(for address: AccountAddress)
 }
 
 protocol GovernanceYourDelegationsInteractorInputProtocol: AnyObject {
@@ -20,4 +22,7 @@ protocol GovernanceYourDelegationsInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: GovernanceYourDelegationsInteractorError)
 }
 
-protocol GovernanceYourDelegationsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol GovernanceYourDelegationsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+    func showAddDelegation(from view: GovernanceYourDelegationsViewProtocol?)
+    func showDelegateInfo(from view: GovernanceYourDelegationsViewProtocol?, delegate: GovernanceDelegateLocal)
+}

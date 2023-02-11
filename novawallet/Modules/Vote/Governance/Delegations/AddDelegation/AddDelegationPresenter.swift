@@ -10,6 +10,7 @@ final class AddDelegationPresenter {
     let viewModelFactory: GovernanceDelegateViewModelFactoryProtocol
     let chain: ChainModel
     let learnDelegateMetadata: URL
+    let lastVotedDays: Int
     let logger: LoggerProtocol
 
     private var allDelegates: [AccountAddress: GovernanceDelegateLocal] = [:]
@@ -22,6 +23,7 @@ final class AddDelegationPresenter {
         interactor: AddDelegationInteractorInputProtocol,
         wireframe: AddDelegationWireframeProtocol,
         chain: ChainModel,
+        lastVotedDays: Int,
         viewModelFactory: GovernanceDelegateViewModelFactoryProtocol,
         learnDelegateMetadata: URL,
         localizationManager: LocalizationManagerProtocol,
@@ -30,6 +32,7 @@ final class AddDelegationPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
+        self.lastVotedDays = lastVotedDays
         self.viewModelFactory = viewModelFactory
         self.learnDelegateMetadata = learnDelegateMetadata
         self.logger = logger
@@ -55,7 +58,7 @@ final class AddDelegationPresenter {
             viewModelFactory.createAnyDelegateViewModel(
                 from: $0,
                 chain: chain,
-                locale: locale
+                locale: selectedLocale
             )
         }
 
