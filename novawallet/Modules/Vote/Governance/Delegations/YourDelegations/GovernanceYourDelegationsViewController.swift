@@ -60,7 +60,7 @@ final class GovernanceYourDelegationsViewController: UIViewController, ViewHolde
 
     private func createDataSource() -> DataSource {
         .init(tableView: rootView.tableView) { [weak self] tableView, indexPath, identifier -> UITableViewCell? in
-            guard let self = self, let model = self.dataStore[identifier]  else {
+            guard let self = self, let model = self.dataStore[identifier] else {
                 return nil
             }
 
@@ -93,7 +93,7 @@ extension GovernanceYourDelegationsViewController: GovernanceYourDelegationsView
             accum[model.identifier] = model
         }
 
-        let identifiers = viewModels.map { $0.identifier }
+        let identifiers = viewModels.map(\.identifier)
 
         var snapshot = Snapshot()
         snapshot.appendSections([.main])

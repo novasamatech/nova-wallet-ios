@@ -33,11 +33,13 @@ final class GovernanceYourDelegationCell: BlurredTableViewCell<GovernanceYourDel
         delegationView.snp.makeConstraints { make in
             make.height.equalTo(Constants.footerHeight)
         }
+
+        view.spacing = 16
     }
 
     private func applyStyle() {
         shouldApplyHighlighting = true
-        contentInsets = .init(top: 4, left: 0, bottom: 4, right: 0)
+        contentInsets = .init(top: 4, left: 16, bottom: 4, right: 16)
         innerInsets = .init(top: 12, left: 12, bottom: 0, right: 12)
         backgroundBlurView.sideLength = 12
         footerBlurView.sideLength = 12
