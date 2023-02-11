@@ -90,7 +90,7 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
     func didReceiveSubmissionHash(_: String) {
         view?.didStopLoading()
 
-        wireframe.presentExtrinsicSubmission(from: view, completionAction: .pop, locale: selectedLocale)
+        wireframe.complete(on: view, locale: selectedLocale)
     }
 
     func didReceiveError(_ error: GovernanceDelegateConfirmInteractorError) {

@@ -43,7 +43,7 @@ struct GovernanceDelegateConfirmViewFactory {
             return nil
         }
 
-        let wireframe = GovernanceDelegateConfirmWireframe()
+        let wireframe = GovernanceDelegateConfirmWireframe(state: state)
 
         let votingLockId = state.governanceId(for: option)
 
