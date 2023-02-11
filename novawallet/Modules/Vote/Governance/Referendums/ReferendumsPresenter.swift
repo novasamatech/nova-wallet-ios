@@ -268,7 +268,13 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func selectDelegations() {
-        wireframe.showDelegations(from: view)
+        let delegatings = voting?.value?.votes.delegatings ?? [:]
+
+        if delegatings.isEmpty {
+            wireframe.showAddDelegation(from: view)
+        } else {
+            wireframe.showYourDelegations(from: view)
+        }
     }
 }
 

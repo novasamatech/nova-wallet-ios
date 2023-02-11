@@ -43,7 +43,7 @@ final class GovernanceYourDelegationsViewLayout: UIView {
         }
 
         tableView.contentInset = UIEdgeInsets(
-            top: 0,
+            top: 8,
             left: 0,
             bottom: UIConstants.actionHeight + 2 * UIConstants.actionBottomInset,
             right: 0
