@@ -147,7 +147,7 @@ extension GovernanceDelegateInfoViewModelFactory: GovernanceDelegateInfoViewMode
         return .init(
             profileViewModel: profileViewModel,
             addressViewModel: addressViewModel,
-            details: metadata?.shortDescription,
+            details: hasFullDescription ? metadata?.longDescription : metadata?.shortDescription,
             hasFullDescription: hasFullDescription
         )
     }
