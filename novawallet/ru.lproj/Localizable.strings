@@ -1171,3 +1171,4 @@
 "gov.undelegating.period" = "Период отзыва делегации";
 "gov.delegate" = "Делегат";
 "gov.your.delegation" = "Ваша делегация";
+"common.revoke" = "Отозвать";
