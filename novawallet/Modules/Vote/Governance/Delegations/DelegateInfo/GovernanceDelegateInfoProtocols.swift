@@ -45,12 +45,14 @@ protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresent
 
     func showRecentVotes(
         from view: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress: AccountAddress
+        delegateAddress: AccountAddress,
+        delegateName: String?
     )
 
     func showAllVotes(
         from view: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress: AccountAddress
+        delegateAddress: AccountAddress,
+        delegateName: String?
     )
 
     func showAddDelegation(from view: GovernanceDelegateInfoViewProtocol?)

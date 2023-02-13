@@ -1,6 +1,14 @@
 import UIKit
 import RobinHood
 
+enum DelegateVotedReferenda {
+    case allTimes
+    case recent(
+        days: Int,
+        fetchBlockTreshold: BlockNumber
+    )
+}
+
 final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     weak var presenter: DelegateVotedReferendaInteractorOutputProtocol!
 
@@ -10,6 +18,11 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let address: AccountAddress
     let governanceOffchainVotingFactory: GovernanceOffchainVotingFactoryProtocol
+    let delegateVotedReferenda: DelegateVotedReferenda
+
+    private var lastUsedBlockNumber: BlockNumber?
+    private var currentBlockNumber: BlockNumber?
+    private var currentBlockTime: BlockTime?
 
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
         governanceState.generalLocalSubscriptionFactory
@@ -28,6 +41,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         serviceFactory: GovernanceServiceFactoryProtocol,
         address: AccountAddress,
         governanceOffchainVotingFactory: GovernanceOffchainVotingFactoryProtocol,
+        delegateVotedReferenda: DelegateVotedReferenda,
         operationQueue: OperationQueue
     ) {
         self.governanceState = governanceState
@@ -35,6 +49,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         self.serviceFactory = serviceFactory
         self.operationQueue = operationQueue
         self.address = address
+        self.delegateVotedReferenda = delegateVotedReferenda
         self.governanceOffchainVotingFactory = governanceOffchainVotingFactory
     }
 
@@ -76,6 +91,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
             return
         }
 
+        presenter.didReceiveChain(option.chain)
         setupBlockTimeService(for: option.chain)
         provideBlockTime()
         setupSubscriptionFactory(for: option)
@@ -142,7 +158,8 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
                 do {
                     let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-
+                    self?.currentBlockTime = blockTime
+                    self?.provideOffchainVotingIfNeeded()
                     self?.presenter?.didReceiveBlockTime(blockTime)
                 } catch {
                     self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
@@ -206,14 +223,52 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
     func provideOffchainVotingIfNeeded() {
         if offchainVotingCancellable == nil, let option = governanceState.settings.value {
-            provideOffchainVoting(for: option)
+            provideOffchainVoting()
         }
     }
 
-    func provideOffchainVoting(for _: GovernanceSelectedOption) {
+    private func estimateStatsBlockNumber(days: Int) -> BlockNumber? {
+        guard let blockNumber = currentBlockNumber, let blockTime = currentBlockTime, blockTime > 0 else {
+            return nil
+        }
+
+        let blocksInPast = BlockNumber(TimeInterval(days).secondsFromDays / TimeInterval(blockTime).seconds)
+
+        guard blockNumber > blocksInPast else {
+            return 0
+        }
+
+        return blockNumber - blocksInPast
+    }
+
+    private func provideOffchainVoting() {
+        switch delegateVotedReferenda {
+        case .allTimes:
+            provideOffchainVoting(from: nil)
+        case let .recent(days, fetchBlockTreshold):
+            guard let activityBlockNumber = estimateStatsBlockNumber(days: days) else {
+                return
+            }
+
+            if
+                let lastUsedBlockNumber = lastUsedBlockNumber,
+                activityBlockNumber > lastUsedBlockNumber,
+                activityBlockNumber - lastUsedBlockNumber < fetchBlockTreshold {
+                return
+            }
+
+            lastUsedBlockNumber = activityBlockNumber
+            provideOffchainVoting(from: activityBlockNumber)
+        }
+    }
+
+    func provideOffchainVoting(from blockNumber: BlockNumber?) {
         clear(cancellable: &offchainVotingCancellable)
 
-        let votingWrapper = governanceOffchainVotingFactory.createDirectVotesFetchOperation(for: address, from: nil)
+        let votingWrapper = governanceOffchainVotingFactory.createDirectVotesFetchOperation(
+            for: address,
+            from: blockNumber
+        )
 
         votingWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -225,7 +280,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
                 do {
                     let voting = try votingWrapper.targetOperation.extractNoCancellableResultData()
-                    self.provideReferendumsIfNeeded(referendumIds: Set(voting.keys))
+                    self?.provideReferendumsIfNeeded(referendumIds: Set(voting.keys))
                     self?.presenter?.didReceiveOffchainVoting(voting)
                 } catch {
                     self?.presenter?.didReceiveError(.offchainVotingFetchFailed(error))
@@ -292,6 +347,8 @@ extension DelegateVotedReferendaInteractor: GeneralLocalStorageSubscriber, Gener
         switch result {
         case let .success(blockNumber):
             if let blockNumber = blockNumber {
+                currentBlockNumber = blockNumber
+                provideBlockTime()
                 presenter?.didReceiveBlockNumber(blockNumber)
             }
         case let .failure(error): break

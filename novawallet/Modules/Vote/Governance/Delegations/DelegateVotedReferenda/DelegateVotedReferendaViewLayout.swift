@@ -17,6 +17,13 @@ final class DelegateVotedReferendaViewLayout: UIView {
         return view
     }()
 
+    let totalRefrendumsLabel: BorderedLabelView = .create { view in
+        view.backgroundView.fillColor = R.color.colorChipsBackground()!
+        view.titleLabel.apply(style: .init(textColor: R.color.colorChipText()!, font: .semiBoldFootnote))
+        view.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8)
+        view.backgroundView.cornerRadius = 6
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = R.color.colorSecondaryScreenBackground()
@@ -33,7 +40,7 @@ final class DelegateVotedReferendaViewLayout: UIView {
         addSubview(tableView)
         tableView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top).inset(12)
-            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(16)
         }
     }

@@ -1143,3 +1143,4 @@
 "delegate.vote.by" = "%@ от %@";
 "delegations.list.multiple.tracks" = "В %@ треках";
 "delegations.list.empty" = "Список делегаций появится здесь";
+"gov.vote.by" = "%@ голосов от %@";

@@ -123,7 +123,8 @@ final class ReferendumsPresenter {
             votes: accountVotes?.votes ?? [:],
             offchainVotes: offchainVoting,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
-            locale: selectedLocale
+            locale: selectedLocale,
+            voterName: nil
         ))
 
         let activitySection: ReferendumsSection
