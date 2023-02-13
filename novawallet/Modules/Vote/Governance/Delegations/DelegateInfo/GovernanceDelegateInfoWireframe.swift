@@ -74,4 +74,14 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
             animated: true
         )
     }
+
+    func showTracks(
+        from _: GovernanceDelegateInfoViewProtocol?,
+        tracks _: [GovernanceTrackInfoLocal],
+        delegations _: [TrackIdLocal: ReferendumDelegatingLocal]
+    ) {}
+
+    func showEditDelegation(from _: GovernanceDelegateInfoViewProtocol?) {}
+
+    func showRevokeDelegation(from _: GovernanceDelegateInfoViewProtocol?) {}
 }
