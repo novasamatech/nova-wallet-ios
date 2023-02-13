@@ -73,7 +73,7 @@ final class GovernanceDelegateConfirmViewController: UIViewController, ViewHolde
             preferredLanguages: languages
         )
 
-        rootView.yourDelegationCell.titleLabel.text = R.string.localizable.governanceReferendumsYourDelegations(
+        rootView.yourDelegationCell.titleLabel.text = R.string.localizable.govYourDelegation(
             preferredLanguages: languages
         )
 

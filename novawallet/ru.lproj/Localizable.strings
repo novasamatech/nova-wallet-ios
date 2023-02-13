@@ -1170,3 +1170,4 @@
 "gov.add.delegate.self.error.message" = "Вы не можете делегировать голоса себе";
 "gov.undelegating.period" = "Период отзыва делегации";
 "gov.delegate" = "Делегат";
+"gov.your.delegation" = "Ваша делегация";
