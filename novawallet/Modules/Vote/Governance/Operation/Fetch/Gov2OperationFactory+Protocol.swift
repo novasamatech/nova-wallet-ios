@@ -64,6 +64,39 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
+    func fetchAllTracks(
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[GovernanceTrackInfoLocal]> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let tracksOperation = StorageConstantOperation<[Referenda.Track]>(path: Referenda.tracks)
+
+        tracksOperation.configurationBlock = {
+            do {
+                tracksOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                tracksOperation.result = .failure(error)
+            }
+        }
+
+        let mapOperation = ClosureOperation<[GovernanceTrackInfoLocal]> {
+            try tracksOperation.extractNoCancellableResultData().map { track in
+                GovernanceTrackInfoLocal(
+                    trackId: TrackIdLocal(track.trackId),
+                    name: track.info.name
+                )
+            }
+        }
+
+        tracksOperation.addDependency(codingFactoryOperation)
+        mapOperation.addDependency(tracksOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [codingFactoryOperation, tracksOperation]
+        )
+    }
+
     func fetchReferendumWrapper(
         for remoteReferendum: ReferendumInfo,
         index: ReferendumIdLocal,
