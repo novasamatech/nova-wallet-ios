@@ -146,8 +146,7 @@ final class GovernanceUnavailableTracksViewLayout: UIView {
     private func setupLayout() {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide)
+            make.edges.equalToSuperview()
         }
 
         contentView.stackView.addArrangedSubview(titleLabel)
@@ -169,13 +168,13 @@ extension GovernanceUnavailableTracksViewLayout {
         if !delegatedTracks.isEmpty {
             height += titleHeight
             height += 2 * Constants.sectionInset + CGFloat(delegatedTracks.count - 1) *
-                (trackHeight + Constants.trackSpacing)
+                (trackHeight + Constants.trackSpacing) + trackHeight
         }
 
         if !votedTracks.isEmpty {
             height += 2 * titleHeight + Constants.actionOffset
             height += 2 * Constants.sectionInset + CGFloat(votedTracks.count - 1) *
-                (trackHeight + Constants.trackSpacing)
+                (trackHeight + Constants.trackSpacing) + trackHeight
         }
 
         return height
