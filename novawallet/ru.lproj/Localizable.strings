@@ -1148,7 +1148,7 @@
 "gov.available.tracks" = "Доступные треки";
 "gov.unavailable.tracks" = "Недоступные треки";
 "gov.add.delegation.tracks.title" = "Выберите треки для делегирования";
-"gov.add.delegation.tracks.details" = "Пожалуйста, выберите треки в которых вы бы хотели делегировать ваши голоса.";
+"gov.add.delegation.tracks.details" = "Пожалуйста, выберите треки, в которых вы бы хотели делегировать ваши голоса.";
 "gov.tracks.selection.hint" = "Выберите хотя бы 1 трек...";
 "common.select.all" = "Выбрать все";
 "gov.add.delegation.tracks.empty" = "Нет доступных треков для делегирования";
