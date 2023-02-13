@@ -146,7 +146,8 @@ final class GovernanceUnavailableTracksViewLayout: UIView {
     private func setupLayout() {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide)
         }
 
         contentView.stackView.addArrangedSubview(titleLabel)
