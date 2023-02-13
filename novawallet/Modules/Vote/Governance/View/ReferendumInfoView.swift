@@ -89,7 +89,7 @@ extension ReferendumInfoView {
 extension ReferendumInfoView {
     struct Model {
         let status: Status
-        let time: Time?
+        var time: Time?
         let title: String?
         let track: Track?
         let referendumNumber: String?

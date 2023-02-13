@@ -56,7 +56,7 @@ extension ReferendumTableViewCell {
 
 extension ReferendumView {
     struct Model {
-        let referendumInfo: ReferendumInfoView.Model
+        var referendumInfo: ReferendumInfoView.Model
         let progress: VotingProgressView.Model?
         let yourVotes: YourVotesView.Model?
     }
