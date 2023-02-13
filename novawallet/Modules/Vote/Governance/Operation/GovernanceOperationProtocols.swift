@@ -20,6 +20,12 @@ protocol ReferendumsOperationFactoryProtocol {
         from connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[ReferendumVoterLocal]>
+
+    func fetchReferendumsWrapper(
+        for referendumIds: Set<ReferendumIdLocal>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[ReferendumLocal]>
 }
 
 protocol ReferendumActionOperationFactoryProtocol {

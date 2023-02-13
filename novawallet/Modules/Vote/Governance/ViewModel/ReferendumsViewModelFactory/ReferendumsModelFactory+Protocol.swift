@@ -34,6 +34,11 @@ protocol ReferendumsModelFactoryProtocol {
     func createLoadingViewModel() -> [ReferendumsSection]
 }
 
+protocol DelegateReferendumsModelFactoryProtocol {
+    func createReferendumsViewModel(input: ReferendumsModelFactoryInput) -> [ReferendumsCellViewModel]
+    func createLoadingViewModel() -> [ReferendumsSection]
+}
+
 extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
     func createLoadingViewModel() -> [ReferendumsSection] {
         let cells: [ReferendumsCellViewModel] = (0 ..< 10).map {
@@ -140,5 +145,12 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         }
 
         return provideCommonReferendumCellViewModel(status: status, params: params, locale: locale)
+    }
+}
+
+extension ReferendumsModelFactory: DelegateReferendumsModelFactoryProtocol {
+    func createReferendumsViewModel(input: ReferendumsModelFactoryInput) -> [ReferendumsCellViewModel] {
+        let (active, completed) = createReferendumsCellViewModels(input: input)
+        return active + completed
     }
 }
