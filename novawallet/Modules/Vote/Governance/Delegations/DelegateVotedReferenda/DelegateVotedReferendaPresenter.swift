@@ -11,6 +11,7 @@ final class DelegateVotedReferendaPresenter {
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let sorting: ReferendumsSorting
     let logger: LoggerProtocol
+    let name: String
 
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
@@ -34,6 +35,7 @@ final class DelegateVotedReferendaPresenter {
         viewModelFactory: DelegateReferendumsModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         sorting: ReferendumsSorting,
+        name: String,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -43,6 +45,7 @@ final class DelegateVotedReferendaPresenter {
         self.statusViewModelFactory = statusViewModelFactory
         self.sorting = sorting
         self.logger = logger
+        self.name = name
         self.localizationManager = localizationManager
     }
 
@@ -61,10 +64,11 @@ final class DelegateVotedReferendaPresenter {
         let referendumsViewModels = viewModelFactory.createReferendumsViewModel(input: .init(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
-            votes: [:],
-            offchainVotes: voting,
+            votes: voting,
+            offchainVotes: nil,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
-            locale: selectedLocale
+            locale: selectedLocale,
+            voterName: name
         ))
 
         view.update(viewModels: referendumsViewModels)
@@ -151,6 +155,11 @@ final class DelegateVotedReferendaPresenter {
 }
 
 extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutputProtocol {
+    func didReceiveChain(_ chainModel: ChainModel) {
+        chain = chainModel
+        updateReferendumsView()
+    }
+
     func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>]) {
         let indexedReferendums = Array((referendumsMetadata ?? [:]).values).reduceToDict()
 
@@ -177,7 +186,8 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         self.blockNumber = blockNumber
 
-        interactor.refresh()
+        updateReferendumsView()
+        // interactor.refresh()
     }
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {
