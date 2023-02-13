@@ -70,7 +70,12 @@ protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresent
         delegations: [TrackIdLocal: ReferendumDelegatingLocal]
     )
 
-    func showEditDelegation(from view: GovernanceDelegateInfoViewProtocol?)
+    func showEditDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
+    )
 
-    func showRevokeDelegation(from view: GovernanceDelegateInfoViewProtocol?)
+    func showRevokeDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?
+    )
 }
