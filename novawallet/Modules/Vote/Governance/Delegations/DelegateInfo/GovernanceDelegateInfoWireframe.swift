@@ -81,7 +81,19 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
         delegations _: [TrackIdLocal: ReferendumDelegatingLocal]
     ) {}
 
-    func showEditDelegation(from _: GovernanceDelegateInfoViewProtocol?) {}
+    func showEditDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
+    ) {
+        guard let tracksView = GovEditDelegationTracksViewFactory.createView(for: state, delegate: delegate) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            tracksView.controller,
+            animated: true
+        )
+    }
 
     func showRevokeDelegation(from _: GovernanceDelegateInfoViewProtocol?) {}
 }

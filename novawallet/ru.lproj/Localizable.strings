@@ -1172,3 +1172,5 @@
 "gov.delegate" = "Делегат";
 "gov.your.delegation" = "Ваша делегация";
 "common.revoke" = "Отозвать";
+"gov.edit.delegation.tracks.title" = "Выберите треки для изменения делегации";
+"gov.edit.delegation" = "Изменить делегацию";

@@ -51,6 +51,18 @@ final class GovernanceDelegateInfoPresenter {
         self.localizationManager = localizationManager
     }
 
+    private func getDelegateDisplayInfo() -> GovernanceDelegateFlowDisplayInfo<AccountId>? {
+        guard let delegateId = try? delegateAddress?.toAccountId() else {
+            return nil
+        }
+
+        return .init(
+            additions: delegateId,
+            delegateMetadata: metadata,
+            delegateIdentity: identity
+        )
+    }
+
     private func updateYourDelegations(from voting: ReferendumTracksVotingDistribution?) {
         if
             let delegateId = try? delegateAddress?.toAccountId(using: chain.chainFormat),
@@ -254,21 +266,19 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     }
 
     func addDelegation() {
-        guard let delegateId = try? delegateAddress?.toAccountId() else {
+        guard let displayInfo = getDelegateDisplayInfo() else {
             return
         }
 
-        let delegate: GovernanceDelegateFlowDisplayInfo<AccountId> = .init(
-            additions: delegateId,
-            delegateMetadata: metadata,
-            delegateIdentity: identity
-        )
-
-        wireframe.showAddDelegation(from: view, delegate: delegate)
+        wireframe.showAddDelegation(from: view, delegate: displayInfo)
     }
 
     func editDelegation() {
-        wireframe.showEditDelegation(from: view)
+        guard let displayInfo = getDelegateDisplayInfo() else {
+            return
+        }
+
+        wireframe.showEditDelegation(from: view, delegate: displayInfo)
     }
 
     func revokeDelegation() {

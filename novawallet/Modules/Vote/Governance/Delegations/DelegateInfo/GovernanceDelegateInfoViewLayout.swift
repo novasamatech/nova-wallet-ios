@@ -273,7 +273,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
             yourDelegationTable?.setCustomHeight(76, at: index)
         }
 
-        cell.contentInsets = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
+        cell.contentInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
 
         return cell
     }
