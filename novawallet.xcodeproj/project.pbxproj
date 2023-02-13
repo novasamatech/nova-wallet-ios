@@ -1334,6 +1334,9 @@
 		84754CA22513DB8800854599 /* EmptyAccountIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84754CA12513DB8800854599 /* EmptyAccountIcon.swift */; };
 		84754CA42513E6DC00854599 /* PrimitiveContextWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84754CA32513E6DC00854599 /* PrimitiveContextWrapper.swift */; };
 		84755CEB298CF9CF0092D1A8 /* ViewModelViewPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84755CEA298CF9CF0092D1A8 /* ViewModelViewPair.swift */; };
+		84757E14299A1E1500616C6C /* BatchSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84757E13299A1E1500616C6C /* BatchSubscriptionHandler.swift */; };
+		84757E17299A2E1200616C6C /* Gov2SubscriptionFactory+Votes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84757E16299A2E1200616C6C /* Gov2SubscriptionFactory+Votes.swift */; };
+		84757E19299A2E2F00616C6C /* Gov2SubscriptionFactory+Referendum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84757E18299A2E2F00616C6C /* Gov2SubscriptionFactory+Referendum.swift */; };
 		8475AE39258B958300B058F3 /* ErrorContent+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8475AE38258B958300B058F3 /* ErrorContent+Wallet.swift */; };
 		8475B47B289870A4009B90BC /* ProcessStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8475B47A289870A4009B90BC /* ProcessStepView.swift */; };
 		8476C9E025EF94F2003EEAE1 /* StakingViewModelFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476C9DF25EF94F2003EEAE1 /* StakingViewModelFacade.swift */; };
@@ -4604,6 +4607,9 @@
 		84754CA12513DB8800854599 /* EmptyAccountIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyAccountIcon.swift; sourceTree = "<group>"; };
 		84754CA32513E6DC00854599 /* PrimitiveContextWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimitiveContextWrapper.swift; sourceTree = "<group>"; };
 		84755CEA298CF9CF0092D1A8 /* ViewModelViewPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelViewPair.swift; sourceTree = "<group>"; };
+		84757E13299A1E1500616C6C /* BatchSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchSubscriptionHandler.swift; sourceTree = "<group>"; };
+		84757E16299A2E1200616C6C /* Gov2SubscriptionFactory+Votes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gov2SubscriptionFactory+Votes.swift"; sourceTree = "<group>"; };
+		84757E18299A2E2F00616C6C /* Gov2SubscriptionFactory+Referendum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gov2SubscriptionFactory+Referendum.swift"; sourceTree = "<group>"; };
 		8475AE38258B958300B058F3 /* ErrorContent+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ErrorContent+Wallet.swift"; sourceTree = "<group>"; };
 		8475B47A289870A4009B90BC /* ProcessStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessStepView.swift; sourceTree = "<group>"; };
 		8476C9DF25EF94F2003EEAE1 /* StakingViewModelFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingViewModelFacade.swift; sourceTree = "<group>"; };
@@ -8882,8 +8888,8 @@
 		8453DE5328FD24210055345C /* Subscription */ = {
 			isa = PBXGroup;
 			children = (
+				84757E15299A2DE500616C6C /* Gov2SubscriptionFactory */,
 				8453DE5428FD24FF0055345C /* GovernanceSubscriptionProtocol.swift */,
-				8453DE5628FD27390055345C /* Gov2SubscriptionFactory.swift */,
 				845B07FE2916F529005785D3 /* Gov1SubscriptionFactory.swift */,
 			);
 			path = Subscription;
@@ -9602,6 +9608,7 @@
 				84C3420C283192D000156569 /* CallbackStorageSubscription.swift */,
 				84FA7C1D284FED0A00B648E1 /* CallbackBatchStorageSubscription.swift */,
 				88AF35DD28C21D28003730DA /* LocksSubscription.swift */,
+				84757E13299A1E1500616C6C /* BatchSubscriptionHandler.swift */,
 			);
 			path = StorageSubscription;
 			sourceTree = "<group>";
@@ -9735,6 +9742,16 @@
 				84754C872510BAFE00854599 /* ModalAlertFactory.swift */,
 			);
 			path = ModalAlert;
+			sourceTree = "<group>";
+		};
+		84757E15299A2DE500616C6C /* Gov2SubscriptionFactory */ = {
+			isa = PBXGroup;
+			children = (
+				8453DE5628FD27390055345C /* Gov2SubscriptionFactory.swift */,
+				84757E16299A2E1200616C6C /* Gov2SubscriptionFactory+Votes.swift */,
+				84757E18299A2E2F00616C6C /* Gov2SubscriptionFactory+Referendum.swift */,
+			);
+			path = Gov2SubscriptionFactory;
 			sourceTree = "<group>";
 		};
 		84770F23291E590800852A33 /* Fetch */ = {
@@ -17454,6 +17471,7 @@
 				849976B327B2430300B14A6C /* DAppMetamaskTransport.swift in Sources */,
 				8425D0EC28FE9ACB003B782A /* Gov2ExtrinsicFactory.swift in Sources */,
 				84E1CCFA260DCBF9001E81B5 /* SwitchAccount+UsernameSetupWireframe.swift in Sources */,
+				84757E19299A2E2F00616C6C /* Gov2SubscriptionFactory+Referendum.swift in Sources */,
 				8473F4BA282C012B007CC55A /* StakingRelaychainInteractor+InputProtocol.swift in Sources */,
 				84E0EE0C292D402C008B2953 /* GovernanceAssetSelectionViewFactory.swift in Sources */,
 				848DAEFE282293DB00D56F55 /* ParachainStaking+Types.swift in Sources */,
@@ -18625,6 +18643,7 @@
 				D3F199376DAEBF380C5FFD9D /* DAppAddFavoriteViewLayout.swift in Sources */,
 				12734D7CC6ACA5B657F44519 /* DAppAddFavoriteViewFactory.swift in Sources */,
 				8483B15528F9406C0048B295 /* ReferendumVotersInteractorError.swift in Sources */,
+				84757E14299A1E1500616C6C /* BatchSubscriptionHandler.swift in Sources */,
 				4E184FFD1532C293BDF6D7C1 /* DAppAuthSettingsProtocols.swift in Sources */,
 				319124D11B1376B430B6C2EF /* DAppAuthSettingsWireframe.swift in Sources */,
 				849F1453294477DA00D9F9BA /* TextWithServiceInputView.swift in Sources */,
@@ -18804,6 +18823,7 @@
 				41FA237A4AA56AC99322A040 /* ParitySignerAddConfirmPresenter.swift in Sources */,
 				663DB041307C59E939BF0BE2 /* ParitySignerAddConfirmInteractor.swift in Sources */,
 				13CF38563E1849EAF1B4E4B6 /* ParitySignerAddConfirmViewFactory.swift in Sources */,
+				84757E17299A2E1200616C6C /* Gov2SubscriptionFactory+Votes.swift in Sources */,
 				84F76ED629006A0900D7206C /* ReferendumConvictionView.swift in Sources */,
 				9979A61C1677B7B1D44E58B4 /* ParitySignerTxQrProtocols.swift in Sources */,
 				84CFE448292B9CB100CDDD7C /* OnChainTransferBaseInteractor.swift in Sources */,
