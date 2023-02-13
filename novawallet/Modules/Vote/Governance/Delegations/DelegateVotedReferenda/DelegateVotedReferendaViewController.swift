@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     typealias RootViewType = DelegateVotedReferendaViewLayout
@@ -8,10 +9,18 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, Row>
     private var dataSource: DataSource?
+    let quantityFormatter: LocalizableResource<NumberFormatter>
 
-    init(presenter: DelegateVotedReferendaPresenterProtocol) {
+    init(
+        presenter: DelegateVotedReferendaPresenterProtocol,
+        quantityFormatter: LocalizableResource<NumberFormatter>,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.quantityFormatter = quantityFormatter
+
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -26,6 +35,9 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        dataSource = createDataSource()
+        rootView.tableView.dataSource = dataSource
+
         presenter.setup()
     }
 
@@ -33,12 +45,34 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
         let dataSource = DataSource(tableView: rootView.tableView) { tableView, indexPath, model in
             let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             cell.view.bind(viewModel: model.viewModel)
+            cell.applyStyle()
             return cell
         }
 
         dataSource.defaultRowAnimation = .fade
         return dataSource
     }
+
+    private func setupCounter(value: Int?) {
+        navigationItem.rightBarButtonItem = nil
+
+        let formatter = quantityFormatter.value(for: selectedLocale)
+
+        guard
+            let value = value,
+            let valueString = formatter.string(from: value as NSNumber) else {
+            return
+        }
+
+        rootView.totalRefrendumsLabel.titleLabel.text = valueString
+        rootView.totalRefrendumsLabel.sizeToFit()
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.totalRefrendumsLabel)
+    }
+
+    private func setupLocalization() {}
+
+    private var viewModels: [ReferendumsCellViewModel] = []
 }
 
 extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtocol {
@@ -47,6 +81,7 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
         dataSource?.apply(snapshot, animatingDifferences: true)
+        setupCounter(value: viewModels.count)
     }
 
     func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
@@ -62,7 +97,7 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
                 updatingValue.referendumInfo.time = time[$0.referendumIndex]??.viewModel
                 return Row(
                     referendumIndex: $0.referendumIndex,
-                    viewModel: .cached(value: updatingValue)
+                    viewModel: .loaded(value: updatingValue)
                 )
             case let .cached(value):
                 var updatingValue = value
@@ -81,6 +116,14 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
 
         var newSnapshot = dataSource.snapshot()
         newSnapshot.reloadItems(visibleItems)
-        dataSource.apply(newSnapshot)
+        dataSource.apply(newSnapshot, animatingDifferences: false)
+    }
+}
+
+extension DelegateVotedReferendaViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }

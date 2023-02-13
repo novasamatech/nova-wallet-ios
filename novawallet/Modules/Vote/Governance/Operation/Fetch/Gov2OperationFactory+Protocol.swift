@@ -280,7 +280,7 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
             blockHash: nil
         )
 
-        enactmentsWrapper.targetOperation.addDependency(referendumOperation)
+        enactmentsWrapper.addDependency(operations: [referendumOperation])
 
         let inQueueStateWrapper = createTrackQueueOperation(
             dependingOn: referendumOperation,

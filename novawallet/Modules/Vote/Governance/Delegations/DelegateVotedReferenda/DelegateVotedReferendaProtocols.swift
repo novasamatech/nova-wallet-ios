@@ -20,6 +20,7 @@ protocol DelegateVotedReferendaInteractorOutputProtocol: AnyObject {
     func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveError(_ error: DelegateVotedReferendaError)
+    func didReceiveChain(_ chainModel: ChainModel)
 }
 
 protocol DelegateVotedReferendaWireframeProtocol: AnyObject {}

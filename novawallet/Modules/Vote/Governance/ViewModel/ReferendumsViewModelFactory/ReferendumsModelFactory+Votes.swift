@@ -7,12 +7,14 @@ extension ReferendumsModelFactory {
         from onchainVotes: ReferendumAccountVoteLocal?,
         offchainVotes: GovernanceOffchainVotesLocal.Single?,
         chain: ChainModel,
+        voterName: String?,
         locale: Locale
     ) -> YourVotesView.Model? {
         if let onchainVotes = onchainVotes {
             return createDirectVotesViewModel(
                 votes: onchainVotes,
                 chain: chain,
+                voterName: voterName,
                 locale: locale
             )
         }
@@ -27,7 +29,7 @@ extension ReferendumsModelFactory {
                     locale: locale
                 )
             case let .direct(vote):
-                return createDirectVotesViewModel(votes: vote, chain: chain, locale: locale)
+                return createDirectVotesViewModel(votes: vote, chain: chain, voterName: voterName, locale: locale)
             }
         }
 
@@ -75,6 +77,7 @@ extension ReferendumsModelFactory {
     func createDirectVotesViewModel(
         votes: ReferendumAccountVoteLocal?,
         chain: ChainModel,
+        voterName: String?,
         locale: Locale
     ) -> YourVotesView.Model? {
         guard let votes = votes else {
@@ -88,11 +91,20 @@ extension ReferendumsModelFactory {
                 locale: locale
             )
 
-            return Strings.governanceReferendumsYourVote(
-                votesString ?? "",
-                preferredLanguages: locale.rLanguages
-            )
+            if let voterName = voterName {
+                return Strings.govVoteBy(
+                    votesString ?? "",
+                    voterName,
+                    preferredLanguages: locale.rLanguages
+                )
+            } else {
+                return Strings.governanceReferendumsYourVote(
+                    votesString ?? "",
+                    preferredLanguages: locale.rLanguages
+                )
+            }
         }
+
         let ayesModel = votes.hasAyeVotes ? YourVoteView.Model(
             title: Strings.governanceAye(preferredLanguages: locale.rLanguages).uppercased(),
             description: formatVotes(votes.ayes),
