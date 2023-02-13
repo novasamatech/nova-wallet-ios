@@ -1166,7 +1166,7 @@
 "gov.add.delegate.hint2" = "Undelegating period will start after you revoke a delegation";
 "gov.add.delegate.voting.error.title" = "Already voting";
 "gov.add.delegate.voting.error.message" = "Please, remove votes from selected tracks to start delegating";
-"gov.add.delegate.self.error.title" = "Cannot delegate to self";
-"gov.add.delegate.self.error.message" = "You cannot delegate votes to yourself";
+"gov.add.delegate.self.error.title" = "Cannot delegate to yourself";
+"gov.add.delegate.self.error.message" = "You cannot delegate to yourself, please choose different address";
 "gov.undelegating.period" = "Undelegating period";
 "gov.delegate" = "Delegate";
