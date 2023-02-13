@@ -12,16 +12,24 @@ final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWirefra
     }
 
     func complete(on view: GovernanceDelegateConfirmViewProtocol?, locale: Locale) {
-        guard let yourDelegations = GovernanceYourDelegationsViewFactory.createView(for: state) else {
-            return
-        }
-
-        yourDelegations.controller.hidesBottomBarWhenPushed = true
-
         let presenter = view?.controller.navigationController
-        presenter?.popToRootViewController(animated: false)
 
-        presenter?.pushViewController(yourDelegations.controller, animated: true)
+        if
+            let yourDelegations = presenter?.viewControllers.first(
+                where: { $0 is GovernanceYourDelegationsViewProtocol }
+            ) {
+            presenter?.popToViewController(yourDelegations, animated: true)
+        } else {
+            guard let yourDelegations = GovernanceYourDelegationsViewFactory.createView(for: state) else {
+                return
+            }
+
+            yourDelegations.controller.hidesBottomBarWhenPushed = true
+
+            presenter?.popToRootViewController(animated: false)
+
+            presenter?.pushViewController(yourDelegations.controller, animated: true)
+        }
 
         let title = R.string.localizable
             .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
