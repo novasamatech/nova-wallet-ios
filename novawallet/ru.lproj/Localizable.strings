@@ -1160,7 +1160,6 @@
 "gov.unavailable.tracks.remove.votes" = "Удалить голоса для делегации в этих треках";
 "gov.remove.votes.tracks.format" = "%@ (+%@ ещё)";
 "gov.tracks" = "Треки";
-"delegate.vote.by" = "%@ от %@";
 "delegations.list.multiple.tracks" = "В %@ треках";
 "delegations.list.empty" = "Список делегаций появится здесь";
 "gov.add.delegate.hint1" = "Ваши голоса будут автоматически применятся вместе с голосами делегата";
