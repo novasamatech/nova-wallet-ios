@@ -4,7 +4,10 @@ final class GovernanceDelegateSetupWireframe: GovernanceDelegateSetupWireframePr
     let state: GovernanceSharedState
     let delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
 
-    init(state: GovernanceSharedState, delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>) {
+    init(
+        state: GovernanceSharedState,
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
+    ) {
         self.state = state
         self.delegateDisplayInfo = delegateDisplayInfo
     }

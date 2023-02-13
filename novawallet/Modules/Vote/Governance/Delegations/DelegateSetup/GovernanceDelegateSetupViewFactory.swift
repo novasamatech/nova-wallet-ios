@@ -22,6 +22,25 @@ struct GovernanceDelegateSetupViewFactory {
         )
     }
 
+    static func createEditDelegationView(
+        for state: GovernanceSharedState,
+        delegateId: AccountId,
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
+    ) -> GovernanceDelegateSetupViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.govEditDelegation(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        return createModule(
+            for: state,
+            delegateId: delegateId,
+            delegateDisplayInfo: delegateDisplayInfo,
+            title: title
+        )
+    }
+
     private static func createModule(
         for state: GovernanceSharedState,
         delegateId: AccountId,
