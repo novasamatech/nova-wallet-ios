@@ -90,7 +90,6 @@ extension GovernanceDelegateConfirmPresenter {
         guard
             let viewModel = trackViewModelFactory.createTracksRowViewModel(
                 from: delegationInfo.additions,
-                chain: chain,
                 locale: selectedLocale
             ) else {
             return

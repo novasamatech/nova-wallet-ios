@@ -1174,3 +1174,5 @@
 "common.revoke" = "Отозвать";
 "gov.edit.delegation.tracks.title" = "Выберите треки для изменения делегации";
 "gov.edit.delegation" = "Изменить делегацию";
+"gov.revoke.delegation.tracks.title" = "Выберите треки для удаления делегаций";
+"gov.revoke.delegation.title" = "Удаление делегаций";
