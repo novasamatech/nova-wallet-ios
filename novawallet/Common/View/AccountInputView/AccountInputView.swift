@@ -49,7 +49,6 @@ class AccountInputView: BackgroundedContentControl {
         let button = RoundedButton()
         button.applyAccessoryStyle()
         button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
-        button.imageWithTitleView?.titleFont = .semiBoldFootnote
 
         return button
     }()
@@ -376,7 +375,6 @@ class AccountInputView: BackgroundedContentControl {
         let button = RoundedButton()
         button.applyAccessoryStyle()
         button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
-        button.imageWithTitleView?.titleFont = .semiBoldFootnote
 
         mySelfButton = button
 

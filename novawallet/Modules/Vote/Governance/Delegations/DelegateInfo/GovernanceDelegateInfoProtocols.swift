@@ -55,5 +55,8 @@ protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresent
         delegateName: String?
     )
 
-    func showAddDelegation(from view: GovernanceDelegateInfoViewProtocol?)
+    func showAddDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegate: AccountId
+    )
 }
