@@ -3,22 +3,37 @@ import Foundation
 final class GovernanceDelegateSetupWireframe: GovernanceDelegateSetupWireframeProtocol {
     let state: GovernanceSharedState
     let delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
+    let flowType: GovernanceDelegationFlowType
 
     init(
         state: GovernanceSharedState,
-        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>,
+        flowType: GovernanceDelegationFlowType
     ) {
         self.state = state
         self.delegateDisplayInfo = delegateDisplayInfo
+        self.flowType = flowType
     }
 
     func showConfirm(from view: GovernanceDelegateSetupViewProtocol?, delegation: GovernanceNewDelegation) {
-        guard
-            let confirmView = GovernanceDelegateConfirmViewFactory.createAddDelegationView(
+        let optConfirmView: UIViewController?
+
+        switch flowType {
+        case .add:
+            optConfirmView = GovernanceDelegateConfirmViewFactory.createAddDelegationView(
                 for: state,
                 delegation: delegation,
                 delegationDisplayInfo: delegateDisplayInfo
-            ) else {
+            )?.controller
+        case .edit:
+            optConfirmView = GovernanceDelegateConfirmViewFactory.createEditDelegationView(
+                for: state,
+                delegation: delegation,
+                delegationDisplayInfo: delegateDisplayInfo
+            )?.controller
+        }
+
+        guard let confirmView = optConfirmView else {
             return
         }
 
