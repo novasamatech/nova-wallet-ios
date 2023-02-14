@@ -10,7 +10,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let address: AccountAddress
     let governanceOffchainVotingFactory: GovernanceOffchainVotingFactoryProtocol
-    let delegateVotedReferenda: DelegateVotedReferenda
+    let delegateVotedReferenda: DelegateVotedReferendaOption
 
     private var lastUsedBlockNumber: BlockNumber?
     private var currentBlockNumber: BlockNumber?
@@ -33,7 +33,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         serviceFactory: GovernanceServiceFactoryProtocol,
         address: AccountAddress,
         governanceOffchainVotingFactory: GovernanceOffchainVotingFactoryProtocol,
-        delegateVotedReferenda: DelegateVotedReferenda,
+        delegateVotedReferenda: DelegateVotedReferendaOption,
         operationQueue: OperationQueue
     ) {
         self.governanceState = governanceState
