@@ -35,7 +35,7 @@ struct DelegateVotedReferendaViewFactory {
         state: GovernanceSharedState,
         delegateAddress: AccountAddress,
         delegateName: String?,
-        option: DelegateVotedReferenda
+        option: DelegateVotedReferendaOption
     ) -> DelegateVotedReferendaViewProtocol? {
         guard let chain = state.settings.value?.chain,
               let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
