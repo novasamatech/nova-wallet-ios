@@ -137,7 +137,7 @@ class RowView<T: UIView>: BackgroundedContentControl {
     private func updateContentInteraction() {
         contentView?.isUserInteractionEnabled = hasInteractableContent
 
-        let color = hasInteractableContent ? R.color.colorCellBackgroundPressed()! : .clear
+        let color = hasInteractableContent ? .clear : R.color.colorCellBackgroundPressed()!
         roundedBackgroundView?.highlightedFillColor = color
     }
 }
