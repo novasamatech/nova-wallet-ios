@@ -33,6 +33,8 @@ final class StackButtonsCell: RowView<GenericPairValueView<TriangularedButton, T
 
         mainButton.applyDefaultStyle()
         secondaryButton.applySecondaryDefaultStyle()
+
+        hasInteractableContent = true
     }
 }
 
