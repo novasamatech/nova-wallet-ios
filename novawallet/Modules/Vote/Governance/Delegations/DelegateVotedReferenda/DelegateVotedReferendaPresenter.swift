@@ -256,7 +256,9 @@ extension DelegateVotedReferendaPresenter: Localizable {
 
 extension DelegateVotedReferendaPresenter: DelegateVotedReferendaPresenterProtocol {
     func setup() {
+        let loadingViewModel = viewModelFactory.createLoadingViewModel()
         view?.update(title: title)
+        view?.update(viewModels: loadingViewModel)
         interactor.setup()
     }
 }
