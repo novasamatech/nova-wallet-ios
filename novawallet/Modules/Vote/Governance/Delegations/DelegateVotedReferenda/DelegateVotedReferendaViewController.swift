@@ -6,10 +6,12 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     typealias Row = ReferendumsCellViewModel
 
     let presenter: DelegateVotedReferendaPresenterProtocol
+    let quantityFormatter: LocalizableResource<NumberFormatter>
+
     typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, Row>
     typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, Row>
     private var dataSource: DataSource?
-    let quantityFormatter: LocalizableResource<NumberFormatter>
+    private var localizableTitle: LocalizableResource<String>?
 
     init(
         presenter: DelegateVotedReferendaPresenterProtocol,
@@ -70,9 +72,21 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.totalRefrendumsLabel)
     }
 
-    private func setupLocalization() {}
+    private func setupLocalization() {
+        title = localizableTitle?.value(for: selectedLocale)
+        if let count = dataSource?.snapshot().numberOfItems {
+            setupCounter(value: count)
+        }
+    }
 
-    private var viewModels: [ReferendumsCellViewModel] = []
+    private func updateTime(
+        in model: ReferendumView.Model,
+        time: StatusTimeViewModel??
+    ) -> ReferendumView.Model {
+        var updatingValue = model
+        updatingValue.referendumInfo.time = time??.viewModel
+        return updatingValue
+    }
 }
 
 extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtocol {
@@ -93,18 +107,16 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
         let visibleItems = visibleRows.compactMap(dataSource.itemIdentifier).compactMap {
             switch $0.viewModel {
             case let .loaded(value):
-                var updatingValue = value
-                updatingValue.referendumInfo.time = time[$0.referendumIndex]??.viewModel
+                let newValue = updateTime(in: value, time: time[$0.referendumIndex])
                 return Row(
                     referendumIndex: $0.referendumIndex,
-                    viewModel: .loaded(value: updatingValue)
+                    viewModel: .loaded(value: newValue)
                 )
             case let .cached(value):
-                var updatingValue = value
-                updatingValue.referendumInfo.time = time[$0.referendumIndex]??.viewModel
+                let newValue = updateTime(in: value, time: time[$0.referendumIndex])
                 return Row(
                     referendumIndex: $0.referendumIndex,
-                    viewModel: .cached(value: updatingValue)
+                    viewModel: .cached(value: newValue)
                 )
             case .loading:
                 return Row(
@@ -117,6 +129,11 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
         var newSnapshot = dataSource.snapshot()
         newSnapshot.reloadItems(visibleItems)
         dataSource.apply(newSnapshot, animatingDifferences: false)
+    }
+
+    func update(title: LocalizableResource<String>) {
+        localizableTitle = title
+        self.title = title.value(for: selectedLocale)
     }
 }
 

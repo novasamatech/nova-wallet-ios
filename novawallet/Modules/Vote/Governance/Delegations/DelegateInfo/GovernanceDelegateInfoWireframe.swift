@@ -48,7 +48,7 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
         delegateAddress: AccountAddress,
         delegateName: String?
     ) {
-        guard let votedReferendaView = DelegateVotedReferendaViewFactory.createRecentView(
+        guard let votedReferendaView = DelegateVotedReferendaViewFactory.createRecentVotesView(
             state: state,
             delegateAddress: delegateAddress,
             delegateName: delegateName
@@ -67,7 +67,7 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
         delegateAddress: AccountAddress,
         delegateName: String?
     ) {
-        guard let votedReferendaView = DelegateVotedReferendaViewFactory.createView(
+        guard let votedReferendaView = DelegateVotedReferendaViewFactory.createAllVotesView(
             state: state,
             delegateAddress: delegateAddress,
             delegateName: delegateName
