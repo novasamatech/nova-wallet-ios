@@ -1174,3 +1174,5 @@
 "common.revoke" = "Revoke";
 "gov.edit.delegation.tracks.title" = "Select tracks to edit delegation";
 "gov.edit.delegation" = "Edit delegation";
+"gov.revoke.delegation.tracks.title" = "Select tracks to revoke your delegation";
+"gov.revoke.delegation.title" = "Revoke delegation";

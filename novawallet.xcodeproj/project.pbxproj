@@ -81,6 +81,7 @@
 		1C9EA26D4E4BA6BAE147B374 /* GovernanceDelegateConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43F25AF006B7B19281AC7B1 /* GovernanceDelegateConfirmWireframe.swift */; };
 		1D1DC32EFF13F41677A084B7 /* DAppOperationConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = E675B4C5BE36C0004564105B /* DAppOperationConfirmProtocols.swift */; };
 		1EE4FBB79EE6015D7D3EBDC1 /* ParitySignerTxScanWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8B46E3BAB48A2D2E1D2EF4 /* ParitySignerTxScanWireframe.swift */; };
+		1F205FE059A7099A1A7391EC /* GovernanceRevokeDelegationTracksViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36335FF0C6AEAB65EB46411A /* GovernanceRevokeDelegationTracksViewFactory.swift */; };
 		1F45D221E855D5340572C243 /* GovernanceUnavailableTracksProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59BED0E6DBC4C21D9625740C /* GovernanceUnavailableTracksProtocols.swift */; };
 		1F496969FEE3E160BABDAC66 /* ReferendumVoteSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5159EA2661A6CBE123CCF891 /* ReferendumVoteSetupProtocols.swift */; };
 		1F88F3DBFA0BD6D0FDF558F3 /* SelectValidatorsConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975DECE71DE70DFD866B8E23 /* SelectValidatorsConfirmViewFactory.swift */; };
@@ -167,6 +168,7 @@
 		3229E306230161AA99B14BDD /* StakingRewardPayoutsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336395FFC4B2104A9651A2DE /* StakingRewardPayoutsViewFactory.swift */; };
 		3250F2C0E12ED42A355853BE /* SelectValidatorsStartProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9939B17C4224C8E153F8A /* SelectValidatorsStartProtocols.swift */; };
 		331186FCF0903BA793C6D930 /* DelegationListViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8A9948F319AD0D154D1EC4 /* DelegationListViewFactory.swift */; };
+		33431341505ABC30172D34E3 /* GovernanceRevokeDelegationTracksWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 461A9E7672D247C9CCF0B45D /* GovernanceRevokeDelegationTracksWireframe.swift */; };
 		3349B35F5D5DDD2D46FF2E48 /* LedgerInstructionsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F9B478321689D963F51C4E /* LedgerInstructionsViewFactory.swift */; };
 		33B0D1D29AB3FC3CA23567B6 /* LedgerWalletAccountConfirmationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DEC8CCF0671304A658AD606 /* LedgerWalletAccountConfirmationWireframe.swift */; };
 		3403F3DCDE932B9F9C6D32B6 /* ReferendumDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1565588CB7E044C02B091FB /* ReferendumDetailsViewLayout.swift */; };
@@ -175,6 +177,7 @@
 		34D6FF85BEA25EFD1D15D460 /* InAppUpdatesInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E09DD01C1CC61EA5CDED9C /* InAppUpdatesInteractor.swift */; };
 		352B75BEB10A48CC6CE64D4A /* Pods_novawalletAll_novawallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1313BBDD3A28AC9786B5B00E /* Pods_novawalletAll_novawallet.framework */; };
 		355476A5AECD2FFE4ED3DE39 /* MessageSheetViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A719A9FC28373296AB195CB /* MessageSheetViewLayout.swift */; };
+		3592E885646B3ED9F2717412 /* GovernanceRevokeDelegationTracksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAF58F7D0659E89B66B75E4 /* GovernanceRevokeDelegationTracksViewController.swift */; };
 		35F9157CAA182493B2F0E1D3 /* ParaStkRedeemInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B5C1C920BFDA8F5C9C89D9 /* ParaStkRedeemInteractor.swift */; };
 		36177C077867DBAEAA2675F7 /* TransferSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D8B7BE70A9F907F8B43BFC /* TransferSetupViewController.swift */; };
 		363F8BBFDE9BF834BDEC346E /* TokensManageInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AC2847EB686A6B2A16D8DF /* TokensManageInteractor.swift */; };
@@ -2926,6 +2929,7 @@
 		C74B44F382EDAE5CB5A8468F /* ParaStkUnstakeConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99C973B203F72D6233718CD4 /* ParaStkUnstakeConfirmProtocols.swift */; };
 		C7D77690E10875CF1856EBA1 /* StakingRewardPayoutsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7911693957DFAF141EBDAFEC /* StakingRewardPayoutsProtocols.swift */; };
 		C7E68F5B6EC7B21B8797F874 /* GovernanceEditDelegationTracksPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF467EBB295AC2A3DDA4492 /* GovernanceEditDelegationTracksPresenter.swift */; };
+		C7E96E4185084C3E8F226E97 /* GovernanceRevokeDelegationTracksPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F99FF35A16A80005A264E5F /* GovernanceRevokeDelegationTracksPresenter.swift */; };
 		C80B2FDBD395CDEAD1B7E996 /* AnalyticsRewardDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2C9D26B9F9CC048C67796F /* AnalyticsRewardDetailsViewLayout.swift */; };
 		C89D156BA8B690E8E4DE19ED /* ExportSeedProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1D5849A2EBF462B32F3A9C /* ExportSeedProtocols.swift */; };
 		C92F192D3ED6D7067298A6F4 /* ChainAddressDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2EA5D52F51F03FBAB490FE /* ChainAddressDetailsViewController.swift */; };
@@ -3445,6 +3449,7 @@
 		358E87C8E90981E6D9515745 /* GovernanceUnlockConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceUnlockConfirmViewFactory.swift; sourceTree = "<group>"; };
 		3593D7650F5126266ED9FE84 /* GovernanceSelectTracksViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceSelectTracksViewLayout.swift; sourceTree = "<group>"; };
 		35A4A258D911C67F875E386D /* ParaStkCollatorFiltersViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkCollatorFiltersViewController.swift; sourceTree = "<group>"; };
+		36335FF0C6AEAB65EB46411A /* GovernanceRevokeDelegationTracksViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationTracksViewFactory.swift; sourceTree = "<group>"; };
 		365CAE2753E7D5F9B9DB7D1F /* CustomValidatorListInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomValidatorListInteractor.swift; sourceTree = "<group>"; };
 		367393F8CA6157A999F69573 /* AssetsSearchViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSearchViewLayout.swift; sourceTree = "<group>"; };
 		369C65964F4D7E8D02EEC5EC /* ReferendumFullDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsViewFactory.swift; sourceTree = "<group>"; };
@@ -3474,6 +3479,7 @@
 		3C50BB281AD6DB3CF1493958 /* DAppOperationConfirmPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmPresenter.swift; sourceTree = "<group>"; };
 		3C535E8504943299B3E4A8EB /* ReferendumFullDetailsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsViewController.swift; sourceTree = "<group>"; };
 		3C784EDFB9227884E30FBE6E /* ReferendumVoteConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteConfirmWireframe.swift; sourceTree = "<group>"; };
+		3CAF58F7D0659E89B66B75E4 /* GovernanceRevokeDelegationTracksViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationTracksViewController.swift; sourceTree = "<group>"; };
 		3D2A26EC9537BD4275A03272 /* OperationDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OperationDetailsPresenter.swift; sourceTree = "<group>"; };
 		3D383344BEDAEDC76A6BE2CE /* DAppTxDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsProtocols.swift; sourceTree = "<group>"; };
 		3E5EB48ADB08405BF51F087D /* GovernanceRemoveVotesConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRemoveVotesConfirmWireframe.swift; sourceTree = "<group>"; };
@@ -3485,6 +3491,7 @@
 		3F6DA24E0481A3678F2EF809 /* ReferendumFullDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsProtocols.swift; sourceTree = "<group>"; };
 		3F7068913923A6DEEE9D8EA0 /* CrowdloanContributionSetupPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupPresenter.swift; sourceTree = "<group>"; };
 		3F75722D2F921FD1C2D4105D /* CrowdloanContributionConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmViewController.swift; sourceTree = "<group>"; };
+		3F99FF35A16A80005A264E5F /* GovernanceRevokeDelegationTracksPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationTracksPresenter.swift; sourceTree = "<group>"; };
 		3FEA5A50D493EABD48128286 /* GovernanceYourDelegationsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceYourDelegationsViewFactory.swift; sourceTree = "<group>"; };
 		3FECFFBAB264397F9B2646CE /* ChangeWatchOnlyViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChangeWatchOnlyViewController.swift; sourceTree = "<group>"; };
 		408CF7752F4F638FA29DFE4A /* ParitySignerTxScanPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParitySignerTxScanPresenter.swift; sourceTree = "<group>"; };
@@ -3498,6 +3505,7 @@
 		44DDD9500E4A1040D863BC1E /* ParaStkStakeSetupViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkStakeSetupViewLayout.swift; sourceTree = "<group>"; };
 		44EAF50AAF6C23225E06C16C /* AssetsSearchInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSearchInteractor.swift; sourceTree = "<group>"; };
 		45C0B1C175A2470AAA50DAC5 /* DAppSettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppSettingsViewController.swift; sourceTree = "<group>"; };
+		461A9E7672D247C9CCF0B45D /* GovernanceRevokeDelegationTracksWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceRevokeDelegationTracksWireframe.swift; sourceTree = "<group>"; };
 		46BDF9947BE6366712E454DD /* LedgerDiscoverWalletCreateWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LedgerDiscoverWalletCreateWireframe.swift; sourceTree = "<group>"; };
 		470B64C45E547C25FCCCFC33 /* StakingMainProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingMainProtocols.swift; sourceTree = "<group>"; };
 		475B5A735FE818842CB3C82C /* AssetsSearchViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AssetsSearchViewFactory.swift; sourceTree = "<group>"; };
@@ -8264,6 +8272,7 @@
 		8434B5FF298D360D00FACF4C /* DelegationTracks */ = {
 			isa = PBXGroup;
 			children = (
+				E8CE674E87C407CE0A83F1A5 /* RevokeDelegationTracks */,
 				FD1C3FF6240169EA0E5C6123 /* EditDelegationTracks */,
 				2A1FB6759F2E8A05A1894287 /* GovernanceUnavailableTracks */,
 				8434B600298D362200FACF4C /* AddDelegationTracks */,
@@ -15046,6 +15055,17 @@
 			path = AddDelegation;
 			sourceTree = "<group>";
 		};
+		E8CE674E87C407CE0A83F1A5 /* RevokeDelegationTracks */ = {
+			isa = PBXGroup;
+			children = (
+				461A9E7672D247C9CCF0B45D /* GovernanceRevokeDelegationTracksWireframe.swift */,
+				3F99FF35A16A80005A264E5F /* GovernanceRevokeDelegationTracksPresenter.swift */,
+				3CAF58F7D0659E89B66B75E4 /* GovernanceRevokeDelegationTracksViewController.swift */,
+				36335FF0C6AEAB65EB46411A /* GovernanceRevokeDelegationTracksViewFactory.swift */,
+			);
+			path = RevokeDelegationTracks;
+			sourceTree = "<group>";
+		};
 		F14E378DE1BCBB4C8D39AB4C /* ParaStkYieldBoostStop */ = {
 			isa = PBXGroup;
 			children = (
@@ -19127,6 +19147,10 @@
 				C7E68F5B6EC7B21B8797F874 /* GovernanceEditDelegationTracksPresenter.swift in Sources */,
 				0C56B29DBA5245728AF7EDA4 /* GovernanceEditDelegationTracksViewController.swift in Sources */,
 				FF985AA0ABA33118AC02A761 /* GovernanceEditDelegationTracksViewFactory.swift in Sources */,
+				33431341505ABC30172D34E3 /* GovernanceRevokeDelegationTracksWireframe.swift in Sources */,
+				C7E96E4185084C3E8F226E97 /* GovernanceRevokeDelegationTracksPresenter.swift in Sources */,
+				3592E885646B3ED9F2717412 /* GovernanceRevokeDelegationTracksViewController.swift in Sources */,
+				1F205FE059A7099A1A7391EC /* GovernanceRevokeDelegationTracksViewFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
