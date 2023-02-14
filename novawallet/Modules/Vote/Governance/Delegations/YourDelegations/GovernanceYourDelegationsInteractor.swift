@@ -59,6 +59,10 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         self.operationQueue = operationQueue
     }
 
+    deinit {
+        unsubscribeAccountVotes()
+    }
+
     private func updateBlockTime() {
         clear(cancellable: &blockTimeCancellable)
 
@@ -185,8 +189,12 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         fetchDelegatesIfNeeded(true)
     }
 
-    private func subscribeAccountVotes() {
+    private func unsubscribeAccountVotes() {
         subscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccountId)
+    }
+
+    private func subscribeAccountVotes() {
+        unsubscribeAccountVotes()
 
         subscriptionFactory.subscribeToAccountVotes(self, accountId: selectedAccountId) { [weak self] result in
             switch result {
