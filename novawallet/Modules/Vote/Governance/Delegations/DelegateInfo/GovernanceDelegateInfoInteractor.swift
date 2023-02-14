@@ -63,6 +63,10 @@ final class GovernanceDelegateInfoInteractor {
         self.operationQueue = operationQueue
     }
 
+    deinit {
+        unsubscribeAccountVotes()
+    }
+
     private func provideTracks() {
         let wrapper = referendumOperationFactory.fetchAllTracks(runtimeProvider: runtimeService)
 
@@ -82,8 +86,12 @@ final class GovernanceDelegateInfoInteractor {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func subscribeAccountVotes() {
+    private func unsubscribeAccountVotes() {
         subscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccountId)
+    }
+
+    private func subscribeAccountVotes() {
+        unsubscribeAccountVotes()
 
         subscriptionFactory.subscribeToAccountVotes(
             self,
