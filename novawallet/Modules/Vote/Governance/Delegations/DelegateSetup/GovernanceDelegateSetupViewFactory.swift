@@ -18,7 +18,8 @@ struct GovernanceDelegateSetupViewFactory {
             for: state,
             delegateId: delegateId,
             delegateDisplayInfo: delegateDisplayInfo,
-            title: title
+            title: title,
+            flowType: .add
         )
     }
 
@@ -37,7 +38,8 @@ struct GovernanceDelegateSetupViewFactory {
             for: state,
             delegateId: delegateId,
             delegateDisplayInfo: delegateDisplayInfo,
-            title: title
+            title: title,
+            flowType: .edit
         )
     }
 
@@ -45,7 +47,8 @@ struct GovernanceDelegateSetupViewFactory {
         for state: GovernanceSharedState,
         delegateId: AccountId,
         delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>,
-        title: LocalizableResource<String>
+        title: LocalizableResource<String>,
+        flowType: GovernanceDelegationFlowType
     ) -> GovernanceDelegateSetupViewProtocol? {
         guard let interactor = createInteractor(for: state), let option = state.settings.value else {
             return nil
@@ -61,7 +64,11 @@ struct GovernanceDelegateSetupViewFactory {
             return nil
         }
 
-        let wireframe = GovernanceDelegateSetupWireframe(state: state, delegateDisplayInfo: delegateDisplayInfo)
+        let wireframe = GovernanceDelegateSetupWireframe(
+            state: state,
+            delegateDisplayInfo: delegateDisplayInfo,
+            flowType: flowType
+        )
 
         let votingLockId = state.governanceId(for: option)
 
