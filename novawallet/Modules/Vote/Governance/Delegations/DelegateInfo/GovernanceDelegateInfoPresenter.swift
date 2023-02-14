@@ -189,7 +189,11 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     }
 
     func addDelegation() {
-        wireframe.showAddDelegation(from: view)
+        guard let delegate = try? delegateAddress?.toAccountId() else {
+            return
+        }
+
+        wireframe.showAddDelegation(from: view, delegate: delegate)
     }
 }
 

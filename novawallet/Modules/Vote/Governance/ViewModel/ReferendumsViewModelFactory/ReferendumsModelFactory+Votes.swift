@@ -43,7 +43,7 @@ extension ReferendumsModelFactory {
         locale: Locale
     ) -> YourVotesView.Model? {
         let formatVotes: (BigUInt) -> String = { votesInPlank in
-            let votesString = self.stringDisplayViewModelFactory.createVotes(
+            let votesString = self.stringDisplayViewModelFactory.createVotesValue(
                 from: votesInPlank,
                 chain: chain,
                 locale: locale
@@ -56,7 +56,7 @@ extension ReferendumsModelFactory {
             )
         }
 
-        let votesValue = votes.delegateVote.vote.conviction.votes(for: votes.delegateVote.balance) ?? 0
+        let votesValue = votes.delegatorPower.conviction.votes(for: votes.delegatorPower.balance) ?? 0
         let isAye = votes.delegateVote.vote.aye
 
         let ayesModel = isAye ? YourVoteView.Model(

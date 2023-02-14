@@ -176,7 +176,7 @@ final class ReferendumDetailsPresenter {
                     locale: selectedLocale
                 )
             case let .delegated(delegateVote):
-                viewModel = referendumStringsFactory.createDelegateVotesViewModel(
+                viewModel = referendumStringsFactory.createDelegatorVotesViaDelegateViewModel(
                     from: delegateVote,
                     delegateName: offchainVoting.identity?.displayName ?? offchainVoting.metadata?.name,
                     chain: chain,
