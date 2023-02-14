@@ -12,7 +12,7 @@ final class DelegateVotedReferendaPresenter {
     let sorting: ReferendumsSorting
     let logger: LoggerProtocol
     let name: String
-    let option: DelegateVotedReferenda
+    let option: DelegateVotedReferendaOption
 
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
@@ -36,7 +36,7 @@ final class DelegateVotedReferendaPresenter {
         sorting: ReferendumsSorting,
         name: String,
         localizationManager: LocalizationManagerProtocol,
-        option: DelegateVotedReferenda,
+        option: DelegateVotedReferendaOption,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
