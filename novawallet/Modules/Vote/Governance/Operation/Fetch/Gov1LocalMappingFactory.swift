@@ -8,7 +8,7 @@ final class Gov1LocalMappingFactory {
         additionalInfo: Gov1OperationFactory.AdditionalInfo
     ) -> ReferendumLocal {
         let track = GovernanceTrackLocal(
-            trackId: Gov1OperationFactory.trackId,
+            trackId: TrackIdLocal(Gov1OperationFactory.trackId),
             name: Gov1OperationFactory.trackName,
             totalTracksCount: 1
         )

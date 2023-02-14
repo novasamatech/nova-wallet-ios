@@ -8,6 +8,10 @@ protocol ReferendumsOperationFactoryProtocol {
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<[ReferendumLocal]>
 
+    func fetchAllTracks(
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[GovernanceTrackInfoLocal]>
+
     func fetchAccountVotesWrapper(
         for accountId: AccountId,
         from connection: JSONRPCEngine,

@@ -16,9 +16,8 @@ final class ReferendumInfoView: UIView {
     let trackNameView: BorderedIconLabelView = .create {
         $0.iconDetailsView.spacing = 6
         $0.contentInsets = .init(top: 4, left: 6, bottom: 4, right: 8)
-        $0.iconDetailsView.detailsLabel.apply(style: .track)
-        $0.backgroundView.apply(style: .referendum)
         $0.iconDetailsView.detailsLabel.numberOfLines = 1
+        $0.apply(style: .track)
     }
 
     let numberLabel: BorderedLabelView = .create {

@@ -81,7 +81,21 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
         )
     }
 
-    func showAddDelegation(from _: GovernanceDelegateInfoViewProtocol?) {
-        // TODO: Task #860pmdtgh
+    func showAddDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegate: AccountId
+    ) {
+        guard
+            let tracksView = GovernanceAddDelegationTracksViewFactory.createView(
+                for: state,
+                delegate: delegate
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            tracksView.controller,
+            animated: true
+        )
     }
 }
