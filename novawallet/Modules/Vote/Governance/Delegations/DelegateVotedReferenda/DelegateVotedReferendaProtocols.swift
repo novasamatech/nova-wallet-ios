@@ -1,7 +1,10 @@
 import RobinHood
+import SoraFoundation
+
 protocol DelegateVotedReferendaViewProtocol: ControllerBackedProtocol {
     func update(viewModels: [ReferendumsCellViewModel])
     func updateReferendums(time: [UInt: StatusTimeViewModel?])
+    func update(title: LocalizableResource<String>)
 }
 
 protocol DelegateVotedReferendaPresenterProtocol: AnyObject {
@@ -10,7 +13,8 @@ protocol DelegateVotedReferendaPresenterProtocol: AnyObject {
 
 protocol DelegateVotedReferendaInteractorInputProtocol: AnyObject {
     func setup()
-    func refresh()
+    func retryBlockTime()
+    func retryOffchainVotingFetch()
 }
 
 protocol DelegateVotedReferendaInteractorOutputProtocol: AnyObject {
@@ -23,7 +27,8 @@ protocol DelegateVotedReferendaInteractorOutputProtocol: AnyObject {
     func didReceiveChain(_ chainModel: ChainModel)
 }
 
-protocol DelegateVotedReferendaWireframeProtocol: AnyObject {}
+protocol DelegateVotedReferendaWireframeProtocol: AlertPresentable, ErrorPresentable,
+    CommonRetryable {}
 
 enum DelegateVotedReferendaError: Error {
     case blockNumberSubscriptionFailed(Error)

@@ -1,14 +1,6 @@
 import UIKit
 import RobinHood
 
-enum DelegateVotedReferenda {
-    case allTimes
-    case recent(
-        days: Int,
-        fetchBlockTreshold: BlockNumber
-    )
-}
-
 final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     weak var presenter: DelegateVotedReferendaInteractorOutputProtocol!
 
@@ -172,7 +164,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(blockTimeWrapper.allOperations, waitUntilFinished: false)
     }
 
-    func provideReferendumsIfNeeded(referendumIds: Set<ReferendumIdLocal>) {
+    private func provideReferendumsIfNeeded(referendumIds: Set<ReferendumIdLocal>) {
         guard referendumsCancellable == nil else {
             return
         }
@@ -197,7 +189,11 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
             return
         }
 
-        let wrapper = referendumsOperationFactory.fetchReferendumsWrapper(for: referendumIds, connection: connection, runtimeProvider: runtimeProvider)
+        let wrapper = referendumsOperationFactory.fetchReferendumsWrapper(
+            for: referendumIds,
+            connection: connection,
+            runtimeProvider: runtimeProvider
+        )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -221,13 +217,13 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func provideOffchainVotingIfNeeded() {
-        if offchainVotingCancellable == nil, let option = governanceState.settings.value {
+    private func provideOffchainVotingIfNeeded() {
+        if offchainVotingCancellable == nil {
             provideOffchainVoting()
         }
     }
 
-    private func estimateStatsBlockNumber(days: Int) -> BlockNumber? {
+    private func estimateBlockNumber(daysAgo days: Int) -> BlockNumber? {
         guard let blockNumber = currentBlockNumber, let blockTime = currentBlockTime, blockTime > 0 else {
             return nil
         }
@@ -246,7 +242,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         case .allTimes:
             provideOffchainVoting(from: nil)
         case let .recent(days, fetchBlockTreshold):
-            guard let activityBlockNumber = estimateStatsBlockNumber(days: days) else {
+            guard let activityBlockNumber = estimateBlockNumber(daysAgo: days) else {
                 return
             }
 
@@ -262,7 +258,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         }
     }
 
-    func provideOffchainVoting(from blockNumber: BlockNumber?) {
+    private func provideOffchainVoting(from blockNumber: BlockNumber?) {
         clear(cancellable: &offchainVotingCancellable)
 
         let votingWrapper = governanceOffchainVotingFactory.createDirectVotesFetchOperation(
@@ -296,15 +292,8 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
 extension DelegateVotedReferendaInteractor: DelegateVotedReferendaInteractorInputProtocol {
     func setup() {
+        lastUsedBlockNumber = nil
         continueSetup()
-    }
-
-    func refresh() {
-        if governanceState.settings.value != nil {
-            provideBlockTime()
-            metadataProvider?.refresh()
-            provideOffchainVotingIfNeeded()
-        }
     }
 
     func retryBlockTime() {
@@ -332,7 +321,7 @@ extension DelegateVotedReferendaInteractor: GovMetadataLocalStorageSubscriber, G
         switch result {
         case let .success(changes):
             presenter?.didReceiveReferendumsMetadata(changes)
-        case let .failure(error): break
+        case let .failure(error):
             presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
     }

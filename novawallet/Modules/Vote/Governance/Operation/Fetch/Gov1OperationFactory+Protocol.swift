@@ -281,7 +281,7 @@ extension Gov1OperationFactory: ReferendumsOperationFactoryProtocol {
             blockHash: nil
         )
 
-        enactmentsWrapper.targetOperation.addDependency(referendumOperation)
+        enactmentsWrapper.addDependency(operations: [referendumOperation])
 
         let additionalWrapper = createAdditionalInfoWrapper(
             dependingOn: codingFactoryOperation,
