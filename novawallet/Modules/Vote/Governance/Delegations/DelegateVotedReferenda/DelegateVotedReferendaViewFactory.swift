@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct DelegateVotedReferendaViewFactory {
-    static func createRecentView(
+    static func createRecentVotesView(
         state: GovernanceSharedState,
         delegateAddress: AccountAddress,
         delegateName: String?
@@ -18,7 +18,7 @@ struct DelegateVotedReferendaViewFactory {
         )
     }
 
-    static func createView(
+    static func createAllVotesView(
         state: GovernanceSharedState,
         delegateAddress: AccountAddress,
         delegateName: String?
@@ -84,6 +84,7 @@ struct DelegateVotedReferendaViewFactory {
             sorting: ReferendumsTimeSortingProvider(),
             name: delegateName ?? delegateAddress,
             localizationManager: LocalizationManager.shared,
+            option: option,
             logger: Logger.shared
         )
 

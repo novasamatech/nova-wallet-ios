@@ -1144,3 +1144,5 @@
 "delegations.list.multiple.tracks" = "В %@ треках";
 "delegations.list.empty" = "Список делегаций появится здесь";
 "gov.vote.by" = "%@ голосов от %@";
+"delegations.voted.referenda.all.times.title" = "Референдумы";
+"delegations.voted.referenda.recent.title" = "Последние референдумы за %@";

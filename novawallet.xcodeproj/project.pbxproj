@@ -2475,6 +2475,8 @@
 		8849C5E8297FBB1F00DE35CC /* InAppUpdatesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849C5E7297FBB1F00DE35CC /* InAppUpdatesService.swift */; };
 		8849C5EA29806F1E00DE35CC /* InAppUpdatesStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849C5E929806F1E00DE35CC /* InAppUpdatesStyles.swift */; };
 		8849C5ED29806F4500DE35CC /* VersionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849C5EC29806F4500DE35CC /* VersionTableViewCell.swift */; };
+		884A752D299B56F200FEFC30 /* DelegateReferendumsModelFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884A752C299B56F200FEFC30 /* DelegateReferendumsModelFactoryProtocol.swift */; };
+		884A752F299B642E00FEFC30 /* DelegateVotedReferenda.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884A752E299B642E00FEFC30 /* DelegateVotedReferenda.swift */; };
 		885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5CB64B91B35804B3671456 /* ControllerAccountPresenter.swift */; };
 		8857E02D28A4F6C000260BA2 /* CurrencyManagerStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */; };
 		8857E02F28A4FA6000260BA2 /* Currency+usd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8857E02E28A4FA6000260BA2 /* Currency+usd.swift */; };
@@ -5695,6 +5697,8 @@
 		8849C5E7297FBB1F00DE35CC /* InAppUpdatesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppUpdatesService.swift; sourceTree = "<group>"; };
 		8849C5E929806F1E00DE35CC /* InAppUpdatesStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppUpdatesStyles.swift; sourceTree = "<group>"; };
 		8849C5EC29806F4500DE35CC /* VersionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionTableViewCell.swift; sourceTree = "<group>"; };
+		884A752C299B56F200FEFC30 /* DelegateReferendumsModelFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegateReferendumsModelFactoryProtocol.swift; sourceTree = "<group>"; };
+		884A752E299B642E00FEFC30 /* DelegateVotedReferenda.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegateVotedReferenda.swift; sourceTree = "<group>"; };
 		8857E02C28A4F6C000260BA2 /* CurrencyManagerStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyManagerStub.swift; sourceTree = "<group>"; };
 		8857E02E28A4FA6000260BA2 /* Currency+usd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Currency+usd.swift"; sourceTree = "<group>"; };
 		8857E03028A6A22500260BA2 /* PriceAssetInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceAssetInfoFactory.swift; sourceTree = "<group>"; };
@@ -6621,6 +6625,8 @@
 				7C2883649A5E84DF9B861C83 /* DelegateVotedReferendaViewController.swift */,
 				5E86B1DF9D9E8E5DD8DC49DE /* DelegateVotedReferendaViewLayout.swift */,
 				399700B22225DD916DFACAF9 /* DelegateVotedReferendaViewFactory.swift */,
+				884A752C299B56F200FEFC30 /* DelegateReferendumsModelFactoryProtocol.swift */,
+				884A752E299B642E00FEFC30 /* DelegateVotedReferenda.swift */,
 			);
 			path = DelegateVotedReferenda;
 			sourceTree = "<group>";
@@ -16002,6 +16008,7 @@
 				8466781A27ECA021007935D3 /* PersistentExtrinsicService.swift in Sources */,
 				8490151824AB8C6D008F705E /* WalletCommonStyleConfigurator.swift in Sources */,
 				849E0CD025CFDDB700B33506 /* StorageUpdateData+Decoding.swift in Sources */,
+				884A752D299B56F200FEFC30 /* DelegateReferendumsModelFactoryProtocol.swift in Sources */,
 				8430AAE126022CA1005B1066 /* BaseStakingState.swift in Sources */,
 				8490141124A92F6D008F705E /* OnboardingMainViewController.swift in Sources */,
 				D9D163642744F60D00681C1F /* ExternalContribution.swift in Sources */,
@@ -17635,6 +17642,7 @@
 				E2F9D7BDDE961B162EF100AB /* StakingMainViewFactory.swift in Sources */,
 				88DC3E21292CAA0100DBCE4D /* RoundedView+Style.swift in Sources */,
 				848DAF00282294E600D56F55 /* ParachainStaking.swift in Sources */,
+				884A752F299B642E00FEFC30 /* DelegateVotedReferenda.swift in Sources */,
 				886CA9632977E9B300FC255A /* GovernanceDelegateBanner.swift in Sources */,
 				CD76A6513A708051857FD480 /* StakingAmountProtocols.swift in Sources */,
 				61B9688494251703A6373A1B /* StakingAmountWireframe.swift in Sources */,
