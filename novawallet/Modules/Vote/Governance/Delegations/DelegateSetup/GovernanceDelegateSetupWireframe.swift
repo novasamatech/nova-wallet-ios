@@ -16,7 +16,7 @@ final class GovernanceDelegateSetupWireframe: GovernanceDelegateSetupWireframePr
     }
 
     func showConfirm(from view: GovernanceDelegateSetupViewProtocol?, delegation: GovernanceNewDelegation) {
-        let optConfirmView: UIViewController?
+        let optConfirmView: ControllerBackedProtocol?
 
         switch flowType {
         case .add:
@@ -24,13 +24,13 @@ final class GovernanceDelegateSetupWireframe: GovernanceDelegateSetupWireframePr
                 for: state,
                 delegation: delegation,
                 delegationDisplayInfo: delegateDisplayInfo
-            )?.controller
+            )
         case .edit:
             optConfirmView = GovernanceDelegateConfirmViewFactory.createEditDelegationView(
                 for: state,
                 delegation: delegation,
                 delegationDisplayInfo: delegateDisplayInfo
-            )?.controller
+            )
         }
 
         guard let confirmView = optConfirmView else {
