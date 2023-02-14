@@ -39,6 +39,7 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
 
         dataSource = createDataSource()
         rootView.tableView.dataSource = dataSource
+        rootView.tableView.delegate = self
 
         presenter.setup()
     }
@@ -94,7 +95,7 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModels)
-        dataSource?.apply(snapshot, animatingDifferences: true)
+        dataSource?.apply(snapshot, animatingDifferences: false)
         setupCounter(value: viewModels.count)
     }
 
@@ -134,6 +135,12 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
     func update(title: LocalizableResource<String>) {
         localizableTitle = title
         self.title = title.value(for: selectedLocale)
+    }
+}
+
+extension DelegateVotedReferendaViewController: UITableViewDelegate {
+    func tableView(_: UITableView, willDisplay cell: UITableViewCell, forRowAt _: IndexPath) {
+        (cell as? SkeletonableViewCell)?.updateLoadingState()
     }
 }
 

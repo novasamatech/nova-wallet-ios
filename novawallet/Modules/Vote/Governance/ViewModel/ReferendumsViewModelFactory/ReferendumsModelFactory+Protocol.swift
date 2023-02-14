@@ -167,4 +167,14 @@ extension ReferendumsModelFactory: DelegateReferendumsModelFactoryProtocol {
         let (active, completed) = createReferendumsCellViewModels(input: input)
         return active + completed
     }
+
+    func createLoadingViewModel() -> [ReferendumsCellViewModel] {
+        let cells: [ReferendumsCellViewModel] = (0 ..< 10).map {
+            ReferendumsCellViewModel(
+                referendumIndex: UInt($0),
+                viewModel: .loading
+            )
+        }
+        return cells
+    }
 }
