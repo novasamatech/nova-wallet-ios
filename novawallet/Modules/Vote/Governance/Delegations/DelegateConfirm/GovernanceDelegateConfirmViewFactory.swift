@@ -22,6 +22,25 @@ struct GovernanceDelegateConfirmViewFactory {
         )
     }
 
+    static func createEditDelegationView(
+        for state: GovernanceSharedState,
+        delegation: GovernanceNewDelegation,
+        delegationDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
+    ) -> GovernanceDelegateConfirmViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.govEditDelegation(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        return createModule(
+            for: state,
+            delegation: delegation,
+            delegationDisplayInfo: delegationDisplayInfo,
+            title: title
+        )
+    }
+
     private static func createModule(
         for state: GovernanceSharedState,
         delegation: GovernanceNewDelegation,
@@ -51,8 +70,6 @@ struct GovernanceDelegateConfirmViewFactory {
             targetAssetInfo: assetInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
-
-        let networkViewModelFactory = NetworkViewModelFactory()
 
         let lockChangeViewModelFactory = ReferendumLockChangeViewModelFactory(
             assetDisplayInfo: assetInfo,

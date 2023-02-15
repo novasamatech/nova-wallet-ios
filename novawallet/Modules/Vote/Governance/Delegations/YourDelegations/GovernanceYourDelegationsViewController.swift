@@ -93,11 +93,19 @@ extension GovernanceYourDelegationsViewController: GovernanceYourDelegationsView
             accum[model.identifier] = model
         }
 
-        let identifiers = viewModels.map(\.identifier)
+        let newIdentifiers = viewModels.map(\.identifier)
+
+        let existingIdentifiers = Set(dataSource.snapshot().itemIdentifiers)
+        let changedIdentifiers = existingIdentifiers.intersection(Set(newIdentifiers))
 
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
-        snapshot.appendItems(identifiers)
+        snapshot.appendItems(newIdentifiers)
+
+        if !changedIdentifiers.isEmpty {
+            snapshot.reloadItems(Array(changedIdentifiers))
+        }
+
         dataSource.apply(snapshot, animatingDifferences: false)
     }
 }

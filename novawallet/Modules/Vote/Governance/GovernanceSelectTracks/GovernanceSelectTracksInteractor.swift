@@ -24,6 +24,10 @@ class GovernanceSelectTracksInteractor: GovernanceSelectTracksInteractorInputPro
         self.operationQueue = operationQueue
     }
 
+    deinit {
+        unsubscribeAccountVotes()
+    }
+
     private func provideTracks() {
         let wrapper = fetchOperationFactory.fetchAllTracks(runtimeProvider: runtimeProvider)
 
@@ -43,8 +47,12 @@ class GovernanceSelectTracksInteractor: GovernanceSelectTracksInteractorInputPro
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func subscribeAccountVotes() {
+    private func unsubscribeAccountVotes() {
         subscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
+    }
+
+    private func subscribeAccountVotes() {
+        unsubscribeAccountVotes()
 
         subscriptionFactory.subscribeToAccountVotes(
             self,

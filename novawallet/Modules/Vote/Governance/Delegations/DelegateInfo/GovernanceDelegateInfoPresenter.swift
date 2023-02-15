@@ -9,6 +9,8 @@ final class GovernanceDelegateInfoPresenter {
 
     let infoViewModelFactory: GovernanceDelegateInfoViewModelFactoryProtocol
     let identityViewModelFactory: IdentityViewModelFactoryProtocol
+    let tracksViewModelFactory: GovernanceTrackViewModelFactoryProtocol
+    let votesViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let initStats: GovernanceDelegateStats?
     let chain: ChainModel
 
@@ -16,6 +18,8 @@ final class GovernanceDelegateInfoPresenter {
     private var metadata: GovernanceDelegateMetadataRemote?
     private var identity: AccountIdentity?
     private var delegateProfileViewModel: GovernanceDelegateProfileView.Model?
+    private var delegatings: [TrackIdLocal: ReferendumDelegatingLocal]?
+    private var tracks: [GovernanceTrackInfoLocal]?
 
     var delegateAddress: AccountAddress? {
         details?.stats.address ?? initStats?.address
@@ -28,6 +32,8 @@ final class GovernanceDelegateInfoPresenter {
         initDelegate: GovernanceDelegateLocal?,
         infoViewModelFactory: GovernanceDelegateInfoViewModelFactoryProtocol,
         identityViewModelFactory: IdentityViewModelFactoryProtocol,
+        tracksViewModelFactory: GovernanceTrackViewModelFactoryProtocol,
+        votesViewModelFactory: ReferendumDisplayStringFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,11 +42,44 @@ final class GovernanceDelegateInfoPresenter {
         self.chain = chain
         self.infoViewModelFactory = infoViewModelFactory
         self.identityViewModelFactory = identityViewModelFactory
+        self.tracksViewModelFactory = tracksViewModelFactory
+        self.votesViewModelFactory = votesViewModelFactory
         initStats = initDelegate?.stats
         metadata = initDelegate?.metadata
         identity = initDelegate?.identity
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    private func getDelegateDisplayInfo() -> GovernanceDelegateFlowDisplayInfo<AccountId>? {
+        guard let delegateId = try? delegateAddress?.toAccountId() else {
+            return nil
+        }
+
+        return .init(
+            additions: delegateId,
+            delegateMetadata: metadata,
+            delegateIdentity: identity
+        )
+    }
+
+    private func updateYourDelegations(from voting: ReferendumTracksVotingDistribution?) {
+        if
+            let delegateId = try? delegateAddress?.toAccountId(using: chain.chainFormat),
+            let delegatings = voting?.votes.delegatings.filter({ $0.value.target == delegateId }) {
+            self.delegatings = delegatings
+        } else {
+            delegatings = nil
+        }
+    }
+
+    private func getDelegatedTracks() -> [GovernanceTrackInfoLocal]? {
+        guard let tracks = tracks, let delegatings = delegatings else {
+            return nil
+        }
+
+        let targetTrackIds = Set(delegatings.keys)
+        return tracks.filter { targetTrackIds.contains($0.trackId) }
     }
 
     private func provideDelegateViewModel() {
@@ -85,8 +124,54 @@ final class GovernanceDelegateInfoPresenter {
     }
 
     private func provideYourDelegations() {
-        // TODO: #860pmdth8
-        view?.didReceiveYourDelegation(viewModel: nil)
+        if
+            let delegatings = delegatings,
+            let delegating = delegatings.first?.value,
+            let targetTracks = getDelegatedTracks() {
+            guard
+                let tracksViewModel = tracksViewModelFactory.createTracksRowViewModel(
+                    from: targetTracks,
+                    chain: chain,
+                    locale: selectedLocale
+                ) else {
+                return
+            }
+
+            if delegatings.count == 1 {
+                let votes = votesViewModelFactory.createVotes(
+                    from: delegating.conviction.votes(for: delegating.balance) ?? 0,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+
+                let conviction = votesViewModelFactory.createVotesDetails(
+                    from: delegating.balance,
+                    conviction: delegating.conviction.decimalValue,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+
+                view?.didReceiveYourDelegation(
+                    viewModel: .init(
+                        tracks: tracksViewModel,
+                        delegation: .init(
+                            votes: votes ?? "",
+                            conviction: conviction ?? ""
+                        )
+                    )
+                )
+            } else {
+                view?.didReceiveYourDelegation(
+                    viewModel: .init(
+                        tracks: tracksViewModel,
+                        delegation: nil
+                    )
+                )
+            }
+
+        } else {
+            view?.didReceiveYourDelegation(viewModel: nil)
+        }
     }
 
     private func provideIdentity() {
@@ -181,17 +266,31 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     }
 
     func addDelegation() {
-        guard let delegateId = try? delegateAddress?.toAccountId() else {
+        guard let displayInfo = getDelegateDisplayInfo() else {
             return
         }
 
-        let delegate: GovernanceDelegateFlowDisplayInfo<AccountId> = .init(
-            additions: delegateId,
-            delegateMetadata: metadata,
-            delegateIdentity: identity
-        )
+        wireframe.showAddDelegation(from: view, delegate: displayInfo)
+    }
 
-        wireframe.showAddDelegation(from: view, delegate: delegate)
+    func editDelegation() {
+        guard let displayInfo = getDelegateDisplayInfo() else {
+            return
+        }
+
+        wireframe.showEditDelegation(from: view, delegate: displayInfo)
+    }
+
+    func revokeDelegation() {
+        wireframe.showRevokeDelegation(from: view)
+    }
+
+    func showTracks() {
+        guard let delegatings = delegatings, !delegatings.isEmpty, let tracks = getDelegatedTracks() else {
+            return
+        }
+
+        wireframe.showTracks(from: view, tracks: tracks, delegations: delegatings)
     }
 }
 
@@ -202,6 +301,7 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutpu
 
             provideDelegateViewModel()
             provideStatsViewModel()
+            provideYourDelegations()
         }
     }
 
@@ -222,6 +322,18 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutpu
         }
     }
 
+    func didReceiveVotingResult(_ result: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
+        updateYourDelegations(from: result.value)
+
+        provideYourDelegations()
+    }
+
+    func didReceiveTracks(_ tracks: [GovernanceTrackInfoLocal]) {
+        self.tracks = tracks
+
+        provideYourDelegations()
+    }
+
     func didReceiveError(_ error: GovernanceDelegateInfoError) {
         logger.error("Did receive error: \(error)")
 
@@ -230,11 +342,16 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutpu
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshDetails()
             }
-        case .metadataSubscriptionFailed, .blockSubscriptionFailed, .blockTimeFetchFailed:
+        case .metadataSubscriptionFailed, .blockSubscriptionFailed, .blockTimeFetchFailed,
+             .votesSubscriptionFailed:
             interactor.remakeSubscriptions()
         case .identityFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.refreshIdentity()
+            }
+        case .tracksFetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refreshTracks()
             }
         }
     }
