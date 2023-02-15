@@ -10,10 +10,13 @@ struct GovernanceNewDelegation {
 
 extension GovernanceNewDelegation {
     func createActions(from voting: ReferendumTracksVotingDistribution) -> [GovernanceDelegatorAction] {
-        trackIds.map { trackId in
+        let oldTracks = voting.votes.delegatings.filter { $0.value.target == delegateId }
+        let oldTrackIds = Set(oldTracks.keys)
+
+        return trackIds.union(oldTrackIds).map { trackId in
             var actions: [GovernanceDelegatorAction] = []
 
-            if voting.votes.delegatings[trackId] != nil {
+            if oldTrackIds.contains(trackId) {
                 actions.append(
                     .init(
                         delegateId: delegateId,
@@ -23,13 +26,15 @@ extension GovernanceNewDelegation {
                 )
             }
 
-            actions.append(
-                .init(
-                    delegateId: delegateId,
-                    trackId: trackId,
-                    type: .delegate(.init(balance: balance, conviction: conviction))
+            if trackIds.contains(trackId) {
+                actions.append(
+                    .init(
+                        delegateId: delegateId,
+                        trackId: trackId,
+                        type: .delegate(.init(balance: balance, conviction: conviction))
+                    )
                 )
-            )
+            }
 
             return actions
         }.flatMap { $0 }
