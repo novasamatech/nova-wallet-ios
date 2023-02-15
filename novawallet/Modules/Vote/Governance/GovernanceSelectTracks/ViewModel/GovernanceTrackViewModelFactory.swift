@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 protocol GovernanceTrackViewModelFactoryProtocol {
     func createViewModel(
@@ -6,6 +7,12 @@ protocol GovernanceTrackViewModelFactoryProtocol {
         chain: ChainModel,
         locale: Locale
     ) -> ReferendumInfoView.Track
+
+    func createTracksRowViewModel(
+        from tracks: [GovernanceTrackInfoLocal],
+        chain: ChainModel,
+        locale: Locale
+    ) -> GovernanceTracksViewModel?
 }
 
 extension GovernanceTrackViewModelFactoryProtocol {
@@ -18,7 +25,15 @@ extension GovernanceTrackViewModelFactoryProtocol {
     }
 }
 
-final class GovernanceTrackViewModelFactory {}
+final class GovernanceTrackViewModelFactory {
+    let quantityFormatter: LocalizableResource<NumberFormatter>
+
+    init(
+        quantityFormatter: LocalizableResource<NumberFormatter> = NumberFormatter.quantity.localizableResource()
+    ) {
+        self.quantityFormatter = quantityFormatter
+    }
+}
 
 extension GovernanceTrackViewModelFactory: GovernanceTrackViewModelFactoryProtocol {
     func createViewModel(
@@ -32,5 +47,37 @@ extension GovernanceTrackViewModelFactory: GovernanceTrackViewModelFactoryProtoc
             title: type?.title(for: locale)?.uppercased() ?? "",
             icon: type?.imageViewModel(for: chain)
         )
+    }
+
+    func createTracksRowViewModel(
+        from tracks: [GovernanceTrackInfoLocal],
+        chain _: ChainModel,
+        locale: Locale
+    ) -> GovernanceTracksViewModel? {
+        guard let firstTrack = tracks.first else {
+            return nil
+        }
+
+        let viewModel: GovernanceTracksViewModel
+
+        let trackName = ReferendumTrackType(rawValue: firstTrack.name)?.title(
+            for: locale
+        )?.firstLetterCapitalized() ?? firstTrack.name
+
+        if tracks.count > 1 {
+            let otherTracks = quantityFormatter.value(for: locale).string(
+                from: NSNumber(value: tracks.count - 1)
+            )
+
+            let details = R.string.localizable.govRemoveVotesTracksFormat(
+                trackName,
+                otherTracks ?? "",
+                preferredLanguages: locale.rLanguages
+            )
+
+            return .init(details: details, canExpand: true)
+        } else {
+            return .init(details: trackName, canExpand: false)
+        }
     }
 }

@@ -43,6 +43,13 @@ protocol GovernanceLockStateFactoryProtocol {
         blockHash: Data?
     ) -> CompoundOperationWrapper<GovernanceLockStateDiff>
 
+    func calculateDelegateStateDiff(
+        for trackVotes: ReferendumTracksVotingDistribution,
+        newDelegation: GovernanceNewDelegation,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<GovernanceDelegateStateDiff>
+
     func buildUnlockScheduleWrapper(
         for tracksVoting: ReferendumTracksVotingDistribution,
         from connection: JSONRPCEngine,
@@ -53,6 +60,12 @@ protocol GovernanceLockStateFactoryProtocol {
 
 protocol GovernanceDelegateStatsFactoryProtocol {
     func fetchStatsWrapper(for activityStartBlock: BlockNumber) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
+
+    func fetchStatsByIdsWrapper(
+        from delegateIds: Set<AccountAddress>,
+        activityStartBlock: BlockNumber
+    ) -> CompoundOperationWrapper<[GovernanceDelegateStats]>
+
     func fetchDetailsWrapper(
         for delegate: AccountAddress,
         activityStartBlock: BlockNumber
@@ -62,6 +75,14 @@ protocol GovernanceDelegateStatsFactoryProtocol {
 protocol GovernanceDelegateListFactoryProtocol {
     func fetchDelegateListWrapper(
         for activityStartBlock: BlockNumber,
+        chain: ChainModel,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<[GovernanceDelegateLocal]>
+
+    func fetchDelegateListByIdsWrapper(
+        from delegateIds: Set<AccountId>,
+        activityStartBlock: BlockNumber,
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol

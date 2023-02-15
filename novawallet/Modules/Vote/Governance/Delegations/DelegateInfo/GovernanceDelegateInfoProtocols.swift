@@ -14,6 +14,9 @@ protocol GovernanceDelegateInfoPresenterProtocol: AnyObject {
     func presentIdentityItem(_ item: ValidatorInfoViewModel.IdentityItemValue)
     func presentAccountOptions()
     func addDelegation()
+    func editDelegation()
+    func revokeDelegation()
+    func showTracks()
 }
 
 protocol GovernanceDelegateInfoInteractorInputProtocol: AnyObject {
@@ -21,12 +24,15 @@ protocol GovernanceDelegateInfoInteractorInputProtocol: AnyObject {
     func refreshDetails()
     func remakeSubscriptions()
     func refreshIdentity()
+    func refreshTracks()
 }
 
 protocol GovernanceDelegateInfoInteractorOutputProtocol: AnyObject {
     func didReceiveDetails(_ details: GovernanceDelegateDetails?)
     func didReceiveMetadata(_ metadata: GovernanceDelegateMetadataRemote?)
     func didReceiveIdentity(_ identity: AccountIdentity?)
+    func didReceiveTracks(_ tracks: [GovernanceTrackInfoLocal])
+    func didReceiveVotingResult(_ result: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
     func didReceiveError(_ error: GovernanceDelegateInfoError)
 }
 
@@ -55,6 +61,21 @@ protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresent
 
     func showAddDelegation(
         from view: GovernanceDelegateInfoViewProtocol?,
-        delegate: AccountId
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
+    )
+
+    func showTracks(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        tracks: [GovernanceTrackInfoLocal],
+        delegations: [TrackIdLocal: ReferendumDelegatingLocal]
+    )
+
+    func showEditDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
+    )
+
+    func showRevokeDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?
     )
 }

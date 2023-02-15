@@ -4,19 +4,13 @@ import SoraUI
 class IconTitleValueView: UIView {
     let imageView = UIImageView()
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextSecondary()
-        label.font = UIFont.p1Paragraph
-        return label
-    }()
+    let titleLabel: UILabel = .create {
+        $0.apply(style: .footnoteSecondary)
+    }
 
-    let valueLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorTextPrimary()
-        label.font = UIFont.p1Paragraph
-        return label
-    }()
+    let valueLabel: UILabel = .create {
+        $0.apply(style: .footnotePrimary)
+    }
 
     let borderView = UIFactory.default.createBorderedContainerView()
 
@@ -45,7 +39,7 @@ class IconTitleValueView: UIView {
 
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(imageView.snp.trailing).offset(9.0)
+            make.leading.equalTo(imageView.snp.trailing).offset(8.0)
             make.centerY.equalToSuperview()
         }
 

@@ -43,4 +43,46 @@ extension DataValidationRunner {
 
         runner.runValidation(notifyingOnSuccess: successClosure)
     }
+
+    static func validateDelegate(
+        factory: GovernanceValidatorFactoryProtocol,
+        params: GovernanceDelegateValidatingParams,
+        selectedLocale: Locale,
+        feeErrorClosure: @escaping () -> Void,
+        successClosure: @escaping DataValidationRunnerCompletion
+    ) {
+        let runner = DataValidationRunner(validators: [
+            factory.enoughTokensForVoting(
+                params.assetBalance,
+                votingAmount: params.newDelegation?.balance,
+                assetInfo: params.assetInfo,
+                locale: selectedLocale
+            ),
+            factory.hasInPlank(
+                fee: params.fee,
+                locale: selectedLocale,
+                precision: params.assetInfo.assetPrecision,
+                onError: feeErrorClosure
+            ),
+            factory.enoughTokensForVotingAndFee(
+                params.assetBalance,
+                votingAmount: params.newDelegation?.balance,
+                fee: params.fee,
+                assetInfo: params.assetInfo,
+                locale: selectedLocale
+            ),
+            factory.notVoting(
+                params.votes,
+                tracks: params.newDelegation?.trackIds,
+                locale: selectedLocale
+            ),
+            factory.notSelfDelegating(
+                selfId: params.selfAccountId,
+                delegateId: params.newDelegation?.delegateId,
+                locale: selectedLocale
+            )
+        ])
+
+        runner.runValidation(notifyingOnSuccess: successClosure)
+    }
 }
