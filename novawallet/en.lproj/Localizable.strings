@@ -1176,3 +1176,6 @@
 "gov.edit.delegation" = "Edit delegation";
 "gov.revoke.delegation.tracks.title" = "Select tracks to revoke your delegation";
 "gov.revoke.delegation.title" = "Revoke delegation";
+"gov.revoke.delegation.confirm.hint" = "After the undelegating period has expired, you will need to unlock your tokens.";
+"gov.revoke.delegate.missing.error.title" = "Already revoked";
+"gov.revoke.delegate.missing.error.message" = "You have already revoked votes from one of the tracks";
