@@ -17,6 +17,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
     private var profileView: GovernanceDelegateProfileView?
     private var addressView: IdentityAccountInfoView?
     private var statsTable: StackTableView?
+    private var yourDelegationTable: StackTableView?
     private var identityTable: StackTableView?
     private var descriptionStackView: UIStackView?
     private var descriptionView: MarkdownViewContainer?
@@ -103,7 +104,8 @@ final class GovernanceDelegateInfoViewLayout: UIView {
 
         if let details = viewModel.details {
             optDescriptionView = MarkdownViewContainer(
-                preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset
+                preferredWidth: UIScreen.main.bounds.width - 2 * UIConstants.horizontalInset,
+                maxTextLength: MarkdownText.readMoreThreshold
             )
 
             optDescriptionView?.load(from: details, completion: nil)
@@ -197,6 +199,83 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         identityTable = table
 
         return table
+    }
+
+    @discardableResult
+    func addYourDelegationTable(for locale: Locale) -> StackTableView {
+        removeYourDelegationTable()
+
+        let table = createStackTableView(
+            with: R.string.localizable.govYourDelegation(preferredLanguages: locale.rLanguages)
+        )
+
+        if let nextView = statsTable ?? identityTable {
+            stackView.insertArranged(view: table, before: nextView)
+        } else {
+            stackView.addArrangedSubview(table)
+        }
+
+        stackView.setCustomSpacing(8, after: table)
+
+        yourDelegationTable = table
+
+        return table
+    }
+
+    func removeYourDelegationTable() {
+        yourDelegationTable?.removeFromSuperview()
+        yourDelegationTable = nil
+    }
+
+    func addTracksCell(for viewModel: GovernanceTracksViewModel, locale: Locale) -> StackInfoTableCell? {
+        let title = R.string.localizable.govTracks(preferredLanguages: locale.rLanguages)
+
+        if viewModel.canExpand {
+            return yourDelegationTable?.addInfoCell(for: title, value: viewModel.details)
+        } else {
+            yourDelegationTable?.addTitleValueCell(for: title, value: viewModel.details)
+            return nil
+        }
+    }
+
+    func addYourDelegationCell(for viewModel: GovernanceYourDelegationViewModel, locale: Locale) {
+        let title = R.string.localizable.govYourDelegation(preferredLanguages: locale.rLanguages)
+
+        let cell = yourDelegationTable?.addTitleMultiValue(
+            for: title,
+            valueTop: viewModel.votes,
+            valueBottom: viewModel.conviction
+        )
+
+        cell?.canSelect = false
+    }
+
+    func addYourDelegationActions(for locale: Locale) -> StackButtonsCell {
+        let cell = StackButtonsCell()
+
+        cell.mainButton.imageWithTitleView?.title = R.string.localizable.commonEdit(
+            preferredLanguages: locale.rLanguages
+        )
+
+        cell.secondaryButton.imageWithTitleView?.title = R.string.localizable.commonRevoke(
+            preferredLanguages: locale.rLanguages
+        )
+
+        yourDelegationTable?.addArrangedSubview(cell)
+
+        if let index = yourDelegationTable?.stackView.arrangedSubviews.firstIndex(of: cell) {
+            yourDelegationTable?.setShowsSeparator(false, at: index)
+
+            if index > 0 {
+                yourDelegationTable?.setShowsSeparator(false, at: index - 1)
+            }
+
+            yourDelegationTable?.setCustomHeight(76, at: index)
+        }
+
+        cell.contentInsets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+
+        return cell
     }
 
     func addDelegationButton(for locale: Locale) -> TriangularedButton? {
