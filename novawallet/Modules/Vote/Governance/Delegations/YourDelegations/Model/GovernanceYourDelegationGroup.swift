@@ -52,7 +52,7 @@ extension GovernanceYourDelegationGroup {
             let delegations = delegationKeyValue.map(\.value)
             let delegationTracks = delegationKeyValue.compactMap { keyValue in
                 tracks.first { $0.trackId == keyValue.key }
-            }
+            }.sorted(by: { $0.trackId < $1.trackId })
 
             return GovernanceYourDelegationGroup(
                 delegateModel: delegate,
@@ -67,7 +67,16 @@ extension GovernanceYourDelegationGroup {
             } else if group1.delegateModel.metadata == nil, group2.delegateModel.metadata != nil {
                 return false
             } else {
-                return group1.totalVotes() > group2.totalVotes()
+                let totalVotes1 = group1.totalVotes()
+                let totalVotes2 = group2.totalVotes()
+
+                if totalVotes1 != totalVotes2 {
+                    return totalVotes1 > totalVotes2
+                } else {
+                    return group1.delegateModel.identifier.localizedCompare(
+                        group2.delegateModel.identifier
+                    ) == .orderedAscending
+                }
             }
         }
     }
