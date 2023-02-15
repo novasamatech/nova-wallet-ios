@@ -234,7 +234,6 @@ extension GovernanceLockStateFactory: GovernanceLockStateFactoryProtocol {
     func calculateDelegateStateDiff(
         for trackVotes: ReferendumTracksVotingDistribution,
         newDelegation: GovernanceNewDelegation,
-        connection _: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<GovernanceDelegateStateDiff> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()

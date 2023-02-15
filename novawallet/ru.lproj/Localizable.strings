@@ -1176,3 +1176,6 @@
 "gov.edit.delegation" = "Изменить делегацию";
 "gov.revoke.delegation.tracks.title" = "Выберите треки для удаления делегаций";
 "gov.revoke.delegation.title" = "Удаление делегаций";
+"gov.revoke.delegation.confirm.hint" = "После прохождения периода отзыва делегаций, вам необходимо разблокировать токены.";
+"gov.revoke.delegate.missing.error.title" = "Делегация уже отозвана";
+"gov.revoke.delegate.missing.error.message" = "Вы уже отозвали делагацию в одном из треков";
