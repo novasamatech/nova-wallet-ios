@@ -134,7 +134,7 @@ class GovernanceSelectTracksPresenter {
             return
         }
 
-        selectedTracks?.formUnion(availableTrackTypes.intersection(Set(group.trackTypes)))
+        selectedTracks = availableTrackTypes.intersection(Set(group.trackTypes))
 
         updateTracksView()
     }

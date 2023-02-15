@@ -41,6 +41,7 @@ final class StackTableView: RoundedView {
     }
 
     private var customHeights: [Int: CGFloat] = [:]
+    private var showsSeparatorStore: [Int: Bool] = [:]
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -86,6 +87,12 @@ final class StackTableView: RoundedView {
         updateLayout()
     }
 
+    func setShowsSeparator(_ value: Bool, at index: Int) {
+        showsSeparatorStore[index] = value
+
+        updateLayout()
+    }
+
     func updateLayout() {
         let views = stackView.arrangedSubviews
 
@@ -95,7 +102,7 @@ final class StackTableView: RoundedView {
             }
 
             rowView.preferredHeight = customHeights[index] ?? cellHeight
-            rowView.borderView.borderType = hasSeparators ? [.bottom] : []
+            rowView.borderView.borderType = shouldShowSeparator(at: index) ? [.bottom] : []
             rowView.roundedBackgroundView.cornerRadius = 0.0
             rowView.roundedBackgroundView.roundingCorners = []
             rowView.contentInsets = UIEdgeInsets(
@@ -142,6 +149,10 @@ final class StackTableView: RoundedView {
 
         invalidateIntrinsicContentSize()
         setNeedsLayout()
+    }
+
+    private func shouldShowSeparator(at index: Int) -> Bool {
+        showsSeparatorStore[index] ?? hasSeparators
     }
 
     private func configureStyle() {

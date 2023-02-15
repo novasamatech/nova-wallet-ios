@@ -13,6 +13,19 @@ extension BorderedLabelView {
 }
 
 extension BorderedLabelView.Style {
+    static let chipsText = BorderedLabelView.Style(
+        text: .init(
+            textColor: R.color.colorChipText()!,
+            font: .semiBoldCaps1
+        ),
+        background: .init(
+            shadowOpacity: 0,
+            strokeWidth: 0,
+            fillColor: R.color.colorChipsBackground()!,
+            highlightedFillColor: R.color.colorChipsBackground()!
+        )
+    )
+
     static let critical = BorderedLabelView.Style(
         text: .init(
             textColor: R.color.colorCriticalText()!,
