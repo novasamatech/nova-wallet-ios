@@ -78,6 +78,7 @@ final class ReferendumsPresenter {
         referendums = nil
         referendumsMetadata = nil
         voting = nil
+        offchainVoting = nil
         unlockSchedule = nil
         blockNumber = nil
         blockTime = nil
@@ -268,7 +269,13 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func selectDelegations() {
-        wireframe.showDelegations(from: view)
+        let delegatings = voting?.value?.votes.delegatings ?? [:]
+
+        if delegatings.isEmpty {
+            wireframe.showAddDelegation(from: view)
+        } else {
+            wireframe.showYourDelegations(from: view)
+        }
     }
 }
 

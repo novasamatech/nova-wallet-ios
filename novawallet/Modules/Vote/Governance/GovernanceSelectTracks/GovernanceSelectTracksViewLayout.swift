@@ -141,6 +141,7 @@ class GovernanceSelectTracksViewLayout: UIView {
         rowView.roundedBackgroundView.highlightedFillColor = .clear
         rowView.rowContentView.bind(viewModel: viewModel)
         rowView.contentInsets = .zero
+        rowView.borderView.borderType = []
         return rowView
     }
 

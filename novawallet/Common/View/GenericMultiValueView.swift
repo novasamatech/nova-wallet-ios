@@ -27,6 +27,18 @@ class GenericPairValueView<FView: UIView, SView: UIView>: UIView {
         setupLayout()
     }
 
+    func makeVertical() {
+        stackView.axis = .vertical
+
+        setNeedsLayout()
+    }
+
+    func makeHorizontal() {
+        stackView.axis = .horizontal
+
+        setNeedsLayout()
+    }
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
