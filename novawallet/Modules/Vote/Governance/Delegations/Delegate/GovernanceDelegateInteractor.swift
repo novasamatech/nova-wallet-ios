@@ -298,8 +298,8 @@ extension GovernanceDelegateInteractor: GeneralLocalStorageSubscriber, GeneralLo
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(blockNumber):
-            if let blockNumber = blockNumber {
-                basePresenter?.didReceiveBlockNumber(blockNumber)
+            if blockNumber != nil {
+                provideBlockTime()
             }
         case let .failure(error):
             basePresenter?.didReceiveBaseError(.blockNumberSubscriptionFailed(error))

@@ -21,6 +21,7 @@ enum GovernanceDelegateInfoViewModel {
     }
 
     struct YourDelegation {
-        // TODO: Task #860pmdth8
+        let tracks: GovernanceTracksViewModel
+        let delegation: GovernanceYourDelegationViewModel?
     }
 }

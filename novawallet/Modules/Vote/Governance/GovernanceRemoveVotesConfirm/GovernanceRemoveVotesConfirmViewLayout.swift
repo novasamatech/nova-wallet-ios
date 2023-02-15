@@ -19,7 +19,7 @@ final class GovernanceRemoveVotesConfirmViewLayout: UIView {
 
     let feeCell = StackNetworkFeeCell()
 
-    let tracksTrackView = StackTableView()
+    let tracksTableView = StackTableView()
 
     let actionLoadableView = LoadableActionView()
 
@@ -38,15 +38,15 @@ final class GovernanceRemoveVotesConfirmViewLayout: UIView {
 
     @discardableResult
     func setNotSelectableTracks(for title: String, tracks: String) -> StackTableCell {
-        tracksTrackView.clear()
+        tracksTableView.clear()
 
-        return tracksTrackView.addTitleValueCell(for: title, value: tracks)
+        return tracksTableView.addTitleValueCell(for: title, value: tracks)
     }
 
     func setSelectableTracks(for title: String, tracks: String) -> StackInfoTableCell {
-        tracksTrackView.clear()
+        tracksTableView.clear()
 
-        return tracksTrackView.addInfoCell(for: title, value: tracks)
+        return tracksTableView.addInfoCell(for: title, value: tracks)
     }
 
     private func setupLayout() {
@@ -70,6 +70,6 @@ final class GovernanceRemoveVotesConfirmViewLayout: UIView {
         senderTableView.addArrangedSubview(accountCell)
         senderTableView.addArrangedSubview(feeCell)
 
-        containerView.stackView.addArrangedSubview(tracksTrackView)
+        containerView.stackView.addArrangedSubview(tracksTableView)
     }
 }
