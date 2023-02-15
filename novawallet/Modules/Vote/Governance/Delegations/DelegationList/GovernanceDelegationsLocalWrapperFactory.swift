@@ -31,7 +31,10 @@ final class GovernanceDelegationsLocalWrapperFactory: GovOffchainModelWrapperFac
         )
     }
 
-    override func createModelWrapper(for params: AccountAddress, chain _: ChainModel) -> CompoundOperationWrapper<[GovernanceOffchainDelegation]> {
+    override func createModelWrapper(
+        for params: AccountAddress,
+        chain _: ChainModel
+    ) -> CompoundOperationWrapper<[GovernanceOffchainDelegation]> {
         operationFactory.createDelegationsFetchWrapper(for: params)
     }
 }
