@@ -297,7 +297,7 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
 
             let delegatingTracks = voting.delegatings.filter { $0.value.target == delegateId }.map(\.key)
 
-            return !tracks.isEmpty && tracks == Set(delegatingTracks)
+            return !tracks.isEmpty && tracks.isSubset(of: delegatingTracks)
         })
     }
 }

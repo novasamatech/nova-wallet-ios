@@ -32,5 +32,10 @@ protocol GovernanceRevokeDelegationConfirmWireframeProtocol: AlertPresentable, E
     FeeRetryable, MessageSheetPresentable,
     AddressOptionsPresentable, GovernanceErrorPresentable {
     func showTracks(from view: GovernanceRevokeDelegationConfirmViewProtocol?, tracks: [GovernanceTrackInfoLocal])
-    func complete(on view: GovernanceRevokeDelegationConfirmViewProtocol?, locale: Locale)
+
+    func complete(
+        on view: GovernanceRevokeDelegationConfirmViewProtocol?,
+        allRemoved: Bool,
+        locale: Locale
+    )
 }

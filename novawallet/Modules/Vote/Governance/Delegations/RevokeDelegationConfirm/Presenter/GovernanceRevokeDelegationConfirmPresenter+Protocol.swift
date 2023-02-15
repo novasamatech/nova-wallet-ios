@@ -57,7 +57,7 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
             selectedTracks: selectedTrackIds,
             delegateId: delegationInfo.additions,
             fee: fee,
-            votes: votesResult?.value,
+            votes: votesResult?.value?.votes,
             assetInfo: assetInfo
         )
 
@@ -67,11 +67,7 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
             selectedLocale: selectedLocale,
             feeErrorClosure: { [weak self] in
                 self?.refreshFee()
-            }, successClosure: {
-                guard let selectedTracks = self?.selectedTracks else {
-                    return
-                }
-
+            }, successClosure: { [weak self] in
                 self?.view?.didStartLoading()
 
                 self?.interactor.submitRevoke(for: selectedTrackIds)
@@ -84,7 +80,12 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
     func didReceiveSubmissionHash(_: String) {
         view?.didStopLoading()
 
-        wireframe.complete(on: view, locale: selectedLocale)
+        let selectedIds = Set(selectedTracks.map(\.trackId))
+        let currentsIds = Set((votesResult?.value?.votes.delegatings ?? [:]).keys)
+
+        let allRemoved = selectedIds == currentsIds
+
+        wireframe.complete(on: view, allRemoved: allRemoved, locale: selectedLocale)
     }
 
     func didReceiveError(_ error: GovernanceRevokeDelegationInteractorError) {

@@ -82,21 +82,23 @@ extension GovRevokeDelegationConfirmPresenter {
 
     func provideYourDelegation() {
         guard
-            selectedTracks.count == 1,
-            let trackId = selectedTracks.first?.trackId,
-            let delegating = votesResult?.value?.votes.delegatings[trackId] else {
+            let delegatings = votesResult?.value?.votes.delegatings.filter(
+                { $0.value.target == delegationInfo.additions }
+            ).map({ ($0.value.balance, $0.value.conviction) }),
+            let firstDelegation = delegatings.first,
+            delegatings.allSatisfy({ $0 == firstDelegation }) else {
             return
         }
 
         let votesString = referendumStringsViewModelFactory.createVotes(
-            from: delegating.conviction.votes(for: delegating.balance) ?? 0,
+            from: firstDelegation.1.votes(for: firstDelegation.0) ?? 0,
             chain: chain,
             locale: selectedLocale
         )
 
         let convictionString = referendumStringsViewModelFactory.createVotesDetails(
-            from: delegating.balance,
-            conviction: delegating.conviction.decimalValue,
+            from: firstDelegation.0,
+            conviction: firstDelegation.1.decimalValue,
             chain: chain,
             locale: selectedLocale
         )
