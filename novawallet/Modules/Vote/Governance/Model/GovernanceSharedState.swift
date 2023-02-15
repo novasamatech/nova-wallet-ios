@@ -189,4 +189,31 @@ final class GovernanceSharedState {
             )
         }
     }
+
+    func createOffchainDelegateListFactory(
+        for option: GovernanceSelectedOption
+    ) -> GovernanceDelegateListFactoryProtocol? {
+        switch option.type {
+        case .governanceV1:
+            return nil
+        case .governanceV2:
+            guard let delegationApi = option.chain.externalApis?.governanceDelegations()?.first else {
+                return nil
+            }
+
+            let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: delegationApi.url)
+            let delegateMetadataFactory = GovernanceDelegateMetadataFactory()
+
+            let identityOperationFactory = IdentityOperationFactory(
+                requestFactory: requestFactory,
+                emptyIdentitiesWhenNoStorage: true
+            )
+
+            return GovernanceDelegateListOperationFactory(
+                statsOperationFactory: statsOperationFactory,
+                metadataOperationFactory: delegateMetadataFactory,
+                identityOperationFactory: identityOperationFactory
+            )
+        }
+    }
 }
