@@ -5,13 +5,16 @@ import RobinHood
 final class GovernanceDelegateInfoInteractor {
     weak var presenter: GovernanceDelegateInfoInteractorOutputProtocol?
 
-    let delegate: AccountId
+    let selectedAccountId: AccountId
+    let delegateId: AccountId
     let chain: ChainModel
     let lastVotedDays: Int
     let fetchBlockTreshold: BlockNumber
+    let referendumOperationFactory: ReferendumsOperationFactoryProtocol
+    let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol
     let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
+    let runtimeService: RuntimeProviderProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
     let identityOperationFactory: IdentityOperationFactoryProtocol
@@ -25,13 +28,16 @@ final class GovernanceDelegateInfoInteractor {
     private var currentBlockTime: BlockTime?
 
     init(
+        selectedAccountId: AccountId,
         delegate: AccountId,
         chain: ChainModel,
         lastVotedDays: Int,
         fetchBlockTreshold: BlockNumber,
+        referendumOperationFactory: ReferendumsOperationFactoryProtocol,
+        subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         detailsOperationFactory: GovernanceDelegateStatsFactoryProtocol,
         connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
+        runtimeService: RuntimeProviderProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
         identityOperationFactory: IdentityOperationFactoryProtocol,
@@ -39,11 +45,14 @@ final class GovernanceDelegateInfoInteractor {
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
-        self.delegate = delegate
+        self.selectedAccountId = selectedAccountId
+        delegateId = delegate
         self.chain = chain
         self.lastVotedDays = lastVotedDays
         self.fetchBlockTreshold = fetchBlockTreshold
         self.detailsOperationFactory = detailsOperationFactory
+        self.referendumOperationFactory = referendumOperationFactory
+        self.subscriptionFactory = subscriptionFactory
         self.connection = connection
         self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
@@ -52,6 +61,53 @@ final class GovernanceDelegateInfoInteractor {
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
         self.operationQueue = operationQueue
+    }
+
+    deinit {
+        unsubscribeAccountVotes()
+    }
+
+    private func provideTracks() {
+        let wrapper = referendumOperationFactory.fetchAllTracks(runtimeProvider: runtimeService)
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let tracks = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveTracks(tracks)
+                } catch {
+                    self?.presenter?.didReceiveError(
+                        GovernanceDelegateInfoError.tracksFetchFailed(error)
+                    )
+                }
+            }
+        }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    private func unsubscribeAccountVotes() {
+        subscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccountId)
+    }
+
+    private func subscribeAccountVotes() {
+        unsubscribeAccountVotes()
+
+        subscriptionFactory.subscribeToAccountVotes(
+            self,
+            accountId: selectedAccountId
+        ) { [weak self] result in
+            switch result {
+            case let .success(votingResult):
+                self?.presenter?.didReceiveVotingResult(votingResult)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(
+                    GovernanceDelegateInfoError.votesSubscriptionFailed(error)
+                )
+            case .none:
+                break
+            }
+        }
     }
 
     private func updateBlockTime() {
@@ -76,23 +132,13 @@ final class GovernanceDelegateInfoInteractor {
         operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func estimateStatsBlockNumber() -> BlockNumber? {
-        guard let blockNumber = currentBlockNumber, let blockTime = currentBlockTime, blockTime > 0 else {
-            return nil
-        }
-
-        let blocksInPast = BlockNumber(TimeInterval(lastVotedDays).secondsFromDays / TimeInterval(blockTime).seconds)
-
-        guard blockNumber > blocksInPast else {
-            return 0
-        }
-
-        return blockNumber - blocksInPast
-    }
-
     private func fetchDetailsIfNeeded() {
         do {
-            guard let activityBlockNumber = estimateStatsBlockNumber() else {
+            guard
+                let activityBlockNumber = currentBlockNumber?.blockBackInDays(
+                    lastVotedDays,
+                    blockTime: currentBlockTime
+                ) else {
                 return
             }
 
@@ -105,7 +151,7 @@ final class GovernanceDelegateInfoInteractor {
 
             lastUsedBlockNumber = activityBlockNumber
 
-            let delegateAddress = try delegate.toAddress(using: chain.chainFormat)
+            let delegateAddress = try delegateId.toAddress(using: chain.chainFormat)
 
             let wrapper = detailsOperationFactory.fetchDetailsWrapper(
                 for: delegateAddress,
@@ -187,8 +233,10 @@ final class GovernanceDelegateInfoInteractor {
 extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
-        subscribeMetadata(for: delegate)
-        provideIdentity(for: delegate)
+        subscribeMetadata(for: delegateId)
+        provideIdentity(for: delegateId)
+        subscribeAccountVotes()
+        provideTracks()
     }
 
     func refreshDetails() {
@@ -200,11 +248,17 @@ extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInpu
         subscribeBlockNumber()
 
         clearMetadataSubscription()
-        subscribeMetadata(for: delegate)
+        subscribeMetadata(for: delegateId)
+
+        subscribeAccountVotes()
     }
 
     func refreshIdentity() {
-        provideIdentity(for: delegate)
+        provideIdentity(for: delegateId)
+    }
+
+    func refreshTracks() {
+        provideTracks()
     }
 }
 

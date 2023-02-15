@@ -59,7 +59,7 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
 
     func showAddDelegation(
         from view: GovernanceDelegateInfoViewProtocol?,
-        delegate: AccountId
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
     ) {
         guard
             let tracksView = GovernanceAddDelegationTracksViewFactory.createView(
@@ -74,4 +74,26 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
             animated: true
         )
     }
+
+    func showTracks(
+        from _: GovernanceDelegateInfoViewProtocol?,
+        tracks _: [GovernanceTrackInfoLocal],
+        delegations _: [TrackIdLocal: ReferendumDelegatingLocal]
+    ) {}
+
+    func showEditDelegation(
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
+    ) {
+        guard let tracksView = GovEditDelegationTracksViewFactory.createView(for: state, delegate: delegate) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            tracksView.controller,
+            animated: true
+        )
+    }
+
+    func showRevokeDelegation(from _: GovernanceDelegateInfoViewProtocol?) {}
 }

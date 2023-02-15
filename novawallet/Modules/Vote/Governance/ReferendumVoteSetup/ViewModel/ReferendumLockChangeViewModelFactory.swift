@@ -38,13 +38,27 @@ protocol ReferendumLockChangeViewModelFactoryProtocol {
 
 extension ReferendumLockChangeViewModelFactoryProtocol {
     func createTransferableAmountViewModel(
-        from diff: GovernanceLockStateDiff,
+        from diffLock: GovernanceLockStateDiff,
         balance: AssetBalance,
         locks: AssetLocks,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel? {
         createTransferableAmountViewModel(
-            resultLocked: diff.after?.maxLockedAmount,
+            resultLocked: diffLock.after?.maxLockedAmount,
+            balance: balance,
+            locks: locks,
+            locale: locale
+        )
+    }
+
+    func createTransferableAmountViewModel(
+        govLockedAmount: BigUInt?,
+        balance: AssetBalance,
+        locks: AssetLocks,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel? {
+        createTransferableAmountViewModel(
+            resultLocked: govLockedAmount,
             balance: balance,
             locks: locks,
             locale: locale
