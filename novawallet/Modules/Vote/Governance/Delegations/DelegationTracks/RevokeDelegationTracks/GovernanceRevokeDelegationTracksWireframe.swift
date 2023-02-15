@@ -9,5 +9,22 @@ final class GovRevokeDelegationTracksWireframe: GovernanceSelectTracksWireframe 
         self.delegateDisplayInfo = delegateDisplayInfo
     }
 
-    override func proceed(from _: ControllerBackedProtocol?, tracks _: [GovernanceTrackInfoLocal]) {}
+    override func proceed(
+        from view: ControllerBackedProtocol?,
+        tracks: [GovernanceTrackInfoLocal]
+    ) {
+        guard
+            let confirmView = GovRevokeDelegationConfirmViewFactory.createView(
+                for: state,
+                selectedTracks: tracks,
+                delegate: delegateDisplayInfo
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            confirmView.controller,
+            animated: true
+        )
+    }
 }
