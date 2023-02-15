@@ -46,6 +46,13 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         tracks: Set<TrackIdLocal>?,
         locale: Locale?
     ) -> DataValidating
+
+    func delegating(
+        _ accountVotingDistribution: ReferendumAccountVotingDistribution?,
+        tracks: Set<TrackIdLocal>?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating
 }
 
 final class GovernanceValidatorFactory {
@@ -268,6 +275,29 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
             let votedTracks = Set(voting.votedTracks.keys)
 
             return !tracks.isEmpty && tracks.isDisjoint(with: votedTracks)
+        })
+    }
+
+    func delegating(
+        _ accountVotingDistribution: ReferendumAccountVotingDistribution?,
+        tracks: Set<TrackIdLocal>?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentAlreadyRevokedDelegation(from: view, locale: locale)
+        }, preservesCondition: {
+            guard let voting = accountVotingDistribution, let tracks = tracks else {
+                return false
+            }
+
+            let delegatingTracks = voting.delegatings.filter { $0.value.target == delegateId }.map(\.key)
+
+            return !tracks.isEmpty && tracks == Set(delegatingTracks)
         })
     }
 }
