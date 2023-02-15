@@ -55,8 +55,20 @@ final class GovernanceDelegateInfoViewController: UIViewController, ViewHolder {
         presenter.addDelegation()
     }
 
+    @objc private func actionEditDelegation() {
+        presenter.editDelegation()
+    }
+
+    @objc private func actionRevokeDelegation() {
+        presenter.revokeDelegation()
+    }
+
     @objc private func actionAccountOptions() {
         presenter.presentAccountOptions()
+    }
+
+    @objc private func actionTracks() {
+        presenter.showTracks()
     }
 
     @objc private func actionIdentityItem(_ sender: AnyObject) {
@@ -129,11 +141,41 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
     }
 
     func didReceiveYourDelegation(viewModel: GovernanceDelegateInfoViewModel.YourDelegation?) {
-        if viewModel == nil {
+        if let viewModel = viewModel {
+            rootView.removeDelegationButton()
+
+            rootView.addYourDelegationTable(for: selectedLocale)
+
+            if let cell = rootView.addTracksCell(for: viewModel.tracks, locale: selectedLocale) {
+                cell.addTarget(
+                    self,
+                    action: #selector(actionTracks),
+                    for: .touchUpInside
+                )
+            }
+
+            if let delegation = viewModel.delegation {
+                rootView.addYourDelegationCell(for: delegation, locale: selectedLocale)
+            }
+
+            let actionsCell = rootView.addYourDelegationActions(for: selectedLocale)
+
+            actionsCell.mainButton.addTarget(
+                self,
+                action: #selector(actionEditDelegation),
+                for: .touchUpInside
+            )
+
+            actionsCell.secondaryButton.addTarget(
+                self,
+                action: #selector(actionRevokeDelegation),
+                for: .touchUpInside
+            )
+        } else {
+            rootView.removeYourDelegationTable()
+
             let addDelegationButton = rootView.addDelegationButton(for: selectedLocale)
             addDelegationButton?.addTarget(self, action: #selector(actionAddDelegation), for: .touchUpInside)
-        } else {
-            rootView.removeDelegationButton()
         }
     }
 
