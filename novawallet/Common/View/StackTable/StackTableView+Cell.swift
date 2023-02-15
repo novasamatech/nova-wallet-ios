@@ -34,4 +34,21 @@ extension StackTableView {
 
         return cell
     }
+
+    @discardableResult
+    func addTitleMultiValue(
+        for title: String,
+        valueTop: String,
+        valueBottom: String
+    ) -> StackTitleMultiValueCell {
+        let cell = StackTitleMultiValueCell()
+
+        cell.titleLabel.text = title
+        cell.topValueLabel.text = valueTop
+        cell.bottomValueLabel.text = valueBottom
+
+        addArrangedSubview(cell)
+
+        return cell
+    }
 }

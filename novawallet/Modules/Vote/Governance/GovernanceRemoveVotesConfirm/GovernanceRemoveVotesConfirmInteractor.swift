@@ -39,6 +39,10 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
         self.currencyManager = currencyManager
     }
 
+    deinit {
+        clearAccounVotesSubscription()
+    }
+
     private func clearAndSubscribeBalance() {
         clear(streamableProvider: &assetBalanceProvider)
 
@@ -62,8 +66,12 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
         }
     }
 
-    private func subscribeAccountVotes() {
+    private func clearAccounVotesSubscription() {
         subscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccount.accountId)
+    }
+
+    private func subscribeAccountVotes() {
+        clearAccounVotesSubscription()
 
         subscriptionFactory.subscribeToAccountVotes(
             self,

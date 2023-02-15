@@ -6,7 +6,7 @@ struct GovernanceDelegateSetupViewFactory {
     static func createAddDelegationView(
         for state: GovernanceSharedState,
         delegateId: AccountId,
-        tracks: [GovernanceTrackInfoLocal]
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateSetupViewProtocol? {
         let title = LocalizableResource { locale in
             R.string.localizable.governanceReferendumsAddDelegation(
@@ -17,16 +17,38 @@ struct GovernanceDelegateSetupViewFactory {
         return createModule(
             for: state,
             delegateId: delegateId,
-            tracks: tracks,
-            title: title
+            delegateDisplayInfo: delegateDisplayInfo,
+            title: title,
+            flowType: .add
+        )
+    }
+
+    static func createEditDelegationView(
+        for state: GovernanceSharedState,
+        delegateId: AccountId,
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
+    ) -> GovernanceDelegateSetupViewProtocol? {
+        let title = LocalizableResource { locale in
+            R.string.localizable.govEditDelegation(
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        return createModule(
+            for: state,
+            delegateId: delegateId,
+            delegateDisplayInfo: delegateDisplayInfo,
+            title: title,
+            flowType: .edit
         )
     }
 
     private static func createModule(
         for state: GovernanceSharedState,
         delegateId: AccountId,
-        tracks: [GovernanceTrackInfoLocal],
-        title: LocalizableResource<String>
+        delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>,
+        title: LocalizableResource<String>,
+        flowType: GovernanceDelegationFlowType
     ) -> GovernanceDelegateSetupViewProtocol? {
         guard let interactor = createInteractor(for: state), let option = state.settings.value else {
             return nil
@@ -42,7 +64,11 @@ struct GovernanceDelegateSetupViewFactory {
             return nil
         }
 
-        let wireframe = GovernanceDelegateSetupWireframe(state: state)
+        let wireframe = GovernanceDelegateSetupWireframe(
+            state: state,
+            delegateDisplayInfo: delegateDisplayInfo,
+            flowType: flowType
+        )
 
         let votingLockId = state.governanceId(for: option)
 
@@ -63,7 +89,7 @@ struct GovernanceDelegateSetupViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let dataValidatingFactory = createDataValidatorFactory(for: wireframe)
+        let dataValidatingFactory = GovernanceValidatorFactory.createFromPresentable(wireframe)
 
         let presenter = GovernanceDelegateSetupPresenter(
             interactor: interactor,
@@ -71,7 +97,7 @@ struct GovernanceDelegateSetupViewFactory {
             selectedAccountId: selectedAccount.accountId,
             chain: chain,
             delegateId: delegateId,
-            tracks: tracks,
+            tracks: delegateDisplayInfo.additions,
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
@@ -98,16 +124,6 @@ struct GovernanceDelegateSetupViewFactory {
             presenter: presenter,
             delegateTitle: title,
             localizationManager: LocalizationManager.shared
-        )
-    }
-
-    private static func createDataValidatorFactory(
-        for wireframe: GovernanceDelegateSetupWireframeProtocol
-    ) -> GovernanceValidatorFactory {
-        GovernanceValidatorFactory(
-            presentable: wireframe,
-            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
     }
 

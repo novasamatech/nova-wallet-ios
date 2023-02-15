@@ -45,6 +45,24 @@ extension BlockNumber {
             Data(bytes: &blockNumber, count: MemoryLayout<UInt32>.size).reversed()
         ).toHex(includePrefix: true)
     }
+
+    func blockBackInDays(_ days: Int, blockTime: BlockTime?) -> BlockNumber? {
+        guard let blockTime = blockTime else {
+            return nil
+        }
+
+        guard blockTime > 0 else {
+            return self
+        }
+
+        let blocksInPast = BlockNumber(TimeInterval(days).secondsFromDays / TimeInterval(blockTime).seconds)
+
+        guard self > blocksInPast else {
+            return 0
+        }
+
+        return self - blocksInPast
+    }
 }
 
 extension Moment {

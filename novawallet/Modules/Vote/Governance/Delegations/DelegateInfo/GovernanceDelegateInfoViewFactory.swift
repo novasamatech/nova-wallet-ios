@@ -24,6 +24,8 @@ struct GovernanceDelegateInfoViewFactory {
             initDelegate: delegate,
             infoViewModelFactory: GovernanceDelegateInfoViewModelFactory(),
             identityViewModelFactory: IdentityViewModelFactory(),
+            tracksViewModelFactory: GovernanceTrackViewModelFactory(),
+            votesViewModelFactory: ReferendumDisplayStringFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -46,6 +48,9 @@ struct GovernanceDelegateInfoViewFactory {
         guard
             let chain = state.settings.value?.chain,
             let delegateAccountId = try? delegate.stats.address.toAccountId(),
+            let selectedAccountId = SelectedWalletSettings.shared.value?.fetch(
+                for: chain.accountRequest()
+            )?.accountId,
             let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url
         else {
             return nil
@@ -56,7 +61,9 @@ struct GovernanceDelegateInfoViewFactory {
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let blockTimeService = state.blockTimeService else {
+            let blockTimeService = state.blockTimeService,
+            let referendumsOperationFactory = state.referendumsOperationFactory,
+            let subscriptionFactory = state.subscriptionFactory else {
             return nil
         }
 
@@ -79,10 +86,13 @@ struct GovernanceDelegateInfoViewFactory {
         let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
 
         return .init(
+            selectedAccountId: selectedAccountId,
             delegate: delegateAccountId,
             chain: chain,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             fetchBlockTreshold: GovernanceDelegationConstants.delegateFetchBlockThreshold,
+            referendumOperationFactory: referendumsOperationFactory,
+            subscriptionFactory: subscriptionFactory,
             detailsOperationFactory: statsOperationFactory,
             connection: connection,
             runtimeService: runtimeProvider,
