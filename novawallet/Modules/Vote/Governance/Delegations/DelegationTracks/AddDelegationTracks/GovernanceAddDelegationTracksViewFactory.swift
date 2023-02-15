@@ -5,7 +5,7 @@ import SoraKeystore
 struct GovernanceAddDelegationTracksViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        delegate: AccountId
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
     ) -> GovernanceSelectTracksViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
@@ -15,7 +15,7 @@ struct GovernanceAddDelegationTracksViewFactory {
 
         let wireframe = GovernanceAddDelegationTracksWireframe(
             state: state,
-            delegate: delegate
+            delegateDisplayInfo: delegate
         )
 
         let presenter = GovernanceAddDelegationTracksPresenter(
