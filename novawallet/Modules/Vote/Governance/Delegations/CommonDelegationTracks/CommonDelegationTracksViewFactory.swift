@@ -5,7 +5,8 @@ import SoraFoundation
 struct CommonDelegationTracksViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        tracks: [TrackVote]
+        tracks: [GovernanceTrackInfoLocal],
+        delegations: [TrackIdLocal: ReferendumDelegatingLocal] = [:]
     ) -> CommonDelegationTracksViewProtocol? {
         guard let chain = state.settings.value?.chain else {
             return nil
@@ -16,6 +17,7 @@ struct CommonDelegationTracksViewFactory {
 
         let presenter = CommonDelegationTracksPresenter(
             tracks: tracks,
+            delegations: delegations,
             chain: chain,
             viewModelFactory: viewModelFactory,
             stringFactory: stringFactory,

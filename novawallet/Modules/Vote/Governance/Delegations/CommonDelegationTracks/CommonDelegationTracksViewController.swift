@@ -5,6 +5,7 @@ final class CommonDelegationTracksViewController: UIViewController, ViewHolder {
 
     let presenter: CommonDelegationTracksPresenterProtocol
     private var viewModels: [TrackTableViewCell.Model] = []
+    private var titleModel: String = ""
 
     init(presenter: CommonDelegationTracksPresenterProtocol) {
         self.presenter = presenter
@@ -29,7 +30,27 @@ final class CommonDelegationTracksViewController: UIViewController, ViewHolder {
 
     private func setupTableView() {
         rootView.tableView.registerClassForCell(TrackTableViewCell.self)
+        rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
         rootView.tableView.dataSource = self
+        rootView.tableView.delegate = self
+    }
+}
+
+extension CommonDelegationTracksViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
+        headerView.titleView.detailsLabel.apply(style: .bottomSheetTitle)
+        headerView.contentInsets = .init(top: 10, left: 0, bottom: 10, right: 0)
+        headerView.titleView.bind(viewModel: .init(title: titleModel, icon: nil))
+        return headerView
+    }
+
+    func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
+        CommonDelegationTracksViewLayout.Constants.cellHeight
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
+        CommonDelegationTracksViewLayout.Constants.titleHeight
     }
 }
 
@@ -51,10 +72,15 @@ extension CommonDelegationTracksViewController: CommonDelegationTracksViewProtoc
         viewModels = tracks
         rootView.tableView.reloadData()
     }
+
+    func didReceive(title: String) {
+        titleModel = title
+        rootView.tableView.reloadData()
+    }
 }
 
 extension CommonDelegationTracksViewController {
-    static func estimatePreferredHeight(for tracks: [TrackVote]) -> CGFloat {
+    static func estimatePreferredHeight(for tracks: [GovernanceTrackInfoLocal]) -> CGFloat {
         RootViewType.estimatePreferredHeight(for: tracks)
     }
 }

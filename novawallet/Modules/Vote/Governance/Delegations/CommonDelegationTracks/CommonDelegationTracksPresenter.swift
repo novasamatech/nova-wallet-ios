@@ -6,34 +6,40 @@ final class CommonDelegationTracksPresenter {
     weak var view: CommonDelegationTracksViewProtocol?
     let viewModelFactory: GovernanceTrackViewModelFactoryProtocol
     let stringFactory: ReferendumDisplayStringFactoryProtocol
-    let tracks: [TrackVote]
+    let tracks: [GovernanceTrackInfoLocal]
+    let delegations: [TrackIdLocal: ReferendumDelegatingLocal]
     let chain: ChainModel
 
     init(
-        tracks: [TrackVote],
+        tracks: [GovernanceTrackInfoLocal],
+        delegations: [TrackIdLocal: ReferendumDelegatingLocal],
         chain: ChainModel,
         viewModelFactory: GovernanceTrackViewModelFactoryProtocol,
         stringFactory: ReferendumDisplayStringFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.tracks = tracks
+        self.delegations = delegations
         self.chain = chain
         self.viewModelFactory = viewModelFactory
         self.stringFactory = stringFactory
         self.localizationManager = localizationManager
     }
 
-    private func mapTrackToViewModel(trackVote: TrackVote) -> TrackTableViewCell.Model {
+    private func mapTrackToViewModel(
+        track: GovernanceTrackInfoLocal,
+        delegation: ReferendumDelegatingLocal?
+    ) -> TrackTableViewCell.Model {
         let trackViewModel = viewModelFactory.createViewModel(
-            from: trackVote.track,
+            from: track,
             chain: chain,
             locale: selectedLocale
         )
-        guard let vote = trackVote.vote else {
+        guard let delegation = delegation else {
             return .init(track: trackViewModel, details: nil)
         }
 
-        let votes = vote.conviction.votes(for: vote.balance) ?? 0
+        let votes = delegation.conviction.votes(for: delegation.balance) ?? 0
         let votesString = stringFactory.createVotes(
             from: votes,
             chain: chain,
@@ -41,8 +47,8 @@ final class CommonDelegationTracksPresenter {
         )
 
         let voteDetails = stringFactory.createVotesDetails(
-            from: vote.balance,
-            conviction: vote.conviction.decimalValue,
+            from: delegation.balance,
+            conviction: delegation.conviction.decimalValue,
             chain: chain,
             locale: selectedLocale
         )
@@ -58,7 +64,11 @@ final class CommonDelegationTracksPresenter {
     }
 
     private func updateView() {
-        let viewModels = tracks.map(mapTrackToViewModel)
+        let viewModels = tracks.map { mapTrackToViewModel(
+            track: $0,
+            delegation: delegations[$0.trackId]
+        ) }
+        view?.didReceive(title: R.string.localizable.govTracks(preferredLanguages: selectedLocale.rLanguages))
         view?.didReceive(tracks: viewModels)
     }
 }
