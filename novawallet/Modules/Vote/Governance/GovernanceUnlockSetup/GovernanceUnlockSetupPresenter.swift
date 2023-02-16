@@ -110,14 +110,12 @@ final class GovernanceUnlockSetupPresenter {
     }
 
     private func createDelegationViewModel() -> GovernanceUnlocksViewModel.Item? {
-        guard
-            let delegatings = votingResult?.value?.votes.delegatings,
-            let maxAmount = delegatings.values.map(\.balance).max() else {
+        guard let delegatedAmount = votingResult?.value?.totalDelegated() else {
             return nil
         }
 
         let amountDecimal = Decimal.fromSubstrateAmount(
-            maxAmount,
+            delegatedAmount,
             precision: assetDisplayInfo.assetPrecision
         ) ?? 0
 
@@ -260,7 +258,7 @@ final class GovernanceUnlockSetupPresenter {
             items = []
         }
 
-        let hasDelegatings = votingResult?.value?.votes.delegatings.isEmpty == false
+        let hasDelegatings = votingResult?.value?.totalDelegated() != nil
 
         if hasDelegatings {
             view?.didTickClaim(states: items + [.delegation])
