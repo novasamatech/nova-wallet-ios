@@ -19,7 +19,7 @@ final class ReferendumDetailsViewLayout: UIView {
 
     var timelineView = TimelineRow()
 
-    var yourVoteRow: YourVoteRow?
+    var yourVoteTableView: StackTableView?
     var requestedAmountRow: RequestedAmountRow?
 
     let fullDetailsView = FullDetailsRow(frame: .zero)
@@ -97,20 +97,30 @@ final class ReferendumDetailsViewLayout: UIView {
         }
     }
 
-    func setYourVote(model: YourVoteRow.Model?) {
-        guard let yourVoteViewModel = model else {
-            yourVoteRow?.removeFromSuperview()
-            yourVoteRow = nil
+    func setYourVote(model: [YourVoteRow.Model]) {
+        guard !model.isEmpty else {
+            yourVoteTableView?.removeFromSuperview()
+            yourVoteTableView = nil
+
             return
         }
 
-        if yourVoteRow == nil {
-            let yourVoteView = YourVoteRow(frame: .zero)
-            containerView.stackView.insertArranged(view: yourVoteView, before: votingDetailsRow)
-            yourVoteRow = yourVoteView
+        let table: StackTableView
+
+        if let current = yourVoteTableView {
+            table = current
+            table.clear()
+        } else {
+            table = StackTableView()
+            yourVoteTableView = table
+            containerView.stackView.insertArranged(view: table, before: votingDetailsRow)
         }
 
-        yourVoteRow?.bind(viewModel: yourVoteViewModel)
+        for rowModel in model {
+            let yourVoteView = YourVoteRow(frame: .zero)
+            table.addArrangedSubview(yourVoteView)
+            yourVoteView.bind(viewModel: rowModel)
+        }
     }
 
     func setRequestedAmount(model: RequestedAmountRow.Model?) {

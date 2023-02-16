@@ -1179,3 +1179,4 @@
 "gov.revoke.delegation.confirm.hint" = "После прохождения периода отзыва делегаций, вам необходимо разблокировать токены.";
 "gov.revoke.delegate.missing.error.title" = "Делегация уже отозвана";
 "gov.revoke.delegate.missing.error.message" = "Вы уже отозвали делагацию в одном из треков";
+"governance.abstain" = "Воздержалось";
