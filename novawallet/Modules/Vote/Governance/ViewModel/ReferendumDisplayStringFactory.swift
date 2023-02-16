@@ -87,7 +87,7 @@ extension ReferendumDisplayStringFactoryProtocol {
         if vote.hasAbstainVotes {
             let viewModel = createYourVoteRowViewModel(
                 vote: .init(balance: vote.abstainBalance, conviction: vote.convictionValue),
-                typeName: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
+                typeName: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
                 style: .abstainInverse,
                 chain: chain,
                 locale: locale

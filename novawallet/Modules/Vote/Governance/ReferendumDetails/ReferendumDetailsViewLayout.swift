@@ -112,12 +112,14 @@ final class ReferendumDetailsViewLayout: UIView {
             table.clear()
         } else {
             table = StackTableView()
+            table.hasSeparators = false
             yourVoteTableView = table
             containerView.stackView.insertArranged(view: table, before: votingDetailsRow)
         }
 
         for rowModel in model {
             let yourVoteView = YourVoteRow(frame: .zero)
+            yourVoteView.roundedBackgroundView.apply(style: .clear)
             table.addArrangedSubview(yourVoteView)
             yourVoteView.bind(viewModel: rowModel)
         }
