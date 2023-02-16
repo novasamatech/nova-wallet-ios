@@ -152,7 +152,7 @@ enum UnlockScheduleTestBuilding {
     ) -> GovernanceUnlockSchedule.Item {
         let actions = actionsBlock()
 
-        return .init(amount: amount, unlockAt: atBlock, actions: actions)
+        return .init(amount: amount, unlockWhen: .unlockAt(atBlock), actions: actions)
     }
 }
 
