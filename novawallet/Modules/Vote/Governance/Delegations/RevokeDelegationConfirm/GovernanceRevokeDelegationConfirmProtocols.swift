@@ -31,7 +31,11 @@ protocol GovernanceRevokeDelegationConfirmInteractorOutputProtocol: GovernanceDe
 protocol GovernanceRevokeDelegationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
     FeeRetryable, MessageSheetPresentable,
     AddressOptionsPresentable, GovernanceErrorPresentable {
-    func showTracks(from view: GovernanceRevokeDelegationConfirmViewProtocol?, tracks: [GovernanceTrackInfoLocal])
+    func showTracks(
+        from view: GovernanceRevokeDelegationConfirmViewProtocol?,
+        tracks: [GovernanceTrackInfoLocal],
+        delegations: [TrackIdLocal: ReferendumDelegatingLocal]
+    )
 
     func complete(
         on view: GovernanceRevokeDelegationConfirmViewProtocol?,

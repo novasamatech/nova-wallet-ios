@@ -42,7 +42,11 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
     }
 
     func presentTracks() {
-        wireframe.showTracks(from: view, tracks: selectedTracks)
+        wireframe.showTracks(
+            from: view,
+            tracks: selectedTracks,
+            delegations: votesResult?.value?.votes.delegatings ?? [:]
+        )
     }
 
     func confirm() {
