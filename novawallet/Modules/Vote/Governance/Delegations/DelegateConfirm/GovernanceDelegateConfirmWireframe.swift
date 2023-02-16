@@ -1,4 +1,5 @@
 import Foundation
+import SoraUI
 
 final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWireframeProtocol, ModalAlertPresenting {
     let state: GovernanceSharedState
@@ -7,8 +8,20 @@ final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWirefra
         self.state = state
     }
 
-    func showTracks(from _: GovernanceDelegateConfirmViewProtocol?, tracks _: [GovernanceTrackInfoLocal]) {
-        // TODO: #860pmdth7
+    func showTracks(from view: GovernanceDelegateConfirmViewProtocol?, tracks: [GovernanceTrackInfoLocal]) {
+        guard let tracksView = CommonDelegationTracksViewFactory.createView(
+            for: state,
+            tracks: tracks
+        ) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+
+        tracksView.controller.modalTransitioningFactory = factory
+        tracksView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(tracksView.controller, animated: true)
     }
 
     func complete(on view: GovernanceDelegateConfirmViewProtocol?, locale: Locale) {
