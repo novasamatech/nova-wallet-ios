@@ -1179,3 +1179,4 @@
 "gov.revoke.delegation.confirm.hint" = "After the undelegating period has expired, you will need to unlock your tokens.";
 "gov.revoke.delegate.missing.error.title" = "Already revoked";
 "gov.revoke.delegate.missing.error.message" = "You have already revoked votes from one of the tracks";
+"governance.abstain" = "Abstain";
