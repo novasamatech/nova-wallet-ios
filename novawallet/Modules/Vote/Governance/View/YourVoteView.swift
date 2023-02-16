@@ -90,6 +90,8 @@ final class YourVoteView: UIView {
 
     private func setupLayout() {
         voteLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        voteLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
