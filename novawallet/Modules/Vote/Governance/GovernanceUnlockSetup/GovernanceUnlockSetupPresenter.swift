@@ -109,6 +109,23 @@ final class GovernanceUnlockSetupPresenter {
         return .init(amount: amountString, claimState: .now)
     }
 
+    private func createDelegationViewModel() -> GovernanceUnlocksViewModel.Item? {
+        guard
+            let delegatings = votingResult?.value?.votes.delegatings,
+            let maxAmount = delegatings.values.map(\.balance).max() else {
+            return nil
+        }
+
+        let amountDecimal = Decimal.fromSubstrateAmount(
+            maxAmount,
+            precision: assetDisplayInfo.assetPrecision
+        ) ?? 0
+
+        let amountString = balanceViewModelFactory.amountFromValue(amountDecimal).value(for: selectedLocale)
+
+        return .init(amount: amountString, claimState: .delegation)
+    }
+
     private func createUnlockViewModel(
         for amount: BigUInt,
         unlockAt: BlockNumber,
@@ -168,7 +185,11 @@ final class GovernanceUnlockSetupPresenter {
             items = []
         }
 
-        view?.didReceive(viewModel: .init(total: totalViewModel, items: items))
+        if let delegation = createDelegationViewModel() {
+            view?.didReceive(viewModel: .init(total: totalViewModel, items: items + [delegation]))
+        } else {
+            view?.didReceive(viewModel: .init(total: totalViewModel, items: items))
+        }
     }
 
     private func refreshUnlockSchedule() {
@@ -239,7 +260,13 @@ final class GovernanceUnlockSetupPresenter {
             items = []
         }
 
-        view?.didTickClaim(states: items)
+        let hasDelegatings = votingResult?.value?.votes.delegatings.isEmpty == false
+
+        if hasDelegatings {
+            view?.didTickClaim(states: items + [.delegation])
+        } else {
+            view?.didTickClaim(states: items)
+        }
     }
 }
 
