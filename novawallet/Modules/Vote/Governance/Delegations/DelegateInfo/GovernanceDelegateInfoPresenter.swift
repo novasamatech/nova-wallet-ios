@@ -131,7 +131,6 @@ final class GovernanceDelegateInfoPresenter {
             guard
                 let tracksViewModel = tracksViewModelFactory.createTracksRowViewModel(
                     from: targetTracks,
-                    chain: chain,
                     locale: selectedLocale
                 ) else {
                 return
@@ -282,7 +281,11 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     }
 
     func revokeDelegation() {
-        wireframe.showRevokeDelegation(from: view)
+        guard let displayInfo = getDelegateDisplayInfo() else {
+            return
+        }
+
+        wireframe.showRevokeDelegation(from: view, delegate: displayInfo)
     }
 
     func showTracks() {
