@@ -134,7 +134,7 @@ extension ReferendumDetailsViewController: ReferendumDetailsViewProtocol {
         rootView.setNeedsLayout()
     }
 
-    func didReceive(yourVoteModel: YourVoteRow.Model?) {
+    func didReceive(yourVoteModel: [YourVoteRow.Model]) {
         rootView.setYourVote(model: yourVoteModel)
     }
 

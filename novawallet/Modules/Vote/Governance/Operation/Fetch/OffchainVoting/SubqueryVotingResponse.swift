@@ -110,6 +110,24 @@ extension ConvictionVoting.AccountVoteSplit {
     }
 }
 
+extension ConvictionVoting.AccountVoteSplitAbstain {
+    init?(subqueryVote: SubqueryVotingResponse.SplitAbstainVote) {
+        guard let ayeAmount = BigUInt(subqueryVote.ayeAmount) else {
+            return nil
+        }
+
+        guard let nayAmount = BigUInt(subqueryVote.nayAmount) else {
+            return nil
+        }
+
+        guard let abstainAmount = BigUInt(subqueryVote.abstainAmount) else {
+            return nil
+        }
+
+        self.init(aye: ayeAmount, nay: nayAmount, abstain: abstainAmount)
+    }
+}
+
 extension ReferendumAccountVoteLocal {
     init?(subqueryStandardVote: SubqueryVotingResponse.StandardVote) {
         guard let standardVote = ConvictionVoting.AccountVoteStandard(subqueryVote: subqueryStandardVote) else {
@@ -125,5 +143,15 @@ extension ReferendumAccountVoteLocal {
         }
 
         self = .split(splitVote)
+    }
+
+    init?(subquerySplitAbstainVote: SubqueryVotingResponse.SplitAbstainVote) {
+        let optSplitVote = ConvictionVoting.AccountVoteSplitAbstain(subqueryVote: subquerySplitAbstainVote)
+
+        guard let splitVote = optSplitVote else {
+            return nil
+        }
+
+        self = .splitAbstain(splitVote)
     }
 }

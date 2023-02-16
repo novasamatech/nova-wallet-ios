@@ -77,6 +77,10 @@ extension GovernanceOffchainVoting {
             if let vote = ReferendumAccountVoteLocal(subquerySplitVote: splitVote) {
                 return insertingDirect(vote: vote, referendumId: referendumId)
             }
+        } else if let splitAbstainVote = castingVote.splitAbstainVote {
+            if let vote = ReferendumAccountVoteLocal(subquerySplitAbstainVote: splitAbstainVote) {
+                return insertingDirect(vote: vote, referendumId: referendumId)
+            }
         }
 
         return self
