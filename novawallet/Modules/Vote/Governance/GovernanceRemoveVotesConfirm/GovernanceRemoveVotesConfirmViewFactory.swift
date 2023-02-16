@@ -18,7 +18,7 @@ struct GovernanceRemoveVotesConfirmViewFactory {
         else {
             return nil
         }
-        let wireframe = GovRemoveVotesConfirmWireframe()
+        let wireframe = GovRemoveVotesConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
