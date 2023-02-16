@@ -45,22 +45,10 @@ class GovernanceLockStateFactory {
     }
 
     func calculatePriorLockMax(from trackVotes: ReferendumTracksVotingDistribution) -> BlockNumber? {
-        let optCastingMax = trackVotes.votes.priorLocks.values
+        trackVotes.votes.priorLocks.values
             .filter { $0.exists }
             .map(\.unlockAt)
             .max()
-
-        let optDelegatingMax = trackVotes.votes.delegatings.values
-            .compactMap { $0.prior.exists ? $0.prior.unlockAt : nil }
-            .max()
-
-        if let castingMax = optCastingMax, let delegatingMax = optDelegatingMax {
-            return max(castingMax, delegatingMax)
-        } else if let castingMax = optCastingMax {
-            return castingMax
-        } else {
-            return optDelegatingMax
-        }
     }
 
     func calculateMaxLock(
