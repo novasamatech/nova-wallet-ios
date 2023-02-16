@@ -91,7 +91,6 @@ final class GovernanceRemoveVotesConfirmPresenter {
         guard
             let viewModel = trackViewModelFactory.createTracksRowViewModel(
                 from: tracks,
-                chain: chain,
                 locale: selectedLocale
             ) else {
             return

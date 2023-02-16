@@ -10,7 +10,6 @@ protocol GovernanceTrackViewModelFactoryProtocol {
 
     func createTracksRowViewModel(
         from tracks: [GovernanceTrackInfoLocal],
-        chain: ChainModel,
         locale: Locale
     ) -> GovernanceTracksViewModel?
 }
@@ -51,14 +50,11 @@ extension GovernanceTrackViewModelFactory: GovernanceTrackViewModelFactoryProtoc
 
     func createTracksRowViewModel(
         from tracks: [GovernanceTrackInfoLocal],
-        chain _: ChainModel,
         locale: Locale
     ) -> GovernanceTracksViewModel? {
         guard let firstTrack = tracks.first else {
             return nil
         }
-
-        let viewModel: GovernanceTracksViewModel
 
         let trackName = ReferendumTrackType(rawValue: firstTrack.name)?.title(
             for: locale
