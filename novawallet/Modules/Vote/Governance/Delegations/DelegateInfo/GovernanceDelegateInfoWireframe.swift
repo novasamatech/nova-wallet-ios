@@ -1,4 +1,5 @@
 import Foundation
+import SoraUI
 
 final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProtocol {
     let state: GovernanceSharedState
@@ -76,10 +77,25 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
     }
 
     func showTracks(
-        from _: GovernanceDelegateInfoViewProtocol?,
-        tracks _: [GovernanceTrackInfoLocal],
-        delegations _: [TrackIdLocal: ReferendumDelegatingLocal]
-    ) {}
+        from view: GovernanceDelegateInfoViewProtocol?,
+        tracks: [GovernanceTrackInfoLocal],
+        delegations: [TrackIdLocal: ReferendumDelegatingLocal]
+    ) {
+        guard let tracksView = CommonDelegationTracksViewFactory.createView(
+            for: state,
+            tracks: tracks,
+            delegations: delegations
+        ) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+
+        tracksView.controller.modalTransitioningFactory = factory
+        tracksView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(tracksView.controller, animated: true)
+    }
 
     func showEditDelegation(
         from view: GovernanceDelegateInfoViewProtocol?,
