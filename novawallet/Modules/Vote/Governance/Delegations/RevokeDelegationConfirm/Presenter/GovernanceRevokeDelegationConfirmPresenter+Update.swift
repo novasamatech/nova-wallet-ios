@@ -1,25 +1,7 @@
 import Foundation
 import SoraFoundation
 
-extension GovernanceDelegateConfirmPresenter {
-    func provideAmountViewModel() {
-        guard
-            let precision = chain.utilityAsset()?.displayInfo.assetPrecision,
-            let decimalAmount = Decimal.fromSubstrateAmount(
-                delegation.balance,
-                precision: precision
-            ) else {
-            return
-        }
-
-        let viewModel = balanceViewModelFactory.balanceFromPrice(
-            decimalAmount,
-            priceData: priceData
-        ).value(for: selectedLocale)
-
-        view?.didReceiveAmount(viewModel: viewModel)
-    }
-
+extension GovRevokeDelegationConfirmPresenter {
     func provideWalletViewModel() {
         guard let viewModel = try? walletDisplayViewModelFactory.createDisplayViewModel(from: selectedAccount) else {
             return
@@ -58,7 +40,7 @@ extension GovernanceDelegateConfirmPresenter {
     }
 
     func provideDelegateViewModel() {
-        guard let address = try? delegation.delegateId.toAddress(using: chain.chainFormat) else {
+        guard let address = try? delegationInfo.additions.toAddress(using: chain.chainFormat) else {
             return
         }
 
@@ -89,7 +71,7 @@ extension GovernanceDelegateConfirmPresenter {
     func provideTracksViewModel() {
         guard
             let viewModel = trackViewModelFactory.createTracksRowViewModel(
-                from: delegationInfo.additions,
+                from: selectedTracks,
                 locale: selectedLocale
             ) else {
             return
@@ -99,15 +81,24 @@ extension GovernanceDelegateConfirmPresenter {
     }
 
     func provideYourDelegation() {
+        guard
+            let delegatings = votesResult?.value?.votes.delegatings.filter(
+                { $0.value.target == delegationInfo.additions }
+            ).map({ ($0.value.balance, $0.value.conviction) }),
+            let firstDelegation = delegatings.first,
+            delegatings.allSatisfy({ $0 == firstDelegation }) else {
+            return
+        }
+
         let votesString = referendumStringsViewModelFactory.createVotes(
-            from: delegation.conviction.votes(for: delegation.balance) ?? 0,
+            from: firstDelegation.1.votes(for: firstDelegation.0) ?? 0,
             chain: chain,
             locale: selectedLocale
         )
 
         let convictionString = referendumStringsViewModelFactory.createVotesDetails(
-            from: delegation.balance,
-            conviction: delegation.conviction.decimalValue,
+            from: firstDelegation.0,
+            conviction: firstDelegation.1.decimalValue,
             chain: chain,
             locale: selectedLocale
         )
@@ -117,40 +108,8 @@ extension GovernanceDelegateConfirmPresenter {
         )
     }
 
-    func provideTransferableAmountViewModel() {
-        guard
-            let assetBalance = assetBalance,
-            let assetLocks = assetLocks,
-            let lockDiff = lockDiff,
-            let viewModel = lockChangeViewModelFactory.createTransferableAmountViewModel(
-                govLockedAmount: lockDiff.after?.maxLockedAmount,
-                balance: assetBalance,
-                locks: assetLocks,
-                locale: selectedLocale
-            ) else {
-            return
-        }
-
-        view?.didReceiveTransferableAmount(viewModel: viewModel)
-    }
-
-    func provideLockedAmountViewModel() {
-        guard
-            let lockDiff = lockDiff,
-            let viewModel = lockChangeViewModelFactory.createAmountTransitionAfterDelegatingViewModel(
-                from: lockDiff,
-                locale: selectedLocale
-            ) else {
-            return
-        }
-
-        view?.didReceiveLockedAmount(viewModel: viewModel)
-    }
-
     func provideUndelegatingPeriodViewModel() {
-        guard
-            let lockDiff = lockDiff,
-            let blockTime = blockTime else {
+        guard let blockTime = blockTime, let lockDiff = lockDiff else {
             return
         }
 
@@ -164,40 +123,65 @@ extension GovernanceDelegateConfirmPresenter {
     }
 
     func provideHints() {
-        let hint1 = R.string.localizable.govAddDelegateHint1(preferredLanguages: selectedLocale.rLanguages)
-        let hint2 = R.string.localizable.govAddDelegateHint2(preferredLanguages: selectedLocale.rLanguages)
+        let hint = R.string.localizable.govRevokeDelegationConfirmHint(
+            preferredLanguages: selectedLocale.rLanguages
+        )
 
-        view?.didReceiveHints(viewModel: [hint1, hint2])
+        view?.didReceiveHints(viewModel: [hint])
     }
 
-    func refreshFee() {
+    func refreshLockDiff() {
         guard let voting = votesResult?.value else {
             return
         }
 
-        let actions = delegation.createActions(from: voting)
+        let delegatings = voting.votes.delegatings
+
+        let selectedTrackIds = Set(selectedTracks.map(\.trackId))
+
+        let optMaxDelegation = delegatings.filter { selectedTrackIds.contains($0.key) }.values.max {
+            if let conviction1 = $0.conviction.decimalValue, let conviction2 = $1.conviction.decimalValue {
+                return conviction1 < conviction2
+            } else if $0.conviction.decimalValue != nil {
+                return true
+            } else {
+                return false
+            }
+        }
+
+        guard let maxDelegation = optMaxDelegation else {
+            return
+        }
+
+        let delegation = GovernanceNewDelegation(
+            delegateId: delegationInfo.additions,
+            trackIds: selectedTrackIds,
+            balance: maxDelegation.balance,
+            conviction: maxDelegation.conviction
+        )
+
+        interactor.refreshDelegateStateDiff(for: voting, newDelegation: delegation)
+    }
+
+    func refreshFee() {
+        let actions = selectedTracks.map {
+            GovernanceDelegatorAction(
+                delegateId: delegationInfo.additions,
+                trackId: $0.trackId,
+                type: .undelegate
+            )
+        }
 
         interactor.estimateFee(for: actions)
     }
 
-    func refreshLockDiff() {
-        guard let trackVoting = votesResult?.value else {
-            return
-        }
-
-        interactor.refreshDelegateStateDiff(for: trackVoting, newDelegation: delegation)
-    }
-
     func updateView() {
-        provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
         provideFeeViewModel()
         provideDelegateViewModel()
         provideTracksViewModel()
         provideYourDelegation()
-        provideTransferableAmountViewModel()
-        provideLockedAmountViewModel()
         provideUndelegatingPeriodViewModel()
         provideHints()
     }
