@@ -6,7 +6,7 @@ final class GovernanceDelegateBanner: UIView {
     let gradientBannerView: GradientBannerView = .create {
         $0.infoView.imageView.image = R.image.iconDelegateBadges()
         $0.stackView.setCustomSpacing(16, after: $0.infoView)
-        $0.bind(model: .stakingController())
+        $0.bind(model: .governanceDelegations())
     }
 
     let closeButton: RoundedButton = .create {
@@ -42,7 +42,14 @@ final class GovernanceDelegateBanner: UIView {
             $0.trailing.equalToSuperview().inset(8)
             $0.top.equalToSuperview().inset(12)
         }
+
         gradientBannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
+        gradientBannerView.infoView.imageInsets = .init(
+            top: 24,
+            left: 0,
+            bottom: 0,
+            right: 0
+        )
     }
 
     func set(locale: Locale) {

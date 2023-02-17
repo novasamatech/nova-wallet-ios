@@ -94,7 +94,6 @@ final class GovernanceAddDelegationTracksPresenter: GovernanceSelectTracksPresen
 
     override func setupAvailableTracks() {
         guard
-            availableTrackIds == nil,
             let unavailableTrackIds = getUnavailableTrackIds(),
             let tracks = tracks else {
             return
@@ -112,7 +111,7 @@ final class GovernanceAddDelegationTracksPresenter: GovernanceSelectTracksPresen
     }
 
     override func setupSelectedTracks() {
-        guard selectedTracks == nil, tracks != nil, votingResult != nil else {
+        guard tracks != nil, votingResult != nil else {
             return
         }
 

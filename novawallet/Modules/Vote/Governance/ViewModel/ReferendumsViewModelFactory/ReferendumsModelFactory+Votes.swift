@@ -71,7 +71,7 @@ extension ReferendumsModelFactory {
             style: .nay
         ) : nil
 
-        return .init(aye: ayesModel, nay: naysModel)
+        return .init(aye: ayesModel, nay: naysModel, abstain: nil)
     }
 
     func createDirectVotesViewModel(
@@ -110,14 +110,23 @@ extension ReferendumsModelFactory {
             description: formatVotes(votes.ayes),
             style: .aye
         ) : nil
+
         let naysModel = votes.hasNayVotes ? YourVoteView.Model(
             title: Strings.governanceNay(preferredLanguages: locale.rLanguages).uppercased(),
             description: formatVotes(votes.nays),
             style: .nay
         ) : nil
+
+        let abstainModel = votes.hasAbstainVotes ? YourVoteView.Model(
+            title: Strings.governanceAbstain(preferredLanguages: locale.rLanguages).uppercased(),
+            description: formatVotes(votes.abstains),
+            style: .abstain
+        ) : nil
+
         return .init(
             aye: ayesModel,
-            nay: naysModel
+            nay: naysModel,
+            abstain: abstainModel
         )
     }
 
