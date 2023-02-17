@@ -1115,6 +1115,9 @@
 "delegations.sort.delegations" = "Delegations";
 "delegations.sort.delegatedVotes" = "Delegated votes";
 "delegations.sort.lastVoted" = "Voted last %@";
+"delegations.delegations" = "Delegations";
+"delegations.delegatedVotes" = "Delegated votes";
+"delegations.lastVoted" = "Voted last %@";
 "delegations.show.title" = "Show";
 "delegations.show.individuals" = "Individuals";
 "delegations.show.organizations" = "Organizations";
