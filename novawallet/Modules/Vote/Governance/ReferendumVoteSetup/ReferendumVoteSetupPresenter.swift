@@ -149,7 +149,7 @@ final class ReferendumVoteSetupPresenter {
     private func updateLockedAmountView() {
         guard
             let lockDiff = lockDiff,
-            let viewModel = lockChangeViewModelFactory.createAmountViewModel(
+            let viewModel = lockChangeViewModelFactory.createAmountTransitionAfterVotingViewModel(
                 from: lockDiff,
                 locale: selectedLocale
             ) else {
@@ -164,7 +164,7 @@ final class ReferendumVoteSetupPresenter {
             let lockDiff = lockDiff,
             let blockNumber = blockNumber,
             let blockTime = blockTime,
-            let viewModel = lockChangeViewModelFactory.createPeriodViewModel(
+            let viewModel = lockChangeViewModelFactory.createPeriodTransitionAfterVotingViewModel(
                 from: lockDiff,
                 blockNumber: blockNumber,
                 blockTime: blockTime,

@@ -5,7 +5,7 @@ protocol ReferendumDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(dAppModels: [ReferendumDAppView.Model]?)
     func didReceive(timelineModel: [ReferendumTimelineView.Model]?)
     func didReceive(titleModel: ReferendumDetailsTitleView.Model)
-    func didReceive(yourVoteModel: YourVoteRow.Model?)
+    func didReceive(yourVoteModel: [YourVoteRow.Model])
     func didReceive(requestedAmount: RequestedAmountRow.Model?)
     func didReceive(trackTagsModel: TrackTagsView.Model?)
     func didReceive(activeTimeViewModel: ReferendumInfoView.Time?)
