@@ -41,18 +41,18 @@ final class GovernanceDelegateListOperationFactory {
     ) -> BaseOperation<[GovernanceDelegateLocal]> {
         ClosureOperation<[GovernanceDelegateLocal]> {
             let stats = try statsOperation.extractNoCancellableResultData()
-            let metadataList = try metadataOperation.extractNoCancellableResultData()
+            let metadataList = try? metadataOperation.extractNoCancellableResultData()
             let identities = try? identitiesOperation.extractNoCancellableResultData()
 
             let initMetadataStore = [AccountId: GovernanceDelegateMetadataRemote]()
-            let metadataStore = try metadataList.reduce(into: initMetadataStore) { accum, item in
+            let metadataStore = try metadataList?.reduce(into: initMetadataStore) { accum, item in
                 let accountId = try item.address.toAccountId()
                 accum[accountId] = item
             }
 
             return try stats.map { statsItem in
                 let accountId = try statsItem.address.toAccountId()
-                let metadata = metadataStore[accountId]
+                let metadata = metadataStore?[accountId]
                 let identity = identities?[accountId]
 
                 return GovernanceDelegateLocal(stats: statsItem, metadata: metadata, identity: identity)
