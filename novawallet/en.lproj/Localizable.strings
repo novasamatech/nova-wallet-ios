@@ -1162,7 +1162,7 @@
 "gov.tracks" = "Tracks";
 "delegations.list.multiple.tracks" = "Across %@ tracks";
 "delegations.list.empty" = "List of delegations will appear here";
-"gov.add.delegate.hint1" = "Your votes will automatically vote alongside your delegates' vote";
+"gov.add.delegate.hint1" = "Your votes will automatically apply alongside your delegates' vote";
 "gov.add.delegate.hint2" = "Undelegating period will start after you revoke a delegation";
 "gov.add.delegate.voting.error.title" = "Already voting";
 "gov.add.delegate.voting.error.message" = "Please, remove votes from selected tracks to start delegating";
