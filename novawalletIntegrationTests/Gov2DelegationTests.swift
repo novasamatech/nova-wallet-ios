@@ -9,39 +9,20 @@ final class Gov2DelegationTests: XCTestCase {
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let chainId = KnowChainId.kusama
+        let chainId: ChainModel.Id = KnowChainId.kusama
         let recentBlockNumber: BlockNumber = 1000
 
         guard
+            let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry),
             let chain = chainRegistry.getChain(for: chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return
         }
 
-        let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: delegationApi.url)
-        let metadataOperationFactory = GovernanceDelegateMetadataFactory()
-
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let identityOperationFactory = IdentityOperationFactory(
-            requestFactory: requestFactory,
-            emptyIdentitiesWhenNoStorage: true
-        )
-
-        let delegationListFactory = GovernanceDelegateListOperationFactory(
-            statsOperationFactory: statsOperationFactory,
-            metadataOperationFactory: metadataOperationFactory,
-            identityOperationFactory: identityOperationFactory
-        )
-
         // when
 
-        let wrapper = delegationListFactory.fetchDelegateListWrapper(
+        let wrapper = operationFactory.fetchDelegateListWrapper(
             for: recentBlockNumber,
             chain: chain,
             connection: connection,
@@ -56,6 +37,49 @@ final class Gov2DelegationTests: XCTestCase {
             let delegates = try wrapper.targetOperation.extractNoCancellableResultData()
             XCTAssertTrue(delegates.contains(where: { $0.metadata != nil }))
             XCTAssertTrue(delegates.contains(where: { $0.identity != nil }))
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testDelegationListByIdsFetch() throws {
+        // given
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId: ChainModel.Id = KnowChainId.kusama
+        let recentBlockNumber: BlockNumber = 1000
+        let delegates = [
+            "FLKBjcL1hXtX7PHF5zrVwQTWQSKg7PCMQ5w6ZU7qvQGsvZR",
+            "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE"
+        ]
+
+        guard
+            let operationFactory = setupDelegationListFactory(for: chainId, chainRegistry: chainRegistry),
+            let chain = chainRegistry.getChain(for: chainId),
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return
+        }
+
+        // when
+
+        let delegateIds = Set(delegates.compactMap({ try? $0.toAccountId(using: chain.chainFormat) }))
+        let wrapper = operationFactory.fetchDelegateListByIdsWrapper(
+            from: Set(delegateIds),
+            activityStartBlock: recentBlockNumber,
+            chain: chain,
+            connection: connection,
+            runtimeService: runtimeService
+        )
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        // then
+
+        do {
+            let result = try wrapper.targetOperation.extractNoCancellableResultData()
+            XCTAssertEqual(result.count, delegates.count)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -215,5 +239,38 @@ final class Gov2DelegationTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+    }
+
+    private func setupDelegationListFactory(
+        for chainId: ChainModel.Id,
+        chainRegistry: ChainRegistryProtocol
+    ) -> GovernanceDelegateListFactoryProtocol? {
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainId = KnowChainId.kusama
+
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+            return nil
+        }
+
+        let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: delegationApi.url)
+        let metadataOperationFactory = GovernanceDelegateMetadataFactory()
+
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        let identityOperationFactory = IdentityOperationFactory(
+            requestFactory: requestFactory,
+            emptyIdentitiesWhenNoStorage: true
+        )
+
+        return GovernanceDelegateListOperationFactory(
+            statsOperationFactory: statsOperationFactory,
+            metadataOperationFactory: metadataOperationFactory,
+            identityOperationFactory: identityOperationFactory
+        )
     }
 }

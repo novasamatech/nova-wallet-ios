@@ -56,7 +56,7 @@ class GovernanceSelectTracksViewLayout: UIView {
             make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
         }
 
-        contentView.stackView.setCustomSpacing(8, after: titleLabel)
+        contentView.stackView.setCustomSpacing(16, after: titleLabel)
 
         contentView.stackView.addArrangedSubview(tracksGroupContainerView)
         tracksGroupContainerView.snp.makeConstraints { make in
@@ -141,6 +141,7 @@ class GovernanceSelectTracksViewLayout: UIView {
         rowView.roundedBackgroundView.highlightedFillColor = .clear
         rowView.rowContentView.bind(viewModel: viewModel)
         rowView.contentInsets = .zero
+        rowView.borderView.borderType = []
         return rowView
     }
 

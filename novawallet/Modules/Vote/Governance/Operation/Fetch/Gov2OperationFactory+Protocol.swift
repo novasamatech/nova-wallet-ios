@@ -209,7 +209,9 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
                     }.addingPriorLock(castingVoting.prior, track: track)
                 case let .delegating(delegatingVoting):
                     let delegatingLocal = ReferendumDelegatingLocal(remote: delegatingVoting)
-                    return resultVoting.addingDelegating(delegatingLocal, trackId: track)
+                    return resultVoting
+                        .addingDelegating(delegatingLocal, trackId: track)
+                        .addingPriorLock(delegatingVoting.prior, track: track)
                 case .unknown:
                     return resultVoting
                 }

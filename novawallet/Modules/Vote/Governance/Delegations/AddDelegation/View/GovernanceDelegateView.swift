@@ -13,11 +13,11 @@ final class GovernanceDelegateView: UIView {
     private var typeStack: UIStackView?
 
     let descriptionLabel = UILabel(style: .footnoteSecondary)
-    let delegationsTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 1)
+    let delegationsTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 0)
     let delegationsValueLabel = UILabel(style: .footnotePrimary, numberOfLines: 1)
-    let votesTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 1)
+    let votesTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 0)
     let votesValueLabel = UILabel(style: .footnotePrimary, numberOfLines: 1)
-    let lastVotesTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 1)
+    let lastVotesTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 0)
     let lastVotesValueLabel = UILabel(style: .footnotePrimary, numberOfLines: 1)
 
     let avatarView: DAppIconView = .create {
