@@ -1113,8 +1113,11 @@
 "add.token.invalid.decimals.message" = "Число десятичных знаков должно быть не менее 0 и не более %@.";
 "delegations.sort.title" = "Сортировка по";
 "delegations.sort.delegations" = "Делегациям";
-"delegations.sort.delegatedVotes" = "Всем голосам";
+"delegations.sort.delegatedVotes" = "Голосам делегаторов";
 "delegations.sort.lastVoted" = "Голосам за %@";
+"delegations.delegations" = "Делегации";
+"delegations.delegatedVotes" = "Голоса делегаторов";
+"delegations.lastVoted" = "Голоса за %@";
 "delegations.show.title" = "Показать";
 "delegations.show.individuals" = "Личные аккаунты";
 "delegations.show.organizations" = "Организации";
