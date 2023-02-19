@@ -1,24 +1,26 @@
 import UIKit
 import RobinHood
+import SubstrateSdk
 
 final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     weak var presenter: DelegateVotedReferendaInteractorOutputProtocol!
 
-    let governanceState: GovernanceSharedState
-    let chainRegistry: ChainRegistryProtocol
-    let serviceFactory: GovernanceServiceFactoryProtocol
-    let operationQueue: OperationQueue
     let address: AccountAddress
-    let governanceOffchainVotingFactory: GovernanceOffchainVotingFactoryProtocol
-    let delegateVotedReferenda: DelegateVotedReferendaOption
+    let governanceOption: GovernanceSelectedOption
+    let connection: JSONRPCEngine
+    let runtimeService: RuntimeProviderProtocol
+    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol
+    let fetchFactory: DelegateVotedReferendaOperationFactoryProtocol
+    let blockTimeService: BlockTimeEstimationServiceProtocol
+    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let dataFetchOption: DelegateVotedReferendaOption
+    let fetchBlockTreshold: BlockNumber
+    let operationQueue: OperationQueue
 
     private var lastUsedBlockNumber: BlockNumber?
     private var currentBlockNumber: BlockNumber?
     private var currentBlockTime: BlockTime?
-
-    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
-        governanceState.generalLocalSubscriptionFactory
-    }
 
     private(set) var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private(set) var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
@@ -28,88 +30,43 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     var offchainVotingCancellable: CancellableCall?
 
     init(
-        governanceState: GovernanceSharedState,
-        chainRegistry: ChainRegistryProtocol,
-        serviceFactory: GovernanceServiceFactoryProtocol,
         address: AccountAddress,
-        governanceOffchainVotingFactory: GovernanceOffchainVotingFactoryProtocol,
-        delegateVotedReferenda: DelegateVotedReferendaOption,
+        governanceOption: GovernanceSelectedOption,
+        connection: JSONRPCEngine,
+        runtimeService: RuntimeProviderProtocol,
+        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
+        govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol,
+        fetchFactory: DelegateVotedReferendaOperationFactoryProtocol,
+        blockTimeService: BlockTimeEstimationServiceProtocol,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
+        dataFetchOption: DelegateVotedReferendaOption,
+        fetchBlockTreshold: BlockNumber,
         operationQueue: OperationQueue
     ) {
-        self.governanceState = governanceState
-        self.chainRegistry = chainRegistry
-        self.serviceFactory = serviceFactory
-        self.operationQueue = operationQueue
         self.address = address
-        self.delegateVotedReferenda = delegateVotedReferenda
-        self.governanceOffchainVotingFactory = governanceOffchainVotingFactory
+        self.governanceOption = governanceOption
+        self.connection = connection
+        self.runtimeService = runtimeService
+        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
+        self.govMetadataLocalSubscriptionFactory = govMetadataLocalSubscriptionFactory
+        self.fetchFactory = fetchFactory
+        self.blockTimeService = blockTimeService
+        self.blockTimeOperationFactory = blockTimeOperationFactory
+        self.dataFetchOption = dataFetchOption
+        self.fetchBlockTreshold = fetchBlockTreshold
+        self.operationQueue = operationQueue
     }
 
     deinit {
-        clearBlockTimeService()
-        clearCancellable()
-    }
-
-    func clear() {
-        clearBlockTimeService()
-        clearSubscriptionFactory()
-        clearBlockNumberSubscription()
         clearCancellable()
     }
 
     func clearCancellable() {
         clear(cancellable: &referendumsCancellable)
         clear(cancellable: &blockTimeCancellable)
-        clear(cancellable: &offchainVotingCancellable)
-    }
-
-    private func clearBlockTimeService() {
-        governanceState.blockTimeService?.throttle()
-        governanceState.replaceBlockTimeService(nil)
-    }
-
-    private func clearSubscriptionFactory() {
-        governanceState.replaceGovernanceFactory(for: nil)
-    }
-
-    func clearBlockNumberSubscription() {
-        blockNumberSubscription?.removeObserver(self)
-        blockNumberSubscription = nil
-    }
-
-    func continueSetup() {
-        guard let option = governanceState.settings.value else {
-            presenter?.didReceiveError(.settingsLoadFailed)
-            return
-        }
-
-        presenter.didReceiveChain(option.chain)
-        setupBlockTimeService(for: option.chain)
-        provideBlockTime()
-        setupSubscriptionFactory(for: option)
-        subscribeToBlockNumber(for: option.chain)
-        subscribeToMetadata(for: option)
-    }
-
-    private func setupBlockTimeService(for chain: ChainModel) {
-        do {
-            let blockTimeService = try serviceFactory.createBlockTimeService(for: chain.chainId)
-            governanceState.replaceBlockTimeService(blockTimeService)
-            blockTimeService.setup()
-        } catch {
-            presenter?.didReceiveError(.blockTimeServiceFailed(error))
-        }
-    }
-
-    private func setupSubscriptionFactory(for option: GovernanceSelectedOption) {
-        governanceState.replaceGovernanceFactory(for: option)
     }
 
     func subscribeToBlockNumber(for chain: ChainModel) {
-        guard blockNumberSubscription == nil else {
-            return
-        }
-
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
     }
 
@@ -122,21 +79,10 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     }
 
     func provideBlockTime() {
-        guard
-            blockTimeCancellable == nil,
-            let blockTimeService = governanceState.blockTimeService,
-            let blockTimeFactory = governanceState.createBlockTimeOperationFactory(),
-            let chain = governanceState.settings.value?.chain else {
-            return
-        }
+        clear(cancellable: &blockTimeCancellable)
 
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceiveError(.blockTimeFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        let blockTimeWrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeProvider,
+        let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
+            from: runtimeService,
             blockTimeEstimationService: blockTimeService
         )
 
@@ -164,85 +110,32 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(blockTimeWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func provideReferendumsIfNeeded(referendumIds: Set<ReferendumIdLocal>) {
-        guard referendumsCancellable == nil else {
-            return
-        }
-
-        guard let chain = governanceState.settings.value?.chain else {
-            presenter?.didReceiveError(.referendumsFetchFailed(PersistentValueSettingsError.missingValue))
-            return
-        }
-
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.connectionUnavailable))
-            return
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            presenter?.didReceiveError(.referendumsFetchFailed(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
-        guard let referendumsOperationFactory = governanceState.referendumsOperationFactory else {
-            presenter?.didReceiveReferendums([])
-            return
-        }
-
-        let wrapper = referendumsOperationFactory.fetchReferendumsWrapper(
-            for: referendumIds,
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.referendumsCancellable else {
-                    return
-                }
-
-                self?.referendumsCancellable = nil
-
-                do {
-                    let referendums = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveReferendums(referendums)
-                } catch {
-                    self?.presenter?.didReceiveError(.referendumsFetchFailed(error))
-                }
-            }
-        }
-
-        referendumsCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-    }
-
     private func provideOffchainVotingIfNeeded() {
         if offchainVotingCancellable == nil {
             provideOffchainVoting()
         }
     }
 
-    private func estimateBlockNumber(daysAgo days: Int) -> BlockNumber? {
-        guard let blockNumber = currentBlockNumber, let blockTime = currentBlockTime, blockTime > 0 else {
-            return nil
-        }
-
-        let blocksInPast = BlockNumber(TimeInterval(days).secondsFromDays / TimeInterval(blockTime).seconds)
-
-        guard blockNumber > blocksInPast else {
-            return 0
-        }
-
-        return blockNumber - blocksInPast
-    }
-
     private func provideOffchainVoting() {
-        switch delegateVotedReferenda {
+        switch dataFetchOption {
         case .allTimes:
+            if
+                let lastUsedBlockNumber = lastUsedBlockNumber,
+                let currentBlockNumber = currentBlockNumber,
+                currentBlockNumber > lastUsedBlockNumber,
+                currentBlockNumber - lastUsedBlockNumber < fetchBlockTreshold {
+                return
+            }
+
+            lastUsedBlockNumber = currentBlockNumber
+
             provideOffchainVoting(from: nil)
-        case let .recent(days, fetchBlockTreshold):
-            guard let activityBlockNumber = estimateBlockNumber(daysAgo: days) else {
+        case let .recent(days):
+            guard
+                let activityBlockNumber = currentBlockNumber?.blockBackInDays(
+                    days,
+                    blockTime: currentBlockTime
+                ) else {
                 return
             }
 
@@ -254,6 +147,7 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
             }
 
             lastUsedBlockNumber = activityBlockNumber
+
             provideOffchainVoting(from: activityBlockNumber)
         }
     }
@@ -261,9 +155,11 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     private func provideOffchainVoting(from blockNumber: BlockNumber?) {
         clear(cancellable: &offchainVotingCancellable)
 
-        let votingWrapper = governanceOffchainVotingFactory.createDirectVotesFetchOperation(
-            for: address,
-            from: blockNumber
+        let votingWrapper = fetchFactory.createVotedReferendaWrapper(
+            for: .init(address: address, blockNumber: blockNumber),
+            chain: governanceOption.chain,
+            connection: connection,
+            runtimeService: runtimeService
         )
 
         votingWrapper.targetOperation.completionBlock = { [weak self] in
@@ -276,7 +172,6 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
                 do {
                     let voting = try votingWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.provideReferendumsIfNeeded(referendumIds: Set(voting.keys))
                     self?.presenter?.didReceiveOffchainVoting(voting)
                 } catch {
                     self?.presenter?.didReceiveError(.offchainVotingFetchFailed(error))
@@ -292,8 +187,8 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
 
 extension DelegateVotedReferendaInteractor: DelegateVotedReferendaInteractorInputProtocol {
     func setup() {
-        lastUsedBlockNumber = nil
-        continueSetup()
+        subscribeToBlockNumber(for: governanceOption.chain)
+        subscribeToMetadata(for: governanceOption)
     }
 
     func retryBlockTime() {
@@ -303,21 +198,18 @@ extension DelegateVotedReferendaInteractor: DelegateVotedReferendaInteractorInpu
     func retryOffchainVotingFetch() {
         provideOffchainVotingIfNeeded()
     }
+
+    func remakeSubscription() {
+        subscribeToBlockNumber(for: governanceOption.chain)
+        subscribeToMetadata(for: governanceOption)
+    }
 }
 
 extension DelegateVotedReferendaInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
-    var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
-        governanceState.govMetadataLocalSubscriptionFactory
-    }
-
     func handleGovernanceMetadataPreview(
         result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
-        option: GovernanceSelectedOption
+        option _: GovernanceSelectedOption
     ) {
-        guard let currentOption = governanceState.settings.value, currentOption == option else {
-            return
-        }
-
         switch result {
         case let .success(changes):
             presenter?.didReceiveReferendumsMetadata(changes)
@@ -328,11 +220,7 @@ extension DelegateVotedReferendaInteractor: GovMetadataLocalStorageSubscriber, G
 }
 
 extension DelegateVotedReferendaInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId: ChainModel.Id) {
-        guard let chain = governanceState.settings.value?.chain, chain.chainId == chainId else {
-            return
-        }
-
+    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(blockNumber):
             if let blockNumber = blockNumber {

@@ -15,16 +15,15 @@ protocol DelegateVotedReferendaInteractorInputProtocol: AnyObject {
     func setup()
     func retryBlockTime()
     func retryOffchainVotingFetch()
+    func remakeSubscription()
 }
 
 protocol DelegateVotedReferendaInteractorOutputProtocol: AnyObject {
     func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>])
-    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotes)
+    func didReceiveOffchainVoting(_ voting: DelegateVotedReferendaModel)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
-    func didReceiveReferendums(_ referendums: [ReferendumLocal])
     func didReceiveError(_ error: DelegateVotedReferendaError)
-    func didReceiveChain(_ chainModel: ChainModel)
 }
 
 protocol DelegateVotedReferendaWireframeProtocol: AlertPresentable, ErrorPresentable,
@@ -34,8 +33,5 @@ enum DelegateVotedReferendaError: Error {
     case blockNumberSubscriptionFailed(Error)
     case metadataSubscriptionFailed(Error)
     case offchainVotingFetchFailed(Error)
-    case settingsLoadFailed
-    case blockTimeServiceFailed(Error)
     case blockTimeFetchFailed(Error)
-    case referendumsFetchFailed(Error)
 }
