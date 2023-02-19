@@ -12,17 +12,17 @@ final class DelegateVotedReferendaPresenter {
     let sorting: ReferendumsSorting
     let logger: LoggerProtocol
     let name: String
+    let chain: ChainModel
     let option: DelegateVotedReferendaOption
 
     private var referendums: [ReferendumLocal]?
+    private var offchainVotes: GovernanceOffchainVotes?
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var maxTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
     private var timeModels: [UInt: StatusTimeViewModel?]?
-    private var chain: ChainModel?
-    private var voting: GovernanceOffchainVotes?
 
     deinit {
         invalidateTimer()
@@ -31,6 +31,7 @@ final class DelegateVotedReferendaPresenter {
     init(
         interactor: DelegateVotedReferendaInteractorInputProtocol,
         wireframe: DelegateVotedReferendaWireframeProtocol,
+        chain: ChainModel,
         viewModelFactory: DelegateReferendumsModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         sorting: ReferendumsSorting,
@@ -41,6 +42,7 @@ final class DelegateVotedReferendaPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.chain = chain
         self.viewModelFactory = viewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.sorting = sorting
@@ -54,20 +56,20 @@ final class DelegateVotedReferendaPresenter {
         guard let view = view else {
             return
         }
-        guard let currentBlock = blockNumber,
-              let blockTime = blockTime,
-              let referendums = referendums,
-              let chainModel = chain,
-              let voting = voting else {
+        guard
+            let currentBlock = blockNumber,
+            let blockTime = blockTime,
+            let referendums = referendums,
+            let offchainVotes = offchainVotes else {
             return
         }
 
         let referendumsViewModels = viewModelFactory.createReferendumsViewModel(input: .init(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
-            votes: voting,
+            votes: offchainVotes,
             offchainVotes: nil,
-            chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
+            chainInfo: .init(chain: chain, currentBlock: currentBlock, blockDuration: blockTime),
             locale: selectedLocale,
             voterName: name
         ))
@@ -79,12 +81,15 @@ final class DelegateVotedReferendaPresenter {
         guard let view = view else {
             return
         }
-        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = referendums else {
+        guard
+            let currentBlock = blockNumber,
+            let blockTime = blockTime,
+            let referendums = referendums else {
             return
         }
 
         let timeModels = statusViewModelFactory.createTimeViewModels(
-            referendums: referendums,
+            referendums: Array(referendums),
             currentBlock: currentBlock,
             blockDuration: blockTime,
             locale: selectedLocale
@@ -160,7 +165,7 @@ final class DelegateVotedReferendaPresenter {
             return LocalizableResource { locale in
                 R.string.localizable.delegationsVotedReferendaAllTimesTitle(preferredLanguages: locale.rLanguages)
             }
-        case let .recent(days, _):
+        case let .recent(days):
             return LocalizableResource { locale in
                 let formattedDays = R.string.localizable.commonDaysFormat(
                     format: days,
@@ -176,11 +181,6 @@ final class DelegateVotedReferendaPresenter {
 }
 
 extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutputProtocol {
-    func didReceiveChain(_ chainModel: ChainModel) {
-        chain = chainModel
-        updateReferendumsView()
-    }
-
     func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>]) {
         let indexedReferendums = Array((referendumsMetadata ?? [:]).values).reduceToDict()
 
@@ -194,14 +194,15 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
                 }
             }
         }
+
         updateReferendumsView()
     }
 
-    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotes) {
-        if self.voting != voting {
-            self.voting = voting
-            updateReferendumsView()
-        }
+    func didReceiveOffchainVoting(_ voting: DelegateVotedReferendaModel) {
+        offchainVotes = voting.offchainVotes
+        referendums = voting.referendums.values.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
+
+        updateReferendumsView()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
@@ -210,24 +211,15 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
 
     func didReceiveBlockTime(_ blockTime: BlockTime) {
         self.blockTime = blockTime
-        updateTimeModels()
-    }
 
-    func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
-        self.referendums = referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
-
-        updateReferendumsView()
         updateTimeModels()
     }
 
     func didReceiveError(_ error: DelegateVotedReferendaError) {
         switch error {
-        case .blockNumberSubscriptionFailed,
-             .metadataSubscriptionFailed,
-             .blockTimeServiceFailed,
-             .settingsLoadFailed:
+        case .blockNumberSubscriptionFailed, .metadataSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.setup()
+                self?.interactor.remakeSubscription()
             }
         case .offchainVotingFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -236,10 +228,6 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
         case .blockTimeFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryBlockTime()
-            }
-        case .referendumsFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryOffchainVotingFetch()
             }
         }
     }
