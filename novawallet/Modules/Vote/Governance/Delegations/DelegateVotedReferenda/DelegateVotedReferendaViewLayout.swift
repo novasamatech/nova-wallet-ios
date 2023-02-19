@@ -40,8 +40,7 @@ final class DelegateVotedReferendaViewLayout: UIView {
         addSubview(tableView)
         tableView.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide.snp.top).inset(12)
-            $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(safeAreaLayoutGuide).inset(16)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
     }
 }
