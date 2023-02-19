@@ -1166,8 +1166,6 @@
 "delegations.list.multiple.tracks" = "В %@ треках";
 "delegations.list.empty" = "Список делегаций появится здесь";
 "gov.vote.by" = "%@ голосов от %@";
-"delegations.voted.referenda.all.times.title" = "Референдумы";
-"delegations.voted.referenda.recent.title" = "Последние референдумы за %@";
 "gov.add.delegate.hint1" = "Ваши голоса будут автоматически применяться вместе с голосами ваших делегатов";
 "gov.add.delegate.hint2" = "Период выхода из делегации начнется после её отмены";
 "gov.add.delegate.voting.error.title" = "Вы уже голосовали";

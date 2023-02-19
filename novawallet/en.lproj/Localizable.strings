@@ -1166,8 +1166,6 @@
 "delegations.list.multiple.tracks" = "Across %@ tracks";
 "delegations.list.empty" = "List of delegations will appear here";
 "gov.vote.by" = "%@ votes by %@";
-"delegations.voted.referenda.all.times.title" = "Voted referenda";
-"delegations.voted.referenda.recent.title" = "Voted last %@";
 "gov.add.delegate.hint1" = "Your votes will automatically apply alongside your delegates' vote";
 "gov.add.delegate.hint2" = "Undelegating period will start after you revoke a delegation";
 "gov.add.delegate.voting.error.title" = "Already voting";
