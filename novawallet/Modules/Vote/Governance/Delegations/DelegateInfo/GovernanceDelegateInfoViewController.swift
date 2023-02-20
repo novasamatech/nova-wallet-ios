@@ -98,7 +98,7 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
 
         if let delegatedVotes = viewModel.delegatedVotes {
             statsTable.addTitleValueCell(
-                for: R.string.localizable.delegationsSortDelegatedVotes(
+                for: R.string.localizable.delegationsDelegatedVotes(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
                 value: delegatedVotes
@@ -107,7 +107,7 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
 
         if let delegations = viewModel.delegations {
             let cell = statsTable.addInfoCell(
-                for: R.string.localizable.delegationsSortDelegations(
+                for: R.string.localizable.delegationsDelegations(
                     preferredLanguages: selectedLocale.rLanguages
                 ),
                 value: delegations
@@ -118,7 +118,7 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
 
         if let recentVotes = viewModel.recentVotes {
             let cell = statsTable.addInfoCell(
-                for: R.string.localizable.delegationsSortLastVoted(
+                for: R.string.localizable.delegationsLastVoted(
                     recentVotes.period,
                     preferredLanguages: selectedLocale.rLanguages
                 ),
