@@ -22,6 +22,6 @@ struct ReferendumsCellViewModel: Hashable {
         hasher.combine(referendumIndex)
     }
 
-    var referendumIndex: UInt
+    var referendumIndex: ReferendumIdLocal
     var viewModel: LoadableViewModelState<ReferendumView.Model>
 }

@@ -3,14 +3,15 @@ import SoraFoundation
 
 final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     typealias RootViewType = DelegateVotedReferendaViewLayout
-    typealias Row = ReferendumsCellViewModel
+    typealias Row = ReferendumIdLocal
 
     let presenter: DelegateVotedReferendaPresenterProtocol
     let quantityFormatter: LocalizableResource<NumberFormatter>
 
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, Row>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, Row>
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, ReferendumIdLocal>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, ReferendumIdLocal>
     private var dataSource: DataSource?
+    private var dataStore: [ReferendumIdLocal: ReferendumsCellViewModel] = [:]
     private var localizableTitle: LocalizableResource<String>?
 
     init(
@@ -45,9 +46,13 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     }
 
     private func createDataSource() -> DataSource {
-        let dataSource = DataSource(tableView: rootView.tableView) { tableView, indexPath, model in
+        let dataSource = DataSource(tableView: rootView.tableView) { [weak self] tableView, indexPath, modelId in
             let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.view.bind(viewModel: model.viewModel)
+
+            if let model = self?.dataStore[modelId] {
+                cell.view.bind(viewModel: model.viewModel)
+            }
+
             cell.applyStyle()
             return cell
         }
@@ -92,9 +97,26 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
 
 extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtocol {
     func update(viewModels: [ReferendumsCellViewModel]) {
+        let existingIds = viewModels.compactMap { model in
+            if dataStore[model.referendumIndex] != nil {
+                return model.referendumIndex
+            } else {
+                return nil
+            }
+        }
+
+        dataStore = viewModels.reduce(
+            into: [ReferendumIdLocal: ReferendumsCellViewModel]()
+        ) {
+            $0[$1.referendumIndex] = $1
+        }
+
+        let newIds = viewModels.map(\.referendumIndex)
+
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
-        snapshot.appendItems(viewModels)
+        snapshot.appendItems(newIds)
+        snapshot.reloadItems(existingIds)
         dataSource?.apply(snapshot, animatingDifferences: false)
         setupCounter(value: viewModels.count)
     }
@@ -105,30 +127,39 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
             return
         }
 
-        let visibleItems = visibleRows.compactMap(dataSource.itemIdentifier).compactMap {
-            switch $0.viewModel {
+        let visibleModelIds: [Row] = visibleRows.compactMap {
+            dataSource.itemIdentifier(for: $0)
+        }
+
+        dataStore = time.reduce(into: dataStore) { store, keyValue in
+            let modelId = keyValue.key
+            guard let model = store[modelId] else {
+                return
+            }
+
+            switch model.viewModel {
             case let .loaded(value):
-                let newValue = updateTime(in: value, time: time[$0.referendumIndex])
-                return Row(
-                    referendumIndex: $0.referendumIndex,
+                let newValue = updateTime(in: value, time: time[modelId])
+                store[modelId] = ReferendumsCellViewModel(
+                    referendumIndex: modelId,
                     viewModel: .loaded(value: newValue)
                 )
             case let .cached(value):
-                let newValue = updateTime(in: value, time: time[$0.referendumIndex])
-                return Row(
-                    referendumIndex: $0.referendumIndex,
+                let newValue = updateTime(in: value, time: time[modelId])
+                store[modelId] = ReferendumsCellViewModel(
+                    referendumIndex: modelId,
                     viewModel: .cached(value: newValue)
                 )
             case .loading:
-                return Row(
-                    referendumIndex: $0.referendumIndex,
+                store[modelId] = ReferendumsCellViewModel(
+                    referendumIndex: modelId,
                     viewModel: .loading
                 )
             }
         }
 
         var newSnapshot = dataSource.snapshot()
-        newSnapshot.reloadItems(visibleItems)
+        newSnapshot.reloadItems(visibleModelIds)
         dataSource.apply(newSnapshot, animatingDifferences: false)
     }
 
