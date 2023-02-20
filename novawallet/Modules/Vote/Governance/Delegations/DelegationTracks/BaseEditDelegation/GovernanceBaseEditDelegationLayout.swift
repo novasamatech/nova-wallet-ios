@@ -29,6 +29,7 @@ class GovernanceBaseEditDelegationLayout: GovernanceSelectTracksViewLayout {
 
         contentView.stackView.insertArranged(view: descriptionLabel, after: titleLabel)
         contentView.stackView.setCustomSpacing(8, after: descriptionLabel)
+        contentView.stackView.setCustomSpacing(8, after: titleLabel)
 
         descriptionLabel.snp.makeConstraints { make in
             make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)

@@ -46,7 +46,6 @@ protocol GovernanceLockStateFactoryProtocol {
     func calculateDelegateStateDiff(
         for trackVotes: ReferendumTracksVotingDistribution,
         newDelegation: GovernanceNewDelegation,
-        connection: JSONRPCEngine,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<GovernanceDelegateStateDiff>
 
