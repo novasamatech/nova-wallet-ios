@@ -76,6 +76,7 @@ protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresent
     )
 
     func showRevokeDelegation(
-        from view: GovernanceDelegateInfoViewProtocol?
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegate: GovernanceDelegateFlowDisplayInfo<AccountId>
     )
 }

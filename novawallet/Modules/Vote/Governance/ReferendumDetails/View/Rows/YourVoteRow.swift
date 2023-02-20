@@ -27,3 +27,5 @@ final class YourVoteRow: RowView<GenericTitleValueView<YourVoteView, MultiValueV
         rowContentView.valueView.bind(viewModel: viewModel.amount)
     }
 }
+
+extension YourVoteRow: StackTableViewCellProtocol {}

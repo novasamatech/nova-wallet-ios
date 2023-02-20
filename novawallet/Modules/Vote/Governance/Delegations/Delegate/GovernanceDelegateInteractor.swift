@@ -223,7 +223,6 @@ extension GovernanceDelegateInteractor {
         let wrapper = lockStateFactory.calculateDelegateStateDiff(
             for: trackVoting,
             newDelegation: newDelegation,
-            connection: connection,
             runtimeProvider: runtimeProvider
         )
 
