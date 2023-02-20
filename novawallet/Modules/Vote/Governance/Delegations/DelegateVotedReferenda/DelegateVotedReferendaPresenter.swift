@@ -203,6 +203,7 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
         referendums = voting.referendums.values.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
 
         updateReferendumsView()
+        updateTimeModels()
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
