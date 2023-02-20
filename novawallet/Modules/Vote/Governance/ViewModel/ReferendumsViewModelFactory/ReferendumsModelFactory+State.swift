@@ -6,12 +6,14 @@ extension ReferendumsModelFactory {
     func provideCommonReferendumCellViewModel(
         status: ReferendumInfoView.Status,
         params: StatusParams,
+        voterName: String?,
         locale: Locale
     ) -> ReferendumView.Model {
         let yourVotesModel = createVotesViewModel(
             from: params.onchainVotes,
             offchainVotes: params.offchainVotes,
             chain: params.chainInfo.chain,
+            voterName: voterName,
             locale: locale
         )
 
@@ -78,6 +80,7 @@ extension ReferendumsModelFactory {
     func providePreparingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Preparing,
         params: StatusParams,
+        voterName: String?,
         locale: Locale
     ) -> ReferendumView.Model {
         let timeModel = statusViewModelFactory.createTimeViewModel(
@@ -107,6 +110,7 @@ extension ReferendumsModelFactory {
             from: params.onchainVotes,
             offchainVotes: params.offchainVotes,
             chain: params.chainInfo.chain,
+            voterName: voterName,
             locale: locale
         )
 
@@ -138,6 +142,7 @@ extension ReferendumsModelFactory {
     func provideDecidingReferendumCellViewModel(
         _ model: ReferendumStateLocal.Deciding,
         params: StatusParams,
+        voterName: String?,
         locale: Locale
     ) -> ReferendumView.Model {
         let votingProgressViewModel: VotingProgressView.Model
@@ -175,6 +180,7 @@ extension ReferendumsModelFactory {
             from: params.onchainVotes,
             offchainVotes: params.offchainVotes,
             chain: params.chainInfo.chain,
+            voterName: voterName,
             locale: locale
         )
 
@@ -204,6 +210,7 @@ extension ReferendumsModelFactory {
 
     func provideApprovedReferendumCellViewModel(
         params: StatusParams,
+        voterName: String?,
         locale: Locale
     ) -> ReferendumView.Model {
         let timeModel = statusViewModelFactory.createTimeViewModel(
@@ -219,6 +226,7 @@ extension ReferendumsModelFactory {
             from: params.onchainVotes,
             offchainVotes: params.offchainVotes,
             chain: params.chainInfo.chain,
+            voterName: voterName,
             locale: locale
         )
 

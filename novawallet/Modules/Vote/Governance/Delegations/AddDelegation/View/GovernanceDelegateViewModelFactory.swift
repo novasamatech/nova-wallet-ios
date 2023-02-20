@@ -53,15 +53,27 @@ extension GovernanceDelegateViewModelFactory: GovernanceDelegateViewModelFactory
 
         let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
 
+        let formattedDays = R.string.localizable.commonDaysFormat(
+            format: lastVotedDays,
+            preferredLanguages: locale.rLanguages
+        )
+
         return GovernanceDelegateTableViewCell.Model(
             addressViewModel: addressViewModel,
             type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
             description: delegate.metadata?.shortDescription,
-            delegationsTitle: GovernanceDelegatesOrder.delegations.value(for: locale),
+            delegationsTitle: R.string.localizable.delegationsDelegations(
+                preferredLanguages: locale.rLanguages
+            ),
             delegations: delegations,
-            votesTitle: GovernanceDelegatesOrder.delegatedVotes.value(for: locale),
+            votesTitle: R.string.localizable.delegationsDelegatedVotes(
+                preferredLanguages: locale.rLanguages
+            ),
             votes: totalVotes,
-            lastVotesTitle: GovernanceDelegatesOrder.lastVoted(days: lastVotedDays).value(for: locale),
+            lastVotesTitle: R.string.localizable.delegationsLastVoted(
+                formattedDays,
+                preferredLanguages: locale.rLanguages
+            ),
             lastVotes: lastVotes
         )
     }
