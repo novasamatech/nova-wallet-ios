@@ -227,7 +227,11 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
             return
         }
 
-        wireframe.showRecentVotes(from: view, delegateAddress: address)
+        wireframe.showRecentVotes(
+            from: view,
+            delegateAddress: address,
+            delegateName: delegateProfileViewModel?.name
+        )
     }
 
     func presentAllVotes() {
@@ -235,7 +239,11 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
             return
         }
 
-        wireframe.showAllVotes(from: view, delegateAddress: address)
+        wireframe.showAllVotes(
+            from: view,
+            delegateAddress: address,
+            delegateName: delegateProfileViewModel?.name
+        )
     }
 
     func presentIdentityItem(_ item: ValidatorInfoViewModel.IdentityItemValue) {

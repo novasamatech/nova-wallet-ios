@@ -9,6 +9,7 @@ struct ReferendumsModelFactoryInput {
     let offchainVotes: GovernanceOffchainVotesLocal?
     let chainInfo: ChainInformation
     let locale: Locale
+    let voterName: String?
 
     struct ChainInformation {
         let chain: ChainModel
@@ -80,6 +81,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             let model = createReferendumCellViewModel(
                 state: referendum.state,
                 params: params,
+                voterName: input.voterName,
                 locale: input.locale
             )
 
@@ -105,6 +107,7 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
         return createReferendumCellViewModel(
             state: input.referendum.state,
             params: params,
+            voterName: nil,
             locale: input.selectedLocale
         )
     }
@@ -112,16 +115,27 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
     private func createReferendumCellViewModel(
         state: ReferendumStateLocal,
         params: StatusParams,
+        voterName: String?,
         locale: Locale
     ) -> ReferendumView.Model {
         let status: ReferendumInfoView.Status
         switch state {
         case let .preparing(model):
-            return providePreparingReferendumCellViewModel(model, params: params, locale: locale)
+            return providePreparingReferendumCellViewModel(
+                model,
+                params: params,
+                voterName: voterName,
+                locale: locale
+            )
         case let .deciding(model):
-            return provideDecidingReferendumCellViewModel(model, params: params, locale: locale)
+            return provideDecidingReferendumCellViewModel(
+                model,
+                params: params,
+                voterName: voterName,
+                locale: locale
+            )
         case .approved:
-            return provideApprovedReferendumCellViewModel(params: params, locale: locale)
+            return provideApprovedReferendumCellViewModel(params: params, voterName: voterName, locale: locale)
         case .rejected:
             let statusName = Strings.governanceReferendumsStatusRejected(preferredLanguages: locale.rLanguages)
             status = .init(name: statusName.uppercased(), kind: .negative)
@@ -139,6 +153,28 @@ extension ReferendumsModelFactory: ReferendumsModelFactoryProtocol {
             status = .init(name: statusName.uppercased(), kind: .positive)
         }
 
-        return provideCommonReferendumCellViewModel(status: status, params: params, locale: locale)
+        return provideCommonReferendumCellViewModel(
+            status: status,
+            params: params,
+            voterName: voterName,
+            locale: locale
+        )
+    }
+}
+
+extension ReferendumsModelFactory: DelegateReferendumsModelFactoryProtocol {
+    func createReferendumsViewModel(input: ReferendumsModelFactoryInput) -> [ReferendumsCellViewModel] {
+        let (active, completed) = createReferendumsCellViewModels(input: input)
+        return active + completed
+    }
+
+    func createLoadingViewModel() -> [ReferendumsCellViewModel] {
+        let cells: [ReferendumsCellViewModel] = (0 ..< 10).map {
+            ReferendumsCellViewModel(
+                referendumIndex: UInt($0),
+                viewModel: .loading
+            )
+        }
+        return cells
     }
 }
