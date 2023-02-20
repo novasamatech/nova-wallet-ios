@@ -9,7 +9,8 @@ struct GovernanceDelegateInfoViewFactory {
     ) -> GovernanceDelegateInfoViewProtocol? {
         guard
             let interactor = createInteractor(for: state, delegate: delegate),
-            let chain = state.settings.value?.chain else {
+            let chain = state.settings.value?.chain,
+            let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
@@ -21,6 +22,8 @@ struct GovernanceDelegateInfoViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chain: chain,
+            accountManagementFilter: AccountManagementFilter(),
+            wallet: wallet,
             initDelegate: delegate,
             infoViewModelFactory: GovernanceDelegateInfoViewModelFactory(),
             identityViewModelFactory: IdentityViewModelFactory(),
@@ -45,20 +48,12 @@ struct GovernanceDelegateInfoViewFactory {
         for state: GovernanceSharedState,
         delegate: GovernanceDelegateLocal
     ) -> GovernanceDelegateInfoInteractor? {
-        guard
-            let chain = state.settings.value?.chain,
-            let delegateAccountId = try? delegate.stats.address.toAccountId(),
-            let selectedAccountId = SelectedWalletSettings.shared.value?.fetch(
-                for: chain.accountRequest()
-            )?.accountId,
-            let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url
-        else {
-            return nil
-        }
-
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
+            let chain = state.settings.value?.chain,
+            let delegateAccountId = try? delegate.stats.address.toAccountId(),
+            let statsUrl = chain.externalApis?.governanceDelegations()?.first?.url,
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let blockTimeService = state.blockTimeService,
@@ -66,6 +61,8 @@ struct GovernanceDelegateInfoViewFactory {
             let subscriptionFactory = state.subscriptionFactory else {
             return nil
         }
+
+        let selectedAccountId = SelectedWalletSettings.shared.value?.fetch(for: chain.accountRequest())?.accountId
 
         let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: statsUrl)
 
