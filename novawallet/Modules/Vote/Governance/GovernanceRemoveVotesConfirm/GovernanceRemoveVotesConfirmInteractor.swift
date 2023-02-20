@@ -105,13 +105,11 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
                 return builder
             }
 
-            return try requests.reduce(builder) { accum, _ in
-                try strongSelf.extrinsicFactory.unlock(
-                    with: Set(actions),
-                    accountId: strongSelf.selectedAccount.accountId,
-                    builder: accum
-                )
-            }
+            return try strongSelf.extrinsicFactory.unlock(
+                with: Set(actions),
+                accountId: strongSelf.selectedAccount.accountId,
+                builder: builder
+            )
         }
     }
 }
