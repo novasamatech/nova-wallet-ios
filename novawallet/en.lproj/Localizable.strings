@@ -1115,6 +1115,9 @@
 "delegations.sort.delegations" = "Delegations";
 "delegations.sort.delegatedVotes" = "Delegated votes";
 "delegations.sort.lastVoted" = "Voted last %@";
+"delegations.delegations" = "Delegations";
+"delegations.delegatedVotes" = "Delegated votes";
+"delegations.lastVoted" = "Voted last %@";
 "delegations.show.title" = "Show";
 "delegations.show.individuals" = "Individuals";
 "delegations.show.organizations" = "Organizations";
@@ -1162,7 +1165,8 @@
 "gov.tracks" = "Tracks";
 "delegations.list.multiple.tracks" = "Across %@ tracks";
 "delegations.list.empty" = "List of delegations will appear here";
-"gov.add.delegate.hint1" = "Your votes will automatically vote alongside your delegates' vote";
+"gov.vote.by" = "%@ votes by %@";
+"gov.add.delegate.hint1" = "Your votes will automatically apply alongside your delegates' vote";
 "gov.add.delegate.hint2" = "Undelegating period will start after you revoke a delegation";
 "gov.add.delegate.voting.error.title" = "Already voting";
 "gov.add.delegate.voting.error.message" = "Please, remove votes from selected tracks to start delegating";
@@ -1178,5 +1182,5 @@
 "gov.revoke.delegation.title" = "Revoke delegation";
 "gov.revoke.delegation.confirm.hint" = "After the undelegating period has expired, you will need to unlock your tokens.";
 "gov.revoke.delegate.missing.error.title" = "Already revoked";
-"gov.revoke.delegate.missing.error.message" = "You have already revoked votes from one of the tracks";
+"gov.revoke.delegate.missing.error.message" = "You have already revoked delegation from one of the tracks";
 "governance.abstain" = "Abstain";
