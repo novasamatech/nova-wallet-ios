@@ -13,7 +13,15 @@ enum ReferendumPersonalActivity {
     case delegations(ReferendumsDelegationViewModel)
 }
 
-struct ReferendumsCellViewModel {
-    var referendumIndex: UInt
+struct ReferendumsCellViewModel: Hashable {
+    static func == (lhs: ReferendumsCellViewModel, rhs: ReferendumsCellViewModel) -> Bool {
+        lhs.referendumIndex == rhs.referendumIndex && lhs.viewModel.isLoading == rhs.viewModel.isLoading
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(referendumIndex)
+    }
+
+    var referendumIndex: ReferendumIdLocal
     var viewModel: LoadableViewModelState<ReferendumView.Model>
 }
