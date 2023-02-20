@@ -62,6 +62,28 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
         """
     }
 
+    private func prepareReferendumVotersQuery(referendumId: ReferendumIdLocal) -> String {
+        """
+        {
+            castingVotings (filter: {referendumId: {equalTo: "\(referendumId)"}}) {
+                nodes {
+                  referendumId
+                  standardVote
+                  splitVote
+                  splitAbstainVote
+                  voter
+                  delegatorVotes {
+                    nodes {
+                      delegator
+                      vote
+                    }
+                  }
+                }
+            }
+        }
+        """
+    }
+
     private func prepareVotingActivityQuery(
         for address: AccountAddress,
         from block: BlockNumber?
@@ -113,6 +135,20 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
             }
 
             return voting.getAllDirectVotes()
+        }
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func createReferendumVotesFetchOperation(referendumId: ReferendumIdLocal) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        let query = prepareReferendumVotersQuery(referendumId: referendumId)
+
+        let operation = createOperation(
+            for: query
+        ) { (response: SubqueryVotingResponse.ReferendumVotesResponse) -> [ReferendumVoterLocal] in
+            response.castingVotings.nodes.compactMap {
+                ReferendumVoterLocal(from: $0)
+            }
         }
 
         return CompoundOperationWrapper(targetOperation: operation)
