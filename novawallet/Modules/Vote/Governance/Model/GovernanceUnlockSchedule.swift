@@ -7,20 +7,51 @@ struct GovernanceUnlockSchedule: Equatable {
         case unlock(track: TrackIdLocal)
     }
 
+    enum ClaimTime: Equatable, Hashable {
+        /// use 0 to mark the lock is available to unlock now
+        case unlockAt(BlockNumber)
+        case afterUndelegate
+
+        var unlockAtBlock: BlockNumber? {
+            switch self {
+            case let .unlockAt(blockNumber):
+                return blockNumber
+            case .afterUndelegate:
+                return nil
+            }
+        }
+
+        func isAfter(time: ClaimTime) -> Bool {
+            if let block1 = unlockAtBlock, let block2 = time.unlockAtBlock {
+                return block1 > block2
+            } else if unlockAtBlock == nil, time.unlockAtBlock == nil {
+                return false
+            } else if unlockAtBlock == nil {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+
     struct Item: Equatable {
         let amount: BigUInt
 
-        /// use 0 to mark the lock is available to unlock now
-        let unlockAt: BlockNumber
+        let unlockWhen: ClaimTime
 
         let actions: Set<Action>
 
         var isEmpty: Bool {
-            amount == 0 && actions.isEmpty
+            switch unlockWhen {
+            case .unlockAt:
+                return amount == 0 && actions.isEmpty
+            case .afterUndelegate:
+                return false
+            }
         }
 
         static func emptyUnlock(at block: BlockNumber) -> Item {
-            .init(amount: 0, unlockAt: block, actions: [])
+            .init(amount: 0, unlockWhen: .unlockAt(block), actions: [])
         }
     }
 
@@ -45,7 +76,14 @@ struct GovernanceUnlockSchedule: Equatable {
 
     func availableUnlock(at block: BlockNumber) -> Claimable {
         items
-            .filter { $0.unlockAt <= block }
+            .filter { item in
+                switch item.unlockWhen {
+                case let .unlockAt(unlockAtBlock):
+                    return unlockAtBlock <= block
+                case .afterUndelegate:
+                    return false
+                }
+            }
             .reduce(Claimable.empty()) { accum, unlock in
                 .init(
                     amount: accum.amount + unlock.amount,
@@ -55,6 +93,13 @@ struct GovernanceUnlockSchedule: Equatable {
     }
 
     func remainingLocks(after block: BlockNumber) -> [Item] {
-        items.filter { $0.unlockAt > block }
+        items.filter { item in
+            switch item.unlockWhen {
+            case let .unlockAt(unlockAtBlock):
+                return unlockAtBlock > block
+            case .afterUndelegate:
+                return true
+            }
+        }
     }
 }

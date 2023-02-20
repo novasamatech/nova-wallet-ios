@@ -347,4 +347,136 @@ class Gov2UnlockScheduleTests: XCTestCase {
             }
         }
     }
+
+    func testShouldHandleStandaloneDelegation() {
+        GovernanceUnlocksTestBuilding.run(atBlock: 1000) {
+            GovernanceUnlocksTestBuilding.given {
+                TrackTestBuilding.track(0) {
+                    TrackTestBuilding.VotingParams.delegating(amount: 1)
+                }
+            }
+
+            GovernanceUnlocksTestBuilding.expect {
+                UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
+                    UnlockScheduleTestBuilding.unlockAfterUndelegate(amount: 1)
+                }
+            }
+        }
+    }
+
+    func testShouldTakeDelegationPriorLockIntoAccount() {
+        GovernanceUnlocksTestBuilding.run(atBlock: 1000) {
+            GovernanceUnlocksTestBuilding.given {
+                TrackTestBuilding.track(0) {
+                    TrackTestBuilding.VotingParams.prior(amount: 10, unlockAt: 1100)
+                    TrackTestBuilding.VotingParams.delegating(amount: 1)
+                }
+            }
+
+            GovernanceUnlocksTestBuilding.expect {
+                UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
+                    UnlockScheduleTestBuilding.unlock(amount: 9, atBlock: 1100) {
+                        GovernanceUnlockSchedule.Action.unlock(track: 0)
+                    }
+
+                    UnlockScheduleTestBuilding.unlockAfterUndelegate(amount: 1)
+                }
+            }
+        }
+    }
+
+    func testDelegationPlusGapCase() {
+        GovernanceUnlocksTestBuilding.run(atBlock: 1000) {
+            GovernanceUnlocksTestBuilding.given {
+                TrackTestBuilding.track(0) {
+                    TrackTestBuilding.VotingParams.locked(10)
+                    TrackTestBuilding.VotingParams.delegating(amount: 1)
+                }
+            }
+
+            GovernanceUnlocksTestBuilding.expect {
+                UnlockScheduleTestBuilding.ScheduleResult.availableItem(amount: 9) {
+                    GovernanceUnlockSchedule.Action.unlock(track: 0)
+                }
+
+                UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
+                    UnlockScheduleTestBuilding.unlockAfterUndelegate(amount: 1)
+                }
+            }
+        }
+    }
+
+    func testDelegationPlutVotingCase() {
+        GovernanceUnlocksTestBuilding.run(atBlock: 1000) {
+            GovernanceUnlocksTestBuilding.given {
+                TrackTestBuilding.track(0) {
+                    TrackTestBuilding.VotingParams.delegating(amount: 1)
+                }
+
+                TrackTestBuilding.track(1) {
+                    TrackTestBuilding.VotingParams.prior(amount: 10, unlockAt: 1000)
+                    TrackTestBuilding.VotingParams.votes {
+                        TrackTestBuilding.Vote(referendum: 0, amount: 5, unlockAt: 1100)
+                    }
+                }
+            }
+
+            GovernanceUnlocksTestBuilding.expect {
+                /// 5 is claimable from track 1 priors
+                UnlockScheduleTestBuilding.ScheduleResult.availableItem(amount: 5) {
+                    GovernanceUnlockSchedule.Action.unlock(track: 1)
+                }
+
+                UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
+                    /// 4 is delayed until 1100 from track 1 votes
+                    UnlockScheduleTestBuilding.unlock(amount: 4, atBlock: 1100) {
+                        GovernanceUnlockSchedule.Action.unvote(track: 1, index: 0)
+                        GovernanceUnlockSchedule.Action.unlock(track: 1)
+                    }
+
+                    /// 1 is delayed indefinitely because of track 1 delegation
+                    UnlockScheduleTestBuilding.unlockAfterUndelegate(amount: 1)
+                }
+            }
+        }
+    }
+
+    func testMultipleDelegationPlutVotingCase() {
+        GovernanceUnlocksTestBuilding.run(atBlock: 1000) {
+            GovernanceUnlocksTestBuilding.given {
+                TrackTestBuilding.track(0) {
+                    TrackTestBuilding.VotingParams.delegating(amount: 1)
+                }
+
+                TrackTestBuilding.track(1) {
+                    TrackTestBuilding.VotingParams.prior(amount: 10, unlockAt: 1000)
+                    TrackTestBuilding.VotingParams.votes {
+                        TrackTestBuilding.Vote(referendum: 0, amount: 5, unlockAt: 1100)
+                    }
+                }
+
+                TrackTestBuilding.track(2) {
+                    TrackTestBuilding.VotingParams.delegating(amount: 3)
+                }
+            }
+
+            GovernanceUnlocksTestBuilding.expect {
+                /// 5 is claimable from track 1 priors
+                UnlockScheduleTestBuilding.ScheduleResult.availableItem(amount: 5) {
+                    GovernanceUnlockSchedule.Action.unlock(track: 1)
+                }
+
+                UnlockScheduleTestBuilding.ScheduleResult.remainingItems {
+                    /// 4 is delayed until 1100 from track 1 votes
+                    UnlockScheduleTestBuilding.unlock(amount: 2, atBlock: 1100) {
+                        GovernanceUnlockSchedule.Action.unvote(track: 1, index: 0)
+                        GovernanceUnlockSchedule.Action.unlock(track: 1)
+                    }
+
+                    /// 3 is delayed indefinitely because of track 1 and 2 delegations
+                    UnlockScheduleTestBuilding.unlockAfterUndelegate(amount: 3)
+                }
+            }
+        }
+    }
 }
