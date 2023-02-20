@@ -1165,10 +1165,11 @@
 "gov.tracks" = "Треки";
 "delegations.list.multiple.tracks" = "В %@ треках";
 "delegations.list.empty" = "Список делегаций появится здесь";
+"gov.vote.by" = "%@ голосов от %@";
 "gov.add.delegate.hint1" = "Ваши голоса будут автоматически применяться вместе с голосами ваших делегатов";
 "gov.add.delegate.hint2" = "Период выхода из делегации начнется после её отмены";
 "gov.add.delegate.voting.error.title" = "Вы уже голосовали";
-"gov.add.delegate.voting.error.message" = "Пожалуйста, удалить голоса в выбранных треках для начала делегирования";
+"gov.add.delegate.voting.error.message" = "Пожалуйста, удалите голоса в выбранных треках для начала делегирования";
 "gov.add.delegate.self.error.title" = "Нельзя делегировать себе";
 "gov.add.delegate.self.error.message" = "Вы не можете делегировать голоса себе, пожалуйста, выберите другой адрес";
 "gov.undelegating.period" = "Период выхода из делегации";
@@ -1181,5 +1182,5 @@
 "gov.revoke.delegation.title" = "Отмена делегации";
 "gov.revoke.delegation.confirm.hint" = "После истечения периода выхода из делегации не забудьте разблокировать токены";
 "gov.revoke.delegate.missing.error.title" = "Делегация уже отменена";
-"gov.revoke.delegate.missing.error.message" = "Вы уже отменили делагацию в одном из треков";
+"gov.revoke.delegate.missing.error.message" = "Вы уже отменили делегацию в одном из треков";
 "governance.abstain" = "Воздержался";
