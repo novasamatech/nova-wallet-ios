@@ -1184,3 +1184,4 @@
 "gov.revoke.delegate.missing.error.title" = "Делегация уже отменена";
 "gov.revoke.delegate.missing.error.message" = "Вы уже отменили делегацию в одном из треков";
 "governance.abstain" = "Воздержался";
+"delegations.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелёк для того, чтобы добавить делегацию";
