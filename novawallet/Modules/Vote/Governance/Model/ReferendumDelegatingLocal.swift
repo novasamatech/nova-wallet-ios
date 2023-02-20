@@ -8,15 +8,15 @@ struct ReferendumDelegatingLocal {
 
     let conviction: ConvictionVoting.Conviction
 
-    let delegations: ConvictionVoting.Delegations
-
-    let prior: ConvictionVoting.PriorLock
-
     init(remote: ConvictionVoting.Delegating) {
         balance = remote.balance
         target = remote.target
         conviction = remote.conviction
-        delegations = remote.delegations
-        prior = remote.prior
+    }
+
+    init(balance: BigUInt, target: AccountId, conviction: ConvictionVoting.Conviction) {
+        self.balance = balance
+        self.target = target
+        self.conviction = conviction
     }
 }
