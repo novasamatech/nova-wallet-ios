@@ -8,6 +8,7 @@ struct WalletNoAccountHandlingParams {
     let accountManagementFilter: AccountManagementFilterProtocol
     let successHandler: () -> Void
     let newAccountHandler: () -> Void
+    let addAccountAskMessage: String
 }
 
 protocol WalletNoAccountHandling {
@@ -33,15 +34,10 @@ extension WalletNoAccountHandling {
         if wallet.fetch(for: chain.accountRequest()) != nil {
             params.successHandler()
         } else if accountManagementFilter.canAddAccount(to: wallet, chain: chain) {
-            let message = R.string.localizable.commonChainCrowdloanAccountMissingMessage(
-                chain.name,
-                preferredLanguages: locale.rLanguages
-            )
-
             wireframe.presentAddAccount(
                 from: view,
                 chainName: chain.name,
-                message: message,
+                message: params.addAccountAskMessage,
                 locale: locale,
                 addClosure: params.newAccountHandler
             )

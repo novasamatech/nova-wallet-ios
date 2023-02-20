@@ -82,6 +82,7 @@ final class ReferendumsPresenter {
         blockTime = nil
         maxStatusTimeInterval = nil
         timeModels = nil
+        supportsDelegations = false
 
         view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
     }
