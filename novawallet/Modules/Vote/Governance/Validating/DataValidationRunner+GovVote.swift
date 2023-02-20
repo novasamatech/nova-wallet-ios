@@ -85,4 +85,35 @@ extension DataValidationRunner {
 
         runner.runValidation(notifyingOnSuccess: successClosure)
     }
+
+    static func validateRevokeDelegation(
+        factory: GovernanceValidatorFactoryProtocol,
+        params: GovernanceUndelegateValidatingParams,
+        selectedLocale: Locale,
+        feeErrorClosure: @escaping () -> Void,
+        successClosure: @escaping DataValidationRunnerCompletion
+    ) {
+        let runner = DataValidationRunner(validators: [
+            factory.hasInPlank(
+                fee: params.fee,
+                locale: selectedLocale,
+                precision: params.assetInfo.assetPrecision,
+                onError: feeErrorClosure
+            ),
+            factory.canPayFeeInPlank(
+                balance: params.assetBalance?.transferable,
+                fee: params.fee,
+                asset: params.assetInfo,
+                locale: selectedLocale
+            ),
+            factory.delegating(
+                params.votes,
+                tracks: params.selectedTracks,
+                delegateId: params.delegateId,
+                locale: selectedLocale
+            )
+        ])
+
+        runner.runValidation(notifyingOnSuccess: successClosure)
+    }
 }

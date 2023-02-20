@@ -188,9 +188,16 @@ enum ConvictionVoting {
         @StringCodable var nay: BigUInt
     }
 
+    struct AccountVoteSplitAbstain: Codable, Equatable {
+        @StringCodable var aye: BigUInt
+        @StringCodable var nay: BigUInt
+        @StringCodable var abstain: BigUInt
+    }
+
     enum AccountVote: Codable {
         static let standardField = "Standard"
         static let splitField = "Split"
+        static let splitAbstainField = "SplitAbstain"
 
         case unknown
 
@@ -203,6 +210,13 @@ enum ConvictionVoting {
          */
         case split(_ vote: AccountVoteSplit)
 
+        /**
+         *  A split vote with balances given for both ways as well as abstentions, and with no
+         *  conviction, useful for parachains when voting, other off-chain aggregate accounts and
+         *  individuals who wish to abstain.
+         */
+        case splitAbstain(_ vote: AccountVoteSplitAbstain)
+
         public init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
             let type = try container.decode(String.self)
@@ -214,6 +228,9 @@ enum ConvictionVoting {
             case Self.splitField:
                 let vote = try container.decode(AccountVoteSplit.self)
                 self = .split(vote)
+            case Self.splitAbstainField:
+                let vote = try container.decode(AccountVoteSplitAbstain.self)
+                self = .splitAbstain(vote)
             default:
                 self = .unknown
             }
@@ -228,6 +245,9 @@ enum ConvictionVoting {
                 try container.encode(model)
             case let .split(model):
                 try container.encode(Self.splitField)
+                try container.encode(model)
+            case let .splitAbstain(model):
+                try container.encode(Self.splitAbstainField)
                 try container.encode(model)
             case .unknown:
                 throw EncodingError.invalidValue(

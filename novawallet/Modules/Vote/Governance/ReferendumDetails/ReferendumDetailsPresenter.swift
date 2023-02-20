@@ -159,7 +159,7 @@ final class ReferendumDetailsPresenter {
     }
 
     private func provideYourVote() {
-        let viewModel: YourVoteRow.Model?
+        let viewModel: [YourVoteRow.Model]
 
         if let accountVotes = accountVotes {
             viewModel = referendumStringsFactory.createDirectVotesViewModel(
@@ -184,7 +184,7 @@ final class ReferendumDetailsPresenter {
                 )
             }
         } else {
-            viewModel = nil
+            viewModel = []
         }
 
         view?.didReceive(yourVoteModel: viewModel)
