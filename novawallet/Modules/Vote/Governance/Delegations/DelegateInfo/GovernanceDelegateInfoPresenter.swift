@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 
-final class GovernanceDelegateInfoPresenter {
+final class GovernanceDelegateInfoPresenter: WalletNoAccountHandling {
     weak var view: GovernanceDelegateInfoViewProtocol?
     let wireframe: GovernanceDelegateInfoWireframeProtocol
     let interactor: GovernanceDelegateInfoInteractorInputProtocol
@@ -13,6 +13,8 @@ final class GovernanceDelegateInfoPresenter {
     let votesViewModelFactory: ReferendumDisplayStringFactoryProtocol
     let initStats: GovernanceDelegateStats?
     let chain: ChainModel
+    let accountManagementFilter: AccountManagementFilterProtocol
+    let wallet: MetaAccountModel
 
     private var details: GovernanceDelegateDetails?
     private var metadata: GovernanceDelegateMetadataRemote?
@@ -29,6 +31,8 @@ final class GovernanceDelegateInfoPresenter {
         interactor: GovernanceDelegateInfoInteractorInputProtocol,
         wireframe: GovernanceDelegateInfoWireframeProtocol,
         chain: ChainModel,
+        accountManagementFilter: AccountManagementFilterProtocol,
+        wallet: MetaAccountModel,
         initDelegate: GovernanceDelegateLocal?,
         infoViewModelFactory: GovernanceDelegateInfoViewModelFactoryProtocol,
         identityViewModelFactory: IdentityViewModelFactoryProtocol,
@@ -40,6 +44,8 @@ final class GovernanceDelegateInfoPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chain = chain
+        self.wallet = wallet
+        self.accountManagementFilter = accountManagementFilter
         self.infoViewModelFactory = infoViewModelFactory
         self.identityViewModelFactory = identityViewModelFactory
         self.tracksViewModelFactory = tracksViewModelFactory
@@ -273,11 +279,34 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
     }
 
     func addDelegation() {
-        guard let displayInfo = getDelegateDisplayInfo() else {
+        guard let view = view else {
             return
         }
 
-        wireframe.showAddDelegation(from: view, delegate: displayInfo)
+        validateAccount(
+            from: .init(
+                wallet: wallet,
+                chain: chain,
+                accountManagementFilter: accountManagementFilter,
+                successHandler: { [weak self] in
+                    guard let displayInfo = self?.getDelegateDisplayInfo() else {
+                        return
+                    }
+
+                    self?.wireframe.showAddDelegation(from: view, delegate: displayInfo)
+                },
+                newAccountHandler: { [weak self] in
+                    guard let wallet = self?.wallet else {
+                        return
+                    }
+
+                    self?.wireframe.showWalletDetails(from: view, wallet: wallet)
+                }
+            ),
+            view: view,
+            wireframe: wireframe,
+            locale: selectedLocale
+        )
     }
 
     func editDelegation() {
