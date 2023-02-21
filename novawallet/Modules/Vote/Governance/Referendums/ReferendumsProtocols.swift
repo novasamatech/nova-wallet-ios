@@ -38,6 +38,7 @@ protocol ReferendumsInteractorOutputProtocol: AnyObject {
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule)
+    func didReceiveSupportDelegations(_ supportsDelegations: Bool)
     func didReceiveError(_ error: ReferendumsInteractorError)
 }
 

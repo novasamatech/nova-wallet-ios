@@ -107,6 +107,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     func setup(with accountId: AccountId?, option: GovernanceSelectedOption) {
         presenter?.didReceiveSelectedOption(option)
+        provideDelegationsSupport(for: option)
 
         if let accountId = accountId {
             subscribeToAssetBalance(for: accountId, chain: option.chain)
@@ -190,6 +191,10 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
 
         setup(with: accountResponse?.accountId, option: newOption)
+    }
+
+    func provideDelegationsSupport(for newOption: GovernanceSelectedOption) {
+        presenter?.didReceiveSupportDelegations(governanceState.supportsDelegations(for: newOption))
     }
 
     func provideBlockTime() {
