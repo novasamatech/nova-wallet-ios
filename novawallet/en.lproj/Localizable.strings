@@ -1184,3 +1184,4 @@
 "gov.revoke.delegate.missing.error.title" = "Already revoked";
 "gov.revoke.delegate.missing.error.message" = "You have already revoked delegation from one of the tracks";
 "governance.abstain" = "Abstain";
+"delegations.account.missing.message" = "You should add %@ account to the wallet in order to delegate";

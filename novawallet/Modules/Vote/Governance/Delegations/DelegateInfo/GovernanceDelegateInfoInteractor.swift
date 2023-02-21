@@ -5,7 +5,7 @@ import RobinHood
 final class GovernanceDelegateInfoInteractor {
     weak var presenter: GovernanceDelegateInfoInteractorOutputProtocol?
 
-    let selectedAccountId: AccountId
+    let selectedAccountId: AccountId?
     let delegateId: AccountId
     let chain: ChainModel
     let lastVotedDays: Int
@@ -28,7 +28,7 @@ final class GovernanceDelegateInfoInteractor {
     private var currentBlockTime: BlockTime?
 
     init(
-        selectedAccountId: AccountId,
+        selectedAccountId: AccountId?,
         delegate: AccountId,
         chain: ChainModel,
         lastVotedDays: Int,
@@ -87,10 +87,19 @@ final class GovernanceDelegateInfoInteractor {
     }
 
     private func unsubscribeAccountVotes() {
+        guard let selectedAccountId = selectedAccountId else {
+            return
+        }
+
         subscriptionFactory.unsubscribeFromAccountVotes(self, accountId: selectedAccountId)
     }
 
     private func subscribeAccountVotes() {
+        guard let selectedAccountId = selectedAccountId else {
+            presenter?.didReceiveVotingResult(.init(value: nil, blockHash: nil))
+            return
+        }
+
         unsubscribeAccountVotes()
 
         subscriptionFactory.subscribeToAccountVotes(

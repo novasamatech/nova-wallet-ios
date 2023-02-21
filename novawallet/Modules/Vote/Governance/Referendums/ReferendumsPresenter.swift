@@ -38,9 +38,7 @@ final class ReferendumsPresenter {
         selectedOption?.type
     }
 
-    private var supportsDelegations: Bool {
-        governanceType == .governanceV2
-    }
+    private var supportsDelegations: Bool = false
 
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
@@ -84,6 +82,7 @@ final class ReferendumsPresenter {
         blockTime = nil
         maxStatusTimeInterval = nil
         timeModels = nil
+        supportsDelegations = false
 
         view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
     }
@@ -376,6 +375,12 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule) {
         self.unlockSchedule = unlockSchedule
+        updateReferendumsView()
+    }
+
+    func didReceiveSupportDelegations(_ supportsDelegations: Bool) {
+        self.supportsDelegations = supportsDelegations
+
         updateReferendumsView()
     }
 
