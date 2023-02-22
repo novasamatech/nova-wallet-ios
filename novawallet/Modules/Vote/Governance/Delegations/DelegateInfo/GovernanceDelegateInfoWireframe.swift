@@ -21,16 +21,13 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
         name: String,
         longDescription: String
     ) {
-        guard let view = view,
-              let navigationController = view.controller.navigationController else {
-            return
-        }
+        let detailsView = MarkdownDescriptionViewFactory.createDelegateDetailsView(
+            for: name,
+            description: longDescription
+        )
 
-        let state = DelegateInfoDetailsState(name: name, longDescription: longDescription)
-        let delegateInfoDetailsViewController = DelegateInfoDetailsViewFactory.createView(state: state)
-
-        navigationController.pushViewController(
-            delegateInfoDetailsViewController.controller,
+        view?.controller.navigationController?.pushViewController(
+            detailsView.controller,
             animated: true
         )
     }
