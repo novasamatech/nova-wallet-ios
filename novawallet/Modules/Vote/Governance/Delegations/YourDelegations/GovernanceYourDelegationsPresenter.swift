@@ -37,6 +37,7 @@ final class GovernanceYourDelegationsPresenter {
             let delegations = delegations,
             let delegates = delegates,
             let tracks = tracks else {
+            view?.didReceive(viewModels: [])
             return
         }
 
@@ -63,6 +64,7 @@ final class GovernanceYourDelegationsPresenter {
 
 extension GovernanceYourDelegationsPresenter: GovernanceYourDelegationsPresenterProtocol {
     func setup() {
+        updateView()
         interactor.setup()
     }
 
