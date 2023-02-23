@@ -62,7 +62,7 @@ final class AddDelegationViewLayout: UIView {
 
         insertSubview(skeletonContanerView, belowSubview: tableView)
         skeletonContanerView.snp.makeConstraints {
-            $0.top.equalTo(tableView).offset(tableView.contentInset.top)
+            $0.top.equalTo(tableView).offset(12)
             $0.left.equalTo(tableView).offset(16)
             $0.right.equalTo(tableView).offset(-16)
             $0.bottom.equalTo(tableView)

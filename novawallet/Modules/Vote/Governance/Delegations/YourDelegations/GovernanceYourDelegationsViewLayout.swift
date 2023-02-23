@@ -55,7 +55,7 @@ final class GovernanceYourDelegationsViewLayout: UIView {
 
         insertSubview(skeletonContanerView, belowSubview: tableView)
         skeletonContanerView.snp.makeConstraints { make in
-            make.top.equalTo(tableView).offset(tableView.contentInset.top)
+            make.top.equalTo(tableView).offset(12)
             make.leading.trailing.equalTo(tableView).inset(16)
             make.bottom.equalTo(tableView)
         }
