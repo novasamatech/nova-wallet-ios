@@ -116,7 +116,11 @@ extension GovernanceYourDelegationsViewController: GovernanceYourDelegationsView
 
         dataSource.apply(snapshot, animatingDifferences: false)
 
-        rootView.setLoading(viewModels.isEmpty)
+        if viewModels.isEmpty {
+            rootView.startLoadingIfNeeded()
+        } else {
+            rootView.stopLoadingIfNeeded()
+        }
     }
 }
 

@@ -60,16 +60,6 @@ final class GovernanceYourDelegationsViewLayout: UIView {
             make.bottom.equalTo(tableView)
         }
     }
-
-    func setLoading(_ isLoading: Bool) {
-        addDelegationButton.isHidden = isLoading
-
-        if isLoading {
-            startLoadingIfNeeded()
-        } else {
-            stopLoadingIfNeeded()
-        }
-    }
 }
 
 extension GovernanceYourDelegationsViewLayout: SkeletonableView, AdaptiveDesignable {
