@@ -8,7 +8,6 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     let selectedAccountId: AccountId
     let chain: ChainModel
     let lastVotedDays: Int
-    let fetchBlockTreshold: BlockNumber
     let subscriptionFactory: GovernanceSubscriptionFactoryProtocol
     let referendumsOperationFactory: ReferendumsOperationFactoryProtocol
     let offchainOperationFactory: GovernanceDelegateListFactoryProtocol
@@ -21,8 +20,6 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
 
     private var delegateIds: Set<AccountId> = Set()
     private var currentBlockNumber: BlockNumber?
-    private var currentBlockTime: BlockTime?
-    private var lastUsedBlockNumber: BlockNumber?
 
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private var blockTimeCancellable: CancellableCall?
@@ -33,7 +30,6 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         selectedAccountId: AccountId,
         chain: ChainModel,
         lastVotedDays: Int,
-        fetchBlockTreshold: BlockNumber,
         subscriptionFactory: GovernanceSubscriptionFactoryProtocol,
         referendumsOperationFactory: ReferendumsOperationFactoryProtocol,
         offchainOperationFactory: GovernanceDelegateListFactoryProtocol,
@@ -47,7 +43,6 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         self.selectedAccountId = selectedAccountId
         self.chain = chain
         self.lastVotedDays = lastVotedDays
-        self.fetchBlockTreshold = fetchBlockTreshold
         self.subscriptionFactory = subscriptionFactory
         self.referendumsOperationFactory = referendumsOperationFactory
         self.offchainOperationFactory = offchainOperationFactory
@@ -63,7 +58,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         unsubscribeAccountVotes()
     }
 
-    private func updateBlockTime() {
+    private func fetchBlockTimeAndUpdateDelegates() {
         clear(cancellable: &blockTimeCancellable)
 
         let blockTimeUpdateWrapper = blockTimeFactory.createBlockTimeOperation(
@@ -81,9 +76,8 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
 
                 do {
                     let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.currentBlockTime = blockTime
 
-                    self?.fetchDelegatesIfNeeded()
+                    self?.fetchDelegatesIfNeeded(for: blockTime)
                 } catch {
                     self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
                 }
@@ -95,23 +89,13 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func fetchDelegatesIfNeeded(_ forced: Bool = false) {
+    private func fetchDelegatesIfNeeded(for blockTime: BlockTime) {
         guard
             let activityBlockNumber = currentBlockNumber?.blockBackInDays(
-                lastVotedDays, blockTime: currentBlockTime
+                lastVotedDays, blockTime: blockTime
             ) else {
             return
         }
-
-        if
-            !forced,
-            let lastUsedBlockNumber = lastUsedBlockNumber,
-            activityBlockNumber > lastUsedBlockNumber,
-            activityBlockNumber - lastUsedBlockNumber < fetchBlockTreshold {
-            return
-        }
-
-        lastUsedBlockNumber = activityBlockNumber
 
         clear(cancellable: &delegatesCancellable)
 
@@ -186,7 +170,9 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
 
         presenter?.didReceiveDelegations(delegations)
 
-        fetchDelegatesIfNeeded(true)
+        if currentBlockNumber != nil {
+            fetchBlockTimeAndUpdateDelegates()
+        }
     }
 
     private func unsubscribeAccountVotes() {
@@ -221,7 +207,9 @@ extension GovernanceYourDelegationsInteractor: GovernanceYourDelegationsInteract
     }
 
     func refreshDelegates() {
-        fetchDelegatesIfNeeded()
+        if currentBlockNumber != nil {
+            fetchBlockTimeAndUpdateDelegates()
+        }
     }
 
     func remakeSubscriptions() {
@@ -239,9 +227,14 @@ extension GovernanceYourDelegationsInteractor: GeneralLocalStorageSubscriber, Ge
         switch result {
         case let .success(blockNumber):
             if let blockNumber = blockNumber {
+                let optLastBlockNumber = currentBlockNumber
                 currentBlockNumber = blockNumber
 
-                updateBlockTime()
+                if let lastBlockNumber = optLastBlockNumber, blockNumber.isNext(to: lastBlockNumber) {
+                    return
+                }
+
+                fetchBlockTimeAndUpdateDelegates()
             }
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))

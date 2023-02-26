@@ -125,7 +125,6 @@ struct DelegateVotedReferendaViewFactory {
             blockTimeService: blockTimeService,
             blockTimeOperationFactory: blockTimeOperationFactory,
             dataFetchOption: dataFetchOption,
-            fetchBlockTreshold: GovernanceDelegationConstants.delegateFetchBlockThreshold,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
