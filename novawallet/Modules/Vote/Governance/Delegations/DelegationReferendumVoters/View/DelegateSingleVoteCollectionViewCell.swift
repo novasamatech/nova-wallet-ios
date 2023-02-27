@@ -68,6 +68,8 @@ final class DelegateSingleVoteCollectionViewCell: UICollectionViewCell {
             $0.bottom.equalToSuperview()
             $0.trailing.equalTo(middleLineView.snp.leading)
         }
+
+        votesView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
     private func applyStyle() {
@@ -76,6 +78,7 @@ final class DelegateSingleVoteCollectionViewCell: UICollectionViewCell {
         votesView.stackView.alignment = .fill
         votesView.valueTop.apply(style: .footnotePrimary)
         votesView.valueBottom.apply(style: .caption1Secondary)
+        delegateInfoView.isUserInteractionEnabled = false
     }
 }
 

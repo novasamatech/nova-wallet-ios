@@ -34,6 +34,8 @@ final class DelegateSingleVoteHeader: UICollectionReusableView {
         votesView.stackView.alignment = .fill
         votesView.valueTop.apply(style: .footnotePrimary)
         votesView.valueBottom.apply(style: .caption1Secondary)
+        votesView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        votesView.valueBottom.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 
