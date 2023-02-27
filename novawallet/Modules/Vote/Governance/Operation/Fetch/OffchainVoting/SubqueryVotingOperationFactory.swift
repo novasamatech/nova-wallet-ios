@@ -62,10 +62,17 @@ final class SubqueryVotingOperationFactory: SubqueryBaseOperationFactory {
         """
     }
 
-    private func prepareReferendumVotersQuery(referendumId: ReferendumIdLocal) -> String {
+    private func prepareReferendumVotersQuery(referendumId: ReferendumIdLocal, isAye: Bool) -> String {
         """
         {
-            castingVotings (filter: {referendumId: {equalTo: "\(referendumId)"}}) {
+            castingVotings (filter: {
+                referendumId: {equalTo: "\(referendumId)"},
+                or: [
+                      {splitVote: { isNull: false }},
+                      {splitAbstainVote: {isNull: false}},
+                      {standardVote: { contains: { aye: \(isAye)}}}
+                    ]
+            }) {
                 nodes {
                   referendumId
                   standardVote
@@ -140,14 +147,18 @@ extension SubqueryVotingOperationFactory: GovernanceOffchainVotingFactoryProtoco
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    func createReferendumVotesFetchOperation(referendumId: ReferendumIdLocal) -> CompoundOperationWrapper<[ReferendumVoterLocal]> {
-        let query = prepareReferendumVotersQuery(referendumId: referendumId)
+    func createReferendumVotesFetchOperation(
+        referendumId: ReferendumIdLocal,
+        isAye: Bool
+    ) ->
+        CompoundOperationWrapper<[ReferendumVoterLocal]> {
+        let query = prepareReferendumVotersQuery(referendumId: referendumId, isAye: isAye)
 
         let operation = createOperation(
             for: query
         ) { (response: SubqueryVotingResponse.ReferendumVotesResponse) -> [ReferendumVoterLocal] in
-            response.castingVotings.nodes.compactMap {
-                ReferendumVoterLocal(from: $0)
+            response.castingVotings.nodes.compactMap { node in
+                ReferendumVoterLocal(from: node)
             }
         }
 

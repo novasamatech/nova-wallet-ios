@@ -186,15 +186,13 @@ extension SubqueryVotingResponse {
 
 extension ReferendumVoterLocal {
     init?(from castingVote: SubqueryVotingResponse.CastingAndDelegationsVoting) {
-        guard let referendumId = ReferendumIdLocal(castingVote.referendumId) else {
-            return nil
-        }
-
         var referendumAccountVoteLocal: ReferendumAccountVoteLocal?
         if let standardVote = castingVote.standardVote {
             referendumAccountVoteLocal = ReferendumAccountVoteLocal(subqueryStandardVote: standardVote)
         } else if let splitVote = castingVote.splitVote {
             referendumAccountVoteLocal = ReferendumAccountVoteLocal(subquerySplitVote: splitVote)
+        } else if let splitAbstainVote = castingVote.splitAbstainVote {
+            referendumAccountVoteLocal = ReferendumAccountVoteLocal(subquerySplitAbstainVote: splitAbstainVote)
         }
         guard let referendumAccountVoteLocal = referendumAccountVoteLocal else {
             return nil
@@ -204,8 +202,8 @@ extension ReferendumVoterLocal {
         }
         vote = referendumAccountVoteLocal
         self.accountId = accountId
-        let delegators: [Delegator?] = castingVote.delegatorVotes.nodes.map {
-            (delegatorVote) -> Delegator? in
+        delegators = castingVote.delegatorVotes.nodes.compactMap {
+            (delegatorVote) -> GovernanceOffchainDelegation? in
             guard let delegatorBalance = BigUInt(delegatorVote.vote.amount) else {
                 return nil
             }
@@ -214,11 +212,10 @@ extension ReferendumVoterLocal {
 
             let delegatorPower = GovernanceOffchainVoting.DelegatorPower(balance: delegatorBalance, conviction: delegatorConviction)
 
-            return Delegator(
-                address: delegatorVote.delegator,
+            return GovernanceOffchainDelegation(
+                delegator: delegatorVote.delegator,
                 power: delegatorPower
             )
         }
-        self.delegators = delegators.compactMap { $0 }
     }
 }
