@@ -39,7 +39,7 @@ final class DelegationReferendumVotersPresenter {
             locale: selectedLocale
         )
 
-        view?.didReceive(viewModels: viewModels)
+        view?.didReceive(viewModel: .loaded(value: viewModels))
     }
 
     private var title: LocalizableResource<String> {
@@ -61,6 +61,7 @@ extension DelegationReferendumVotersPresenter: DelegationReferendumVotersPresent
     func setup() {
         interactor.setup()
         view?.didReceive(title: title.value(for: selectedLocale))
+        view?.didReceive(viewModel: .loading)
     }
 
     func select(address: AccountAddress) {
@@ -79,7 +80,12 @@ extension DelegationReferendumVotersPresenter: DelegationReferendumVotersPresent
 
 extension DelegationReferendumVotersPresenter: DelegationReferendumVotersInteractorOutputProtocol {
     func didReceive(error: DelegationReferendumVotersError) {
-        print(error.localizedDescription)
+        switch error {
+        case .fetchFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.refresh()
+            }
+        }
     }
 
     func didReceive(voters: ReferendumVoterLocals) {
