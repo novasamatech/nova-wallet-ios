@@ -62,7 +62,11 @@ struct DelegationReferendumVotersViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = DelegationReferendumVotersViewController(presenter: presenter)
+        let view = DelegationReferendumVotersViewController(
+            presenter: presenter,
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

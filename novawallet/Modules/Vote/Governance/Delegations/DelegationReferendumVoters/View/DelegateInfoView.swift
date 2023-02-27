@@ -12,7 +12,12 @@ final class DelegateInfoView: UIView {
 
     let baseView = ContentView()
     private var viewModel: Model?
-    weak var delegate: DelegateInfoDelegate?
+    weak var delegate: DelegateInfoDelegate? {
+        didSet {
+            baseView.isUserInteractionEnabled = delegate != nil
+        }
+    }
+
     var id: Int?
 
     var iconView: UIImageView {
@@ -50,7 +55,7 @@ final class DelegateInfoView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc private func didTapOnBaseView(_: Any?) {
+    @objc private func didTapOnBaseView() {
         delegate?.didTapOnDelegateInfo(sender: self)
     }
 

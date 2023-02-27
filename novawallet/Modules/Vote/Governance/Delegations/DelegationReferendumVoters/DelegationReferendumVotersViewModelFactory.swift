@@ -32,11 +32,13 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             }
         }
         .sorted {
+            let lhsDelegatorsVotes = $0.delegatorsVotes
+            let rhsDelegatorsVotes = $1.delegatorsVotes
             switch type {
             case .ayes:
-                return $0.vote.ayes > $1.vote.ayes
+                return $0.vote.ayes + lhsDelegatorsVotes > $1.vote.ayes + rhsDelegatorsVotes
             case .nays:
-                return $0.vote.nays > $1.vote.nays
+                return $0.vote.nays + lhsDelegatorsVotes > $1.vote.nays + rhsDelegatorsVotes
             }
         }.compactMap {
             self.createSection(
@@ -67,6 +69,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
                 return lhsVotes > rhsVotes
             })
             return createGroupSectionViewModel(
+                referendumVotersType: type,
                 chain: chain,
                 locale: locale,
                 delegator: voter,
@@ -78,6 +81,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
     }
 
     private func createGroupSectionViewModel(
+        referendumVotersType: ReferendumVotersType,
         chain: ChainModel,
         locale: Locale,
         delegator: ReferendumVoterLocal,
@@ -101,10 +105,21 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             displayAddressViewModel = displayAddressFactory.createViewModel(from: address)
         }
 
-        let votes = delegations.reduce(into: 0) {
+        let votes: BigUInt
+
+        switch referendumVotersType {
+        case .ayes:
+            votes = delegator.vote.ayes
+        case .nays:
+            votes = delegator.vote.nays
+        }
+
+        let delegatorsVotes = delegations.reduce(into: 0) {
             $0 += ($1.power.conviction.votes(for: $1.power.balance) ?? 0)
         }
-        let votesString = stringFactory.createVotes(from: votes, chain: chain, locale: locale)
+
+        let totalVotes = votes + delegatorsVotes
+        let votesString = stringFactory.createVotes(from: totalVotes, chain: chain, locale: locale)
 
         let cells = delegations.compactMap {
             self.createDelegationViewModel(

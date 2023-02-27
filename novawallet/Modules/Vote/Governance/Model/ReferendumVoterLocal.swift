@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 struct ReferendumVoterLocal: Equatable {
     let accountId: AccountId
@@ -9,5 +10,11 @@ struct ReferendumVoterLocal: Equatable {
         self.accountId = accountId
         self.vote = vote
         self.delegators = delegators
+    }
+
+    var delegatorsVotes: BigUInt {
+        delegators.reduce(into: 0) {
+            $0 += ($1.power.conviction.votes(for: $1.power.balance) ?? 0)
+        }
     }
 }

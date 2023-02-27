@@ -1,6 +1,7 @@
 protocol DelegationReferendumVotersViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModels: [DelegationReferendumVotersModel])
+    func didReceive(viewModel: LoadableViewModelState<[DelegationReferendumVotersModel]>)
     func didReceive(title: String)
+    func didReceiveEmptyView(title: String)
 }
 
 protocol DelegationReferendumVotersPresenterProtocol: AnyObject {

@@ -22,9 +22,17 @@ final class DelegateGroupVotesHeader: UICollectionReusableView {
         baseView.valueView
     }
 
-    var id: Int?
+    var id: Int? {
+        didSet {
+            delegateInfoView.id = id
+        }
+    }
 
-    weak var delegate: DelegateGroupVotesHeaderDelegate?
+    weak var delegate: DelegateGroupVotesHeaderDelegate? {
+        didSet {
+            delegateInfoView.delegate = delegate
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -64,6 +72,7 @@ final class DelegateGroupVotesHeader: UICollectionReusableView {
         actionTitleControl.titleLabel.apply(style: .footnotePrimary)
         actionTitleControl.horizontalSpacing = 0.0
         actionTitleControl.imageView.isUserInteractionEnabled = false
+        actionTitleControl.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 

@@ -1,19 +1,33 @@
 import UIKit
+import SoraFoundation
+import SoraUI
 
 final class DelegationReferendumVotersViewController: UIViewController, ViewHolder {
     typealias RootViewType = DelegationReferendumVotersViewLayout
 
     let presenter: DelegationReferendumVotersPresenterProtocol
+    let quantityFormatter: LocalizableResource<NumberFormatter>
+
     typealias DataSource = UICollectionViewDiffableDataSource<DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model>
     typealias Snapshot = NSDiffableDataSourceSnapshot<DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model>
-    private var viewModels: [DelegationReferendumVotersModel] = []
+    private var viewModel: LoadableViewModelState<[DelegationReferendumVotersModel]>?
+    private var votersCount: Int?
+
     private var openedSectionsIds: [String] = []
+    private var emptyViewTitle: String?
 
     private lazy var dataSource = createDataSource()
 
-    init(presenter: DelegationReferendumVotersPresenterProtocol) {
+    init(
+        presenter: DelegationReferendumVotersPresenterProtocol,
+        quantityFormatter: LocalizableResource<NumberFormatter>,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.quantityFormatter = quantityFormatter
+
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -32,9 +46,19 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
         presenter.setup()
     }
 
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        switch viewModel {
+        case .loading:
+            rootView.updateLoadingState()
+        case .loaded, .cached, .none:
+            break
+        }
+    }
+
     private func setupCollectionView() {
         rootView.collectionView.dataSource = dataSource
-        rootView.collectionView.delegate = self
 
         rootView.collectionView.registerClass(
             DelegateGroupVotesHeader.self,
@@ -45,8 +69,6 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
         rootView.collectionView.registerCellClass(DelegateSingleVoteCollectionViewCell.self)
-
-        rootView.showHeader = { _ in true }
     }
 
     private func createDataSource() -> DataSource {
@@ -91,6 +113,7 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
 
     private func update(viewModels: [DelegationReferendumVotersModel]) {
         var snapshot = Snapshot()
+        var count: Int = 0
         viewModels.forEach { viewModel in
             switch viewModel {
             case let .grouped(sectionModel):
@@ -99,29 +122,63 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
                 if openedSectionsIds.contains(sectionModel.id) {
                     snapshot.appendItems(sectionModel.cells, toSection: section)
                 }
+                count += sectionModel.cells.count
             case let .single(sectionModel):
                 let section = DelegationReferendumVotersModel.single(sectionModel)
                 snapshot.appendSections([section])
+                count += 1
             }
         }
-        self.viewModels = viewModels
         dataSource.apply(snapshot, animatingDifferences: false)
+        setupCounter(value: count)
+    }
+
+    private func setupCounter(value: Int?) {
+        votersCount = value
+        navigationItem.rightBarButtonItem = nil
+
+        let formatter = quantityFormatter.value(for: selectedLocale)
+
+        guard
+            let value = value,
+            let valueString = formatter.string(from: value as NSNumber) else {
+            return
+        }
+
+        rootView.totalVotersLabel.titleLabel.text = valueString
+        rootView.totalVotersLabel.sizeToFit()
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.totalVotersLabel)
     }
 }
 
 extension DelegationReferendumVotersViewController: DelegationReferendumVotersViewProtocol {
-    func didReceive(viewModels: [DelegationReferendumVotersModel]) {
-        update(viewModels: viewModels)
+    func didReceive(viewModel: LoadableViewModelState<[DelegationReferendumVotersModel]>) {
+        self.viewModel = viewModel
+
+        switch viewModel {
+        case .loading:
+            rootView.startLoadingIfNeeded()
+        case let .loaded(viewModels), let .cached(viewModels):
+            rootView.stopLoadingIfNeeded()
+            update(viewModels: viewModels)
+        }
+
+        reloadEmptyState(animated: false)
     }
 
     func didReceive(title: String) {
         self.title = title
     }
+
+    func didReceiveEmptyView(title: String) {
+        emptyViewTitle = title
+    }
 }
 
 extension DelegationReferendumVotersViewController: DelegateGroupVotesHeaderDelegate {
     func didTapOnActionControl(sender: DelegateGroupVotesHeader) {
-        guard let index = sender.id else {
+        guard let index = sender.id, let viewModels = viewModel?.value else {
             return
         }
 
@@ -141,7 +198,9 @@ extension DelegationReferendumVotersViewController: DelegateGroupVotesHeaderDele
 
 extension DelegationReferendumVotersViewController: DelegateInfoDelegate {
     func didTapOnDelegateInfo(sender: DelegateInfoView) {
-        guard let index = sender.id, let model = viewModels[safe: index] else {
+        guard let index = sender.id,
+              let viewModels = viewModel?.value,
+              let model = viewModels[safe: index] else {
             return
         }
 
@@ -156,5 +215,41 @@ extension DelegationReferendumVotersViewController: UICollectionViewDelegate {
         }
 
         presenter.select(address: model.delegateInfo.addressViewModel.address)
+    }
+}
+
+extension DelegationReferendumVotersViewController: EmptyStateViewOwnerProtocol {
+    var emptyStateDelegate: EmptyStateDelegate { self }
+    var emptyStateDataSource: EmptyStateDataSource { self }
+    var contentViewForEmptyState: UIView { rootView }
+}
+
+extension DelegationReferendumVotersViewController: EmptyStateDataSource {
+    var viewForEmptyState: UIView? {
+        let emptyView = EmptyStateView()
+        emptyView.image = R.image.iconEmptyHistory()
+        emptyView.title = emptyViewTitle ?? ""
+        emptyView.titleColor = R.color.colorTextSecondary()!
+        emptyView.titleFont = .regularFootnote
+        return emptyView
+    }
+}
+
+extension DelegationReferendumVotersViewController: EmptyStateDelegate {
+    var shouldDisplayEmptyState: Bool {
+        switch viewModel {
+        case let .loaded(value), let .cached(value):
+            return value.isEmpty
+        case .loading, .none:
+            return false
+        }
+    }
+}
+
+extension DelegationReferendumVotersViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupCounter(value: votersCount)
+        }
     }
 }
