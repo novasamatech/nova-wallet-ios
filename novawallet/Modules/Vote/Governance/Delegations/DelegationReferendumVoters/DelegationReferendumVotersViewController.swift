@@ -59,6 +59,7 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
 
     private func setupCollectionView() {
         rootView.collectionView.dataSource = dataSource
+        rootView.collectionView.delegate = self
 
         rootView.collectionView.registerClass(
             DelegateGroupVotesHeader.self,
