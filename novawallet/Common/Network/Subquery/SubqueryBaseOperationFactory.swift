@@ -36,7 +36,6 @@ class SubqueryBaseOperationFactory {
                 SubqueryResponse<P>.self,
                 from: data
             )
-
             switch response {
             case let .errors(error):
                 throw error

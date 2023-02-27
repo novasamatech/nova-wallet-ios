@@ -35,6 +35,7 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     private func extractNodeUrls(from chain: ChainModel) -> [URL] {
-        chain.nodes.sorted(by: { $0.order < $1.order }).map(\.url)
+        chain.nodes.reversed().map(\.url)
+        //      .sorted(by: { $0.order < $1.order }).map(\.url)
     }
 }
