@@ -13,5 +13,8 @@ protocol GovernanceOffchainVotingFactoryProtocol {
         from block: BlockNumber?
     ) -> CompoundOperationWrapper<GovernanceOffchainVotes>
 
-    func createReferendumVotesFetchOperation(referendumId: ReferendumIdLocal) -> CompoundOperationWrapper<[ReferendumVoterLocal]>
+    func createReferendumVotesFetchOperation(
+        referendumId: ReferendumIdLocal,
+        isAye: Bool
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]>
 }

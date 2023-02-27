@@ -1,16 +1,11 @@
 import Foundation
 
-struct ReferendumVoterLocal {
+struct ReferendumVoterLocal: Equatable {
     let accountId: AccountId
     let vote: ReferendumAccountVoteLocal
-    let delegators: [Delegator]
+    let delegators: [GovernanceOffchainDelegation]
 
-    struct Delegator {
-        let address: AccountAddress
-        let power: GovernanceOffchainVoting.DelegatorPower
-    }
-
-    init(accountId: AccountId, vote: ReferendumAccountVoteLocal, delegators: [ReferendumVoterLocal.Delegator] = []) {
+    init(accountId: AccountId, vote: ReferendumAccountVoteLocal, delegators: [GovernanceOffchainDelegation] = []) {
         self.accountId = accountId
         self.vote = vote
         self.delegators = delegators
