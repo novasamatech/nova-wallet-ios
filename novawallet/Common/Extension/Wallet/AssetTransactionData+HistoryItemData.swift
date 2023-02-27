@@ -105,7 +105,7 @@ extension AssetTransactionData {
         let peerId = accountId?.toHex() ?? address
 
         return AssetTransactionData(
-            transactionId: item.identifier,
+            transactionId: item.txHash,
             status: item.status.walletValue,
             assetId: assetId,
             peerId: peerId,
