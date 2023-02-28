@@ -25,7 +25,7 @@ extension StakingRelaychainInteractor {
             validatorProvider = subscribeValidator(for: stashAccountId, chainId: chainId)
             payeeProvider = subscribePayee(for: stashAccountId, chainId: chainId)
 
-            if let rewardApi = chainAsset.chain.externalApi?.staking {
+            if let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
                 totalRewardProvider = subscribeTotalReward(
                     for: stashItem.stash,
                     api: rewardApi,
@@ -140,7 +140,7 @@ extension StakingRelaychainInteractor {
     }
 
     private func subscribeRewardsAnalytics(for stash: AccountAddress) {
-        if let analyticsURL = selectedChainAsset?.chain.externalApi?.staking?.url {
+        if let analyticsURL = selectedChainAsset?.chain.externalApis?.staking()?.first?.url {
             rewardAnalyticsProvider = subscribeWeaklyRewardAnalytics(for: stash, url: analyticsURL)
         } else {
             presenter?.didReceieve(
@@ -218,7 +218,7 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: ChainModel.ExternalApi
+        api _: LocalChainExternalApi
     ) {
         switch result {
         case let .success(totalReward):

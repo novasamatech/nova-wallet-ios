@@ -34,6 +34,25 @@ protocol GovernanceValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         track: TrackIdLocal?,
         locale: Locale?
     ) -> DataValidating
+
+    func notSelfDelegating(
+        selfId: AccountId?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating
+
+    func notVoting(
+        _ accountVotingDistribution: ReferendumAccountVotingDistribution?,
+        tracks: Set<TrackIdLocal>?,
+        locale: Locale?
+    ) -> DataValidating
+
+    func delegating(
+        _ accountVotingDistribution: ReferendumAccountVotingDistribution?,
+        tracks: Set<TrackIdLocal>?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating
 }
 
 final class GovernanceValidatorFactory {
@@ -219,5 +238,76 @@ extension GovernanceValidatorFactory: GovernanceValidatorFactoryProtocol {
 
             return numberOfVotes < Int(accountVotingDistribution.maxVotesPerTrack)
         })
+    }
+
+    func notSelfDelegating(
+        selfId: AccountId?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentSelfDelegating(from: view, locale: locale)
+        }, preservesCondition: {
+            selfId != nil && delegateId != nil && selfId != delegateId
+        })
+    }
+
+    func notVoting(
+        _ accountVotingDistribution: ReferendumAccountVotingDistribution?,
+        tracks: Set<TrackIdLocal>?,
+        locale: Locale?
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentAlreadyVoting(from: view, locale: locale)
+        }, preservesCondition: {
+            guard let voting = accountVotingDistribution, let tracks = tracks else {
+                return false
+            }
+
+            let votedTracks = Set(voting.votedTracks.keys)
+
+            return !tracks.isEmpty && tracks.isDisjoint(with: votedTracks)
+        })
+    }
+
+    func delegating(
+        _ accountVotingDistribution: ReferendumAccountVotingDistribution?,
+        tracks: Set<TrackIdLocal>?,
+        delegateId: AccountId?,
+        locale: Locale?
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentAlreadyRevokedDelegation(from: view, locale: locale)
+        }, preservesCondition: {
+            guard let voting = accountVotingDistribution, let tracks = tracks else {
+                return false
+            }
+
+            let delegatingTracks = voting.delegatings.filter { $0.value.target == delegateId }.map(\.key)
+
+            return !tracks.isEmpty && tracks.isSubset(of: delegatingTracks)
+        })
+    }
+}
+
+extension GovernanceValidatorFactory {
+    static func createFromPresentable(_ presentable: GovernanceErrorPresentable) -> GovernanceValidatorFactory {
+        GovernanceValidatorFactory(
+            presentable: presentable,
+            assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
     }
 }

@@ -35,18 +35,16 @@ struct ReferendumAccountVotingDistribution {
     }
 
     func lockedBalance(for trackId: TrackIdLocal) -> BigUInt {
-        if let delegating = delegatings[trackId] {
-            return max(delegating.balance, delegating.prior.amount)
-        } else {
-            let maxVotedBalance = (votedTracks[trackId] ?? []).map { referendumId in
-                votes[referendumId]?.totalBalance ?? 0
-            }
-            .max() ?? 0
-
-            let priorLockedBalance = priorLocks[trackId]?.amount ?? 0
-
-            return max(maxVotedBalance, priorLockedBalance)
+        let maxVotedBalance = (votedTracks[trackId] ?? []).map { referendumId in
+            votes[referendumId]?.totalBalance ?? 0
         }
+        .max() ?? 0
+
+        let delegatedBalance = delegatings[trackId]?.balance ?? 0
+
+        let priorLockedBalance = priorLocks[trackId]?.amount ?? 0
+
+        return max(delegatedBalance, max(maxVotedBalance, priorLockedBalance))
     }
 
     func addingVote(
@@ -122,5 +120,15 @@ struct ReferendumTracksVotingDistribution {
 
     func totalLocked() -> BigUInt {
         trackLocks.reduce(BigUInt(0)) { max($0, $1.amount) }
+    }
+
+    func totalDelegated() -> BigUInt? {
+        guard !votes.delegatings.isEmpty else {
+            return nil
+        }
+
+        return votes.delegatings.reduce(BigUInt(0)) { total, keyValue in
+            max(total, keyValue.value.balance)
+        }
     }
 }

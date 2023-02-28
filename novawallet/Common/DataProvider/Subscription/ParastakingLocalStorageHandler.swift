@@ -28,7 +28,7 @@ protocol ParastakingLocalStorageHandler: AnyObject {
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for address: AccountAddress,
-        api: ChainModel.ExternalApi
+        api: LocalChainExternalApi
     )
 }
 
@@ -53,7 +53,7 @@ extension ParastakingLocalStorageHandler {
     func handleTotalReward(
         result _: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: ChainModel.ExternalApi
+        api _: LocalChainExternalApi
     ) {}
 
     func handleParastakingCandidateMetadata(

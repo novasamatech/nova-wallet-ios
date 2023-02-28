@@ -157,11 +157,76 @@ final class GovernanceSharedState {
         }
     }
 
+    func supportsDelegations(for option: GovernanceSelectedOption) -> Bool {
+        switch option.type {
+        case .governanceV2:
+            if let delegationsApi = option.chain.externalApis?.governanceDelegations() {
+                return !delegationsApi.isEmpty
+            } else {
+                return false
+            }
+        case .governanceV1:
+            return false
+        }
+    }
+
     func createBlockTimeOperationFactory() -> BlockTimeOperationFactoryProtocol? {
         guard let chain = settings.value?.chain else {
             return nil
         }
 
         return BlockTimeOperationFactory(chain: chain)
+    }
+
+    func createOffchainAllVotesFactory(
+        for option: GovernanceSelectedOption
+    ) -> GovernanceOffchainVotingWrapperFactoryProtocol? {
+        switch option.type {
+        case .governanceV1:
+            return nil
+        case .governanceV2:
+            guard let delegationApi = option.chain.externalApis?.governanceDelegations()?.first else {
+                return nil
+            }
+
+            let identityOperationFactory = IdentityOperationFactory(
+                requestFactory: requestFactory,
+                emptyIdentitiesWhenNoStorage: true
+            )
+
+            let fetchOperationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
+
+            return GovernanceOffchainVotingWrapperFactory(
+                operationFactory: fetchOperationFactory,
+                identityOperationFactory: identityOperationFactory
+            )
+        }
+    }
+
+    func createOffchainDelegateListFactory(
+        for option: GovernanceSelectedOption
+    ) -> GovernanceDelegateListFactoryProtocol? {
+        switch option.type {
+        case .governanceV1:
+            return nil
+        case .governanceV2:
+            guard let delegationApi = option.chain.externalApis?.governanceDelegations()?.first else {
+                return nil
+            }
+
+            let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: delegationApi.url)
+            let delegateMetadataFactory = GovernanceDelegateMetadataFactory()
+
+            let identityOperationFactory = IdentityOperationFactory(
+                requestFactory: requestFactory,
+                emptyIdentitiesWhenNoStorage: true
+            )
+
+            return GovernanceDelegateListOperationFactory(
+                statsOperationFactory: statsOperationFactory,
+                metadataOperationFactory: delegateMetadataFactory,
+                identityOperationFactory: identityOperationFactory
+            )
+        }
     }
 }

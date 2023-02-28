@@ -54,8 +54,12 @@ final class GovernanceUnlockSetupPresenter {
         blockTime: BlockTime
     ) -> TimeInterval? {
         let intervals: [TimeInterval] = (unlockSchedule?.items ?? []).compactMap { item in
-            if block < item.unlockAt {
-                return block.secondsTo(block: item.unlockAt, blockDuration: blockTime)
+            guard let unlockAtBlock = item.unlockWhen.unlockAtBlock else {
+                return nil
+            }
+
+            if block < unlockAtBlock {
+                return block.secondsTo(block: unlockAtBlock, blockDuration: blockTime)
             } else {
                 return nil
             }
@@ -65,36 +69,41 @@ final class GovernanceUnlockSetupPresenter {
     }
 
     private func createUnlockClaimState(
-        for unlockAt: BlockNumber,
+        for unlockWhen: GovernanceUnlockSchedule.ClaimTime,
         block: BlockNumber,
         blockTime: BlockTime,
         elapsedTimeInterval: TimeInterval?
     ) -> GovernanceUnlocksViewModel.ClaimState {
-        if block < unlockAt {
-            let remainedTimeInSeconds = block.secondsTo(block: unlockAt, blockDuration: blockTime)
+        switch unlockWhen {
+        case let .unlockAt(unlockAtBlock):
+            if block < unlockAtBlock {
+                let remainedTimeInSeconds = block.secondsTo(block: unlockAtBlock, blockDuration: blockTime)
 
-            let tickedTime: TimeInterval
+                let tickedTime: TimeInterval
 
-            if let elapsedTimeInterval = elapsedTimeInterval {
-                tickedTime = remainedTimeInSeconds > elapsedTimeInterval ?
-                    remainedTimeInSeconds - elapsedTimeInterval : 0
+                if let elapsedTimeInterval = elapsedTimeInterval {
+                    tickedTime = remainedTimeInSeconds > elapsedTimeInterval ?
+                        remainedTimeInSeconds - elapsedTimeInterval : 0
+                } else {
+                    tickedTime = remainedTimeInSeconds
+                }
+
+                if let leftTime = tickedTime.localizedDaysOrTime(for: selectedLocale) {
+                    let time = R.string.localizable.commonTimeLeftFormat(
+                        leftTime,
+                        preferredLanguages: selectedLocale.rLanguages
+                    )
+
+                    return .afterPeriod(time: time)
+                } else {
+                    return .afterPeriod(time: "")
+                }
+
             } else {
-                tickedTime = remainedTimeInSeconds
+                return .now
             }
-
-            if let leftTime = tickedTime.localizedDaysOrTime(for: selectedLocale) {
-                let time = R.string.localizable.commonTimeLeftFormat(
-                    leftTime,
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-
-                return .afterPeriod(time: time)
-            } else {
-                return .afterPeriod(time: "")
-            }
-
-        } else {
-            return .now
+        case .afterUndelegate:
+            return .delegation
         }
     }
 
@@ -111,7 +120,7 @@ final class GovernanceUnlockSetupPresenter {
 
     private func createUnlockViewModel(
         for amount: BigUInt,
-        unlockAt: BlockNumber,
+        unlockWhen: GovernanceUnlockSchedule.ClaimTime,
         block: BlockNumber,
         blockTime: BlockTime
     ) -> GovernanceUnlocksViewModel.Item {
@@ -123,7 +132,7 @@ final class GovernanceUnlockSetupPresenter {
         let amountString = balanceViewModelFactory.amountFromValue(amountDecimal).value(for: selectedLocale)
 
         let claimState = createUnlockClaimState(
-            for: unlockAt,
+            for: unlockWhen,
             block: block,
             blockTime: blockTime,
             elapsedTimeInterval: nil
@@ -152,7 +161,7 @@ final class GovernanceUnlockSetupPresenter {
             let remainingUnlockViewModels = remainingUnlocks.map {
                 createUnlockViewModel(
                     for: $0.amount,
-                    unlockAt: $0.unlockAt,
+                    unlockWhen: $0.unlockWhen,
                     block: blockNumber,
                     blockTime: blockTime
                 )
@@ -223,7 +232,7 @@ final class GovernanceUnlockSetupPresenter {
 
             let remainingUnlocks = unlockSchedule.remainingLocks(after: blockNumber).map {
                 createUnlockClaimState(
-                    for: $0.unlockAt,
+                    for: $0.unlockWhen,
                     block: blockNumber,
                     blockTime: blockTime,
                     elapsedTimeInterval: elapsedTimeInterval
