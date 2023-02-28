@@ -8,11 +8,12 @@ enum ReferendumVotersViewFactory {
             return nil
         }
 
-        if chain.externalApis?.governanceDelegations()?.first != nil {
+        if let governanceDelegationsApi = chain.externalApis?.governanceDelegations()?.first {
             return DelegationReferendumVotersViewFactory.createView(
                 state: state,
                 referendum: referendum,
-                type: type
+                type: type,
+                delegationApi: governanceDelegationsApi
             )
         } else {
             return ReferendumOnChainVotersViewFactory.createView(

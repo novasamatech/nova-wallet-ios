@@ -19,7 +19,7 @@ protocol ReferendumVotersLocalWrapperFactoryProtocol {
 }
 
 final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<ReferendumVotersFactoryParams, [ReferendumVoterLocal]>,
-                                                 ReferendumVotersLocalWrapperFactoryProtocol {
+    ReferendumVotersLocalWrapperFactoryProtocol {
     let operationFactory: GovernanceOffchainVotingFactoryProtocol
 
     init(

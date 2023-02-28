@@ -6,17 +6,14 @@ struct DelegationReferendumVotersViewFactory {
     static func createView(
         state: GovernanceSharedState,
         referendum: ReferendumLocal,
-        type: ReferendumVotersType
+        type: ReferendumVotersType,
+        delegationApi: LocalChainExternalApi
     ) -> DelegationReferendumVotersViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard let chain = state.settings.value?.chain,
               let connection = chainRegistry.getConnection(for: chain.chainId),
               let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return nil
-        }
-
-        guard let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
             return nil
         }
 

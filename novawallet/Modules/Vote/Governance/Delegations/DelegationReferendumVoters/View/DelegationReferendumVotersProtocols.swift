@@ -20,4 +20,4 @@ protocol DelegationReferendumVotersInteractorOutputProtocol: AnyObject {
 }
 
 protocol DelegationReferendumVotersWireframeProtocol: AlertPresentable, ErrorPresentable,
-                                                      CommonRetryable, AddressOptionsPresentable {}
+    CommonRetryable, AddressOptionsPresentable {}

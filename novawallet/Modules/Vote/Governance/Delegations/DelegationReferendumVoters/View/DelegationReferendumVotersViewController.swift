@@ -48,7 +48,7 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        if state == .loading {
+        if state?.isLoading == true {
             rootView.updateLoadingState()
         }
     }
@@ -152,7 +152,7 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
 
 extension DelegationReferendumVotersViewController: DelegationReferendumVotersViewProtocol {
     func didReceive(viewModel: LoadableViewModelState<[DelegationReferendumVotersModel]>) {
-        self.state = viewModel
+        state = viewModel
 
         switch viewModel {
         case .loading:
