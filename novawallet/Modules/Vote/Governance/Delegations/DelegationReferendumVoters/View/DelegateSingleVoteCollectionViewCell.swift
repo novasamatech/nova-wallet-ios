@@ -84,8 +84,10 @@ final class DelegateSingleVoteCollectionViewCell: UICollectionViewCell {
 
 extension DelegateSingleVoteCollectionViewCell {
     struct Model: Hashable {
-        static func == (lhs: DelegateSingleVoteCollectionViewCell.Model,
-                        rhs: DelegateSingleVoteCollectionViewCell.Model) -> Bool {
+        static func == (
+            lhs: DelegateSingleVoteCollectionViewCell.Model,
+            rhs: DelegateSingleVoteCollectionViewCell.Model
+        ) -> Bool {
             lhs.delegateInfo.addressViewModel.address == rhs.delegateInfo.addressViewModel.address
         }
 

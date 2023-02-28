@@ -11,7 +11,7 @@ final class DelegateInfoView: UIView {
     >>
 
     let baseView = ContentView()
-  
+
     weak var delegate: DelegateInfoDelegate? {
         didSet {
             baseView.isUserInteractionEnabled = delegate != nil
@@ -35,7 +35,7 @@ final class DelegateInfoView: UIView {
     var indicatorView: UIImageView {
         baseView.detailsView.sView
     }
-    
+
     private var loadingImage: ImageViewModelProtocol?
 
     override init(frame: CGRect) {

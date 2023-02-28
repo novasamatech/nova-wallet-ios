@@ -79,7 +79,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             )
         }
     }
-    
+
     private func displayAddressViewModel(
         voter: ReferendumVoterLocal,
         address: AccountAddress,
@@ -92,7 +92,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             return displayAddressFactory.createViewModel(from: address)
         }
     }
-    
+
     private func createGroupSectionViewModel(
         referendumVotersType: ReferendumVotersType,
         chain: ChainModel,
@@ -111,7 +111,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             address: address,
             identites: identites
         )
-        
+
         let votes: BigUInt
 
         switch referendumVotersType {
