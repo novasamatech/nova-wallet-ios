@@ -56,7 +56,8 @@ final class NetworkInfoViewModelFactory {
 
         let stakedPair = balanceViewModelFactory.balanceFromPrice(
             stakedAmount,
-            priceData: priceData
+            priceData: priceData,
+            roundingMode: .up
         )
 
         return LocalizableResource { locale in

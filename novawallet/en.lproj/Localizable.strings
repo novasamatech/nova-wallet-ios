@@ -333,7 +333,7 @@
 "staking.stash.can.hint" = "Stash can stake more and set the controller.";
 "staking.controller.can.hint" = "Controller can unstake, redeem, return to stake, change rewards destination and validators.";
 "staking.switch.account.to.stash" = "Switch your account to stash to set the controller.";
-"staking.inactive.current.minimal.stake" = "Staking is currently inactive.\nCurrent minimal stake is %@.";
+"staking.inactive.current.minimal.stake" = "Your stake is less then minimum of %@.\nHaving stake less than minimum increases chances of staking to not generate rewards";
 "staking.change.your.validators" = "Change your validators.";
 "staking.bond.more.tokens" = "Stake more tokens.";
 "staking.redeem.unbonded.tokens" = "Redeem unstaked tokens.";

@@ -60,6 +60,22 @@ extension NominatorState {
         }
     }
 
+    var hasElectedValidators: Bool {
+        guard let eraStakers = commonData.eraStakersInfo else {
+            return true
+        }
+
+        do {
+            let accountId = try stashItem.stash.toAccountId()
+
+            return eraStakers.validators.contains { validator in
+                validator.exposure.others.contains { $0.who == accountId }
+            }
+        } catch {
+            return true
+        }
+    }
+
     func createStatusPresentableViewModel(
         locale: Locale?
     ) -> AlertPresentableViewModel? {
