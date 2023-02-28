@@ -4,6 +4,7 @@ struct GovernanceUnlocksViewModel {
     enum ClaimState {
         case now
         case afterPeriod(time: String)
+        case delegation
     }
 
     struct Item {

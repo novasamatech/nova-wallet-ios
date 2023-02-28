@@ -8,21 +8,26 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
         self.state = state
     }
 
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel) {
+        guard let accountManagementView = AccountManagementViewFactory.createView(for: wallet.identifier) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(accountManagementView.controller, animated: true)
+    }
+
     func showFullDescription(
         from view: GovernanceDelegateInfoViewProtocol?,
         name: String,
         longDescription: String
     ) {
-        guard let view = view,
-              let navigationController = view.controller.navigationController else {
-            return
-        }
+        let detailsView = MarkdownDescriptionViewFactory.createDelegateDetailsView(
+            for: name,
+            description: longDescription
+        )
 
-        let state = DelegateInfoDetailsState(name: name, longDescription: longDescription)
-        let delegateInfoDetailsViewController = DelegateInfoDetailsViewFactory.createView(state: state)
-
-        navigationController.pushViewController(
-            delegateInfoDetailsViewController.controller,
+        view?.controller.navigationController?.pushViewController(
+            detailsView.controller,
             animated: true
         )
     }
@@ -45,17 +50,41 @@ final class GovernanceDelegateInfoWireframe: GovernanceDelegateInfoWireframeProt
     }
 
     func showRecentVotes(
-        from _: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress _: AccountAddress
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress: AccountAddress,
+        delegateName: String?
     ) {
-        // TODO: Task #860pmdtg6
+        guard let votedReferendaView = DelegateVotedReferendaViewFactory.createRecentVotesView(
+            state: state,
+            delegateAddress: delegateAddress,
+            delegateName: delegateName
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            votedReferendaView.controller,
+            animated: true
+        )
     }
 
     func showAllVotes(
-        from _: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress _: AccountAddress
+        from view: GovernanceDelegateInfoViewProtocol?,
+        delegateAddress: AccountAddress,
+        delegateName: String?
     ) {
-        // TODO: Task #860pmdtg6
+        guard let votedReferendaView = DelegateVotedReferendaViewFactory.createAllVotesView(
+            state: state,
+            delegateAddress: delegateAddress,
+            delegateName: delegateName
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            votedReferendaView.controller,
+            animated: true
+        )
     }
 
     func showAddDelegation(

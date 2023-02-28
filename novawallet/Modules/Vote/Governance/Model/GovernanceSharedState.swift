@@ -157,6 +157,19 @@ final class GovernanceSharedState {
         }
     }
 
+    func supportsDelegations(for option: GovernanceSelectedOption) -> Bool {
+        switch option.type {
+        case .governanceV2:
+            if let delegationsApi = option.chain.externalApis?.governanceDelegations() {
+                return !delegationsApi.isEmpty
+            } else {
+                return false
+            }
+        case .governanceV1:
+            return false
+        }
+    }
+
     func createBlockTimeOperationFactory() -> BlockTimeOperationFactoryProtocol? {
         guard let chain = settings.value?.chain else {
             return nil

@@ -209,7 +209,9 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
                     }.addingPriorLock(castingVoting.prior, track: track)
                 case let .delegating(delegatingVoting):
                     let delegatingLocal = ReferendumDelegatingLocal(remote: delegatingVoting)
-                    return resultVoting.addingDelegating(delegatingLocal, trackId: track)
+                    return resultVoting
+                        .addingDelegating(delegatingLocal, trackId: track)
+                        .addingPriorLock(delegatingVoting.prior, track: track)
                 case .unknown:
                     return resultVoting
                 }
@@ -270,5 +272,75 @@ extension Gov2OperationFactory: ReferendumsOperationFactoryProtocol {
         let dependencies = [codingFactoryOperation] + votesWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+
+    func fetchReferendumsWrapper(
+        for referendumIds: Set<ReferendumIdLocal>,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<[ReferendumLocal]> {
+        let remoteIndexes = Array(referendumIds.map { StringScaleMapper(value: $0) })
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let wrapper: CompoundOperationWrapper<[StorageResponse<ReferendumInfo>]> = requestFactory.queryItems(
+            engine: connection,
+            keyParams: { remoteIndexes },
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+            storagePath: Referenda.referendumInfo,
+            at: nil
+        )
+        wrapper.addDependency(operations: [codingFactoryOperation])
+
+        let referendumOperation = ClosureOperation<[ReferendumIndexKey: ReferendumInfo]> {
+            let responses = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            let initAccum = [ReferendumIndexKey: ReferendumInfo]()
+            return zip(remoteIndexes, responses).reduce(into: initAccum) { accum, pair in
+                accum[ReferendumIndexKey(referendumIndex: Referenda.ReferendumIndex(pair.0.value))] = pair.1.value
+            }
+        }
+
+        referendumOperation.addDependency(wrapper.targetOperation)
+
+        let additionalInfoWrapper = createAdditionalInfoWrapper(
+            from: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
+        )
+
+        let enactmentsWrapper = createEnacmentTimeFetchWrapper(
+            dependingOn: referendumOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            blockHash: nil
+        )
+
+        enactmentsWrapper.addDependency(operations: [referendumOperation])
+
+        let inQueueStateWrapper = createTrackQueueOperation(
+            dependingOn: referendumOperation,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            requestFactory: requestFactory
+        )
+
+        inQueueStateWrapper.addDependency(operations: [referendumOperation])
+
+        let mapOperation = createReferendumMapOperation(
+            dependingOn: referendumOperation,
+            additionalInfoOperation: additionalInfoWrapper.targetOperation,
+            enactmentsOperation: enactmentsWrapper.targetOperation,
+            inQueueOperation: inQueueStateWrapper.targetOperation
+        )
+
+        mapOperation.addDependency(referendumOperation)
+        mapOperation.addDependency(additionalInfoWrapper.targetOperation)
+        mapOperation.addDependency(enactmentsWrapper.targetOperation)
+        mapOperation.addDependency(inQueueStateWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + wrapper.allOperations + [referendumOperation] +
+            additionalInfoWrapper.allOperations + inQueueStateWrapper.allOperations + enactmentsWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 }
