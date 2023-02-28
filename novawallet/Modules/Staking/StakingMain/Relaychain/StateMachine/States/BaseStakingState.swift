@@ -107,6 +107,12 @@ class BaseStakingState: StakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
+    func process(bagListSize: UInt32?) {
+        commonData = commonData.byReplacing(bagListSize: bagListSize)
+
+        stateMachine?.transit(to: self)
+    }
+
     func process(stashItem _: StashItem?) {}
     func process(ledgerInfo _: StakingLedger?) {}
     func process(nomination _: Nomination?) {}

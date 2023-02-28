@@ -15,6 +15,9 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
     func subscribeMaxNominatorsCount(for chainId: ChainModel.Id)
         -> AnyDataProvider<DecodedU32>?
 
+    func subscribeBagsListSize(for chainId: ChainModel.Id)
+        -> AnyDataProvider<DecodedU32>?
+
     func subscribeNomination(for accountId: AccountId, chainId: ChainModel.Id)
         -> AnyDataProvider<DecodedNomination>?
 
@@ -162,6 +165,42 @@ extension StakingLocalStorageSubscriber {
         )
 
         return maxNominatorsCountProvider
+    }
+
+    func subscribeBagsListSize(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
+        guard let bagListSizeProvider = try? stakingLocalSubscriptionFactory
+            .getBagListSizeProvider(
+                for: chainId,
+                missingEntryStrategy: .defaultValue(StringScaleMapper(value: UInt32.max))
+            ) else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<DecodedU32>]) in
+            let bagListSize = changes.reduceToLastChange()
+            self?.stakingLocalSubscriptionHandler.handleBagListSize(
+                result: .success(bagListSize?.item?.value),
+                chainId: chainId
+            )
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.stakingLocalSubscriptionHandler.handleBagListSize(
+                result: .failure(error),
+                chainId: chainId
+            )
+            return
+        }
+
+        bagListSizeProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+        )
+
+        return bagListSizeProvider
     }
 
     func subscribeNomination(

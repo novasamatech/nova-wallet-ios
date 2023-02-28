@@ -36,6 +36,8 @@ protocol StakingLocalSubscriptionHandler {
 
     func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
 
+    func handleBagListSize(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
+
     func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId: ChainModel.Id)
 
     func handleCurrentEra(result: Result<EraIndex?, Error>, chainId: ChainModel.Id)
@@ -79,6 +81,8 @@ extension StakingLocalSubscriptionHandler {
     func handleCounterForNominators(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
 
     func handleMaxNominatorsCount(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
+
+    func handleBagListSize(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
 
     func handleActiveEra(result _: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {}
 

@@ -127,6 +127,7 @@ extension StakingRelaychainInteractor {
         clear(dataProvider: &minNominatorBondProvider)
         clear(dataProvider: &counterForNominatorsProvider)
         clear(dataProvider: &maxNominatorsCountProvider)
+        clear(dataProvider: &bagListSizeProvider)
     }
 
     func performNominatorLimitsSubscripion() {
@@ -137,6 +138,7 @@ extension StakingRelaychainInteractor {
         minNominatorBondProvider = subscribeToMinNominatorBond(for: chainId)
         counterForNominatorsProvider = subscribeToCounterForNominators(for: chainId)
         maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainId)
+        bagListSizeProvider = subscribeBagsListSize(for: chainId)
     }
 
     private func subscribeRewardsAnalytics(for stash: AccountAddress) {
@@ -238,6 +240,10 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
 
     func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         presenter?.didReceiveMaxNominatorsCount(result: result)
+    }
+
+    func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
+        presenter?.didReceiveBagListSize(result: result)
     }
 }
 
