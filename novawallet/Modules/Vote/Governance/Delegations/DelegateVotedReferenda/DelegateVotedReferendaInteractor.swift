@@ -74,10 +74,10 @@ final class DelegateVotedReferendaInteractor: AnyCancellableCleaning {
     }
 
     func fetchBlockTimeWithVoting() {
-        fetchBlockTime(true)
+        fetchBlockTime(forceVotingFetch: true)
     }
 
-    func fetchBlockTime(_ forceVotingFetch: Bool = false) {
+    func fetchBlockTime(forceVotingFetch: Bool = false) {
         clear(cancellable: &blockTimeCancellable)
 
         let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
@@ -175,7 +175,7 @@ extension DelegateVotedReferendaInteractor: DelegateVotedReferendaInteractorInpu
     }
 
     func retryBlockTime() {
-        fetchBlockTime(true)
+        fetchBlockTime(forceVotingFetch: true)
     }
 
     func retryOffchainVotingFetch() {
@@ -212,7 +212,7 @@ extension DelegateVotedReferendaInteractor: GeneralLocalStorageSubscriber, Gener
 
                 let forceVotingFetch = optLastBlockNumber.map { !blockNumber.isNext(to: $0) } ?? true
 
-                fetchBlockTime(forceVotingFetch)
+                fetchBlockTime(forceVotingFetch: forceVotingFetch)
                 presenter?.didReceiveBlockNumber(blockNumber)
             }
         case let .failure(error): break
