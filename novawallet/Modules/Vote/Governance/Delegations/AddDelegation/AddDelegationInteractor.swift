@@ -8,7 +8,6 @@ final class AddDelegationInteractor {
 
     let chain: ChainModel
     let lastVotedDays: Int
-    let fetchBlockTreshold: BlockNumber
     let delegateListOperationFactory: GovernanceDelegateListFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -19,14 +18,11 @@ final class AddDelegationInteractor {
     let operationQueue: OperationQueue
 
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
-    private var lastUsedBlockNumber: BlockNumber?
     private var currentBlockNumber: BlockNumber?
-    private var currentBlockTime: BlockTime?
 
     init(
         chain: ChainModel,
         lastVotedDays: Int,
-        fetchBlockTreshold: BlockNumber,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -38,7 +34,6 @@ final class AddDelegationInteractor {
     ) {
         self.chain = chain
         self.lastVotedDays = lastVotedDays
-        self.fetchBlockTreshold = fetchBlockTreshold
         self.connection = connection
         self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
@@ -49,7 +44,7 @@ final class AddDelegationInteractor {
         self.operationQueue = operationQueue
     }
 
-    private func updateBlockTime() {
+    private func fetchBlockTimeAndUpdateDelegates() {
         let blockTimeUpdateWrapper = blockTimeFactory.createBlockTimeOperation(
             from: runtimeService,
             blockTimeEstimationService: blockTimeService
@@ -59,9 +54,8 @@ final class AddDelegationInteractor {
             DispatchQueue.main.async {
                 do {
                     let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.currentBlockTime = blockTime
 
-                    self?.fetchDelegateListIfNeeded()
+                    self?.fetchDelegateList(for: blockTime)
                 } catch {
                     self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
                 }
@@ -71,33 +65,14 @@ final class AddDelegationInteractor {
         operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
     }
 
-    private func estimateStatsBlockNumber() -> BlockNumber? {
-        guard let blockNumber = currentBlockNumber, let blockTime = currentBlockTime, blockTime > 0 else {
-            return nil
-        }
-
-        let blocksInPast = BlockNumber(TimeInterval(lastVotedDays).secondsFromDays / TimeInterval(blockTime).seconds)
-
-        guard blockNumber > blocksInPast else {
-            return 0
-        }
-
-        return blockNumber - blocksInPast
-    }
-
-    private func fetchDelegateListIfNeeded() {
-        guard let activityBlockNumber = estimateStatsBlockNumber() else {
+    private func fetchDelegateList(for blockTime: BlockTime) {
+        guard
+            let activityBlockNumber = currentBlockNumber?.blockBackInDays(
+                lastVotedDays,
+                blockTime: blockTime
+            ) else {
             return
         }
-
-        if
-            let lastUsedBlockNumber = lastUsedBlockNumber,
-            activityBlockNumber > lastUsedBlockNumber,
-            activityBlockNumber - lastUsedBlockNumber < fetchBlockTreshold {
-            return
-        }
-
-        lastUsedBlockNumber = activityBlockNumber
 
         let wrapper = delegateListOperationFactory.fetchDelegateListWrapper(
             for: activityBlockNumber,
@@ -140,9 +115,9 @@ extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     }
 
     func refreshDelegates() {
-        lastUsedBlockNumber = nil
-
-        fetchDelegateListIfNeeded()
+        if currentBlockNumber != nil {
+            fetchBlockTimeAndUpdateDelegates()
+        }
     }
 
     func saveCloseBanner() {
@@ -154,11 +129,18 @@ extension AddDelegationInteractor: GeneralLocalStorageSubscriber, GeneralLocalSt
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(blockNumber):
-            if let blockNumber = blockNumber {
-                currentBlockNumber = blockNumber
-
-                updateBlockTime()
+            guard let blockNumber = blockNumber else {
+                return
             }
+
+            let optLastBlockNumber = currentBlockNumber
+            currentBlockNumber = blockNumber
+
+            if let lastBlockNumber = optLastBlockNumber, blockNumber.isNext(to: lastBlockNumber) {
+                return
+            }
+
+            fetchBlockTimeAndUpdateDelegates()
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))
         }
