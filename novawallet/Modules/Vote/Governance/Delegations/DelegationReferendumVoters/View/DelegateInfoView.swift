@@ -7,7 +7,7 @@ import SoraUI
 
 final class DelegateInfoView: UIView {
     typealias ContentView = IconDetailsGenericView<GenericPairValueView<
-        GenericPairValueView<UILabel, GovernanceDelegateTypeView>, UIImageView
+        GenericPairValueView<UILabel, GovernanceDelegateTypeView>, GenericPairValueView<UIImageView, UIView>
     >>
 
     let baseView = ContentView()
@@ -33,7 +33,7 @@ final class DelegateInfoView: UIView {
     }
 
     var indicatorView: UIImageView {
-        baseView.detailsView.sView
+        baseView.detailsView.sView.fView
     }
 
     private var loadingImage: ImageViewModelProtocol?
@@ -72,7 +72,7 @@ final class DelegateInfoView: UIView {
         baseView.detailsView.fView.sView.iconDetailsView.iconWidth = Constants.typeIconWidth
         baseView.detailsView.fView.makeHorizontal()
         baseView.detailsView.makeHorizontal()
-        baseView.detailsView.fView.sView.contentInsets = .init(top: 1, left: 4, bottom: 1, right: 6)
+        baseView.detailsView.fView.sView.contentInsets = .init(top: 1, left: 4, bottom: 1, right: 4)
         baseView.detailsView.fView.sView.backgroundView.cornerRadius = 5
         baseView.detailsView.fView.spacing = 4
 
@@ -81,6 +81,10 @@ final class DelegateInfoView: UIView {
         nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         typeView.setContentHuggingPriority(.required, for: .horizontal)
+        baseView.detailsView.sView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        baseView.detailsView.sView.sView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        baseView.detailsView.sView.makeHorizontal()
+        baseView.detailsView.sView.spacing = 4
     }
 }
 
@@ -127,17 +131,12 @@ extension DelegateInfoView {
         }
 
         typeView.isHidden = false
+        typeView.iconDetailsView.detailsLabel.isHidden = true
         switch type {
         case .individual:
-            typeView.iconDetailsView.bind(viewModel: .init(
-                title: "",
-                icon: R.image.iconIndividual()
-            ))
+            typeView.iconDetailsView.imageView.image = R.image.iconIndividual()
         case .organization:
-            typeView.iconDetailsView.bind(viewModel: .init(
-                title: "",
-                icon: R.image.iconOrganization()
-            ))
+            typeView.iconDetailsView.imageView.image = R.image.iconOrganization()
         }
     }
 
