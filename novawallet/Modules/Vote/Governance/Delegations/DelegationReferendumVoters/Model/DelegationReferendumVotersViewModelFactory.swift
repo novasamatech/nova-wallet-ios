@@ -83,11 +83,21 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
     private func displayAddressViewModel(
         voter: ReferendumVoterLocal,
         address: AccountAddress,
-        identites: [AccountId: AccountIdentity]
+        identites: [AccountId: AccountIdentity],
+        metadata: GovernanceDelegateMetadataRemote?
     ) -> DisplayAddressViewModel {
         if let displayName = identites[voter.accountId]?.displayName {
-            let displayAddress = DisplayAddress(address: address, username: displayName)
-            return displayAddressFactory.createViewModel(from: displayAddress)
+            return displayAddressFactory.createViewModel(
+                from: address,
+                name: displayName,
+                iconUrl: metadata?.image
+            )
+        } else if let displayName = metadata?.name {
+            return displayAddressFactory.createViewModel(
+                from: address,
+                name: displayName,
+                iconUrl: metadata?.image
+            )
         } else {
             return displayAddressFactory.createViewModel(from: address)
         }
@@ -109,7 +119,8 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         let displayAddressViewModel = displayAddressViewModel(
             voter: voter,
             address: address,
-            identites: identites
+            identites: identites,
+            metadata: metadata
         )
 
         let votes: BigUInt
@@ -168,7 +179,8 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         let displayAddressViewModel = displayAddressViewModel(
             voter: voter,
             address: address,
-            identites: identites
+            identites: identites,
+            metadata: metadata
         )
 
         let amountInPlank: BigUInt
@@ -223,10 +235,18 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         }
 
         let displayAddressViewModel: DisplayAddressViewModel
-
         if let displayName = identites[accountId]?.displayName {
-            let displayAddress = DisplayAddress(address: address, username: displayName)
-            displayAddressViewModel = displayAddressFactory.createViewModel(from: displayAddress)
+            displayAddressViewModel = displayAddressFactory.createViewModel(
+                from: address,
+                name: displayName,
+                iconUrl: metadata?.image
+            )
+        } else if let displayName = metadata?.name {
+            displayAddressViewModel = displayAddressFactory.createViewModel(
+                from: address,
+                name: displayName,
+                iconUrl: metadata?.image
+            )
         } else {
             displayAddressViewModel = displayAddressFactory.createViewModel(from: address)
         }
