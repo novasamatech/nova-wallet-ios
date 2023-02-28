@@ -155,3 +155,78 @@ extension ReferendumAccountVoteLocal {
         self = .splitAbstain(splitVote)
     }
 }
+
+extension SubqueryVotingResponse {
+    struct CastingAndDelegationsVoting: Decodable {
+        let referendumId: String
+        let standardVote: StandardVote?
+        let splitVote: SplitVote?
+        let splitAbstainVote: SplitAbstainVote?
+        let voter: String
+        let delegatorVotes: DelegatorVotesReponse
+    }
+
+    struct ReferendumCastingVoting: Decodable {
+        let nodes: [CastingAndDelegationsVoting]
+    }
+
+    struct ReferendumVotesResponse: Decodable {
+        let castingVotings: ReferendumCastingVoting
+    }
+
+    struct DelegatorVotesReponse: Decodable {
+        struct Delegation: Decodable {
+            let delegator: AccountAddress
+            let vote: SubqueryVotingResponse.RawVote
+        }
+
+        let nodes: [Delegation]
+    }
+}
+
+extension ReferendumVoterLocal {
+    init?(from castingVote: SubqueryVotingResponse.CastingAndDelegationsVoting) {
+        guard let vote = Self.createVoteLocal(from: castingVote),
+              let accountId = try? AccountAddress(castingVote.voter).toAccountId() else {
+            return nil
+        }
+
+        self.vote = vote
+        self.accountId = accountId
+        delegators = castingVote.delegatorVotes.nodes.compactMap(Self.createDelegator)
+    }
+
+    private static func createVoteLocal(
+        from castingVote: SubqueryVotingResponse.CastingAndDelegationsVoting
+    ) -> ReferendumAccountVoteLocal? {
+        if let standardVote = castingVote.standardVote {
+            return ReferendumAccountVoteLocal(subqueryStandardVote: standardVote)
+        } else if let splitVote = castingVote.splitVote {
+            return ReferendumAccountVoteLocal(subquerySplitVote: splitVote)
+        } else if let splitAbstainVote = castingVote.splitAbstainVote {
+            return ReferendumAccountVoteLocal(subquerySplitAbstainVote: splitAbstainVote)
+        }
+
+        return nil
+    }
+
+    private static func createDelegator(
+        from node: SubqueryVotingResponse.DelegatorVotesReponse.Delegation
+    ) -> GovernanceOffchainDelegation? {
+        guard let delegatorBalance = BigUInt(node.vote.amount) else {
+            return nil
+        }
+
+        let delegatorConviction = ConvictionVoting.Conviction(subqueryConviction: node.vote.conviction)
+
+        let delegatorPower = GovernanceOffchainVoting.DelegatorPower(
+            balance: delegatorBalance,
+            conviction: delegatorConviction
+        )
+
+        return GovernanceOffchainDelegation(
+            delegator: node.delegator,
+            power: delegatorPower
+        )
+    }
+}
