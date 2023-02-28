@@ -25,13 +25,10 @@ extension ReferendumsActivityViewModelFactoryProtocol {
         unlockSchedule: GovernanceUnlockSchedule?,
         locale: Locale
     ) -> ReferendumsSection {
-        guard voting != nil else {
-            return .personalActivities([])
-        }
-
         var actions: [ReferendumPersonalActivity] = []
 
         if
+            let voting = voting,
             let viewModel = createLocksViewModel(
                 chain: chain,
                 voting: voting,
@@ -131,11 +128,7 @@ extension ReferendumsActivityViewModelFactory: ReferendumsActivityViewModelFacto
         voting: ReferendumTracksVotingDistribution?,
         locale: Locale
     ) -> ReferendumsDelegationViewModel? {
-        guard let voting = voting else {
-            return nil
-        }
-
-        guard let totalDelegated = voting.totalDelegated() else {
+        guard let totalDelegated = voting?.totalDelegated() else {
             return .addDelegation
         }
 

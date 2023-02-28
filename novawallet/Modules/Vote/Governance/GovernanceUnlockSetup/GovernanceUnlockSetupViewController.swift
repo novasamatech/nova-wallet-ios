@@ -64,7 +64,7 @@ final class GovernanceUnlockSetupViewController: UIViewController, ViewHolder {
             switch $0.claimState {
             case .now:
                 return true
-            case .afterPeriod:
+            case .afterPeriod, .delegation:
                 return false
             }
         } ?? false

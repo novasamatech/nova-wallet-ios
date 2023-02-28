@@ -95,11 +95,27 @@ final class GovernanceDelegateInfoViewLayout: UIView {
     }
 
     func addDescription(from viewModel: GovernanceDelegateInfoViewModel.Delegate, locale: Locale) -> RoundedButton? {
-        if descriptionStackView != nil {
+        if
+            let details = viewModel.details,
+            descriptionView != nil,
+            viewModel.hasFullDescription,
+            readMoreButton != nil {
+            // if structure doesn't change then reload text
+            descriptionView?.load(from: details, completion: nil)
+
+            return readMoreButton
+        } else {
             descriptionStackView?.removeFromSuperview()
             descriptionStackView = nil
-        }
 
+            return createDescription(from: viewModel, locale: locale)
+        }
+    }
+
+    private func createDescription(
+        from viewModel: GovernanceDelegateInfoViewModel.Delegate,
+        locale: Locale
+    ) -> RoundedButton? {
         let optDescriptionView: MarkdownViewContainer?
 
         if let details = viewModel.details {

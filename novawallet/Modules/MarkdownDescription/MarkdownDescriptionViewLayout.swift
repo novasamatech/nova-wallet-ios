@@ -1,7 +1,7 @@
 import UIKit
 import CDMarkdownKit
 
-final class ReferendumFullDescriptionViewLayout: UIView {
+final class MarkdownDescriptionViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
         view.stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 24, right: 16)
@@ -47,8 +47,13 @@ final class ReferendumFullDescriptionViewLayout: UIView {
         }
     }
 
-    func set(title: String) {
-        titleLabel.text = title
+    func set(title: String?) {
+        if let title = title {
+            titleLabel.text = title
+            titleLabel.isHidden = false
+        } else {
+            titleLabel.isHidden = true
+        }
     }
 
     private func setupLayout() {

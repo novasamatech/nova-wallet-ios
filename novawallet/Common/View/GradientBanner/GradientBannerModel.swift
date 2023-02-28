@@ -6,6 +6,17 @@ struct GradientBannerModel {
 }
 
 extension GradientBannerModel {
+    static func governanceDelegations() -> GradientBannerModel {
+        let color = UIColor(
+            red: 35.0 / 255.0,
+            green: 127.0 / 255.0,
+            blue: 212.0 / 255.0,
+            alpha: 0.64
+        )
+
+        return createModel(with: color)
+    }
+
     static func stakingController() -> GradientBannerModel {
         let color = UIColor(
             red: 131.0 / 255.0,
