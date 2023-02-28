@@ -11,7 +11,7 @@ final class DelegateInfoView: UIView {
     >>
 
     let baseView = ContentView()
-    private var viewModel: Model?
+  
     weak var delegate: DelegateInfoDelegate? {
         didSet {
             baseView.isUserInteractionEnabled = delegate != nil
@@ -35,6 +35,8 @@ final class DelegateInfoView: UIView {
     var indicatorView: UIImageView {
         baseView.detailsView.sView
     }
+    
+    private var loadingImage: ImageViewModelProtocol?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -88,7 +90,7 @@ extension DelegateInfoView {
     func bind(viewModel: Model) {
         bind(type: viewModel.type)
 
-        self.viewModel?.addressViewModel.imageViewModel?.cancel(on: iconView)
+        loadingImage?.cancel(on: iconView)
 
         if let iconRadius = iconRadius(for: viewModel.type) {
             viewModel.addressViewModel.imageViewModel?.loadImage(
@@ -107,7 +109,7 @@ extension DelegateInfoView {
 
         nameLabel.lineBreakMode = viewModel.addressViewModel.lineBreakMode
         nameLabel.text = viewModel.addressViewModel.name ?? viewModel.addressViewModel.address
-        self.viewModel = viewModel
+        loadingImage = viewModel.addressViewModel.imageViewModel
     }
 
     private func bind(type: GovernanceDelegateTypeView.Model?) {

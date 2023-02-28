@@ -19,5 +19,5 @@ protocol DelegationReferendumVotersInteractorOutputProtocol: AnyObject {
     func didReceive(voters: ReferendumVoterLocals)
 }
 
-protocol DelegationReferendumVotersWireframeProtocol:
-    AlertPresentable, ErrorPresentable, CommonRetryable, AddressOptionsPresentable {}
+protocol DelegationReferendumVotersWireframeProtocol: AlertPresentable, ErrorPresentable,
+                                                      CommonRetryable, AddressOptionsPresentable {}

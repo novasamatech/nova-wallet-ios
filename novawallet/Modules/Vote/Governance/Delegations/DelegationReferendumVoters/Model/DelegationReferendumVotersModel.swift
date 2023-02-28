@@ -2,15 +2,6 @@ enum DelegationReferendumVotersModel: Hashable {
     case grouped(GroupSection)
     case single(SingleSection)
 
-    var id: String {
-        switch self {
-        case let .grouped(model):
-            return model.id
-        case let .single(model):
-            return model.id
-        }
-    }
-
     var address: AccountAddress {
         switch self {
         case let .grouped(model):

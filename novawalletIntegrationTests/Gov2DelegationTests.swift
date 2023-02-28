@@ -303,6 +303,7 @@ final class Gov2DelegationTests: XCTestCase {
         do {
             let voters = try wrapper.targetOperation.extractNoCancellableResultData()
             XCTAssertTrue(!voters.isEmpty)
+            XCTAssertTrue(voters.contains { !$0.delegators.isEmpty })
         } catch {
             XCTFail("Unexpected error: \(error)")
         }

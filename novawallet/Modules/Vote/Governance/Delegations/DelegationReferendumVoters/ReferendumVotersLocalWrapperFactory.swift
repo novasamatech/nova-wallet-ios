@@ -18,11 +18,8 @@ protocol ReferendumVotersLocalWrapperFactoryProtocol {
     ) -> CompoundOperationWrapper<ReferendumVoterLocals>
 }
 
-final class ReferendumVotersLocalWrapperFactory:
-    GovOffchainModelWrapperFactory<
-        ReferendumVotersFactoryParams,
-        [ReferendumVoterLocal]
-    >, ReferendumVotersLocalWrapperFactoryProtocol {
+final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<ReferendumVotersFactoryParams, [ReferendumVoterLocal]>,
+                                                 ReferendumVotersLocalWrapperFactoryProtocol {
     let operationFactory: GovernanceOffchainVotingFactoryProtocol
 
     init(
