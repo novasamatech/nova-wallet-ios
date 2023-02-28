@@ -63,6 +63,10 @@ extension BlockNumber {
 
         return self - blocksInPast
     }
+
+    func isNext(to blockNumber: BlockNumber) -> Bool {
+        blockNumber >= 0 && blockNumber + 1 == self
+    }
 }
 
 extension Moment {
