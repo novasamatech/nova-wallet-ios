@@ -10,9 +10,8 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
 
     typealias DataSource = UICollectionViewDiffableDataSource<DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model>
     typealias Snapshot = NSDiffableDataSourceSnapshot<DelegationReferendumVotersModel, DelegateSingleVoteCollectionViewCell.Model>
-    private var viewModel: LoadableViewModelState<[DelegationReferendumVotersModel]>?
+    private var state: LoadableViewModelState<[DelegationReferendumVotersModel]>?
     private var votersCount: Int?
-
     private var openedSectionsIds: [String] = []
     private var emptyViewTitle: String?
 
@@ -49,11 +48,8 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        switch viewModel {
-        case .loading:
+        if state == .loading {
             rootView.updateLoadingState()
-        case .loaded, .cached, .none:
-            break
         }
     }
 
@@ -79,7 +75,8 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
                 UICollectionViewCell? in
                 let cell: DelegateSingleVoteCollectionViewCell? = collectionView.dequeueReusableCell(for: indexPath)
                 cell?.bind(viewModel: model)
-                let isLast = indexPath.row == collectionView.numberOfItems(inSection: indexPath.section) - 1
+                let itemsCount = collectionView.numberOfItems(inSection: indexPath.section)
+                let isLast = indexPath.row == itemsCount - 1
                 cell?.apply(position: isLast ? .bottom : .middle)
                 return cell
             }
@@ -135,7 +132,6 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
     }
 
     private func setupCounter(value: Int?) {
-        votersCount = value
         navigationItem.rightBarButtonItem = nil
 
         let formatter = quantityFormatter.value(for: selectedLocale)
@@ -150,12 +146,13 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
         rootView.totalVotersLabel.sizeToFit()
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.totalVotersLabel)
+        votersCount = value
     }
 }
 
 extension DelegationReferendumVotersViewController: DelegationReferendumVotersViewProtocol {
     func didReceive(viewModel: LoadableViewModelState<[DelegationReferendumVotersModel]>) {
-        self.viewModel = viewModel
+        self.state = viewModel
 
         switch viewModel {
         case .loading:
@@ -179,7 +176,7 @@ extension DelegationReferendumVotersViewController: DelegationReferendumVotersVi
 
 extension DelegationReferendumVotersViewController: DelegateGroupVotesHeaderDelegate {
     func didTapOnActionControl(sender: DelegateGroupVotesHeader) {
-        guard let index = sender.id, let viewModels = viewModel?.value else {
+        guard let index = sender.id, let viewModels = state?.value else {
             return
         }
 
@@ -200,7 +197,7 @@ extension DelegationReferendumVotersViewController: DelegateGroupVotesHeaderDele
 extension DelegationReferendumVotersViewController: DelegateInfoDelegate {
     func didTapOnDelegateInfo(sender: DelegateInfoView) {
         guard let index = sender.id,
-              let viewModels = viewModel?.value,
+              let viewModels = state?.value,
               let model = viewModels[safe: index] else {
             return
         }
@@ -238,7 +235,7 @@ extension DelegationReferendumVotersViewController: EmptyStateDataSource {
 
 extension DelegationReferendumVotersViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
-        switch viewModel {
+        switch state {
         case let .loaded(value), let .cached(value):
             return value.isEmpty
         case .loading, .none:

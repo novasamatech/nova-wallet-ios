@@ -7462,14 +7462,11 @@
 				887C44FE29AC7ECE00950F98 /* Model */,
 				8858917029A4B54C00320896 /* View */,
 				885A6C3129A374B500B65C1A /* ReferendumVotersLocalWrapperFactory.swift */,
-				99F4AC351A494FC4A89A6CF6 /* DelegationReferendumVotersProtocols.swift */,
 				7B13D65B93E65B5112272962 /* DelegationReferendumVotersWireframe.swift */,
 				12BEE17030110A1531A231EE /* DelegationReferendumVotersPresenter.swift */,
 				A813E09FA3047357C7A75564 /* DelegationReferendumVotersInteractor.swift */,
-				BF2A45FEEA61BDB78BFAB0D7 /* DelegationReferendumVotersViewController.swift */,
 				7059B3F1E8DC94D36733B4C7 /* DelegationReferendumVotersViewLayout.swift */,
 				E83916DF00BA41516B94304E /* DelegationReferendumVotersViewFactory.swift */,
-				8858917929A700F000320896 /* DelegationReferendumVotersViewModelFactory.swift */,
 			);
 			path = DelegationReferendumVoters;
 			sourceTree = "<group>";
@@ -13981,6 +13978,8 @@
 				887C44FA29AC7B8700950F98 /* DelegateSingleVoteHeader.swift */,
 				8858917329A4BA0A00320896 /* DelegateGroupVotesHeader.swift */,
 				887C44FC29AC7BCA00950F98 /* DelegateSingleVoteCollectionViewCell.swift */,
+				99F4AC351A494FC4A89A6CF6 /* DelegationReferendumVotersProtocols.swift */,
+				BF2A45FEEA61BDB78BFAB0D7 /* DelegationReferendumVotersViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -14021,6 +14020,7 @@
 			children = (
 				887C44FF29AC7ED600950F98 /* DelegationReferendumVotersModel.swift */,
 				887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */,
+				8858917929A700F000320896 /* DelegationReferendumVotersViewModelFactory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
