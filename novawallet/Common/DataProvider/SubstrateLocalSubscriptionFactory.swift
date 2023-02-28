@@ -84,6 +84,20 @@ class SubstrateLocalSubscriptionFactory {
         storageCodingPath: StorageCodingPath,
         fallback: StorageProviderSourceFallback<T>
     ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> where T: Equatable & Decodable {
+        try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            possibleCodingPaths: [storageCodingPath],
+            fallback: fallback
+        )
+    }
+
+    func getDataProvider<T>(
+        for localKey: String,
+        chainId: ChainModel.Id,
+        possibleCodingPaths: [StorageCodingPath],
+        fallback: StorageProviderSourceFallback<T>
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> where T: Equatable & Decodable {
         clearIfNeeded()
 
         if let dataProvider = getProvider(for: localKey) as? DataProvider<ChainStorageDecodedItem<T>> {
@@ -101,11 +115,12 @@ class SubstrateLocalSubscriptionFactory {
         let trigger = DataProviderProxyTrigger()
         let source: StorageProviderSource<T> = StorageProviderSource(
             itemIdentifier: localKey,
-            codingPath: storageCodingPath,
+            possibleCodingPaths: possibleCodingPaths,
             runtimeService: runtimeCodingProvider,
             provider: streamableProvider,
             trigger: trigger,
-            fallback: fallback
+            fallback: fallback,
+            operationManager: operationManager
         )
 
         let dataProvider = DataProvider(
