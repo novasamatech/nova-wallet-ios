@@ -40,9 +40,13 @@ final class DelegateSingleVoteHeader: UICollectionReusableView {
 }
 
 extension DelegateSingleVoteHeader {
-    struct Model {
+    struct Model: Equatable {
         let delegateInfo: DelegateInfoView.Model
         let votes: MultiValueView.Model
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.delegateInfo == rhs.delegateInfo && lhs.votes == rhs.votes
+        }
     }
 
     func bind(viewModel: Model) {

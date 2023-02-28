@@ -73,12 +73,12 @@ final class DelegateGroupVotesHeader: UICollectionReusableView {
         actionTitleControl.horizontalSpacing = 0.0
         actionTitleControl.imageView.isUserInteractionEnabled = false
         actionTitleControl.setContentCompressionResistancePriority(.required, for: .horizontal)
-        actionTitleControl.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        delegateInfoView.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 }
 
 extension DelegateGroupVotesHeader {
-    struct Model {
+    struct Model: Equatable {
         let delegateInfo: DelegateInfoView.Model
         let votes: String
     }

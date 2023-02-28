@@ -23,13 +23,13 @@ extension DelegationReferendumVotersModel {
         }
 
         static func == (lhs: GroupSection, rhs: GroupSection) -> Bool {
-            lhs.id == rhs.id
+            lhs.id == rhs.id && lhs.model == rhs.model && lhs.cells == rhs.cells
         }
     }
 
     struct SingleSection: Hashable {
         static func == (lhs: SingleSection, rhs: SingleSection) -> Bool {
-            lhs.id == rhs.id
+            lhs.id == rhs.id && lhs.model == rhs.model
         }
 
         func hash(into hasher: inout Hasher) {
