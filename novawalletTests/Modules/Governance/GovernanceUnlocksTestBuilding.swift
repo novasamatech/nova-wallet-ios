@@ -152,7 +152,11 @@ enum UnlockScheduleTestBuilding {
     ) -> GovernanceUnlockSchedule.Item {
         let actions = actionsBlock()
 
-        return .init(amount: amount, unlockAt: atBlock, actions: actions)
+        return .init(amount: amount, unlockWhen: .unlockAt(atBlock), actions: actions)
+    }
+
+    static func unlockAfterUndelegate(amount: BigUInt) -> GovernanceUnlockSchedule.Item {
+        return .init(amount: amount, unlockWhen: .afterUndelegate, actions: Set())
     }
 }
 
@@ -271,6 +275,21 @@ enum TrackTestBuilding {
 
         static func prior(amount: BigUInt, unlockAt: BlockNumber) -> VotingParams {
             VotingParams(locked: 0, votes: [], prior: .init(unlockAt: unlockAt, amount: amount), delegating: nil)
+        }
+
+        static func delegating(
+            amount: BigUInt,
+            conviction: ConvictionVoting.Conviction = .none,
+            target: AccountId = AccountId.zeroAccountId(of: 32)
+        ) -> VotingParams {
+            .init(
+                locked: 0,
+                votes: [],
+                prior: .notExisting,
+                delegating: .init(
+                    balance: amount, target: target, conviction: conviction
+                )
+            )
         }
     }
 

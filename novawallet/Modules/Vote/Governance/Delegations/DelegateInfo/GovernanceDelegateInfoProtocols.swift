@@ -37,7 +37,10 @@ protocol GovernanceDelegateInfoInteractorOutputProtocol: AnyObject {
 }
 
 protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-    AddressOptionsPresentable, WebPresentable, IdentityPresentable {
+    AddressOptionsPresentable, WebPresentable, IdentityPresentable,
+    NoAccountSupportPresentable {
+    func showWalletDetails(from view: ControllerBackedProtocol?, wallet: MetaAccountModel)
+
     func showFullDescription(
         from view: GovernanceDelegateInfoViewProtocol?,
         name: String,
@@ -51,12 +54,14 @@ protocol GovernanceDelegateInfoWireframeProtocol: AlertPresentable, ErrorPresent
 
     func showRecentVotes(
         from view: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress: AccountAddress
+        delegateAddress: AccountAddress,
+        delegateName: String?
     )
 
     func showAllVotes(
         from view: GovernanceDelegateInfoViewProtocol?,
-        delegateAddress: AccountAddress
+        delegateAddress: AccountAddress,
+        delegateName: String?
     )
 
     func showAddDelegation(

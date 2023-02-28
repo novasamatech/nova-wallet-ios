@@ -71,7 +71,7 @@ final class GovUnlocksCalculator {
 
                 let unlock = GovernanceUnlockSchedule.Item(
                     amount: vote.totalBalance,
-                    unlockAt: unlockAt,
+                    unlockWhen: .unlockAt(unlockAt),
                     actions: [unvoteAction, unlockAction]
                 )
 
@@ -90,12 +90,12 @@ final class GovUnlocksCalculator {
 
         return GovernanceUnlockSchedule.Item(
             amount: prior.amount,
-            unlockAt: prior.unlockAt,
+            unlockWhen: .unlockAt(prior.unlockAt),
             actions: [priorUnlockAction]
         )
     }
 
-    private func extendUnlocksForVotesWithPriors(
+    private func extendUnlocksFromPriors(
         _ unlocks: [TrackIdLocal: [GovernanceUnlockSchedule.Item]],
         priors: [TrackIdLocal: ConvictionVoting.PriorLock]
     ) -> [TrackIdLocal: [GovernanceUnlockSchedule.Item]] {
@@ -107,15 +107,22 @@ final class GovUnlocksCalculator {
                 return
             }
 
+            let trackUnlocks = unlocks[trackId] ?? []
+
             /// one can't unlock voted amount if there is a prior in the track that unlocks later
-            let items: [GovernanceUnlockSchedule.Item] = (unlocks[trackId] ?? []).map { unlock in
-                if priorLock.unlockAt > unlock.unlockAt {
-                    return GovernanceUnlockSchedule.Item(
-                        amount: unlock.amount,
-                        unlockAt: priorLock.unlockAt,
-                        actions: unlock.actions
-                    )
-                } else {
+            let items: [GovernanceUnlockSchedule.Item] = trackUnlocks.map { unlock in
+                switch unlock.unlockWhen {
+                case let .unlockAt(unlockAtBlock):
+                    if priorLock.unlockAt > unlockAtBlock {
+                        return GovernanceUnlockSchedule.Item(
+                            amount: unlock.amount,
+                            unlockWhen: .unlockAt(priorLock.unlockAt),
+                            actions: unlock.actions
+                        )
+                    } else {
+                        return unlock
+                    }
+                case .afterUndelegate:
                     return unlock
                 }
             }
@@ -127,22 +134,23 @@ final class GovUnlocksCalculator {
         }
     }
 
-    private func extendUnlocksWithDelegatingPriors(
+    private func extendUnlocksFromDelegations(
         _ unlocks: [TrackIdLocal: [GovernanceUnlockSchedule.Item]],
         delegations: [TrackIdLocal: ReferendumDelegatingLocal]
     ) -> [TrackIdLocal: [GovernanceUnlockSchedule.Item]] {
         delegations.reduce(into: unlocks) { accum, keyValue in
             let trackId = keyValue.key
-            let priorLock = keyValue.value.prior
+            let delegation = keyValue.value
 
-            guard priorLock.exists else {
-                return
-            }
+            let trackUnlocks = unlocks[trackId] ?? []
 
-            let priorUnlock = createUnlockFromPrior(priorLock, trackId: trackId)
+            let delegatedUnlock = GovernanceUnlockSchedule.Item(
+                amount: delegation.balance,
+                unlockWhen: .afterUndelegate,
+                actions: []
+            )
 
-            /// one can either vote directly or delegate
-            accum[trackId] = [priorUnlock]
+            accum[trackId] = trackUnlocks + [delegatedUnlock]
         }
     }
 
@@ -161,7 +169,7 @@ final class GovUnlocksCalculator {
 
                 let unlock = GovernanceUnlockSchedule.Item(
                     amount: trackLockAmount,
-                    unlockAt: 0,
+                    unlockWhen: .unlockAt(0),
                     actions: [priorUnlockAction]
                 )
 
@@ -184,12 +192,12 @@ final class GovUnlocksCalculator {
             additionalInfo: additionalInfo
         )
 
-        let voteUnlocksWithPriors = extendUnlocksForVotesWithPriors(
+        let voteUnlocksWithPriors = extendUnlocksFromPriors(
             voteUnlocksByTrack,
             priors: tracksVoting.votes.priorLocks
         )
 
-        let unlocksFromVotesAndDelegatings = extendUnlocksWithDelegatingPriors(
+        let unlocksFromVotesAndDelegatings = extendUnlocksFromDelegations(
             voteUnlocksWithPriors,
             delegations: tracksVoting.votes.delegatings
         )
@@ -200,20 +208,20 @@ final class GovUnlocksCalculator {
     private func flattenUnlocksByBlockNumber(
         from unlocks: [TrackIdLocal: [GovernanceUnlockSchedule.Item]]
     ) -> [GovernanceUnlockSchedule.Item] {
-        let initial = [BlockNumber: GovernanceUnlockSchedule.Item]()
+        let initial = [GovernanceUnlockSchedule.ClaimTime: GovernanceUnlockSchedule.Item]()
 
         let unlocksByBlockNumber = unlocks.reduce(into: initial) { accum, keyValue in
             let trackUnlocks = keyValue.value
 
             for unlock in trackUnlocks {
-                if let prevUnlock = accum[unlock.unlockAt] {
-                    accum[unlock.unlockAt] = .init(
+                if let prevUnlock = accum[unlock.unlockWhen] {
+                    accum[unlock.unlockWhen] = .init(
                         amount: max(unlock.amount, prevUnlock.amount),
-                        unlockAt: unlock.unlockAt,
+                        unlockWhen: unlock.unlockWhen,
                         actions: prevUnlock.actions.union(unlock.actions)
                     )
                 } else {
-                    accum[unlock.unlockAt] = unlock
+                    accum[unlock.unlockWhen] = unlock
                 }
             }
         }
@@ -222,7 +230,7 @@ final class GovUnlocksCalculator {
     }
 
     private func normalizeUnlocks(_ unlocks: [GovernanceUnlockSchedule.Item]) -> [GovernanceUnlockSchedule.Item] {
-        var sortedByBlockNumber = unlocks.sorted(by: { $0.unlockAt > $1.unlockAt })
+        var sortedByBlockNumber = unlocks.sorted(by: { $0.unlockWhen.isAfter(time: $1.unlockWhen) })
 
         var optMaxUnlock: (BigUInt, Int)?
         for (index, unlock) in sortedByBlockNumber.enumerated() {
@@ -237,7 +245,7 @@ final class GovUnlocksCalculator {
                     /// only part of the amount can be unlocked
                     sortedByBlockNumber[index] = .init(
                         amount: unlock.amount - maxAmount,
-                        unlockAt: unlock.unlockAt,
+                        unlockWhen: unlock.unlockWhen,
                         actions: unlock.actions
                     )
                 } else {
@@ -245,11 +253,11 @@ final class GovUnlocksCalculator {
                     let prevUnlock = sortedByBlockNumber[maxIndex]
                     sortedByBlockNumber[maxIndex] = .init(
                         amount: prevUnlock.amount,
-                        unlockAt: prevUnlock.unlockAt,
+                        unlockWhen: prevUnlock.unlockWhen,
                         actions: prevUnlock.actions.union(unlock.actions)
                     )
 
-                    sortedByBlockNumber[index] = .init(amount: 0, unlockAt: unlock.unlockAt, actions: [])
+                    sortedByBlockNumber[index] = .init(amount: 0, unlockWhen: unlock.unlockWhen, actions: [])
                 }
 
             } else {
