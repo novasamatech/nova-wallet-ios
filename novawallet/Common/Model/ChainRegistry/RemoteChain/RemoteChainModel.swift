@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-struct RemoteChainModel: Equatable, Codable, Hashable {
+struct RemoteChainModel: Equatable, Codable {
     let chainId: ChainModel.Id
     let parentId: ChainModel.Id?
     let name: String

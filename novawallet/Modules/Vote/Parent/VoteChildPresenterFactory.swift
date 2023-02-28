@@ -178,15 +178,21 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
+            stringDisplayViewModelFactory: ReferendumDisplayStringFactory(),
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
+
+        let activityViewModelFactory = ReferendumsActivityViewModelFactory(
+            assetBalanceFormatterFactory: assetBalanceFormatterFactory
         )
 
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            activityViewModelFactory: activityViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             sorting: ReferendumsTimeSortingProvider(),

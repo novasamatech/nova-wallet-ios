@@ -12,4 +12,5 @@ enum ReferendumsInteractorError: Error {
     case blockTimeFetchFailed(_ internalError: Error)
     case blockTimeServiceFailed(_ internalError: Error)
     case unlockScheduleFetchFailed(_ internalError: Error)
+    case offchainVotingFetchFailed(_ internalError: Error)
 }

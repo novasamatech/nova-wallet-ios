@@ -30,7 +30,7 @@ final class Gov2LocalMappingFactory {
         )
 
         let localTrack = GovernanceTrackLocal(
-            trackId: status.track,
+            trackId: TrackIdLocal(status.track),
             name: track.name,
             totalTracksCount: additionalInfo.tracks.count
         )
@@ -80,7 +80,7 @@ final class Gov2LocalMappingFactory {
         )
 
         let localTrack = GovernanceTrackLocal(
-            trackId: status.track,
+            trackId: TrackIdLocal(status.track),
             name: track.name,
             totalTracksCount: additionalInfo.tracks.count
         )
