@@ -1,7 +1,11 @@
 import Foundation
 
 enum BagList {
+    static var defaultModuleName: String {
+        "VoterList"
+    }
+
     static var possibleModuleNames: [String] {
-        ["VoterList", "BagsList"]
+        [defaultModuleName, "BagsList"]
     }
 }

@@ -8,4 +8,8 @@ extension BagList {
     static func bagListSizePath(for moduleName: String) -> StorageCodingPath {
         .init(moduleName: moduleName, itemName: "CounterForListNodes")
     }
+
+    static var defaultBagListSizePath: StorageCodingPath {
+        bagListSizePath(for: BagList.defaultModuleName)
+    }
 }

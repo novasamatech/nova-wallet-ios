@@ -54,15 +54,34 @@ final class StakingRelaychainPresenter {
         return accountId.flatMap { accounts[$0] }
     }
 
+    private func updateMinStakeAndProvideInfo() {
+        if let networkStakingInfo = networkStakingInfo {
+            let commondData = stateMachine.viewState { (state: BaseStakingState) in state.commonData }
+            let minStake = networkStakingInfo.calculateMinimumStake(
+                given: commondData?.minNominatorBond,
+                votersCount: commondData?.bagListSize
+            )
+
+            stateMachine.state.process(minStake: minStake)
+        }
+
+        provideStakingInfo()
+    }
+
     private func provideStakingInfo() {
         let commonData = stateMachine.viewState { (state: BaseStakingState) in state.commonData }
 
         if let chainAsset = commonData?.chainAsset, let networkStakingInfo = networkStakingInfo {
+            let params = NetworkInfoViewModelParams(
+                minNominatorBond: commonData?.minNominatorBond,
+                votersCount: commonData?.bagListSize
+            )
+
             let networkStakingInfoViewModel = networkInfoViewModelFactory
                 .createNetworkStakingInfoViewModel(
                     with: networkStakingInfo,
                     chainAsset: chainAsset,
-                    minNominatorBond: commonData?.minNominatorBond,
+                    params: params,
                     priceData: commonData?.price
                 )
             view?.didRecieveNetworkStakingInfo(viewModel: networkStakingInfoViewModel)
@@ -499,10 +518,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
     func didReceive(networkStakingInfo: NetworkStakingInfo) {
         self.networkStakingInfo = networkStakingInfo
 
-        let commondData = stateMachine.viewState { (state: BaseStakingState) in state.commonData }
-        let minStake = networkStakingInfo.calculateMinimumStake(given: commondData?.minNominatorBond)
-        stateMachine.state.process(minStake: minStake)
-        provideStakingInfo()
+        updateMinStakeAndProvideInfo()
     }
 
     func didReceive(networkStakingInfoError: Error) {
@@ -543,16 +559,7 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         switch result {
         case let .success(minNominatorBond):
             stateMachine.state.process(minNominatorBond: minNominatorBond)
-
-            if let networkStakingInfo = networkStakingInfo {
-                let minStake = networkStakingInfo.calculateMinimumStake(
-                    given: minNominatorBond
-                )
-
-                stateMachine.state.process(minStake: minStake)
-            }
-
-            provideStakingInfo()
+            updateMinStakeAndProvideInfo()
 
         case let .failure(error):
             handle(error: error)
@@ -572,6 +579,16 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         switch result {
         case let .success(maxNominatorsCount):
             stateMachine.state.process(maxNominatorsCount: maxNominatorsCount)
+        case let .failure(error):
+            handle(error: error)
+        }
+    }
+
+    func didReceiveBagListSize(result: Result<UInt32?, Error>) {
+        switch result {
+        case let .success(bagListSize):
+            stateMachine.state.process(bagListSize: bagListSize)
+            updateMinStakeAndProvideInfo()
         case let .failure(error):
             handle(error: error)
         }

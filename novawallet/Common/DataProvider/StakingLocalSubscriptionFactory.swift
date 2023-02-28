@@ -19,6 +19,11 @@ protocol StakingLocalSubscriptionFactoryProtocol {
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32>
 
+    func getBagListSizeProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32>
+
     func getNominationProvider(for accountId: AccountId, chainId: ChainModel.Id) throws
         -> AnyDataProvider<DecodedNomination>
 
@@ -95,6 +100,26 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
         let codingPath = StorageCodingPath.maxNominatorsCount
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: codingPath,
+            fallback: fallback
+        )
+    }
+
+    func getBagListSizeProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
+        let codingPath = BagList.defaultBagListSizePath
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
         let fallback = StorageProviderSourceFallback(

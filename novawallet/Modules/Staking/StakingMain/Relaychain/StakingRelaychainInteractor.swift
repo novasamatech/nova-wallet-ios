@@ -53,6 +53,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
     var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
+    var bagListSizeProvider: AnyDataProvider<DecodedU32>?
     var rewardAnalyticsProvider: AnySingleValueProvider<[SubqueryRewardItemData]>?
 
     init(
