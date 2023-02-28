@@ -30,21 +30,23 @@ final class ReferendumVotersLocalWrapperFactory: GovOffchainModelWrapperFactory<
         self.operationFactory = operationFactory
 
         super.init(
-            identityParams: .init(operationFactory: identityOperationFactory) { delegations in
-                delegations.flatMap { delegation in
-                    [delegation.accountId] + delegation.delegators.compactMap {
-                        try? $0.delegator.toAccountId()
-                    }
-                }
-            },
-            metadataParams: .init(operationFactory: metadataOperationFactory) { delegations in
-                delegations.flatMap { delegation in
-                    [delegation.accountId] + delegation.delegators.compactMap {
-                        try? $0.delegator.toAccountId()
-                    }
-                }
-            }
+            identityParams: .init(
+                operationFactory: identityOperationFactory,
+                closure: Self.mapAccounts
+            ),
+            metadataParams: .init(
+                operationFactory: metadataOperationFactory,
+                closure: Self.mapAccounts
+            )
         )
+    }
+
+    private static func mapAccounts(from delegations: [ReferendumVoterLocal]) -> [AccountId] {
+        delegations.flatMap { delegation in
+            [delegation.accountId] + delegation.delegators.compactMap {
+                try? $0.delegator.toAccountId()
+            }
+        }
     }
 
     override func createModelWrapper(
