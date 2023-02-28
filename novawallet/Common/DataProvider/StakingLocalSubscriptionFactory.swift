@@ -119,8 +119,14 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         for chainId: ChainModel.Id,
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
-        let codingPath = BagList.defaultBagListSizePath
-        let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+        let possibleCodingPaths = BagList.possibleModuleNames.map {
+            BagList.bagListSizePath(for: $0)
+        }
+
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            BagList.defaultBagListSizePath,
+            chainId: chainId
+        )
 
         let fallback = StorageProviderSourceFallback(
             usesRuntimeFallback: false,
@@ -130,7 +136,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         return try getDataProvider(
             for: localKey,
             chainId: chainId,
-            storageCodingPath: codingPath,
+            possibleCodingPaths: possibleCodingPaths,
             fallback: fallback
         )
     }

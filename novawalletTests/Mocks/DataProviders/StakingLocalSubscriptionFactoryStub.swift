@@ -8,6 +8,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     let minNominatorBond: BigUInt?
     let counterForNominators: UInt32?
     let maxNominatorsCount: UInt32?
+    let bagListSize: UInt32?
     let nomination: Nomination?
     let validatorPrefs: ValidatorPrefs?
     let ledgerInfo: StakingLedger?
@@ -22,6 +23,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         minNominatorBond: BigUInt? = nil,
         counterForNominators: UInt32? = nil,
         maxNominatorsCount: UInt32? = nil,
+        bagListSize: UInt32? = nil,
         nomination: Nomination? = nil,
         validatorPrefs: ValidatorPrefs? = nil,
         ledgerInfo: StakingLedger? = nil,
@@ -35,6 +37,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         self.minNominatorBond = minNominatorBond
         self.counterForNominators = counterForNominators
         self.maxNominatorsCount = maxNominatorsCount
+        self.bagListSize = bagListSize
         self.nomination = nomination
         self.validatorPrefs = validatorPrefs
         self.ledgerInfo = ledgerInfo
@@ -119,6 +122,31 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         }()
 
         return AnyDataProvider(DataProviderStub(models: [maxNominatorsCountModel]))
+    }
+
+    func getBagListSizeProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
+        let localIdentifierFactory = LocalStorageKeyFactory()
+
+        let bagListSizeModel: DecodedU32 = try {
+            let localKey = try localIdentifierFactory.createFromStoragePath(
+                BagList.defaultBagListSizePath,
+                chainId: chainId
+            )
+
+            if let bagListSize = bagListSize {
+                return DecodedU32(
+                    identifier: localKey,
+                    item: StringScaleMapper(value: bagListSize)
+                )
+            } else {
+                return DecodedU32(identifier: localKey, item: nil)
+            }
+        }()
+
+        return AnyDataProvider(DataProviderStub(models: [bagListSizeModel]))
     }
 
     func getNominationProvider(
