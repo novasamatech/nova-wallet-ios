@@ -41,6 +41,14 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if dataSource.snapshot().numberOfItems == 0 {
+            rootView.updateLoadingState()
+        }
+    }
+
     private func createDataSource() -> DataSource {
         .init(tableView: rootView.tableView) { [weak self] tableView, indexPath, model -> UITableViewCell? in
             guard let self = self else {
@@ -118,6 +126,12 @@ extension AddDelegationViewController: AddDelegationViewProtocol {
         snapshot.appendSections([.main])
         snapshot.appendItems(delegateViewModels)
         dataSource.apply(snapshot, animatingDifferences: false)
+
+        if delegateViewModels.isEmpty {
+            rootView.startLoadingIfNeeded()
+        } else {
+            rootView.stopLoadingIfNeeded()
+        }
     }
 
     func didReceive(filter: GovernanceDelegatesFilter) {

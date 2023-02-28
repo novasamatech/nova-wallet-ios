@@ -2284,6 +2284,7 @@
 		84E2ABC82992724600A5D3C1 /* GovernanceDelegatorAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2ABC72992724600A5D3C1 /* GovernanceDelegatorAction.swift */; };
 		84E2ABCA2992891300A5D3C1 /* GovernanceDelegateInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2ABC92992891300A5D3C1 /* GovernanceDelegateInteractor.swift */; };
 		84E2ABCC29939E6B00A5D3C1 /* GovernanceDelegateValidatingParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2ABCB29939E6B00A5D3C1 /* GovernanceDelegateValidatingParams.swift */; };
+		84E4897329A79017008726FA /* SkeletonDecoration+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E4897229A79017008726FA /* SkeletonDecoration+View.swift */; };
 		84E493252731C064000534F2 /* AssetListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E493242731C064000534F2 /* AssetListViewModel.swift */; };
 		84E4932727325D4E000534F2 /* AssetListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E4932627325D4E000534F2 /* AssetListViewModelFactory.swift */; };
 		84E58C7D275E125100BD441A /* PublicSans-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84E58C7C275E124A00BD441A /* PublicSans-ExtraLight.otf */; };
@@ -5609,6 +5610,7 @@
 		84E2ABC72992724600A5D3C1 /* GovernanceDelegatorAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegatorAction.swift; sourceTree = "<group>"; };
 		84E2ABC92992891300A5D3C1 /* GovernanceDelegateInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateInteractor.swift; sourceTree = "<group>"; };
 		84E2ABCB29939E6B00A5D3C1 /* GovernanceDelegateValidatingParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateValidatingParams.swift; sourceTree = "<group>"; };
+		84E4897229A79017008726FA /* SkeletonDecoration+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SkeletonDecoration+View.swift"; sourceTree = "<group>"; };
 		84E493242731C064000534F2 /* AssetListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListViewModel.swift; sourceTree = "<group>"; };
 		84E4932627325D4E000534F2 /* AssetListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListViewModelFactory.swift; sourceTree = "<group>"; };
 		84E58C7C275E124A00BD441A /* PublicSans-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-ExtraLight.otf"; sourceTree = "<group>"; };
@@ -10695,6 +10697,7 @@
 				845FC93326B09EDB0021EC48 /* RoundedButton+Style.swift */,
 				F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */,
 				849ECD3826DF792800F542A3 /* SkeletonRow+View.swift */,
+				84E4897229A79017008726FA /* SkeletonDecoration+View.swift */,
 				849D755A2756910A007726C3 /* RoundedView+Styles.swift */,
 				84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */,
 				8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */,
@@ -16627,6 +16630,7 @@
 				F471897626C297AA006487AD /* AnalyticsValidatorsPage.swift in Sources */,
 				849D14CC2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift in Sources */,
 				F44CD8F426242825005DDF23 /* PayoutRewardsService+Fetch.swift in Sources */,
+				84E4897329A79017008726FA /* SkeletonDecoration+View.swift in Sources */,
 				2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */,
 				845B07FF2916F529005785D3 /* Gov1SubscriptionFactory.swift in Sources */,
 				888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */,
