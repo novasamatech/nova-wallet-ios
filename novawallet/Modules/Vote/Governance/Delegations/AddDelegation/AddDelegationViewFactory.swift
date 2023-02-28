@@ -61,7 +61,6 @@ struct AddDelegationViewFactory {
         return AddDelegationInteractor(
             chain: chain,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
-            fetchBlockTreshold: GovernanceDelegationConstants.delegateFetchBlockThreshold,
             connection: connection,
             runtimeService: runtimeProvider,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

@@ -5,6 +5,12 @@ final class GovernanceDelegateMetadataFactory: BaseFetchOperationFactory {
     // swiftlint:disable:next line_length
     static let baseUrl = URL(string: "https://raw.githubusercontent.com/nova-wallet/opengov-delegate-registry/master/registry/")!
 
+    let timeout: TimeInterval
+
+    init(timeout: TimeInterval = 10) {
+        self.timeout = timeout
+    }
+
     func createUrl(for chain: ChainModel) -> URL {
         let normalizedName = chain.name.lowercased()
 
@@ -17,6 +23,6 @@ final class GovernanceDelegateMetadataFactory: BaseFetchOperationFactory {
 extension GovernanceDelegateMetadataFactory: GovernanceDelegateMetadataFactoryProtocol {
     func fetchMetadataOperation(for chain: ChainModel) -> BaseOperation<[GovernanceDelegateMetadataRemote]> {
         let url = createUrl(for: chain)
-        return createFetchOperation(from: url)
+        return createFetchOperation(from: url, shouldUseCache: false, timeout: timeout)
     }
 }
