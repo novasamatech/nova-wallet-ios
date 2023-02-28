@@ -12,7 +12,7 @@ extension GovernanceDelegateTableViewCell {
 
     func applyStyle() {
         shouldApplyHighlighting = true
-        contentInsets = .init(top: 4, left: 0, bottom: 4, right: 0)
+        contentInsets = .init(top: 4, left: 16, bottom: 4, right: 16)
         innerInsets = .init(top: 12, left: 12, bottom: 12, right: 12)
         backgroundBlurView.sideLength = 12
     }

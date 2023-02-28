@@ -37,6 +37,14 @@ final class GovernanceYourDelegationsViewController: UIViewController, ViewHolde
         presenter.setup()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if !dataStore.isEmpty {
+            rootView.updateLoadingState()
+        }
+    }
+
     private func setupLocalization() {
         title = R.string.localizable.governanceReferendumsYourDelegations(
             preferredLanguages: selectedLocale.rLanguages
@@ -107,6 +115,12 @@ extension GovernanceYourDelegationsViewController: GovernanceYourDelegationsView
         }
 
         dataSource.apply(snapshot, animatingDifferences: false)
+
+        if viewModels.isEmpty {
+            rootView.startLoadingIfNeeded()
+        } else {
+            rootView.stopLoadingIfNeeded()
+        }
     }
 }
 

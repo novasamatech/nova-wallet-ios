@@ -87,7 +87,6 @@ struct GovernanceDelegateInfoViewFactory {
             delegate: delegateAccountId,
             chain: chain,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
-            fetchBlockTreshold: GovernanceDelegationConstants.delegateFetchBlockThreshold,
             referendumOperationFactory: referendumsOperationFactory,
             subscriptionFactory: subscriptionFactory,
             detailsOperationFactory: statsOperationFactory,
