@@ -55,7 +55,7 @@ final class AddDelegationViewLayout: UIView {
         }
         addSubview(tableView)
         tableView.snp.makeConstraints {
-            $0.top.equalTo(topView.snp.bottom).offset(0)
+            $0.top.equalTo(topView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
