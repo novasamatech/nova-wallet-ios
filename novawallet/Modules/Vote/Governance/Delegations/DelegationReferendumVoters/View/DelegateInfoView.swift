@@ -74,17 +74,25 @@ final class DelegateInfoView: UIView {
         baseView.detailsView.makeHorizontal()
         baseView.detailsView.fView.sView.contentInsets = .init(top: 1, left: 4, bottom: 1, right: 6)
         baseView.detailsView.fView.sView.backgroundView.cornerRadius = 5
+        baseView.detailsView.fView.spacing = 4
 
         nameLabel.numberOfLines = 1
         nameLabel.apply(style: .footnotePrimary)
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+        typeView.setContentHuggingPriority(.required, for: .horizontal)
     }
 }
 
 extension DelegateInfoView {
-    struct Model {
+    struct Model: Equatable {
         let type: GovernanceDelegateTypeView.Model?
         let addressViewModel: DisplayAddressViewModel
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.type == rhs.type && lhs.addressViewModel.address == rhs.addressViewModel.address &&
+                lhs.addressViewModel.name == rhs.addressViewModel.name
+        }
     }
 
     func bind(viewModel: Model) {
