@@ -20,11 +20,12 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
     typealias Model = ChainStorageDecodedItem<T>
 
     let itemIdentifier: String
-    let codingPath: StorageCodingPath
+    let possibleCodingPaths: [StorageCodingPath]
     let runtimeService: RuntimeCodingServiceProtocol
     let provider: StreamableProvider<ChainStorageItem>
     let trigger: DataProviderTriggerProtocol
     let fallback: StorageProviderSourceFallback<T>
+    let operationManager: OperationManagerProtocol
 
     private var lastSeenResult: LastSeen = .waiting
     private var lastSeenError: Error?
@@ -33,20 +34,42 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
 
     init(
         itemIdentifier: String,
-        codingPath: StorageCodingPath,
+        possibleCodingPaths: [StorageCodingPath],
         runtimeService: RuntimeCodingServiceProtocol,
         provider: StreamableProvider<ChainStorageItem>,
         trigger: DataProviderTriggerProtocol,
-        fallback: StorageProviderSourceFallback<T>
+        fallback: StorageProviderSourceFallback<T>,
+        operationManager: OperationManagerProtocol
     ) {
         self.itemIdentifier = itemIdentifier
-        self.codingPath = codingPath
+        self.possibleCodingPaths = possibleCodingPaths
         self.runtimeService = runtimeService
         self.provider = provider
         self.trigger = trigger
         self.fallback = fallback
+        self.operationManager = operationManager
 
         subscribe()
+    }
+
+    convenience init(
+        itemIdentifier: String,
+        codingPath: StorageCodingPath,
+        runtimeService: RuntimeCodingServiceProtocol,
+        provider: StreamableProvider<ChainStorageItem>,
+        trigger: DataProviderTriggerProtocol,
+        fallback: StorageProviderSourceFallback<T>,
+        operationManager: OperationManagerProtocol
+    ) {
+        self.init(
+            itemIdentifier: itemIdentifier,
+            possibleCodingPaths: [codingPath],
+            runtimeService: runtimeService,
+            provider: provider,
+            trigger: trigger,
+            fallback: fallback,
+            operationManager: operationManager
+        )
     }
 
     // MARK: Private
@@ -100,18 +123,31 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
     }
 
     private func prepareFallbackBaseOperation(
-        for missingEntryStrategy: MissingRuntimeEntryStrategy<T>
+        for missingEntryStrategy: MissingRuntimeEntryStrategy<T>,
+        storagePath: StorageCodingPath?,
+        lastSeenResult: LastSeen,
+        lastSeenError: Error?
     ) -> CompoundOperationWrapper<T?> {
         if let error = lastSeenError {
             return CompoundOperationWrapper<T?>.createWithError(error)
         }
 
+        guard let storagePath = storagePath else {
+            switch missingEntryStrategy {
+            case .emitError:
+                return CompoundOperationWrapper.createWithError(StorageDecodingOperationError.invalidStoragePath)
+            case let .defaultValue(value):
+                return CompoundOperationWrapper.createWithResult(value)
+            }
+        }
+
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let decodingOperation = StorageFallbackDecodingOperation<T>(
-            path: codingPath,
+            path: storagePath,
             data: lastSeenResult.data
         )
+
         decodingOperation.configurationBlock = {
             do {
                 decodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -143,16 +179,18 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
         )
     }
 
-    private func prepareOptionalBaseNillOperation(
+    private func prepareOptionalBaseNilOperation(
         for missingEntryStrategy: MissingRuntimeEntryStrategy<T>,
-        codingPath: StorageCodingPath
+        storagePath: StorageCodingPath?
     ) -> CompoundOperationWrapper<T?> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let mapOperation = ClosureOperation<T?> {
             let runtime = try codingFactoryOperation.extractNoCancellableResultData().metadata
 
-            if runtime.getStorageMetadata(in: codingPath.moduleName, storageName: codingPath.itemName) != nil {
+            if
+                let storagePath = storagePath,
+                runtime.getStorageMetadata(for: storagePath) != nil {
                 return nil
             } else {
                 switch missingEntryStrategy {
@@ -170,19 +208,22 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
     }
 
     private func prepareOptionalBaseOperation(
-        for missingEntryStrategy: MissingRuntimeEntryStrategy<T>
+        for missingEntryStrategy: MissingRuntimeEntryStrategy<T>,
+        storagePath: StorageCodingPath?,
+        lastSeenResult: LastSeen,
+        lastSeenError: Error?
     ) -> CompoundOperationWrapper<T?> {
         if let error = lastSeenError {
             return CompoundOperationWrapper<T?>.createWithError(error)
         }
 
-        guard let data = lastSeenResult.data else {
-            return prepareOptionalBaseNillOperation(for: missingEntryStrategy, codingPath: codingPath)
+        guard let storagePath = storagePath, let data = lastSeenResult.data else {
+            return prepareOptionalBaseNilOperation(for: missingEntryStrategy, storagePath: storagePath)
         }
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let decodingOperation = StorageDecodingOperation<T>(path: codingPath, data: data)
+        let decodingOperation = StorageDecodingOperation<T>(path: storagePath, data: data)
         decodingOperation.configurationBlock = {
             do {
                 decodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -204,6 +245,60 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
             dependencies: [codingFactoryOperation, decodingOperation]
         )
     }
+
+    private func resolveCodingPathAndPrepareDecodingOperation(
+        for codingPaths: [StorageCodingPath],
+        fallback: StorageProviderSourceFallback<T>,
+        lastSeenResult: LastSeen,
+        lastSeenError: Error?
+    ) -> CompoundOperationWrapper<T?> {
+        let decodingWrapperClosure: (StorageCodingPath?) -> CompoundOperationWrapper<T?> = { storagePath in
+            if fallback.usesRuntimeFallback {
+                return self.prepareFallbackBaseOperation(
+                    for: fallback.missingEntryStrategy,
+                    storagePath: storagePath,
+                    lastSeenResult: lastSeenResult,
+                    lastSeenError: lastSeenError
+                )
+            } else {
+                return self.prepareOptionalBaseOperation(
+                    for: fallback.missingEntryStrategy,
+                    storagePath: storagePath,
+                    lastSeenResult: lastSeenResult,
+                    lastSeenError: lastSeenError
+                )
+            }
+        }
+
+        guard codingPaths.count > 1 else {
+            return decodingWrapperClosure(codingPaths.first)
+        }
+
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let resolutionOperation = ClosureOperation<StorageCodingPath?> {
+            let metadata = try codingFactoryOperation.extractNoCancellableResultData().metadata
+            return codingPaths.first { metadata.getStorageMetadata(for: $0) != nil }
+        }
+
+        resolutionOperation.addDependency(codingFactoryOperation)
+
+        let decodingWrapper: CompoundOperationWrapper<T?> = OperationCombiningService.compoundOptionalWrapper(
+            operationManager: operationManager
+        ) {
+            let storagePath = try resolutionOperation.extractNoCancellableResultData()
+            return decodingWrapperClosure(storagePath)
+        }
+
+        decodingWrapper.addDependency(operations: [resolutionOperation])
+
+        let dependencies = [codingFactoryOperation, resolutionOperation] + decodingWrapper.dependencies
+
+        return CompoundOperationWrapper(
+            targetOperation: decodingWrapper.targetOperation,
+            dependencies: dependencies
+        )
+    }
 }
 
 extension StorageProviderSource {
@@ -219,9 +314,13 @@ extension StorageProviderSource {
             return CompoundOperationWrapper<Model?>.createWithResult(value)
         }
 
-        let baseOperationWrapper = fallback.usesRuntimeFallback ?
-            prepareFallbackBaseOperation(for: fallback.missingEntryStrategy) :
-            prepareOptionalBaseOperation(for: fallback.missingEntryStrategy)
+        let baseOperationWrapper = resolveCodingPathAndPrepareDecodingOperation(
+            for: possibleCodingPaths,
+            fallback: fallback,
+            lastSeenResult: lastSeenResult,
+            lastSeenError: lastSeenError
+        )
+
         let mappingOperation: BaseOperation<Model?> = ClosureOperation {
             if let item = try baseOperationWrapper.targetOperation.extractNoCancellableResultData() {
                 return ChainStorageDecodedItem(identifier: modelId, item: item)
@@ -248,9 +347,13 @@ extension StorageProviderSource {
 
         let currentId = itemIdentifier
 
-        let baseOperationWrapper = fallback.usesRuntimeFallback ?
-            prepareFallbackBaseOperation(for: fallback.missingEntryStrategy) :
-            prepareOptionalBaseOperation(for: fallback.missingEntryStrategy)
+        let baseOperationWrapper = resolveCodingPathAndPrepareDecodingOperation(
+            for: possibleCodingPaths,
+            fallback: fallback,
+            lastSeenResult: lastSeenResult,
+            lastSeenError: lastSeenError
+        )
+
         let mappingOperation: BaseOperation<[Model]> = ClosureOperation {
             if let item = try baseOperationWrapper.targetOperation.extractNoCancellableResultData() {
                 return [ChainStorageDecodedItem(identifier: currentId, item: item)]
