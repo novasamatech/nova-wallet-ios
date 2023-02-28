@@ -62,7 +62,6 @@ struct GovernanceYourDelegationsViewFactory {
             selectedAccountId: selectedAccountId,
             chain: chain,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
-            fetchBlockTreshold: GovernanceDelegationConstants.delegateFetchBlockThreshold,
             subscriptionFactory: subscriptionFactory,
             referendumsOperationFactory: referendumsOperationFactory,
             offchainOperationFactory: offchainOperationFactory,
