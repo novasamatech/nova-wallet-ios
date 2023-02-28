@@ -9,3 +9,13 @@ final class StorageSubscriptionObserver<T: Decodable, V: Equatable>: Observable<
         super.init(state: nil)
     }
 }
+
+final class BatchStorageSubscriptionObserver<T: JSONListConvertible, V: Equatable>: Observable<V?> {
+    let subscription: CallbackBatchStorageSubscription<T>
+
+    init(subscription: CallbackBatchStorageSubscription<T>) {
+        self.subscription = subscription
+
+        super.init(state: nil)
+    }
+}
