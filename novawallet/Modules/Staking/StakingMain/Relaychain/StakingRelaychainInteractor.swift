@@ -46,6 +46,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var validatorProvider: AnyDataProvider<DecodedValidator>?
     var nominatorProvider: AnyDataProvider<DecodedNomination>?
     var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
+    var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
     var payeeProvider: AnyDataProvider<DecodedPayee>?
     var controllerAccountProvider: StreamableProvider<MetaAccountModel>?

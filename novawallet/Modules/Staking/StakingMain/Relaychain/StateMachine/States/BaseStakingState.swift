@@ -119,6 +119,7 @@ class BaseStakingState: StakingStateProtocol {
     func process(validatorPrefs _: ValidatorPrefs?) {}
     func process(totalReward _: TotalRewardItem?) {}
     func process(payee _: RewardDestinationArg?) {}
+    func process(bagListNode _: BagList.Node?) {}
 
     func process(eraCountdown: EraCountdown) {
         commonData = commonData.byReplacing(eraCountdown: eraCountdown)

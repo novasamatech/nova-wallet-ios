@@ -594,6 +594,15 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         }
     }
 
+    func didReceiveBagListNode(result: Result<BagList.Node?, Error>) {
+        switch result {
+        case let .success(bagListNode):
+            stateMachine.state.process(bagListNode: bagListNode)
+        case let .failure(error):
+            handle(error: error)
+        }
+    }
+
     func didReceive(eraCountdownResult: Result<EraCountdown, Error>) {
         switch eraCountdownResult {
         case let .success(eraCountdown):

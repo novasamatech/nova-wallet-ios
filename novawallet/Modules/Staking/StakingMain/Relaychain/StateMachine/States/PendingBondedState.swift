@@ -19,7 +19,8 @@ final class PendingBondedState: BaseStashNextState {
                 stashItem: stashItem,
                 ledgerInfo: ledgerInfo,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else {
             newState = self
@@ -43,7 +44,8 @@ final class PendingBondedState: BaseStashNextState {
                 ledgerInfo: nil,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else {
             newState = self

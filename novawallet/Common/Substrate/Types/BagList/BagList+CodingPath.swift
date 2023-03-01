@@ -12,4 +12,12 @@ extension BagList {
     static var defaultBagListSizePath: StorageCodingPath {
         bagListSizePath(for: BagList.defaultModuleName)
     }
+
+    static func bagListNode(for moduleName: String) -> StorageCodingPath {
+        .init(moduleName: moduleName, itemName: "ListNodes")
+    }
+
+    static var defaultBagListNodePath: StorageCodingPath {
+        bagListNode(for: BagList.defaultModuleName)
+    }
 }
