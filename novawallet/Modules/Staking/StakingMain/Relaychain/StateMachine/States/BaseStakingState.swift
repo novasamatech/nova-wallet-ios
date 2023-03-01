@@ -113,6 +113,14 @@ class BaseStakingState: StakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
+    func process(bagListScoreFactor: BigUInt?) {
+        if bagListScoreFactor != commonData.bagListScoreFactor {
+            commonData = commonData.byReplacing(bagListScoreFactor: bagListScoreFactor)
+
+            stateMachine?.transit(to: self)
+        }
+    }
+
     func process(stashItem _: StashItem?) {}
     func process(ledgerInfo _: StakingLedger?) {}
     func process(nomination _: Nomination?) {}

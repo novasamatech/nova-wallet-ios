@@ -1121,3 +1121,5 @@
 "in.app.updates.button.show.more.title" = "Посмотреть все доступные обновления";
 "in.app.updates.version.title" = "Версия %@";
 "in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";
+"staking.improvements" = "Улучшения стейкинга";
+"staking.rebag.alert.message" = "Устаревшая позиция в очереди на передачу стейка валидатору может привести к остановке поступления наград";

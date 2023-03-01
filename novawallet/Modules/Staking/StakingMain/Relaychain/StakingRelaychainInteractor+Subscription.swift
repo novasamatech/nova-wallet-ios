@@ -126,14 +126,7 @@ extension StakingRelaychainInteractor {
         stashAccountProvider = subscribeForAccountId(accountId, chain: chain)
     }
 
-    func clearNominatorsLimitProviders() {
-        clear(dataProvider: &minNominatorBondProvider)
-        clear(dataProvider: &counterForNominatorsProvider)
-        clear(dataProvider: &maxNominatorsCountProvider)
-        clear(dataProvider: &bagListSizeProvider)
-    }
-
-    func performNominatorLimitsSubscripion() {
+    func performNominatorLimitsSubscription() {
         guard let chainId = selectedChainAsset?.chain.chainId else {
             return
         }
@@ -141,7 +134,15 @@ extension StakingRelaychainInteractor {
         minNominatorBondProvider = subscribeToMinNominatorBond(for: chainId)
         counterForNominatorsProvider = subscribeToCounterForNominators(for: chainId)
         maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainId)
+    }
+
+    func performBagListParamsSubscription() {
+        guard let chainId = selectedChainAsset?.chain.chainId else {
+            return
+        }
+
         bagListSizeProvider = subscribeBagsListSize(for: chainId)
+        totalIssuanceProvider = subscribeTotalIssuance(for: chainId)
     }
 
     private func subscribeRewardsAnalytics(for stash: AccountAddress) {
@@ -255,6 +256,16 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
 
     func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         presenter?.didReceiveBagListSize(result: result)
+    }
+
+    func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(totalIssuance):
+            let scoreFactor = totalIssuance.map { BagList.scoreFactor(for: $0) }
+            presenter?.didReceiveBagListScoreFactor(result: .success(scoreFactor))
+        case let .failure(error):
+            presenter?.didReceiveBagListScoreFactor(result: .failure(error))
+        }
     }
 }
 

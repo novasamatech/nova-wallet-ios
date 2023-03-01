@@ -329,6 +329,10 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
         }
     }
 
+    func performRebag() {
+        wireframe.showRebagConfirm(from: view)
+    }
+
     func performAnalyticsAction() {
         let isNominator: AnalyticsContainerViewMode = {
             if stateMachine.viewState(using: { (state: ValidatorState) in state }) != nil {
@@ -598,6 +602,15 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         switch result {
         case let .success(bagListNode):
             stateMachine.state.process(bagListNode: bagListNode)
+        case let .failure(error):
+            handle(error: error)
+        }
+    }
+
+    func didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>) {
+        switch result {
+        case let .success(bagListScoreFactor):
+            stateMachine.state.process(bagListScoreFactor: bagListScoreFactor)
         case let .failure(error):
             handle(error: error)
         }
