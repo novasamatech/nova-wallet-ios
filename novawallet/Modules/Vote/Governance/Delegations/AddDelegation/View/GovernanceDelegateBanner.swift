@@ -16,8 +16,7 @@ final class GovernanceDelegateBanner: UIView {
         $0.roundedBackgroundView?.strokeColor = .clear
         $0.roundedBackgroundView?.highlightedStrokeColor = .clear
         $0.roundedBackgroundView?.cornerRadius = 12
-        $0.contentInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-        $0.imageWithTitleView?.iconImage = R.image.iconClose()?.tinted(with: R.color.colorIconChip()!)
+        $0.imageWithTitleView?.iconImage = R.image.iconBannerClose()
         $0.changesContentOpacityWhenHighlighted = true
     }
 
