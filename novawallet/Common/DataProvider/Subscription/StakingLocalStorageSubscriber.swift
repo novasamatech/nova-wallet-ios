@@ -27,6 +27,11 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
     func subscribeLedgerInfo(for accountId: AccountId, chainId: ChainModel.Id)
         -> AnyDataProvider<DecodedLedgerInfo>?
 
+    func subscribeBagListNode(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedBagListNode>?
+
     func subscribeActiveEra(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedActiveEra>?
 
     func subscribeCurrentEra(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedEraIndex>?
@@ -304,38 +309,82 @@ extension StakingLocalStorageSubscriber {
             return nil
         }
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<DecodedLedgerInfo>]) in
-            let ledgerInfo = changes.reduceToLastChange()
-            self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
-                result: .success(ledgerInfo?.item),
-                accountId: accountId,
-                chainId: chainId
-            )
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
-                result: .failure(error),
-                accountId: accountId,
-                chainId: chainId
-            )
-            return
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        ledgerProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
+        addDataProviderObserver(
+            for: ledgerProvider,
+            updateClosure: { [weak self] value in
+                self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
+                    result: .success(value),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            }
         )
 
         return ledgerProvider
+    }
+
+    func subscribeBagListNode(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedBagListNode>? {
+        guard
+            let nodeProvider = try? stakingLocalSubscriptionFactory.getBagListNodeProvider(
+                for: accountId,
+                chainId: chainId
+            ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: nodeProvider,
+            updateClosure: { [weak self] value in
+                self?.stakingLocalSubscriptionHandler.handleBagListNode(
+                    result: .success(value),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleBagListNode(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            }
+        )
+
+        return nodeProvider
+    }
+
+    private func addDataProviderObserver<T: Decodable>(
+        for provider: AnyDataProvider<ChainStorageDecodedItem<T>>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        options: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+    ) {
+        let update = { (changes: [DataProviderChange<ChainStorageDecodedItem<T>>]) in
+            let value = changes.reduceToLastChange()
+            updateClosure(value?.item)
+        }
+
+        let failure = { error in
+            failureClosure(error)
+        }
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: update,
+            failing: failure,
+            options: options
+        )
     }
 
     func subscribeActiveEra(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedActiveEra>? {

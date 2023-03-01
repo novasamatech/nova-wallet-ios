@@ -40,6 +40,7 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
     func didReceiveCounterForNominators(result: Result<UInt32?, Error>)
     func didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)
     func didReceiveBagListSize(result: Result<UInt32?, Error>)
+    func didReceiveBagListNode(result: Result<BagList.Node?, Error>)
     func didReceive(eraCountdownResult: Result<EraCountdown, Error>)
 
     func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>)

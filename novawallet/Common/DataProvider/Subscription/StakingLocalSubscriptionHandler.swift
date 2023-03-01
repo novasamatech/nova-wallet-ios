@@ -24,6 +24,12 @@ protocol StakingLocalSubscriptionHandler {
         chainId: ChainModel.Id
     )
 
+    func handleBagListNode(
+        result: Result<BagList.Node?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    )
+
     func handlePayee(
         result: Result<RewardDestinationArg?, Error>,
         accountId: AccountId,
@@ -66,6 +72,12 @@ extension StakingLocalSubscriptionHandler {
 
     func handleLedgerInfo(
         result _: Result<StakingLedger?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {}
+
+    func handleBagListNode(
+        result _: Result<BagList.Node?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}
