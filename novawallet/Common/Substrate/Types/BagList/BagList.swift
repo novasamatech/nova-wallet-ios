@@ -11,8 +11,20 @@ enum BagList {
         [defaultModuleName, "BagsList"]
     }
 
+    typealias Score = BigUInt
+
     struct Node: Codable, Equatable {
-        @StringCodable var bagUpper: BigUInt
-        @StringCodable var score: BigUInt
+        @StringCodable var bagUpper: Score
+        @StringCodable var score: Score
+    }
+
+    static let scoreDivider = BigUInt("18446744073709551615")
+
+    static func scoreFactor(for totalIssuance: BigUInt) -> BigUInt {
+        max(totalIssuance / scoreDivider, BigUInt(1))
+    }
+
+    static func scoreOf(stake: BigUInt, given factor: BigUInt) -> Score {
+        stake / factor
     }
 }

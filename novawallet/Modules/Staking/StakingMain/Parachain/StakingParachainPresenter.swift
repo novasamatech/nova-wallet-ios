@@ -165,7 +165,13 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         wireframe.showYourCollators(from: view)
     }
 
-    func performSetupValidatorsForBondedAction() {}
+    func performSetupValidatorsForBondedAction() {
+        // no support at this point
+    }
+
+    func performRebag() {
+        // no support at this point
+    }
 
     func performStakeMoreAction() {
         wireframe.showYourCollators(from: view)

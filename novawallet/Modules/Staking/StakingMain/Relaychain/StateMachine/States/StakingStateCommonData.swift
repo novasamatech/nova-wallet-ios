@@ -14,6 +14,7 @@ struct StakingStateCommonData {
     let counterForNominators: UInt32?
     let maxNominatorsCount: UInt32?
     let bagListSize: UInt32?
+    let bagListScoreFactor: BigUInt?
     let eraCountdown: EraCountdown?
     let subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod)?
 }
@@ -33,6 +34,7 @@ extension StakingStateCommonData {
             counterForNominators: nil,
             maxNominatorsCount: nil,
             bagListSize: nil,
+            bagListScoreFactor: nil,
             eraCountdown: nil,
             subqueryRewards: nil
         )
@@ -52,6 +54,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -71,6 +74,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -90,6 +94,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -109,6 +114,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -128,6 +134,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -147,6 +154,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -166,6 +174,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -185,6 +194,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -204,6 +214,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -223,6 +234,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -242,6 +254,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -261,6 +274,27 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown,
+            subqueryRewards: subqueryRewards
+        )
+    }
+
+    func byReplacing(bagListScoreFactor: BigUInt?) -> StakingStateCommonData {
+        StakingStateCommonData(
+            address: address,
+            chainAsset: chainAsset,
+            accountBalance: accountBalance,
+            price: price,
+            calculatorEngine: calculatorEngine,
+            eraStakersInfo: eraStakersInfo,
+            minStake: minStake,
+            maxNominatorsPerValidator: maxNominatorsPerValidator,
+            minNominatorBond: minNominatorBond,
+            counterForNominators: counterForNominators,
+            maxNominatorsCount: maxNominatorsCount,
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -280,6 +314,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: subqueryRewards
         )
@@ -299,6 +334,7 @@ extension StakingStateCommonData {
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
             bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
             subqueryRewards: (subqueryRewards, period)
         )
