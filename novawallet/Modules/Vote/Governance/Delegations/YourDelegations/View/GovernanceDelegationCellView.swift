@@ -74,17 +74,26 @@ final class GovernanceDelegationCellView: GenericTitleValueView<GovernanceTrackC
 }
 
 extension GovernanceDelegationCellView {
-    struct Track {
+    struct Track: Hashable {
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.trackViewModel.title == rhs.trackViewModel.title && lhs.tracksCount == rhs.tracksCount
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(trackViewModel.title)
+            hasher.combine(tracksCount)
+        }
+
         let trackViewModel: ReferendumInfoView.Track
         let tracksCount: String?
     }
 
-    struct Votes {
+    struct Votes: Hashable {
         let votesTitle: String
         let votesDetails: String
     }
 
-    struct Model {
+    struct Model: Hashable {
         let track: Track
         let votes: Votes
     }

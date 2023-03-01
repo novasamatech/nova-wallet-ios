@@ -8,10 +8,12 @@ final class AddDelegationPresenter {
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
     let viewModelFactory: GovernanceDelegateViewModelFactoryProtocol
+    let yourDelegationsViewModelFactory: GovernanceYourDelegationsViewModelFactoryProtocol
     let chain: ChainModel
     let learnDelegateMetadata: URL
     let lastVotedDays: Int
     let logger: LoggerProtocol
+    let yourDelegations: [AccountAddress: GovernanceYourDelegationGroup]
 
     private var allDelegates: [AccountAddress: GovernanceDelegateLocal] = [:]
     private var targetDelegates: [GovernanceDelegateLocal] = []
@@ -25,7 +27,9 @@ final class AddDelegationPresenter {
         chain: ChainModel,
         lastVotedDays: Int,
         viewModelFactory: GovernanceDelegateViewModelFactoryProtocol,
+        yourDelegationsViewModelFactory: GovernanceYourDelegationsViewModelFactoryProtocol,
         learnDelegateMetadata: URL,
+        yourDelegations: [GovernanceYourDelegationGroup],
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,6 +40,10 @@ final class AddDelegationPresenter {
         self.viewModelFactory = viewModelFactory
         self.learnDelegateMetadata = learnDelegateMetadata
         self.logger = logger
+        self.yourDelegationsViewModelFactory = yourDelegationsViewModelFactory
+        self.yourDelegations = yourDelegations.reduce(into: [AccountAddress: GovernanceYourDelegationGroup]()) {
+            $0[$1.delegateModel.stats.address] = $1
+        }
         self.localizationManager = localizationManager
     }
 
@@ -54,15 +62,35 @@ final class AddDelegationPresenter {
     }
 
     private func updateView() {
-        let viewModels = targetDelegates.map {
-            viewModelFactory.createAnyDelegateViewModel(
-                from: $0,
-                chain: chain,
-                locale: selectedLocale
-            )
+        let viewModels = targetDelegates.compactMap {
+            if let yourDelegate = yourDelegations[$0.stats.address] {
+                return createYourDelegateViewModel(delegate: yourDelegate)
+            } else {
+                return createDelegateViewModel(delegate: $0)
+            }
         }
 
         view?.didReceive(delegateViewModels: viewModels)
+    }
+
+    private func createYourDelegateViewModel(delegate: GovernanceYourDelegationGroup) -> AddDelegationViewModel? {
+        yourDelegationsViewModelFactory.createYourDelegateViewModel(
+            from: delegate,
+            chain: chain,
+            locale: selectedLocale
+        ).map {
+            .yourDelegate($0)
+        }
+    }
+
+    private func createDelegateViewModel(delegate: GovernanceDelegateLocal) -> AddDelegationViewModel? {
+        let viewModel = viewModelFactory.createAnyDelegateViewModel(
+            from: delegate,
+            chain: chain,
+            locale: selectedLocale
+        )
+
+        return .delegate(viewModel)
     }
 }
 
@@ -73,8 +101,8 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
         view?.didReceive(filter: selectedFilter)
     }
 
-    func selectDelegate(_ viewModel: GovernanceDelegateTableViewCell.Model) {
-        guard let delegate = allDelegates[viewModel.addressViewModel.address] else {
+    func selectDelegate(address: AccountAddress) {
+        guard let delegate = allDelegates[address] else {
             return
         }
 
