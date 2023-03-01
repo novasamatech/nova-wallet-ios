@@ -200,7 +200,8 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaInteractorOutpu
 
     func didReceiveOffchainVoting(_ voting: DelegateVotedReferendaModel) {
         offchainVotes = voting.offchainVotes
-        referendums = voting.referendums.values.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
+        referendums = voting.referendums.values
+            .sorted { $0.index > $1.index }
 
         updateReferendumsView()
         updateTimeModels()

@@ -6,8 +6,8 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
     typealias RootViewType = AddDelegationViewLayout
 
     let presenter: AddDelegationPresenterProtocol
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, GovernanceDelegateTableViewCell.Model>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, GovernanceDelegateTableViewCell.Model>
+    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, AddDelegationViewModel>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, AddDelegationViewModel>
     private lazy var dataSource = createDataSource()
     private var selectedFilter: GovernanceDelegatesFilter?
     private var selectedOrder: GovernanceDelegatesOrder?
@@ -55,10 +55,17 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
                 return nil
             }
 
-            let cell: GovernanceDelegateTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.bind(viewModel: model, locale: self.selectedLocale)
-            cell.applyStyle()
-            return cell
+            switch model {
+            case let .yourDelegate(viewModel):
+                let cell: GovernanceYourDelegationCell = tableView.dequeueReusableCell(for: indexPath)
+                cell.bind(viewModel: viewModel, locale: self.selectedLocale)
+                return cell
+            case let .delegate(viewModel):
+                let cell: GovernanceDelegateTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                cell.bind(viewModel: viewModel, locale: self.selectedLocale)
+                cell.applyStyle()
+                return cell
+            }
         }
     }
 
@@ -121,7 +128,7 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
 }
 
 extension AddDelegationViewController: AddDelegationViewProtocol {
-    func didReceive(delegateViewModels: [GovernanceDelegateTableViewCell.Model]) {
+    func didReceive(delegateViewModels: [AddDelegationViewModel]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(delegateViewModels)
@@ -179,7 +186,7 @@ extension AddDelegationViewController: UITableViewDelegate {
             return
         }
 
-        presenter.selectDelegate(selectedItem)
+        presenter.selectDelegate(address: selectedItem.address)
     }
 }
 
