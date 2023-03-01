@@ -9,6 +9,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     let counterForNominators: UInt32?
     let maxNominatorsCount: UInt32?
     let bagListSize: UInt32?
+    let bagListNode: BagList.Node?
     let nomination: Nomination?
     let validatorPrefs: ValidatorPrefs?
     let ledgerInfo: StakingLedger?
@@ -16,6 +17,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     let currentEra: EraIndex?
     let payee: RewardDestinationArg?
     let totalReward: TotalRewardItem?
+    let totalIssuance: BigUInt?
     let stashItem: StashItem?
     let storageFacade: StorageFacadeProtocol
 
@@ -24,12 +26,14 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         counterForNominators: UInt32? = nil,
         maxNominatorsCount: UInt32? = nil,
         bagListSize: UInt32? = nil,
+        bagListNode: BagList.Node? = nil,
         nomination: Nomination? = nil,
         validatorPrefs: ValidatorPrefs? = nil,
         ledgerInfo: StakingLedger? = nil,
         activeEra: ActiveEraInfo? = nil,
         currentEra: EraIndex? = nil,
         payee: RewardDestinationArg? = nil,
+        totalIssuance: BigUInt? = nil,
         totalReward: TotalRewardItem? = nil,
         stashItem: StashItem? = nil,
         storageFacade: StorageFacadeProtocol = SubstrateStorageTestFacade()
@@ -38,6 +42,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         self.counterForNominators = counterForNominators
         self.maxNominatorsCount = maxNominatorsCount
         self.bagListSize = bagListSize
+        self.bagListNode = bagListNode
         self.nomination = nomination
         self.validatorPrefs = validatorPrefs
         self.ledgerInfo = ledgerInfo
@@ -45,6 +50,7 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         self.currentEra = currentEra
         self.payee = payee
         self.totalReward = totalReward
+        self.totalIssuance = totalIssuance
         self.stashItem = stashItem
         self.storageFacade = storageFacade
     }
@@ -218,6 +224,17 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         return AnyDataProvider(DataProviderStub(models: [ledgerInfoModel]))
     }
 
+    func getBagListNodeProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedBagListNode> {
+        try getDataProviderStub(
+            for: bagListNode,
+            storagePath: BagList.defaultBagListNodePath,
+            chainId: chainId
+        )
+    }
+
     func getPayee(
         for accountId: AccountId,
         chainId: ChainModel.Id
@@ -279,6 +296,14 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         return AnyDataProvider(DataProviderStub(models: [currentEraModel]))
     }
 
+    func getTotalIssuanceProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBigUInt> {
+        try getDataProviderStub(
+            for: totalIssuance.map({ StringScaleMapper(value: $0) }),
+            storagePath: StorageCodingPath.totalIssuance,
+            chainId: chainId
+        )
+    }
+
     func getTotalReward(
         for address: AccountAddress,
         api: ChainModel.ExternalApi,
@@ -300,5 +325,33 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         }
 
         return provider
+    }
+
+    private func getDataProviderStub<T: Decodable & Equatable>(
+        for value: T?,
+        storagePath: StorageCodingPath,
+        chainId: ChainModel.Id,
+        accountId: AccountId? = nil
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
+        let localIdentifierFactory = LocalStorageKeyFactory()
+
+        let localKey: String
+
+        if let accountId = accountId {
+            localKey = try localIdentifierFactory.createFromStoragePath(
+                storagePath,
+                accountId: accountId,
+                chainId: chainId
+            )
+        } else {
+            localKey = try localIdentifierFactory.createFromStoragePath(
+                storagePath,
+                chainId: chainId
+            )
+        }
+
+        let model = ChainStorageDecodedItem(identifier: localKey, item: value)
+
+        return AnyDataProvider(DataProviderStub(models: [model]))
     }
 }
