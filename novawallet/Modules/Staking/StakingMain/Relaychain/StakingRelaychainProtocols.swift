@@ -41,6 +41,7 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
     func didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)
     func didReceiveBagListSize(result: Result<UInt32?, Error>)
     func didReceiveBagListNode(result: Result<BagList.Node?, Error>)
+    func didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>)
     func didReceive(eraCountdownResult: Result<EraCountdown, Error>)
 
     func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>)
@@ -68,6 +69,7 @@ protocol StakingRelaychainWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showUnbond(from view: ControllerBackedProtocol?)
     func showRedeem(from view: ControllerBackedProtocol?)
     func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption)
+    func showRebagConfirm(from view: ControllerBackedProtocol?)
     func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)

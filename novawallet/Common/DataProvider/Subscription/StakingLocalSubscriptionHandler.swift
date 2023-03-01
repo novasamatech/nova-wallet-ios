@@ -38,6 +38,8 @@ protocol StakingLocalSubscriptionHandler {
 
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId: ChainModel.Id)
 
+    func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId: ChainModel.Id)
+
     func handleCounterForNominators(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
 
     func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
@@ -87,6 +89,8 @@ extension StakingLocalSubscriptionHandler {
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}
+
+    func handleTotalIssuance(result _: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {}
 
     func handleMinNominatorBond(result _: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {}
 

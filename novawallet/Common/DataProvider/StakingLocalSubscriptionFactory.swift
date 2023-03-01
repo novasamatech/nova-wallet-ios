@@ -24,6 +24,8 @@ protocol StakingLocalSubscriptionFactoryProtocol {
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32>
 
+    func getTotalIssuanceProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBigUInt>
+
     func getNominationProvider(for accountId: AccountId, chainId: ChainModel.Id) throws
         -> AnyDataProvider<DecodedNomination>
 
@@ -77,6 +79,18 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             chainId: chainId,
             storageCodingPath: codingPath,
             fallback: fallback
+        )
+    }
+
+    func getTotalIssuanceProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBigUInt> {
+        let codingPath = StorageCodingPath.totalIssuance
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: codingPath,
+            shouldUseFallback: false
         )
     }
 

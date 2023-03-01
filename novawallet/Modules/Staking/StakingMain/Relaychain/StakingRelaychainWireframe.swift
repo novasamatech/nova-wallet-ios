@@ -151,6 +151,10 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
+    func showRebagConfirm(from _: ControllerBackedProtocol?) {
+        // TODO: #8677bqzt1
+    }
+
     func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode) {
         let analyticsView = AnalyticsContainerViewFactory.createView(mode: mode, stakingState: state)
         analyticsView.controller.hidesBottomBarWhenPushed = true

@@ -7,6 +7,7 @@ extension StakingStateViewModelFactory {
             findMinStakeNotSatisfied(commonData: state.commonData, ledgerInfo: state.ledgerInfo),
             findInactiveAlert(state: state),
             findRedeemUnbondedAlert(commonData: state.commonData, ledgerInfo: state.ledgerInfo),
+            findRebagAlert(state: state),
             findWaitingNextEraAlert(nominationStatus: state.status)
         ].compactMap { $0 }
     }
@@ -114,5 +115,16 @@ extension StakingStateViewModelFactory {
             return .waitingNextEra
         }
         return nil
+    }
+
+    private func findRebagAlert(state: NominatorState) -> StakingAlert? {
+        guard
+            let bagListNode = state.bagListNode,
+            let scoreFactor = state.commonData.bagListScoreFactor,
+            BagList.scoreOf(stake: state.ledgerInfo.active, given: scoreFactor) > bagListNode.bagUpper else {
+            return nil
+        }
+
+        return .rebag
     }
 }
