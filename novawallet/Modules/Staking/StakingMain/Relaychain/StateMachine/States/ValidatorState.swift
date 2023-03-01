@@ -21,7 +21,8 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
             commonData: commonData,
             stashItem: stashItem,
             totalReward: totalReward,
-            payee: payee
+            payee: payee,
+            bagListNode: nil
         )
     }
 
@@ -46,7 +47,8 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
                 commonData: commonData,
                 stashItem: stashItem,
                 ledgerInfo: nil,
-                totalReward: totalReward
+                totalReward: totalReward,
+                bagListNode: bagListNode
             )
         }
 
@@ -68,7 +70,8 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
                 ledgerInfo: ledgerInfo,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else {
             newState = self
@@ -95,7 +98,8 @@ final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
                 stashItem: stashItem,
                 ledgerInfo: ledgerInfo,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         }
 

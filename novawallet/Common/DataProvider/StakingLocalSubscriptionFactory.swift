@@ -51,6 +51,11 @@ protocol StakingLocalSubscriptionFactoryProtocol {
     func getStashItemProvider(
         for address: AccountAddress
     ) -> StreamableProvider<StashItem>
+
+    func getBagListNodeProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedBagListNode>
 }
 
 final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -194,6 +199,28 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             for: localKey,
             chainId: chainId,
             storageCodingPath: codingPath,
+            shouldUseFallback: false
+        )
+    }
+
+    func getBagListNodeProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedBagListNode> {
+        let possibleCodingPaths = BagList.possibleModuleNames.map {
+            BagList.bagListNode(for: $0)
+        }
+
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            BagList.defaultBagListNodePath,
+            accountId: accountId,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            possibleCodingPaths: possibleCodingPaths,
             shouldUseFallback: false
         )
     }
