@@ -229,7 +229,7 @@
 "staking.recommended.custom.title" = "Choose custom validators ";
 "fee.not.yet.loaded.title" = "Fee calculation is in progress";
 "fee.not.yet.loaded.message" = "Please wait until fee is calculated";
-"staking.setup.amount.too.low" = "Can't stake less than minimal value (%@)";
+"staking.setup.amount.too.low" = "You cannot stake less than the network minimum value (%@)";
 "common.confirm.title" = "Confirmation";
 "staking.stash.title" = "Wallet account";
 "staking.setup.sent.message" = "Staking setup transaction sent";
@@ -1123,3 +1123,4 @@
 "in.app.updates.fetch.change.logs.error" = "Change logs can't be loaded";
 "staking.improvements" = "Staking improvements";
 "staking.rebag.alert.message" = "Having outdated position in the queue of stake assignment to a validator may suspend your rewards";
+"staking.min.stake.violated.message" = "The recommended minimum stake to consistently receive rewards is %@.";
