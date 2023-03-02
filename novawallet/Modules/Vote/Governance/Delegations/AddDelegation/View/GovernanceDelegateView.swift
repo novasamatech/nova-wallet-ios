@@ -127,7 +127,7 @@ extension GovernanceDelegateView {
     }
 
     func bind(viewModel: Model, locale: Locale) {
-        bind(type: viewModel.type, locale: locale)
+        bind(type: viewModel.type)
 
         typeView.locale = locale
 
@@ -177,7 +177,7 @@ extension GovernanceDelegateView {
         }
     }
 
-    private func bind(type: GovernanceDelegateTypeView.Model?, locale _: Locale) {
+    private func bind(type: GovernanceDelegateTypeView.Model?) {
         switch type {
         case .organization:
             avatarView.backgroundView.apply(style: .roundedContainerWithShadow(radius: 8))

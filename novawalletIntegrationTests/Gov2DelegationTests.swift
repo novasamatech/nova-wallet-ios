@@ -146,6 +146,10 @@ final class Gov2DelegationTests: XCTestCase {
     func testFetchDelegations() {
         performFetchDelegationsTest(for: "H1tAQMm3eizGcmpAhL9aA9gR844kZpQfkU7pkmMiLx9jSzE")
     }
+    
+    func testFetchReferendumVoters() {
+        performFetchReferndumVotersTest(referendumId: 84)
+    }
 
     private func performFetchAccountCastingAndDelegatedVotesTest(for address: AccountAddress) {
         // given
@@ -272,5 +276,36 @@ final class Gov2DelegationTests: XCTestCase {
             metadataOperationFactory: metadataOperationFactory,
             identityOperationFactory: identityOperationFactory
         )
+    }
+    
+    private func performFetchReferndumVotersTest(referendumId: ReferendumIdLocal) {
+        // given
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+        let chainId = KnowChainId.kusama
+        
+        guard
+            let chain = chainRegistry.getChain(for: chainId),
+            let delegationApi = chain.externalApis?.governanceDelegations()?.first else {
+            return
+        }
+
+        let operationFactory = SubqueryVotingOperationFactory(url: delegationApi.url)
+        
+        // when
+
+        let wrapper = operationFactory.createReferendumVotesFetchOperation(referendumId: referendumId, isAye: true)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        // then
+
+        do {
+            let voters = try wrapper.targetOperation.extractNoCancellableResultData()
+            XCTAssertTrue(!voters.isEmpty)
+            XCTAssertTrue(voters.contains { !$0.delegators.isEmpty })
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
     }
 }
