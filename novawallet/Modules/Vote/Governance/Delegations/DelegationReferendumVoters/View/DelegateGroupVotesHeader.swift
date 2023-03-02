@@ -6,20 +6,11 @@ import SoraUI
 }
 
 final class DelegateGroupVotesHeader: UICollectionReusableView {
-    typealias ContentView = GenericTitleValueView<DelegateInfoView, ActionTitleControl>
-
-    let baseView = ContentView()
-
-    var delegateInfoView: DelegateInfoView {
-        baseView.titleView
-    }
+    let delegateInfoView = DelegateInfoView()
+    let actionTitleControl = DelegateGroupActionTitleControl()
 
     var votesView: UILabel {
         actionTitleControl.titleLabel
-    }
-
-    var actionTitleControl: ActionTitleControl {
-        baseView.valueView
     }
 
     var id: Int? {
@@ -37,13 +28,9 @@ final class DelegateGroupVotesHeader: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        addSubview(baseView)
-        baseView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
-
-        actionTitleControl.addTarget(self, action: #selector(didTapOnActionControl), for: .touchUpInside)
+        setupLayout()
         applyStyle()
+        actionTitleControl.addTarget(self, action: #selector(didTapOnActionControl), for: .touchUpInside)
     }
 
     @available(*, unavailable)
@@ -61,18 +48,23 @@ final class DelegateGroupVotesHeader: UICollectionReusableView {
         delegate?.didTapOnActionControl(sender: self)
     }
 
+    private func setupLayout() {
+        addSubview(delegateInfoView)
+        delegateInfoView.snp.makeConstraints {
+            $0.top.bottom.equalToSuperview()
+            $0.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+        }
+
+        addSubview(actionTitleControl)
+        actionTitleControl.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            $0.centerY.equalToSuperview()
+            $0.leading.greaterThanOrEqualTo(delegateInfoView.snp.trailing).offset(8)
+        }
+    }
+
     private func applyStyle() {
         backgroundColor = .clear
-
-        let tintColor = R.color.colorTextPrimary()!
-        actionTitleControl.titleLabel.apply(style: .footnotePrimary)
-        actionTitleControl.imageView.image = R.image.iconLinkChevron()?.tinted(with: tintColor)
-        actionTitleControl.identityIconAngle = CGFloat.pi / 2.0
-        actionTitleControl.activationIconAngle = -CGFloat.pi / 2.0
-        actionTitleControl.titleLabel.apply(style: .footnotePrimary)
-        actionTitleControl.horizontalSpacing = 0.0
-        actionTitleControl.imageView.isUserInteractionEnabled = false
-        actionTitleControl.setContentCompressionResistancePriority(.required, for: .horizontal)
         delegateInfoView.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 }
