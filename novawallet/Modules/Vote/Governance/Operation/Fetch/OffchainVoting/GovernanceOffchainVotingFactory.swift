@@ -12,4 +12,9 @@ protocol GovernanceOffchainVotingFactoryProtocol {
         for address: AccountAddress,
         from block: BlockNumber?
     ) -> CompoundOperationWrapper<GovernanceOffchainVotes>
+
+    func createReferendumVotesFetchOperation(
+        referendumId: ReferendumIdLocal,
+        isAye: Bool
+    ) -> CompoundOperationWrapper<[ReferendumVoterLocal]>
 }
