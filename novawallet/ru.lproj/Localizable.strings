@@ -1119,13 +1119,13 @@
 "delegations.delegatedVotes" = "Голоса делегаторов";
 "delegations.lastVoted" = "Голоса за %@";
 "delegations.show.title" = "Показать";
-"delegations.show.individuals" = "Личные аккаунты";
+"delegations.show.individuals" = "Персоны";
 "delegations.show.organizations" = "Организации";
 "delegations.show.all" = "Все аккаунты";
 "delegations.add.banner.title" = "Вы уже стали делегатом?";
 "delegations.add.banner.subtitle" = "Расскажите нам о себе, чтобы пользователи Nova узнали вас лучше";
 "delegations.add.banner.link" = "Добавить описание";
-"delegations.show.chip.individual" = "Личный аккаунт";
+"delegations.show.chip.individual" = "Персона";
 "delegations.show.chip.organization" = "Организация";
 "delegations.add.title" = "Добавить делегацию";
 "delegations.title" = "Делегаторы";
