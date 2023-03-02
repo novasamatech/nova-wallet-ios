@@ -1119,7 +1119,7 @@
 "delegations.delegatedVotes" = "Голоса делегаторов";
 "delegations.lastVoted" = "Голоса за %@";
 "delegations.show.title" = "Показать";
-"delegations.show.individuals" = "Персоны";
+"delegations.show.individuals" = "Персон";
 "delegations.show.organizations" = "Организации";
 "delegations.show.all" = "Все аккаунты";
 "delegations.add.banner.title" = "Вы уже стали делегатом?";
