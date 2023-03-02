@@ -38,8 +38,8 @@ final class GovernanceDelegateBanner: UIView {
         addSubview(closeButton)
         closeButton.snp.makeConstraints {
             $0.size.equalTo(CGSize(width: 24, height: 24))
-            $0.trailing.equalToSuperview().inset(8)
-            $0.top.equalToSuperview().inset(12)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.top.equalToSuperview().inset(16)
         }
 
         gradientBannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
@@ -47,7 +47,7 @@ final class GovernanceDelegateBanner: UIView {
             top: 24,
             left: 0,
             bottom: 0,
-            right: 0
+            right: 11
         )
     }
 
