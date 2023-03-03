@@ -528,7 +528,8 @@
 "account.import.option.title" = "Импортировать аккаунт";
 "account.actions.change.sheet.title" = "Изменить аккаунт %@";
 "wallet.account.locks.vesting" = "Вестинг";
-"wallet.account.locks.democracy" = "Демократия";
+"wallet.account.locks.democracy.version1" = "Governance v1";
+"wallet.account.locks.democracy.version2" = "OpenGov";
 "wallet.account.locks.elections" = "Выборы";
 "wallet.balances.widget.title" = "Ваш баланс";
 "common.max" = "макс.";
