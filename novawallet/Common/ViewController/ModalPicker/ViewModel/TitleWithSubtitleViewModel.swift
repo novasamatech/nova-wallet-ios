@@ -1,6 +1,6 @@
 import Foundation
 
-struct TitleWithSubtitleViewModel {
+struct TitleWithSubtitleViewModel: Equatable, Hashable {
     let title: String
     let subtitle: String
 

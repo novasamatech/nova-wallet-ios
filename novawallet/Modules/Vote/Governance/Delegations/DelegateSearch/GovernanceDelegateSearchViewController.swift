@@ -12,8 +12,8 @@ final class GovernanceDelegateSearchViewController: BaseTableSearchViewControlle
         basePresenter as? GovernanceDelegateSearchPresenterProtocol
     }
 
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, AddDelegationViewModel>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, AddDelegationViewModel>
+    typealias DataSource = UITableViewDiffableDataSource<TitleWithSubtitleViewModel, AddDelegationViewModel>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<TitleWithSubtitleViewModel, AddDelegationViewModel>
     private lazy var dataSource = createDataSource()
 
     private var headerViewModel: TitleWithSubtitleViewModel?
@@ -38,12 +38,19 @@ final class GovernanceDelegateSearchViewController: BaseTableSearchViewControlle
         super.viewDidLoad()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        rootView.searchView.searchBar.becomeFirstResponder()
+    }
+
     private func applyState() {
         rootView.tableView.isHidden = shouldDisplayEmptyState
         reloadEmptyState(animated: false)
     }
 
     private func setupTableView() {
+        rootView.tableView.separatorStyle = .none
         rootView.tableView.dataSource = dataSource
         rootView.tableView.delegate = self
 
@@ -81,11 +88,15 @@ final class GovernanceDelegateSearchViewController: BaseTableSearchViewControlle
 extension GovernanceDelegateSearchViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
         guard headerViewModel != nil else { return 0 }
+
         return 26.0
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
-        guard let headerViewModel = headerViewModel else { return nil }
+        guard let headerViewModel = headerViewModel else {
+            return nil
+        }
+
         let headerView: CustomValidatorListHeaderView = tableView.dequeueReusableHeaderFooterView()
         headerView.bind(viewModel: headerViewModel)
         return headerView
@@ -157,13 +168,15 @@ extension GovernanceDelegateSearchViewController: EmptyStateDelegate {
 
 extension GovernanceDelegateSearchViewController: GovernanceDelegateSearchViewProtocol {
     func didReceive(viewModel: TableSearchResultViewModel<AddDelegationViewModel>) {
-        headerViewModel = viewModel.title
-
         var snapshot = Snapshot()
 
-        if let items = viewModel.items {
-            snapshot.appendSections([.main])
+        if let items = viewModel.items, let headerViewModel = viewModel.title {
+            self.headerViewModel = headerViewModel
+
+            snapshot.appendSections([headerViewModel])
             snapshot.appendItems(items)
+        } else {
+            headerViewModel = nil
         }
 
         dataSource.apply(snapshot, animatingDifferences: false)
