@@ -70,7 +70,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
             view = addressView
         } else {
             let addressView = IdentityAccountInfoView()
-
+            addressView.actionIcon = R.image.iconMore()?.withTintColor(R.color.colorIconSecondary()!)
             if let descriptionStackView = descriptionStackView {
                 stackView.insertArranged(view: addressView, after: descriptionStackView)
             } else if let profileView = profileView {

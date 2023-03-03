@@ -4,7 +4,10 @@ import SubstrateSdk
 import SoraKeystore
 
 struct AddDelegationViewFactory {
-    static func createView(state: GovernanceSharedState) -> AddDelegationViewProtocol? {
+    static func createView(
+        state: GovernanceSharedState,
+        yourDelegations: [GovernanceYourDelegationGroup] = []
+    ) -> AddDelegationViewProtocol? {
         guard let interactor = createInteractor(for: state), let chain = state.settings.value?.chain else {
             return nil
         }
@@ -13,10 +16,22 @@ struct AddDelegationViewFactory {
 
         let wireframe = AddDelegationWireframe(state: state)
 
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
+        let addressViewModelFactory = DisplayAddressViewModelFactory()
+        let quantityFormatter = NumberFormatter.quantity.localizableResource()
+
         let viewModelFactory = GovernanceDelegateViewModelFactory(
-            votesDisplayFactory: ReferendumDisplayStringFactory(),
-            addressViewModelFactory: DisplayAddressViewModelFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            votesDisplayFactory: referendumDisplayStringFactory,
+            addressViewModelFactory: addressViewModelFactory,
+            quantityFormatter: quantityFormatter,
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays
+        )
+
+        let yourDelegationsViewModelFactory = GovYourDelegationsViewModelFactory(
+            votesDisplayFactory: referendumDisplayStringFactory,
+            addressViewModelFactory: addressViewModelFactory,
+            tracksViewModelFactory: GovernanceTrackViewModelFactory(),
+            quantityFormatter: quantityFormatter,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays
         )
 
@@ -26,7 +41,9 @@ struct AddDelegationViewFactory {
             chain: chain,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             viewModelFactory: viewModelFactory,
+            yourDelegationsViewModelFactory: yourDelegationsViewModelFactory,
             learnDelegateMetadata: ApplicationConfig.shared.learnGovernanceDelegateMetadata,
+            yourDelegations: yourDelegations,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

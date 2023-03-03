@@ -53,7 +53,7 @@ final class GovernanceYourDelegationCell: BlurredTableViewCell<GovernanceYourDel
 }
 
 extension GovernanceYourDelegationCell {
-    struct Model {
+    struct Model: Hashable {
         var identifier: AccountAddress { delegateViewModel.addressViewModel.address }
 
         let delegateViewModel: GovernanceDelegateTableViewCell.Model

@@ -112,6 +112,7 @@ final class ReferendumDetailsViewLayout: UIView {
             table.clear()
         } else {
             table = StackTableView()
+            table.contentInsets = .init(top: 4, left: 16, bottom: 4, right: 16)
             table.hasSeparators = false
             yourVoteTableView = table
             containerView.stackView.insertArranged(view: table, before: votingDetailsRow)
