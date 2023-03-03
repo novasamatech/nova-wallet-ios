@@ -22,6 +22,7 @@ final class AddDelegationViewLayout: UIView {
         $0.backgroundColor = .clear
         $0.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
         $0.registerClassForCell(GovernanceDelegateTableViewCell.self)
+        $0.registerClassForCell(GovernanceYourDelegationCell.self)
         $0.rowHeight = UITableView.automaticDimension
     }
 

@@ -69,7 +69,7 @@ extension GovernanceYourDelegationsPresenter: GovernanceYourDelegationsPresenter
     }
 
     func addDelegation() {
-        wireframe.showAddDelegation(from: view)
+        wireframe.showAddDelegation(from: view, yourDelegations: groups ?? [])
     }
 
     func selectDelegate(for address: AccountAddress) {
