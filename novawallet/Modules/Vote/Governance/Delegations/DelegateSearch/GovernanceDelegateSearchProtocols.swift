@@ -1,8 +1,10 @@
 protocol GovernanceDelegateSearchViewProtocol: TableSearchViewProtocol {
-    func didReceive(viewModels: [GovernanceDelegateTableViewCell.Model])
+    func didReceive(viewModel: TableSearchResultViewModel<AddDelegationViewModel>)
 }
 
-protocol GovernanceDelegateSearchPresenterProtocol: TableSearchPresenterProtocol {}
+protocol GovernanceDelegateSearchPresenterProtocol: TableSearchPresenterProtocol {
+    func presentResult(for address: AccountAddress)
+}
 
 protocol GovernanceDelegateSearchInteractorInputProtocol: AnyObject {
     func setup()

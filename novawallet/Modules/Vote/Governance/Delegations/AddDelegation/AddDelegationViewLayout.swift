@@ -17,6 +17,13 @@ final class AddDelegationViewLayout: UIView {
         ])
     ])
 
+    let searchButton = UIBarButtonItem(
+        image: R.image.iconSearchWhite(),
+        style: .plain,
+        target: nil,
+        action: nil
+    )
+
     let tableView: UITableView = .create {
         $0.separatorStyle = .none
         $0.backgroundColor = .clear

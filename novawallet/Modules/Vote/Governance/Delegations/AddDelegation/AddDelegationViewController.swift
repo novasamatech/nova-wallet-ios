@@ -90,6 +90,10 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
             action: #selector(didTapOnCloseBanner),
             for: .touchUpInside
         )
+
+        navigationItem.rightBarButtonItem = rootView.searchButton
+        rootView.searchButton.target = self
+        rootView.searchButton.action = #selector(didTapSearch)
     }
 
     @objc private func didTapOnFilter() {
@@ -106,6 +110,10 @@ final class AddDelegationViewController: UIViewController, ViewHolder {
 
     @objc private func didTapOnCloseBanner() {
         presenter.closeBanner()
+    }
+
+    @objc private func didTapSearch() {
+        presenter.showSearch()
     }
 
     private func setupLocalization() {

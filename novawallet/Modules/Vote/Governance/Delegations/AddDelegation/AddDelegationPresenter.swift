@@ -199,6 +199,10 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
             delegate: delegate
         )
     }
+
+    func showSearch() {
+        wireframe.showSearch(from: view, initDelegates: allDelegates)
+    }
 }
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
