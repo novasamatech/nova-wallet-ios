@@ -44,6 +44,14 @@ final class GovernanceDelegateSearchViewController: BaseTableSearchViewControlle
         rootView.searchView.searchBar.becomeFirstResponder()
     }
 
+    private func setupLocalization() {
+        title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
     private func applyState() {
         rootView.tableView.isHidden = shouldDisplayEmptyState
         reloadEmptyState(animated: false)
@@ -133,7 +141,7 @@ extension GovernanceDelegateSearchViewController: EmptyStateDataSource {
         switch emptyStateType {
         case .notFound:
             emptyView.image = R.image.iconEmptySearch()
-            emptyView.title = R.string.localizable.stakingValidatorSearchEmptyTitle(
+            emptyView.title = R.string.localizable.walletSearchEmptyTitle_v1100(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .start:
@@ -153,9 +161,7 @@ extension GovernanceDelegateSearchViewController: EmptyStateDataSource {
         rootView.emptyStateContainer
     }
 
-    var verticalSpacingForEmptyState: CGFloat? {
-        26.0
-    }
+    var verticalSpacingForEmptyState: CGFloat? { 0 }
 }
 
 // MARK: - EmptyStateDelegate
@@ -199,11 +205,7 @@ extension GovernanceDelegateSearchViewController: GovernanceDelegateSearchViewPr
 extension GovernanceDelegateSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
-
-            rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            setupLocalization()
         }
     }
 }

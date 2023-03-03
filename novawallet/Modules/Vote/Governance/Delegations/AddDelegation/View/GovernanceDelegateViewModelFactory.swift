@@ -26,6 +26,48 @@ class GovernanceDelegateViewModelFactory {
         self.quantityFormatter = quantityFormatter
         self.lastVotedDays = lastVotedDays
     }
+
+    private func createStatsViewModel(
+        from delegateStats: GovernanceDelegateStats,
+        chain: ChainModel,
+        locale: Locale
+    ) -> GovernanceDelegateView.Stats? {
+        guard !delegateStats.isEmpty else {
+            return nil
+        }
+
+        let numberFormatter = quantityFormatter.value(for: locale)
+        let delegations = numberFormatter.string(from: NSNumber(value: delegateStats.delegationsCount))
+
+        let totalVotes = votesDisplayFactory.createVotesValue(
+            from: delegateStats.delegatedVotes,
+            chain: chain,
+            locale: locale
+        )
+
+        let lastVotes = numberFormatter.string(from: NSNumber(value: delegateStats.recentVotes))
+
+        let formattedDays = R.string.localizable.commonDaysFormat(
+            format: lastVotedDays,
+            preferredLanguages: locale.rLanguages
+        )
+
+        return .init(
+            delegationsTitle: R.string.localizable.delegationsDelegations(
+                preferredLanguages: locale.rLanguages
+            ),
+            delegations: delegations,
+            votesTitle: R.string.localizable.delegationsDelegatedVotes(
+                preferredLanguages: locale.rLanguages
+            ),
+            votes: totalVotes,
+            lastVotesTitle: R.string.localizable.delegationsLastVoted(
+                formattedDays,
+                preferredLanguages: locale.rLanguages
+            ),
+            lastVotes: lastVotes
+        )
+    }
 }
 
 extension GovernanceDelegateViewModelFactory: GovernanceDelegateViewModelFactoryProtocol {
@@ -42,39 +84,13 @@ extension GovernanceDelegateViewModelFactory: GovernanceDelegateViewModelFactory
             iconUrl: delegate.metadata?.image
         )
 
-        let numberFormatter = quantityFormatter.value(for: locale)
-        let delegations = numberFormatter.string(from: NSNumber(value: delegate.stats.delegationsCount))
-
-        let totalVotes = votesDisplayFactory.createVotesValue(
-            from: delegate.stats.delegatedVotes,
-            chain: chain,
-            locale: locale
-        )
-
-        let lastVotes = numberFormatter.string(from: NSNumber(value: delegate.stats.recentVotes))
-
-        let formattedDays = R.string.localizable.commonDaysFormat(
-            format: lastVotedDays,
-            preferredLanguages: locale.rLanguages
-        )
+        let stats = createStatsViewModel(from: delegate.stats, chain: chain, locale: locale)
 
         return GovernanceDelegateTableViewCell.Model(
             addressViewModel: addressViewModel,
             type: delegate.metadata.map { $0.isOrganization ? .organization : .individual },
             description: delegate.metadata?.shortDescription,
-            delegationsTitle: R.string.localizable.delegationsDelegations(
-                preferredLanguages: locale.rLanguages
-            ),
-            delegations: delegations,
-            votesTitle: R.string.localizable.delegationsDelegatedVotes(
-                preferredLanguages: locale.rLanguages
-            ),
-            votes: totalVotes,
-            lastVotesTitle: R.string.localizable.delegationsLastVoted(
-                formattedDays,
-                preferredLanguages: locale.rLanguages
-            ),
-            lastVotes: lastVotes
+            stats: stats
         )
     }
 }
