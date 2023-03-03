@@ -43,5 +43,9 @@ protocol AddDelegationWireframeProtocol: AlertPresentable, ErrorPresentable, Com
 
     func showInfo(from view: AddDelegationViewProtocol?, delegate: GovernanceDelegateLocal)
 
-    func showSearch(from view: AddDelegationViewProtocol?, initDelegates: [AccountAddress: GovernanceDelegateLocal])
+    func showSearch(
+        from view: AddDelegationViewProtocol?,
+        initDelegates: [AccountAddress: GovernanceDelegateLocal],
+        initDelegations: [AccountAddress: GovernanceYourDelegationGroup]
+    )
 }
