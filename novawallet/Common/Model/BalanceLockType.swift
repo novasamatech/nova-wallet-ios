@@ -8,7 +8,7 @@ enum LockType: String {
     case elections = "phrelect"
     case governance = "pyconvot"
 
-    static var locksOrder: [Self] = [.vesting, .staking, .democracy, .elections]
+    static var locksOrder: [Self] = [.vesting, .staking, .democracy, .governance, .elections]
 
     var displayType: LocalizableResource<String> {
         LocalizableResource<String> { locale in
@@ -21,8 +21,12 @@ enum LockType: String {
                 return R.string.localizable.stakingTitle(
                     preferredLanguages: locale.rLanguages
                 )
-            case .democracy, .governance:
-                return R.string.localizable.walletAccountLocksDemocracy(
+            case .democracy:
+                return R.string.localizable.walletAccountLocksDemocracyVersion1(
+                    preferredLanguages: locale.rLanguages
+                )
+            case .governance:
+                return R.string.localizable.walletAccountLocksDemocracyVersion2(
                     preferredLanguages: locale.rLanguages
                 )
             case .elections:

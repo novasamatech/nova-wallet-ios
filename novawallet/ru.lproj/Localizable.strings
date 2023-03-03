@@ -528,7 +528,8 @@
 "account.import.option.title" = "Импортировать аккаунт";
 "account.actions.change.sheet.title" = "Изменить аккаунт %@";
 "wallet.account.locks.vesting" = "Вестинг";
-"wallet.account.locks.democracy" = "Демократия";
+"wallet.account.locks.democracy.version1" = "Governance v1";
+"wallet.account.locks.democracy.version2" = "OpenGov";
 "wallet.account.locks.elections" = "Выборы";
 "wallet.balances.widget.title" = "Ваш баланс";
 "common.max" = "макс.";
@@ -1119,13 +1120,13 @@
 "delegations.delegatedVotes" = "Голоса делегаторов";
 "delegations.lastVoted" = "Голоса за %@";
 "delegations.show.title" = "Показать";
-"delegations.show.individuals" = "Личные аккаунты";
+"delegations.show.individuals" = "Персон";
 "delegations.show.organizations" = "Организации";
 "delegations.show.all" = "Все аккаунты";
 "delegations.add.banner.title" = "Вы уже стали делегатом?";
 "delegations.add.banner.subtitle" = "Расскажите нам о себе, чтобы пользователи Nova узнали вас лучше";
 "delegations.add.banner.link" = "Добавить описание";
-"delegations.show.chip.individual" = "Личный аккаунт";
+"delegations.show.chip.individual" = "Персона";
 "delegations.show.chip.organization" = "Организация";
 "delegations.add.title" = "Добавить делегацию";
 "delegations.title" = "Делегаторы";

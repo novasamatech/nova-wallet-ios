@@ -6,9 +6,12 @@ import SoraUI
 }
 
 final class DelegateInfoView: UIView {
-    typealias ContentView = IconDetailsGenericView<GenericPairValueView<
-        GenericPairValueView<UILabel, GovernanceDelegateTypeView>, GenericPairValueView<UIImageView, UIView>
-    >>
+    typealias ContentView = IconDetailsGenericView<
+        GenericPairValueView<
+            GenericPairValueView<UILabel, GovernanceDelegateTypeView>,
+            GenericPairValueView<UIImageView, UIView>
+        >
+    >
 
     let baseView = ContentView()
 
@@ -67,24 +70,28 @@ final class DelegateInfoView: UIView {
         baseView.spacing = Constants.nameIconSpace
         baseView.mode = .iconDetails
         baseView.iconWidth = Constants.iconSize.width
-
-        baseView.detailsView.fView.spacing = Constants.nameTypeSpace
-        baseView.detailsView.fView.sView.iconDetailsView.iconWidth = Constants.typeIconWidth
+        baseView.detailsView.spacing = Constants.space
+        baseView.detailsView.fView.spacing = Constants.space
+        baseView.detailsView.spacing = Constants.space
         baseView.detailsView.fView.makeHorizontal()
         baseView.detailsView.makeHorizontal()
-        baseView.detailsView.fView.sView.contentInsets = .init(top: 1, left: 4, bottom: 1, right: 4)
-        baseView.detailsView.fView.sView.backgroundView.cornerRadius = 5
         baseView.detailsView.fView.spacing = 4
+
+        typeView.iconDetailsView.iconWidth = Constants.typeIconWidth
+        typeView.contentInsets = Constants.typeIconInsets
+        typeView.backgroundView.cornerRadius = 5
 
         nameLabel.numberOfLines = 1
         nameLabel.apply(style: .footnotePrimary)
         nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        nameLabel.setContentHuggingPriority(.required, for: .horizontal)
+
         indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         typeView.setContentHuggingPriority(.required, for: .horizontal)
         baseView.detailsView.sView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         baseView.detailsView.sView.sView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         baseView.detailsView.sView.makeHorizontal()
-        baseView.detailsView.sView.spacing = 4
+        baseView.detailsView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 }
 
@@ -105,22 +112,22 @@ extension DelegateInfoView {
         loadingImage?.cancel(on: iconView)
 
         if let iconRadius = iconRadius(for: viewModel.type) {
-            viewModel.addressViewModel.imageViewModel?.loadImage(
-                on: iconView,
+            viewModel.addressViewModel.imageViewModel.loadImageOrClear(
+                imageView: iconView,
                 targetSize: Constants.iconSize,
                 cornerRadius: iconRadius,
                 animated: true
             )
         } else {
-            viewModel.addressViewModel.imageViewModel?.loadImage(
-                on: iconView,
+            viewModel.addressViewModel.imageViewModel.loadImageOrClear(
+                imageView: iconView,
                 targetSize: Constants.iconSize,
                 animated: true
             )
         }
-
         nameLabel.lineBreakMode = viewModel.addressViewModel.lineBreakMode
         nameLabel.text = viewModel.addressViewModel.name ?? viewModel.addressViewModel.address
+        nameLabel.sizeToFit()
         loadingImage = viewModel.addressViewModel.imageViewModel
     }
 
@@ -154,8 +161,9 @@ extension DelegateInfoView {
     enum Constants {
         static let nameIconSpace: CGFloat = 12
         static let iconSize = CGSize(width: 24, height: 24)
-        static let nameTypeSpace: CGFloat = 4
+        static let space: CGFloat = 4
         static let indicatorWidth: CGFloat = 12
         static let typeIconWidth: CGFloat = 21
+        static let typeIconInsets: UIEdgeInsets = .init(top: 1, left: 4, bottom: 1, right: 4)
     }
 }
