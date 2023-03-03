@@ -108,7 +108,7 @@ extension GovernanceUnlockConfirmViewController: GovernanceUnlockConfirmViewProt
     func didReceiveRemainedLock(viewModel: GovernanceRemainedLockViewModel?) {
         if let viewModel = viewModel {
             let amountString = NSMutableAttributedString(
-                string: viewModel.amount,
+                string: viewModel.amount + " ",
                 attributes: [
                     .foregroundColor: R.color.colorTextPrimary()!,
                     .font: UIFont.caption1

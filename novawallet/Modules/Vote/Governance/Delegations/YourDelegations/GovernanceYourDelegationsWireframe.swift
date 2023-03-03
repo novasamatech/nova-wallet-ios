@@ -7,8 +7,14 @@ final class GovernanceYourDelegationsWireframe: GovernanceYourDelegationsWirefra
         self.state = state
     }
 
-    func showAddDelegation(from view: GovernanceYourDelegationsViewProtocol?) {
-        guard let addDelegation = AddDelegationViewFactory.createView(state: state) else {
+    func showAddDelegation(
+        from view: GovernanceYourDelegationsViewProtocol?,
+        yourDelegations: [GovernanceYourDelegationGroup]
+    ) {
+        guard let addDelegation = AddDelegationViewFactory.createView(
+            state: state,
+            yourDelegations: yourDelegations
+        ) else {
             return
         }
 
