@@ -9,6 +9,7 @@ final class GovernanceDelegateSearchPresenter {
     private(set) var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
     private(set) var metadata: [GovernanceDelegateMetadataRemote]?
     private(set) var identities: [AccountAddress: AccountIdentity] = [:]
+    private(set) var noIdentities: Set<AccountAddress> = Set()
     private(set) var remoteSearched: Set<AccountAddress> = Set()
 
     private(set) var searchString: String = ""
@@ -122,13 +123,23 @@ final class GovernanceDelegateSearchPresenter {
             }
         )
 
+        let optAccountId = try? searchString.toAccountId(using: chain.chainFormat)
+
         if
             targetDelegates[searchString] == nil,
             !remoteSearched.contains(searchString),
-            let accountId = try? searchString.toAccountId(using: chain.chainFormat) {
+            let accountId = optAccountId {
             view?.didStartSearch()
             remoteSearched.insert(searchString)
             interactor.performDelegateSearch(accountId: accountId)
+        }
+
+        if targetDelegates[searchString] == nil, optAccountId != nil, noIdentities.contains(searchString) {
+            targetDelegates[searchString] = .init(
+                stats: .init(address: searchString),
+                metadata: nil,
+                identity: nil
+            )
         }
 
         let delegates = targetDelegates.values.sorted { delegate1, delegate2 in
@@ -202,6 +213,10 @@ extension GovernanceDelegateSearchPresenter: GovernanceDelegateSearchInteractorO
 
         identities[address] = identity
 
+        if identity == nil {
+            noIdentities.insert(address)
+        }
+
         view?.didStopSearch()
 
         updateSearchResult()
@@ -233,7 +248,7 @@ extension GovernanceDelegateSearchPresenter: GovernanceDelegateSearchInteractorO
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.performDelegateSearch(accountId: accountId)
             }
-        case .metadataSubscriptionFailed:
+        case .metadataSubscriptionFailed, .blockSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
