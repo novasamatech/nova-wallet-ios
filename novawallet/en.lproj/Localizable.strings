@@ -429,7 +429,7 @@
 "staking.filter.title.own.stake.token" = "Validator's own stake (%@)";
 "staking.custom.deselect.warning" = "You are about to deselect all the validators you selected earlier.";
 "common.search" = "Search";
-"staking.validator.search.placeholder" = "Search by address or name";
+"search.by.address.name.placeholder" = "Search by address or name";
 "common.search.results.number" = "Search results: %li";
 "common.search.start.title_v2_2_0" = "Search results will be displayed here";
 "staking.validator.search.empty.title" = "No search results.\nBe sure you typed full account address";

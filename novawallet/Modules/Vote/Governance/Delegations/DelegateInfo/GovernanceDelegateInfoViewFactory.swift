@@ -70,13 +70,8 @@ struct GovernanceDelegateInfoViewFactory {
         let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]> =
             JsonDataProviderFactory.shared.getJson(for: metadataUrl)
 
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
         let identityOperationFactory = IdentityOperationFactory(
-            requestFactory: storageRequestFactory,
+            requestFactory: state.requestFactory,
             emptyIdentitiesWhenNoStorage: true
         )
 
