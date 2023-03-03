@@ -16,8 +16,7 @@ final class GovernanceDelegateBanner: UIView {
         $0.roundedBackgroundView?.strokeColor = .clear
         $0.roundedBackgroundView?.highlightedStrokeColor = .clear
         $0.roundedBackgroundView?.cornerRadius = 12
-        $0.contentInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-        $0.imageWithTitleView?.iconImage = R.image.iconClose()?.tinted(with: R.color.colorIconChip()!)
+        $0.imageWithTitleView?.iconImage = R.image.iconBannerClose()
         $0.changesContentOpacityWhenHighlighted = true
     }
 
@@ -39,8 +38,8 @@ final class GovernanceDelegateBanner: UIView {
         addSubview(closeButton)
         closeButton.snp.makeConstraints {
             $0.size.equalTo(CGSize(width: 24, height: 24))
-            $0.trailing.equalToSuperview().inset(8)
-            $0.top.equalToSuperview().inset(12)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.top.equalToSuperview().inset(16)
         }
 
         gradientBannerView.contentInsets = .init(top: 16, left: 16, bottom: 20, right: 0)
@@ -48,7 +47,7 @@ final class GovernanceDelegateBanner: UIView {
             top: 24,
             left: 0,
             bottom: 0,
-            right: 0
+            right: 11
         )
     }
 

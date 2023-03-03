@@ -13,6 +13,7 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     private var dataSource: DataSource?
     private var dataStore: [ReferendumIdLocal: ReferendumsCellViewModel] = [:]
     private var localizableTitle: LocalizableResource<String>?
+    private var cachedCount: Int?
 
     init(
         presenter: DelegateVotedReferendaPresenterProtocol,
@@ -62,6 +63,7 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
     }
 
     private func setupCounter(value: Int?) {
+        cachedCount = value
         navigationItem.rightBarButtonItem = nil
 
         let formatter = quantityFormatter.value(for: selectedLocale)
@@ -80,7 +82,7 @@ final class DelegateVotedReferendaViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = localizableTitle?.value(for: selectedLocale)
-        if let count = dataSource?.snapshot().numberOfItems {
+        if let count = cachedCount {
             setupCounter(value: count)
         }
     }
@@ -118,7 +120,11 @@ extension DelegateVotedReferendaViewController: DelegateVotedReferendaViewProtoc
         snapshot.appendItems(newIds)
         snapshot.reloadItems(existingIds)
         dataSource?.apply(snapshot, animatingDifferences: false)
-        setupCounter(value: viewModels.count)
+
+        let loadedViewModelsCount = viewModels.filter { !$0.viewModel.isLoading }.count
+        if loadedViewModelsCount > 0 {
+            setupCounter(value: loadedViewModelsCount)
+        }
     }
 
     func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
