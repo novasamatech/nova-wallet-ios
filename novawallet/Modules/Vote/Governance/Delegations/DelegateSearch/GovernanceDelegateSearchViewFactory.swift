@@ -54,6 +54,7 @@ struct GovernanceDelegateSearchViewFactory {
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let blockTimeService = state.blockTimeService,
             let delegateListOperationFactory = state.createOffchainDelegateListFactory(for: settings) else {
             return nil
         }
@@ -67,12 +68,18 @@ struct GovernanceDelegateSearchViewFactory {
             emptyIdentitiesWhenNoStorage: true
         )
 
+        let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
+
         return .init(
             delegateListOperationFactory: delegateListOperationFactory,
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays,
             connection: connection,
             runtimeService: runtimeService,
             metadataProvider: metadataProvider,
             identityOperationFactory: identityOperationFactory,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            blockTimeService: blockTimeService,
+            blockTimeFactory: blockTimeOperationFactory,
             chain: chain,
             operationQueue: state.operationQueue
         )
