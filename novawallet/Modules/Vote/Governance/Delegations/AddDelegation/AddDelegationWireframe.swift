@@ -35,4 +35,16 @@ final class AddDelegationWireframe: AddDelegationWireframeProtocol {
 
         view?.controller.navigationController?.pushViewController(infoView.controller, animated: true)
     }
+
+    func showSearch(from view: AddDelegationViewProtocol?, initDelegates: [AccountAddress: GovernanceDelegateLocal]) {
+        guard
+            let searchView = GovernanceDelegateSearchViewFactory.createView(
+                for: state,
+                delegates: initDelegates
+            ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(searchView.controller, animated: true)
+    }
 }

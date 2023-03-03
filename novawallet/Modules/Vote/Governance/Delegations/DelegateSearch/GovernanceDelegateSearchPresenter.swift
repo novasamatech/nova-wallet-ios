@@ -81,8 +81,8 @@ final class GovernanceDelegateSearchPresenter {
     }
 
     private func updateSearchResult() {
-        guard searchString.isEmpty else {
-            provideSearchResult(for: [])
+        guard !searchString.isEmpty else {
+            provideInitialSearchResult()
             return
         }
 
@@ -136,14 +136,31 @@ final class GovernanceDelegateSearchPresenter {
 
     private func provideSearchResult(for delegates: [GovernanceDelegateLocal]) {
         let viewModels = delegates.map { delegate in
-            viewModelFactory.createAnyDelegateViewModel(
+            let viewModel = viewModelFactory.createAnyDelegateViewModel(
                 from: delegate,
                 chain: chain,
                 locale: selectedLocale
             )
+
+            return AddDelegationViewModel.delegate(viewModel)
         }
 
-        view?.didReceive(viewModels: viewModels)
+        if !viewModels.isEmpty {
+            let title = R.string.localizable.commonSearchResultsNumber(
+                viewModels.count,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            view?.didReceive(
+                viewModel: .found(title: .init(title: title), items: viewModels)
+            )
+        } else {
+            view?.didReceive(viewModel: .notFound)
+        }
+    }
+
+    private func provideInitialSearchResult() {
+        view?.didReceive(viewModel: .start)
     }
 }
 
@@ -153,6 +170,8 @@ extension GovernanceDelegateSearchPresenter: GovernanceDelegateSearchPresenterPr
 
         updateSearchResult()
     }
+
+    func presentResult(for _: AccountAddress) {}
 
     func search(for textEntry: String) {
         searchString = textEntry

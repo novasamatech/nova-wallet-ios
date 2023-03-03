@@ -16,6 +16,7 @@ protocol AddDelegationPresenterProtocol: AnyObject {
     func showAddDelegateInformation()
     func showSortOptions()
     func showFilters()
+    func showSearch()
 }
 
 protocol AddDelegationInteractorInputProtocol: AnyObject {
@@ -41,4 +42,6 @@ protocol AddDelegationWireframeProtocol: AlertPresentable, ErrorPresentable, Com
     )
 
     func showInfo(from view: AddDelegationViewProtocol?, delegate: GovernanceDelegateLocal)
+
+    func showSearch(from view: AddDelegationViewProtocol?, initDelegates: [AccountAddress: GovernanceDelegateLocal])
 }
