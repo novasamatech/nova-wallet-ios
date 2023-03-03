@@ -5,7 +5,8 @@ import RobinHood
 struct GovernanceDelegateSearchViewFactory {
     static func createView(
         for state: GovernanceSharedState,
-        delegates: [AccountAddress: GovernanceDelegateLocal]
+        delegates: [AccountAddress: GovernanceDelegateLocal],
+        yourDelegations: [AccountAddress: GovernanceYourDelegationGroup]
     ) -> GovernanceDelegateSearchViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
@@ -13,10 +14,22 @@ struct GovernanceDelegateSearchViewFactory {
             return nil
         }
 
-        let viewModelFactory = GovernanceDelegateViewModelFactory(
-            votesDisplayFactory: ReferendumDisplayStringFactory(),
-            addressViewModelFactory: DisplayAddressViewModelFactory(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+        let referendumDisplayStringFactory = ReferendumDisplayStringFactory()
+        let addressViewModelFactory = DisplayAddressViewModelFactory()
+        let quantityFormatter = NumberFormatter.quantity.localizableResource()
+
+        let anyDelegationViewModelFactory = GovernanceDelegateViewModelFactory(
+            votesDisplayFactory: referendumDisplayStringFactory,
+            addressViewModelFactory: addressViewModelFactory,
+            quantityFormatter: quantityFormatter,
+            lastVotedDays: GovernanceDelegationConstants.recentVotesInDays
+        )
+
+        let yourDelegationsViewModelFactory = GovYourDelegationsViewModelFactory(
+            votesDisplayFactory: referendumDisplayStringFactory,
+            addressViewModelFactory: addressViewModelFactory,
+            tracksViewModelFactory: GovernanceTrackViewModelFactory(),
+            quantityFormatter: quantityFormatter,
             lastVotedDays: GovernanceDelegationConstants.recentVotesInDays
         )
 
@@ -25,8 +38,10 @@ struct GovernanceDelegateSearchViewFactory {
         let presenter = GovernanceDelegateSearchPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: viewModelFactory,
+            anyDelegationViewModelFactory: anyDelegationViewModelFactory,
+            yourDelegationsViewModelFactory: yourDelegationsViewModelFactory,
             initDelegates: delegates,
+            initDelegations: yourDelegations,
             chain: chain,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared

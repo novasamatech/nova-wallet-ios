@@ -7,6 +7,7 @@ final class GovernanceDelegateSearchPresenter {
     let interactor: GovernanceDelegateSearchInteractorInputProtocol
 
     private(set) var delegates: [AccountAddress: GovernanceDelegateLocal] = [:]
+    private(set) var yourDelegations: [AccountAddress: GovernanceYourDelegationGroup] = [:]
     private(set) var metadata: [GovernanceDelegateMetadataRemote]?
     private(set) var identities: [AccountAddress: AccountIdentity] = [:]
     private(set) var noIdentities: Set<AccountAddress> = Set()
@@ -14,23 +15,28 @@ final class GovernanceDelegateSearchPresenter {
 
     private(set) var searchString: String = ""
 
-    let viewModelFactory: GovernanceDelegateViewModelFactoryProtocol
+    let anyDelegationViewModelFactory: GovernanceDelegateViewModelFactoryProtocol
+    let yourDelegationsViewModelFactory: GovernanceYourDelegationsViewModelFactoryProtocol
     let chain: ChainModel
     let logger: LoggerProtocol
 
     init(
         interactor: GovernanceDelegateSearchInteractorInputProtocol,
         wireframe: GovernanceDelegateSearchWireframeProtocol,
-        viewModelFactory: GovernanceDelegateViewModelFactoryProtocol,
+        anyDelegationViewModelFactory: GovernanceDelegateViewModelFactoryProtocol,
+        yourDelegationsViewModelFactory: GovernanceYourDelegationsViewModelFactoryProtocol,
         initDelegates: [AccountAddress: GovernanceDelegateLocal],
+        initDelegations: [AccountAddress: GovernanceYourDelegationGroup],
         chain: ChainModel,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.viewModelFactory = viewModelFactory
+        self.anyDelegationViewModelFactory = anyDelegationViewModelFactory
+        self.yourDelegationsViewModelFactory = yourDelegationsViewModelFactory
         delegates = initDelegates
+        yourDelegations = initDelegations
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -157,7 +163,24 @@ final class GovernanceDelegateSearchPresenter {
 
     private func provideSearchResult(for delegates: [GovernanceDelegateLocal]) {
         let viewModels = delegates.map { delegate in
-            let viewModel = viewModelFactory.createAnyDelegateViewModel(
+            if let delegation = yourDelegations[delegate.stats.address] {
+                let updatedDelegation = GovernanceYourDelegationGroup(
+                    delegateModel: delegate,
+                    delegations: delegation.delegations,
+                    tracks: delegation.tracks
+                )
+
+                if
+                    let viewModel = yourDelegationsViewModelFactory.createYourDelegateViewModel(
+                        from: updatedDelegation,
+                        chain: chain,
+                        locale: selectedLocale
+                    ) {
+                    return AddDelegationViewModel.yourDelegate(viewModel)
+                }
+            }
+
+            let viewModel = anyDelegationViewModelFactory.createAnyDelegateViewModel(
                 from: delegate,
                 chain: chain,
                 locale: selectedLocale

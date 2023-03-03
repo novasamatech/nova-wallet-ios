@@ -201,7 +201,7 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     }
 
     func showSearch() {
-        wireframe.showSearch(from: view, initDelegates: allDelegates)
+        wireframe.showSearch(from: view, initDelegates: allDelegates, initDelegations: yourDelegations)
     }
 }
 
