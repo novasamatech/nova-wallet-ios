@@ -6,6 +6,16 @@ private typealias UnknownAddressContentView = GenericTitleValueView<UnknownAddre
 final class IdentityAccountInfoView: RowView<GenericTitleValueView<UIView, UIImageView>> {
     static let preferredHeight = 56.0
 
+    var actionIcon: UIImage? = R.image.iconActionIndicator() {
+        didSet {
+            if let knownAddressView = contentView as? KnownAddressContentView {
+                knownAddressView.valueView.image = actionIcon
+            } else if let unknownAddressView = contentView as? UnknownAddressContentView {
+                unknownAddressView.valueView.image = actionIcon
+            }
+        }
+    }
+
     convenience init() {
         let size = CGSize(width: 340.0, height: Self.preferredHeight)
         let defaultFrame = CGRect(origin: .zero, size: size)
@@ -52,7 +62,7 @@ final class IdentityAccountInfoView: RowView<GenericTitleValueView<UIView, UIIma
 
         let knownAddressView = KnownAddressContentView()
         knownAddressView.isUserInteractionEnabled = false
-        knownAddressView.valueView.image = R.image.iconActionIndicator()
+        knownAddressView.valueView.image = actionIcon
 
         knownAddressView.titleView.nameLabel.setContentCompressionResistancePriority(
             .defaultLow,
@@ -86,7 +96,7 @@ final class IdentityAccountInfoView: RowView<GenericTitleValueView<UIView, UIIma
 
         let unknownAddressView = UnknownAddressContentView()
         unknownAddressView.isUserInteractionEnabled = false
-        unknownAddressView.valueView.image = R.image.iconActionIndicator()
+        unknownAddressView.valueView.image = actionIcon
 
         unknownAddressView.titleView.addressLabel.setContentCompressionResistancePriority(
             .defaultLow,

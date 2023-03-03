@@ -23,6 +23,9 @@ protocol GovernanceYourDelegationsInteractorOutputProtocol: AnyObject {
 }
 
 protocol GovernanceYourDelegationsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
-    func showAddDelegation(from view: GovernanceYourDelegationsViewProtocol?)
+    func showAddDelegation(
+        from view: GovernanceYourDelegationsViewProtocol?,
+        yourDelegations: [GovernanceYourDelegationGroup]
+    )
     func showDelegateInfo(from view: GovernanceYourDelegationsViewProtocol?, delegate: GovernanceDelegateLocal)
 }

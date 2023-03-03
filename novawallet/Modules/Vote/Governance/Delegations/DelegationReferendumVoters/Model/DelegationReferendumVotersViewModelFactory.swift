@@ -47,7 +47,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
                 locale: locale,
                 identites: voters.identities,
                 voter: $0,
-                metadata: voters.metadata[$0.accountId]
+                metadata: voters.metadata
             )
         }
     }
@@ -58,10 +58,17 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         locale: Locale,
         identites: [AccountId: AccountIdentity],
         voter: ReferendumVoterLocal,
-        metadata: GovernanceDelegateMetadataRemote?
+        metadata: [AccountId: GovernanceDelegateMetadataRemote]
     ) -> DelegationReferendumVotersModel? {
         if voter.delegators.isEmpty {
-            return createSingleSectionViewModel(type: type, chain: chain, locale: locale, identites: identites, voter: voter, metadata: metadata)
+            return createSingleSectionViewModel(
+                type: type,
+                chain: chain,
+                locale: locale,
+                identites: identites,
+                voter: voter,
+                metadata: metadata[voter.accountId]
+            )
         } else {
             let sortedDelegations = voter.delegators.sorted(by: {
                 let lhsVotes = $0.power.conviction.votes(for: $0.power.balance) ?? 0
@@ -86,13 +93,15 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         identites: [AccountId: AccountIdentity],
         metadata: GovernanceDelegateMetadataRemote?
     ) -> DisplayAddressViewModel {
-        if let displayName = identites[voter.accountId]?.displayName {
+        if let displayName = identites[voter.accountId]?.displayName,
+           !displayName.isEmpty {
             return displayAddressFactory.createViewModel(
                 from: address,
                 name: displayName,
                 iconUrl: metadata?.image
             )
-        } else if let displayName = metadata?.name {
+        } else if let displayName = metadata?.name,
+                  !displayName.isEmpty {
             return displayAddressFactory.createViewModel(
                 from: address,
                 name: displayName,
@@ -110,32 +119,57 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         voter: ReferendumVoterLocal,
         delegations: [GovernanceOffchainDelegation],
         identites: [AccountId: AccountIdentity],
-        metadata: GovernanceDelegateMetadataRemote?
+        metadata: [AccountId: GovernanceDelegateMetadataRemote]
     ) -> DelegationReferendumVotersModel? {
-        guard let address = try? voter.accountId.toAddress(using: chain.chainFormat) else {
+        guard let voterAddress = try? voter.accountId.toAddress(using: chain.chainFormat) else {
             return nil
         }
 
+        let voterMetadata = metadata[voter.accountId]
         let displayAddressViewModel = displayAddressViewModel(
             voter: voter,
-            address: address,
+            address: voterAddress,
             identites: identites,
-            metadata: metadata
+            metadata: voterMetadata
         )
 
         let votes: BigUInt
+        let amountInPlank: BigUInt
 
         switch referendumVotersType {
         case .ayes:
             votes = voter.vote.ayes
+            amountInPlank = voter.vote.ayeBalance
         case .nays:
             votes = voter.vote.nays
+            amountInPlank = voter.vote.nayBalance
         }
 
         let totalVotes = votes + voter.delegatorsVotes
-        let votesString = stringFactory.createVotes(from: totalVotes, chain: chain, locale: locale)
+        let votesString = stringFactory.createVotes(from: votes, chain: chain, locale: locale) ?? ""
+        let details = stringFactory.createVotesDetails(
+            from: amountInPlank,
+            conviction: voter.vote.conviction,
+            chain: chain,
+            locale: locale
+        )
+        let totalVotesString = stringFactory.createVotes(from: totalVotes, chain: chain, locale: locale)
+        let type: GovernanceDelegateTypeView.Model? = voterMetadata.map {
+            $0.isOrganization ? .organization : .individual
+        }
+        let delegateInfo = DelegateInfoView.Model(
+            type: type,
+            addressViewModel: displayAddressViewModel
+        )
+        let delegateCellModel = DelegateSingleVoteCollectionViewCell.Model(
+            delegateInfo: delegateInfo,
+            votes: .init(
+                topValue: votesString,
+                bottomValue: details
+            )
+        )
 
-        let cells = delegations.compactMap {
+        var cells = delegations.map {
             self.createDelegationViewModel(
                 chain: chain,
                 locale: locale,
@@ -145,22 +179,26 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             )
         }
 
-        let type: GovernanceDelegateTypeView.Model? = metadata.map {
-            $0.isOrganization ? .organization : .individual
+        if let delegateCellPosition = delegations.firstIndex(where: {
+            guard let delegatorVotes = $0.power.conviction.votes(for: $0.power.balance) else {
+                return false
+            }
+            return delegatorVotes < votes
+        }) {
+            cells.insert(delegateCellModel, at: delegateCellPosition)
+        } else {
+            cells.append(delegateCellModel)
         }
 
-        let model = DelegateGroupVotesHeader.Model(
-            delegateInfo: .init(
-                type: type,
-                addressViewModel: displayAddressViewModel
-            ),
-            votes: votesString ?? ""
+        let delegateHeaderModel = DelegateGroupVotesHeader.Model(
+            delegateInfo: delegateInfo,
+            votes: totalVotesString ?? ""
         )
 
         return .grouped(.init(
-            id: address,
-            model: model,
-            cells: cells
+            id: voterAddress,
+            model: delegateHeaderModel,
+            cells: cells.compactMap { $0 }
         ))
     }
 
@@ -226,7 +264,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
         locale: Locale,
         identites: [AccountId: AccountIdentity],
         delegation: GovernanceOffchainDelegation,
-        metadata: GovernanceDelegateMetadataRemote?
+        metadata: [AccountId: GovernanceDelegateMetadataRemote]
     ) -> DelegateSingleVoteCollectionViewCell.Model? {
         let address = delegation.delegator
 
@@ -234,18 +272,21 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             return nil
         }
 
+        let delegationMetadata = metadata[accountId]
         let displayAddressViewModel: DisplayAddressViewModel
-        if let displayName = identites[accountId]?.displayName {
+        if let displayName = identites[accountId]?.displayName,
+           !displayName.isEmpty {
             displayAddressViewModel = displayAddressFactory.createViewModel(
                 from: address,
                 name: displayName,
-                iconUrl: metadata?.image
+                iconUrl: delegationMetadata?.image
             )
-        } else if let displayName = metadata?.name {
+        } else if let displayName = delegationMetadata?.name,
+                  !displayName.isEmpty {
             displayAddressViewModel = displayAddressFactory.createViewModel(
                 from: address,
                 name: displayName,
-                iconUrl: metadata?.image
+                iconUrl: delegationMetadata?.image
             )
         } else {
             displayAddressViewModel = displayAddressFactory.createViewModel(from: address)
@@ -262,7 +303,7 @@ final class DelegationReferendumVotersViewModelFactory: DelegationReferendumVote
             locale: locale
         )
 
-        let type: GovernanceDelegateTypeView.Model? = metadata.map {
+        let type: GovernanceDelegateTypeView.Model? = delegationMetadata.map {
             $0.isOrganization ? .organization : .individual
         }
 

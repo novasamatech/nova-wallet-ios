@@ -528,7 +528,8 @@
 "account.import.option.title" = "Import account";
 "account.actions.change.sheet.title" = "Change %@ account";
 "wallet.account.locks.vesting" = "Vesting";
-"wallet.account.locks.democracy" = "Democracy";
+"wallet.account.locks.democracy.version1" = "Governance v1";
+"wallet.account.locks.democracy.version2" = "OpenGov";
 "wallet.account.locks.elections" = "Elections";
 "wallet.balances.widget.title" = "Your balance";
 "common.max" = "max";
@@ -1130,7 +1131,7 @@
 "delegations.add.title" = "Add delegation";
 "delegations.title" = "Delegations";
 "delegations.info.title" = "Delegate Info";
-"delegations.info.voted.all" = "Voted for all time";
+"delegations.info.voted.all" = "Voted referenda";
 "in.app.updates.title" = "Update available";
 "in.app.updates.install.button.title" = "Install";
 "in.app.updates.banner.major.title" = "Major update";

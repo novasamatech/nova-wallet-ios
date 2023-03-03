@@ -68,7 +68,7 @@ final class YourVoteView: UIView {
         $0.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
     }
 
-    let voteLabel = UILabel(style: .votes, textAlignment: .left)
+    let voteLabel = UILabel(style: .votes, textAlignment: .left, numberOfLines: 1)
     lazy var content: UIStackView = UIView.hStack(
         spacing: 6,
         [
@@ -91,7 +91,7 @@ final class YourVoteView: UIView {
     private func setupLayout() {
         voteLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         voteLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-
+        typeView.titleLabel.setContentHuggingPriority(.required, for: .horizontal)
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()

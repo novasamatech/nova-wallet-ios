@@ -127,7 +127,7 @@ final class DelegationReferendumVotersViewController: UIViewController, ViewHold
                 count += 1
             }
         }
-        dataSource.apply(snapshot, animatingDifferences: false)
+        dataSource.apply(snapshot, animatingDifferences: true)
         setupCounter(value: count)
     }
 
