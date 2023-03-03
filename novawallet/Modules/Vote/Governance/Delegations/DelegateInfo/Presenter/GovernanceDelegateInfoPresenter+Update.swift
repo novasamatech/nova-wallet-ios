@@ -20,13 +20,13 @@ extension GovernanceDelegateInfoPresenter {
     func provideStatsViewModel() {
         let optViewModel: GovernanceDelegateInfoViewModel.Stats?
 
-        if let details = details {
+        if let details = details, !details.stats.isEmpty {
             optViewModel = infoViewModelFactory.createStatsViewModel(
                 from: details,
                 chain: chain,
                 locale: selectedLocale
             )
-        } else if let stats = initStats {
+        } else if let stats = initStats, !stats.isEmpty {
             optViewModel = infoViewModelFactory.createStatsViewModel(
                 using: stats,
                 chain: chain,
