@@ -44,48 +44,29 @@ final class AddDelegationInteractor {
         self.operationQueue = operationQueue
     }
 
-    private func fetchBlockTimeAndUpdateDelegates() {
-        let blockTimeUpdateWrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
-
-        blockTimeUpdateWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
-
-                    self?.fetchDelegateList(for: blockTime)
-                } catch {
-                    self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
-                }
-            }
-        }
-
-        operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
-    }
-
-    private func fetchDelegateList(for blockTime: BlockTime) {
-        guard
-            let activityBlockNumber = currentBlockNumber?.blockBackInDays(
-                lastVotedDays,
-                blockTime: blockTime
-            ) else {
+    private func fetchDelegates() {
+        guard let currentBlockNumber = currentBlockNumber else {
             return
         }
 
-        let wrapper = delegateListOperationFactory.fetchDelegateListWrapper(
-            for: activityBlockNumber,
+        let wrapper = delegateListOperationFactory.fetchDelegateListByBlockNumber(
+            .init(
+                currentBlockNumber: currentBlockNumber,
+                lastVotedDays: lastVotedDays,
+                blockTimeService: blockTimeService,
+                blockTimeOperationFactory: blockTimeFactory
+            ),
             chain: chain,
             connection: connection,
-            runtimeService: runtimeService
+            runtimeService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
                     let delegates = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveDelegates(delegates)
+                    self?.presenter?.didReceiveDelegates(delegates ?? [])
                 } catch {
                     self?.presenter?.didReceiveError(.delegateListFetchFailed(error))
                 }
@@ -115,9 +96,7 @@ extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     }
 
     func refreshDelegates() {
-        if currentBlockNumber != nil {
-            fetchBlockTimeAndUpdateDelegates()
-        }
+        fetchDelegates()
     }
 
     func saveCloseBanner() {
@@ -140,7 +119,7 @@ extension AddDelegationInteractor: GeneralLocalStorageSubscriber, GeneralLocalSt
                 return
             }
 
-            fetchBlockTimeAndUpdateDelegates()
+            fetchDelegates()
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))
         }
