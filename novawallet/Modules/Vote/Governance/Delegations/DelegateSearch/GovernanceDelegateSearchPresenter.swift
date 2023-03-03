@@ -35,6 +35,16 @@ final class GovernanceDelegateSearchPresenter {
         self.localizationManager = localizationManager
     }
 
+    private func deriveDelegate(from address: AccountAddress) -> GovernanceDelegateLocal {
+        if let delegate = delegates[address] {
+            return delegate
+        }
+
+        let metadataItem = metadata?.first(where: { $0.address == address })
+
+        return .init(stats: .init(address: address), metadata: metadataItem, identity: identities[address])
+    }
+
     private func insertNewFromClosures(
         initDelegates: [AccountAddress: GovernanceDelegateLocal],
         onChainDelegateClosure: (AccountAddress, GovernanceDelegateLocal) -> Bool,
@@ -171,7 +181,11 @@ extension GovernanceDelegateSearchPresenter: GovernanceDelegateSearchPresenterPr
         updateSearchResult()
     }
 
-    func presentResult(for _: AccountAddress) {}
+    func presentResult(for address: AccountAddress) {
+        let delegate = deriveDelegate(from: address)
+
+        wireframe.showInfo(from: view, delegate: delegate)
+    }
 
     func search(for textEntry: String) {
         searchString = textEntry

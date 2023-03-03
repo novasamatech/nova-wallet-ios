@@ -20,4 +20,6 @@ protocol GovernanceDelegateSearchInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: GovernanceDelegateSearchError)
 }
 
-protocol GovernanceDelegateSearchWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {}
+protocol GovernanceDelegateSearchWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
+    func showInfo(from view: GovernanceDelegateSearchViewProtocol?, delegate: GovernanceDelegateLocal)
+}
