@@ -600,6 +600,8 @@ extension StakingMainViewController: AlertsViewDelegate {
             presenter.performStakeMoreAction()
         case .redeemUnbonded:
             presenter.performRedeemAction()
+        case .rebag:
+            presenter.performRebag()
         case .waitingNextEra:
             break
         }

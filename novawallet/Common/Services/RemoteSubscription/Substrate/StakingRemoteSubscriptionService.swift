@@ -18,18 +18,41 @@ protocol StakingRemoteSubscriptionServiceProtocol {
 
 final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
     StakingRemoteSubscriptionServiceProtocol {
-    private static let globalDataStoragePaths: [StorageCodingPath] = [
-        .activeEra,
-        .currentEra,
-        .totalIssuance,
-        .minNominatorBond,
-        .maxNominatorsCount,
-        .counterForNominators
-    ]
+    private static var globalDataStoragePaths: [StorageCodingPath] {
+        [
+            .activeEra,
+            .currentEra,
+            .totalIssuance,
+            .minNominatorBond,
+            .maxNominatorsCount,
+            .counterForNominators
+        ]
+    }
 
-    private static func globalDataParamsCacheKey(for chainId: ChainModel.Id) throws -> String {
+    private static func createBagsListRequests(
+        for localKeyFactory: LocalStorageKeyFactoryProtocol,
+        chainId: ChainModel.Id
+    ) throws -> [UnkeyedSubscriptionRequest] {
+        // we may have different modules in different chain but only on subscription will be established
+        let bagListSizeRequests = try BagList.possibleModuleNames.map { moduleName in
+            let storagePath = BagList.bagListSizePath(for: moduleName)
+            let localKey = try localKeyFactory.createFromStoragePath(
+                BagList.defaultBagListSizePath,
+                chainId: chainId
+            )
+
+            return UnkeyedSubscriptionRequest(storagePath: storagePath, localKey: localKey)
+        }
+
+        return bagListSizeRequests
+    }
+
+    private static func createDataParamsCacheKey(
+        for chainId: ChainModel.Id,
+        paths: [StorageCodingPath]
+    ) throws -> String {
         let storageKeyFactory = StorageKeyFactory()
-        let cacheKeyData = try globalDataStoragePaths.reduce(Data()) { result, storagePath in
+        let cacheKeyData = try paths.reduce(Data()) { result, storagePath in
             let storageKeyData = try storageKeyFactory.createStorageKey(
                 moduleName: storagePath.moduleName,
                 storageName: storagePath.itemName
@@ -49,18 +72,24 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
         do {
             let localKeyFactory = LocalStorageKeyFactory()
 
-            let localKeys = try Self.globalDataStoragePaths.map { storagePath in
+            let globalPaths = Self.globalDataStoragePaths
+            let globalLocalKeys = try globalPaths.map { storagePath in
                 try localKeyFactory.createFromStoragePath(
                     storagePath,
                     chainId: chainId
                 )
             }
 
-            let cacheKey = try Self.globalDataParamsCacheKey(for: chainId)
+            let bagListRequests = try Self.createBagsListRequests(for: localKeyFactory, chainId: chainId)
 
-            let requests = zip(Self.globalDataStoragePaths, localKeys).map {
+            let bagListPaths = bagListRequests.map(\.storagePath)
+            let cacheKey = try Self.createDataParamsCacheKey(for: chainId, paths: globalPaths + bagListPaths)
+
+            let globalRequests = zip(globalPaths, globalLocalKeys).map {
                 UnkeyedSubscriptionRequest(storagePath: $0.0, localKey: $0.1)
             }
+
+            let requests = globalRequests + bagListRequests
 
             return attachToSubscription(
                 with: requests,
@@ -82,7 +111,13 @@ final class StakingRemoteSubscriptionService: RemoteSubscriptionService,
         closure: RemoteSubscriptionClosure?
     ) {
         do {
-            let cacheKey = try Self.globalDataParamsCacheKey(for: chainId)
+            let bagListRequests = try Self.createBagsListRequests(for: LocalStorageKeyFactory(), chainId: chainId)
+            let bagListPaths = bagListRequests.map(\.storagePath)
+
+            let cacheKey = try Self.createDataParamsCacheKey(
+                for: chainId,
+                paths: Self.globalDataStoragePaths + bagListPaths
+            )
 
             detachFromSubscription(
                 cacheKey,
