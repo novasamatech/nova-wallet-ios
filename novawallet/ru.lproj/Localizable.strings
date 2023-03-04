@@ -333,7 +333,7 @@
 "staking.stash.can.hint" = "С помощью стэш аккаунта можно застейкать больше и установить контроллер аккаунт";
 "staking.controller.can.hint" = "Контроллер аккаунт может вывести из стейка, забрать, вернуть в стейк, сменить назначение вознаграждений и валидаторов.";
 "staking.switch.account.to.stash" = "Для установки контроллер аккаунта смените аккаунт на стэш.";
-"staking.inactive.current.minimal.stake" = "В настоящее время стейкинг неактивен. \nТекущая минимальная ставка %@ .";
+"staking.inactive.current.minimal.stake" = "Ваш стейк меньше минимального %@.\nДанная ситуация увеличивает шанс не получить награды за стейкинг.";
 "staking.change.your.validators" = "Смените своих валидаторов.";
 "staking.bond.more.tokens" = "Застейкайте ещё токенов";
 "staking.redeem.unbonded.tokens" = "Заберите токены после вывода";
@@ -1121,3 +1121,6 @@
 "in.app.updates.button.show.more.title" = "Посмотреть все доступные обновления";
 "in.app.updates.version.title" = "Версия %@";
 "in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";
+"staking.improvements" = "Улучшения стейкинга";
+"staking.rebag.alert.message" = "Устаревшая позиция в очереди на передачу стейка валидатору может привести к остановке поступления наград";
+"staking.min.stake.violated.message" = "Рекомендованный минимальный стейк для стабильного получения наград %@.";

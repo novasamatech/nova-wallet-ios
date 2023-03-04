@@ -96,4 +96,52 @@ extension OperationCombiningService {
     func longrunOperation() -> LongrunOperation<[T]> {
         LongrunOperation(longrun: AnyLongrun(longrun: self))
     }
+
+    static func compoundWrapper(
+        operationManager: OperationManagerProtocol,
+        wrapperClosure: @escaping () throws -> CompoundOperationWrapper<T>?
+    ) -> CompoundOperationWrapper<T?> {
+        let loadingOperation: BaseOperation<[T]> = OperationCombiningService(operationManager: operationManager) {
+            if let wrapper = try wrapperClosure() {
+                return [wrapper]
+            } else {
+                return []
+            }
+        }.longrunOperation()
+
+        let mappingOperation = ClosureOperation<T?> {
+            try loadingOperation.extractNoCancellableResultData().first
+        }
+
+        mappingOperation.addDependency(loadingOperation)
+
+        return .init(targetOperation: mappingOperation, dependencies: [loadingOperation])
+    }
+
+    static func compoundOptionalWrapper(
+        operationManager: OperationManagerProtocol,
+        wrapperClosure: @escaping () throws -> CompoundOperationWrapper<T?>?
+    ) -> CompoundOperationWrapper<T?> {
+        let loadingOperation: BaseOperation<[T?]> = OperationCombiningService<T?>(operationManager: operationManager) {
+            if let wrapper = try wrapperClosure() {
+                return [wrapper]
+            } else {
+                return []
+            }
+        }.longrunOperation()
+
+        let mappingOperation = ClosureOperation<T?> {
+            let results = try loadingOperation.extractNoCancellableResultData()
+
+            if !results.isEmpty {
+                return results[0]
+            } else {
+                return nil
+            }
+        }
+
+        mappingOperation.addDependency(loadingOperation)
+
+        return .init(targetOperation: mappingOperation, dependencies: [loadingOperation])
+    }
 }

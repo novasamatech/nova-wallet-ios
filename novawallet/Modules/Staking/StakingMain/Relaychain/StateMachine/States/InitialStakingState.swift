@@ -18,7 +18,8 @@ final class InitialStakingState: BaseStakingState {
                 commonData: commonData,
                 stashItem: stashItem,
                 ledgerInfo: nil,
-                totalReward: nil
+                totalReward: nil,
+                bagListNode: nil
             )
         } else {
             newState = NoStashState(
