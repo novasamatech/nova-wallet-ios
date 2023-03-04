@@ -133,6 +133,10 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         childPresenter?.performRebondAction()
     }
 
+    func performRebag() {
+        childPresenter?.performRebag()
+    }
+
     func performAnalyticsAction() {
         childPresenter?.performAnalyticsAction()
     }

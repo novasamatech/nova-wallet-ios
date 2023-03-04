@@ -12,7 +12,8 @@ final class PendingNominatorState: BaseStashNextState {
         ledgerInfo: StakingLedger?,
         nomination: Nomination?,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?
+        payee: RewardDestinationArg?,
+        bagListNode: BagList.Node?
     ) {
         self.ledgerInfo = ledgerInfo
         self.nomination = nomination
@@ -22,7 +23,8 @@ final class PendingNominatorState: BaseStashNextState {
             commonData: commonData,
             stashItem: stashItem,
             totalReward: totalReward,
-            payee: payee
+            payee: payee,
+            bagListNode: bagListNode
         )
     }
 
@@ -45,7 +47,8 @@ final class PendingNominatorState: BaseStashNextState {
                 ledgerInfo: ledgerInfo,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
 
             stateMachine.transit(to: newState)
@@ -69,7 +72,8 @@ final class PendingNominatorState: BaseStashNextState {
                 ledgerInfo: ledgerInfo,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else if let ledgerInfo = ledgerInfo {
             newState = BondedState(
@@ -78,7 +82,8 @@ final class PendingNominatorState: BaseStashNextState {
                 stashItem: stashItem,
                 ledgerInfo: ledgerInfo,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else if let nomination = nomination {
             self.nomination = nomination
@@ -90,7 +95,8 @@ final class PendingNominatorState: BaseStashNextState {
                 commonData: commonData,
                 stashItem: stashItem,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         }
 

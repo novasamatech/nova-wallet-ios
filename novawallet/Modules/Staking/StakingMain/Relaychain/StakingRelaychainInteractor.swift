@@ -46,6 +46,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var validatorProvider: AnyDataProvider<DecodedValidator>?
     var nominatorProvider: AnyDataProvider<DecodedNomination>?
     var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
+    var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
     var payeeProvider: AnyDataProvider<DecodedPayee>?
     var controllerAccountProvider: StreamableProvider<MetaAccountModel>?
@@ -53,6 +54,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
     var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
+    var bagListSizeProvider: AnyDataProvider<DecodedU32>?
+    var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
     var rewardAnalyticsProvider: AnySingleValueProvider<[SubqueryRewardItemData]>?
 
     init(
