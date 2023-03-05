@@ -73,6 +73,10 @@ struct AddDelegationViewFactory {
             return nil
         }
 
+        let metadataUrl = GovernanceDelegateMetadataFactory().createUrl(for: chain)
+        let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]> =
+            JsonDataProviderFactory.shared.getJson(for: metadataUrl)
+
         let blockTimeOperationFactory = BlockTimeOperationFactory(chain: chain)
 
         return AddDelegationInteractor(
@@ -84,6 +88,7 @@ struct AddDelegationViewFactory {
             delegateListOperationFactory: delegateListOperationFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,
+            metadataProvider: metadataProvider,
             settings: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
