@@ -56,7 +56,8 @@ struct DelegationReferendumVotersViewFactory {
             viewModelFactory: viewModelFactory,
             votersType: type,
             chain: chain,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
         )
 
         let view = DelegationReferendumVotersViewController(
