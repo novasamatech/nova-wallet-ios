@@ -28,6 +28,7 @@ protocol AddDelegationInteractorInputProtocol: AnyObject {
 
 protocol AddDelegationInteractorOutputProtocol: AnyObject {
     func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal])
+    func didReceiveMetadata(_ metadata: [GovernanceDelegateMetadataRemote]?)
     func didReceiveShouldDisplayBanner(_ isHidden: Bool)
     func didReceiveError(_ error: AddDelegationInteractorError)
 }

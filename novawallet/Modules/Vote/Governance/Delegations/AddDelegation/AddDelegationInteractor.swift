@@ -13,6 +13,7 @@ final class AddDelegationInteractor {
     let runtimeService: RuntimeCodingServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     private(set) var settings: SettingsManagerProtocol
+    let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -29,6 +30,7 @@ final class AddDelegationInteractor {
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
         settings: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -40,6 +42,7 @@ final class AddDelegationInteractor {
         self.delegateListOperationFactory = delegateListOperationFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
+        self.metadataProvider = metadataProvider
         self.settings = settings
         self.operationQueue = operationQueue
     }
@@ -83,16 +86,46 @@ final class AddDelegationInteractor {
     private func provideSettings() {
         presenter?.didReceiveShouldDisplayBanner(settings.governanceDelegateInfoSeen)
     }
+
+    private func subscribeMetadata() {
+        let updateClosure: ([DataProviderChange<[GovernanceDelegateMetadataRemote]>]) -> Void = { [weak self] changes in
+            let metadata = changes.reduceToLastChange()
+
+            self?.presenter?.didReceiveMetadata(metadata)
+        }
+
+        let failureClosure: (Error) -> Void = { [weak self] error in
+            self?.presenter?.didReceiveError(.metadataSubscriptionFailed(error))
+        }
+
+        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+
+        metadataProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+    }
+
+    private func clearMetadataSubscription() {
+        metadataProvider.removeObserver(self)
+    }
 }
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
+        subscribeMetadata()
         provideSettings()
     }
 
     func remakeSubscriptions() {
         subscribeBlockNumber()
+
+        clearMetadataSubscription()
+        subscribeMetadata()
     }
 
     func refreshDelegates() {
