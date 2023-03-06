@@ -44,7 +44,7 @@ extension GovernanceYourDelegationGroup {
             } else {
                 let address = (try? delegateId.toAddress(using: chain.chainFormat)) ?? delegateId.toHex()
                 delegate = .init(
-                    stats: .init(address: address, delegationsCount: 1, delegatedVotes: 0, recentVotes: 0),
+                    stats: .init(address: address),
                     metadata: metadataDic?[address],
                     identity: nil
                 )
@@ -66,7 +66,13 @@ extension GovernanceYourDelegationGroup {
             )
         }
 
-        return groups.sorted { group1, group2 in
+        return groups.sortedByTotalVotes()
+    }
+}
+
+extension Array where Array.Element == GovernanceYourDelegationGroup {
+    func sortedByTotalVotes() -> [GovernanceYourDelegationGroup] {
+        sorted { group1, group2 in
             if group1.delegateModel.metadata != nil, group2.delegateModel.metadata == nil {
                 return true
             } else if group1.delegateModel.metadata == nil, group2.delegateModel.metadata != nil {
