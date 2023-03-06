@@ -1389,6 +1389,8 @@
 		847999B628894FE200D1BAD2 /* AccountInputViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847999B528894FE200D1BAD2 /* AccountInputViewDelegate.swift */; };
 		847999B82889510C00D1BAD2 /* TextInputViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847999B72889510C00D1BAD2 /* TextInputViewDelegate.swift */; };
 		8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */; };
+		847A258E29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A258D29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift */; };
+		847A259029B5D2710054F90C /* GovJsonLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A258F29B5D2710054F90C /* GovJsonLocalStorageHandler.swift */; };
 		847A25B928D7BB1F006AC9F5 /* BalancesTransferEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A25B828D7BB1F006AC9F5 /* BalancesTransferEvent.swift */; };
 		847A25BB28D7BB92006AC9F5 /* ExtrinsicProcessor+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A25BA28D7BB92006AC9F5 /* ExtrinsicProcessor+Events.swift */; };
 		847A25BD28D7C0E7006AC9F5 /* TokenTransferedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A25BC28D7C0E7006AC9F5 /* TokenTransferedEvent.swift */; };
@@ -4735,6 +4737,8 @@
 		847999B528894FE200D1BAD2 /* AccountInputViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInputViewDelegate.swift; sourceTree = "<group>"; };
 		847999B72889510C00D1BAD2 /* TextInputViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputViewDelegate.swift; sourceTree = "<group>"; };
 		8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryIntegrationTests.swift; sourceTree = "<group>"; };
+		847A258D29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovJsonLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		847A258F29B5D2710054F90C /* GovJsonLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovJsonLocalStorageHandler.swift; sourceTree = "<group>"; };
 		847A25B828D7BB1F006AC9F5 /* BalancesTransferEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesTransferEvent.swift; sourceTree = "<group>"; };
 		847A25BA28D7BB92006AC9F5 /* ExtrinsicProcessor+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+Events.swift"; sourceTree = "<group>"; };
 		847A25BC28D7C0E7006AC9F5 /* TokenTransferedEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenTransferedEvent.swift; sourceTree = "<group>"; };
@@ -12938,6 +12942,8 @@
 				880855FB28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift */,
 				8412219F28F051EE00715C82 /* GovMetadataLocalStorageSubscriber.swift */,
 				841221A128F0520300715C82 /* GovMetadataLocalStorageHandler.swift */,
+				847A258D29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift */,
+				847A258F29B5D2710054F90C /* GovJsonLocalStorageHandler.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -16907,6 +16913,7 @@
 				84F4A90A254CC863000CF0A3 /* KeystoreExportWrapper.swift in Sources */,
 				843074F928BF6201009D463B /* NoAccountSupportPresentable.swift in Sources */,
 				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
+				847A259029B5D2710054F90C /* GovJsonLocalStorageHandler.swift in Sources */,
 				84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */,
 				8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */,
 				849E17E8279143B2002D1744 /* NavigationBarStyle.swift in Sources */,
@@ -17022,6 +17029,7 @@
 				88F19DE028D8D0F600F6E459 /* LoadableViewModelState+Addition.swift in Sources */,
 				84DF21AB25363C9F005454AE /* Chain+Info.swift in Sources */,
 				84A3B8A22836DA2600DE2669 /* LastAccountIdKeyWrapper.swift in Sources */,
+				847A258E29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift in Sources */,
 				84A59164292B593E00BCCF8F /* TransactionFeeProxy.swift in Sources */,
 				84243095265B1888003E07EC /* CrowdloanMetadata.swift in Sources */,
 				84CFF1ED26526FBC00DB7CF7 /* StakingBondMoreConfirmationWireframe.swift in Sources */,

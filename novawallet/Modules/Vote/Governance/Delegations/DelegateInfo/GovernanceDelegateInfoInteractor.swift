@@ -15,12 +15,13 @@ final class GovernanceDelegateInfoInteractor {
     let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
     let identityOperationFactory: IdentityOperationFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
+    private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private var currentBlockNumber: BlockNumber?
 
@@ -35,10 +36,10 @@ final class GovernanceDelegateInfoInteractor {
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
         identityOperationFactory: IdentityOperationFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccountId = selectedAccountId
@@ -51,10 +52,10 @@ final class GovernanceDelegateInfoInteractor {
         self.connection = connection
         self.runtimeService = runtimeService
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.metadataProvider = metadataProvider
         self.identityOperationFactory = identityOperationFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
+        self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
     }
 
@@ -173,32 +174,9 @@ final class GovernanceDelegateInfoInteractor {
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
     }
 
-    private func subscribeMetadata(for delegate: AccountId) {
-        let updateClosure: ([DataProviderChange<[GovernanceDelegateMetadataRemote]>]) -> Void = { [weak self] changes in
-            let metadata = changes.reduceToLastChange()?.first {
-                (try? $0.address.toAccountId()) == delegate
-            }
-
-            self?.presenter?.didReceiveMetadata(metadata)
-        }
-
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.presenter?.didReceiveError(.metadataSubscriptionFailed(error))
-        }
-
-        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
-
-        metadataProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-    }
-
-    private func clearMetadataSubscription() {
-        metadataProvider.removeObserver(self)
+    private func subscribeToDelegatesMetadata() {
+        metadataProvider?.removeObserver(self)
+        metadataProvider = subscribeDelegatesMetadata(for: chain)
     }
 
     private func provideIdentity(for delegate: AccountId) {
@@ -227,9 +205,9 @@ final class GovernanceDelegateInfoInteractor {
 extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
-        subscribeMetadata(for: delegateId)
         provideIdentity(for: delegateId)
         subscribeAccountVotes()
+        subscribeToDelegatesMetadata()
         provideTracks()
     }
 
@@ -242,8 +220,7 @@ extension GovernanceDelegateInfoInteractor: GovernanceDelegateInfoInteractorInpu
     func remakeSubscriptions() {
         subscribeBlockNumber()
 
-        clearMetadataSubscription()
-        subscribeMetadata(for: delegateId)
+        subscribeToDelegatesMetadata()
 
         subscribeAccountVotes()
     }
@@ -273,6 +250,19 @@ extension GovernanceDelegateInfoInteractor: GeneralLocalStorageSubscriber, Gener
             }
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))
+        }
+    }
+}
+
+extension GovernanceDelegateInfoInteractor: GovJsonLocalStorageSubscriber, GovJsonLocalStorageHandler {
+    func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain: ChainModel) {
+        switch result {
+        case let .success(metadata):
+            let address = try? delegateId.toAddress(using: chain.chainFormat)
+            let delegateMetadata = metadata.first { $0.address == address }
+            presenter?.didReceiveMetadata(delegateMetadata)
+        case let .failure(error):
+            presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
     }
 }
