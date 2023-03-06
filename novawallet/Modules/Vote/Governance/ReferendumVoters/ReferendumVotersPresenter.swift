@@ -3,7 +3,7 @@ import SoraFoundation
 import BigInt
 
 final class ReferendumVotersPresenter {
-    weak var view: ReferendumVotersViewProtocol?
+    weak var view: VotesViewProtocol?
     let wireframe: ReferendumVotersWireframeProtocol
     let interactor: ReferendumVotersInteractorInputProtocol
     let stringFactory: ReferendumDisplayStringFactoryProtocol
@@ -41,7 +41,7 @@ final class ReferendumVotersPresenter {
     private func createViewModel(
         _ model: ReferendumVotersModel,
         voter: ReferendumVoterLocal
-    ) -> ReferendumVotersViewModel? {
+    ) -> VotesViewModel? {
         guard let address = try? voter.accountId.toAddress(using: chain.chainFormat) else {
             return nil
         }
@@ -75,10 +75,10 @@ final class ReferendumVotersPresenter {
             locale: selectedLocale
         )
 
-        return ReferendumVotersViewModel(
+        return VotesViewModel(
             displayAddress: displayAddressViewModel,
             votes: votesString ?? "",
-            preConviction: details ?? ""
+            votesDetails: details ?? ""
         )
     }
 
@@ -87,7 +87,7 @@ final class ReferendumVotersPresenter {
             return
         }
 
-        let viewModels: [ReferendumVotersViewModel] = model.voters.filter { voter in
+        let viewModels: [VotesViewModel] = model.voters.filter { voter in
             switch type {
             case .ayes:
                 return voter.vote.hasAyeVotes
@@ -109,16 +109,37 @@ final class ReferendumVotersPresenter {
 
         view?.didReceiveViewModels(.loaded(value: viewModels))
     }
+
+    private var title: LocalizableResource<String> {
+        switch type {
+        case .ayes:
+            return LocalizableResource { locale in
+                R.string.localizable.govVotersAye(preferredLanguages: locale.rLanguages)
+            }
+
+        case .nays:
+            return LocalizableResource { locale in
+                R.string.localizable.govVotersNay(preferredLanguages: locale.rLanguages)
+            }
+        }
+    }
+
+    private var emptyViewTitle: LocalizableResource<String> {
+        LocalizableResource { locale in
+            R.string.localizable.govVotersEmpty(preferredLanguages: locale.rLanguages)
+        }
+    }
 }
 
-extension ReferendumVotersPresenter: ReferendumVotersPresenterProtocol {
+extension ReferendumVotersPresenter: VotesPresenterProtocol {
     func setup() {
         view?.didReceiveViewModels(.loading)
-
+        view?.didReceive(title: title)
+        view?.didReceiveEmptyView(title: emptyViewTitle)
         interactor.setup()
     }
 
-    func selectVoter(for viewModel: ReferendumVotersViewModel) {
+    func select(viewModel: VotesViewModel) {
         guard let view = view else {
             return
         }

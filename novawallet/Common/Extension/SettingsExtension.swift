@@ -12,7 +12,9 @@ enum SettingsKey: String {
     case selectedCurrency
     case governanceChainId
     case governanceType
+    case governanceDelegateInfoSeen
     case skippedUpdateVersion
+    case skippedAddDelegationTracksHint
 }
 
 extension SettingsManagerProtocol {
@@ -127,6 +129,16 @@ extension SettingsManagerProtocol {
         }
     }
 
+    var governanceDelegateInfoSeen: Bool {
+        get {
+            bool(for: SettingsKey.governanceDelegateInfoSeen.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.governanceDelegateInfoSeen.rawValue)
+        }
+    }
+
     var skippedUpdateVersion: String? {
         get {
             string(for: SettingsKey.skippedUpdateVersion.rawValue)
@@ -138,6 +150,16 @@ extension SettingsManagerProtocol {
             } else {
                 removeValue(for: SettingsKey.skippedUpdateVersion.rawValue)
             }
+        }
+    }
+
+    var skippedAddDelegationTracksHint: Bool {
+        get {
+            bool(for: SettingsKey.skippedAddDelegationTracksHint.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.skippedAddDelegationTracksHint.rawValue)
         }
     }
 }

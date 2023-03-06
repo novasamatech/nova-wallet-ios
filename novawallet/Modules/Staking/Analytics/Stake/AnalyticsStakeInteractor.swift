@@ -54,7 +54,7 @@ extension AnalyticsStakeInteractor: AnalyticsStakeInteractorInputProtocol {
     }
 
     func fetchStakeHistory(stashAddress: AccountAddress) {
-        guard let analyticsURL = chainAsset.chain.externalApi?.staking?.url else { return }
+        guard let analyticsURL = chainAsset.chain.externalApis?.staking()?.first?.url else { return }
         let subqueryStakeHistorySource = SubqueryStakeSource(address: stashAddress, url: analyticsURL)
         let fetchOperation = subqueryStakeHistorySource.fetchOperation()
 

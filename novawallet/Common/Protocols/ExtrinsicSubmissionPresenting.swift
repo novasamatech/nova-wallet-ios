@@ -3,6 +3,7 @@ import Foundation
 enum ExtrinsicSubmissionPresentingAction {
     case dismiss
     case pop
+    case popBack
 }
 
 protocol ExtrinsicSubmissionPresenting: AnyObject {
@@ -32,6 +33,11 @@ extension ExtrinsicSubmissionPresenting where Self: ModalAlertPresenting {
         case .pop:
             let presenter = view?.controller.navigationController
             view?.controller.navigationController?.popToRootViewController(animated: true)
+
+            presentSuccessNotification(title, from: presenter, completion: nil)
+        case .popBack:
+            let presenter = view?.controller.navigationController
+            view?.controller.navigationController?.popViewController(animated: true)
 
             presentSuccessNotification(title, from: presenter, completion: nil)
         }
