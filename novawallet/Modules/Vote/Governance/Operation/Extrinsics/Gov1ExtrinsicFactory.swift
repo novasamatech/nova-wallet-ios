@@ -49,4 +49,11 @@ final class Gov1ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
 
         return try appendCalls(unlockCalls, builder: newBuilder)
     }
+
+    func delegationUpdate(
+        with _: [GovernanceDelegatorAction],
+        builder _: ExtrinsicBuilderProtocol
+    ) throws -> ExtrinsicBuilderProtocol {
+        fatalError("Not supported")
+    }
 }

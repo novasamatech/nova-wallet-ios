@@ -4,7 +4,7 @@ import BigInt
 
 extension Referenda {
     struct Deposit: Decodable {
-        let who: AccountId
+        @BytesCodable var who: AccountId
         @StringCodable var amount: BigUInt
     }
 }

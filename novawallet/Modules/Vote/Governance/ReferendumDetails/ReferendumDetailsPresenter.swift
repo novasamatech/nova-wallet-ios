@@ -25,6 +25,7 @@ final class ReferendumDetailsPresenter {
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
     private var votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private var offchainVoting: GovernanceOffchainVotesLocal.Single?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
     private var price: PriceData?
@@ -73,6 +74,7 @@ final class ReferendumDetailsPresenter {
         referendum = initData.referendum
         accountVotes = initData.accountVotes
         votingDistribution = initData.votesResult
+        offchainVoting = initData.offchainVoting
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         referendumMetadata = initData.metadata
@@ -157,23 +159,39 @@ final class ReferendumDetailsPresenter {
     }
 
     private func provideYourVote() {
+        let viewModel: [YourVoteRow.Model]
+
         if let accountVotes = accountVotes {
-            let viewModel = referendumStringsFactory.createYourVotesViewModel(
+            viewModel = referendumStringsFactory.createDirectVotesViewModel(
                 from: accountVotes,
                 chain: chain,
                 locale: selectedLocale
             )
-
-            view?.didReceive(yourVoteModel: viewModel)
+        } else if let offchainVoting = offchainVoting {
+            switch offchainVoting.voteType {
+            case let .direct(directVote):
+                viewModel = referendumStringsFactory.createDirectVotesViewModel(
+                    from: directVote,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+            case let .delegated(delegateVote):
+                viewModel = referendumStringsFactory.createDelegatorVotesViaDelegateViewModel(
+                    from: delegateVote,
+                    delegateName: offchainVoting.identity?.displayName ?? offchainVoting.metadata?.name,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+            }
         } else {
-            view?.didReceive(yourVoteModel: nil)
+            viewModel = []
         }
+
+        view?.didReceive(yourVoteModel: viewModel)
     }
 
     private func provideVotingDetails() {
-        guard
-            let blockNumber = blockNumber,
-            let blockTime = blockTime else {
+        guard let blockNumber = blockNumber, let blockTime = blockTime else {
             return
         }
 
@@ -184,11 +202,14 @@ final class ReferendumDetailsPresenter {
         )
 
         let referendumViewModel = referendumViewModelFactory.createViewModel(
-            from: referendum,
-            metadata: referendumMetadata,
-            vote: accountVotes,
-            chainInfo: chainInfo,
-            selectedLocale: selectedLocale
+            input: .init(
+                referendum: referendum,
+                metadata: referendumMetadata,
+                onchainVotes: accountVotes,
+                offchainVotes: nil,
+                chainInfo: chainInfo,
+                selectedLocale: selectedLocale
+            )
         )
 
         let votingProgress = referendumViewModel.progress

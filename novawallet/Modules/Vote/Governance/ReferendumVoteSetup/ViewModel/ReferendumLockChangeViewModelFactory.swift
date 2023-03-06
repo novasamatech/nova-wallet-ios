@@ -24,6 +24,12 @@ protocol ReferendumLockChangeViewModelFactoryProtocol {
         locale: Locale
     ) -> ReferendumLockTransitionViewModel?
 
+    func createSinglePeriodViewModel(
+        _ period: Moment?,
+        blockTime: BlockTime,
+        locale: Locale
+    ) -> String
+
     func createRemainedOtherLocksViewModel(
         locks: AssetLocks,
         locale: Locale
@@ -32,20 +38,34 @@ protocol ReferendumLockChangeViewModelFactoryProtocol {
 
 extension ReferendumLockChangeViewModelFactoryProtocol {
     func createTransferableAmountViewModel(
-        from diff: GovernanceLockStateDiff,
+        from diffLock: GovernanceLockStateDiff,
         balance: AssetBalance,
         locks: AssetLocks,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel? {
         createTransferableAmountViewModel(
-            resultLocked: diff.after?.maxLockedAmount,
+            resultLocked: diffLock.after?.maxLockedAmount,
             balance: balance,
             locks: locks,
             locale: locale
         )
     }
 
-    func createAmountViewModel(
+    func createTransferableAmountViewModel(
+        govLockedAmount: BigUInt?,
+        balance: AssetBalance,
+        locks: AssetLocks,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel? {
+        createTransferableAmountViewModel(
+            resultLocked: govLockedAmount,
+            balance: balance,
+            locks: locks,
+            locale: locale
+        )
+    }
+
+    func createAmountTransitionAfterVotingViewModel(
         from diff: GovernanceLockStateDiff,
         locale: Locale
     ) -> ReferendumLockTransitionViewModel? {
@@ -56,7 +76,7 @@ extension ReferendumLockChangeViewModelFactoryProtocol {
         )
     }
 
-    func createPeriodViewModel(
+    func createPeriodTransitionAfterVotingViewModel(
         from diff: GovernanceLockStateDiff,
         blockNumber: BlockNumber,
         blockTime: BlockTime,
@@ -74,6 +94,29 @@ extension ReferendumLockChangeViewModelFactoryProtocol {
             initLockedUntil: diff.before.lockedUntil ?? blockNumber,
             resultLockedUntil: resultLockedUntil,
             blockNumber: blockNumber,
+            blockTime: blockTime,
+            locale: locale
+        )
+    }
+
+    func createAmountTransitionAfterDelegatingViewModel(
+        from diff: GovernanceDelegateStateDiff,
+        locale: Locale
+    ) -> ReferendumLockTransitionViewModel? {
+        createAmountViewModel(
+            initLocked: diff.before.maxLockedAmount,
+            resultLocked: diff.after?.maxLockedAmount,
+            locale: locale
+        )
+    }
+
+    func createPeriodTransitionAfterDelegatingViewModel(
+        from diff: GovernanceDelegateStateDiff,
+        blockTime: BlockTime,
+        locale: Locale
+    ) -> String {
+        createSinglePeriodViewModel(
+            diff.after?.undelegatingPeriod,
             blockTime: blockTime,
             locale: locale
         )
@@ -228,6 +271,20 @@ extension ReferendumLockChangeViewModelFactory: ReferendumLockChangeViewModelFac
         }
 
         return .init(fromValue: fromAmountString, toValue: toAmountString, change: change)
+    }
+
+    func createSinglePeriodViewModel(
+        _ period: Moment?,
+        blockTime: BlockTime,
+        locale: Locale
+    ) -> String {
+        guard let period = period else {
+            return ""
+        }
+
+        let timeInterval = period.seconds(from: blockTime)
+
+        return timeInterval.localizedDaysHoursIncludingZero(for: locale)
     }
 
     func createPeriodViewModel(

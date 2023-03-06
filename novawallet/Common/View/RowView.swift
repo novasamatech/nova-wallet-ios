@@ -17,6 +17,12 @@ class RowView<T: UIView>: BackgroundedContentControl {
 
     var roundedBackgroundView: RoundedView! { backgroundView as? RoundedView }
 
+    var hasInteractableContent: Bool = false {
+        didSet {
+            updateContentInteraction()
+        }
+    }
+
     init(contentView: T? = nil, preferredHeight: CGFloat? = nil) {
         self.preferredHeight = preferredHeight
 
@@ -98,7 +104,6 @@ class RowView<T: UIView>: BackgroundedContentControl {
         shapeView.strokeWidth = 0.0
         shapeView.isUserInteractionEnabled = false
         shapeView.fillColor = .clear
-        shapeView.highlightedFillColor = R.color.colorCellBackgroundPressed()!
         shapeView.cornerRadius = 0.0
         shapeView.roundingCorners = []
         backgroundView = shapeView
@@ -110,8 +115,9 @@ class RowView<T: UIView>: BackgroundedContentControl {
             contentView = T()
         }
 
-        contentView?.isUserInteractionEnabled = false
         contentView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        updateContentInteraction()
     }
 
     private func updateContentSizeForWidth(_ width: CGFloat) {
@@ -126,5 +132,12 @@ class RowView<T: UIView>: BackgroundedContentControl {
         calculatedHeight = size.height
 
         invalidateIntrinsicContentSize()
+    }
+
+    private func updateContentInteraction() {
+        contentView?.isUserInteractionEnabled = hasInteractableContent
+
+        let color = hasInteractableContent ? .clear : R.color.colorCellBackgroundPressed()!
+        roundedBackgroundView?.highlightedFillColor = color
     }
 }

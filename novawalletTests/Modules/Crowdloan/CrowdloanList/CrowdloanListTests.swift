@@ -266,7 +266,7 @@ class CrowdloanListTests: XCTestCase {
             balance: BigUInt(1e+18)
         )
 
-        guard let crowdloanInfoURL = selectedChain.externalApi?.crowdloans?.url else {
+        guard let crowdloanInfoURL = selectedChain.externalApis?.crowdloans()?.first?.url else {
             return nil
         }
 

@@ -2,6 +2,8 @@ import Foundation
 import BigInt
 
 protocol ReferendumDisplayStringFactoryProtocol {
+    func createVotesValue(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String?
+
     func createVotes(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String?
 
     func createVotesDetails(
@@ -51,20 +53,62 @@ extension ReferendumDisplayStringFactoryProtocol {
         return ReferendumVotesViewModel(ayes: aye, nays: nay)
     }
 
-    func createYourVotesViewModel(
+    func createDirectVotesViewModel(
         from vote: ReferendumAccountVoteLocal,
         chain: ChainModel,
         locale: Locale
-    ) -> YourVoteRow.Model {
-        let votesString = createVotes(
-            from: vote.convictionValue.votes(for: vote.totalBalance) ?? 0,
-            chain: chain,
-            locale: locale
-        )
+    ) -> [YourVoteRow.Model] {
+        var viewModels: [YourVoteRow.Model] = []
 
-        let convictionString = createVotesDetails(
-            from: vote.totalBalance,
-            conviction: vote.conviction,
+        if vote.hasAyeVotes {
+            let viewModel = createYourVoteRowViewModel(
+                vote: .init(balance: vote.ayeBalance, conviction: vote.convictionValue),
+                typeName: R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages),
+                style: .ayeInverse,
+                chain: chain,
+                locale: locale
+            )
+
+            viewModels.append(viewModel)
+        }
+
+        if vote.hasNayVotes {
+            let viewModel = createYourVoteRowViewModel(
+                vote: .init(balance: vote.nayBalance, conviction: vote.convictionValue),
+                typeName: R.string.localizable.governanceNay(preferredLanguages: locale.rLanguages),
+                style: .nayInverse,
+                chain: chain,
+                locale: locale
+            )
+
+            viewModels.append(viewModel)
+        }
+
+        if vote.hasAbstainVotes {
+            let viewModel = createYourVoteRowViewModel(
+                vote: .init(balance: vote.abstainBalance, conviction: vote.convictionValue),
+                typeName: R.string.localizable.governanceAbstain(preferredLanguages: locale.rLanguages),
+                style: .abstainInverse,
+                chain: chain,
+                locale: locale
+            )
+
+            viewModels.append(viewModel)
+        }
+
+        return viewModels
+    }
+
+    func createDelegatorVotesViaDelegateViewModel(
+        from vote: GovernanceOffchainVoting.DelegateVote,
+        delegateName: String?,
+        chain: ChainModel,
+        locale: Locale
+    ) -> [YourVoteRow.Model] {
+        let votesValue = vote.delegatorPower.conviction.votes(for: vote.delegatorPower.balance) ?? 0
+
+        let votesString = createVotes(
+            from: votesValue,
             chain: chain,
             locale: locale
         )
@@ -72,7 +116,7 @@ extension ReferendumDisplayStringFactoryProtocol {
         let voteSideString: String
         let voteSideStyle: YourVoteView.Style
 
-        if vote.hasAyeVotes {
+        if vote.delegateVote.vote.aye {
             voteSideString = R.string.localizable.governanceAye(preferredLanguages: locale.rLanguages)
             voteSideStyle = .ayeInverse
         } else {
@@ -80,10 +124,45 @@ extension ReferendumDisplayStringFactoryProtocol {
             voteSideStyle = .nayInverse
         }
 
+        let delegateName = delegateName ?? vote.delegateAddress
+
+        let voteDescription = R.string.localizable.delegatorVotesViaDelegate(
+            delegateName,
+            preferredLanguages: locale.rLanguages
+        )
+
+        let viewModel = YourVoteRow.Model(
+            vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
+            amount: .init(topValue: votesString ?? "", bottomValue: nil)
+        )
+
+        return [viewModel]
+    }
+
+    func createYourVoteRowViewModel(
+        vote: GovernanceBalanceConviction,
+        typeName: String,
+        style: YourVoteView.Style,
+        chain: ChainModel,
+        locale: Locale
+    ) -> YourVoteRow.Model {
+        let votesString = createVotes(
+            from: vote.votes ?? 0,
+            chain: chain,
+            locale: locale
+        )
+
+        let convictionString = createVotesDetails(
+            from: vote.balance,
+            conviction: vote.conviction.decimalValue,
+            chain: chain,
+            locale: locale
+        )
+
         let voteDescription = R.string.localizable.govYourVote(preferredLanguages: locale.rLanguages)
 
         return YourVoteRow.Model(
-            vote: .init(title: voteSideString.uppercased(), description: voteDescription, style: voteSideStyle),
+            vote: .init(title: typeName.uppercased(), description: voteDescription, style: style),
             amount: .init(topValue: votesString ?? "", bottomValue: convictionString)
         )
     }
@@ -96,7 +175,7 @@ final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtoc
         self.formatterFactory = formatterFactory
     }
 
-    func createVotes(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
+    func createVotesValue(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
         guard let asset = chain.utilityAsset() else {
             return nil
         }
@@ -107,11 +186,15 @@ final class ReferendumDisplayStringFactory: ReferendumDisplayStringFactoryProtoc
 
         let displayFormatter = formatterFactory.createDisplayFormatter(for: displayInfo).value(for: locale)
 
-        if let votesValueString = displayFormatter.stringFromDecimal(votesDecimal) {
-            return R.string.localizable.govCommonVotesFormat(votesValueString, preferredLanguages: locale.rLanguages)
-        } else {
+        return displayFormatter.stringFromDecimal(votesDecimal)
+    }
+
+    func createVotes(from votes: BigUInt, chain: ChainModel, locale: Locale) -> String? {
+        guard let votesValueString = createVotesValue(from: votes, chain: chain, locale: locale) else {
             return nil
         }
+
+        return R.string.localizable.govCommonVotesFormat(votesValueString, preferredLanguages: locale.rLanguages)
     }
 
     func createVotesDetails(

@@ -42,7 +42,7 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
 
     func subscribeTotalReward(
         for address: AccountAddress,
-        api: ChainModel.ExternalApi,
+        api: LocalChainExternalApi,
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>?
 
@@ -540,7 +540,7 @@ extension StakingLocalStorageSubscriber {
 
     func subscribeTotalReward(
         for address: AccountAddress,
-        api: ChainModel.ExternalApi,
+        api: LocalChainExternalApi,
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>? {
         guard let totalRewardProvider = try? stakingLocalSubscriptionFactory.getTotalReward(
