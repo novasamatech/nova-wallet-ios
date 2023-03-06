@@ -40,28 +40,28 @@ extension GovJsonLocalStorageSubscriber {
     }
 
     private func addDataProviderObserver<T: Decodable>(
-            for provider: AnySingleValueProvider<T>,
-            updateClosure: @escaping (T?) -> Void,
-            failureClosure: @escaping (Error) -> Void,
-            options: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
-        ) {
-            let update = { (changes: [DataProviderChange<T>]) in
-                let value = changes.reduceToLastChange()
-                updateClosure(value)
-            }
-
-            let failure = { error in
-                failureClosure(error)
-            }
-
-            provider.addObserver(
-                self,
-                deliverOn: .main,
-                executing: update,
-                failing: failure,
-                options: options
-            )
+        for provider: AnySingleValueProvider<T>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        options: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+    ) {
+        let update = { (changes: [DataProviderChange<T>]) in
+            let value = changes.reduceToLastChange()
+            updateClosure(value)
         }
+
+        let failure = { error in
+            failureClosure(error)
+        }
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: update,
+            failing: failure,
+            options: options
+        )
+    }
 }
 
 extension GovJsonLocalStorageSubscriber where Self: GovJsonLocalStorageHandler {
