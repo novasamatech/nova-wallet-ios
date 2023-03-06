@@ -15,8 +15,10 @@ final class AddDelegationInteractor {
     private(set) var settings: SettingsManagerProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
+    private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private var currentBlockNumber: BlockNumber?
 
@@ -29,6 +31,7 @@ final class AddDelegationInteractor {
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         settings: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -40,6 +43,7 @@ final class AddDelegationInteractor {
         self.delegateListOperationFactory = delegateListOperationFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
+        self.govJsonProviderFactory = govJsonProviderFactory
         self.settings = settings
         self.operationQueue = operationQueue
     }
@@ -83,16 +87,23 @@ final class AddDelegationInteractor {
     private func provideSettings() {
         presenter?.didReceiveShouldDisplayBanner(settings.governanceDelegateInfoSeen)
     }
+
+    private func subscribeToDelegatesMetadata() {
+        metadataProvider?.removeObserver(self)
+        metadataProvider = subscribeDelegatesMetadata(for: chain)
+    }
 }
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
+        subscribeToDelegatesMetadata()
         provideSettings()
     }
 
     func remakeSubscriptions() {
         subscribeBlockNumber()
+        subscribeToDelegatesMetadata()
     }
 
     func refreshDelegates() {
@@ -122,6 +133,17 @@ extension AddDelegationInteractor: GeneralLocalStorageSubscriber, GeneralLocalSt
             fetchDelegates()
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))
+        }
+    }
+}
+
+extension AddDelegationInteractor: GovJsonLocalStorageSubscriber, GovJsonLocalStorageHandler {
+    func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain _: ChainModel) {
+        switch result {
+        case let .success(metadata):
+            presenter?.didReceiveMetadata(metadata)
+        case let .failure(error):
+            presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
     }
 }

@@ -15,8 +15,9 @@ final class AddDelegationPresenter {
     let logger: LoggerProtocol
     let yourDelegations: [AccountAddress: GovernanceYourDelegationGroup]
 
-    private var allDelegates: [AccountAddress: GovernanceDelegateLocal] = [:]
+    private var allDelegates: [AccountAddress: GovernanceDelegateLocal]?
     private var targetDelegates: [GovernanceDelegateLocal] = []
+    private var metadata: [GovernanceDelegateMetadataRemote]?
     private var selectedFilter = GovernanceDelegatesFilter.all
     private var selectedOrder = GovernanceDelegatesOrder.delegations
     private var shownPickerHandler: ModalPickerViewControllerDelegate?
@@ -48,17 +49,23 @@ final class AddDelegationPresenter {
     }
 
     private func updateTargetDelegates() {
-        targetDelegates = allDelegates.values.filter { delegate in
-            selectedFilter.matchesDelegate(delegate)
-        }.sorted { delegate1, delegate2 in
-            if delegate1.metadata != nil, delegate2.metadata == nil {
-                return true
-            } else if delegate1.metadata == nil, delegate2.metadata != nil {
-                return false
-            } else {
-                return selectedOrder.isDescending(delegate1, delegate2: delegate2)
-            }
+        guard let allDelegates = allDelegates else {
+            return
         }
+
+        let metadataDelegates = (metadata ?? [])
+            .filter { allDelegates[$0.address] == nil }
+            .map {
+                GovernanceDelegateLocal(
+                    stats: .init(address: $0.address),
+                    metadata: $0,
+                    identity: nil
+                )
+            }
+
+        targetDelegates = (allDelegates.values + metadataDelegates).filter { delegate in
+            selectedFilter.matchesDelegate(delegate)
+        }.sortedByOrder(selectedOrder)
     }
 
     private func updateView() {
@@ -102,7 +109,7 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     }
 
     func selectDelegate(address: AccountAddress) {
-        guard let delegate = allDelegates[address] else {
+        guard let delegate = targetDelegates.first(where: { $0.stats.address == address }) else {
             return
         }
 
@@ -201,7 +208,11 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     }
 
     func showSearch() {
-        wireframe.showSearch(from: view, initDelegates: allDelegates, initDelegations: yourDelegations)
+        wireframe.showSearch(
+            from: view,
+            initDelegates: allDelegates ?? [:],
+            initDelegations: yourDelegations
+        )
     }
 }
 
@@ -219,11 +230,18 @@ extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
         updateView()
     }
 
+    func didReceiveMetadata(_ metadata: [GovernanceDelegateMetadataRemote]?) {
+        self.metadata = metadata
+
+        updateTargetDelegates()
+        updateView()
+    }
+
     func didReceiveError(_ error: AddDelegationInteractorError) {
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .blockSubscriptionFailed:
+        case .blockSubscriptionFailed, .metadataSubscriptionFailed:
             interactor.remakeSubscriptions()
         case .delegateListFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

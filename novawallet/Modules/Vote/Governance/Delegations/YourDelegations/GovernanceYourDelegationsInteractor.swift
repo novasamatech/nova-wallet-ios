@@ -16,11 +16,13 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
+    let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
     private var delegateIds: Set<AccountId> = Set()
     private var currentBlockNumber: BlockNumber?
 
+    private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private var blockTimeCancellable: CancellableCall?
     private var tracksCancellable: CancellableCall?
@@ -38,6 +40,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
+        govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccountId = selectedAccountId
@@ -51,6 +54,7 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
         self.blockTimeFactory = blockTimeFactory
         self.connection = connection
         self.runtimeService = runtimeService
+        self.govJsonProviderFactory = govJsonProviderFactory
         self.operationQueue = operationQueue
     }
 
@@ -195,7 +199,13 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     }
 
     private func subscribeBlockNumber() {
+        blockNumberSubscription?.removeObserver(self)
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
+    }
+
+    private func subscribeToDelegatesMetadata() {
+        metadataProvider?.removeObserver(self)
+        metadataProvider = subscribeDelegatesMetadata(for: chain)
     }
 }
 
@@ -203,6 +213,7 @@ extension GovernanceYourDelegationsInteractor: GovernanceYourDelegationsInteract
     func setup() {
         subscribeAccountVotes()
         subscribeBlockNumber()
+        subscribeToDelegatesMetadata()
         fetchTracks()
     }
 
@@ -215,6 +226,7 @@ extension GovernanceYourDelegationsInteractor: GovernanceYourDelegationsInteract
     func remakeSubscriptions() {
         subscribeAccountVotes()
         subscribeBlockNumber()
+        subscribeToDelegatesMetadata()
     }
 
     func refreshTracks() {
@@ -238,6 +250,17 @@ extension GovernanceYourDelegationsInteractor: GeneralLocalStorageSubscriber, Ge
             }
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))
+        }
+    }
+}
+
+extension GovernanceYourDelegationsInteractor: GovJsonLocalStorageSubscriber, GovJsonLocalStorageHandler {
+    func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain _: ChainModel) {
+        switch result {
+        case let .success(metadata):
+            presenter?.didReceiveMetadata(metadata)
+        case let .failure(error):
+            presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
     }
 }
