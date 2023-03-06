@@ -19,6 +19,7 @@ protocol GovernanceYourDelegationsInteractorOutputProtocol: AnyObject {
     func didReceiveDelegations(_ delegations: [TrackIdLocal: ReferendumDelegatingLocal])
     func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal])
     func didReceiveTracks(_ tracks: [GovernanceTrackInfoLocal])
+    func didReceiveMetadata(_ metadata: [GovernanceDelegateMetadataRemote])
     func didReceiveError(_ error: GovernanceYourDelegationsInteractorError)
 }
 

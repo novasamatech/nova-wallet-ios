@@ -19,6 +19,7 @@ extension GovernanceYourDelegationGroup {
         from delegates: [GovernanceDelegateLocal],
         delegations: [TrackIdLocal: ReferendumDelegatingLocal],
         tracks: [GovernanceTrackInfoLocal],
+        metadata: [GovernanceDelegateMetadataRemote]?,
         chain: ChainModel
     ) -> [GovernanceYourDelegationGroup] {
         let delegateIds = Set(delegations.values.map(\.target))
@@ -31,6 +32,10 @@ extension GovernanceYourDelegationGroup {
             accum[accountId] = delegate
         }
 
+        let metadataDic = metadata?.reduce(into: [AccountAddress: GovernanceDelegateMetadataRemote]()) {
+            $0[$1.address] = $1
+        }
+
         let groups: [GovernanceYourDelegationGroup] = delegateIds.compactMap { delegateId in
             let delegate: GovernanceDelegateLocal
 
@@ -40,7 +45,7 @@ extension GovernanceYourDelegationGroup {
                 let address = (try? delegateId.toAddress(using: chain.chainFormat)) ?? delegateId.toHex()
                 delegate = .init(
                     stats: .init(address: address, delegationsCount: 1, delegatedVotes: 0, recentVotes: 0),
-                    metadata: nil,
+                    metadata: metadataDic?[address],
                     identity: nil
                 )
             }
