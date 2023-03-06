@@ -65,15 +65,7 @@ final class AddDelegationPresenter {
 
         targetDelegates = (allDelegates.values + metadataDelegates).filter { delegate in
             selectedFilter.matchesDelegate(delegate)
-        }.sorted { delegate1, delegate2 in
-            if delegate1.metadata != nil, delegate2.metadata == nil {
-                return true
-            } else if delegate1.metadata == nil, delegate2.metadata != nil {
-                return false
-            } else {
-                return selectedOrder.isDescending(delegate1, delegate2: delegate2)
-            }
-        }
+        }.sortedByOrder(selectedOrder)
     }
 
     private func updateView() {
