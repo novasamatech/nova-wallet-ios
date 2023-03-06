@@ -24,7 +24,6 @@ final class ReferendumDetailsPresenter {
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
-    private var votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var offchainVoting: GovernanceOffchainVotesLocal.Single?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
@@ -32,6 +31,7 @@ final class ReferendumDetailsPresenter {
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var dApps: [GovernanceDApps.DApp]?
+    private let canVote: Bool
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
@@ -73,11 +73,11 @@ final class ReferendumDetailsPresenter {
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         referendum = initData.referendum
         accountVotes = initData.accountVotes
-        votingDistribution = initData.votesResult
         offchainVoting = initData.offchainVoting
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         referendumMetadata = initData.metadata
+        canVote = initData.canVote
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -224,7 +224,7 @@ final class ReferendumDetailsPresenter {
 
         let button: String?
 
-        if referendum.canVote {
+        if canVote {
             if accountVotes != nil {
                 button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
             } else {
@@ -505,10 +505,9 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
 
     func didReceiveAccountVotes(
         _ votes: ReferendumAccountVoteLocal?,
-        votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+        votingDistribution _: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     ) {
         accountVotes = votes
-        self.votingDistribution = votingDistribution
 
         provideYourVote()
     }

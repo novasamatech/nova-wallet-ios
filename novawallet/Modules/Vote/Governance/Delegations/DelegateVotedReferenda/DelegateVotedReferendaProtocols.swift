@@ -9,6 +9,7 @@ protocol DelegateVotedReferendaViewProtocol: ControllerBackedProtocol {
 
 protocol DelegateVotedReferendaPresenterProtocol: AnyObject {
     func setup()
+    func selectReferendum(with id: ReferendumIdLocal)
 }
 
 protocol DelegateVotedReferendaInteractorInputProtocol: AnyObject {
@@ -27,7 +28,9 @@ protocol DelegateVotedReferendaInteractorOutputProtocol: AnyObject {
 }
 
 protocol DelegateVotedReferendaWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CommonRetryable {}
+    CommonRetryable {
+    func showReferendumDetails(from view: ControllerBackedProtocol?, initData: ReferendumDetailsInitData)
+}
 
 enum DelegateVotedReferendaError: Error {
     case blockNumberSubscriptionFailed(Error)
