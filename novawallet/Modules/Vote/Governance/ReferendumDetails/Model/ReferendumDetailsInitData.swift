@@ -8,8 +8,4 @@ struct ReferendumDetailsInitData {
     let metadata: ReferendumMetadataLocal?
     let accountVotes: ReferendumAccountVoteLocal?
     var votingAvailable: Bool = true
-
-    var canVote: Bool {
-        referendum.canVote && votingAvailable
-    }
 }

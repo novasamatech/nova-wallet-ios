@@ -31,7 +31,7 @@ final class ReferendumDetailsPresenter {
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var dApps: [GovernanceDApps.DApp]?
-    private let canVote: Bool
+    private let votingAvailable: Bool
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
@@ -77,7 +77,7 @@ final class ReferendumDetailsPresenter {
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         referendumMetadata = initData.metadata
-        canVote = initData.canVote
+        votingAvailable = initData.votingAvailable
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -224,7 +224,7 @@ final class ReferendumDetailsPresenter {
 
         let button: String?
 
-        if canVote {
+        if referendum.canVote, votingAvailable {
             if accountVotes != nil {
                 button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
             } else {
