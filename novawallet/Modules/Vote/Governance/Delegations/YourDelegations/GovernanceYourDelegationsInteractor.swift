@@ -199,10 +199,12 @@ final class GovernanceYourDelegationsInteractor: AnyCancellableCleaning {
     }
 
     private func subscribeBlockNumber() {
+        blockNumberSubscription?.removeObserver(self)
         blockNumberSubscription = subscribeToBlockNumber(for: chain.chainId)
     }
 
     private func subscribeToDelegatesMetadata() {
+        metadataProvider?.removeObserver(self)
         metadataProvider = subscribeDelegatesMetadata(for: chain)
     }
 }
@@ -253,7 +255,7 @@ extension GovernanceYourDelegationsInteractor: GeneralLocalStorageSubscriber, Ge
 }
 
 extension GovernanceYourDelegationsInteractor: GovJsonLocalStorageSubscriber, GovJsonLocalStorageHandler {
-    func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain: ChainModel) {
+    func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain _: ChainModel) {
         switch result {
         case let .success(metadata):
             presenter?.didReceiveMetadata(metadata)

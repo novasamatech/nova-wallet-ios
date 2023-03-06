@@ -13,11 +13,12 @@ final class AddDelegationInteractor {
     let runtimeService: RuntimeCodingServiceProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     private(set) var settings: SettingsManagerProtocol
-    let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
+    private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private var currentBlockNumber: BlockNumber?
 
@@ -30,7 +31,7 @@ final class AddDelegationInteractor {
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>,
+        govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         settings: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -42,7 +43,7 @@ final class AddDelegationInteractor {
         self.delegateListOperationFactory = delegateListOperationFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
-        self.metadataProvider = metadataProvider
+        self.govJsonProviderFactory = govJsonProviderFactory
         self.settings = settings
         self.operationQueue = operationQueue
     }
@@ -87,45 +88,22 @@ final class AddDelegationInteractor {
         presenter?.didReceiveShouldDisplayBanner(settings.governanceDelegateInfoSeen)
     }
 
-    private func subscribeMetadata() {
-        let updateClosure: ([DataProviderChange<[GovernanceDelegateMetadataRemote]>]) -> Void = { [weak self] changes in
-            let metadata = changes.reduceToLastChange()
-
-            self?.presenter?.didReceiveMetadata(metadata)
-        }
-
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.presenter?.didReceiveError(.metadataSubscriptionFailed(error))
-        }
-
-        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
-
-        metadataProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
-    }
-
-    private func clearMetadataSubscription() {
-        metadataProvider.removeObserver(self)
+    private func subscribeToDelegatesMetadata() {
+        metadataProvider?.removeObserver(self)
+        metadataProvider = subscribeDelegatesMetadata(for: chain)
     }
 }
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
-        subscribeMetadata()
+        subscribeToDelegatesMetadata()
         provideSettings()
     }
 
     func remakeSubscriptions() {
         subscribeBlockNumber()
-
-        clearMetadataSubscription()
-        subscribeMetadata()
+        subscribeToDelegatesMetadata()
     }
 
     func refreshDelegates() {
@@ -155,6 +133,17 @@ extension AddDelegationInteractor: GeneralLocalStorageSubscriber, GeneralLocalSt
             fetchDelegates()
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))
+        }
+    }
+}
+
+extension AddDelegationInteractor: GovJsonLocalStorageSubscriber, GovJsonLocalStorageHandler {
+    func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain _: ChainModel) {
+        switch result {
+        case let .success(metadata):
+            presenter?.didReceiveMetadata(metadata)
+        case let .failure(error):
+            presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
     }
 }
