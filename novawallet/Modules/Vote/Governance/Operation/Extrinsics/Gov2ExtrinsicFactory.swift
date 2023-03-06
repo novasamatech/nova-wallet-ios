@@ -55,4 +55,29 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
 
         return try appendCalls(unlockCalls, builder: newBuilder)
     }
+
+    func delegationUpdate(
+        with actions: [GovernanceDelegatorAction],
+        builder: ExtrinsicBuilderProtocol
+    ) throws -> ExtrinsicBuilderProtocol {
+        try actions.reduce(builder) { _, action in
+            switch action.type {
+            case let .delegate(model):
+                return try builder.adding(
+                    call: ConvictionVoting.DelegateCall(
+                        track: Referenda.TrackId(action.trackId),
+                        delegateAddress: .accoundId(action.delegateId),
+                        conviction: model.conviction,
+                        balance: model.balance
+                    ).runtimeCall
+                )
+            case .undelegate:
+                return try builder.adding(
+                    call: ConvictionVoting.UndelegateCall(
+                        track: Referenda.TrackId(action.trackId)
+                    ).runtimeCall
+                )
+            }
+        }
+    }
 }

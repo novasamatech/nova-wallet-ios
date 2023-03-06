@@ -31,6 +31,7 @@ protocol ApplicationConfigProtocol {
     var ledgerGuideURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
+    var learnGovernanceDelegateMetadata: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
 }
@@ -124,9 +125,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v7/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v8/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v7/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v8/chains_dev.json")!
         #endif
     }
 
@@ -200,6 +201,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var learnRecommendedValidatorsURL: URL {
         URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Recommended-validators-in-Nova-Wallet")!
+    }
+
+    var learnGovernanceDelegateMetadata: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
     }
 
     var inAppUpdatesEntrypointURL: URL {
