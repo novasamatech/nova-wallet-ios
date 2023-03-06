@@ -179,6 +179,16 @@ extension DelegateVotedReferendaViewController: UITableViewDelegate {
     func tableView(_: UITableView, willDisplay cell: UITableViewCell, forRowAt _: IndexPath) {
         (cell as? SkeletonableViewCell)?.updateLoadingState()
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        guard let referendumId = dataSource?.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        presenter.selectReferendum(with: referendumId)
+    }
 }
 
 extension DelegateVotedReferendaViewController: Localizable {
