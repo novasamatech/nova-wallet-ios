@@ -199,6 +199,10 @@ extension AddDelegationPresenter: AddDelegationPresenterProtocol {
             delegate: delegate
         )
     }
+
+    func showSearch() {
+        wireframe.showSearch(from: view, initDelegates: allDelegates, initDelegations: yourDelegations)
+    }
 }
 
 extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
@@ -219,7 +223,7 @@ extension AddDelegationPresenter: AddDelegationInteractorOutputProtocol {
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .blockSubscriptionFailed, .blockTimeFetchFailed:
+        case .blockSubscriptionFailed:
             interactor.remakeSubscriptions()
         case .delegateListFetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
