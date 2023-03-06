@@ -9,7 +9,7 @@ protocol DelegateVotedReferendaViewProtocol: ControllerBackedProtocol {
 
 protocol DelegateVotedReferendaPresenterProtocol: AnyObject {
     func setup()
-    func selectReferendum(with id: ReferendumIdLocal)
+    func selectReferendum(with referendumId: ReferendumIdLocal)
 }
 
 protocol DelegateVotedReferendaInteractorInputProtocol: AnyObject {

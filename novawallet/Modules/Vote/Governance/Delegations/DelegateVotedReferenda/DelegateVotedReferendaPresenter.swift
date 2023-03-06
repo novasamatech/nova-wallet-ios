@@ -251,8 +251,8 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaPresenterProtoc
         interactor.setup()
     }
 
-    func selectReferendum(with id: ReferendumIdLocal) {
-        guard let referendum = referendums?.first(where: { $0.index == id }) else {
+    func selectReferendum(with referendumId: ReferendumIdLocal) {
+        guard let referendum = referendums?.first(where: { $0.index == referendumId }) else {
             return
         }
 
@@ -261,8 +261,8 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaPresenterProtoc
             offchainVoting: nil,
             blockNumber: blockNumber,
             blockTime: blockTime,
-            metadata: referendumsMetadata?[id],
-            accountVotes: offchainVotes?[id],
+            metadata: referendumsMetadata?[referendumId],
+            accountVotes: offchainVotes?[referendumId],
             votingAvailable: false
         )
 
