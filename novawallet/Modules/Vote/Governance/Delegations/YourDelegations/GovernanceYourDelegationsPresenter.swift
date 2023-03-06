@@ -38,6 +38,7 @@ final class GovernanceYourDelegationsPresenter {
             let delegations = delegations,
             let delegates = delegates,
             let tracks = tracks else {
+            view?.didReceive(viewModels: [])
             return
         }
 
@@ -65,7 +66,7 @@ final class GovernanceYourDelegationsPresenter {
 
 extension GovernanceYourDelegationsPresenter: GovernanceYourDelegationsPresenterProtocol {
     func setup() {
-        view?.didReceive(viewModels: [])
+        updateView()
         interactor.setup()
     }
 
@@ -111,7 +112,8 @@ extension GovernanceYourDelegationsPresenter: GovernanceYourDelegationsInteracto
         logger.error("Did receive error: \(error)")
 
         switch error {
-        case .blockTimeFetchFailed, .blockSubscriptionFailed, .delegationsSubscriptionFailed, .metadataSubscriptionFailed:
+        case .blockTimeFetchFailed, .blockSubscriptionFailed, .delegationsSubscriptionFailed,
+            .metadataSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }

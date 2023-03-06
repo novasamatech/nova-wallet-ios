@@ -9,7 +9,7 @@ protocol GovJsonLocalStorageHandler {
 
 extension GovJsonLocalStorageHandler {
     func handleDelegatesMetadata(
-        result: Result<[GovernanceDelegateMetadataRemote], Error>,
-        chain: ChainModel
+        result _: Result<[GovernanceDelegateMetadataRemote], Error>,
+        chain _: ChainModel
     ) {}
 }
