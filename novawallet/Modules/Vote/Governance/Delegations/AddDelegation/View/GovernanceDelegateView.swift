@@ -11,6 +11,7 @@ final class GovernanceDelegateView: UIView {
     let typeView = GovernanceDelegateTypeView()
 
     private var typeStack: UIStackView?
+    private var statsStack: UIStackView?
 
     let descriptionLabel = UILabel(style: .footnoteSecondary)
     let delegationsTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 0)
@@ -43,6 +44,24 @@ final class GovernanceDelegateView: UIView {
             UIView()
         ])
 
+        let statsStack = UIView.hStack(spacing: 12, [
+            .vStack([
+                delegationsTitleLabel,
+                delegationsValueLabel
+            ]),
+            Self.dividerView(),
+            .vStack([
+                votesTitleLabel,
+                votesValueLabel
+            ]),
+            Self.dividerView(),
+            .vStack([
+                lastVotesTitleLabel,
+                lastVotesValueLabel
+            ]),
+            UIView()
+        ])
+
         let contentView = UIView.vStack(spacing: 16, [
             .hStack(alignment: .center, spacing: 12, [
                 avatarView,
@@ -52,26 +71,11 @@ final class GovernanceDelegateView: UIView {
                 ])
             ]),
             descriptionLabel,
-            .hStack(spacing: 12, [
-                .vStack([
-                    delegationsTitleLabel,
-                    delegationsValueLabel
-                ]),
-                Self.dividerView(),
-                .vStack([
-                    votesTitleLabel,
-                    votesValueLabel
-                ]),
-                Self.dividerView(),
-                .vStack([
-                    lastVotesTitleLabel,
-                    lastVotesValueLabel
-                ]),
-                UIView()
-            ])
+            statsStack
         ])
 
         self.typeStack = typeStack
+        self.statsStack = statsStack
 
         delegationsTitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         votesTitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
@@ -97,28 +101,27 @@ final class GovernanceDelegateView: UIView {
 }
 
 extension GovernanceDelegateView {
-    struct Model: Hashable {
-        let addressViewModel: DisplayAddressViewModel
-        let type: GovernanceDelegateTypeView.Model?
-        let description: String?
+    struct Stats: Hashable, Equatable {
         let delegationsTitle: String
         let delegations: String?
         let votesTitle: String
         let votes: String?
         let lastVotesTitle: String
         let lastVotes: String?
+    }
+
+    struct Model: Hashable {
+        let addressViewModel: DisplayAddressViewModel
+        let type: GovernanceDelegateTypeView.Model?
+        let description: String?
+        let stats: Stats?
 
         static func == (lhs: GovernanceDelegateView.Model, rhs: GovernanceDelegateView.Model) -> Bool {
             lhs.addressViewModel.address == rhs.addressViewModel.address &&
                 lhs.addressViewModel.name == rhs.addressViewModel.name &&
                 lhs.type == rhs.type &&
                 lhs.description == rhs.description &&
-                lhs.delegations == rhs.delegations &&
-                lhs.delegationsTitle == rhs.delegationsTitle &&
-                lhs.votes == rhs.votes &&
-                lhs.votesTitle == rhs.votesTitle &&
-                lhs.lastVotes == rhs.lastVotes &&
-                lhs.lastVotesTitle == rhs.lastVotesTitle
+                lhs.stats == rhs.stats
         }
 
         func hash(into hasher: inout Hasher) {
@@ -159,12 +162,19 @@ extension GovernanceDelegateView {
             descriptionLabel.isHidden = true
         }
 
-        delegationsTitleLabel.text = viewModel.delegationsTitle
-        delegationsValueLabel.text = viewModel.delegations
-        votesTitleLabel.text = viewModel.votesTitle
-        votesValueLabel.text = viewModel.votes
-        lastVotesTitleLabel.text = viewModel.lastVotesTitle
-        lastVotesValueLabel.text = viewModel.lastVotes
+        if let stats = viewModel.stats {
+            statsStack?.isHidden = false
+
+            delegationsTitleLabel.text = stats.delegationsTitle
+            delegationsValueLabel.text = stats.delegations
+            votesTitleLabel.text = stats.votesTitle
+            votesValueLabel.text = stats.votes
+            lastVotesTitleLabel.text = stats.lastVotesTitle
+            lastVotesValueLabel.text = stats.lastVotes
+        } else {
+            statsStack?.isHidden = true
+        }
+
         self.viewModel = viewModel
     }
 
