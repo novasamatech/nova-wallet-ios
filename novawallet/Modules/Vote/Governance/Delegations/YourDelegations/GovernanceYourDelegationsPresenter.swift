@@ -113,7 +113,7 @@ extension GovernanceYourDelegationsPresenter: GovernanceYourDelegationsInteracto
 
         switch error {
         case .blockTimeFetchFailed, .blockSubscriptionFailed, .delegationsSubscriptionFailed,
-            .metadataSubscriptionFailed:
+             .metadataSubscriptionFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
             }
