@@ -55,7 +55,7 @@ class GovOffchainModelWrapperFactory<P, R: Equatable> {
             )
 
             let filterOperation = ClosureOperation<[AccountId: GovernanceDelegateMetadataRemote]> {
-                let metadataList = try metadataOperation.extractNoCancellableResultData()
+                let metadataList = (try? metadataOperation.extractNoCancellableResultData()) ?? []
                 let model = try modelOperation.extractNoCancellableResultData()
                 let accountIdList = try metadataParams.closure(model)
                 let accountIdSet = Set(accountIdList ?? [])

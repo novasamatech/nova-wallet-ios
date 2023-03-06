@@ -6,4 +6,5 @@ enum GovernanceYourDelegationsInteractorError: Error {
     case blockSubscriptionFailed(Error)
     case blockTimeFetchFailed(Error)
     case tracksFetchFailed(Error)
+    case metadataSubscriptionFailed(Error)
 }

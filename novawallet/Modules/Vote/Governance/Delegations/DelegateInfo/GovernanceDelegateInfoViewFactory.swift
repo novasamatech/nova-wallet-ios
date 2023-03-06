@@ -66,10 +66,6 @@ struct GovernanceDelegateInfoViewFactory {
 
         let statsOperationFactory = SubqueryDelegateStatsOperationFactory(url: statsUrl)
 
-        let metadataUrl = GovernanceDelegateMetadataFactory().createUrl(for: chain)
-        let metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]> =
-            JsonDataProviderFactory.shared.getJson(for: metadataUrl)
-
         let identityOperationFactory = IdentityOperationFactory(
             requestFactory: state.requestFactory,
             emptyIdentitiesWhenNoStorage: true
@@ -88,10 +84,10 @@ struct GovernanceDelegateInfoViewFactory {
             connection: connection,
             runtimeService: runtimeProvider,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            metadataProvider: metadataProvider,
             identityOperationFactory: identityOperationFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,
+            govJsonProviderFactory: JsonDataProviderFactory.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
