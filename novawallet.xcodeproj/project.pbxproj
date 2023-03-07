@@ -2485,6 +2485,8 @@
 		84FBED0329279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */; };
 		84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */; };
 		84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */; };
+		84FC190B29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FC190A29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift */; };
+		84FC190D29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FC190C29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift */; };
 		84FCCD98292E3610002D2D3D /* JSONRPCError+Evm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FCCD97292E3610002D2D3D /* JSONRPCError+Evm.swift */; };
 		84FD19FC27A32973008E5E68 /* HistoryRewardContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */; };
 		84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */; };
@@ -5846,6 +5848,8 @@
 		84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdater.swift; sourceTree = "<group>"; };
 		84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmEventParser.swift; sourceTree = "<group>"; };
 		84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdaterFactory.swift; sourceTree = "<group>"; };
+		84FC190A29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicServiceTypes.swift; sourceTree = "<group>"; };
+		84FC190C29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiExtrinsicFeeProxy.swift; sourceTree = "<group>"; };
 		84FCCD97292E3610002D2D3D /* JSONRPCError+Evm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONRPCError+Evm.swift"; sourceTree = "<group>"; };
 		84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRewardContext.swift; sourceTree = "<group>"; };
 		84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesWithdrawEvent.swift; sourceTree = "<group>"; };
@@ -11731,6 +11735,7 @@
 				845BB8B725E4465F00E5FCDC /* ExtrinsicService.swift */,
 				F47F640A263BFEF800FF67E9 /* ExtrinsicServiceFactory.swift */,
 				84DD5F25263D72C400425ACF /* ExtrinsicFeeProxy.swift */,
+				84FC190C29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift */,
 				8461CC7E26BBFEEA007460E4 /* ExtrinsicEraOperationFactory.swift */,
 				8461CC8026BBFF70007460E4 /* ImmortalEraOperationFactory.swift */,
 				8461CC8226BC0006007460E4 /* MortalEraOperationFactory.swift */,
@@ -11739,6 +11744,7 @@
 				84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */,
 				842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */,
 				8433B34929B63661005E5D0F /* ExtrinsicSplitter.swift */,
+				84FC190A29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -17475,6 +17481,7 @@
 				88C5F082297F0706001CCADE /* ReleaseVersion.swift in Sources */,
 				849013E224A9288B008F705E /* Language.swift in Sources */,
 				840D92A1278D8D6F0007B979 /* DAppBrowserStateError.swift in Sources */,
+				84FC190B29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift in Sources */,
 				849707A128F3E0AC00DD0A02 /* ReferendumVoterLocal.swift in Sources */,
 				84754C882510BAFE00854599 /* ModalAlertFactory.swift in Sources */,
 				8430AACC2602249B005B1066 /* InitialStakingState.swift in Sources */,
@@ -17755,6 +17762,7 @@
 				F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */,
 				84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */,
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
+				84FC190D29B7EE1600BCCAA5 /* MultiExtrinsicFeeProxy.swift in Sources */,
 				8814774029B07B66001E98A1 /* DelegateGroupActionTitleControl.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
 				841221A228F0520300715C82 /* GovMetadataLocalStorageHandler.swift in Sources */,
