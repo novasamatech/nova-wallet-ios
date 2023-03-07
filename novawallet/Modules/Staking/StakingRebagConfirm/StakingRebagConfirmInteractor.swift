@@ -1,0 +1,308 @@
+import UIKit
+import RobinHood
+import BigInt
+
+final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
+    weak var presenter: StakingRebagConfirmInteractorOutputProtocol!
+
+    let chainAsset: ChainAsset
+    var chainId: ChainModel.Id { chainAsset.chain.chainId }
+
+    let selectedAccount: MetaChainAccountResponse
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let feeProxy: ExtrinsicFeeProxyProtocol
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let networkInfoFactory: NetworkStakingInfoOperationFactoryProtocol
+    let eraValidatorService: EraValidatorServiceProtocol?
+    let chainRegistry: ChainRegistryProtocol
+
+    private let operationManager: OperationManagerProtocol
+
+    private var networkInfoCancellable: CancellableCall?
+
+    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var stashControllerProvider: StreamableProvider<StashItem>?
+    private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
+    private var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
+    private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
+
+    init(
+        chainAsset: ChainAsset,
+        selectedAccount: MetaChainAccountResponse,
+        chainRegistry: ChainRegistryProtocol,
+        feeProxy: ExtrinsicFeeProxyProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        networkInfoFactory: NetworkStakingInfoOperationFactoryProtocol,
+        eraValidatorService: EraValidatorServiceProtocol?,
+        operationManager: OperationManagerProtocol,
+        currencyManager: CurrencyManagerProtocol
+    ) {
+        self.chainAsset = chainAsset
+        self.selectedAccount = selectedAccount
+        self.feeProxy = feeProxy
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.networkInfoFactory = networkInfoFactory
+        self.eraValidatorService = eraValidatorService
+        self.operationManager = operationManager
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.chainRegistry = chainRegistry
+        self.currencyManager = currencyManager
+    }
+
+    private func subscribePrice() {
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+        } else {
+            presenter?.didReceive(price: nil)
+        }
+    }
+
+    private func subscribeAccountBalance() {
+        balanceProvider = subscribeToAssetBalanceProvider(
+            for: selectedAccount.chainAccount.accountId,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
+        )
+    }
+
+    private func stashAccountId(stashItem: StashItem?) -> AccountId? {
+        guard let stashItem = stashItem else {
+            return nil
+        }
+        return try? stashItem.stash.toAccountId()
+    }
+
+    private func subscribeStashControllerSubscription() {
+        guard let address = selectedAccount.chainAccount.toAddress() else {
+            subscribeBagListNode(stashItem: nil)
+            return
+        }
+
+        stashControllerProvider = subscribeStashItemProvider(for: address)
+    }
+
+    private func subscribeBagListNode(stashItem: StashItem?) {
+        clear(dataProvider: &bagListNodeProvider)
+
+        guard let stashAccountId = stashAccountId(stashItem: stashItem) else {
+            return
+        }
+
+        bagListNodeProvider = subscribeBagListNode(for: stashAccountId, chainId: chainId)
+    }
+
+    private func subscribeLedgerInfo(stashItem: StashItem?) {
+        clear(dataProvider: &ledgerProvider)
+
+        guard let stashItem = stashItem,
+              let controllerId = try? stashItem.controller.toAccountId() else {
+            return
+        }
+
+        ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainId)
+    }
+
+    func subscribeTotalIssuanceSubscription() {
+        clear(dataProvider: &totalIssuanceProvider)
+
+        totalIssuanceProvider = subscribeTotalIssuance(for: chainId)
+    }
+
+    func provideNetworkStakingInfo() {
+        do {
+            clear(cancellable: &networkInfoCancellable)
+            guard
+                let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+                let eraValidatorService = eraValidatorService else {
+                presenter?.didReceive(error: .networkInfo(ChainRegistryError.runtimeMetadaUnavailable))
+                return
+            }
+
+            let wrapper = networkInfoFactory.networkStakingOperation(
+                for: eraValidatorService,
+                runtimeService: runtimeService
+            )
+
+            wrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard self?.networkInfoCancellable === wrapper else {
+                        return
+                    }
+
+                    self?.networkInfoCancellable = nil
+
+                    do {
+                        let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                        self?.networkInfo = info
+                        //  self?.presenter?.didReceive(networkStakingInfo: info)
+                    } catch {
+                        self?.presenter?.didReceive(error: .networkInfo(error))
+                    }
+                }
+            }
+
+            networkInfoCancellable = wrapper
+
+            operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+        } catch {
+            presenter?.didReceive(error: .networkInfo(error))
+        }
+    }
+
+    var networkInfo: NetworkStakingInfo? {
+        didSet {
+            provideCurrentBagList()
+        }
+    }
+
+    var currentBagListNode: BagList.Node? {
+        didSet {
+            provideCurrentBagList()
+        }
+    }
+
+    private func provideCurrentBagList() {
+        guard let votersInfo = networkInfo?.votersInfo, let currentBagListNode = currentBagListNode else {
+            return
+        }
+
+        let bagUpper = currentBagListNode.bagUpper
+        guard let currentBagListIndex = votersInfo.bagsThresholds.firstIndex(where: { $0 == bagUpper }) else {
+            return
+        }
+
+        let bagLower = votersInfo.bagsThresholds[safe: currentBagListIndex - 1] ?? 0
+
+        presenter.didReceive(currentBag: (bagLower, bagUpper))
+    }
+}
+
+extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProtocol {
+    func setup() {
+        feeProxy.delegate = self
+        provideNetworkStakingInfo()
+        subscribeAccountBalance()
+        subscribePrice()
+        subscribeStashControllerSubscription()
+        subscribeTotalIssuanceSubscription()
+    }
+}
+
+extension StakingRebagConfirmInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(
+        result: Result<PriceData?, Error>,
+        priceId _: AssetModel.PriceId
+    ) {
+        switch result {
+        case let .success(priceData):
+            presenter?.didReceive(price: priceData)
+        case let .failure(error):
+            presenter?.didReceive(error: .fetchPriceFailed(error))
+        }
+    }
+}
+
+extension StakingRebagConfirmInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        switch result {
+        case let .success(balance):
+            presenter?.didReceive(assetBalance: balance)
+        case let .failure(error):
+            presenter?.didReceive(error: .fetchBalanceFailed(error))
+        }
+    }
+}
+
+extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
+    func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
+        switch result {
+        case let .success(stashItem):
+            subscribeBagListNode(stashItem: stashItem)
+            subscribeLedgerInfo(stashItem: stashItem)
+        //  presenter?.didReceive(stashItem: stashItem)
+        case let .failure(error):
+            presenter?.didReceive(error: .fetchStashItemFailed(error))
+        }
+    }
+
+    func handleLedgerInfo(
+        result: Result<StakingLedger?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(ledgerInfo):
+            break
+        // presenter?.didReceive(ledgerInfo: ledgerInfo)
+        case let .failure(error):
+            presenter?.didReceive(error: .fetchLedgerInfoFailed(error))
+        }
+    }
+
+    func handleBagListNode(
+        result: Result<BagList.Node?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        switch result {
+        case let .success(node):
+            currentBagListNode = node
+        case let .failure(error):
+            presenter.didReceive(error: .fetchBagListNodeFailed(error))
+        }
+    }
+
+    func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(totalIssuance):
+            let scoreFactor = totalIssuance.map { BagList.scoreFactor(for: $0) }
+        // presenter?.didReceiveBagListScoreFactor(result: .success(scoreFactor))
+        case let .failure(error):
+            presenter?.didReceive(error: .fetchBagListScoreFactorFailed(error))
+        }
+    }
+}
+
+extension StakingRebagConfirmInteractor: ExtrinsicFeeProxyDelegate {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+        switch result {
+        case let .success(dispatchInfo):
+            let fee = BigUInt(dispatchInfo.fee)
+            presenter?.didReceive(fee: fee)
+        case let .failure(error):
+            presenter?.didReceive(error: .fetchFeeFailed(error))
+        }
+    }
+}
+
+extension StakingRebagConfirmInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil,
+              let priceId = chainAsset.asset.priceId else {
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+    }
+}
+
+enum StakingRebagConfirmError: Error {
+    case fetchPriceFailed(Error)
+    case fetchBalanceFailed(Error)
+    case fetchFeeFailed(Error)
+    case fetchStashItemFailed(Error)
+    case fetchBagListScoreFactorFailed(Error)
+    case fetchBagListNodeFailed(Error)
+    case fetchLedgerInfoFailed(Error)
+    case networkInfo(Error)
+}
