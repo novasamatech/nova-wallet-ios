@@ -2,17 +2,24 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
+struct ExtrinsicSplittingResult {
+    let closure: ExtrinsicBuilderIndexedClosure
+    let numberOfExtrinsics: Int
+}
+
 protocol ExtrinsicSplitting: AnyObject {
     func adding<T: RuntimeCallable>(call: T) -> Self
 
     func buildWrapper(
         using operationFactory: ExtrinsicOperationFactoryProtocol
-    ) -> CompoundOperationWrapper<[ExtrinsicBuilderClosure]>
+    ) -> CompoundOperationWrapper<ExtrinsicSplittingResult>
 }
 
 enum ExtrinsicSplitterError: Error {
     case extrinsicTooLarge(blockLimit: UInt64, callWeight: UInt64)
     case weightNotFound(path: CallCodingPath)
+    case invalidExtrinsicIndex(index: Int, totalExtrinsics: Int)
+    case noCalls
 }
 
 final class ExtrinsicSplitter {
@@ -100,11 +107,11 @@ final class ExtrinsicSplitter {
         let feeWrapper = operationFactory.estimateFeeOperation(closure, numberOfExtrinsics: callTypes.count)
 
         let mapOperation = ClosureOperation<[CallCodingPath: UInt64]> {
-            let feeResults = try feeWrapper.targetOperation.extractNoCancellableResultData()
+            let feeResults = try feeWrapper.targetOperation.extractNoCancellableResultData().results
 
             return try zip(targetCalls, feeResults).reduce(into: [CallCodingPath: UInt64]()) { accum, pair in
                 let callPath = pair.0.path
-                let feeResult = pair.1
+                let feeResult = pair.1.result
 
                 accum[callPath] = try feeResult.get().weight
             }
@@ -120,13 +127,13 @@ final class ExtrinsicSplitter {
         callTypeWeightOperation: BaseOperation<[CallCodingPath: UInt64]>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         internalCalls: [InternalCall]
-    ) -> ClosureOperation<[ExtrinsicBuilderClosure]> {
-        ClosureOperation<[ExtrinsicBuilderClosure]> {
+    ) -> ClosureOperation<ExtrinsicSplittingResult> {
+        ClosureOperation<ExtrinsicSplittingResult> {
             let callTypeWeight = try callTypeWeightOperation.extractNoCancellableResultData()
             let blockLimit = try blockLimitOperation.extractNoCancellableResultData()
             let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
 
-            var builders: [[InternalCall]] = []
+            var extrinsics: [[InternalCall]] = []
             var targetCalls: [InternalCall] = []
             var totalWeight: UInt64 = 0
 
@@ -145,29 +152,65 @@ final class ExtrinsicSplitter {
                 } else {
                     totalWeight = 0
 
-                    builders.append(targetCalls)
+                    extrinsics.append(targetCalls)
                     targetCalls = [internalCall]
                 }
             }
 
             if !targetCalls.isEmpty {
-                builders.append(targetCalls)
+                extrinsics.append(targetCalls)
             }
 
-            return builders.map { internalCalls in
-                let closure: ExtrinsicBuilderClosure = { builder in
-                    var innerBuilder = builder
-                    for internalCall in internalCalls {
-                        let runtimeCall = try internalCall.toRuntimeCall(using: runtimeContext)
-                        innerBuilder = try innerBuilder.adding(call: runtimeCall)
-                    }
-
-                    return innerBuilder
+            let closure: ExtrinsicBuilderIndexedClosure = { builder, index in
+                guard index < extrinsics.count else {
+                    throw ExtrinsicSplitterError.invalidExtrinsicIndex(
+                        index: index,
+                        totalExtrinsics: extrinsics.count
+                    )
                 }
 
-                return closure
+                let internalCalls = extrinsics[index]
+
+                var innerBuilder = builder
+                for internalCall in internalCalls {
+                    let runtimeCall = try internalCall.toRuntimeCall(using: runtimeContext)
+                    innerBuilder = try innerBuilder.adding(call: runtimeCall)
+                }
+
+                return innerBuilder
             }
+
+            return .init(closure: closure, numberOfExtrinsics: extrinsics.count)
         }
+    }
+
+    private func createFastPathWrapper(
+        for internalCall: InternalCall,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<ExtrinsicSplittingResult> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let mappingOperation = ClosureOperation<ExtrinsicSplittingResult> {
+            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
+
+            let closure: ExtrinsicBuilderIndexedClosure = { builder, index in
+                guard index == 0 else {
+                    throw ExtrinsicSplitterError.invalidExtrinsicIndex(index: index, totalExtrinsics: 1)
+                }
+
+                var innerBuilder = builder
+                let runtimeCall = try internalCall.toRuntimeCall(using: runtimeContext)
+                innerBuilder = try innerBuilder.adding(call: runtimeCall)
+
+                return innerBuilder
+            }
+
+            return .init(closure: closure, numberOfExtrinsics: 1)
+        }
+
+        mappingOperation.addDependency(codingFactoryOperation)
+
+        return .init(targetOperation: mappingOperation, dependencies: [codingFactoryOperation])
     }
 }
 
@@ -184,9 +227,17 @@ extension ExtrinsicSplitter: ExtrinsicSplitting {
 
     func buildWrapper(
         using operationFactory: ExtrinsicOperationFactoryProtocol
-    ) -> CompoundOperationWrapper<[ExtrinsicBuilderClosure]> {
+    ) -> CompoundOperationWrapper<ExtrinsicSplittingResult> {
+        guard let firstInnerCall = internalCalls.first else {
+            return CompoundOperationWrapper.createWithError(ExtrinsicSplitterError.noCalls)
+        }
+
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+        }
+
+        guard internalCalls.count > 1 else {
+            return createFastPathWrapper(for: firstInnerCall, runtimeProvider: runtimeProvider)
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()

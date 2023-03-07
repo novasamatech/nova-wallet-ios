@@ -3,18 +3,6 @@ import SubstrateSdk
 import RobinHood
 import IrohaCrypto
 
-typealias FeeExtrinsicResult = Result<RuntimeDispatchInfo, Error>
-typealias EstimateFeeClosure = (FeeExtrinsicResult) -> Void
-typealias EstimateFeeIndexedClosure = ([FeeExtrinsicResult]) -> Void
-
-typealias SubmitExtrinsicResult = Result<String, Error>
-typealias ExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
-
-typealias ExtrinsicSubmitIndexedClosure = ([SubmitExtrinsicResult]) -> Void
-
-typealias ExtrinsicSubscriptionIdClosure = (UInt16) -> Bool
-typealias ExtrinsicSubscriptionStatusClosure = (Result<ExtrinsicStatus, Error>) -> Void
-
 protocol ExtrinsicServiceProtocol {
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderClosure,
@@ -25,7 +13,13 @@ protocol ExtrinsicServiceProtocol {
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         runningIn queue: DispatchQueue,
-        numberOfExtrinsics: Int,
+        indexes: IndexSet,
+        completion completionClosure: @escaping EstimateFeeIndexedClosure
+    )
+
+    func estimateFeeWithSplitter(
+        _ splitter: ExtrinsicSplitting,
+        runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     )
 
@@ -34,6 +28,21 @@ protocol ExtrinsicServiceProtocol {
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitClosure
+    )
+
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        numberOfExtrinsics: Int,
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
+    )
+
+    func submitWithTxSplitter(
+        _ splitter: ExtrinsicSplitting,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     )
 
     func submitAndWatch(
@@ -52,14 +61,22 @@ protocol ExtrinsicServiceProtocol {
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping ExtrinsicSubmitClosure
     )
+}
 
-    func submit(
+extension ExtrinsicServiceProtocol {
+    func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
         numberOfExtrinsics: Int,
-        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
-    )
+        completion completionClosure: @escaping EstimateFeeIndexedClosure
+    ) {
+        estimateFee(
+            closure,
+            runningIn: queue,
+            indexes: IndexSet(0 ..< numberOfExtrinsics),
+            completion: completionClosure
+        )
+    }
 }
 
 final class ExtrinsicService {
@@ -150,13 +167,10 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         runningIn queue: DispatchQueue,
-        numberOfExtrinsics: Int,
+        indexes: IndexSet,
         completion completionClosure: @escaping EstimateFeeIndexedClosure
     ) {
-        let wrapper = operationFactory.estimateFeeOperation(
-            closure,
-            numberOfExtrinsics: numberOfExtrinsics
-        )
+        let wrapper = operationFactory.estimateFeeOperation(closure, indexes: indexes)
 
         wrapper.targetOperation.completionBlock = {
             queue.async {
@@ -164,16 +178,60 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
                     let result = try wrapper.targetOperation.extractNoCancellableResultData()
                     completionClosure(result)
                 } catch {
-                    let result: [FeeExtrinsicResult] = Array(
-                        repeating: .failure(error),
-                        count: numberOfExtrinsics
+                    let result = FeeIndexedExtrinsicResult(
+                        builderClosure: closure,
+                        error: error,
+                        indexes: Array(indexes)
                     )
+
                     completionClosure(result)
                 }
             }
         }
 
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+    }
+
+    func estimateFeeWithSplitter(
+        _ splitter: ExtrinsicSplitting,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping EstimateFeeIndexedClosure
+    ) {
+        let extrinsicsWrapper = splitter.buildWrapper(using: operationFactory)
+
+        let feeWrapper = OperationCombiningService.compoundWrapper(operationManager: operationManager) {
+            let result = try extrinsicsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.operationFactory.estimateFeeOperation(result.closure, numberOfExtrinsics: result.numberOfExtrinsics)
+        }
+
+        feeWrapper.addDependency(wrapper: extrinsicsWrapper)
+
+        feeWrapper.targetOperation.completionBlock = {
+            queue.async {
+                do {
+                    if let operationResult = try feeWrapper.targetOperation.extractNoCancellableResultData() {
+                        completionClosure(operationResult)
+                    } else {
+                        throw BaseOperationError.unexpectedDependentResult
+                    }
+                } catch {
+                    let splitterResult = try? extrinsicsWrapper.targetOperation.extractNoCancellableResultData()
+                    let numberOfExtrinsics = splitterResult?.numberOfExtrinsics ?? 1
+                    let result = FeeIndexedExtrinsicResult(
+                        builderClosure: splitterResult?.closure,
+                        error: error,
+                        indexes: Array(0 ..< numberOfExtrinsics)
+                    )
+
+                    completionClosure(result)
+                }
+            }
+        }
+
+        let operations = extrinsicsWrapper.allOperations + feeWrapper.allOperations
+
+        operationManager.enqueue(operations: operations, in: .transient)
     }
 
     func submit(
@@ -195,6 +253,53 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         }
 
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+    }
+
+    func submitWithTxSplitter(
+        _ txSplitter: ExtrinsicSplitting,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
+    ) {
+        let extrinsicsWrapper = txSplitter.buildWrapper(using: operationFactory)
+
+        let submissionWrapper = OperationCombiningService.compoundWrapper(operationManager: operationManager) {
+            let result = try extrinsicsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.operationFactory.submit(
+                result.closure,
+                signer: signer,
+                numberOfExtrinsics: result.numberOfExtrinsics
+            )
+        }
+
+        submissionWrapper.addDependency(wrapper: extrinsicsWrapper)
+
+        submissionWrapper.targetOperation.completionBlock = {
+            queue.async {
+                do {
+                    if let operationResult = try submissionWrapper.targetOperation.extractNoCancellableResultData() {
+                        completionClosure(operationResult)
+                    } else {
+                        throw BaseOperationError.unexpectedDependentResult
+                    }
+                } catch {
+                    let splitterResult = try? extrinsicsWrapper.targetOperation.extractNoCancellableResultData()
+                    let numberOfExtrinsics = splitterResult?.numberOfExtrinsics ?? 1
+                    let result = SubmitIndexedExtrinsicResult(
+                        builderClosure: splitterResult?.closure,
+                        error: error,
+                        indexes: Array(0 ..< numberOfExtrinsics)
+                    )
+
+                    completionClosure(result)
+                }
+            }
+        }
+
+        let operations = extrinsicsWrapper.allOperations + submissionWrapper.allOperations
+
+        operationManager.enqueue(operations: operations, in: .transient)
     }
 
     func submitAndWatch(
@@ -265,11 +370,13 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
                     let operationResult = try wrapper.targetOperation.extractNoCancellableResultData()
                     completionClosure(operationResult)
                 } catch {
-                    let results: [SubmitExtrinsicResult] = Array(
-                        repeating: .failure(error),
-                        count: numberOfExtrinsics
+                    let result = SubmitIndexedExtrinsicResult(
+                        builderClosure: closure,
+                        error: error,
+                        indexes: Array(0 ..< numberOfExtrinsics)
                     )
-                    completionClosure(results)
+
+                    completionClosure(result)
                 }
             }
         }
