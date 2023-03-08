@@ -94,29 +94,20 @@ final class StakingPayoutConfirmationViewFactory {
             chain: chainAsset.chain
         )
 
-        let extrinsicOperationFactory = extrinsicServiceFactory.createOperationFactory(
-            account: selectedAccount.chainAccount,
-            chain: chainAsset.chain
-        )
-
         let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
             for: metaAccount.metaId,
             accountResponse: selectedAccount.chainAccount
         )
 
-        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
-
         return StakingPayoutConfirmationInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            extrinsicOperationFactory: extrinsicOperationFactory,
             extrinsicService: extrinsicService,
-            runtimeService: runtimeService,
+            feeProxy: MultiExtrinsicFeeProxy(),
+            chainRegistry: chainRegistry,
             signer: signer,
-            accountRepositoryFactory: accountRepositoryFactory,
             operationManager: operationManager,
             payouts: payouts,
             currencyManager: currencyManager

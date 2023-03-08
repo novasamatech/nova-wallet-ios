@@ -32,19 +32,6 @@ enum BlockchainWeight {
             }
         }
     }
-
-    @propertyWrapper
-    struct OptionWrappedRefTime: Decodable {
-        let wrappedValue: UInt64?
-
-        init(wrappedValue: UInt64?) {
-            self.wrappedValue = wrappedValue
-        }
-
-        init(from decoder: Decoder) throws {
-            wrappedValue = try WrappedRefTime(from: decoder).wrappedValue
-        }
-    }
 }
 
 struct BlockWeights: Decodable {
@@ -57,50 +44,14 @@ struct BlockWeights: Decodable {
     var perClass: PerDispatchClass
 
     var normalExtrinsicMaxWeight: UInt64? {
-        switch perClass {
-        case let .normal(weightsPerClass):
-            return weightsPerClass.maxExtrinsic
-        case .operational, .mandatory, .unknown:
-            return nil
-        }
+        perClass.normal.maxExtrinsic
     }
 }
 
-enum PerDispatchClass: Decodable {
-    case normal(WeightsPerClass)
-    case operational(WeightsPerClass)
-    case mandatory(WeightsPerClass)
-    case unknown
-
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-        let type = try container.decode(String.self)
-        let value = try container.decode(WeightsPerClass.self)
-
-        switch type {
-        case "Normal":
-            self = .normal(value)
-        case "Operational":
-            self = .operational(value)
-        case "Mandatory":
-            self = .mandatory(value)
-        default:
-            self = .unknown
-        }
-    }
-
-    var maxExtrinsic: UInt64? {
-        switch self {
-        case let .normal(weightsPerClass):
-            return weightsPerClass.maxExtrinsic
-        case let .operational(weightsPerClass):
-            return weightsPerClass.maxExtrinsic
-        case let .mandatory(weightsPerClass):
-            return weightsPerClass.maxExtrinsic
-        case .unknown:
-            return nil
-        }
-    }
+struct PerDispatchClass: Decodable {
+    let normal: WeightsPerClass
+    let operational: WeightsPerClass
+    let mandatory: WeightsPerClass
 }
 
 struct WeightsPerClass: Decodable {
@@ -108,5 +59,14 @@ struct WeightsPerClass: Decodable {
         case maxExtrinsic
     }
 
-    @BlockchainWeight.OptionWrappedRefTime var maxExtrinsic: UInt64?
+    let maxExtrinsic: UInt64?
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        maxExtrinsic = try container.decodeIfPresent(
+            BlockchainWeight.WrappedRefTime.self,
+            forKey: .maxExtrinsic
+        )?.wrappedValue
+    }
 }
