@@ -76,9 +76,7 @@ final class ExtrinsicSplitter {
 
         mappingOperation.addDependency(blockWeightsOperation)
 
-        let dependencies = [codingFactoryOperation, blockWeightsOperation]
-
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [blockWeightsOperation])
     }
 
     func estimateWeightForCallTypesWrapper(
@@ -86,7 +84,7 @@ final class ExtrinsicSplitter {
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> CompoundOperationWrapper<[CallCodingPath: UInt64]> {
         let callTypes = internalCalls.reduce(into: [CallCodingPath: InternalCall]()) { accum, call in
-            if accum[call.path] != nil {
+            if accum[call.path] == nil {
                 accum[call.path] = call
             }
         }
