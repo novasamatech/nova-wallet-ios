@@ -39,6 +39,19 @@ struct ExtrinsicRetriableResult<R> {
 
         return IndexSet(indexList)
     }
+
+    func errors() -> [Error] {
+        let errors: [Error] = results.compactMap { indexedResult in
+            switch indexedResult.result {
+            case .success:
+                return nil
+            case let .failure(error):
+                return error
+            }
+        }
+
+        return errors
+    }
 }
 
 typealias FeeExtrinsicResult = Result<RuntimeDispatchInfo, Error>

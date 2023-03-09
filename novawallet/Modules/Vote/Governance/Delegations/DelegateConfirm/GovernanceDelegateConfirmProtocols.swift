@@ -28,7 +28,7 @@ protocol GovernanceDelegateConfirmInteractorInputProtocol: GovernanceDelegateInt
 
 protocol GovernanceDelegateConfirmInteractorOutputProtocol: GovernanceDelegateInteractorOutputProtocol {
     func didReceiveLocks(_ locks: AssetLocks)
-    func didReceiveSubmissionHash(_ hash: String)
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult)
     func didReceiveError(_ error: GovernanceDelegateConfirmInteractorError)
 }
 

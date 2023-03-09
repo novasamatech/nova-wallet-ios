@@ -24,7 +24,7 @@ protocol GovernanceRevokeDelegationConfirmInteractorInputProtocol: GovernanceDel
 }
 
 protocol GovernanceRevokeDelegationConfirmInteractorOutputProtocol: GovernanceDelegateInteractorOutputProtocol {
-    func didReceiveSubmissionHash(_ hash: String)
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult)
     func didReceiveError(_ error: GovernanceRevokeDelegationInteractorError)
 }
 
