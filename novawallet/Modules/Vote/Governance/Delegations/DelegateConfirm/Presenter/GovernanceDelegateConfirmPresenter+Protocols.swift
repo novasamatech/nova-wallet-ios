@@ -90,18 +90,27 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
     func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult) {
         view?.didStopLoading()
 
-        let errors = result.errors()
+        let handlers = MultiExtrinsicResultActions(
+            onSuccess: { [weak self]
+                self?.wireframe.complete(on: self, locale: selectedLocale)
+            }, onErrorRetry: { [weak self] closure, indexes in
+                self?.view?.didStartLoading()
 
-        if errors.isEmpty {
-            wireframe.complete(on: view, locale: selectedLocale)
-        } else if let error = errors.first {
-            // TODO: Add retry logic
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+                self?.interactor.retryMultiExtrinsic(
+                    for: closure,
+                    indexes: indexes
+                )
+            }, onErrorSkip: {
+                self?.wireframe.skip(on: self?.view)
             }
-        }
+        )
+
+        wireframe.presentMultiExtrinsicStatusFromResult(
+            on: view,
+            result: result,
+            locale: selectedLocale,
+            handlers: handlers
+        )
     }
 
     func didReceiveError(_ error: GovernanceDelegateConfirmInteractorError) {
@@ -115,11 +124,7 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
         case let .submitFailed(internalError):
             view?.didStopLoading()
 
-            if internalError.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: internalError, from: view, locale: selectedLocale)
-            }
+            wireframe.presentNoSigningOrError(from: view, error: internalError, locale: selectedLocale)
         }
     }
 

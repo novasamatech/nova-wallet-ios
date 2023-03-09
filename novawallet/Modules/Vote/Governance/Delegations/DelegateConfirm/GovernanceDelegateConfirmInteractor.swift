@@ -97,6 +97,10 @@ final class GovernanceDelegateConfirmInteractor: GovernanceDelegateInteractor {
             presenter?.didReceiveError(.locksSubscriptionFailed(error))
         }
     }
+
+    func handleMultiExtrinsicSubmission(result: SubmitIndexedExtrinsicResult) {
+        presenter?.didReceiveSubmissionResult(result)
+    }
 }
 
 extension GovernanceDelegateConfirmInteractor: GovernanceDelegateConfirmInteractorInputProtocol {
@@ -109,7 +113,7 @@ extension GovernanceDelegateConfirmInteractor: GovernanceDelegateConfirmInteract
                 signer: signer,
                 runningIn: .main
             ) { [weak self] result in
-                self?.presenter?.didReceiveSubmissionResult(result)
+                self?.handleMultiExtrinsicSubmission(result: result)
             }
         } catch {
             presenter?.didReceiveError(.submitFailed(error))

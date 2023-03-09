@@ -56,12 +56,18 @@ final class GovRevokeDelegationConfirmInteractor: GovernanceDelegateInteractor {
             operationQueue: operationQueue
         )
     }
+
+    func handleMultiExtrinsicSubmission(result: SubmitIndexedExtrinsicResult) {
+        presenter?.didReceiveSubmissionResult(result)
+    }
 }
 
 extension GovRevokeDelegationConfirmInteractor: GovernanceRevokeDelegationConfirmInteractorInputProtocol {
     func submitRevoke(for tracks: Set<TrackIdLocal>) {
         do {
-            let actions = tracks.map { GovernanceDelegatorAction(delegateId: delegateId, trackId: $0, type: .undelegate) }
+            let actions = tracks.map { trackId in
+                GovernanceDelegatorAction(delegateId: delegateId, trackId: trackId, type: .undelegate)
+            }
 
             let splitter = try createExtrinsicSplitter(for: actions)
 
@@ -70,7 +76,7 @@ extension GovRevokeDelegationConfirmInteractor: GovernanceRevokeDelegationConfir
                 signer: signer,
                 runningIn: .main
             ) { [weak self] result in
-                self?.presenter?.didReceiveSubmissionResult(result)
+                self?.handleMultiExtrinsicSubmission(result: result)
             }
         } catch {
             presenter?.didReceiveError(.submitFailed(error))

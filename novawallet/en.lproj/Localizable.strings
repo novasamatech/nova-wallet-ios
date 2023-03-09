@@ -1186,3 +1186,6 @@
 "gov.revoke.delegate.missing.error.message" = "You have already revoked delegation from one of the tracks";
 "governance.abstain" = "Abstain";
 "delegations.account.missing.message" = "You should add %@ account to the wallet in order to delegate";
+"common.multi.tx.error.title" = "Failed to submit some transactions";
+"common.multi.tx.error.no.details.message" = "There was an error while submitting some transactions (%@). Do you want to retry?";
+"common.multi.tx.error.has.details.message" = "There was an error while submitting some transactions (%@): %@. Do you want to retry?";
