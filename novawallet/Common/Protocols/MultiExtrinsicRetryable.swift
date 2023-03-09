@@ -70,7 +70,7 @@ extension MultiExtrinsicRetryable where Self: AlertPresentable {
 
 struct MultiExtrinsicResultActions {
     let onSuccess: () -> Void
-    let onErrorRetry: (ExtrinsicBuilderIndexedClosure, NSIndexSet) -> Void
+    let onErrorRetry: (@escaping ExtrinsicBuilderIndexedClosure, IndexSet) -> Void
     let onErrorSkip: () -> Void
 }
 
@@ -97,14 +97,14 @@ extension MultiExtrinsicRetryable where Self: AlertPresentable & ErrorPresentabl
                 on: view,
                 params: .init(errors: errors, totalExtrinsics: result.results.count),
                 locale: locale,
-                onRetry: { [weak self] in
+                onRetry: {
                     handlers.onErrorRetry(builderClosure, result.failedIndexes())
-                }, onSkip: { [weak self] in
+                }, onSkip: {
                     handlers.onErrorSkip()
                 }
             )
         } else {
-            _ = present(error: error, from: view, locale: selectedLocale)
+            _ = present(error: error, from: view, locale: locale)
         }
     }
 }
