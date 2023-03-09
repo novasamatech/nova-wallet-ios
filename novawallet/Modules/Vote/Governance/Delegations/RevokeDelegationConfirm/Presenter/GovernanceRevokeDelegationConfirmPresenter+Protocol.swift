@@ -81,15 +81,26 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
 }
 
 extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirmInteractorOutputProtocol {
-    func didReceiveSubmissionHash(_: String) {
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult) {
         view?.didStopLoading()
 
-        let selectedIds = Set(selectedTracks.map(\.trackId))
-        let currentsIds = Set((votesResult?.value?.votes.delegatings ?? [:]).keys)
+        let errors = result.errors()
 
-        let allRemoved = selectedIds == currentsIds
+        if errors.isEmpty {
+            let selectedIds = Set(selectedTracks.map(\.trackId))
+            let currentsIds = Set((votesResult?.value?.votes.delegatings ?? [:]).keys)
 
-        wireframe.complete(on: view, allRemoved: allRemoved, locale: selectedLocale)
+            let allRemoved = selectedIds == currentsIds
+
+            wireframe.complete(on: view, allRemoved: allRemoved, locale: selectedLocale)
+        } else if let error = errors.first {
+            // TODO: Add retry logic
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+            }
+        }
     }
 
     func didReceiveError(_ error: GovernanceRevokeDelegationInteractorError) {

@@ -16,6 +16,6 @@ protocol GovernanceExtrinsicFactoryProtocol {
 
     func delegationUpdate(
         with actions: [GovernanceDelegatorAction],
-        builder: ExtrinsicBuilderProtocol
-    ) throws -> ExtrinsicBuilderProtocol
+        splitter: ExtrinsicSplitting
+    ) throws -> ExtrinsicSplitting
 }

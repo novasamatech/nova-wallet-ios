@@ -26,12 +26,11 @@ final class GovernanceDelegateConfirmInteractor: GovernanceDelegateInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
+        chainRegistry: ChainRegistryProtocol,
         currencyManager: CurrencyManagerProtocol,
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
+        feeProxy: MultiExtrinsicFeeProxyProtocol,
         signer: SigningWrapperProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         operationQueue: OperationQueue
@@ -47,8 +46,7 @@ final class GovernanceDelegateConfirmInteractor: GovernanceDelegateInteractor {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
+            chainRegistry: chainRegistry,
             currencyManager: currencyManager,
             extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
@@ -103,19 +101,18 @@ final class GovernanceDelegateConfirmInteractor: GovernanceDelegateInteractor {
 
 extension GovernanceDelegateConfirmInteractor: GovernanceDelegateConfirmInteractorInputProtocol {
     func submit(actions: [GovernanceDelegatorAction]) {
-        let closure = createExtrinsicBuilderClosure(for: actions)
+        do {
+            let splitter = try createExtrinsicSplitter(for: actions)
 
-        extrinsicService.submit(
-            closure,
-            signer: signer,
-            runningIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(hash):
-                self?.presenter?.didReceiveSubmissionHash(hash)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.submitFailed(error))
+            extrinsicService.submitWithTxSplitter(
+                splitter,
+                signer: signer,
+                runningIn: .main
+            ) { [weak self] result in
+                self?.presenter?.didReceiveSubmissionResult(result)
             }
+        } catch {
+            presenter?.didReceiveError(.submitFailed(error))
         }
     }
 }

@@ -87,10 +87,21 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
         provideTransferableAmountViewModel()
     }
 
-    func didReceiveSubmissionHash(_: String) {
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult) {
         view?.didStopLoading()
 
-        wireframe.complete(on: view, locale: selectedLocale)
+        let errors = result.errors()
+
+        if errors.isEmpty {
+            wireframe.complete(on: view, locale: selectedLocale)
+        } else if let error = errors.first {
+            // TODO: Add retry logic
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+            }
+        }
     }
 
     func didReceiveError(_ error: GovernanceDelegateConfirmInteractorError) {
