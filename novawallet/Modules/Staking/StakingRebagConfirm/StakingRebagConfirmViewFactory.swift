@@ -13,6 +13,24 @@ struct StakingRebagConfirmViewFactory {
             return nil
         }
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        let extrinsicServiceFactory = ExtrinsicServiceFactory(
+            runtimeRegistry: runtimeRegistry,
+            engine: connection,
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        let accountRepositoryFactory = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        )
+
         let interactor = StakingRebagConfirmInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
@@ -23,6 +41,9 @@ struct StakingRebagConfirmViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             networkInfoFactory: networkInfoFactory,
             eraValidatorService: state.eraValidatorService,
+            extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapperFactory: SigningWrapperFactory(),
+            accountRepositoryFactory: accountRepositoryFactory,
             operationManager: OperationManagerFacade.sharedManager,
             currencyManager: currencyManager
         )

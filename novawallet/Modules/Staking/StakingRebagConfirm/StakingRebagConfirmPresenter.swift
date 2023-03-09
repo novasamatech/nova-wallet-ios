@@ -91,6 +91,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmPresenterProtocol {
     func setup() {
         interactor.setup()
         provideAccountViewModel()
+        provideHintsViewModel()
     }
 
     func confirm() {}
@@ -117,10 +118,18 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
             return
         }
 
-        view?.didReceiveRebags(
-            current: "\(lowerBoundDecimal)-\(upperBoundDecimal) \(chainAsset.assetDisplayInfo.symbol)",
-            next: ""
-        )
+        let viewModel = "\(lowerBoundDecimal)-\(upperBoundDecimal) \(chainAsset.assetDisplayInfo.symbol)"
+        view?.didReceiveCurrentRebag(viewModel: viewModel)
+    }
+
+    func didReceive(nextBag: (lowerBound: BigUInt, upperBound: BigUInt)) {
+        guard let lowerBoundDecimal = convertPlanksToDecimal(nextBag.lowerBound),
+              let upperBoundDecimal = convertPlanksToDecimal(nextBag.upperBound) else {
+            return
+        }
+
+        let viewModel = "\(lowerBoundDecimal)-\(upperBoundDecimal) \(chainAsset.assetDisplayInfo.symbol)"
+        view?.didReceiveNextRebag(viewModel: viewModel)
     }
 
     func didReceive(fee: BigUInt?) {
@@ -130,7 +139,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
 
     func didReceive(price: PriceData?) {
         self.price = price
-        provideWalletViewModel()
+        provideFeeViewModel()
     }
 
     func didReceive(assetBalance: AssetBalance?) {
@@ -141,6 +150,8 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
     func didReceive(error: StakingRebagConfirmError) {
         logger?.error(error.localizedDescription)
     }
+
+    func didSubmitRebag() {}
 }
 
 extension StakingRebagConfirmPresenter: Localizable {
