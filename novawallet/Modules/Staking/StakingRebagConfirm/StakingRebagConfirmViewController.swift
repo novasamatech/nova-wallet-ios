@@ -73,9 +73,12 @@ extension StakingRebagConfirmViewController: StakingRebagConfirmViewProtocol {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    func didReceiveRebags(current: String, next: String) {
-        rootView.currentBagList.bind(details: current)
-        rootView.nextBagList.bind(details: next)
+    func didReceiveCurrentRebag(viewModel: String) {
+        rootView.currentBagList.bind(details: viewModel)
+    }
+
+    func didReceiveNextRebag(viewModel: String) {
+        rootView.nextBagList.bind(details: viewModel)
     }
 
     func didReceiveHints(viewModel: [String]) {
