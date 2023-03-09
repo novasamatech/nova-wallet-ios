@@ -38,7 +38,7 @@ final class StakingRebagConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
-        rootView.confirmButton.addTarget(
+        rootView.actionLoadableView.actionButton.addTarget(
             self,
             action: #selector(didTapOnConfirm),
             for: .touchUpInside
@@ -83,6 +83,10 @@ extension StakingRebagConfirmViewController: StakingRebagConfirmViewProtocol {
 
     func didReceiveHints(viewModel: [String]) {
         rootView.hintView.bind(texts: viewModel)
+    }
+
+    func didReceiveConfirmState(isAvailable: Bool) {
+        rootView.actionLoadableView.actionButton.set(enabled: isAvailable)
     }
 
     func didStartLoading() {

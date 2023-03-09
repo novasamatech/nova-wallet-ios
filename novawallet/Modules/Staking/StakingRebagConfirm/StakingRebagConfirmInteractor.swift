@@ -189,8 +189,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
                     do {
                         let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                        self?.networkInfo = info
-                        //  self?.presenter?.didReceive(networkStakingInfo: info)
+                        self?.presenter.didReceive(networkInfo: info)
                     } catch {
                         self?.presenter?.didReceive(error: .networkInfo(error))
                     }
@@ -203,68 +202,6 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         } catch {
             presenter?.didReceive(error: .networkInfo(error))
         }
-    }
-
-    var networkInfo: NetworkStakingInfo? {
-        didSet {
-            provideCurrentBagList()
-            provideNextBagList()
-        }
-    }
-
-    var currentBagListNode: BagList.Node? {
-        didSet {
-            provideCurrentBagList()
-        }
-    }
-
-    var ledgerInfo: StakingLedger? {
-        didSet {
-            provideNextBagList()
-        }
-    }
-
-    var totalIssuance: BigUInt? {
-        didSet {
-            provideNextBagList()
-        }
-    }
-
-    private func provideCurrentBagList() {
-        guard let votersInfo = networkInfo?.votersInfo, let currentBagListNode = currentBagListNode else {
-            return
-        }
-
-        let bagUpper = currentBagListNode.bagUpper
-        guard let currentBagListIndex = votersInfo.bagsThresholds.firstIndex(where: { $0 == bagUpper }) else {
-            return
-        }
-
-        let bagLower = votersInfo.bagsThresholds[safe: currentBagListIndex - 1] ?? 0
-
-        presenter.didReceive(currentBag: (bagLower, bagUpper))
-    }
-
-    private func provideNextBagList() {
-        guard let ledgerInfo = ledgerInfo,
-              let totalIssuance = totalIssuance,
-              let votersInfo = networkInfo?.votersInfo else {
-            return
-        }
-
-        let score = BagList.scoreOf(stake: ledgerInfo.active, totalIssuance: totalIssuance)
-        let lowerTreshold: BigUInt
-        let upperTreshold: BigUInt
-
-        if let targetTresholdIndex = votersInfo.bagsThresholds.firstIndex(where: { $0 > score }) {
-            lowerTreshold = votersInfo.bagsThresholds[safe: targetTresholdIndex - 1] ?? 0
-            upperTreshold = votersInfo.bagsThresholds[targetTresholdIndex]
-        } else {
-            lowerTreshold = votersInfo.bagsThresholds.last ?? 0
-            upperTreshold = BigUInt(UInt64.max)
-        }
-
-        presenter.didReceive(nextBag: (lowerTreshold, upperTreshold))
     }
 
     private func estimateFee(stashItem: StashItem?) {
@@ -282,8 +219,9 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         }
     }
 
-    func submit(stashItem: StashItem?) {
+    private func confirmRebag(stashItem: StashItem?) {
         guard let extrinsicService = extrinsicService,
+              let signingWrapper = signingWrapper,
               let stashItem = stashItem,
               let accountId = try? stashItem.identifier.toAccountId() else {
             presenter.didReceive(error: .submitFailed(CommonError.undefined))
@@ -313,6 +251,14 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
         subscribePrice()
         subscribeStashControllerSubscription()
         subscribeTotalIssuanceSubscription()
+    }
+
+    func refreshFee(stashItem: StashItem) {
+        estimateFee(stashItem: stashItem)
+    }
+
+    func submit(stashItem: StashItem) {
+        confirmRebag(stashItem: stashItem)
     }
 }
 
@@ -353,6 +299,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
             subscribeBagListNode(stashItem: stashItem)
             subscribeLedgerInfo(stashItem: stashItem)
             provideMetaAccount(stashItem: stashItem)
+            presenter.didReceive(stashItem: stashItem)
         case let .failure(error):
             presenter?.didReceive(error: .fetchStashItemFailed(error))
         }
@@ -365,7 +312,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     ) {
         switch result {
         case let .success(ledgerInfo):
-            self.ledgerInfo = ledgerInfo
+            presenter.didReceive(ledgerInfo: ledgerInfo)
         case let .failure(error):
             presenter?.didReceive(error: .fetchLedgerInfoFailed(error))
         }
@@ -378,7 +325,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     ) {
         switch result {
         case let .success(node):
-            currentBagListNode = node
+            presenter.didReceive(currentBagListNode: node)
         case let .failure(error):
             presenter.didReceive(error: .fetchBagListNodeFailed(error))
         }
@@ -387,7 +334,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(totalIssuance):
-            self.totalIssuance = totalIssuance
+            presenter.didReceive(totalIssuance: totalIssuance)
         case let .failure(error):
             presenter?.didReceive(error: .fetchBagListScoreFactorFailed(error))
         }
@@ -415,16 +362,4 @@ extension StakingRebagConfirmInteractor: SelectedCurrencyDepending {
 
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
-}
-
-enum StakingRebagConfirmError: Error {
-    case fetchPriceFailed(Error)
-    case fetchBalanceFailed(Error)
-    case fetchFeeFailed(Error)
-    case fetchStashItemFailed(Error)
-    case fetchBagListScoreFactorFailed(Error)
-    case fetchBagListNodeFailed(Error)
-    case fetchLedgerInfoFailed(Error)
-    case networkInfo(Error)
-    case submitFailed(Error)
 }
