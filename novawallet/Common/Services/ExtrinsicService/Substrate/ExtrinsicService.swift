@@ -34,7 +34,7 @@ protocol ExtrinsicServiceProtocol {
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        numberOfExtrinsics: Int,
+        indexes: IndexSet,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     )
 
@@ -72,6 +72,22 @@ extension ExtrinsicServiceProtocol {
     ) {
         estimateFee(
             closure,
+            runningIn: queue,
+            indexes: IndexSet(0 ..< numberOfExtrinsics),
+            completion: completionClosure
+        )
+    }
+
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        numberOfExtrinsics: Int,
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
+    ) {
+        submit(
+            closure,
+            signer: signer,
             runningIn: queue,
             indexes: IndexSet(0 ..< numberOfExtrinsics),
             completion: completionClosure
@@ -202,7 +218,10 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         let feeWrapper = OperationCombiningService.compoundWrapper(operationManager: operationManager) {
             let result = try extrinsicsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return self.operationFactory.estimateFeeOperation(result.closure, numberOfExtrinsics: result.numberOfExtrinsics)
+            return self.operationFactory.estimateFeeOperation(
+                result.closure,
+                numberOfExtrinsics: result.numberOfExtrinsics
+            )
         }
 
         feeWrapper.addDependency(wrapper: extrinsicsWrapper)
@@ -232,6 +251,35 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         let operations = extrinsicsWrapper.allOperations + feeWrapper.allOperations
 
         operationManager.enqueue(operations: operations, in: .transient)
+    }
+
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        indexes: IndexSet,
+        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
+    ) {
+        let wrapper = operationFactory.submit(closure, signer: signer, indexes: indexes)
+
+        wrapper.targetOperation.completionBlock = {
+            queue.async {
+                do {
+                    let operationResult = try wrapper.targetOperation.extractNoCancellableResultData()
+                    completionClosure(operationResult)
+                } catch {
+                    let result = SubmitIndexedExtrinsicResult(
+                        builderClosure: closure,
+                        error: error,
+                        indexes: Array(indexes)
+                    )
+
+                    completionClosure(result)
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
     func submit(
@@ -353,34 +401,5 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         }
 
         operationManager.enqueue(operations: extrinsicOperation.allOperations, in: .transient)
-    }
-
-    func submit(
-        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
-        numberOfExtrinsics: Int,
-        completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
-    ) {
-        let wrapper = operationFactory.submit(closure, signer: signer, numberOfExtrinsics: numberOfExtrinsics)
-
-        wrapper.targetOperation.completionBlock = {
-            queue.async {
-                do {
-                    let operationResult = try wrapper.targetOperation.extractNoCancellableResultData()
-                    completionClosure(operationResult)
-                } catch {
-                    let result = SubmitIndexedExtrinsicResult(
-                        builderClosure: closure,
-                        error: error,
-                        indexes: Array(0 ..< numberOfExtrinsics)
-                    )
-
-                    completionClosure(result)
-                }
-            }
-        }
-
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 }
