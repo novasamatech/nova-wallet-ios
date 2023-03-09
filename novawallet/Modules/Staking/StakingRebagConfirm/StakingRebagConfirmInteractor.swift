@@ -2,7 +2,7 @@ import UIKit
 import RobinHood
 import BigInt
 
-final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
+final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning, AccountFetching {
     weak var presenter: StakingRebagConfirmInteractorOutputProtocol!
 
     let chainAsset: ChainAsset
@@ -16,6 +16,9 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     let networkInfoFactory: NetworkStakingInfoOperationFactoryProtocol
     let eraValidatorService: EraValidatorServiceProtocol?
     let chainRegistry: ChainRegistryProtocol
+    let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let signingWrapperFactory: SigningWrapperFactoryProtocol
+    let accountRepositoryFactory: AccountRepositoryFactoryProtocol
 
     private let operationManager: OperationManagerProtocol
 
@@ -28,6 +31,9 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     private var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
 
+    private var extrinsicService: ExtrinsicServiceProtocol?
+    private var signingWrapper: SigningWrapperProtocol?
+
     init(
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
@@ -38,6 +44,9 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         networkInfoFactory: NetworkStakingInfoOperationFactoryProtocol,
         eraValidatorService: EraValidatorServiceProtocol?,
+        extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
+        accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         operationManager: OperationManagerProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -51,6 +60,9 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         self.operationManager = operationManager
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.chainRegistry = chainRegistry
+        self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.signingWrapperFactory = signingWrapperFactory
+        self.accountRepositoryFactory = accountRepositoryFactory
         self.currencyManager = currencyManager
     }
 
@@ -68,6 +80,25 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             chainId: chainAsset.chain.chainId,
             assetId: chainAsset.asset.assetId
         )
+    }
+
+    private func handleStashMetaAccount(response: MetaChainAccountResponse?, stashItem: StashItem?) {
+        guard let response = response else {
+            return
+        }
+        let chain = chainAsset.chain
+
+        extrinsicService = extrinsicServiceFactory.createService(
+            account: response.chainAccount,
+            chain: chain
+        )
+
+        signingWrapper = signingWrapperFactory.createSigningWrapper(
+            for: response.metaId,
+            accountResponse: response.chainAccount
+        )
+
+        estimateFee(stashItem: stashItem)
     }
 
     private func stashAccountId(stashItem: StashItem?) -> AccountId? {
@@ -105,6 +136,26 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         }
 
         ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainId)
+    }
+
+    private func provideMetaAccount(stashItem: StashItem?) {
+        guard let stashAccountId = stashAccountId(stashItem: stashItem) else {
+            return
+        }
+
+        fetchFirstMetaAccountResponse(
+            for: stashAccountId,
+            accountRequest: chainAsset.chain.accountRequest(),
+            repositoryFactory: accountRepositoryFactory,
+            operationManager: operationManager
+        ) { [weak self] result in
+            switch result {
+            case let .success(response):
+                self?.handleStashMetaAccount(response: response, stashItem: stashItem)
+            case let .failure(error):
+                self?.presenter.didReceive(error: .fetchStashItemFailed(error))
+            }
+        }
     }
 
     func subscribeTotalIssuanceSubscription() {
@@ -157,12 +208,25 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     var networkInfo: NetworkStakingInfo? {
         didSet {
             provideCurrentBagList()
+            provideNextBagList()
         }
     }
 
     var currentBagListNode: BagList.Node? {
         didSet {
             provideCurrentBagList()
+        }
+    }
+
+    var ledgerInfo: StakingLedger? {
+        didSet {
+            provideNextBagList()
+        }
+    }
+
+    var totalIssuance: BigUInt? {
+        didSet {
+            provideNextBagList()
         }
     }
 
@@ -179,6 +243,65 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         let bagLower = votersInfo.bagsThresholds[safe: currentBagListIndex - 1] ?? 0
 
         presenter.didReceive(currentBag: (bagLower, bagUpper))
+    }
+
+    private func provideNextBagList() {
+        guard let ledgerInfo = ledgerInfo,
+              let totalIssuance = totalIssuance,
+              let votersInfo = networkInfo?.votersInfo else {
+            return
+        }
+
+        let score = BagList.scoreOf(stake: ledgerInfo.active, totalIssuance: totalIssuance)
+        let lowerTreshold: BigUInt
+        let upperTreshold: BigUInt
+
+        if let targetTresholdIndex = votersInfo.bagsThresholds.firstIndex(where: { $0 > score }) {
+            lowerTreshold = votersInfo.bagsThresholds[safe: targetTresholdIndex - 1] ?? 0
+            upperTreshold = votersInfo.bagsThresholds[targetTresholdIndex]
+        } else {
+            lowerTreshold = votersInfo.bagsThresholds.last ?? 0
+            upperTreshold = BigUInt(UInt64.max)
+        }
+
+        presenter.didReceive(nextBag: (lowerTreshold, upperTreshold))
+    }
+
+    private func estimateFee(stashItem: StashItem?) {
+        guard let extrinsicService = extrinsicService,
+              let stashItem = stashItem,
+              let accountId = try? stashItem.identifier.toAccountId() else {
+            presenter.didReceive(error: .fetchFeeFailed(CommonError.undefined))
+            return
+        }
+
+        let rebagCall = BagList.RebagCall(dislocated: .accoundId(accountId))
+        let reuseIdentifier = rebagCall.runtimeCall.callName + rebagCall.extrinsicIdentifier
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { builder in
+            try builder.adding(call: rebagCall.runtimeCall)
+        }
+    }
+
+    func submit(stashItem: StashItem?) {
+        guard let extrinsicService = extrinsicService,
+              let stashItem = stashItem,
+              let accountId = try? stashItem.identifier.toAccountId() else {
+            presenter.didReceive(error: .submitFailed(CommonError.undefined))
+            return
+        }
+
+        let rebagCall = BagList.RebagCall(dislocated: .accoundId(accountId))
+
+        extrinsicService.submit(
+            { builder in
+                try builder.adding(call: rebagCall.runtimeCall)
+            },
+            signer: signingWrapper,
+            runningIn: .main,
+            completion: { [weak self] _ in
+                self?.presenter.didSubmitRebag()
+            }
+        )
     }
 }
 
@@ -229,7 +352,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
         case let .success(stashItem):
             subscribeBagListNode(stashItem: stashItem)
             subscribeLedgerInfo(stashItem: stashItem)
-        //  presenter?.didReceive(stashItem: stashItem)
+            provideMetaAccount(stashItem: stashItem)
         case let .failure(error):
             presenter?.didReceive(error: .fetchStashItemFailed(error))
         }
@@ -242,8 +365,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     ) {
         switch result {
         case let .success(ledgerInfo):
-            break
-        // presenter?.didReceive(ledgerInfo: ledgerInfo)
+            self.ledgerInfo = ledgerInfo
         case let .failure(error):
             presenter?.didReceive(error: .fetchLedgerInfoFailed(error))
         }
@@ -265,8 +387,7 @@ extension StakingRebagConfirmInteractor: StakingLocalStorageSubscriber, StakingL
     func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(totalIssuance):
-            let scoreFactor = totalIssuance.map { BagList.scoreFactor(for: $0) }
-        // presenter?.didReceiveBagListScoreFactor(result: .success(scoreFactor))
+            self.totalIssuance = totalIssuance
         case let .failure(error):
             presenter?.didReceive(error: .fetchBagListScoreFactorFailed(error))
         }
@@ -305,4 +426,5 @@ enum StakingRebagConfirmError: Error {
     case fetchBagListNodeFailed(Error)
     case fetchLedgerInfoFailed(Error)
     case networkInfo(Error)
+    case submitFailed(Error)
 }
