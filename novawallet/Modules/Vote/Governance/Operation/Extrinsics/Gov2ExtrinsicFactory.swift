@@ -58,12 +58,12 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
 
     func delegationUpdate(
         with actions: [GovernanceDelegatorAction],
-        builder: ExtrinsicBuilderProtocol
-    ) throws -> ExtrinsicBuilderProtocol {
-        try actions.reduce(builder) { _, action in
+        splitter: ExtrinsicSplitting
+    ) throws -> ExtrinsicSplitting {
+        actions.reduce(splitter) { _, action in
             switch action.type {
             case let .delegate(model):
-                return try builder.adding(
+                return splitter.adding(
                     call: ConvictionVoting.DelegateCall(
                         track: Referenda.TrackId(action.trackId),
                         delegateAddress: .accoundId(action.delegateId),
@@ -72,7 +72,7 @@ final class Gov2ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
                     ).runtimeCall
                 )
             case .undelegate:
-                return try builder.adding(
+                return splitter.adding(
                     call: ConvictionVoting.UndelegateCall(
                         track: Referenda.TrackId(action.trackId)
                     ).runtimeCall
