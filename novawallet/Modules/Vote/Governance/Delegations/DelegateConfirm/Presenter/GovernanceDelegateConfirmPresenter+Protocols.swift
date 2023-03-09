@@ -91,8 +91,12 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
         view?.didStopLoading()
 
         let handlers = MultiExtrinsicResultActions(
-            onSuccess: { [weak self]
-                self?.wireframe.complete(on: self, locale: selectedLocale)
+            onSuccess: { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+
+                strongSelf.wireframe.complete(on: strongSelf.view, locale: strongSelf.selectedLocale)
             }, onErrorRetry: { [weak self] closure, indexes in
                 self?.view?.didStartLoading()
 
@@ -100,7 +104,7 @@ extension GovernanceDelegateConfirmPresenter: GovernanceDelegateConfirmInteracto
                     for: closure,
                     indexes: indexes
                 )
-            }, onErrorSkip: {
+            }, onErrorSkip: { [weak self] in
                 self?.wireframe.skip(on: self?.view)
             }
         )

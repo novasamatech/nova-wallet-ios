@@ -94,7 +94,7 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
         view?.didStopLoading()
 
         let handlers = MultiExtrinsicResultActions(
-            onSuccess: { [weak self]
+            onSuccess: { [weak self] in
                 self?.handleSuccessSubmission()
             }, onErrorRetry: { [weak self] closure, indexes in
                 self?.view?.didStartLoading()
@@ -103,7 +103,7 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
                     for: closure,
                     indexes: indexes
                 )
-            }, onErrorSkip: {
+            }, onErrorSkip: { [weak self] in
                 self?.wireframe.skip(on: self?.view)
             }
         )
