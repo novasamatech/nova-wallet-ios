@@ -57,6 +57,8 @@ struct StakingRebagConfirmViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
+
         let presenter = StakingRebagConfirmPresenter(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
@@ -64,6 +66,7 @@ struct StakingRebagConfirmViewFactory {
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: LocalizationManager.shared,
+            dataValidatingFactory: dataValidatingFactory,
             logger: Logger.shared
         )
 
