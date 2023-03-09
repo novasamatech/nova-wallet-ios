@@ -19,7 +19,8 @@ protocol GovernanceRevokeDelegationConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol GovernanceRevokeDelegationConfirmInteractorInputProtocol: GovernanceDelegateInteractorInputProtocol {
+protocol GovernanceRevokeDelegationConfirmInteractorInputProtocol: GovernanceDelegateInteractorInputProtocol,
+    MultiExtrinsicSubmitRetryInputProtocol {
     func submitRevoke(for tracks: Set<TrackIdLocal>)
 }
 
@@ -29,8 +30,8 @@ protocol GovernanceRevokeDelegationConfirmInteractorOutputProtocol: GovernanceDe
 }
 
 protocol GovernanceRevokeDelegationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
-    FeeRetryable, MessageSheetPresentable,
-    AddressOptionsPresentable, GovernanceErrorPresentable {
+    FeeRetryable, MessageSheetPresentable, AddressOptionsPresentable, GovernanceErrorPresentable,
+    MultiExtrinsicRetryable {
     func showTracks(
         from view: GovernanceRevokeDelegationConfirmViewProtocol?,
         tracks: [GovernanceTrackInfoLocal],
@@ -42,4 +43,6 @@ protocol GovernanceRevokeDelegationConfirmWireframeProtocol: AlertPresentable, E
         allRemoved: Bool,
         locale: Locale
     )
+
+    func skip(on view: GovernanceRevokeDelegationConfirmViewProtocol?)
 }

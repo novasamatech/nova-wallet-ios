@@ -11,18 +11,46 @@ final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
         return CompoundOperationWrapper.createWithResult(txHash)
     }
 
-    func submit(_ closure: @escaping ExtrinsicBuilderIndexedClosure, signer: SigningWrapperProtocol, numberOfExtrinsics: Int) -> CompoundOperationWrapper<[SubmitExtrinsicResult]> {
-        let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
+    func submit(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        signer: SigningWrapperProtocol,
+        indexes: IndexSet
+    ) -> CompoundOperationWrapper<SubmitIndexedExtrinsicResult> {
+        let results = indexes.map { index in
+            let txHash = Data(repeating: UInt8(index), count: 32).toHex(includePrefix: true)
 
-        return CompoundOperationWrapper.createWithResult([.success(txHash)])
+            return SubmitIndexedExtrinsicResult.IndexedResult(
+                index: index,
+                result: .success(txHash)
+            )
+        }
+
+        let submitResult = SubmitIndexedExtrinsicResult(builderClosure: closure, results: results)
+
+        return CompoundOperationWrapper.createWithResult(submitResult)
     }
 
-    func estimateFeeOperation(_ closure: @escaping ExtrinsicBuilderIndexedClosure, numberOfExtrinsics: Int) -> CompoundOperationWrapper<[FeeExtrinsicResult]> {
+    func estimateFeeOperation(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        indexes: IndexSet
+    ) -> CompoundOperationWrapper<FeeIndexedExtrinsicResult> {
         let dispatchInfo = RuntimeDispatchInfo(
             fee: "10000000000",
             weight: 10005000
         )
 
-        return CompoundOperationWrapper.createWithResult([.success(dispatchInfo)])
+        let results = indexes.map { index in
+            FeeIndexedExtrinsicResult.IndexedResult(
+                index: index,
+                result: .success(dispatchInfo)
+            )
+        }
+
+        let feeResult = FeeIndexedExtrinsicResult(
+            builderClosure: closure,
+            results: results
+        )
+
+        return CompoundOperationWrapper.createWithResult(feeResult)
     }
 }

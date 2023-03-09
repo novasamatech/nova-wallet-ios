@@ -81,26 +81,39 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
 }
 
 extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirmInteractorOutputProtocol {
+    private func handleSuccessSubmission() {
+        let selectedIds = Set(selectedTracks.map(\.trackId))
+        let currentsIds = Set((votesResult?.value?.votes.delegatings ?? [:]).keys)
+
+        let allRemoved = selectedIds == currentsIds
+
+        wireframe.complete(on: view, allRemoved: allRemoved, locale: selectedLocale)
+    }
+
     func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult) {
         view?.didStopLoading()
 
-        let errors = result.errors()
+        let handlers = MultiExtrinsicResultActions(
+            onSuccess: { [weak self]
+                self?.handleSuccessSubmission()
+            }, onErrorRetry: { [weak self] closure, indexes in
+                self?.view?.didStartLoading()
 
-        if errors.isEmpty {
-            let selectedIds = Set(selectedTracks.map(\.trackId))
-            let currentsIds = Set((votesResult?.value?.votes.delegatings ?? [:]).keys)
-
-            let allRemoved = selectedIds == currentsIds
-
-            wireframe.complete(on: view, allRemoved: allRemoved, locale: selectedLocale)
-        } else if let error = errors.first {
-            // TODO: Add retry logic
-            if error.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+                self?.interactor.retryMultiExtrinsic(
+                    for: closure,
+                    indexes: indexes
+                )
+            }, onErrorSkip: {
+                self?.wireframe.skip(on: self?.view)
             }
-        }
+        )
+
+        wireframe.presentMultiExtrinsicStatusFromResult(
+            on: view,
+            result: result,
+            locale: selectedLocale,
+            handlers: handlers
+        )
     }
 
     func didReceiveError(_ error: GovernanceRevokeDelegationInteractorError) {
@@ -110,11 +123,7 @@ extension GovRevokeDelegationConfirmPresenter: GovernanceRevokeDelegationConfirm
         case let .submitFailed(internalError):
             view?.didStopLoading()
 
-            if internalError.isWatchOnlySigning {
-                wireframe.presentDismissingNoSigningView(from: view)
-            } else {
-                _ = wireframe.present(error: internalError, from: view, locale: selectedLocale)
-            }
+            wireframe.presentNoSigningOrError(from: view, error: internalError, locale: selectedLocale)
         }
     }
 
