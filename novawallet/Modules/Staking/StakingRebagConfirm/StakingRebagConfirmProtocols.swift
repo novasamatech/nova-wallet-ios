@@ -9,6 +9,7 @@ protocol StakingRebagConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveHints(viewModel: [String])
     func didStartLoading()
     func didStopLoading()
+    func didReceiveConfirmState(isAvailable: Bool)
 }
 
 protocol StakingRebagConfirmPresenterProtocol: AnyObject {
@@ -19,17 +20,23 @@ protocol StakingRebagConfirmPresenterProtocol: AnyObject {
 
 protocol StakingRebagConfirmInteractorInputProtocol: AnyObject {
     func setup()
+    func refreshFee(stashItem: StashItem)
+    func submit(stashItem: StashItem)
 }
 
 protocol StakingRebagConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(assetBalance: AssetBalance?)
     func didReceive(fee: BigUInt?)
-    func didReceive(currentBag: (lowerBound: BigUInt, upperBound: BigUInt))
-    func didReceive(nextBag: (lowerBound: BigUInt, upperBound: BigUInt))
+    func didReceive(networkInfo: NetworkStakingInfo?)
+    func didReceive(currentBagListNode: BagList.Node?)
+    func didReceive(ledgerInfo: StakingLedger?)
+    func didReceive(totalIssuance: BigUInt?)
+    func didReceive(stashItem: StashItem?)
+
     func didReceive(error: StakingRebagConfirmError)
     func didSubmitRebag()
 }
 
 protocol StakingRebagConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable {}
+    AddressOptionsPresentable, StakingErrorPresentable {}
