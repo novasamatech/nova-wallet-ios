@@ -156,6 +156,7 @@ final class StakingRebagConfirmPresenter {
 extension StakingRebagConfirmPresenter: StakingRebagConfirmPresenterProtocol {
     func setup() {
         interactor.setup()
+        provideWalletViewModel()
         provideAccountViewModel()
         provideHintsViewModel()
         provideConfirmState()
@@ -239,7 +240,6 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
 
     func didReceive(assetBalance: AssetBalance?) {
         balance = assetBalance
-        provideWalletViewModel()
     }
 
     func didReceive(error: StakingRebagConfirmError) {
@@ -255,7 +255,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
              .fetchBagListScoreFactorFailed,
              .fetchBagListNodeFailed,
              .fetchLedgerInfoFailed,
-             .networkInfo:
+             .fetchNetworkInfoFailed:
             break
         case .fetchBalanceFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
