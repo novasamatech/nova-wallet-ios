@@ -31,7 +31,6 @@ final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, 
     private func applyStyle() {
         titleLabel.apply(style: .footnoteSecondary)
         delegateLabel.apply(style: .footnotePrimary)
-        delegateIconView.contentInsets = .zero
 
         rowContentView.valueView.mode = .detailsIcon
         rowContentView.valueView.detailsView.makeHorizontal()

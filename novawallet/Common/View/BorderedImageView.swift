@@ -72,6 +72,8 @@ extension BorderedImageView {
     ) {
         let radius = extractIconRadius(for: delegateType, height: targetSize.height)
 
+        hidesBorder = delegateType == nil
+
         bind(viewModel: viewModel, targetSize: targetSize, cornerRadius: radius)
     }
 }
