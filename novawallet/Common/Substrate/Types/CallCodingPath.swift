@@ -1,6 +1,6 @@
 import Foundation
 
-struct CallCodingPath: Equatable, Codable {
+struct CallCodingPath: Hashable, Codable {
     let moduleName: String
     let callName: String
 }
