@@ -619,6 +619,11 @@
 "staking.hint.reward.bond.more_v2_2_0" = "Вознаграждения увеличатся начиная со следующей эры";
 "staking.hint.no.rewards_ v2_2_0" = "Токены не приносят наград во время вывода";
 "staking.hint.redeem_v2_2_0" = "Не забудьте забрать токены после вывода";
+"staking.hint.rebag.confirm" = "Устаревшая позиция в очереди назначения стейка валидатору может приостановить получение вознаграждений";
+"staking.rebag.confirm.title" = "Улучшения стейкинга";
+"staking.rebag.confirm.new.bag.list" = "Новый слот очереди";
+"staking.rebag.confirm.current.bag.list" = "Текущий слот очереди";
+"staking.rebag.confirm.completion" = "Запрос на изменение слота очереди отправлен";
 "staking.pending.rewards.explanation.message_2_2_0" = "Вознаграждения выплачиваются валидаторами каждые 2–3 дня. Вы можете выплатить их самостоятельно, когда срок вознаграждения истекает, но в этом случае придётся заплатить комиссию";
 "staking.reward.payouts.empty.rewards_2_2_0" = "Замечательно! Все вознаграждения выплачены";
 "staking.your.allocated.description_2_2_0" = "Ваш стейк распределен между следующими валидаторами";
