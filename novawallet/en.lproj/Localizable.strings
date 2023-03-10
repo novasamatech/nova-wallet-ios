@@ -1131,7 +1131,7 @@
 "delegations.add.title" = "Add delegation";
 "delegations.title" = "Delegations";
 "delegations.info.title" = "Delegate Info";
-"delegations.info.voted.all" = "Voted referenda";
+"delegations.info.voted.all" = "Voted for all time";
 "in.app.updates.title" = "Update available";
 "in.app.updates.install.button.title" = "Install";
 "in.app.updates.banner.major.title" = "Major update";
@@ -1189,3 +1189,4 @@
 "common.multi.tx.error.title" = "Failed to submit some transactions";
 "common.multi.tx.error.no.details.message" = "There was an error while submitting some transactions (%@). Do you want to retry?";
 "common.multi.tx.error.has.details.message" = "There was an error while submitting some transactions (%@): %@. Do you want to retry?";
+"delegations.voted.referenda.title" = "Voted referenda";
