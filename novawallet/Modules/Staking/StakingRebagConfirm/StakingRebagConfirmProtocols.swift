@@ -21,6 +21,8 @@ protocol StakingRebagConfirmPresenterProtocol: AnyObject {
 protocol StakingRebagConfirmInteractorInputProtocol: AnyObject {
     func setup()
     func refreshFee(stashItem: StashItem)
+    func remakeStashItemSubscription()
+    func remakeAccountBalanceSubscription()
     func submit(stashItem: StashItem)
 }
 
@@ -39,4 +41,6 @@ protocol StakingRebagConfirmInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingRebagConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable, StakingErrorPresentable {}
+    AddressOptionsPresentable, StakingErrorPresentable, CommonRetryable, MessageSheetPresentable {
+    func complete(from view: StakingRebagConfirmViewProtocol?, locale: Locale)
+}

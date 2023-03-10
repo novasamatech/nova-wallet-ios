@@ -10,6 +10,7 @@ final class StakingRebagConfirmPresenter {
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let balanceWithoutTokenViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
 
     private var fee: BigUInt?
@@ -30,6 +31,7 @@ final class StakingRebagConfirmPresenter {
         interactor: StakingRebagConfirmInteractorInputProtocol,
         wireframe: StakingRebagConfirmWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        balanceWithoutTokenViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         logger: LoggerProtocol?
@@ -39,6 +41,7 @@ final class StakingRebagConfirmPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.balanceWithoutTokenViewModelFactory = balanceWithoutTokenViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
         self.localizationManager = localizationManager
@@ -79,9 +82,10 @@ final class StakingRebagConfirmPresenter {
         view?.didReceiveNetworkFee(viewModel: viewModel)
     }
 
-    // TODO: Lokalize
     private func provideHintsViewModel() {
-        let hint = "Having outdated position in the queue of stake assignment to a validator may suspend your rewards"
+        let hint = R.string.localizable.stakingHintRebagConfirm(
+            preferredLanguages: selectedLocale.rLanguages
+        )
         view?.didReceiveHints(viewModel: [
             hint
         ])
@@ -112,7 +116,7 @@ final class StakingRebagConfirmPresenter {
         view?.didReceiveCurrentRebag(viewModel: viewModel)
     }
 
-    private func provideNextBagList() {
+    private func provideNewBagList() {
         guard let ledgerInfo = ledgerInfo,
               let totalIssuance = totalIssuance,
               let networkInfo = networkInfo else {
@@ -133,7 +137,14 @@ final class StakingRebagConfirmPresenter {
             return ""
         }
 
-        return "\(lowerBoundDecimal)-\(upperBoundDecimal) \(chainAsset.assetDisplayInfo.symbol)"
+        let formattedLowerBound = balanceWithoutTokenViewModelFactory
+            .amountFromValue(lowerBoundDecimal)
+            .value(for: selectedLocale)
+        let formattedUpperBound = balanceViewModelFactory
+            .amountFromValue(upperBoundDecimal)
+            .value(for: selectedLocale)
+
+        return [formattedLowerBound, formattedUpperBound].joined(separator: "—")
     }
 
     private func provideConfirmState() {
@@ -177,8 +188,11 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmPresenterProtocol {
     }
 
     func selectAccount() {
+        let accountId = selectedAccount.chainAccount.accountId
+        let chainFormat = chainAsset.chain.chainFormat
+
         guard let view = view,
-              let address = try? selectedAccount.chainAccount.accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+              let address = try? accountId.toAddress(using: chainFormat) else {
             return
         }
 
@@ -195,7 +209,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
     func didReceive(networkInfo: NetworkStakingInfo?) {
         self.networkInfo = networkInfo
         provideCurrentBagList()
-        provideNextBagList()
+        provideNewBagList()
     }
 
     func didReceive(currentBagListNode: BagList.Node?) {
@@ -205,12 +219,12 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
 
     func didReceive(ledgerInfo: StakingLedger?) {
         self.ledgerInfo = ledgerInfo
-        provideNextBagList()
+        provideNewBagList()
     }
 
     func didReceive(totalIssuance: BigUInt?) {
         self.totalIssuance = totalIssuance
-        provideNextBagList()
+        provideNewBagList()
     }
 
     func didReceive(fee: BigUInt?) {
@@ -230,7 +244,38 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
 
     func didReceive(error: StakingRebagConfirmError) {
         logger?.error(error.localizedDescription)
-        view?.didStopLoading()
+
+        guard let view = view else {
+            return
+        }
+        view.didStopLoading()
+
+        switch error {
+        case .fetchPriceFailed, .fetchBagListScoreFactorFailed, .fetchBagListNodeFailed, .fetchLedgerInfoFailed, .networkInfo:
+            break
+        case .fetchBalanceFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeAccountBalanceSubscription()
+            }
+        case .fetchFeeFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                if let stashItem = self?.stashItem {
+                    self?.interactor.refreshFee(stashItem: stashItem)
+                }
+            }
+        case .fetchStashItemFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.remakeStashItemSubscription()
+            }
+        case let .submitFailed(error):
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else if error.isHardwareWalletSigningCancelled {
+                return
+            } else {
+                wireframe.presentExtrinsicFailed(from: view, locale: selectedLocale)
+            }
+        }
     }
 
     func didReceive(stashItem: StashItem?) {
@@ -240,6 +285,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
 
     func didSubmitRebag() {
         view?.didStopLoading()
+        wireframe.complete(from: view, locale: selectedLocale)
     }
 }
 
@@ -248,6 +294,8 @@ extension StakingRebagConfirmPresenter: Localizable {
         if view?.isSetup == true {
             provideFeeViewModel()
             provideHintsViewModel()
+            provideCurrentBagList()
+            provideNewBagList()
         }
     }
 }

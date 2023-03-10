@@ -17,7 +17,7 @@ final class StakingRebagConfirmViewLayout: UIView {
 
     let rebagSectionView = StackTableView()
     let currentBagList = StackTableCell()
-    let nextBagList = StackTableCell()
+    let newBagList = StackTableCell()
 
     let hintView = HintListView()
 
@@ -40,16 +40,16 @@ final class StakingRebagConfirmViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(containerView)
+        containerView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+
         addSubview(actionLoadableView)
         actionLoadableView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             $0.height.equalTo(UIConstants.actionHeight)
-        }
-
-        addSubview(containerView)
-        containerView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
         }
 
         containerView.stackView.addArrangedSubview(walletSectionView)
@@ -59,10 +59,22 @@ final class StakingRebagConfirmViewLayout: UIView {
         containerView.stackView.setCustomSpacing(8, after: walletSectionView)
 
         containerView.stackView.addArrangedSubview(rebagSectionView)
-        rebagSectionView.addArrangedSubview(currentBagList)
-        rebagSectionView.addArrangedSubview(nextBagList)
         containerView.stackView.setCustomSpacing(16, after: rebagSectionView)
-
         containerView.stackView.addArrangedSubview(hintView)
+    }
+
+    func didReceiveCurrentBagList(viewModel: String) {
+        if !rebagSectionView.stackView.arrangedSubviews.contains(currentBagList) {
+            rebagSectionView.insertArrangedSubview(currentBagList, at: 0)
+        }
+        currentBagList.bind(details: viewModel)
+    }
+
+    func didReceiveNewBagList(viewModel: String) {
+        if !rebagSectionView.stackView.arrangedSubviews.contains(newBagList) {
+            rebagSectionView.addArrangedSubview(newBagList)
+        }
+
+        newBagList.bind(details: viewModel)
     }
 }
