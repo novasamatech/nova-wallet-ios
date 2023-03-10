@@ -52,8 +52,8 @@ final class Gov1ExtrinsicFactory: GovernanceExtrinsicFactory, GovernanceExtrinsi
 
     func delegationUpdate(
         with _: [GovernanceDelegatorAction],
-        builder _: ExtrinsicBuilderProtocol
-    ) throws -> ExtrinsicBuilderProtocol {
+        splitter _: ExtrinsicSplitting
+    ) throws -> ExtrinsicSplitting {
         fatalError("Not supported")
     }
 }
