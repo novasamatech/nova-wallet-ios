@@ -51,7 +51,6 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
     private func createAssetsExistenceOperation(
         for extras: StatemineAssetExtras,
-        chainId _: ChainModel.Id,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
@@ -137,7 +136,6 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
             return createAssetsExistenceOperation(
                 for: extras,
-                chainId: chainId,
                 connection: connection,
                 runtimeService: runtimeService
             )
