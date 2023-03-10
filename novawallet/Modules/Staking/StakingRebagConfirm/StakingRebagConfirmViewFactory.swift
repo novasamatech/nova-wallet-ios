@@ -65,7 +65,7 @@ struct StakingRebagConfirmViewFactory {
             symbolPosition: .prefix,
             icon: nil
         )
-        let balanceWithoutTokenViewModelFactory = BalanceViewModelFactory(
+        let tokenlessBalanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
@@ -78,7 +78,7 @@ struct StakingRebagConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
-            balanceWithoutTokenViewModelFactory: balanceWithoutTokenViewModelFactory,
+            tokenlessBalanceViewModelFactory: tokenlessBalanceViewModelFactory,
             localizationManager: LocalizationManager.shared,
             dataValidatingFactory: dataValidatingFactory,
             logger: Logger.shared
