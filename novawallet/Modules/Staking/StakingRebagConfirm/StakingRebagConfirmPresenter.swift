@@ -10,7 +10,7 @@ final class StakingRebagConfirmPresenter {
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let balanceWithoutTokenViewModelFactory: BalanceViewModelFactoryProtocol
+    let tokenlessBalanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
 
     private var fee: BigUInt?
@@ -31,7 +31,7 @@ final class StakingRebagConfirmPresenter {
         interactor: StakingRebagConfirmInteractorInputProtocol,
         wireframe: StakingRebagConfirmWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        balanceWithoutTokenViewModelFactory: BalanceViewModelFactoryProtocol,
+        tokenlessBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         logger: LoggerProtocol?
@@ -41,7 +41,7 @@ final class StakingRebagConfirmPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.balanceWithoutTokenViewModelFactory = balanceWithoutTokenViewModelFactory
+        self.tokenlessBalanceViewModelFactory = tokenlessBalanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
         self.localizationManager = localizationManager
@@ -91,6 +91,52 @@ final class StakingRebagConfirmPresenter {
         ])
     }
 
+    private func provideCurrentBagListViewModel() {
+        guard let networkInfo = networkInfo, let currentBagListNode = currentBagListNode else {
+            return
+        }
+        let bag = networkInfo.searchBounds(for: currentBagListNode)
+        let viewModel = createAnyBagViewModel(bagListBounds: bag)
+
+        view?.didReceiveCurrentRebag(viewModel: viewModel)
+    }
+
+    private func provideNewBagListViewModel() {
+        guard let ledgerInfo = ledgerInfo,
+              let totalIssuance = totalIssuance,
+              let networkInfo = networkInfo else {
+            return
+        }
+
+        let bag = networkInfo.searchBounds(ledgerInfo: ledgerInfo, totalIssuance: totalIssuance)
+        let viewModel = createAnyBagViewModel(bagListBounds: bag)
+        view?.didReceiveNextRebag(viewModel: viewModel)
+    }
+
+    private func createAnyBagViewModel(bagListBounds: BagListBounds?) -> String {
+        guard let bagListBounds = bagListBounds else {
+            return ""
+        }
+        guard let lowerBoundDecimal = convertPlanksToDecimal(bagListBounds.lower),
+              let upperBoundDecimal = convertPlanksToDecimal(bagListBounds.upper) else {
+            return ""
+        }
+
+        let formattedLowerBound = tokenlessBalanceViewModelFactory
+            .amountFromValue(lowerBoundDecimal)
+            .value(for: selectedLocale)
+        let formattedUpperBound = balanceViewModelFactory
+            .amountFromValue(upperBoundDecimal)
+            .value(for: selectedLocale)
+
+        return [formattedLowerBound, formattedUpperBound].joined(separator: "—")
+    }
+
+    private func provideConfirmState() {
+        let isAvailable = stashItem != nil
+        view?.didReceiveConfirmState(isAvailable: isAvailable)
+    }
+
     private func convertPlanksToDecimal(_ value: BigUInt) -> Decimal? {
         Decimal.fromSubstrateAmount(
             value,
@@ -104,52 +150,6 @@ final class StakingRebagConfirmPresenter {
         }
 
         interactor.refreshFee(stashItem: stashItem)
-    }
-
-    private func provideCurrentBagList() {
-        guard let networkInfo = networkInfo, let currentBagListNode = currentBagListNode else {
-            return
-        }
-        let bag = networkInfo.searchBounds(for: currentBagListNode)
-        let viewModel = createViewModel(bagListBounds: bag)
-
-        view?.didReceiveCurrentRebag(viewModel: viewModel)
-    }
-
-    private func provideNewBagList() {
-        guard let ledgerInfo = ledgerInfo,
-              let totalIssuance = totalIssuance,
-              let networkInfo = networkInfo else {
-            return
-        }
-
-        let bag = networkInfo.searchBounds(ledgerInfo: ledgerInfo, totalIssuance: totalIssuance)
-        let viewModel = createViewModel(bagListBounds: bag)
-        view?.didReceiveNextRebag(viewModel: viewModel)
-    }
-
-    private func createViewModel(bagListBounds: BagListBounds?) -> String {
-        guard let bagListBounds = bagListBounds else {
-            return ""
-        }
-        guard let lowerBoundDecimal = convertPlanksToDecimal(bagListBounds.lower),
-              let upperBoundDecimal = convertPlanksToDecimal(bagListBounds.upper) else {
-            return ""
-        }
-
-        let formattedLowerBound = balanceWithoutTokenViewModelFactory
-            .amountFromValue(lowerBoundDecimal)
-            .value(for: selectedLocale)
-        let formattedUpperBound = balanceViewModelFactory
-            .amountFromValue(upperBoundDecimal)
-            .value(for: selectedLocale)
-
-        return [formattedLowerBound, formattedUpperBound].joined(separator: "—")
-    }
-
-    private func provideConfirmState() {
-        let isAvailable = stashItem != nil
-        view?.didReceiveConfirmState(isAvailable: isAvailable)
     }
 }
 
@@ -208,23 +208,23 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmPresenterProtocol {
 extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProtocol {
     func didReceive(networkInfo: NetworkStakingInfo?) {
         self.networkInfo = networkInfo
-        provideCurrentBagList()
-        provideNewBagList()
+        provideCurrentBagListViewModel()
+        provideNewBagListViewModel()
     }
 
     func didReceive(currentBagListNode: BagList.Node?) {
         self.currentBagListNode = currentBagListNode
-        provideCurrentBagList()
+        provideCurrentBagListViewModel()
     }
 
     func didReceive(ledgerInfo: StakingLedger?) {
         self.ledgerInfo = ledgerInfo
-        provideNewBagList()
+        provideNewBagListViewModel()
     }
 
     func didReceive(totalIssuance: BigUInt?) {
         self.totalIssuance = totalIssuance
-        provideNewBagList()
+        provideNewBagListViewModel()
     }
 
     func didReceive(fee: BigUInt?) {
@@ -251,7 +251,11 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
         view.didStopLoading()
 
         switch error {
-        case .fetchPriceFailed, .fetchBagListScoreFactorFailed, .fetchBagListNodeFailed, .fetchLedgerInfoFailed, .networkInfo:
+        case .fetchPriceFailed,
+             .fetchBagListScoreFactorFailed,
+             .fetchBagListNodeFailed,
+             .fetchLedgerInfoFailed,
+             .networkInfo:
             break
         case .fetchBalanceFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
@@ -294,8 +298,8 @@ extension StakingRebagConfirmPresenter: Localizable {
         if view?.isSetup == true {
             provideFeeViewModel()
             provideHintsViewModel()
-            provideCurrentBagList()
-            provideNewBagList()
+            provideCurrentBagListViewModel()
+            provideNewBagListViewModel()
         }
     }
 }
