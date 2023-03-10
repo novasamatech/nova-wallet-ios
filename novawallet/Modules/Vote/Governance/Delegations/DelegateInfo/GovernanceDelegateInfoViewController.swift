@@ -86,7 +86,7 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
             rootView.addProfileView(for: profile, locale: selectedLocale)
         }
 
-        let readMoreButton = rootView.addDescription(from: viewModel, locale: selectedLocale)
+        let readMoreButton = rootView.addDescription(from: viewModel, delegate: self, locale: selectedLocale)
         readMoreButton?.addTarget(self, action: #selector(actionReadMore), for: .touchUpInside)
 
         let addressView = rootView.addAddressView(for: viewModel.addressViewModel)
@@ -202,6 +202,12 @@ extension GovernanceDelegateInfoViewController: GovernanceDelegateInfoViewProtoc
                 }
             }
         }
+    }
+}
+
+extension GovernanceDelegateInfoViewController: MarkdownViewContainerDelegate {
+    func markdownView(_: MarkdownViewContainer, asksHandle url: URL) {
+        presenter.open(url: url)
     }
 }
 
