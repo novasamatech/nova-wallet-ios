@@ -4,7 +4,6 @@ import SoraUI
 final class GovernanceDelegateView: UIView {
     private enum Constants {
         static let iconSize = CGSize(width: 40, height: 40)
-        static var iconRadius: CGFloat { iconSize.height / 2 }
     }
 
     let nameLabel = UILabel(style: .regularSubhedlinePrimary, numberOfLines: 1)
@@ -21,11 +20,7 @@ final class GovernanceDelegateView: UIView {
     let lastVotesTitleLabel = UILabel(style: .caption2Secondary, numberOfLines: 0)
     let lastVotesValueLabel = UILabel(style: .footnotePrimary, numberOfLines: 1)
 
-    let avatarView: DAppIconView = .create {
-        $0.contentInsets = .zero
-    }
-
-    private var viewModel: Model?
+    let avatarView = BorderedImageView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -134,22 +129,11 @@ extension GovernanceDelegateView {
 
         typeView.locale = locale
 
-        self.viewModel?.addressViewModel.imageViewModel?.cancel(on: avatarView.imageView)
-
-        if let iconRadius = extractIconRadius(for: viewModel.type) {
-            viewModel.addressViewModel.imageViewModel?.loadImage(
-                on: avatarView.imageView,
-                targetSize: Constants.iconSize,
-                cornerRadius: iconRadius,
-                animated: true
-            )
-        } else {
-            viewModel.addressViewModel.imageViewModel?.loadImage(
-                on: avatarView.imageView,
-                targetSize: Constants.iconSize,
-                animated: true
-            )
-        }
+        avatarView.bind(
+            viewModel: viewModel.addressViewModel.imageViewModel,
+            targetSize: Constants.iconSize,
+            delegateType: viewModel.type
+        )
 
         nameLabel.lineBreakMode = viewModel.addressViewModel.lineBreakMode
         nameLabel.text = viewModel.addressViewModel.name ?? viewModel.addressViewModel.address
@@ -174,31 +158,20 @@ extension GovernanceDelegateView {
         } else {
             statsStack?.isHidden = true
         }
-
-        self.viewModel = viewModel
-    }
-
-    private func extractIconRadius(for type: GovernanceDelegateTypeView.Model?) -> CGFloat? {
-        switch type {
-        case .organization:
-            return nil
-        case .individual, .none:
-            return Constants.iconRadius
-        }
     }
 
     private func bind(type: GovernanceDelegateTypeView.Model?) {
         switch type {
         case .organization:
-            avatarView.backgroundView.apply(style: .roundedContainerWithShadow(radius: 8))
+            avatarView.hidesBorder = false
             typeStack?.isHidden = false
             typeView.bind(type: .organization)
         case .individual:
-            avatarView.backgroundView.apply(style: .clear)
+            avatarView.hidesBorder = false
             typeStack?.isHidden = false
             typeView.bind(type: .individual)
         case .none:
-            avatarView.backgroundView.apply(style: .clear)
+            avatarView.hidesBorder = true
             typeStack?.isHidden = true
         }
     }
