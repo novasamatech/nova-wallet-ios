@@ -6,6 +6,6 @@ enum StakingRebagConfirmError: Error {
     case fetchBagListScoreFactorFailed(Error)
     case fetchBagListNodeFailed(Error)
     case fetchLedgerInfoFailed(Error)
-    case networkInfo(Error)
+    case fetchNetworkInfoFailed(Error)
     case submitFailed(Error)
 }

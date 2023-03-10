@@ -172,37 +172,36 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         guard
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
             let eraValidatorService = eraValidatorService else {
-            presenter?.didReceive(error: .networkInfo(ChainRegistryError.runtimeMetadaUnavailable))
+            presenter?.didReceive(error: .fetchNetworkInfoFailed(ChainRegistryError.runtimeMetadaUnavailable))
             return
         }
-        
+
         let wrapper = networkInfoFactory.networkStakingOperation(
             for: eraValidatorService,
             runtimeService: runtimeService
         )
-        
+
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 guard self?.networkInfoCancellable === wrapper else {
                     return
                 }
-                
+
                 self?.networkInfoCancellable = nil
-                
+
                 do {
                     let info = try wrapper.targetOperation.extractNoCancellableResultData()
                     self?.presenter.didReceive(networkInfo: info)
                 } catch {
-                    self?.presenter?.didReceive(error: .networkInfo(error))
+                    self?.presenter?.didReceive(error: .fetchNetworkInfoFailed(error))
                 }
             }
         }
-        
+
         networkInfoCancellable = wrapper
-        
+
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
-}
 
     private func estimateFee(stashItem: StashItem?) {
         guard let extrinsicService = extrinsicService,
@@ -228,7 +227,8 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
         let rebagCall = callFactory.rebag(accountId: accountId)
 
-        extrinsicService.submit({ builder in
+        extrinsicService.submit(
+            { builder in
                 try builder.adding(call: rebagCall)
             },
             signer: signingWrapper,
