@@ -49,4 +49,8 @@ final class GovernanceDelegateConfirmWireframe: GovernanceDelegateConfirmWirefra
 
         presentSuccessNotification(title, from: presenter, completion: nil)
     }
+
+    func skip(on view: GovernanceDelegateConfirmViewProtocol?) {
+        view?.controller.navigationController?.popToRootViewController(animated: true)
+    }
 }

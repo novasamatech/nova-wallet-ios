@@ -6,7 +6,7 @@ struct PayoutsInfo {
     let payouts: [PayoutInfo]
 }
 
-struct PayoutInfo {
+struct PayoutInfo: Hashable {
     let era: EraIndex
     let validator: Data
     let reward: Decimal

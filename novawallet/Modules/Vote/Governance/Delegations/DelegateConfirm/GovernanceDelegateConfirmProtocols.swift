@@ -22,19 +22,20 @@ protocol GovernanceDelegateConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol GovernanceDelegateConfirmInteractorInputProtocol: GovernanceDelegateInteractorInputProtocol {
+protocol GovernanceDelegateConfirmInteractorInputProtocol: GovernanceDelegateInteractorInputProtocol,
+    MultiExtrinsicSubmitRetryInputProtocol {
     func submit(actions: [GovernanceDelegatorAction])
 }
 
 protocol GovernanceDelegateConfirmInteractorOutputProtocol: GovernanceDelegateInteractorOutputProtocol {
     func didReceiveLocks(_ locks: AssetLocks)
-    func didReceiveSubmissionHash(_ hash: String)
+    func didReceiveSubmissionResult(_ result: SubmitIndexedExtrinsicResult)
     func didReceiveError(_ error: GovernanceDelegateConfirmInteractorError)
 }
 
 protocol GovernanceDelegateConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable, FeeRetryable,
-    MessageSheetPresentable, AddressOptionsPresentable,
-    GovernanceErrorPresentable {
+    MessageSheetPresentable, AddressOptionsPresentable, GovernanceErrorPresentable, MultiExtrinsicRetryable {
     func showTracks(from view: GovernanceDelegateConfirmViewProtocol?, tracks: [GovernanceTrackInfoLocal])
     func complete(on view: GovernanceDelegateConfirmViewProtocol?, locale: Locale)
+    func skip(on view: GovernanceDelegateConfirmViewProtocol?)
 }
