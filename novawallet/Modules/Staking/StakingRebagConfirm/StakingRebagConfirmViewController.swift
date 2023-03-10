@@ -1,13 +1,18 @@
 import UIKit
+import SoraFoundation
 
 final class StakingRebagConfirmViewController: UIViewController, ViewHolder {
     typealias RootViewType = StakingRebagConfirmViewLayout
 
     let presenter: StakingRebagConfirmPresenterProtocol
 
-    init(presenter: StakingRebagConfirmPresenterProtocol) {
+    init(
+        presenter: StakingRebagConfirmPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -27,14 +32,14 @@ final class StakingRebagConfirmViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    // TODO: Localize
     private func setupLocalization() {
-        title = "Staking improvements"
-        rootView.walletCell.titleLabel.text = "Wallet"
-        rootView.accountCell.titleLabel.text = "Account"
-        rootView.currentBagList.titleLabel.text = "Current bag list"
-        rootView.nextBagList.titleLabel.text = "New bag list"
-        rootView.confirmButton.imageWithTitleView?.title = "Confirm"
+        let strings = R.string.localizable.self
+        title = strings.stakingRebagConfirmTitle(preferredLanguages: selectedLocale.rLanguages)
+        rootView.walletCell.titleLabel.text = strings.commonWallet(preferredLanguages: selectedLocale.rLanguages)
+        rootView.accountCell.titleLabel.text = strings.commonAccount(preferredLanguages: selectedLocale.rLanguages)
+        rootView.currentBagList.titleLabel.text = strings.stakingRebagConfirmCurrentBagList(preferredLanguages: selectedLocale.rLanguages)
+        rootView.newBagList.titleLabel.text = strings.stakingRebagConfirmNewBagList(preferredLanguages: selectedLocale.rLanguages)
+        rootView.confirmButton.imageWithTitleView?.title = strings.commonConfirm(preferredLanguages: selectedLocale.rLanguages)
     }
 
     private func setupHandlers() {
@@ -74,11 +79,11 @@ extension StakingRebagConfirmViewController: StakingRebagConfirmViewProtocol {
     }
 
     func didReceiveCurrentRebag(viewModel: String) {
-        rootView.currentBagList.bind(details: viewModel)
+        rootView.didReceiveCurrentBagList(viewModel: viewModel)
     }
 
     func didReceiveNextRebag(viewModel: String) {
-        rootView.nextBagList.bind(details: viewModel)
+        rootView.didReceiveNewBagList(viewModel: viewModel)
     }
 
     func didReceiveHints(viewModel: [String]) {
@@ -95,5 +100,13 @@ extension StakingRebagConfirmViewController: StakingRebagConfirmViewProtocol {
 
     func didStopLoading() {
         rootView.actionLoadableView.stopLoading()
+    }
+}
+
+extension StakingRebagConfirmViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }

@@ -19,6 +19,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
+    let callFactory: SubstrateCallFactoryProtocol
 
     private let operationManager: OperationManagerProtocol
 
@@ -26,7 +27,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var stashControllerProvider: StreamableProvider<StashItem>?
+    private var stashItemProvider: StreamableProvider<StashItem>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
@@ -47,6 +48,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
+        callFactory: SubstrateCallFactoryProtocol,
         operationManager: OperationManagerProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -63,6 +65,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.signingWrapperFactory = signingWrapperFactory
         self.accountRepositoryFactory = accountRepositoryFactory
+        self.callFactory = callFactory
         self.currencyManager = currencyManager
     }
 
@@ -108,13 +111,13 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         return try? stashItem.stash.toAccountId()
     }
 
-    private func subscribeStashControllerSubscription() {
+    private func subscribeStashItemSubscription() {
         guard let address = selectedAccount.chainAccount.toAddress() else {
             subscribeBagListNode(stashItem: nil)
             return
         }
 
-        stashControllerProvider = subscribeStashItemProvider(for: address)
+        stashItemProvider = subscribeStashItemProvider(for: address)
     }
 
     private func subscribeBagListNode(stashItem: StashItem?) {
@@ -206,38 +209,41 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
     private func estimateFee(stashItem: StashItem?) {
         guard let extrinsicService = extrinsicService,
-              let stashItem = stashItem,
-              let accountId = try? stashItem.identifier.toAccountId() else {
+              let accountId = stashAccountId(stashItem: stashItem) else {
             presenter.didReceive(error: .fetchFeeFailed(CommonError.undefined))
             return
         }
 
-        let rebagCall = BagList.RebagCall(dislocated: .accoundId(accountId))
-        let reuseIdentifier = rebagCall.runtimeCall.callName + rebagCall.extrinsicIdentifier
+        let rebagCall = callFactory.rebag(accountId: accountId)
+        let reuseIdentifier = rebagCall.callName + accountId.toHexString()
         feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { builder in
-            try builder.adding(call: rebagCall.runtimeCall)
+            try builder.adding(call: rebagCall)
         }
     }
 
     private func confirmRebag(stashItem: StashItem?) {
         guard let extrinsicService = extrinsicService,
               let signingWrapper = signingWrapper,
-              let stashItem = stashItem,
-              let accountId = try? stashItem.identifier.toAccountId() else {
+              let accountId = stashAccountId(stashItem: stashItem) else {
             presenter.didReceive(error: .submitFailed(CommonError.undefined))
             return
         }
 
-        let rebagCall = BagList.RebagCall(dislocated: .accoundId(accountId))
+        let rebagCall = callFactory.rebag(accountId: accountId)
 
         extrinsicService.submit(
             { builder in
-                try builder.adding(call: rebagCall.runtimeCall)
+                try builder.adding(call: rebagCall)
             },
             signer: signingWrapper,
             runningIn: .main,
-            completion: { [weak self] _ in
-                self?.presenter.didSubmitRebag()
+            completion: { [weak self] result in
+                switch result {
+                case .success:
+                    self?.presenter.didSubmitRebag()
+                case let .failure(error):
+                    self?.presenter.didReceive(error: .submitFailed(error))
+                }
             }
         )
     }
@@ -249,7 +255,7 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
         provideNetworkStakingInfo()
         subscribeAccountBalance()
         subscribePrice()
-        subscribeStashControllerSubscription()
+        subscribeStashItemSubscription()
         subscribeTotalIssuanceSubscription()
     }
 
@@ -259,6 +265,14 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
 
     func submit(stashItem: StashItem) {
         confirmRebag(stashItem: stashItem)
+    }
+
+    func remakeStashItemSubscription() {
+        subscribeStashItemSubscription()
+    }
+
+    func remakeAccountBalanceSubscription() {
+        subscribeAccountBalance()
     }
 }
 

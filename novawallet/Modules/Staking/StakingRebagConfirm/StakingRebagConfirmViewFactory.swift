@@ -44,15 +44,28 @@ struct StakingRebagConfirmViewFactory {
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: SigningWrapperFactory(),
             accountRepositoryFactory: accountRepositoryFactory,
+            callFactory: SubstrateCallFactory(),
             operationManager: OperationManagerFacade.sharedManager,
             currencyManager: currencyManager
         )
 
         let wireframe = StakingRebagConfirmWireframe()
 
-        let assetDisplayInfo = chainAsset.assetDisplayInfo
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
         let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let assetDisplayInfo = AssetBalanceDisplayInfo(
+            displayPrecision: chainAsset.assetDisplayInfo.displayPrecision,
+            assetPrecision: chainAsset.assetDisplayInfo.assetPrecision,
+            symbol: "",
+            symbolValueSeparator: "",
+            symbolPosition: .prefix,
+            icon: nil
+        )
+        let balanceWithoutTokenViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
@@ -65,12 +78,16 @@ struct StakingRebagConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
+            balanceWithoutTokenViewModelFactory: balanceWithoutTokenViewModelFactory,
             localizationManager: LocalizationManager.shared,
             dataValidatingFactory: dataValidatingFactory,
             logger: Logger.shared
         )
 
-        let view = StakingRebagConfirmViewController(presenter: presenter)
+        let view = StakingRebagConfirmViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
