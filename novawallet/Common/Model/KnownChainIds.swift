@@ -9,4 +9,7 @@ enum KnowChainId {
     static let edgeware = "742a2ca70c2fda6cee4f8df98d64c4c670a052d9568058982dad9d5a7a135c5b"
     static let karura = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
     static let nodle = "97da7ede98d7bad4e36b4d734b6055425a3be036da2a332ea5a7037656427a21"
+    static let polymesh = "6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063"
+    static let centrifuge = "b3db41421702df9a7fcac62b53ffeac85f7853cc4e689e0b93aeb3db18c09d82"
+    static let xxNetwork = "50dd5d206917bf10502c68fb4d18a59fc8aa31586f4e8856b493e43544aa82aa"
 }
