@@ -251,6 +251,27 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaPresenterProtoc
         view?.update(viewModels: loadingViewModel)
         interactor.setup()
     }
+
+    func selectReferendum(with referendumId: ReferendumIdLocal) {
+        guard let referendum = referendums?.first(where: { $0.index == referendumId }) else {
+            return
+        }
+
+        let details = ReferendumDetailsInitData(
+            referendum: referendum,
+            offchainVoting: nil,
+            blockNumber: blockNumber,
+            blockTime: blockTime,
+            metadata: referendumsMetadata?[referendumId],
+            accountVotes: offchainVotes?[referendumId],
+            votingAvailable: false
+        )
+
+        wireframe.showReferendumDetails(
+            from: view,
+            initData: details
+        )
+    }
 }
 
 extension DelegateVotedReferendaPresenter: CountdownTimerDelegate {
