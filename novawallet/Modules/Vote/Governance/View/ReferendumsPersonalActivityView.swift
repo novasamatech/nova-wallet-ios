@@ -60,7 +60,7 @@ extension ReferendumsPersonalActivityView {
         let strings = R.string.localizable.self
         switch viewModel {
         case .addDelegation:
-            titleLabel.text = strings.governanceReferendumsAddDelegation(preferredLanguages: locale.rLanguages)
+            titleLabel.text = strings.delegationsAddTitle(preferredLanguages: locale.rLanguages)
             titleView.sView.isHidden = true
         case let .delegations(total):
             titleLabel.text = strings.governanceReferendumsYourDelegations(preferredLanguages: locale.rLanguages)

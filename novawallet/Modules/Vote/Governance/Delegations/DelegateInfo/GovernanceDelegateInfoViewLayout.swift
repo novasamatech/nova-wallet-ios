@@ -190,7 +190,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         }
 
         let table = createStackTableView(
-            with: R.string.localizable.delegationsTitle(preferredLanguages: locale.rLanguages)
+            with: R.string.localizable.delegationsDelegations(preferredLanguages: locale.rLanguages)
         )
 
         if let identityTable = identityTable {
@@ -317,7 +317,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
             addDelegationButton = button
         }
 
-        addDelegationButton?.imageWithTitleView?.title = R.string.localizable.governanceReferendumsAddDelegation(
+        addDelegationButton?.imageWithTitleView?.title = R.string.localizable.delegationsAddTitle(
             preferredLanguages: locale.rLanguages
         )
 
