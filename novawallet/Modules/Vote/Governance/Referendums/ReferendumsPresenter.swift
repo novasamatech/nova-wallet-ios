@@ -245,13 +245,14 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
+        let accountVotes = voting?.value?.votes.votes[referendum.index]
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
-            votesResult: voting,
             offchainVoting: offchainVoting?.fetchVotes(for: referendum.index),
             blockNumber: blockNumber,
             blockTime: blockTime,
-            metadata: referendumsMetadata?[referendum.index]
+            metadata: referendumsMetadata?[referendum.index],
+            accountVotes: accountVotes
         )
 
         wireframe.showReferendumDetails(from: view, initData: initData)
