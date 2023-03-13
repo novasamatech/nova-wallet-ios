@@ -74,8 +74,14 @@ extension StakingRebagConfirmViewController: StakingRebagConfirmViewProtocol {
         rootView.accountCell.bind(viewModel: viewModel.cellViewModel)
     }
 
-    func didReceiveNetworkFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<BalanceViewModelProtocol?>) {
+        switch viewModel {
+        case .loading:
+            rootView.networkFeeCell.rowContentView.activityIndicator.startAnimating()
+        case let .cached(value), let .loaded(value):
+            rootView.networkFeeCell.rowContentView.activityIndicator.stopAnimating()
+            rootView.networkFeeCell.rowContentView.bind(viewModel: value)
+        }
     }
 
     func didReceiveCurrentRebag(viewModel: String) {
