@@ -163,7 +163,7 @@ final class DelegateVotedReferendaPresenter {
         switch option {
         case .allTimes:
             return LocalizableResource { locale in
-                R.string.localizable.delegationsInfoVotedAll(preferredLanguages: locale.rLanguages)
+                R.string.localizable.delegationsVotedReferendaTitle(preferredLanguages: locale.rLanguages)
             }
         case let .recent(days):
             return LocalizableResource { locale in
