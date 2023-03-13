@@ -18,13 +18,19 @@ enum BagList {
         @StringCodable var score: Score
     }
 
-    static let scoreDivider = BigUInt("18446744073709551615")
+    // Provided by chain (UInt64.max)
+    static let maxScore = BigUInt("18446744073709551615")
 
     static func scoreFactor(for totalIssuance: BigUInt) -> BigUInt {
-        max(totalIssuance / scoreDivider, BigUInt(1))
+        max(totalIssuance / maxScore, BigUInt(1))
     }
 
     static func scoreOf(stake: BigUInt, given factor: BigUInt) -> Score {
         stake / factor
+    }
+
+    static func scoreOf(stake: BigUInt, totalIssuance: BigUInt) -> Score {
+        let factor = scoreFactor(for: totalIssuance)
+        return scoreOf(stake: stake, given: factor)
     }
 }
