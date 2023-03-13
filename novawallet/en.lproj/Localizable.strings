@@ -339,6 +339,11 @@
 "staking.redeem.unbonded.tokens" = "Redeem unstaked tokens.";
 "staking.your.stake" = "Your stake";
 "staking.controller.account.zero.balance" = "We found that this account has no free tokens, are you sure that you want to change the controller?";
+"staking.hint.rebag.confirm" = "Having outdated position in the queue of stake assignment to a validator may suspend your rewards";
+"staking.rebag.confirm.title" = "Staking improvements";
+"staking.rebag.confirm.new.bag.list" = "New queue slot";
+"staking.rebag.confirm.current.bag.list" = "Current queue slot";
+"staking.rebag.confirm.completion" = "New queue slot request has been submitted";
 "wallet.send.balance.minimal" = "Minimal balance";
 "wallet.fee.over.existential.deposit" = "You should have funds to pay fee and remain above minimal balance.";
 "staking.your.allocated.description" = "Your stake is allocated to the following validators.";
