@@ -73,6 +73,8 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     }
 
     private func subscribePrice() {
+        clear(singleValueProvider: &priceProvider)
+
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
@@ -81,6 +83,8 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     }
 
     private func subscribeAccountBalance() {
+        clear(streamableProvider: &balanceProvider)
+
         balanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.chainAccount.accountId,
             chainId: chainAsset.chain.chainId,
@@ -115,6 +119,8 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     }
 
     private func subscribeStashItemSubscription() {
+        clear(streamableProvider: &stashItemProvider)
+
         guard let address = selectedAccount.chainAccount.toAddress() else {
             subscribeBagListNode(stashItem: nil)
             return
