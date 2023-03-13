@@ -94,7 +94,11 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         return view
     }
 
-    func addDescription(from viewModel: GovernanceDelegateInfoViewModel.Delegate, locale: Locale) -> RoundedButton? {
+    func addDescription(
+        from viewModel: GovernanceDelegateInfoViewModel.Delegate,
+        delegate: MarkdownViewContainerDelegate?,
+        locale: Locale
+    ) -> RoundedButton? {
         if
             let details = viewModel.details,
             descriptionView != nil,
@@ -102,18 +106,20 @@ final class GovernanceDelegateInfoViewLayout: UIView {
             readMoreButton != nil {
             // if structure doesn't change then reload text
             descriptionView?.load(from: details, completion: nil)
+            descriptionView?.delegate = delegate
 
             return readMoreButton
         } else {
             descriptionStackView?.removeFromSuperview()
             descriptionStackView = nil
 
-            return createDescription(from: viewModel, locale: locale)
+            return createDescription(from: viewModel, delegate: delegate, locale: locale)
         }
     }
 
     private func createDescription(
         from viewModel: GovernanceDelegateInfoViewModel.Delegate,
+        delegate: MarkdownViewContainerDelegate?,
         locale: Locale
     ) -> RoundedButton? {
         let optDescriptionView: MarkdownViewContainer?
@@ -130,6 +136,7 @@ final class GovernanceDelegateInfoViewLayout: UIView {
         }
 
         descriptionView = optDescriptionView
+        descriptionView?.delegate = delegate
 
         let optReadMoreButton: RoundedButton?
 

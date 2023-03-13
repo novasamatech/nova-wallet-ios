@@ -81,6 +81,10 @@ final class AddDelegationViewLayout: UIView {
                 make.height.equalTo(32)
             }
         }
+
+        bannerView.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(148)
+        }
     }
 }
 
