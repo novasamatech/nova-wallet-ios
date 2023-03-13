@@ -16,6 +16,7 @@ final class XcmTransferService {
     let operationQueue: OperationQueue
 
     private(set) lazy var xcmFactory = XcmTransferFactory()
+    private(set) lazy var metadataQueryFactory = XcmPalletMetadataQueryFactory()
 
     init(
         wallet: MetaAccountModel,
@@ -293,8 +294,8 @@ final class XcmTransferService {
                 let location = destinationAsset.location
 
                 return try Xcm.appendTransferCall(
-                    asset: asset,
-                    destination: location,
+                    asset: .V1(asset),
+                    destination: .V1(location),
                     weight: maxWeight,
                     module: module,
                     codingFactory: codingFactory
@@ -308,10 +309,25 @@ final class XcmTransferService {
                 dependencies: [coderFactoryOperation]
             )
         case .xcmpallet:
+            let multiassetsVersionWrapper = metadataQueryFactory.createLowestMultiassetsVersionWrapper(
+                for: runtimeProvider
+            )
+
+            let multilocationVersionWrapper = metadataQueryFactory.createLowestMultilocationVersionWrapper(
+                for: runtimeProvider
+            )
+
             let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
                 let module = try moduleResolutionOperation.extractNoCancellableResultData()
+                let multiAssetsVersion = try multiassetsVersionWrapper.targetOperation.extractNoCancellableResultData()
+                let multiLocationVersion = try multilocationVersionWrapper.targetOperation.extractNoCancellableResultData()
+
                 let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
-                let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
+                let assets = Xcm.VersionedMultiassets.versionedMultiassets(
+                    for: multiAssetsVersion,
+                    multiAssets: [destinationAsset.asset]
+                )
+
                 let call = Xcm.PalletTransferCall(
                     destination: destination,
                     beneficiary: beneficiary,
@@ -323,7 +339,12 @@ final class XcmTransferService {
                 return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
             }
 
-            return CompoundOperationWrapper(targetOperation: mapOperation)
+            mapOperation.addDependency(multiassetsVersionWrapper.targetOperation)
+            mapOperation.addDependency(multilocationVersionWrapper.targetOperation)
+
+            let dependencies = multiassetsVersionWrapper.allOperations + multilocationVersionWrapper.allOperations
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
         case .teleport:
             let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
                 let module = try moduleResolutionOperation.extractNoCancellableResultData()
