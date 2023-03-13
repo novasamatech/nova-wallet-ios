@@ -1,3 +1,5 @@
+import Foundation
+
 protocol GovernanceDelegateInfoViewProtocol: ControllerBackedProtocol {
     func didReceiveDelegate(viewModel: GovernanceDelegateInfoViewModel.Delegate)
     func didReceiveStats(viewModel: GovernanceDelegateInfoViewModel.Stats)
@@ -17,6 +19,7 @@ protocol GovernanceDelegateInfoPresenterProtocol: AnyObject {
     func editDelegation()
     func revokeDelegation()
     func showTracks()
+    func open(url: URL)
 }
 
 protocol GovernanceDelegateInfoInteractorInputProtocol: AnyObject {

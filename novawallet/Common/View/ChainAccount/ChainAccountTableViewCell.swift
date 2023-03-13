@@ -16,6 +16,8 @@ class ChainAccountTableViewCell: UITableViewCell {
         selectedBackgroundView.backgroundColor = R.color.colorCellBackgroundPressed()
         self.selectedBackgroundView = selectedBackgroundView
 
+        backgroundColor = .clear
+
         setupLayout()
     }
 
