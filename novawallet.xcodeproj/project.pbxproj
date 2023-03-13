@@ -984,6 +984,8 @@
 		8448F7A8288401A60080CEA9 /* AssetListInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448F7A7288401A60080CEA9 /* AssetListInitState.swift */; };
 		84490E7427F2CE2C00941837 /* TransferMetadataContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */; };
 		8449660A25E15ECA00F2E9F5 /* RewardDestinationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */; };
+		844A539529BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844A539429BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift */; };
+		844A539729BF606D00C77111 /* BlockchainWeightFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844A539629BF606D00C77111 /* BlockchainWeightFactory.swift */; };
 		844ADE7528CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */; };
 		844ADE7728CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7628CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift */; };
 		844ADE7928CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */; };
@@ -2743,8 +2745,8 @@
 		8E74A13BA73160F88B2B0948 /* AddDelegationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0492106F3E5C20019137E9AA /* AddDelegationViewController.swift */; };
 		8EECC23DA32547DAAFC260BE /* ParaStkStakeConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9925D7FC8A58695700B4A308 /* ParaStkStakeConfirmPresenter.swift */; };
 		8F131D86B269B7FAB96CF3B5 /* ParaStkYieldBoostStartWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98096689C3C8541FA585D179 /* ParaStkYieldBoostStartWireframe.swift */; };
-		8F97A52ED6D3703A90373387 /* GovernanceDelegateSearchWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB70DEB7250BAEC7BADAC59 /* GovernanceDelegateSearchWireframe.swift */; };
 		8F8842281718604DB9C30256 /* StakingRebagConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340D78F99A4FCDC04C012ED3 /* StakingRebagConfirmInteractor.swift */; };
+		8F97A52ED6D3703A90373387 /* GovernanceDelegateSearchWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB70DEB7250BAEC7BADAC59 /* GovernanceDelegateSearchWireframe.swift */; };
 		9081D43697D992F51E057ED2 /* CrowdloanContributionSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7068913923A6DEEE9D8EA0 /* CrowdloanContributionSetupPresenter.swift */; };
 		9097EE6D11E2E023D2637BE5 /* GovernanceUnlockSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9CC114CB6B28CDC59F99CF /* GovernanceUnlockSetupPresenter.swift */; };
 		90A3F46EF181DC2B821CC80C /* CrowdloanContributionConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F791FE1B479CE1DF936F79F /* CrowdloanContributionConfirmViewFactory.swift */; };
@@ -4353,6 +4355,8 @@
 		8448F7A7288401A60080CEA9 /* AssetListInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListInitState.swift; sourceTree = "<group>"; };
 		84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransferMetadataContext.swift; sourceTree = "<group>"; };
 		8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModel.swift; sourceTree = "<group>"; };
+		844A539429BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmPalletMetadataQueryFactory.swift; sourceTree = "<group>"; };
+		844A539629BF606D00C77111 /* BlockchainWeightFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainWeightFactory.swift; sourceTree = "<group>"; };
 		844ADE7428CA31BA00EE29F7 /* ParaStkYieldBoostPeriodViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkYieldBoostPeriodViewModel.swift; sourceTree = "<group>"; };
 		844ADE7628CA7F7100EE29F7 /* ParaStkYieldBoostSetupPresenter+ViewUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+ViewUpdate.swift"; sourceTree = "<group>"; };
 		844ADE7828CA7FCB00EE29F7 /* ParaStkYieldBoostSetupPresenter+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkYieldBoostSetupPresenter+Protocol.swift"; sourceTree = "<group>"; };
@@ -11820,6 +11824,7 @@
 				842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */,
 				8433B34929B63661005E5D0F /* ExtrinsicSplitter.swift */,
 				84FC190A29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift */,
+				844A539629BF606D00C77111 /* BlockchainWeightFactory.swift */,
 			);
 			path = Substrate;
 			sourceTree = "<group>";
@@ -13954,6 +13959,7 @@
 				84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */,
 				84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */,
 				84EBFCEF285E84C30006327E /* XcmMultiassetFilter.swift */,
+				844A539429BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -17233,6 +17239,7 @@
 				844ADE8028CB35EC00EE29F7 /* AutomationTimeCancelTask.swift in Sources */,
 				8422F2F02888193F00C7B840 /* UsernameViewModel+Handler.swift in Sources */,
 				8419377F25441D5E00CFA50C /* ReceiveHeaderView.swift in Sources */,
+				844A539729BF606D00C77111 /* BlockchainWeightFactory.swift in Sources */,
 				84452F5825D5C30600F47EC5 /* FilesRepository.swift in Sources */,
 				84B73AD2279B47700071AE16 /* AssetsBalanceUpdater.swift in Sources */,
 				F4871DF326D63E8700D27F23 /* AnalyticsRewardDetailsViewModelFactory.swift in Sources */,
@@ -18764,6 +18771,7 @@
 				9E4E458C92D12B24D5EAD893 /* ControllerAccountInteractor.swift in Sources */,
 				83A98B972B3EA69B357E5002 /* ControllerAccountViewController.swift in Sources */,
 				84329ED22832636F0020BC1C /* RoundCountdown.swift in Sources */,
+				844A539529BF54BA00C77111 /* XcmPalletMetadataQueryFactory.swift in Sources */,
 				84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */,
 				EB5F587A71CCE1F0F86154CF /* ControllerAccountViewFactory.swift in Sources */,
 				9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */,
