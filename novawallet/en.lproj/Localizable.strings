@@ -229,11 +229,8 @@
 "staking.recommended.custom.title" = "Choose custom validators ";
 "fee.not.yet.loaded.title" = "Fee calculation is in progress";
 "fee.not.yet.loaded.message" = "Please wait until fee is calculated";
-<<<<<<< HEAD
 "staking.setup.amount.too.low" = "You cannot stake less than the network minimum value (%@)";
-=======
-"staking.setup.amount.too.low" = "You cannot stake less than the network minimum value (%s)";
->>>>>>> develop
+
 "common.confirm.title" = "Confirmation";
 "staking.stash.title" = "Wallet account";
 "staking.setup.sent.message" = "Staking setup transaction sent";
@@ -336,11 +333,7 @@
 "staking.stash.can.hint" = "Stash can stake more and set the controller.";
 "staking.controller.can.hint" = "Controller can unstake, redeem, return to stake, change rewards destination and validators.";
 "staking.switch.account.to.stash" = "Switch your account to stash to set the controller.";
-<<<<<<< HEAD
 "staking.inactive.current.minimal.stake" = "Your stake is less then minimum of %@.\nHaving stake less than minimum increases chances of staking to not generate rewards";
-=======
-"staking.inactive.current.minimal.stake" = "Your stake is less then minimum of %s.\nHaving stake less than minimum increases chances of staking to not generate rewards";
->>>>>>> develop
 "staking.change.your.validators" = "Change your validators.";
 "staking.bond.more.tokens" = "Stake more tokens.";
 "staking.redeem.unbonded.tokens" = "Redeem unstaked tokens.";

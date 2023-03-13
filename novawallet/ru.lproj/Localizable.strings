@@ -229,7 +229,7 @@
 "staking.recommended.custom.title" = "Выбрать других валидаторов";
 "fee.not.yet.loaded.title" = "Расчет комиссии в процессе";
 "fee.not.yet.loaded.message" = "Подождите, пока будет рассчитана комиссия";
-"staking.setup.amount.too.low" = "Вы не можете застейкать меньше минимального значения сети (%s)";
+"staking.setup.amount.too.low" = "Вы не можете застейкать меньше минимального значения сети (%@)";
 "common.confirm.title" = "Подтверждение";
 "staking.stash.title" = "Аккаунт";
 "staking.setup.sent.message" = "Транзакция на установку стейкинга отправлена";
@@ -332,11 +332,7 @@
 "staking.stash.can.hint" = "С помощью стэш аккаунта можно застейкать больше и установить контроллер аккаунт";
 "staking.controller.can.hint" = "Контроллер аккаунт может вывести из стейка, забрать, вернуть в стейк, сменить назначение вознаграждений и валидаторов.";
 "staking.switch.account.to.stash" = "Для установки контроллер аккаунта смените аккаунт на стэш.";
-<<<<<<< HEAD
 "staking.inactive.current.minimal.stake" = "Ваш стейк меньше минимального %@.\nДанная ситуация увеличивает шанс не получить награды за стейкинг.";
-=======
-"staking.inactive.current.minimal.stake" = "Ваш стейк меньше минимума %s.\nСтейк меньше минимума, уменьшает шансы получить вознаграждение";
->>>>>>> develop
 "staking.change.your.validators" = "Смените своих валидаторов.";
 "staking.bond.more.tokens" = "Застейкайте ещё токенов";
 "staking.redeem.unbonded.tokens" = "Заберите токены после вывода";
