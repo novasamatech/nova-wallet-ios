@@ -25,12 +25,12 @@ extension NetworkStakingInfo {
         let lowerBound: BigUInt
         let upperBound: BigUInt
 
-        if let targetTresholdIndex = votersInfo.bagsThresholds.firstIndex(where: { $0 > score }) {
+        if let targetTresholdIndex = votersInfo.bagsThresholds.firstIndex(where: { $0 >= score }) {
             lowerBound = votersInfo.bagsThresholds[safe: targetTresholdIndex - 1] ?? 0
             upperBound = votersInfo.bagsThresholds[targetTresholdIndex]
         } else {
             lowerBound = votersInfo.bagsThresholds.last ?? 0
-            upperBound = BigUInt(UInt64.max)
+            upperBound = BagList.maxScore
         }
 
         return .init(lower: lowerBound, upper: upperBound)
