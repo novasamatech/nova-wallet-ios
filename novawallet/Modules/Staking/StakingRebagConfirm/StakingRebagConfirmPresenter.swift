@@ -254,11 +254,15 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
         case .fetchPriceFailed,
              .fetchBagListScoreFactorFailed,
              .fetchBagListNodeFailed,
-             .fetchLedgerInfoFailed:
-            break
-        case .fetchBalanceFailed, .fetchStashItemFailed, .fetchNetworkInfoFailed:
+             .fetchLedgerInfoFailed,
+             .fetchBalanceFailed,
+             .fetchStashItemFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
+            }
+        case .fetchNetworkInfoFailed:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryNetworkInfo()
             }
         case .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
