@@ -1170,7 +1170,7 @@
 "gov.revoke.delegation.confirm.hint" = "После истечения периода выхода из делегации не забудьте разблокировать токены";
 "governance.abstain" = "Воздержался";
 "delegations.sort.delegations" = "Делегациям";
-"delegations.sort.delegatedVotes" = "Всем голосам";
+"delegations.sort.delegatedVotes" = "Голосам делегаторов";
 "delegations.sort.lastVoted" = "Голосам за %@";
 "delegations.show.title" = "Показывать";
 "delegations.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелек, чтобы иметь возможность делегировать";
