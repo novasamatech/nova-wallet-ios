@@ -51,7 +51,7 @@ final class GovernanceYourDelegationsViewController: UIViewController, ViewHolde
         )
 
         rootView.addDelegationButton.imageWithTitleView?.title = R.string.localizable
-            .governanceReferendumsAddDelegation(
+            .delegationsAddTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )
     }

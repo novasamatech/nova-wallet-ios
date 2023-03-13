@@ -417,9 +417,8 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                 self?.refreshUnlockSchedule()
             }
         case .offchainVotingFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryOffchainVotingFetch()
-            }
+            // we don't bother user with offchain retry and wait next block
+            break
         }
     }
 }
