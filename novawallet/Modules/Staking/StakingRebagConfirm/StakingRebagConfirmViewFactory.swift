@@ -47,7 +47,7 @@ struct StakingRebagConfirmViewFactory {
             signingWrapperFactory: SigningWrapperFactory(),
             accountRepositoryFactory: accountRepositoryFactory,
             callFactory: SubstrateCallFactory(),
-            operationQueue: OperationQueue(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
 
