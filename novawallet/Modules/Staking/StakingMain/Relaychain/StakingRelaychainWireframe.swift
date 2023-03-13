@@ -155,7 +155,6 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         guard let rebagConfirmView = StakingRebagConfirmViewFactory.createView(with: state) else {
             return
         }
-        rebagConfirmView.controller.hidesBottomBarWhenPushed = true
         let navigationController = FearlessNavigationController(rootViewController: rebagConfirmView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
