@@ -9,8 +9,9 @@ final class StakingRebagConfirmPresenter {
     let logger: LoggerProtocol?
     let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let tokenlessBalanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let displayFormatter: LocalizableResource<LocalizableDecimalFormatting>
+    let tokenFormatter: LocalizableResource<TokenFormatter>
+    let balanceViewModelFactory: BalanceViewModelFactory
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
 
     private var fee: BigUInt?
@@ -30,8 +31,9 @@ final class StakingRebagConfirmPresenter {
         selectedAccount: MetaChainAccountResponse,
         interactor: StakingRebagConfirmInteractorInputProtocol,
         wireframe: StakingRebagConfirmWireframeProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        tokenlessBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        displayFormatter: LocalizableResource<LocalizableDecimalFormatting>,
+        tokenFormatter: LocalizableResource<TokenFormatter>,
+        balanceViewModelFactory: BalanceViewModelFactory,
         localizationManager: LocalizationManagerProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         logger: LoggerProtocol?
@@ -40,8 +42,9 @@ final class StakingRebagConfirmPresenter {
         self.chainAsset = chainAsset
         self.interactor = interactor
         self.wireframe = wireframe
+        self.displayFormatter = displayFormatter
+        self.tokenFormatter = tokenFormatter
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.tokenlessBalanceViewModelFactory = tokenlessBalanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
         self.localizationManager = localizationManager
@@ -122,14 +125,16 @@ final class StakingRebagConfirmPresenter {
             return ""
         }
 
-        let formattedLowerBound = tokenlessBalanceViewModelFactory
-            .amountFromValue(lowerBoundDecimal)
+        let formattedLowerBound = displayFormatter
             .value(for: selectedLocale)
-        let formattedUpperBound = balanceViewModelFactory
-            .amountFromValue(upperBoundDecimal)
+            .stringFromDecimal(lowerBoundDecimal)
+        let formattedUpperBound = tokenFormatter
             .value(for: selectedLocale)
+            .stringFromDecimal(upperBoundDecimal)
 
-        return [formattedLowerBound, formattedUpperBound].joined(separator: "—")
+        return [formattedLowerBound, formattedUpperBound]
+            .compactMap { $0 }
+            .joined(separator: "—")
     }
 
     private func provideConfirmState() {
