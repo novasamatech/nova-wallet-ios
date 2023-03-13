@@ -3,7 +3,7 @@ import BigInt
 protocol StakingRebagConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: DisplayWalletViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
-    func didReceiveNetworkFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveNetworkFee(viewModel: LoadableViewModelState<BalanceViewModelProtocol?>)
     func didReceiveCurrentRebag(viewModel: String)
     func didReceiveNextRebag(viewModel: String)
     func didReceiveHints(viewModel: [String])
