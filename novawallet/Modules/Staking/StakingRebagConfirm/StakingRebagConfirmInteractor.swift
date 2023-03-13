@@ -240,16 +240,20 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             }
         )
     }
+
+    private func makeSubscriptions() {
+        subscribeAccountBalance()
+        subscribePrice()
+        subscribeStashItemSubscription()
+        subscribeTotalIssuanceSubscription()
+    }
 }
 
 extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProtocol {
     func setup() {
         feeProxy.delegate = self
         provideNetworkStakingInfo()
-        subscribeAccountBalance()
-        subscribePrice()
-        subscribeStashItemSubscription()
-        subscribeTotalIssuanceSubscription()
+        makeSubscriptions()
     }
 
     func refreshFee(stashItem: StashItem) {
@@ -261,8 +265,10 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
     }
 
     func remakeSubscriptions() {
-        subscribeStashItemSubscription()
-        subscribeAccountBalance()
+        makeSubscriptions()
+    }
+
+    func retryNetworkInfo() {
         provideNetworkStakingInfo()
     }
 }
