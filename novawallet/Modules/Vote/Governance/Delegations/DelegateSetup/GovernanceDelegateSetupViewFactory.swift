@@ -9,7 +9,7 @@ struct GovernanceDelegateSetupViewFactory {
         delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateSetupViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.governanceReferendumsAddDelegation(
+            R.string.localizable.delegationsAddTitle(
                 preferredLanguages: locale.rLanguages
             )
         }
@@ -170,12 +170,11 @@ struct GovernanceDelegateSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
+            chainRegistry: state.chainRegistry,
             currencyManager: currencyManager,
             extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
-            feeProxy: ExtrinsicFeeProxy(),
+            feeProxy: MultiExtrinsicFeeProxy(),
             lockStateFactory: lockStateFactory,
             operationQueue: operationQueue
         )

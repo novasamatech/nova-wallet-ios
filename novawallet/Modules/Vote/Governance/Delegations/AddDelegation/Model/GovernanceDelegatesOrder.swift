@@ -28,14 +28,25 @@ extension GovernanceDelegatesOrder {
 }
 
 extension GovernanceDelegatesOrder {
+    func isSame(_ delegate1: GovernanceDelegateLocal, delegate2: GovernanceDelegateLocal) -> Bool {
+        switch self {
+        case .delegatedVotes:
+            return delegate1.stats.delegatedVotes == delegate2.stats.delegatedVotes
+        case .delegations:
+            return delegate1.stats.delegationsCount == delegate2.stats.delegationsCount
+        case .lastVoted:
+            return delegate1.stats.recentVotes == delegate2.stats.recentVotes
+        }
+    }
+
     func isDescending(_ delegate1: GovernanceDelegateLocal, delegate2: GovernanceDelegateLocal) -> Bool {
         switch self {
         case .delegatedVotes:
-            return delegate1.stats.delegatedVotes >= delegate2.stats.delegatedVotes
+            return delegate1.stats.delegatedVotes > delegate2.stats.delegatedVotes
         case .delegations:
-            return delegate1.stats.delegationsCount >= delegate2.stats.delegationsCount
+            return delegate1.stats.delegationsCount > delegate2.stats.delegationsCount
         case .lastVoted:
-            return delegate1.stats.recentVotes >= delegate2.stats.recentVotes
+            return delegate1.stats.recentVotes > delegate2.stats.recentVotes
         }
     }
 }

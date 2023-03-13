@@ -163,7 +163,7 @@ final class DelegateVotedReferendaPresenter {
         switch option {
         case .allTimes:
             return LocalizableResource { locale in
-                R.string.localizable.delegationsInfoVotedAll(preferredLanguages: locale.rLanguages)
+                R.string.localizable.delegationsVotedReferendaTitle(preferredLanguages: locale.rLanguages)
             }
         case let .recent(days):
             return LocalizableResource { locale in
@@ -250,6 +250,27 @@ extension DelegateVotedReferendaPresenter: DelegateVotedReferendaPresenterProtoc
         view?.update(title: title)
         view?.update(viewModels: loadingViewModel)
         interactor.setup()
+    }
+
+    func selectReferendum(with referendumId: ReferendumIdLocal) {
+        guard let referendum = referendums?.first(where: { $0.index == referendumId }) else {
+            return
+        }
+
+        let details = ReferendumDetailsInitData(
+            referendum: referendum,
+            offchainVoting: nil,
+            blockNumber: blockNumber,
+            blockTime: blockTime,
+            metadata: referendumsMetadata?[referendumId],
+            accountVotes: offchainVotes?[referendumId],
+            votingAvailable: false
+        )
+
+        wireframe.showReferendumDetails(
+            from: view,
+            initData: details
+        )
     }
 }
 

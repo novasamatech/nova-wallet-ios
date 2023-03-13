@@ -1,6 +1,6 @@
 import UIKit
 
-typealias GovernanceDelegateCellValueView = IconDetailsGenericView<GenericPairValueView<DAppIconView, UILabel>>
+typealias GovernanceDelegateCellValueView = IconDetailsGenericView<GenericPairValueView<BorderedImageView, UILabel>>
 
 final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, GovernanceDelegateCellValueView>> {
     var titleLabel: UILabel {
@@ -11,7 +11,7 @@ final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, 
         rowContentView.valueView.detailsView.sView
     }
 
-    var delegateIconView: DAppIconView {
+    var delegateIconView: BorderedImageView {
         rowContentView.valueView.detailsView.fView
     }
 
@@ -31,7 +31,6 @@ final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, 
     private func applyStyle() {
         titleLabel.apply(style: .footnoteSecondary)
         delegateLabel.apply(style: .footnotePrimary)
-        delegateIconView.contentInsets = .zero
 
         rowContentView.valueView.mode = .detailsIcon
         rowContentView.valueView.detailsView.makeHorizontal()
@@ -55,26 +54,13 @@ final class GovernanceDelegateStackCell: RowView<GenericTitleValueView<UILabel, 
 
         delegateLabel.text = cellViewModel.details
 
-        switch viewModel.type {
-        case .individual, .none:
-            delegateIconView.backgroundView.apply(style: .clear)
+        delegateIconView.hidesBorder = viewModel.type == nil
 
-            cellViewModel.imageViewModel?.loadImage(
-                on: delegateIconView.imageView,
-                targetSize: iconSize,
-                cornerRadius: iconSize.height / 2.0,
-                animated: true
-            )
-        case .organization:
-            let iconRadius = floor(iconSize.height / 5.0)
-            delegateIconView.backgroundView.apply(style: .roundedContainerWithShadow(radius: iconRadius))
-
-            cellViewModel.imageViewModel?.loadImage(
-                on: delegateIconView.imageView,
-                targetSize: iconSize,
-                animated: true
-            )
-        }
+        delegateIconView.bind(
+            viewModel: cellViewModel.imageViewModel,
+            targetSize: iconSize,
+            delegateType: viewModel.type
+        )
     }
 }
 
