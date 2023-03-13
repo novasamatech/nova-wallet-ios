@@ -245,13 +245,14 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
+        let accountVotes = voting?.value?.votes.votes[referendum.index]
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
-            votesResult: voting,
             offchainVoting: offchainVoting?.fetchVotes(for: referendum.index),
             blockNumber: blockNumber,
             blockTime: blockTime,
-            metadata: referendumsMetadata?[referendum.index]
+            metadata: referendumsMetadata?[referendum.index],
+            accountVotes: accountVotes
         )
 
         wireframe.showReferendumDetails(from: view, initData: initData)
@@ -416,9 +417,8 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
                 self?.refreshUnlockSchedule()
             }
         case .offchainVotingFetchFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.retryOffchainVotingFetch()
-            }
+            // we don't bother user with offchain retry and wait next block
+            break
         }
     }
 }

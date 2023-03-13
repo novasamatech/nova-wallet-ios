@@ -8,6 +8,7 @@ final class DelegationReferendumVotersPresenter {
     let viewModelFactory: DelegationReferendumVotersViewModelFactoryProtocol
     let votersType: ReferendumVotersType
     let chain: ChainModel
+    let logger: LoggerProtocol
 
     private var voters: ReferendumVoterLocals?
 
@@ -17,13 +18,15 @@ final class DelegationReferendumVotersPresenter {
         viewModelFactory: DelegationReferendumVotersViewModelFactoryProtocol,
         votersType: ReferendumVotersType,
         chain: ChainModel,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.votersType = votersType
         self.chain = chain
+        self.logger = logger
         self.localizationManager = localizationManager
     }
 
@@ -80,6 +83,8 @@ extension DelegationReferendumVotersPresenter: DelegationReferendumVotersPresent
 
 extension DelegationReferendumVotersPresenter: DelegationReferendumVotersInteractorOutputProtocol {
     func didReceive(error: DelegationReferendumVotersError) {
+        logger.error("Did receive error: \(error)")
+
         switch error {
         case .fetchFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

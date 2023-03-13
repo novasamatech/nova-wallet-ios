@@ -12,14 +12,13 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
-    let feeProxy: ExtrinsicFeeProxyProtocol
+    let feeProxy: MultiExtrinsicFeeProxyProtocol
     let extrinsicFactory: GovernanceExtrinsicFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
     let lockStateFactory: GovernanceLockStateFactoryProtocol
-    let connection: JSONRPCEngine
-    let runtimeProvider: RuntimeProviderProtocol
+    let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -38,12 +37,11 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
+        chainRegistry: ChainRegistryProtocol,
         currencyManager: CurrencyManagerProtocol,
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
+        feeProxy: MultiExtrinsicFeeProxyProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         operationQueue: OperationQueue
     ) {
@@ -52,8 +50,7 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
-        self.connection = connection
-        self.runtimeProvider = runtimeProvider
+        self.chainRegistry = chainRegistry
         self.referendumsSubscriptionFactory = referendumsSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -84,6 +81,11 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
 
     private func provideBlockTime() {
         guard blockTimeCancellable == nil else {
+            return
+        }
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            basePresenter?.didReceiveBaseError(.blockTimeFailed(ChainRegistryError.runtimeMetadaUnavailable))
             return
         }
 
@@ -168,19 +170,9 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
         subscribeAccountVotes()
     }
 
-    func createExtrinsicBuilderClosure(
-        for actions: [GovernanceDelegatorAction]
-    ) -> ExtrinsicBuilderClosure {
-        { [weak self] builder in
-            guard let strongSelf = self else {
-                return builder
-            }
-
-            return try strongSelf.extrinsicFactory.delegationUpdate(
-                with: actions,
-                builder: builder
-            )
-        }
+    func createExtrinsicSplitter(for actions: [GovernanceDelegatorAction]) throws -> ExtrinsicSplitting {
+        let splitter = ExtrinsicSplitter(chain: chain, chainRegistry: chainRegistry)
+        return try extrinsicFactory.delegationUpdate(with: actions, splitter: splitter)
     }
 
     func setup() {
@@ -203,15 +195,19 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
 
 extension GovernanceDelegateInteractor {
     func estimateFee(for actions: [GovernanceDelegatorAction]) {
-        let reuseIdentifier = "\(actions.hashValue)"
+        do {
+            let reuseIdentifier = "\(actions.hashValue)"
 
-        let closure = createExtrinsicBuilderClosure(for: actions)
+            let splitter = try createExtrinsicSplitter(for: actions)
 
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: reuseIdentifier,
-            setupBy: closure
-        )
+            feeProxy.estimateFee(
+                from: splitter,
+                service: extrinsicService,
+                reuseIdentifier: reuseIdentifier
+            )
+        } catch {
+            basePresenter?.didReceiveBaseError(.feeFailed(error))
+        }
     }
 
     func refreshDelegateStateDiff(
@@ -219,6 +215,11 @@ extension GovernanceDelegateInteractor {
         newDelegation: GovernanceNewDelegation
     ) {
         clear(cancellable: &lockDiffCancellable)
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            basePresenter?.didReceiveBaseError(.stateDiffFailed(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
 
         let wrapper = lockStateFactory.calculateDelegateStateDiff(
             for: trackVoting,
@@ -280,13 +281,11 @@ extension GovernanceDelegateInteractor: PriceLocalSubscriptionHandler, PriceLoca
     }
 }
 
-extension GovernanceDelegateInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: TransactionFeeId) {
+extension GovernanceDelegateInteractor: MultiExtrinsicFeeProxyDelegate {
+    func didReceiveTotalFee(result: Result<BigUInt, Error>, for _: TransactionFeeId) {
         switch result {
-        case let .success(dispatchInfo):
-            if let fee = BigUInt(dispatchInfo.fee) {
-                basePresenter?.didReceiveFee(fee)
-            }
+        case let .success(fee):
+            basePresenter?.didReceiveFee(fee)
         case let .failure(error):
             basePresenter?.didReceiveBaseError(.feeFailed(error))
         }

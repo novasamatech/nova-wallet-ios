@@ -137,6 +137,14 @@ extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoPresenterProtoc
 
         wireframe.showTracks(from: view, tracks: tracks, delegations: delegatings)
     }
+
+    func open(url: URL) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
 }
 
 extension GovernanceDelegateInfoPresenter: GovernanceDelegateInfoInteractorOutputProtocol {

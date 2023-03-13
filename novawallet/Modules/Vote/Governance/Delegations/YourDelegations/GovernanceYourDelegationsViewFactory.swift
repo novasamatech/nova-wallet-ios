@@ -70,6 +70,7 @@ struct GovernanceYourDelegationsViewFactory {
             blockTimeFactory: BlockTimeOperationFactory(chain: chain),
             connection: connection,
             runtimeService: runtimeService,
+            govJsonProviderFactory: JsonDataProviderFactory.shared,
             operationQueue: state.operationQueue
         )
     }

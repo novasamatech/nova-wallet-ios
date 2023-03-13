@@ -62,4 +62,8 @@ final class GovRevokeDelegationConfirmWireframe: GovernanceRevokeDelegationConfi
 
         presentSuccessNotification(title, from: presenter, completion: nil)
     }
+
+    func skip(on view: GovernanceRevokeDelegationConfirmViewProtocol?) {
+        view?.controller.navigationController?.popToRootViewController(animated: true)
+    }
 }

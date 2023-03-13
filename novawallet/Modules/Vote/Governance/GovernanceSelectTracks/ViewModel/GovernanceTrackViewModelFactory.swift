@@ -65,7 +65,7 @@ extension GovernanceTrackViewModelFactory: GovernanceTrackViewModelFactoryProtoc
                 from: NSNumber(value: tracks.count - 1)
             )
 
-            let details = R.string.localizable.govRemoveVotesTracksFormat(
+            let details = R.string.localizable.commonMoreFormat(
                 trackName,
                 otherTracks ?? "",
                 preferredLanguages: locale.rLanguages

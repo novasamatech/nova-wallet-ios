@@ -26,12 +26,11 @@ final class GovRevokeDelegationConfirmInteractor: GovernanceDelegateInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeProvider: RuntimeProviderProtocol,
+        chainRegistry: ChainRegistryProtocol,
         currencyManager: CurrencyManagerProtocol,
         extrinsicFactory: GovernanceExtrinsicFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
+        feeProxy: MultiExtrinsicFeeProxyProtocol,
         signer: SigningWrapperProtocol,
         lockStateFactory: GovernanceLockStateFactoryProtocol,
         operationQueue: OperationQueue
@@ -48,8 +47,7 @@ final class GovRevokeDelegationConfirmInteractor: GovernanceDelegateInteractor {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeFactory,
-            connection: connection,
-            runtimeProvider: runtimeProvider,
+            chainRegistry: chainRegistry,
             currencyManager: currencyManager,
             extrinsicFactory: extrinsicFactory,
             extrinsicService: extrinsicService,
@@ -58,25 +56,30 @@ final class GovRevokeDelegationConfirmInteractor: GovernanceDelegateInteractor {
             operationQueue: operationQueue
         )
     }
+
+    func handleMultiExtrinsicSubmission(result: SubmitIndexedExtrinsicResult) {
+        presenter?.didReceiveSubmissionResult(result)
+    }
 }
 
 extension GovRevokeDelegationConfirmInteractor: GovernanceRevokeDelegationConfirmInteractorInputProtocol {
     func submitRevoke(for tracks: Set<TrackIdLocal>) {
-        let actions = tracks.map { GovernanceDelegatorAction(delegateId: delegateId, trackId: $0, type: .undelegate) }
-
-        let closure = createExtrinsicBuilderClosure(for: actions)
-
-        extrinsicService.submit(
-            closure,
-            signer: signer,
-            runningIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(hash):
-                self?.presenter?.didReceiveSubmissionHash(hash)
-            case let .failure(error):
-                self?.presenter?.didReceiveError(.submitFailed(error))
+        do {
+            let actions = tracks.map { trackId in
+                GovernanceDelegatorAction(delegateId: delegateId, trackId: trackId, type: .undelegate)
             }
+
+            let splitter = try createExtrinsicSplitter(for: actions)
+
+            extrinsicService.submitWithTxSplitter(
+                splitter,
+                signer: signer,
+                runningIn: .main
+            ) { [weak self] result in
+                self?.handleMultiExtrinsicSubmission(result: result)
+            }
+        } catch {
+            presenter?.didReceiveError(.submitFailed(error))
         }
     }
 }

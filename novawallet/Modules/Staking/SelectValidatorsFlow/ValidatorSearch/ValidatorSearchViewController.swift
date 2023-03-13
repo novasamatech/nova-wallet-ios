@@ -2,10 +2,12 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class ValidatorSearchViewController: UIViewController, ViewHolder, ImportantViewProtocol {
+final class ValidatorSearchViewController: BaseTableSearchViewController, ImportantViewProtocol {
     typealias RootViewType = ValidatorSearchViewLayout
 
-    let presenter: ValidatorSearchPresenterProtocol
+    var presenter: ValidatorSearchPresenterProtocol? {
+        basePresenter as? ValidatorSearchPresenterProtocol
+    }
 
     private var viewModel: ValidatorSearchViewModel?
 
@@ -19,20 +21,13 @@ final class ValidatorSearchViewController: UIViewController, ViewHolder, Importa
         return button
     }()
 
-    private lazy var searchActivityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .white)
-        activityIndicator.color = R.color.colorIndicatorShimmering()!
-        return activityIndicator
-    }()
-
     // MARK: - Lifecycle
 
     init(
         presenter: ValidatorSearchPresenterProtocol,
         localizationManager: LocalizationManager
     ) {
-        self.presenter = presenter
-        super.init(nibName: nil, bundle: nil)
+        super.init(basePresenter: presenter)
 
         self.localizationManager = localizationManager
     }
@@ -47,21 +42,13 @@ final class ValidatorSearchViewController: UIViewController, ViewHolder, Importa
     }
 
     override func viewDidLoad() {
-        super.viewDidLoad()
-
         setupTable()
         setupNavigationBar()
-        setupSearchView()
 
-        applyLocalization()
         applyState()
+        applyLocalization()
 
-        presenter.setup()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        rootView.searchField.resignFirstResponder()
+        super.viewDidLoad()
     }
 
     // MARK: - Private functions
@@ -87,18 +74,14 @@ final class ValidatorSearchViewController: UIViewController, ViewHolder, Importa
         navigationItem.rightBarButtonItem = doneButton
     }
 
-    private func setupSearchView() {
-        rootView.searchField.delegate = self
-    }
-
     private func presentValidatorInfo(at index: Int) {
-        presenter.didSelectValidator(at: index)
+        presenter?.didSelectValidator(at: index)
     }
 
     // MARK: - Actions
 
     @objc private func tapDoneButton() {
-        presenter.applyChanges()
+        presenter?.applyChanges()
     }
 }
 
@@ -110,17 +93,6 @@ extension ValidatorSearchViewController: ValidatorSearchViewProtocol {
         rootView.tableView.reloadData()
 
         applyState()
-    }
-
-    func didStartSearch() {
-        rootView.searchField.rightViewMode = .always
-        rootView.searchField.rightView = searchActivityIndicator
-        searchActivityIndicator.startAnimating()
-    }
-
-    func didStopSearch() {
-        searchActivityIndicator.stopAnimating()
-        rootView.searchField.rightView = nil
     }
 
     func didReset() {
@@ -156,7 +128,7 @@ extension ValidatorSearchViewController: UITableViewDataSource {
 extension ValidatorSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        presenter.changeValidatorSelection(at: indexPath.row)
+        presenter?.changeValidatorSelection(at: indexPath.row)
     }
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
@@ -169,39 +141,6 @@ extension ValidatorSearchViewController: UITableViewDelegate {
         let headerView: CustomValidatorListHeaderView = tableView.dequeueReusableHeaderFooterView()
         headerView.bind(viewModel: headerViewModel)
         return headerView
-    }
-}
-
-// MARK: - UITextFieldDelegate
-
-extension ValidatorSearchViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-
-        guard let text = textField.text else { return false }
-
-        presenter.search(for: text)
-        return false
-    }
-
-    func textFieldShouldClear(_: UITextField) -> Bool {
-        presenter.search(for: "")
-        return true
-    }
-
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        guard let text = textField.text as NSString? else {
-            return true
-        }
-
-        let newString = text.replacingCharacters(in: range, with: string)
-        presenter.search(for: newString)
-
-        return true
     }
 }
 
@@ -266,11 +205,11 @@ extension ValidatorSearchViewController: CustomValidatorCellDelegate {
 extension ValidatorSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable
-                .commonSearch(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
 
-            rootView.searchField.placeholder = R.string.localizable
-                .stakingValidatorSearchPlaceholder(preferredLanguages: selectedLocale.rLanguages)
+            rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
+                preferredLanguages: selectedLocale.rLanguages
+            )
 
             navigationItem.rightBarButtonItem?.title = R.string.localizable
                 .commonDone(preferredLanguages: selectedLocale.rLanguages)

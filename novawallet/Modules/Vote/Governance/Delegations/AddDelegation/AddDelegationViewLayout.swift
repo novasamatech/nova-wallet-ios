@@ -17,6 +17,13 @@ final class AddDelegationViewLayout: UIView {
         ])
     ])
 
+    let searchButton = UIBarButtonItem(
+        image: R.image.iconSearchWhite(),
+        style: .plain,
+        target: nil,
+        action: nil
+    )
+
     let tableView: UITableView = .create {
         $0.separatorStyle = .none
         $0.backgroundColor = .clear
@@ -73,6 +80,10 @@ final class AddDelegationViewLayout: UIView {
             $0.snp.makeConstraints { make in
                 make.height.equalTo(32)
             }
+        }
+
+        bannerView.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(148)
         }
     }
 }
