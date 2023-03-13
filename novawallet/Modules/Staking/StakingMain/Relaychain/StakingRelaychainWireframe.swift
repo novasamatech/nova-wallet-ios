@@ -151,8 +151,12 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showRebagConfirm(from _: ControllerBackedProtocol?) {
-        // TODO: #8677bqzt1
+    func showRebagConfirm(from view: ControllerBackedProtocol?) {
+        guard let rebagConfirmView = StakingRebagConfirmViewFactory.createView(with: state) else {
+            return
+        }
+        let navigationController = FearlessNavigationController(rootViewController: rebagConfirmView.controller)
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode) {
