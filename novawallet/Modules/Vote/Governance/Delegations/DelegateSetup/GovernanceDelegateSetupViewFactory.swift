@@ -9,7 +9,7 @@ struct GovernanceDelegateSetupViewFactory {
         delegateDisplayInfo: GovernanceDelegateFlowDisplayInfo<[GovernanceTrackInfoLocal]>
     ) -> GovernanceDelegateSetupViewProtocol? {
         let title = LocalizableResource { locale in
-            R.string.localizable.governanceReferendumsAddDelegation(
+            R.string.localizable.delegationsAddTitle(
                 preferredLanguages: locale.rLanguages
             )
         }

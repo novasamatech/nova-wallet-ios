@@ -4,16 +4,18 @@ enum ReferendumVotersViewFactory {
         referendum: ReferendumLocal,
         type: ReferendumVotersType
     ) -> ControllerBackedProtocol? {
-        guard let chain = state.settings.value?.chain else {
+        guard let option = state.settings.value else {
             return nil
         }
 
-        if let governanceDelegationsApi = chain.externalApis?.governanceDelegations()?.first {
+        if
+            state.supportsDelegations(for: option),
+            let api = option.chain.externalApis?.governanceDelegations()?.first {
             return DelegationReferendumVotersViewFactory.createView(
                 state: state,
                 referendum: referendum,
                 type: type,
-                delegationApi: governanceDelegationsApi
+                delegationApi: api
             )
         } else {
             return ReferendumOnChainVotersViewFactory.createView(
