@@ -14,14 +14,15 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     let feeProxy: ExtrinsicFeeProxyProtocol
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let networkInfoFactory: NetworkStakingInfoOperationFactoryProtocol
-    let eraValidatorService: EraValidatorServiceProtocol?
+    let eraValidatorService: EraValidatorServiceProtocol
     let chainRegistry: ChainRegistryProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
+    let runtimeService: RuntimeProviderProtocol
 
-    private let operationManager: OperationManagerProtocol
+    private let operationQueue: OperationQueue
 
     private var networkInfoCancellable: CancellableCall?
 
@@ -44,12 +45,13 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         networkInfoFactory: NetworkStakingInfoOperationFactoryProtocol,
-        eraValidatorService: EraValidatorServiceProtocol?,
+        eraValidatorService: EraValidatorServiceProtocol,
+        runtimeService: RuntimeProviderProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.chainAsset = chainAsset
@@ -59,13 +61,14 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.networkInfoFactory = networkInfoFactory
         self.eraValidatorService = eraValidatorService
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.chainRegistry = chainRegistry
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.signingWrapperFactory = signingWrapperFactory
         self.accountRepositoryFactory = accountRepositoryFactory
         self.callFactory = callFactory
+        self.runtimeService = runtimeService
         self.currencyManager = currencyManager
     }
 
@@ -150,7 +153,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             for: stashAccountId,
             accountRequest: chainAsset.chain.accountRequest(),
             repositoryFactory: accountRepositoryFactory,
-            operationManager: operationManager
+            operationManager: OperationManager(operationQueue: operationQueue)
         ) { [weak self] result in
             switch result {
             case let .success(response):
@@ -169,12 +172,6 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
     func provideNetworkStakingInfo() {
         clear(cancellable: &networkInfoCancellable)
-        guard
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
-            let eraValidatorService = eraValidatorService else {
-            presenter?.didReceive(error: .fetchNetworkInfoFailed(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
 
         let wrapper = networkInfoFactory.networkStakingOperation(
             for: eraValidatorService,
@@ -200,7 +197,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
         networkInfoCancellable = wrapper
 
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func estimateFee(stashItem: StashItem?) {
@@ -263,12 +260,10 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
         confirmRebag(stashItem: stashItem)
     }
 
-    func remakeStashItemSubscription() {
+    func remakeSubscriptions() {
         subscribeStashItemSubscription()
-    }
-
-    func remakeAccountBalanceSubscription() {
         subscribeAccountBalance()
+        provideNetworkStakingInfo()
     }
 }
 

@@ -8,7 +8,8 @@ struct StakingRebagConfirmViewFactory {
             let selectedMetaAccount = SelectedWalletSettings.shared.value,
             let currencyManager = CurrencyManager.shared,
             let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
-            let networkInfoFactory = try? state.createNetworkInfoOperationFactory(for: chainAsset.chain)
+            let networkInfoFactory = try? state.createNetworkInfoOperationFactory(for: chainAsset.chain),
+            let eraValidatorService = state.eraValidatorService
         else {
             return nil
         }
@@ -40,12 +41,13 @@ struct StakingRebagConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             networkInfoFactory: networkInfoFactory,
-            eraValidatorService: state.eraValidatorService,
+            eraValidatorService: eraValidatorService,
+            runtimeService: runtimeRegistry,
             extrinsicServiceFactory: extrinsicServiceFactory,
             signingWrapperFactory: SigningWrapperFactory(),
             accountRepositoryFactory: accountRepositoryFactory,
             callFactory: SubstrateCallFactory(),
-            operationManager: OperationManagerFacade.sharedManager,
+            operationQueue: OperationQueue(),
             currencyManager: currencyManager
         )
 

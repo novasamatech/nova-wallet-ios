@@ -21,8 +21,7 @@ protocol StakingRebagConfirmPresenterProtocol: AnyObject {
 protocol StakingRebagConfirmInteractorInputProtocol: AnyObject {
     func setup()
     func refreshFee(stashItem: StashItem)
-    func remakeStashItemSubscription()
-    func remakeAccountBalanceSubscription()
+    func remakeSubscriptions()
     func submit(stashItem: StashItem)
 }
 

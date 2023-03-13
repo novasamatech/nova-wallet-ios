@@ -174,7 +174,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmPresenterProtocol {
             ),
 
             dataValidatingFactory.canPayFeeInPlank(
-                balance: balance?.freeInPlank,
+                balance: balance?.transferable,
                 fee: fee,
                 asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
@@ -254,22 +254,17 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
         case .fetchPriceFailed,
              .fetchBagListScoreFactorFailed,
              .fetchBagListNodeFailed,
-             .fetchLedgerInfoFailed,
-             .fetchNetworkInfoFailed:
+             .fetchLedgerInfoFailed:
             break
-        case .fetchBalanceFailed:
+        case .fetchBalanceFailed, .fetchStashItemFailed, .fetchNetworkInfoFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeAccountBalanceSubscription()
+                self?.interactor.remakeSubscriptions()
             }
         case .fetchFeeFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 if let stashItem = self?.stashItem {
                     self?.interactor.refreshFee(stashItem: stashItem)
                 }
-            }
-        case .fetchStashItemFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.remakeStashItemSubscription()
             }
         case let .submitFailed(error):
             if error.isWatchOnlySigning {
