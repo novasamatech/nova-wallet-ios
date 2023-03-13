@@ -22,7 +22,10 @@ extension SupportedLedgerApp {
             SupportedLedgerApp(chainId: KnowChainId.karura, coin: 686, cla: 0x9A, type: .substrate),
             SupportedLedgerApp(chainId: KnowChainId.acala, coin: 787, cla: 0x9B, type: .substrate),
             SupportedLedgerApp(chainId: KnowChainId.nodle, coin: 1003, cla: 0x98, type: .substrate),
-            SupportedLedgerApp(chainId: KnowChainId.edgeware, coin: 523, cla: 0x94, type: .substrate)
+            SupportedLedgerApp(chainId: KnowChainId.edgeware, coin: 523, cla: 0x94, type: .substrate),
+            SupportedLedgerApp(chainId: KnowChainId.polymesh, coin: 595, cla: 0x91, type: .substrate),
+            SupportedLedgerApp(chainId: KnowChainId.centrifuge, coin: 747, cla: 0x93, type: .substrate),
+            SupportedLedgerApp(chainId: KnowChainId.xxNetwork, coin: 1955, cla: 0xA3, type: .substrate)
         ]
     }
 
