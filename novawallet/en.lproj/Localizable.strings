@@ -229,8 +229,7 @@
 "staking.recommended.custom.title" = "Choose custom validators ";
 "fee.not.yet.loaded.title" = "Fee calculation is in progress";
 "fee.not.yet.loaded.message" = "Please wait until fee is calculated";
-"staking.setup.amount.too.low" = "You cannot stake less than the network minimum value (%@)";
-
+"staking.setup.amount.too.low" = "You cannot stake less than the network minimum value (%s)";
 "common.confirm.title" = "Confirmation";
 "staking.stash.title" = "Wallet account";
 "staking.setup.sent.message" = "Staking setup transaction sent";
@@ -333,7 +332,7 @@
 "staking.stash.can.hint" = "Stash can stake more and set the controller.";
 "staking.controller.can.hint" = "Controller can unstake, redeem, return to stake, change rewards destination and validators.";
 "staking.switch.account.to.stash" = "Switch your account to stash to set the controller.";
-"staking.inactive.current.minimal.stake" = "Your stake is less then minimum of %@.\nHaving stake less than minimum increases chances of staking to not generate rewards";
+"staking.inactive.current.minimal.stake" = "Your stake is less then minimum of %s.\nHaving stake less than minimum increases chances of staking to not generate rewards";
 "staking.change.your.validators" = "Change your validators.";
 "staking.bond.more.tokens" = "Stake more tokens.";
 "staking.redeem.unbonded.tokens" = "Redeem unstaked tokens.";
@@ -1115,6 +1114,10 @@
 "in.app.updates.severity.major" = "Major";
 "in.app.updates.banner.critical.title" = "Critical update";
 "in.app.updates.banner.critical.subtitle" = "To avoid any issues, and improve your user experience, we strongly recommend that you install recent updates as soon as possible";
+"in.app.updates.banner.major.title" = "Major update";
+"in.app.updates.banner.major.subtitle" = "Lots of amazing new features are available for Nova Wallet! Make sure to update your application to access them";
+"in.app.updates.title" = "Update available";
+"in.app.updates.install.button.title" = "Install";
 "gov.unavailable.tracks.delegated" = "Tracks that you have already delegated votes to";
 "gov.unavailable.tracks.voted" = "Tracks which you have existing votes in";
 "gov.unavailable.tracks.remove.votes" = "Remove votes in order to delegate in these tracks";
@@ -1186,3 +1189,8 @@
 "staking.improvements" = "Staking improvements";
 "staking.rebag.alert.message" = "Having outdated position in the queue of stake assignment to a validator may suspend your rewards";
 "staking.min.stake.violated.message" = "The recommended minimum stake to consistently receive rewards is %@.";
+"staking.hint.rebag.confirm" = "Having outdated position in the queue of stake assignment to a validator may suspend your rewards";
+"staking.rebag.confirm.title" = "Staking improvements";
+"staking.rebag.confirm.new.bag.list" = "New queue slot";
+"staking.rebag.confirm.current.bag.list" = "Current queue slot";
+"staking.rebag.confirm.completion" = "New queue slot request has been submitted";
