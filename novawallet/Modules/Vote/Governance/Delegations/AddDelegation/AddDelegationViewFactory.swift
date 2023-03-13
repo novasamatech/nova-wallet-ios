@@ -84,6 +84,7 @@ struct AddDelegationViewFactory {
             delegateListOperationFactory: delegateListOperationFactory,
             blockTimeService: blockTimeService,
             blockTimeFactory: blockTimeOperationFactory,
+            govJsonProviderFactory: JsonDataProviderFactory.shared,
             settings: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

@@ -16,6 +16,7 @@ protocol AddDelegationPresenterProtocol: AnyObject {
     func showAddDelegateInformation()
     func showSortOptions()
     func showFilters()
+    func showSearch()
 }
 
 protocol AddDelegationInteractorInputProtocol: AnyObject {
@@ -27,6 +28,7 @@ protocol AddDelegationInteractorInputProtocol: AnyObject {
 
 protocol AddDelegationInteractorOutputProtocol: AnyObject {
     func didReceiveDelegates(_ delegates: [GovernanceDelegateLocal])
+    func didReceiveMetadata(_ metadata: [GovernanceDelegateMetadataRemote]?)
     func didReceiveShouldDisplayBanner(_ isHidden: Bool)
     func didReceiveError(_ error: AddDelegationInteractorError)
 }
@@ -41,4 +43,10 @@ protocol AddDelegationWireframeProtocol: AlertPresentable, ErrorPresentable, Com
     )
 
     func showInfo(from view: AddDelegationViewProtocol?, delegate: GovernanceDelegateLocal)
+
+    func showSearch(
+        from view: AddDelegationViewProtocol?,
+        initDelegates: [AccountAddress: GovernanceDelegateLocal],
+        initDelegations: [AccountAddress: GovernanceYourDelegationGroup]
+    )
 }

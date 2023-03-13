@@ -31,7 +31,7 @@ final class DelegationListPresenter {
 
     private var title: LocalizableResource<String> {
         LocalizableResource<String> { locale in
-            R.string.localizable.delegationsTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.delegationsDelegations(preferredLanguages: locale.rLanguages)
         }
     }
 

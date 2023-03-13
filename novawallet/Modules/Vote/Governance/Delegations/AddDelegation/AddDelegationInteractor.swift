@@ -15,8 +15,10 @@ final class AddDelegationInteractor {
     private(set) var settings: SettingsManagerProtocol
     let blockTimeService: BlockTimeEstimationServiceProtocol
     let blockTimeFactory: BlockTimeOperationFactoryProtocol
+    let govJsonProviderFactory: JsonDataProviderFactoryProtocol
     let operationQueue: OperationQueue
 
+    private var metadataProvider: AnySingleValueProvider<[GovernanceDelegateMetadataRemote]>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private var currentBlockNumber: BlockNumber?
 
@@ -29,6 +31,7 @@ final class AddDelegationInteractor {
         delegateListOperationFactory: GovernanceDelegateListFactoryProtocol,
         blockTimeService: BlockTimeEstimationServiceProtocol,
         blockTimeFactory: BlockTimeOperationFactoryProtocol,
+        govJsonProviderFactory: JsonDataProviderFactoryProtocol,
         settings: SettingsManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -40,52 +43,34 @@ final class AddDelegationInteractor {
         self.delegateListOperationFactory = delegateListOperationFactory
         self.blockTimeService = blockTimeService
         self.blockTimeFactory = blockTimeFactory
+        self.govJsonProviderFactory = govJsonProviderFactory
         self.settings = settings
         self.operationQueue = operationQueue
     }
 
-    private func fetchBlockTimeAndUpdateDelegates() {
-        let blockTimeUpdateWrapper = blockTimeFactory.createBlockTimeOperation(
-            from: runtimeService,
-            blockTimeEstimationService: blockTimeService
-        )
-
-        blockTimeUpdateWrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let blockTime = try blockTimeUpdateWrapper.targetOperation.extractNoCancellableResultData()
-
-                    self?.fetchDelegateList(for: blockTime)
-                } catch {
-                    self?.presenter?.didReceiveError(.blockTimeFetchFailed(error))
-                }
-            }
-        }
-
-        operationQueue.addOperations(blockTimeUpdateWrapper.allOperations, waitUntilFinished: false)
-    }
-
-    private func fetchDelegateList(for blockTime: BlockTime) {
-        guard
-            let activityBlockNumber = currentBlockNumber?.blockBackInDays(
-                lastVotedDays,
-                blockTime: blockTime
-            ) else {
+    private func fetchDelegates() {
+        guard let currentBlockNumber = currentBlockNumber else {
             return
         }
 
-        let wrapper = delegateListOperationFactory.fetchDelegateListWrapper(
-            for: activityBlockNumber,
+        let wrapper = delegateListOperationFactory.fetchDelegateListByBlockNumber(
+            .init(
+                currentBlockNumber: currentBlockNumber,
+                lastVotedDays: lastVotedDays,
+                blockTimeService: blockTimeService,
+                blockTimeOperationFactory: blockTimeFactory
+            ),
             chain: chain,
             connection: connection,
-            runtimeService: runtimeService
+            runtimeService: runtimeService,
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
                     let delegates = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveDelegates(delegates)
+                    self?.presenter?.didReceiveDelegates(delegates ?? [])
                 } catch {
                     self?.presenter?.didReceiveError(.delegateListFetchFailed(error))
                 }
@@ -102,22 +87,27 @@ final class AddDelegationInteractor {
     private func provideSettings() {
         presenter?.didReceiveShouldDisplayBanner(settings.governanceDelegateInfoSeen)
     }
+
+    private func subscribeToDelegatesMetadata() {
+        metadataProvider?.removeObserver(self)
+        metadataProvider = subscribeDelegatesMetadata(for: chain)
+    }
 }
 
 extension AddDelegationInteractor: AddDelegationInteractorInputProtocol {
     func setup() {
         subscribeBlockNumber()
+        subscribeToDelegatesMetadata()
         provideSettings()
     }
 
     func remakeSubscriptions() {
         subscribeBlockNumber()
+        subscribeToDelegatesMetadata()
     }
 
     func refreshDelegates() {
-        if currentBlockNumber != nil {
-            fetchBlockTimeAndUpdateDelegates()
-        }
+        fetchDelegates()
     }
 
     func saveCloseBanner() {
@@ -140,9 +130,20 @@ extension AddDelegationInteractor: GeneralLocalStorageSubscriber, GeneralLocalSt
                 return
             }
 
-            fetchBlockTimeAndUpdateDelegates()
+            fetchDelegates()
         case let .failure(error):
             presenter?.didReceiveError(.blockSubscriptionFailed(error))
+        }
+    }
+}
+
+extension AddDelegationInteractor: GovJsonLocalStorageSubscriber, GovJsonLocalStorageHandler {
+    func handleDelegatesMetadata(result: Result<[GovernanceDelegateMetadataRemote], Error>, chain _: ChainModel) {
+        switch result {
+        case let .success(metadata):
+            presenter?.didReceiveMetadata(metadata)
+        case let .failure(error):
+            presenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }
     }
 }

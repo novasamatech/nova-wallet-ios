@@ -6,7 +6,8 @@ import SoraUI
 }
 
 final class DelegateInfoView: UIView {
-    typealias ContentView = IconDetailsGenericView<
+    typealias ContentView = GenericPairValueView<
+        BorderedImageView,
         GenericPairValueView<
             GenericPairValueView<UILabel, GovernanceDelegateTypeView>,
             GenericPairValueView<UIImageView, UIView>
@@ -23,20 +24,20 @@ final class DelegateInfoView: UIView {
 
     var id: Int?
 
-    var iconView: UIImageView {
-        baseView.imageView
+    var iconView: BorderedImageView {
+        baseView.fView
     }
 
     var nameLabel: UILabel {
-        baseView.detailsView.fView.fView
+        baseView.sView.fView.fView
     }
 
     var typeView: GovernanceDelegateTypeView {
-        baseView.detailsView.fView.sView
+        baseView.sView.fView.sView
     }
 
     var indicatorView: UIImageView {
-        baseView.detailsView.sView.fView
+        baseView.sView.sView.fView
     }
 
     private var loadingImage: ImageViewModelProtocol?
@@ -52,6 +53,11 @@ final class DelegateInfoView: UIView {
             target: self,
             action: #selector(didTapOnBaseView)
         ))
+
+        iconView.snp.makeConstraints { make in
+            make.size.equalTo(Constants.iconSize)
+        }
+
         applyStyle()
     }
 
@@ -67,15 +73,17 @@ final class DelegateInfoView: UIView {
     private func applyStyle() {
         backgroundColor = .clear
 
+        baseView.makeHorizontal()
         baseView.spacing = Constants.nameIconSpace
-        baseView.mode = .iconDetails
-        baseView.iconWidth = Constants.iconSize.width
-        baseView.detailsView.spacing = Constants.space
-        baseView.detailsView.fView.spacing = Constants.space
-        baseView.detailsView.spacing = Constants.space
-        baseView.detailsView.fView.makeHorizontal()
-        baseView.detailsView.makeHorizontal()
-        baseView.detailsView.fView.spacing = 4
+        baseView.stackView.alignment = .center
+
+        let detailsView = baseView.sView
+        detailsView.spacing = Constants.space
+        detailsView.fView.spacing = Constants.space
+        detailsView.spacing = Constants.space
+        detailsView.fView.makeHorizontal()
+        detailsView.makeHorizontal()
+        detailsView.fView.spacing = 4
 
         typeView.iconDetailsView.iconWidth = Constants.typeIconWidth
         typeView.contentInsets = Constants.typeIconInsets
@@ -88,10 +96,10 @@ final class DelegateInfoView: UIView {
 
         indicatorView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         typeView.setContentHuggingPriority(.required, for: .horizontal)
-        baseView.detailsView.sView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        baseView.detailsView.sView.sView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        baseView.detailsView.sView.makeHorizontal()
-        baseView.detailsView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        detailsView.sView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        detailsView.sView.sView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        detailsView.sView.makeHorizontal()
+        detailsView.sView.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 }
 
@@ -109,26 +117,15 @@ extension DelegateInfoView {
     func bind(viewModel: Model) {
         bind(type: viewModel.type)
 
-        loadingImage?.cancel(on: iconView)
+        iconView.bind(
+            viewModel: viewModel.addressViewModel.imageViewModel,
+            targetSize: Constants.iconSize,
+            delegateType: viewModel.type
+        )
 
-        if let iconRadius = iconRadius(for: viewModel.type) {
-            viewModel.addressViewModel.imageViewModel.loadImageOrClear(
-                imageView: iconView,
-                targetSize: Constants.iconSize,
-                cornerRadius: iconRadius,
-                animated: true
-            )
-        } else {
-            viewModel.addressViewModel.imageViewModel.loadImageOrClear(
-                imageView: iconView,
-                targetSize: Constants.iconSize,
-                animated: true
-            )
-        }
         nameLabel.lineBreakMode = viewModel.addressViewModel.lineBreakMode
         nameLabel.text = viewModel.addressViewModel.name ?? viewModel.addressViewModel.address
         nameLabel.sizeToFit()
-        loadingImage = viewModel.addressViewModel.imageViewModel
     }
 
     private func bind(type: GovernanceDelegateTypeView.Model?) {

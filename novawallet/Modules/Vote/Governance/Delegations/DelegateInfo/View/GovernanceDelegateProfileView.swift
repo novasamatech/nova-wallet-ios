@@ -3,9 +3,7 @@ import UIKit
 final class GovernanceDelegateProfileView: UIView {
     let nameLabel = UILabel(style: .regularSubhedlinePrimary, numberOfLines: 1)
 
-    let avatarView: DAppIconView = .create {
-        $0.contentInsets = .zero
-    }
+    let avatarView = BorderedImageView()
 
     var locale: Locale {
         get {
@@ -20,8 +18,6 @@ final class GovernanceDelegateProfileView: UIView {
     let typeView = GovernanceDelegateTypeView()
 
     let iconSize: CGSize
-
-    private var imageViewModel: ImageViewModelProtocol?
 
     init(size: CGSize) {
         iconSize = size
@@ -40,30 +36,11 @@ final class GovernanceDelegateProfileView: UIView {
         nameLabel.text = viewModel.name
         typeView.bind(type: viewModel.type)
 
-        imageViewModel?.cancel(on: avatarView.imageView)
-
-        imageViewModel = viewModel.imageViewModel
-
-        switch viewModel.type {
-        case .individual:
-            avatarView.backgroundView.apply(style: .clear)
-
-            imageViewModel?.loadImage(
-                on: avatarView.imageView,
-                targetSize: iconSize,
-                cornerRadius: iconSize.height / 2.0,
-                animated: true
-            )
-        case .organization:
-            let iconRadius = floor(iconSize.height / 5.0)
-            avatarView.backgroundView.apply(style: .roundedContainerWithShadow(radius: iconRadius))
-
-            imageViewModel?.loadImage(
-                on: avatarView.imageView,
-                targetSize: iconSize,
-                animated: true
-            )
-        }
+        avatarView.bind(
+            viewModel: viewModel.imageViewModel,
+            targetSize: iconSize,
+            delegateType: viewModel.type
+        )
     }
 
     private func setupLayout() {
