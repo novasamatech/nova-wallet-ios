@@ -54,23 +54,14 @@ struct StakingRebagConfirmViewFactory {
         let wireframe = StakingRebagConfirmWireframe()
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        )
-
-        let assetDisplayInfo = AssetBalanceDisplayInfo(
-            displayPrecision: chainAsset.assetDisplayInfo.displayPrecision,
-            assetPrecision: chainAsset.assetDisplayInfo.assetPrecision,
-            symbol: "",
-            symbolValueSeparator: "",
-            symbolPosition: .prefix,
-            icon: nil
-        )
-        let tokenlessBalanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
+        let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
+        let displayFormatter = assetBalanceFormatterFactory.createDisplayFormatter(for: assetDisplayInfo)
+        let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: assetDisplayInfo)
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -79,8 +70,9 @@ struct StakingRebagConfirmViewFactory {
             selectedAccount: selectedAccount,
             interactor: interactor,
             wireframe: wireframe,
+            displayFormatter: displayFormatter,
+            tokenFormatter: tokenFormatter,
             balanceViewModelFactory: balanceViewModelFactory,
-            tokenlessBalanceViewModelFactory: tokenlessBalanceViewModelFactory,
             localizationManager: LocalizationManager.shared,
             dataValidatingFactory: dataValidatingFactory,
             logger: Logger.shared
