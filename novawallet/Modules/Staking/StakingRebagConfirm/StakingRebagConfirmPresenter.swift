@@ -74,6 +74,7 @@ final class StakingRebagConfirmPresenter {
                   fee,
                   precision: chainAsset.assetDisplayInfo.assetPrecision
               ) else {
+            view?.didReceiveNetworkFee(viewModel: .loading)
             return
         }
 
@@ -82,7 +83,7 @@ final class StakingRebagConfirmPresenter {
             priceData: price
         ).value(for: selectedLocale)
 
-        view?.didReceiveNetworkFee(viewModel: viewModel)
+        view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
     }
 
     private func provideHintsViewModel() {
@@ -165,6 +166,7 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmPresenterProtocol {
         provideAccountViewModel()
         provideHintsViewModel()
         provideConfirmState()
+        provideFeeViewModel()
     }
 
     func confirm() {
