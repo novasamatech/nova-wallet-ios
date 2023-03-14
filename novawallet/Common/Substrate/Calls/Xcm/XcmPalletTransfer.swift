@@ -12,20 +12,22 @@ extension Xcm {
             case weightLimit = "weight_limit"
         }
 
-        static let callName = "limited_reserve_transfer_assets"
-
         let destination: VersionedMultilocation
         let beneficiary: VersionedMultilocation // must be set relatively to destination
         let assets: VersionedMultiassets
         @StringCodable var feeAssetItem: UInt32 // index of the fee asset in assets
         let weightLimit: Xcm.WeightLimit<JSON> // maximum weight for remote execution
 
-        func runtimeCall(for module: String) -> RuntimeCall<PalletTransferCall> {
-            RuntimeCall(moduleName: module, callName: Self.callName, args: self)
+        func runtimeCall(for path: CallCodingPath) -> RuntimeCall<PalletTransferCall> {
+            RuntimeCall(moduleName: path.moduleName, callName: path.callName, args: self)
         }
+    }
 
-        func codingPath(for module: String) -> CallCodingPath {
-            CallCodingPath(moduleName: module, callName: Self.callName)
-        }
+    static func limitedReserveTransferAssetsPath(for module: String) -> CallCodingPath {
+        CallCodingPath(moduleName: module, callName: "limited_reserve_transfer_assets")
+    }
+
+    static func limitedTeleportAssetsPath(for module: String) -> CallCodingPath {
+        CallCodingPath(moduleName: module, callName: "limited_teleport_assets")
     }
 }

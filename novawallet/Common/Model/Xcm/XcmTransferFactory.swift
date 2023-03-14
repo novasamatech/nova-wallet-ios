@@ -44,39 +44,45 @@ enum XcmTransferFactoryError: Error {
     case noBaseWeight(ChainModel.Id)
 }
 
+struct XcmMultilocationAssetParams {
+    let origin: ChainAsset
+    let reserve: ChainModel
+    let destination: XcmTransferDestination
+    let amount: BigUInt
+    let xcmTransfers: XcmTransfers
+}
+
 extension XcmTransferFactoryProtocol {
     func createMultilocationAsset(
-        from chainAsset: ChainAsset,
-        reserve: ChainModel,
-        destination: XcmTransferDestination,
-        amount: BigUInt,
-        xcmTransfers: XcmTransfers,
+        for params: XcmMultilocationAssetParams,
         version: XcmMultilocationAssetVersion
     ) throws -> XcmMultilocationAsset {
+        let chainAsset = params.origin
+
         let multilocation = createVersionedMultilocation(
             origin: chainAsset.chain,
-            destination: destination,
+            destination: params.destination,
             version: version.multiLocation
         )
 
         let originChainAssetId = chainAsset.chainAssetId
 
-        guard xcmTransfers.transfer(
+        guard params.xcmTransfers.transfer(
             from: originChainAssetId,
-            destinationChainId: destination.chain.chainId
+            destinationChainId: params.destination.chain.chainId
         ) != nil else {
             throw XcmTransferFactoryError.noDestinationAssetFound(originChainAssetId)
         }
 
-        guard let reservePath = xcmTransfers.getReservePath(for: originChainAssetId) else {
+        guard let reservePath = params.xcmTransfers.getReservePath(for: originChainAssetId) else {
             throw XcmTransferFactoryError.noReserve(originChainAssetId)
         }
 
         let multiasset = try createVersionedMultiasset(
             origin: chainAsset.chain,
-            reserve: reserve,
+            reserve: params.reserve,
             assetLocation: reservePath,
-            amount: amount,
+            amount: params.amount,
             version: version.multiAssets
         )
 
