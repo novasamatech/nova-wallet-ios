@@ -411,4 +411,22 @@ class JSONRPCTests: XCTestCase {
 
         XCTAssertEqual(keysCount, resultsCount)
     }
+    
+    func testKiltService() throws {
+        let url = URL(string: "wss://kilt-rpc.dwellir.com")!
+        let engine = WebSocketEngine(urls: [url], logger: Logger.shared)!
+        
+        let operation = KiltWeb3NamesOperationFactory()
+        
+        let wrapper = operation.search(name: "gavin",
+                                       connection: engine)
+        
+        OperationQueue().addOperations(
+            wrapper.allOperations,
+            waitUntilFinished: true
+        )
+        
+        let result = try wrapper.targetOperation.extractNoCancellableResultData()
+        XCTAssertTrue(result.balance > 0)
+    }
 }

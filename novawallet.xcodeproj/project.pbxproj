@@ -2625,6 +2625,7 @@
 		887404B62982775F00EE270A /* InAppUpdatesUrlProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887404B52982775F00EE270A /* InAppUpdatesUrlProvider.swift */; };
 		887404B829828D5500EE270A /* LoadMoreFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887404B729828D5500EE270A /* LoadMoreFooterView.swift */; };
 		887404BA2983DDA800EE270A /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887404B92983DDA800EE270A /* SessionStorage.swift */; };
+		88784E9D29BF966B004489D5 /* KiltWeb3NamesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88784E9C29BF966B004489D5 /* KiltWeb3NamesOperationFactory.swift */; };
 		887A717C28FEF03E00B13C7E /* BaselinedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887A717B28FEF03E00B13C7E /* BaselinedView.swift */; };
 		887AFC8728BC95F0002A0422 /* MetaAccountChainResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */; };
 		887AFC8C28BCB314002A0422 /* PolkadotIconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887AFC8928BCB313002A0422 /* PolkadotIconDetailsView.swift */; };
@@ -5997,6 +5998,7 @@
 		887404B52982775F00EE270A /* InAppUpdatesUrlProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppUpdatesUrlProvider.swift; sourceTree = "<group>"; };
 		887404B729828D5500EE270A /* LoadMoreFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreFooterView.swift; sourceTree = "<group>"; };
 		887404B92983DDA800EE270A /* SessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStorage.swift; sourceTree = "<group>"; };
+		88784E9C29BF966B004489D5 /* KiltWeb3NamesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltWeb3NamesOperationFactory.swift; sourceTree = "<group>"; };
 		88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel2.xcdatamodel; sourceTree = "<group>"; };
 		887A717B28FEF03E00B13C7E /* BaselinedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselinedView.swift; sourceTree = "<group>"; };
 		887AFC8628BC95F0002A0422 /* MetaAccountChainResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountChainResponse.swift; sourceTree = "<group>"; };
@@ -10952,6 +10954,7 @@
 				847999A8288862A500D1BAD2 /* MetaAccountOperationFactory+Secrets.swift */,
 				84A58FD828A10ABD003F6ABF /* MultipartQrOperationFactory.swift */,
 				8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */,
+				88784E9C29BF966B004489D5 /* KiltWeb3NamesOperationFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -18143,6 +18146,7 @@
 				5678BAE4B652C5C5E4284F28 /* AccountManagementViewFactory.swift in Sources */,
 				84CFE441292B8CDA00CDDD7C /* EvmOnChainTransferSetupInteractor.swift in Sources */,
 				849528E326036997009DC845 /* RewardEstimationView.swift in Sources */,
+				88784E9D29BF966B004489D5 /* KiltWeb3NamesOperationFactory.swift in Sources */,
 				847999B628894FE200D1BAD2 /* AccountInputViewDelegate.swift in Sources */,
 				F474D388260CBEE600013699 /* StakingRewardDetailsViewLayout.swift in Sources */,
 				849ABE81262811CF00011A2A /* NominationsListReducer.swift in Sources */,
