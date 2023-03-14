@@ -224,6 +224,66 @@ final class XcmTransferService {
         )
     }
 
+    func createMultilocationAssetWrapper(
+        request: XcmUnweightedTransferRequest,
+        xcmTransfers: XcmTransfers,
+        type: XcmAssetTransfer.TransferType,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<XcmMultilocationAsset> {
+        switch type {
+        case .xtokens:
+            // keep xtokens version to 1 until pallet is updated
+            do {
+                let multilocationAsset = try xcmFactory.createMultilocationAsset(
+                    from: request.origin,
+                    reserve: request.reserve.chain,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers,
+                    version: .init(multiLocation: .V1, multiAssets: .V1)
+                )
+
+                return .createWithResult(multilocationAsset)
+            } catch {
+                return .createWithError(error)
+            }
+        case .xcmpallet, .teleport:
+            let multiassetsVersionWrapper = metadataQueryFactory.createLowestMultiassetsVersionWrapper(
+                for: runtimeProvider
+            )
+
+            let multilocationVersionWrapper = metadataQueryFactory.createLowestMultilocationVersionWrapper(
+                for: runtimeProvider
+            )
+
+            let transferFactory = xcmFactory
+
+            let mappingOperation = ClosureOperation<XcmMultilocationAsset> {
+                let multiassetsVersion = try multiassetsVersionWrapper.targetOperation.extractNoCancellableResultData()
+                let multilocationVersion = try multilocationVersionWrapper.targetOperation
+                    .extractNoCancellableResultData()
+
+                return try transferFactory.createMultilocationAsset(
+                    from: request.origin,
+                    reserve: request.reserve.chain,
+                    destination: request.destination,
+                    amount: request.amount,
+                    xcmTransfers: xcmTransfers,
+                    version: .init(multiLocation: multilocationVersion, multiAssets: multiassetsVersion)
+                )
+            }
+
+            mappingOperation.addDependency(multiassetsVersionWrapper.targetOperation)
+            mappingOperation.addDependency(multilocationVersionWrapper.targetOperation)
+
+            let dependecies = multiassetsVersionWrapper.allOperations + multilocationVersionWrapper.allOperations
+
+            return .init(targetOperation: mappingOperation, dependencies: dependecies)
+        case .unknown:
+            return .createWithError(XcmAssetTransfer.TransferTypeError.unknownType)
+        }
+    }
+
     func createTransferWrapper(
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
@@ -240,44 +300,38 @@ final class XcmTransferService {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
 
-        do {
-            let destinationAsset = try xcmFactory.createMultilocationAsset(
-                from: request.origin,
-                reserve: request.reserve.chain,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
-            )
+        let destinationAssetWrapper = createMultilocationAssetWrapper(
+            request: request,
+            xcmTransfers: xcmTransfers,
+            type: xcmTransfer.type,
+            runtimeProvider: runtimeProvider
+        )
 
-            let moduleResolutionWrapper = createModuleResolutionWrapper(
-                for: xcmTransfer.type,
-                runtimeProvider: runtimeProvider
-            )
+        let moduleResolutionWrapper = createModuleResolutionWrapper(
+            for: xcmTransfer.type,
+            runtimeProvider: runtimeProvider
+        )
 
-            let mapWrapper = createTransferMapWrapper(
-                dependingOn: moduleResolutionWrapper.targetOperation,
-                destinationAsset: destinationAsset,
-                xcmTransfer: xcmTransfer,
-                maxWeight: maxWeight,
-                runtimeProvider: runtimeProvider
-            )
+        let mapWrapper = createTransferMapWrapper(
+            dependingOn: moduleResolutionWrapper.targetOperation,
+            destinationAssetOperation: destinationAssetWrapper.targetOperation,
+            xcmTransfer: xcmTransfer,
+            maxWeight: maxWeight,
+            runtimeProvider: runtimeProvider
+        )
 
-            mapWrapper.addDependency(wrapper: moduleResolutionWrapper)
+        mapWrapper.addDependency(wrapper: moduleResolutionWrapper)
+        mapWrapper.addDependency(wrapper: destinationAssetWrapper)
 
-            let dependencies = moduleResolutionWrapper.allOperations + mapWrapper.dependencies
-            return CompoundOperationWrapper(
-                targetOperation: mapWrapper.targetOperation,
-                dependencies: dependencies
-            )
+        let dependencies = destinationAssetWrapper.allOperations + moduleResolutionWrapper.allOperations
+            + mapWrapper.dependencies
 
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
-        }
+        return CompoundOperationWrapper(targetOperation: mapWrapper.targetOperation, dependencies: dependencies)
     }
 
     func createTransferMapWrapper(
         dependingOn moduleResolutionOperation: BaseOperation<String>,
-        destinationAsset: XcmMultilocationAsset,
+        destinationAssetOperation: BaseOperation<XcmMultilocationAsset>,
         xcmTransfer: XcmAssetTransfer,
         maxWeight: BigUInt,
         runtimeProvider: RuntimeProviderProtocol
@@ -289,13 +343,14 @@ final class XcmTransferService {
             let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
                 let module = try moduleResolutionOperation.extractNoCancellableResultData()
                 let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+                let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
                 let asset = destinationAsset.asset
                 let location = destinationAsset.location
 
                 return try Xcm.appendTransferCall(
-                    asset: .V1(asset),
-                    destination: .V1(location),
+                    asset: asset,
+                    destination: location,
                     weight: maxWeight,
                     module: module,
                     codingFactory: codingFactory
@@ -309,23 +364,20 @@ final class XcmTransferService {
                 dependencies: [coderFactoryOperation]
             )
         case .xcmpallet:
-            let multiassetsVersionWrapper = metadataQueryFactory.createLowestMultiassetsVersionWrapper(
-                for: runtimeProvider
-            )
-
-            let multilocationVersionWrapper = metadataQueryFactory.createLowestMultilocationVersionWrapper(
-                for: runtimeProvider
-            )
+            let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
             let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
                 let module = try moduleResolutionOperation.extractNoCancellableResultData()
-                let multiAssetsVersion = try multiassetsVersionWrapper.targetOperation.extractNoCancellableResultData()
-                let multiLocationVersion = try multilocationVersionWrapper.targetOperation.extractNoCancellableResultData()
+                let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+                let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
                 let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
-                let assets = Xcm.VersionedMultiassets.versionedMultiassets(
-                    for: multiAssetsVersion,
-                    multiAssets: [destinationAsset.asset]
+                let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
+
+                let weight = try BlockchainWeightFactory.convertExecuteCallWeightTypeToJson(
+                    module: module,
+                    codingFactory: codingFactory,
+                    weight: UInt64(maxWeight)
                 )
 
                 let call = Xcm.PalletTransferCall(
@@ -333,40 +385,48 @@ final class XcmTransferService {
                     beneficiary: beneficiary,
                     assets: assets,
                     feeAssetItem: 0,
-                    weightLimit: .limited(weight: UInt64(maxWeight))
+                    weightLimit: .limited(weight: weight)
                 )
 
                 return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
             }
 
-            mapOperation.addDependency(multiassetsVersionWrapper.targetOperation)
-            mapOperation.addDependency(multilocationVersionWrapper.targetOperation)
+            mapOperation.addDependency(coderFactoryOperation)
 
-            let dependencies = multiassetsVersionWrapper.allOperations + multilocationVersionWrapper.allOperations
-
-            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [coderFactoryOperation])
         case .teleport:
+            let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
             let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
                 let module = try moduleResolutionOperation.extractNoCancellableResultData()
+                let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+                let destinationAsset = try destinationAssetOperation.extractNoCancellableResultData()
 
                 let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
                 let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
+
+                let weight = try BlockchainWeightFactory.convertExecuteCallWeightTypeToJson(
+                    module: module,
+                    codingFactory: codingFactory,
+                    weight: UInt64(maxWeight)
+                )
+
                 let call = Xcm.TeleportCall(
                     destination: destination,
                     beneficiary: beneficiary,
                     assets: assets,
                     feeAssetItem: 0,
-                    weightLimit: .limited(weight: UInt64(maxWeight))
+                    weightLimit: .limited(weight: weight)
                 )
 
                 return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
             }
 
-            return CompoundOperationWrapper(targetOperation: mapOperation)
+            mapOperation.addDependency(coderFactoryOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [coderFactoryOperation])
         case .unknown:
-            return CompoundOperationWrapper.createWithError(
-                XcmAssetTransfer.TransferTypeError.unknownType
-            )
+            return .createWithError(XcmAssetTransfer.TransferTypeError.unknownType)
         }
     }
 }
