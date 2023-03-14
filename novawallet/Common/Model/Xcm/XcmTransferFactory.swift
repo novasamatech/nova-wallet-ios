@@ -23,11 +23,13 @@ protocol XcmTransferFactoryProtocol {
         version: Xcm.Version?
     ) throws -> Xcm.VersionedMultiasset
 
-    func createWeightMessage(
-        from instructions: [String],
-        destination: Xcm.Multilocation,
-        asset: Xcm.Multiasset
-    ) throws -> Xcm.Message
+    func createWeightMessages(
+        from chainAsset: ChainAsset,
+        reserve: XcmTransferReserve,
+        destination: XcmTransferDestination,
+        amount: BigUInt,
+        xcmTransfers: XcmTransfers
+    ) throws -> XcmWeightMessages
 }
 
 enum XcmTransferFactoryError: Error {
@@ -79,95 +81,6 @@ extension XcmTransferFactoryProtocol {
         )
 
         return XcmMultilocationAsset(location: multilocation, asset: multiasset)
-    }
-
-    private func createDestinationWeightMessage(
-        from chainAsset: ChainAsset,
-        destination: XcmTransferDestination,
-        xcmTransfer: XcmAssetTransfer,
-        xcmTransfers: XcmTransfers,
-        multiasset: Xcm.Multiasset
-    ) throws -> Xcm.Message {
-        let multilocation = createMultilocation(origin: chainAsset.chain, destination: destination)
-
-        let destinationInstructionsKey = xcmTransfer.destination.fee.instructions
-        guard let destinationInstructions = xcmTransfers.instructions(for: destinationInstructionsKey) else {
-            throw XcmTransferFactoryError.noInstructions(destinationInstructionsKey)
-        }
-
-        return try createWeightMessage(
-            from: destinationInstructions,
-            destination: multilocation,
-            asset: multiasset
-        )
-    }
-
-    private func createReserveWeightMessage(
-        from chainAsset: ChainAsset,
-        reserve: XcmTransferReserve,
-        xcmTransfers: XcmTransfers,
-        multiasset: Xcm.Multiasset
-    ) throws -> Xcm.Message? {
-        guard let reserveFee = xcmTransfers.reserveFee(from: chainAsset.chainAssetId) else {
-            return nil
-        }
-
-        let reserveMultilocation) = createMultilocation(origin: chainAsset.chain, reserve: reserve)
-
-        guard let reserveInstruction = xcmTransfers.instructions(for: reserveFee.instructions) else {
-            throw XcmTransferFactoryError.noInstructions(reserveFee.instructions)
-        }
-
-        return try createWeightMessage(
-            from: reserveInstruction,
-            destination: reserveMultilocation,
-            asset: multiasset
-        )
-    }
-
-    func createWeightMessages(
-        from chainAsset: ChainAsset,
-        reserve: XcmTransferReserve,
-        destination: XcmTransferDestination,
-        amount: BigUInt,
-        xcmTransfers: XcmTransfers
-    ) throws -> XcmWeightMessages {
-        let originChainAssetId = chainAsset.chainAssetId
-
-        guard let xcmTransfer = xcmTransfers.transfer(
-            from: originChainAssetId,
-            destinationChainId: destination.chain.chainId
-        ) else {
-            throw XcmTransferFactoryError.noDestinationAssetFound(originChainAssetId)
-        }
-
-        guard let reservePath = xcmTransfers.getReservePath(for: originChainAssetId) else {
-            throw XcmTransferFactoryError.noReserve(originChainAssetId)
-        }
-
-        let multiasset = try createMultiasset(
-            origin: chainAsset.chain,
-            reserve: reserve.chain,
-            assetLocation: reservePath,
-            amount: amount
-        )
-
-        let destinationMessage = try createDestinationWeightMessage(
-            from: chainAsset,
-            destination: destination,
-            xcmTransfer: xcmTransfer,
-            xcmTransfers: xcmTransfers,
-            multiasset: multiasset
-        )
-
-        let reserveMessage = try createReserveWeightMessage(
-            from: chainAsset,
-            reserve: reserve,
-            xcmTransfers: xcmTransfers,
-            multiasset: multiasset
-        )
-
-        return XcmWeightMessages(destination: destinationMessage, reserve: reserveMessage)
     }
 }
 
@@ -224,7 +137,7 @@ final class XcmTransferFactory {
         }
     }
 
-    private func createAssetMultilocation(
+    func createAssetMultilocation(
         from path: JSON,
         type: XcmAsset.LocationType,
         origin: ChainModel,
@@ -247,7 +160,7 @@ final class XcmTransferFactory {
         return Xcm.Multilocation(parents: parents, interior: junctions)
     }
 
-    private func createMultilocation(
+    func createMultilocation(
         origin: ChainModel,
         destination: XcmTransferDestination
     ) -> Xcm.Multilocation {
@@ -320,6 +233,88 @@ final class XcmTransferFactory {
 
         return Xcm.Multiasset(multilocation: multilocation, amount: amount)
     }
+
+    func createDestinationWeightMessage(
+        from chainAsset: ChainAsset,
+        destination: XcmTransferDestination,
+        xcmTransfer: XcmAssetTransfer,
+        xcmTransfers: XcmTransfers,
+        multiasset: Xcm.Multiasset
+    ) throws -> Xcm.Message {
+        let multilocation = createMultilocation(origin: chainAsset.chain, destination: destination)
+
+        let destinationInstructionsKey = xcmTransfer.destination.fee.instructions
+        guard let destinationInstructions = xcmTransfers.instructions(for: destinationInstructionsKey) else {
+            throw XcmTransferFactoryError.noInstructions(destinationInstructionsKey)
+        }
+
+        return try createWeightMessage(
+            from: destinationInstructions,
+            destination: multilocation,
+            asset: multiasset
+        )
+    }
+
+    func createReserveWeightMessage(
+        from chainAsset: ChainAsset,
+        reserve: XcmTransferReserve,
+        xcmTransfers: XcmTransfers,
+        multiasset: Xcm.Multiasset
+    ) throws -> Xcm.Message? {
+        guard let reserveFee = xcmTransfers.reserveFee(from: chainAsset.chainAssetId) else {
+            return nil
+        }
+
+        let reserveMultilocation = createMultilocation(origin: chainAsset.chain, reserve: reserve)
+
+        guard let reserveInstruction = xcmTransfers.instructions(for: reserveFee.instructions) else {
+            throw XcmTransferFactoryError.noInstructions(reserveFee.instructions)
+        }
+
+        return try createWeightMessage(
+            from: reserveInstruction,
+            destination: reserveMultilocation,
+            asset: multiasset
+        )
+    }
+
+    func createWeightMessage(
+        from instructions: [String],
+        destination: Xcm.Multilocation,
+        asset: Xcm.Multiasset
+    ) throws -> Xcm.Message {
+        let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
+            switch rawInstruction {
+            case Xcm.Instruction.fieldWithdrawAsset:
+                return .withdrawAsset([asset])
+            case Xcm.Instruction.fieldClearOrigin:
+                return .clearOrigin
+            case Xcm.Instruction.fieldReserveAssetDeposited:
+                return .reserveAssetDeposited([asset])
+            case Xcm.Instruction.fieldBuyExecution:
+                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .limited(weight: .init(value: 0)))
+                return .buyExecution(value)
+            case Xcm.Instruction.fieldDepositAsset:
+                let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
+                return .depositAsset(value)
+            case Xcm.Instruction.fieldDepositReserveAsset:
+                let value = Xcm.DepositReserveAssetValue(
+                    assets: .wild(.all),
+                    maxAssets: 1,
+                    dest: destination,
+                    xcm: []
+                )
+
+                return .depositReserveAsset(value)
+            case Xcm.Instruction.fieldReceiveTeleportedAsset:
+                return .receiveTeleportedAsset([asset])
+            default:
+                throw XcmTransferFactoryError.unsupportedInstruction(rawInstruction)
+            }
+        }
+
+        return .V2(xcmInstructions)
+    }
 }
 
 extension XcmTransferFactory: XcmTransferFactoryProtocol {
@@ -358,41 +353,48 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
         return .versionedMultiasset(for: version, multiAsset: multiasset)
     }
 
-    func createWeightMessage(
-        from instructions: [String],
-        destination: Xcm.Multilocation,
-        asset: Xcm.Multiasset
-    ) throws -> Xcm.Message {
-        let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
-            switch rawInstruction {
-            case Xcm.Instruction.fieldWithdrawAsset:
-                return .withdrawAsset([asset])
-            case Xcm.Instruction.fieldClearOrigin:
-                return .clearOrigin
-            case Xcm.Instruction.fieldReserveAssetDeposited:
-                return .reserveAssetDeposited([asset])
-            case Xcm.Instruction.fieldBuyExecution:
-                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .limited(weight: 0))
-                return .buyExecution(value)
-            case Xcm.Instruction.fieldDepositAsset:
-                let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
-                return .depositAsset(value)
-            case Xcm.Instruction.fieldDepositReserveAsset:
-                let value = Xcm.DepositReserveAssetValue(
-                    assets: .wild(.all),
-                    maxAssets: 1,
-                    dest: destination,
-                    xcm: []
-                )
+    func createWeightMessages(
+        from chainAsset: ChainAsset,
+        reserve: XcmTransferReserve,
+        destination: XcmTransferDestination,
+        amount: BigUInt,
+        xcmTransfers: XcmTransfers
+    ) throws -> XcmWeightMessages {
+        let originChainAssetId = chainAsset.chainAssetId
 
-                return .depositReserveAsset(value)
-            case Xcm.Instruction.fieldReceiveTeleportedAsset:
-                return .receiveTeleportedAsset([asset])
-            default:
-                throw XcmTransferFactoryError.unsupportedInstruction(rawInstruction)
-            }
+        guard let xcmTransfer = xcmTransfers.transfer(
+            from: originChainAssetId,
+            destinationChainId: destination.chain.chainId
+        ) else {
+            throw XcmTransferFactoryError.noDestinationAssetFound(originChainAssetId)
         }
 
-        return .V2(xcmInstructions)
+        guard let reservePath = xcmTransfers.getReservePath(for: originChainAssetId) else {
+            throw XcmTransferFactoryError.noReserve(originChainAssetId)
+        }
+
+        let multiasset = try createMultiAsset(
+            origin: chainAsset.chain,
+            reserve: reserve.chain,
+            assetLocation: reservePath,
+            amount: amount
+        )
+
+        let destinationMessage = try createDestinationWeightMessage(
+            from: chainAsset,
+            destination: destination,
+            xcmTransfer: xcmTransfer,
+            xcmTransfers: xcmTransfers,
+            multiasset: multiasset
+        )
+
+        let reserveMessage = try createReserveWeightMessage(
+            from: chainAsset,
+            reserve: reserve,
+            xcmTransfers: xcmTransfers,
+            multiasset: multiasset
+        )
+
+        return XcmWeightMessages(destination: destinationMessage, reserve: reserveMessage)
     }
 }

@@ -32,32 +32,24 @@ extension Xcm {
         let paramName = ExecuteCall<BigUInt>.CodingKeys.maxWeight.rawValue
 
         return try BlockchainWeightFactory.convertCallVersionedWeight(
-            for: path,
-            paramName: paramName,
+            for: .init(path: path, argName: paramName),
             codingFactory: codingFactory,
             handlers: .init(
-                v1Handler: { builder in
-                    let call = ExecuteCall(message: message, maxWeight: StringScaleMapper(value: maxWeight))
+                v1Handler: { builder, weight in
+                    let call = ExecuteCall(message: message, maxWeight: weight)
                     return try builder.adding(call: call.runtimeCall(for: module))
                 },
-                v1P5Handler: { builder in
-                    let call = ExecuteCall(
-                        message: message,
-                        maxWeight: BlockchainWeight.WeightV1P5(refTime: UInt64(maxWeight))
-                    )
-
+                v1P5Handler: { builder, weight in
+                    let call = ExecuteCall(message: message, maxWeight: weight)
                     return try builder.adding(call: call.runtimeCall(for: module))
                 },
-                v2Handler: { builder in
-                    let call = ExecuteCall(
-                        message: message,
-                        maxWeight: BlockchainWeight.WeightV2(refTime: maxWeight, proofSize: 0)
-                    )
-
+                v2Handler: { builder, weight in
+                    let call = ExecuteCall(message: message, maxWeight: weight)
                     return try builder.adding(call: call.runtimeCall(for: module))
                 }
             ),
-            builder: builder
+            builder: builder,
+            weight: UInt64(maxWeight)
         )
     }
 }
