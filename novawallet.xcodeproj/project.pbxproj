@@ -2552,6 +2552,7 @@
 		880E4103298CFFBF0077B18B /* DelegationsDisplayStringFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880E4102298CFFBF0077B18B /* DelegationsDisplayStringFactory.swift */; };
 		880E4105298D0E550077B18B /* GovernanceDelegationsLocalWrapperFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880E4104298D0E550077B18B /* GovernanceDelegationsLocalWrapperFactory.swift */; };
 		88107D6129015FAB001AB0B0 /* TrackTagsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88107D6029015FAB001AB0B0 /* TrackTagsView.swift */; };
+		8813702C29C13E7900829458 /* KiltStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8813702B29C13E7900829458 /* KiltStorageTests.swift */; };
 		8814773C29AF554D001E98A1 /* AddDelegationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814773B29AF554D001E98A1 /* AddDelegationViewModel.swift */; };
 		8814773E29B071AD001E98A1 /* ImageViewModelProtocol+Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814773D29B071AD001E98A1 /* ImageViewModelProtocol+Optional.swift */; };
 		8814774029B07B66001E98A1 /* DelegateGroupActionTitleControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814773F29B07B66001E98A1 /* DelegateGroupActionTitleControl.swift */; };
@@ -5925,6 +5926,7 @@
 		880E4102298CFFBF0077B18B /* DelegationsDisplayStringFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationsDisplayStringFactory.swift; sourceTree = "<group>"; };
 		880E4104298D0E550077B18B /* GovernanceDelegationsLocalWrapperFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegationsLocalWrapperFactory.swift; sourceTree = "<group>"; };
 		88107D6029015FAB001AB0B0 /* TrackTagsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTagsView.swift; sourceTree = "<group>"; };
+		8813702B29C13E7900829458 /* KiltStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltStorageTests.swift; sourceTree = "<group>"; };
 		8814773B29AF554D001E98A1 /* AddDelegationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDelegationViewModel.swift; sourceTree = "<group>"; };
 		8814773D29B071AD001E98A1 /* ImageViewModelProtocol+Optional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewModelProtocol+Optional.swift"; sourceTree = "<group>"; };
 		8814773F29B07B66001E98A1 /* DelegateGroupActionTitleControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegateGroupActionTitleControl.swift; sourceTree = "<group>"; };
@@ -8632,6 +8634,7 @@
 				84532D5E28E4210E00EF4ADC /* ConvictionVotesFetchTests.swift */,
 				843B6F4E28EEEF610086D4E0 /* Gov2OperationFactoryTests.swift */,
 				840874DF2978882700ACFA55 /* Gov2DelegationTests.swift */,
+				8813702B29C13E7900829458 /* KiltStorageTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -16428,6 +16431,7 @@
 				847A25C328D84A9C006AC9F5 /* ReferendumFetchTests.swift in Sources */,
 				84161DB627C39013005DF668 /* NftSyncIntegrationTests.swift in Sources */,
 				84FACB6625F56D5000F32ED4 /* CalculatorServiceTests.swift in Sources */,
+				8813702C29C13E7900829458 /* KiltStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
