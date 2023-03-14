@@ -47,7 +47,7 @@ extension Xcm {
                 return (.V1(destination), .V1(beneficiary))
             case let .V2(fullMultilocation):
                 let (destination, beneficiary) = getDestinationAndBeneficiary(from: fullMultilocation)
-                return (.V2(destination), .V1(beneficiary))
+                return (.V2(destination), .V2(beneficiary))
             }
         }
     }
