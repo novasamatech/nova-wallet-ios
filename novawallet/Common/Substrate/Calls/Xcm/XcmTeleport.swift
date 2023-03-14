@@ -18,7 +18,7 @@ extension Xcm {
         let beneficiary: VersionedMultilocation // must be set relatively to destination
         let assets: VersionedMultiassets
         @StringCodable var feeAssetItem: UInt32 // index of the fee asset in assets
-        let weightLimit: Xcm.WeightLimit // maximum weight for remote execution
+        let weightLimit: Xcm.WeightLimit<JSON> // maximum weight for remote execution
 
         func runtimeCall(for module: String) -> RuntimeCall<TeleportCall> {
             RuntimeCall(moduleName: module, callName: Self.callName, args: self)
