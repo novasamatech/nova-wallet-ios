@@ -2,22 +2,24 @@ import Foundation
 import SubstrateSdk
 
 extension Xcm {
-    enum WeightLimit: Codable {
-        static let unlimitedField = "Unlimited"
-        static let limitedField = "Limited"
+    enum WeightLimitFields {
+        static let unlimited = "Unlimited"
+        static let limited = "Limited"
+    }
 
+    enum WeightLimit<T>: Codable where T: Codable {
         case unlimited
-        case limited(weight: UInt64)
+        case limited(weight: T)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
 
             switch self {
             case .unlimited:
-                try container.encode(Self.unlimitedField)
+                try container.encode(WeightLimitFields.unlimited)
             case let .limited(weight):
-                try container.encode(Self.limitedField)
-                try container.encode(StringScaleMapper(value: weight))
+                try container.encode(WeightLimitFields.limited)
+                try container.encode(weight)
             }
         }
 
@@ -27,10 +29,10 @@ extension Xcm {
             let type = try container.decode(String.self)
 
             switch type {
-            case Self.unlimitedField:
+            case WeightLimitFields.unlimited:
                 self = .unlimited
-            case Self.limitedField:
-                let weight = try container.decode(StringScaleMapper<UInt64>.self).value
+            case WeightLimitFields.limited:
+                let weight = try container.decode(T.self)
                 self = .limited(weight: weight)
             default:
                 throw DecodingError.dataCorruptedError(
