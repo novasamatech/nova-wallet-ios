@@ -508,3 +508,37 @@ enum ModalPickerFactory {
         return viewController
     }
 }
+
+extension ModalPickerFactory {
+    static func createSelectionList(
+        title: LocalizableResource<String>?,
+        items: [LocalizableResource<SelectableTitleTableViewCell.Model>],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate?
+    ) -> UIViewController? {
+        let viewController: ModalPickerViewController<SelectableTitleTableViewCell, SelectableTitleTableViewCell.Model>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 44
+        viewController.headerHeight = 42
+        viewController.footerHeight = 0
+        viewController.headerBorderType = []
+        viewController.actionType = .none
+        viewController.viewModels = items
+        viewController.selectedIndex = selectedIndex
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0, height: height)
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+}

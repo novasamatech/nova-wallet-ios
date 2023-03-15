@@ -73,16 +73,13 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
         title: String,
         description: String
     ) {
-        guard
-            let fullDescriptionView = ReferendumFullDescriptionViewFactory.createView(
-                for: title,
-                description: description
-            ) else {
-            return
-        }
+        let detailsView = MarkdownDescriptionViewFactory.createReferendumFullDetailsView(
+            for: title,
+            description: description
+        )
 
         let navigationController = FearlessNavigationController(
-            rootViewController: fullDescriptionView.controller
+            rootViewController: detailsView.controller
         )
 
         view?.controller.present(navigationController, animated: true)

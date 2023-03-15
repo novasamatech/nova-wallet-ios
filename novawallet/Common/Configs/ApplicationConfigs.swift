@@ -31,6 +31,9 @@ protocol ApplicationConfigProtocol {
     var ledgerGuideURL: URL { get }
     var canDebugDApp: Bool { get }
     var fileCachePath: String { get }
+    var learnGovernanceDelegateMetadata: URL { get }
+    var inAppUpdatesEntrypointURL: URL { get }
+    var inAppUpdatesChangelogsURL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -55,7 +58,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var appStoreURL: URL {
-        URL(string: "https://apps.apple.com/us/app/id1597119355")!
+        URL(string: "itms-apps://apple.com/app/id1597119355")!
     }
 
     var socialURL: URL {
@@ -122,9 +125,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v7/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v8/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v7/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v8/chains_dev.json")!
         #endif
     }
 
@@ -198,5 +201,25 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var learnRecommendedValidatorsURL: URL {
         URL(string: "https://github.com/nova-wallet/nova-utils/wiki/Recommended-validators-in-Nova-Wallet")!
+    }
+
+    var learnGovernanceDelegateMetadata: URL {
+        URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
+    }
+
+    var inAppUpdatesEntrypointURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_release.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_dev.json")!
+        #endif
+    }
+
+    var inAppUpdatesChangelogsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/release")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
+        #endif
     }
 }

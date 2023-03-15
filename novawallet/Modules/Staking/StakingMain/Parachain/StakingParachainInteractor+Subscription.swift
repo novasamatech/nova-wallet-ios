@@ -133,7 +133,7 @@ extension StakingParachainInteractor {
 
         if
             let address = selectedAccount?.chainAccount.toChecksumedAddress(),
-            let rewardApi = chainAsset.chain.externalApi?.staking {
+            let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
             totalRewardProvider = subscribeTotalReward(
                 for: address,
                 api: rewardApi,
@@ -254,7 +254,7 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for address: AccountAddress,
-        api _: ChainModel.ExternalApi
+        api _: LocalChainExternalApi
     ) {
         guard selectedAccount?.chainAccount.toChecksumedAddress() == address else {
             return

@@ -10,6 +10,7 @@ final class MainTabBarInteractor {
     let keystoreImportService: KeystoreImportServiceProtocol
     let serviceCoordinator: ServiceCoordinatorProtocol
     let securedLayer: SecurityLayerServiceProtocol
+    let inAppUpdatesService: SyncServiceProtocol
 
     deinit {
         stopServices()
@@ -19,22 +20,27 @@ final class MainTabBarInteractor {
         eventCenter: EventCenterProtocol,
         serviceCoordinator: ServiceCoordinatorProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
-        securedLayer: SecurityLayerServiceProtocol
+        securedLayer: SecurityLayerServiceProtocol,
+        inAppUpdatesService: SyncServiceProtocol
     ) {
         self.eventCenter = eventCenter
         self.keystoreImportService = keystoreImportService
         self.serviceCoordinator = serviceCoordinator
         self.securedLayer = securedLayer
+        self.inAppUpdatesService = inAppUpdatesService
+        self.inAppUpdatesService.setup()
 
         startServices()
     }
 
     private func startServices() {
         serviceCoordinator.setup()
+        inAppUpdatesService.syncUp()
     }
 
     private func stopServices() {
         serviceCoordinator.throttle()
+        inAppUpdatesService.stopSyncUp()
     }
 }
 

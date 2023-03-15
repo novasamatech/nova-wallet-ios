@@ -122,5 +122,25 @@
         <string>каждые %li дней</string>
       </dict>
     </dict>
+    <key>common.in.tracks</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>1 треке</string>
+        <key>few</key>
+        <string>%li треках</string>
+        <key>many</key>
+        <string>%li треках</string>
+        <key>other</key>
+        <string>%li треках</string>
+      </dict>
+    </dict>
   </dict>
 </plist>

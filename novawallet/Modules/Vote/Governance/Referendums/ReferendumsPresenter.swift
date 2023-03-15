@@ -9,6 +9,7 @@ final class ReferendumsPresenter {
     let interactor: ReferendumsInteractorInputProtocol
     let wireframe: ReferendumsWireframeProtocol
     let viewModelFactory: ReferendumsModelFactoryProtocol
+    let activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol
     let statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let sorting: ReferendumsSorting
@@ -20,6 +21,7 @@ final class ReferendumsPresenter {
     private var referendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private var offchainVoting: GovernanceOffchainVotesLocal?
     private var unlockSchedule: GovernanceUnlockSchedule?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
@@ -36,6 +38,8 @@ final class ReferendumsPresenter {
         selectedOption?.type
     }
 
+    private var supportsDelegations: Bool = false
+
     private lazy var chainBalanceFactory = ChainBalanceViewModelFactory()
 
     deinit {
@@ -46,6 +50,7 @@ final class ReferendumsPresenter {
         interactor: ReferendumsInteractorInputProtocol,
         wireframe: ReferendumsWireframeProtocol,
         viewModelFactory: ReferendumsModelFactoryProtocol,
+        activityViewModelFactory: ReferendumsActivityViewModelFactoryProtocol,
         statusViewModelFactory: ReferendumStatusViewModelFactoryProtocol,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         sorting: ReferendumsSorting,
@@ -55,6 +60,7 @@ final class ReferendumsPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.activityViewModelFactory = activityViewModelFactory
         self.statusViewModelFactory = statusViewModelFactory
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.sorting = sorting
@@ -70,13 +76,14 @@ final class ReferendumsPresenter {
         referendums = nil
         referendumsMetadata = nil
         voting = nil
+        offchainVoting = nil
         unlockSchedule = nil
         blockNumber = nil
         blockTime = nil
         maxStatusTimeInterval = nil
         timeModels = nil
+        supportsDelegations = false
 
-        view?.didReceiveUnlocks(viewModel: nil)
         view?.update(model: .init(sections: viewModelFactory.createLoadingViewModel()))
     }
 
@@ -98,33 +105,6 @@ final class ReferendumsPresenter {
         view?.didReceiveChainBalance(viewModel: viewModel)
     }
 
-    private func updateUnlocksView() {
-        guard
-            let totalLocked = voting?.value?.totalLocked(),
-            totalLocked > 0,
-            let displayInfo = chain?.utilityAssetDisplayInfo()
-        else {
-            view?.didReceiveUnlocks(viewModel: nil)
-            return
-        }
-
-        let totalLockedDecimal = Decimal.fromSubstrateAmount(totalLocked, precision: displayInfo.assetPrecision) ?? 0
-
-        let tokenFormatter = assetBalanceFormatterFactory.createTokenFormatter(for: displayInfo)
-        let totalLockedString = tokenFormatter.value(for: selectedLocale).stringFromDecimal(totalLockedDecimal)
-
-        let hasUnlock: Bool
-
-        if let blockNumber = blockNumber, let unlockSchedule = unlockSchedule {
-            hasUnlock = unlockSchedule.availableUnlock(at: blockNumber).amount > 0
-        } else {
-            hasUnlock = false
-        }
-
-        let viewModel = ReferendumsUnlocksViewModel(totalLock: totalLockedString ?? "", hasUnlock: hasUnlock)
-        view?.didReceiveUnlocks(viewModel: viewModel)
-    }
-
     private func updateReferendumsView() {
         guard let view = view else {
             return
@@ -137,15 +117,38 @@ final class ReferendumsPresenter {
         }
 
         let accountVotes = voting?.value?.votes
-        let sections = viewModelFactory.createSections(input: .init(
+        let referendumsSections = viewModelFactory.createSections(input: .init(
             referendums: referendums,
             metadataMapping: referendumsMetadata,
             votes: accountVotes?.votes ?? [:],
+            offchainVotes: offchainVoting,
             chainInfo: .init(chain: chainModel, currentBlock: currentBlock, blockDuration: blockTime),
-            locale: selectedLocale
+            locale: selectedLocale,
+            voterName: nil
         ))
 
-        view.update(model: .init(sections: sections))
+        let activitySection: ReferendumsSection
+
+        if supportsDelegations {
+            activitySection = activityViewModelFactory.createReferendumsActivitySection(
+                chain: chainModel,
+                voting: voting?.value,
+                blockNumber: currentBlock,
+                unlockSchedule: unlockSchedule,
+                locale: selectedLocale
+            )
+        } else {
+            activitySection = activityViewModelFactory.createReferendumsActivitySectionWithoutDelegations(
+                chain: chainModel,
+                voting: voting?.value,
+                blockNumber: currentBlock,
+                unlockSchedule: unlockSchedule,
+                locale: selectedLocale
+            )
+        }
+
+        let allSections = [activitySection] + referendumsSections
+        view.update(model: .init(sections: allSections))
     }
 
     private func updateTimeModels() {
@@ -242,12 +245,14 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
             return
         }
 
+        let accountVotes = voting?.value?.votes.votes[referendum.index]
         let initData = ReferendumDetailsInitData(
             referendum: referendum,
-            votesResult: voting,
+            offchainVoting: offchainVoting?.fetchVotes(for: referendum.index),
             blockNumber: blockNumber,
             blockTime: blockTime,
-            metadata: referendumsMetadata?[referendum.index]
+            metadata: referendumsMetadata?[referendum.index],
+            accountVotes: accountVotes
         )
 
         wireframe.showReferendumDetails(from: view, initData: initData)
@@ -262,6 +267,16 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
         )
 
         wireframe.showUnlocksDetails(from: view, initData: initData)
+    }
+
+    func selectDelegations() {
+        let delegatings = voting?.value?.votes.delegatings ?? [:]
+
+        if delegatings.isEmpty {
+            wireframe.showAddDelegation(from: view)
+        } else {
+            wireframe.showYourDelegations(from: view)
+        }
     }
 }
 
@@ -293,7 +308,6 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
         self.voting = voting
         updateReferendumsView()
-        updateUnlocksView()
 
         if let tracksVoting = voting.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
@@ -314,6 +328,14 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
             }
         }
         updateReferendumsView()
+    }
+
+    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotesLocal) {
+        if offchainVoting != voting {
+            offchainVoting = voting
+
+            updateReferendumsView()
+        }
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
@@ -354,7 +376,13 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule) {
         self.unlockSchedule = unlockSchedule
-        updateUnlocksView()
+        updateReferendumsView()
+    }
+
+    func didReceiveSupportDelegations(_ supportsDelegations: Bool) {
+        self.supportsDelegations = supportsDelegations
+
+        updateReferendumsView()
     }
 
     func didReceiveError(_ error: ReferendumsInteractorError) {
@@ -388,6 +416,9 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshUnlockSchedule()
             }
+        case .offchainVotingFetchFailed:
+            // we don't bother user with offchain retry and wait next block
+            break
         }
     }
 }
@@ -416,7 +447,6 @@ extension ReferendumsPresenter: Localizable {
             provideChainBalance()
 
             updateReferendumsView()
-            updateUnlocksView()
         }
     }
 }

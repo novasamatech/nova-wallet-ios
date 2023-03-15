@@ -79,3 +79,12 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         }
     }
 }
+
+extension SigningWrapperFactory {
+    static func createSigner(from metaAccountResponse: MetaChainAccountResponse) -> SigningWrapperProtocol {
+        SigningWrapperFactory().createSigningWrapper(
+            for: metaAccountResponse.metaId,
+            accountResponse: metaAccountResponse.chainAccount
+        )
+    }
+}
