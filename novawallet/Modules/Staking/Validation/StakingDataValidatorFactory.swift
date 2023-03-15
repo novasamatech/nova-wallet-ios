@@ -1,6 +1,13 @@
 import Foundation
 import SoraFoundation
 import IrohaCrypto
+import BigInt
+
+struct MinStakeIsNotViolatedParams {
+    let networkInfo: NetworkStakingInfo?
+    let minNominatorBond: BigUInt?
+    let votersCount: UInt32?
+}
 
 protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func canUnbond(amount: Decimal?, bonded: Decimal?, locale: Locale) -> DataValidating
@@ -54,9 +61,16 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
         hasExistingNomination: Bool,
         locale: Locale
     ) -> DataValidating
+
+    func minStakeIsNotViolated(
+        amount: Decimal?,
+        params: MinStakeIsNotViolatedParams,
+        assetInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> DataValidating
 }
 
-final class StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
+final class StakingDataValidatingFactory {
     weak var view: (ControllerBackedProtocol & Localizable)?
 
     var basePresentable: BaseErrorPresentable { presentable }
@@ -69,7 +83,9 @@ final class StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         self.presentable = presentable
         self.balanceFactory = balanceFactory
     }
+}
 
+extension StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
     func canUnbond(amount: Decimal?, bonded: Decimal?, locale: Locale) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
@@ -303,6 +319,53 @@ final class StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
                 let counterForNominators = counterForNominators,
                 let maxNominatorsCount = maxNominatorsCount {
                 return counterForNominators < maxNominatorsCount
+            } else {
+                return true
+            }
+        })
+    }
+
+    func minStakeIsNotViolated(
+        amount: Decimal?,
+        params: MinStakeIsNotViolatedParams,
+        assetInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> DataValidating {
+        let optMinStake = params.networkInfo?.calculateMinimumStake(
+            given: params.minNominatorBond, votersCount: params.votersCount
+        )
+
+        let optMinStakeDecimal = optMinStake.flatMap {
+            Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
+        }
+
+        return WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard
+                let view = self?.view,
+                let minStakeDecimal = optMinStakeDecimal else {
+                return
+            }
+
+            let amountString = self?.balanceFactory?.amountFromValue(
+                minStakeDecimal,
+                roundingMode: .up
+            ).value(for: locale)
+
+            self?.presentable.presentMinStakeViolated(
+                from: view,
+                action: {
+                    delegate.didCompleteWarningHandling()
+                },
+                minStake: amountString ?? "",
+                locale: locale
+            )
+        }, preservesCondition: {
+            if
+                let amount = amount,
+                let votersCount = params.votersCount,
+                params.networkInfo?.votersInfo?.hasVotersLimit(for: votersCount) == true,
+                let minStakeDecimal = optMinStakeDecimal {
+                return amount >= minStakeDecimal
             } else {
                 return true
             }
