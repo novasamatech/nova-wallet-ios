@@ -11,7 +11,8 @@ final class NominatorState: BaseStashNextState, StashLedgerStateProtocol {
         ledgerInfo: StakingLedger,
         nomination: Nomination,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?
+        payee: RewardDestinationArg?,
+        bagListNode: BagList.Node?
     ) {
         self.ledgerInfo = ledgerInfo
         self.nomination = nomination
@@ -21,7 +22,8 @@ final class NominatorState: BaseStashNextState, StashLedgerStateProtocol {
             commonData: commonData,
             stashItem: stashItem,
             totalReward: totalReward,
-            payee: payee
+            payee: payee,
+            bagListNode: bagListNode
         )
     }
 
@@ -46,7 +48,8 @@ final class NominatorState: BaseStashNextState, StashLedgerStateProtocol {
                 commonData: commonData,
                 stashItem: stashItem,
                 ledgerInfo: nil,
-                totalReward: totalReward
+                totalReward: totalReward,
+                bagListNode: bagListNode
             )
         }
 
@@ -71,7 +74,8 @@ final class NominatorState: BaseStashNextState, StashLedgerStateProtocol {
                 stashItem: stashItem,
                 ledgerInfo: ledgerInfo,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         }
 

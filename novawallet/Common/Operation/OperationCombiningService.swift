@@ -117,4 +117,31 @@ extension OperationCombiningService {
 
         return .init(targetOperation: mappingOperation, dependencies: [loadingOperation])
     }
+
+    static func compoundOptionalWrapper(
+        operationManager: OperationManagerProtocol,
+        wrapperClosure: @escaping () throws -> CompoundOperationWrapper<T?>?
+    ) -> CompoundOperationWrapper<T?> {
+        let loadingOperation: BaseOperation<[T?]> = OperationCombiningService<T?>(operationManager: operationManager) {
+            if let wrapper = try wrapperClosure() {
+                return [wrapper]
+            } else {
+                return []
+            }
+        }.longrunOperation()
+
+        let mappingOperation = ClosureOperation<T?> {
+            let results = try loadingOperation.extractNoCancellableResultData()
+
+            if !results.isEmpty {
+                return results[0]
+            } else {
+                return nil
+            }
+        }
+
+        mappingOperation.addDependency(loadingOperation)
+
+        return .init(targetOperation: mappingOperation, dependencies: [loadingOperation])
+    }
 }
