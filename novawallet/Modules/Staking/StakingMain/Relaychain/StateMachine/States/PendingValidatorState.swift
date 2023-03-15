@@ -21,7 +21,8 @@ final class PendingValidatorState: BaseStashNextState {
             commonData: commonData,
             stashItem: stashItem,
             totalReward: totalReward,
-            payee: payee
+            payee: payee,
+            bagListNode: nil
         )
     }
 
@@ -77,7 +78,8 @@ final class PendingValidatorState: BaseStashNextState {
                 stashItem: stashItem,
                 ledgerInfo: ledgerInfo,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else if let prefs = validatorPrefs {
             self.prefs = prefs
@@ -89,7 +91,8 @@ final class PendingValidatorState: BaseStashNextState {
                 commonData: commonData,
                 stashItem: stashItem,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         }
 
@@ -111,7 +114,8 @@ final class PendingValidatorState: BaseStashNextState {
                 ledgerInfo: ledgerInfo,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else if let nomination = nomination {
             newState = PendingNominatorState(
@@ -121,7 +125,8 @@ final class PendingValidatorState: BaseStashNextState {
                 ledgerInfo: ledgerInfo,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else {
             newState = self

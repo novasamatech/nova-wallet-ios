@@ -23,7 +23,8 @@ final class NoStashState: BaseStakingState {
                 commonData: commonData,
                 stashItem: stashItem,
                 ledgerInfo: nil,
-                totalReward: nil
+                totalReward: nil,
+                bagListNode: nil
             )
 
             stateMachine.transit(to: newState)

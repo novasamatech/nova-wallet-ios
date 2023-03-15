@@ -11,16 +11,27 @@ protocol AssetBalanceFormatterFactoryProtocol {
     ) -> LocalizableResource<LocalizableDecimalFormatting>
 
     func createTokenFormatter(
-        for info: AssetBalanceDisplayInfo
-    ) -> LocalizableResource<TokenFormatter>
-
-    func createFeeTokenFormatter(
-        for info: AssetBalanceDisplayInfo
+        for info: AssetBalanceDisplayInfo,
+        roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<TokenFormatter>
 
     func createInputTokenFormatter(
         for info: AssetBalanceDisplayInfo
     ) -> LocalizableResource<TokenFormatter>
+}
+
+extension AssetBalanceFormatterFactoryProtocol {
+    func createTokenFormatter(
+        for info: AssetBalanceDisplayInfo
+    ) -> LocalizableResource<TokenFormatter> {
+        createTokenFormatter(for: info, roundingMode: .down)
+    }
+
+    func createFeeTokenFormatter(
+        for info: AssetBalanceDisplayInfo
+    ) -> LocalizableResource<TokenFormatter> {
+        createTokenFormatter(for: info, roundingMode: .up)
+    }
 }
 
 class AssetBalanceFormatterFactory {
@@ -124,15 +135,10 @@ extension AssetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol {
     }
 
     func createTokenFormatter(
-        for info: AssetBalanceDisplayInfo
+        for info: AssetBalanceDisplayInfo,
+        roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<TokenFormatter> {
-        createTokenFormatterCommon(for: info, roundingMode: .down)
-    }
-
-    func createFeeTokenFormatter(
-        for info: AssetBalanceDisplayInfo
-    ) -> LocalizableResource<TokenFormatter> {
-        createTokenFormatterCommon(for: info, roundingMode: .up)
+        createTokenFormatterCommon(for: info, roundingMode: roundingMode)
     }
 
     func createInputTokenFormatter(

@@ -22,6 +22,7 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
+    func performRebag()
     func performAnalyticsAction()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
@@ -65,6 +66,7 @@ protocol StakingMainChildPresenterProtocol: AnyObject {
     func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
+    func performRebag()
     func performAnalyticsAction()
     func performManageAction(_ action: StakingManageOption)
 }

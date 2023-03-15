@@ -12,3 +12,4 @@ typealias DecodedEraIndex = ChainStorageDecodedItem<StringScaleMapper<EraIndex>>
 typealias DecodedPayee = ChainStorageDecodedItem<RewardDestinationArg>
 typealias DecodedBlockNumber = ChainStorageDecodedItem<StringScaleMapper<BlockNumber>>
 typealias DecodedCrowdloanFunds = ChainStorageDecodedItem<CrowdloanFunds>
+typealias DecodedBagListNode = ChainStorageDecodedItem<BagList.Node>

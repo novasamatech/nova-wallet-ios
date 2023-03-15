@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 extension StakingSharedState {
     func createEraCountdownOperationFactory(
@@ -43,6 +44,13 @@ extension StakingSharedState {
         for chain: ChainModel
     ) throws -> NetworkStakingInfoOperationFactoryProtocol {
         let durationFactory = try createStakingDurationOperationFactory(for: chain)
-        return NetworkStakingInfoOperationFactory(durationFactory: durationFactory)
+        let votersOperationFactory = VotersInfoOperationFactory(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        return NetworkStakingInfoOperationFactory(
+            durationFactory: durationFactory,
+            votersOperationFactory: votersOperationFactory
+        )
     }
 }
