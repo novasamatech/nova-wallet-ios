@@ -69,7 +69,10 @@ extension XcmTransferService: XcmTransferServiceProtocol {
             )
 
             let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest())
-            let operationFactory = try createOperationFactory(for: unweighted.origin.chain, chainAccount: chainAccount)
+            let operationFactory = try createExtrinsicOperationFactory(
+                for: unweighted.origin.chain,
+                chainAccount: chainAccount
+            )
 
             let feeWrapper = operationFactory.estimateFeeOperation { builder in
                 let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
@@ -272,7 +275,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
-            let operationFactory = try createOperationFactory(
+            let operationFactory = try createExtrinsicOperationFactory(
                 for: request.unweighted.origin.chain,
                 chainAccount: chainAccount
             )

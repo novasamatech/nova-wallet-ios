@@ -42,7 +42,7 @@ extension Xcm {
         let destination: VersionedMultilocation
 
         // must be set as maximum between reserve and destination
-        let destinationWeightLimit: Xcm.WeightLimit
+        let destinationWeightLimit: Xcm.WeightLimit<BlockchainWeight.WeightV1>
 
         func runtimeCall(for module: String) -> RuntimeCall<Self> {
             RuntimeCall(moduleName: module, callName: Xcm.ormlTransferCallName, args: self)
@@ -81,7 +81,7 @@ extension Xcm {
             let call = OrmlTransferCallV2(
                 asset: asset,
                 destination: destination,
-                destinationWeightLimit: .limited(weight: UInt64(weight))
+                destinationWeightLimit: .limited(weight: .init(value: UInt64(weight)))
             )
 
             return ({ try $0.adding(call: call.runtimeCall(for: module)) }, path)
