@@ -10,13 +10,17 @@ struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         }
     }
 
-    func amountFromValue(_ value: Decimal) -> LocalizableResource<String> {
+    func amountFromValue(_ value: Decimal, roundingMode: NumberFormatter.RoundingMode) -> LocalizableResource<String> {
         LocalizableResource { _ in
             "$100"
         }
     }
 
-    func balanceFromPrice(_ amount: Decimal, priceData: PriceData?) -> LocalizableResource<BalanceViewModelProtocol> {
+    func balanceFromPrice(
+        _ amount: Decimal,
+        priceData: PriceData?,
+        roundingMode: NumberFormatter.RoundingMode
+    ) -> LocalizableResource<BalanceViewModelProtocol> {
         LocalizableResource { _ in
             BalanceViewModel(amount: amount.description, price: priceData?.price.description)
         }

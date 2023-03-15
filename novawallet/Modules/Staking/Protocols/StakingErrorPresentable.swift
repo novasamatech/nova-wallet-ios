@@ -47,12 +47,19 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
     )
 
     func presentMaxNumberOfNominatorsReached(from view: ControllerBackedProtocol?, locale: Locale?)
+
+    func presentMinStakeViolated(
+        from view: ControllerBackedProtocol,
+        action: @escaping () -> Void,
+        minStake: String,
+        locale: Locale?
+    )
 }
 
 extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?) {
         let message = R.string.localizable.stakingSetupAmountTooLow(value)
-        let title = R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
+        let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
@@ -210,5 +217,23 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentMinStakeViolated(
+        from view: ControllerBackedProtocol,
+        action: @escaping () -> Void,
+        minStake: String,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.stakingMinStakeViolatedMessage(minStake, preferredLanguages: locale?.rLanguages)
+
+        presentWarning(
+            for: title,
+            message: message,
+            action: action,
+            view: view,
+            locale: locale
+        )
     }
 }

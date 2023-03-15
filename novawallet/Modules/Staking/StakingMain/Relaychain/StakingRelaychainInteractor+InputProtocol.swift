@@ -27,7 +27,8 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
         performPriceSubscription()
         performAccountInfoSubscription()
         performStashControllerSubscription()
-        performNominatorLimitsSubscripion()
+        performNominatorLimitsSubscription()
+        performBagListParamsSubscription()
 
         provideRewardCalculator(from: rewardCalculationService)
         provideEraStakersInfo(from: eraValidatorService)
