@@ -29,6 +29,8 @@ final class StakingAmountPresenter {
     private var minBondAmount: Decimal?
     private var counterForNominators: UInt32?
     private var maxNominatorsCount: UInt32?
+    private var bagListSize: UInt32?
+    private var networkInfo: NetworkStakingInfo?
 
     init(
         wireframe: StakingAmountWireframeProtocol,
@@ -236,6 +238,18 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
                 maxNominatorsCount: maxNominatorsCount,
                 hasExistingNomination: false,
                 locale: locale
+            ),
+            dataValidatingFactory.minStakeIsNotViolated(
+                amount: amount,
+                params: .init(
+                    networkInfo: networkInfo,
+                    minNominatorBond: minBondAmount?.toSubstrateAmount(
+                        precision: assetInfo.assetPrecision
+                    ),
+                    votersCount: bagListSize
+                ),
+                assetInfo: assetInfo,
+                locale: locale
             )
         ]).runValidation { [weak self] in
             guard
@@ -366,6 +380,14 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
 
     func didReceive(maxNominatorsCount: UInt32?) {
         self.maxNominatorsCount = maxNominatorsCount
+    }
+
+    func didReceive(bagListSize: UInt32?) {
+        self.bagListSize = bagListSize
+    }
+
+    func didReceive(networkInfo: NetworkStakingInfo) {
+        self.networkInfo = networkInfo
     }
 }
 

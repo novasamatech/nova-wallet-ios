@@ -1186,3 +1186,11 @@
 "gov.revoke.delegate.missing.error.message" = "You have already revoked delegation from one of the tracks";
 "common.multi.tx.error.no.details.message" = "There was an error while submitting some transactions (%@). Do you want to retry?";
 "common.multi.tx.error.has.details.message" = "There was an error while submitting some transactions (%@): %@. Do you want to retry?";
+"staking.improvements" = "Staking improvements";
+"staking.rebag.alert.message" = "Having outdated position in the queue of stake assignment to a validator may suspend your rewards";
+"staking.min.stake.violated.message" = "The recommended minimum stake to consistently receive rewards is %@.";
+"staking.hint.rebag.confirm" = "Having outdated position in the queue of stake assignment to a validator may suspend your rewards";
+"staking.rebag.confirm.title" = "Staking improvements";
+"staking.rebag.confirm.new.bag.list" = "New queue slot";
+"staking.rebag.confirm.current.bag.list" = "Current queue slot";
+"staking.rebag.confirm.completion" = "New queue slot request has been submitted";

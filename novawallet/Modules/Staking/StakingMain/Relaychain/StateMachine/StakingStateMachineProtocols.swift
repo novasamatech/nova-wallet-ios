@@ -33,6 +33,9 @@ protocol StakingStateProtocol {
     func process(minNominatorBond: BigUInt?)
     func process(counterForNominators: UInt32?)
     func process(maxNominatorsCount: UInt32?)
+    func process(bagListSize: UInt32?)
+    func process(bagListNode: BagList.Node?)
+    func process(bagListScoreFactor: BigUInt?)
     func process(eraCountdown: EraCountdown)
     func process(subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod))
 }

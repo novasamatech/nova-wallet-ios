@@ -6,9 +6,17 @@ import BigInt
 
 protocol BalanceViewModelFactoryProtocol {
     func priceFromAmount(_ amount: Decimal, priceData: PriceData) -> LocalizableResource<String>
-    func amountFromValue(_ value: Decimal) -> LocalizableResource<String>
-    func balanceFromPrice(_ amount: Decimal, priceData: PriceData?)
-        -> LocalizableResource<BalanceViewModelProtocol>
+
+    func amountFromValue(
+        _ value: Decimal,
+        roundingMode: NumberFormatter.RoundingMode
+    ) -> LocalizableResource<String>
+
+    func balanceFromPrice(
+        _ amount: Decimal,
+        priceData: PriceData?,
+        roundingMode: NumberFormatter.RoundingMode
+    ) -> LocalizableResource<BalanceViewModelProtocol>
     func spendingAmountFromPrice(_ amount: Decimal, priceData: PriceData?)
         -> LocalizableResource<BalanceViewModelProtocol>
     func lockingAmountFromPrice(_ amount: Decimal, priceData: PriceData?)
@@ -16,6 +24,16 @@ protocol BalanceViewModelFactoryProtocol {
     func createBalanceInputViewModel(_ amount: Decimal?) -> LocalizableResource<AmountInputViewModelProtocol>
     func createAssetBalanceViewModel(_ amount: Decimal, balance: Decimal?, priceData: PriceData?)
         -> LocalizableResource<AssetBalanceViewModelProtocol>
+}
+
+extension BalanceViewModelFactoryProtocol {
+    func balanceFromPrice(_ amount: Decimal, priceData: PriceData?) -> LocalizableResource<BalanceViewModelProtocol> {
+        balanceFromPrice(amount, priceData: priceData, roundingMode: .down)
+    }
+
+    func amountFromValue(_ value: Decimal) -> LocalizableResource<String> {
+        amountFromValue(value, roundingMode: .down)
+    }
 }
 
 final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
@@ -60,8 +78,14 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         return formatterFactory.createTokenFormatter(for: priceAssetInfo)
     }
 
-    func amountFromValue(_ value: Decimal) -> LocalizableResource<String> {
-        let localizableFormatter = formatterFactory.createTokenFormatter(for: targetAssetInfo)
+    func amountFromValue(
+        _ value: Decimal,
+        roundingMode: NumberFormatter.RoundingMode
+    ) -> LocalizableResource<String> {
+        let localizableFormatter = formatterFactory.createTokenFormatter(
+            for: targetAssetInfo,
+            roundingMode: roundingMode
+        )
 
         return LocalizableResource { locale in
             let formatter = localizableFormatter.value(for: locale)
@@ -99,9 +123,14 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
 
     func balanceFromPrice(
         _ amount: Decimal,
-        priceData: PriceData?
+        priceData: PriceData?,
+        roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<BalanceViewModelProtocol> {
-        let localizableAmountFormatter = formatterFactory.createTokenFormatter(for: targetAssetInfo)
+        let localizableAmountFormatter = formatterFactory.createTokenFormatter(
+            for: targetAssetInfo,
+            roundingMode: roundingMode
+        )
+
         let optLocalizablePriceFormatter = priceFormatter(for: priceData)
 
         return LocalizableResource { locale in

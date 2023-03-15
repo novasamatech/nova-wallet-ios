@@ -4,8 +4,10 @@ import SoraFoundation
 extension StakingStateViewModelFactory {
     func stakingAlertsForNominatorState(_ state: NominatorState) -> [StakingAlert] {
         [
+            findMinStakeNotSatisfied(commonData: state.commonData, ledgerInfo: state.ledgerInfo),
             findInactiveAlert(state: state),
             findRedeemUnbondedAlert(commonData: state.commonData, ledgerInfo: state.ledgerInfo),
+            findRebagAlert(state: state),
             findWaitingNextEraAlert(nominationStatus: state.status)
         ].compactMap { $0 }
     }
@@ -18,7 +20,7 @@ extension StakingStateViewModelFactory {
 
     func stakingAlertsForBondedState(_ state: BondedState) -> [StakingAlert] {
         [
-            findMinNominatorBondAlert(state: state),
+            findMinStakeNotSatisfied(commonData: state.commonData, ledgerInfo: state.ledgerInfo),
             .bondedSetValidators,
             findRedeemUnbondedAlert(commonData: state.commonData, ledgerInfo: state.ledgerInfo)
         ].compactMap { $0 }
@@ -49,71 +51,47 @@ extension StakingStateViewModelFactory {
         return .redeemUnbonded(localizedString)
     }
 
-    private func findMinNominatorBondAlert(state: BondedState) -> StakingAlert? {
-        let commonData = state.commonData
-        let ledgerInfo = state.ledgerInfo
-
-        guard let minStake = commonData.minStake else {
-            return nil
-        }
-
-        guard ledgerInfo.active < minStake else {
-            return nil
-        }
-
-        guard
-            let chainAsset = commonData.chainAsset,
-            let minActiveDecimal = Decimal.fromSubstrateAmount(
-                minStake,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ),
-            let minActiveAmount = balanceViewModelFactory?.amountFromValue(minActiveDecimal)
-        else {
-            return nil
-        }
-
-        let localizedString = LocalizableResource<String> { locale in
-            R.string.localizable.stakingInactiveCurrentMinimalStake(
-                minActiveAmount.value(for: locale),
-                preferredLanguages: locale.rLanguages
-            )
-        }
-
-        return .nominatorLowStake(localizedString)
-    }
-
-    private func findInactiveAlert(state: NominatorState) -> StakingAlert? {
-        guard case .inactive = state.status else { return nil }
-
-        let commonData = state.commonData
-        let ledgerInfo = state.ledgerInfo
-
-        guard let minStake = commonData.minStake else {
-            return nil
-        }
-
-        if ledgerInfo.active < minStake {
+    private func findMinStakeNotSatisfied(
+        commonData: StakingStateCommonData,
+        ledgerInfo: StakingLedger
+    ) -> StakingAlert? {
+        if let minStake = commonData.minStake, ledgerInfo.active < minStake {
             guard
                 let chainAsset = commonData.chainAsset,
                 let minActiveDecimal = Decimal.fromSubstrateAmount(
                     minStake,
                     precision: chainAsset.assetDisplayInfo.assetPrecision
                 ),
-                let minActiveAmount = balanceViewModelFactory?.amountFromValue(minActiveDecimal)
+                let localizedMinActiveAmount = balanceViewModelFactory?.balanceFromPrice(
+                    minActiveDecimal,
+                    priceData: commonData.price,
+                    roundingMode: .up
+                )
             else {
                 return nil
             }
 
             let localizedString = LocalizableResource<String> { locale in
-                R.string.localizable.stakingInactiveCurrentMinimalStake(
-                    minActiveAmount.value(for: locale),
+                let minActiveAmount = localizedMinActiveAmount.value(for: locale)
+                let message = minActiveAmount.price.map { "\(minActiveAmount.amount) (\($0)" } ?? minActiveAmount.amount
+
+                return R.string.localizable.stakingInactiveCurrentMinimalStake(
+                    message,
                     preferredLanguages: locale.rLanguages
                 )
             }
             return .nominatorLowStake(localizedString)
-        } else if state.allValidatorsWithoutReward {
-            return .nominatorAllOversubscribed
         } else {
+            return nil
+        }
+    }
+
+    private func findInactiveAlert(state: NominatorState) -> StakingAlert? {
+        guard case .inactive = state.status else { return nil }
+
+        let minStakeViolated = state.commonData.minStake.map { state.ledgerInfo.active < $0 } ?? false
+
+        if !minStakeViolated, !state.hasElectedValidators {
             let description = LocalizableResource { locale in
                 R.string.localizable.stakingNominatorStatusAlertNoValidators(
                     preferredLanguages: locale.rLanguages
@@ -125,7 +103,11 @@ extension StakingStateViewModelFactory {
             }
 
             return .nominatorChangeValidators(title: title, details: description)
+        } else if state.allValidatorsWithoutReward {
+            return .nominatorAllOversubscribed
         }
+
+        return nil
     }
 
     private func findWaitingNextEraAlert(nominationStatus: NominationViewStatus) -> StakingAlert? {
@@ -133,5 +115,16 @@ extension StakingStateViewModelFactory {
             return .waitingNextEra
         }
         return nil
+    }
+
+    private func findRebagAlert(state: NominatorState) -> StakingAlert? {
+        guard
+            let bagListNode = state.bagListNode,
+            let scoreFactor = state.commonData.bagListScoreFactor,
+            BagList.scoreOf(stake: state.ledgerInfo.active, given: scoreFactor) > bagListNode.bagUpper else {
+            return nil
+        }
+
+        return .rebag
     }
 }
