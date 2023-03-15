@@ -13,4 +13,9 @@ protocol GovernanceExtrinsicFactoryProtocol {
         accountId: AccountId,
         builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol
+
+    func delegationUpdate(
+        with actions: [GovernanceDelegatorAction],
+        splitter: ExtrinsicSplitting
+    ) throws -> ExtrinsicSplitting
 }

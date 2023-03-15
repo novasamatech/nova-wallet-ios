@@ -5,8 +5,9 @@ import BigInt
 
 /**
  *  Class that calculates:
- *  Locked amount diff - maximum amount of tokens locked before vote is applied and after
- *  Locked period diff - period of time needed to unlock all the tokens before vote is applied and after.
+ *  Locked amount diff - maximum amount of tokens locked before vote/delegation is applied and after;
+ *  Locked period diff - period of time needed to unlock all the tokens before vote is applied and after;
+ *  Undelegating period diff - period of time needed to unlock delegated tokens;
  *
  *  Locked amount calculation assumes that no unlocks can happen during
  *  voting (event if voting for the same referendum). So the diff may not decrease.
@@ -44,22 +45,10 @@ class GovernanceLockStateFactory {
     }
 
     func calculatePriorLockMax(from trackVotes: ReferendumTracksVotingDistribution) -> BlockNumber? {
-        let optCastingMax = trackVotes.votes.priorLocks.values
+        trackVotes.votes.priorLocks.values
             .filter { $0.exists }
             .map(\.unlockAt)
             .max()
-
-        let optDelegatingMax = trackVotes.votes.delegatings.values
-            .compactMap { $0.prior.exists ? $0.prior.unlockAt : nil }
-            .max()
-
-        if let castingMax = optCastingMax, let delegatingMax = optDelegatingMax {
-            return max(castingMax, delegatingMax)
-        } else if let castingMax = optCastingMax {
-            return castingMax
-        } else {
-            return optDelegatingMax
-        }
     }
 
     func calculateMaxLock(
@@ -148,6 +137,41 @@ class GovernanceLockStateFactory {
             return GovernanceLockStateDiff(before: oldState, vote: newVote, after: newState)
         }
     }
+
+    func createDelegateStateDiffOperation(
+        for trackVotes: ReferendumTracksVotingDistribution,
+        newDelegation: GovernanceNewDelegation,
+        additionalInfoOperation: BaseOperation<GovUnlockCalculationInfo>
+    ) -> BaseOperation<GovernanceDelegateStateDiff> {
+        ClosureOperation<GovernanceDelegateStateDiff> {
+            let additions = try additionalInfoOperation.extractNoCancellableResultData()
+
+            let oldAmount = trackVotes.trackLocks.map(\.amount).max() ?? 0
+
+            let oldPeriod = trackVotes.votes.delegatings.values.compactMap { delegation in
+                delegation.conviction.conviction(for: additions.voteLockingPeriod)
+            }.max()
+
+            let oldState = GovernanceDelegateState(
+                maxLockedAmount: oldAmount,
+                undelegatingPeriod: oldPeriod
+            )
+
+            let newState: GovernanceDelegateState?
+
+            let newAmount = max(oldAmount, newDelegation.balance)
+
+            let newPeriod = newDelegation.conviction.conviction(for: additions.voteLockingPeriod)
+
+            newState = GovernanceDelegateState(maxLockedAmount: newAmount, undelegatingPeriod: newPeriod)
+
+            return GovernanceDelegateStateDiff(
+                before: oldState,
+                delegation: newDelegation,
+                after: newState
+            )
+        }
+    }
 }
 
 extension GovernanceLockStateFactory: GovernanceLockStateFactoryProtocol {
@@ -191,6 +215,30 @@ extension GovernanceLockStateFactory: GovernanceLockStateFactoryProtocol {
 
         let dependencies = [codingFactoryOperation] + referendumsWrapper.allOperations +
             additionalInfoWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: calculationOperation, dependencies: dependencies)
+    }
+
+    func calculateDelegateStateDiff(
+        for trackVotes: ReferendumTracksVotingDistribution,
+        newDelegation: GovernanceNewDelegation,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<GovernanceDelegateStateDiff> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let additionalInfoWrapper = createAdditionalInfoWrapper(dependingOn: codingFactoryOperation)
+
+        additionalInfoWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let calculationOperation = createDelegateStateDiffOperation(
+            for: trackVotes,
+            newDelegation: newDelegation,
+            additionalInfoOperation: additionalInfoWrapper.targetOperation
+        )
+
+        calculationOperation.addDependency(additionalInfoWrapper.targetOperation)
+
+        let dependencies = [codingFactoryOperation] + additionalInfoWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: calculationOperation, dependencies: dependencies)
     }

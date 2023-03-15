@@ -78,35 +78,34 @@ class LocksSubscription: StorageChildSubscribing {
     }
 
     func processUpdate(_ data: Data?, blockHash _: Data?) {
-        guard let data = data else {
-            return
-        }
         logger.debug("Did receive locks update")
 
         let decodingWrapper = createDecodingOperationWrapper(
             data: data,
             chainAssetId: chainAssetId
         )
-        let changesWrapper = createChangesOperationWrapper(
-            dependingOn: decodingWrapper,
+
+        let saveOperation = createSaveOperation(
+            dependingOn: decodingWrapper.targetOperation,
             chainAssetId: chainAssetId,
             accountId: accountId
         )
 
-        let saveOperation = createSaveOperation(dependingOn: changesWrapper)
+        saveOperation.addDependency(decodingWrapper.targetOperation)
 
-        changesWrapper.addDependency(wrapper: decodingWrapper)
-        saveOperation.addDependency(changesWrapper.targetOperation)
-
-        let operations = decodingWrapper.allOperations + changesWrapper.allOperations + [saveOperation]
+        let operations = decodingWrapper.allOperations + [saveOperation]
 
         operationManager.enqueue(operations: operations, in: .transient)
     }
 
     private func createDecodingOperationWrapper(
-        data: Data,
+        data: Data?,
         chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<[BalanceLock]?> {
+        guard let data = data else {
+            return CompoundOperationWrapper.createWithResult(nil)
+        }
+
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
             logger.error("Runtime metadata unavailable for chain: \(chainAssetId.chainId)")
             return CompoundOperationWrapper.createWithError(
@@ -137,46 +136,24 @@ class LocksSubscription: StorageChildSubscribing {
         )
     }
 
-    private func createChangesOperationWrapper(
-        dependingOn decodingWrapper: CompoundOperationWrapper<[BalanceLock]?>,
+    private func createSaveOperation(
+        dependingOn decodingOperation: BaseOperation<[BalanceLock]?>,
         chainAssetId: ChainAssetId,
         accountId: AccountId
-    ) -> CompoundOperationWrapper<[DataProviderChange<AssetLock>]?> {
-        let fetchOperation = repository.fetchAllOperation(with: .init())
+    ) -> BaseOperation<Void> {
+        let replaceOperation = repository.replaceOperation {
+            let remoteItems = try decodingOperation.extractNoCancellableResultData() ?? []
 
-        let changesOperation = ClosureOperation<[DataProviderChange<AssetLock>]?> {
-            let locks = try decodingWrapper
-                .targetOperation
-                .extractNoCancellableResultData() ?? []
-
-            let remoteModels = locks.map {
+            return remoteItems.map { remoteItem in
                 AssetLock(
                     chainAssetId: chainAssetId,
                     accountId: accountId,
-                    type: $0.identifier,
-                    amount: $0.amount
+                    type: remoteItem.identifier,
+                    amount: remoteItem.amount
                 )
             }
-
-            return remoteModels.map(DataProviderChange.update)
         }
 
-        changesOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(targetOperation: changesOperation, dependencies: [fetchOperation])
-    }
-
-    private func createSaveOperation(
-        dependingOn operation: CompoundOperationWrapper<[DataProviderChange<AssetLock>]?>
-    ) -> BaseOperation<Void> {
-        let replaceOperation = repository.replaceOperation {
-            guard let changes = try operation.targetOperation.extractNoCancellableResultData() else {
-                return []
-            }
-            return changes.compactMap(\.item)
-        }
-
-        replaceOperation.addDependency(operation.targetOperation)
         return replaceOperation
     }
 }

@@ -8,7 +8,7 @@ final class Gov1LocalMappingFactory {
         additionalInfo: Gov1OperationFactory.AdditionalInfo
     ) -> ReferendumLocal {
         let track = GovernanceTrackLocal(
-            trackId: Gov1OperationFactory.trackId,
+            trackId: TrackIdLocal(Gov1OperationFactory.trackId),
             name: Gov1OperationFactory.trackName,
             totalTracksCount: 1
         )
@@ -123,7 +123,9 @@ extension Gov1LocalMappingFactory {
                 }.addingPriorLock(castingVoting.prior, track: track)
             case let .delegating(delegatingVoting):
                 let delegatingLocal = ReferendumDelegatingLocal(remote: delegatingVoting)
-                return initVotingLocal.addingDelegating(delegatingLocal, trackId: track)
+                return initVotingLocal
+                    .addingDelegating(delegatingLocal, trackId: track)
+                    .addingPriorLock(delegatingVoting.prior, track: track)
             case .unknown:
                 return initVotingLocal
             }

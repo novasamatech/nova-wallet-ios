@@ -51,7 +51,7 @@ final class ParaStkCollatorsSearchViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string.localizable.commonSearch(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.searchField.placeholder = R.string.localizable.stakingValidatorSearchPlaceholder(
+        rootView.searchField.placeholder = R.string.localizable.searchByAddressNamePlaceholder(
             preferredLanguages: selectedLocale.rLanguages
         )
     }
