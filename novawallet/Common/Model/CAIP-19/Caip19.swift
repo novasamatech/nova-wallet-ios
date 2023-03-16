@@ -3,7 +3,7 @@ import Foundation
 enum Caip19 {}
 
 extension Caip19 {
-    struct AssetId {
+    struct AssetId: Hashable {
         let chainId: Caip2.ChainId
         let assetNamespace: String
         let assetReference: String

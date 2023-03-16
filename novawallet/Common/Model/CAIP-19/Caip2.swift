@@ -1,7 +1,7 @@
 enum Caip2 {}
 
 extension Caip2 {
-    struct ChainId {
+    struct ChainId: Hashable {
         let namespace: String
         let reference: String
     }
