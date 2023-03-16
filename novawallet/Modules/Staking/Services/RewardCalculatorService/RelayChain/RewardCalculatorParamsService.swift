@@ -67,12 +67,24 @@ extension InflationRewardCalculatorParamsService: RewardCalculatorParamsServiceP
             operationQueue: operationQueue,
             callbackQueue: notificationQueue
         ) { result in
-            let parachainsCountResult: Result<RewardCalculatorParams, Error> = result.map { parachains in
+            let parachainsCountResult: Result<RewardCalculatorParams, Error>
+
+            switch result {
+            case let .success(parachains):
                 let count = parachains?.reduce(Int(0)) { accum, parachain in
                     parachain.value >= Paras.lowestPublicParaId ? accum + 1 : accum
                 } ?? 0
 
-                return .inflation(parachainsCount: count)
+                parachainsCountResult = .success(.inflation(parachainsCount: count))
+            case let .failure(error):
+                if
+                    let encodingError = error as? StorageKeyEncodingOperationError,
+                    case .invalidStoragePath = encodingError {
+                    // no parachains support
+                    parachainsCountResult = .success(.inflation(parachainsCount: 0))
+                } else {
+                    parachainsCountResult = .failure(error)
+                }
             }
 
             notificationQueue.async {
