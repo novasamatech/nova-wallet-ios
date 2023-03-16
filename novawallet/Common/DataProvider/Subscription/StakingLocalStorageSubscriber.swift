@@ -38,7 +38,7 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
 
     func subscribePayee(for accountId: AccountId, chainId: ChainModel.Id) -> AnyDataProvider<DecodedPayee>?
 
-    func subscribeTotalIssuance(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedBigUInt>?
+    func subscribeTotalIssuance(for chainId: ChainModel.Id, callbackQueue: DispatchQueue) -> AnyDataProvider<DecodedBigUInt>?
 
     func subscribeTotalReward(
         for address: AccountAddress,
@@ -366,6 +366,10 @@ extension StakingLocalStorageSubscriber {
     }
 
     func subscribeTotalIssuance(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedBigUInt>? {
+        subscribeTotalIssuance(for: chainId, callbackQueue: .main)
+    }
+
+    func subscribeTotalIssuance(for chainId: ChainModel.Id, callbackQueue: DispatchQueue) -> AnyDataProvider<DecodedBigUInt>? {
         guard
             let provider = try? stakingLocalSubscriptionFactory.getTotalIssuanceProvider(
                 for: chainId
@@ -380,12 +384,14 @@ extension StakingLocalStorageSubscriber {
                     result: .success(valueWrapper?.value),
                     chainId: chainId
                 )
-            }, failureClosure: { [weak self] error in
+            },
+            failureClosure: { [weak self] error in
                 self?.stakingLocalSubscriptionHandler.handleTotalIssuance(
                     result: .failure(error),
                     chainId: chainId
                 )
-            }
+            },
+            callbackQueue: callbackQueue
         )
 
         return provider
@@ -395,6 +401,21 @@ extension StakingLocalStorageSubscriber {
         for provider: AnyDataProvider<ChainStorageDecodedItem<T>>,
         updateClosure: @escaping (T?) -> Void,
         failureClosure: @escaping (Error) -> Void,
+        options _: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+    ) {
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure,
+            callbackQueue: .main
+        )
+    }
+
+    private func addDataProviderObserver<T: Decodable>(
+        for provider: AnyDataProvider<ChainStorageDecodedItem<T>>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        callbackQueue: DispatchQueue,
         options: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
     ) {
         let update = { (changes: [DataProviderChange<ChainStorageDecodedItem<T>>]) in
@@ -408,7 +429,7 @@ extension StakingLocalStorageSubscriber {
 
         provider.addObserver(
             self,
-            deliverOn: .main,
+            deliverOn: callbackQueue,
             executing: update,
             failing: failure,
             options: options
