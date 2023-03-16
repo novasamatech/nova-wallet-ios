@@ -8372,7 +8372,7 @@
 				84893BFA24D9B0D1008F6A3F /* Extensions */,
 				842D1E7F24D0BEDE00C30A7A /* Rswift */,
 				8490155424AD2F26008F705E /* Scale */,
-				8849AD6329C3566B00F4F7FF /* CAIP-19 */,
+				8849AD6329C3566B00F4F7FF /* CAIP */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -10674,7 +10674,7 @@
 		849013E024A9287F008F705E /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8849AD5E29C3524F00F4F7FF /* CAIP-19 */,
+				8849AD5E29C3524F00F4F7FF /* CAIP */,
 				84FBECF72926B79500FBEB83 /* Evm */,
 				8411706E285B0B1B006F4DFB /* Xcm */,
 				84D1110F26B932300016D962 /* ChainRegistry */,
@@ -14206,21 +14206,21 @@
 			path = Currency;
 			sourceTree = "<group>";
 		};
-		8849AD5E29C3524F00F4F7FF /* CAIP-19 */ = {
+		8849AD5E29C3524F00F4F7FF /* CAIP */ = {
 			isa = PBXGroup;
 			children = (
 				88BB0B4629C2FB5300D041C1 /* Caip19.swift */,
 				8849AD5F29C3526700F4F7FF /* Caip2.swift */,
 			);
-			path = "CAIP-19";
+			path = CAIP;
 			sourceTree = "<group>";
 		};
-		8849AD6329C3566B00F4F7FF /* CAIP-19 */ = {
+		8849AD6329C3566B00F4F7FF /* CAIP */ = {
 			isa = PBXGroup;
 			children = (
 				8849AD5C29C3088800F4F7FF /* Caip19ParserTests.swift */,
 			);
-			path = "CAIP-19";
+			path = CAIP;
 			sourceTree = "<group>";
 		};
 		8849AD6429C35B5300F4F7FF /* Web3Names */ = {
