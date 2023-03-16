@@ -2033,6 +2033,10 @@
 		84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */; };
 		84C1DBBA29C0A11200F295A5 /* XcmTransferService+Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBB929C0A11200F295A5 /* XcmTransferService+Fee.swift */; };
 		84C1DBBC29C0A18000F295A5 /* XcmTransferService+Compose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBBB29C0A18000F295A5 /* XcmTransferService+Compose.swift */; };
+		84C1DBBE29C2615F00F295A5 /* InflationCurveRewardConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBBD29C2615F00F295A5 /* InflationCurveRewardConfig.swift */; };
+		84C1DBC029C276E000F295A5 /* RewardCalculatorParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBBF29C276E000F295A5 /* RewardCalculatorParamsService.swift */; };
+		84C1DBC329C27A6600F295A5 /* Paras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBC229C27A6600F295A5 /* Paras.swift */; };
+		84C1DBC529C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBC429C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift */; };
 		84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */; };
 		84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */; };
 		84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */; };
@@ -5418,6 +5422,10 @@
 		84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountTableViewCell.xib; sourceTree = "<group>"; };
 		84C1DBB929C0A11200F295A5 /* XcmTransferService+Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmTransferService+Fee.swift"; sourceTree = "<group>"; };
 		84C1DBBB29C0A18000F295A5 /* XcmTransferService+Compose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XcmTransferService+Compose.swift"; sourceTree = "<group>"; };
+		84C1DBBD29C2615F00F295A5 /* InflationCurveRewardConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InflationCurveRewardConfig.swift; sourceTree = "<group>"; };
+		84C1DBBF29C276E000F295A5 /* RewardCalculatorParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorParamsService.swift; sourceTree = "<group>"; };
+		84C1DBC229C27A6600F295A5 /* Paras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paras.swift; sourceTree = "<group>"; };
+		84C1DBC429C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorParamsServiceFactory.swift; sourceTree = "<group>"; };
 		84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAccountSubscribingState.swift; sourceTree = "<group>"; };
 		84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionPayload.swift; sourceTree = "<group>"; };
 		84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsSelectionDecorator.swift; sourceTree = "<group>"; };
@@ -8702,6 +8710,7 @@
 		8438E1DC24C18F11001BDB13 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				84C1DBC129C27A5600F295A5 /* Paras */,
 				8436C79B29ACCFBB0024B409 /* ElectionProviderMultiPhase */,
 				84DD261529ACA92B0032A598 /* BagList */,
 				845B07E929159174005785D3 /* Democracy */,
@@ -12866,6 +12875,14 @@
 			path = Xcm;
 			sourceTree = "<group>";
 		};
+		84C1DBC129C27A5600F295A5 /* Paras */ = {
+			isa = PBXGroup;
+			children = (
+				84C1DBC229C27A6600F295A5 /* Paras.swift */,
+			);
+			path = Paras;
+			sourceTree = "<group>";
+		};
 		84C2063628D1BEBD006D0D52 /* AccountDetailsSelection */ = {
 			isa = PBXGroup;
 			children = (
@@ -14029,6 +14046,9 @@
 				AEF7404D25E6DC9400407D41 /* InflationCurveRewardEngine.swift */,
 				844384AD28538F4700611CE2 /* AlephZeroRewardEngine.swift */,
 				844384AF285391D800611CE2 /* RewardCalculatorEngineFactory.swift */,
+				84C1DBBD29C2615F00F295A5 /* InflationCurveRewardConfig.swift */,
+				84C1DBBF29C276E000F295A5 /* RewardCalculatorParamsService.swift */,
+				84C1DBC429C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift */,
 			);
 			path = RelayChain;
 			sourceTree = "<group>";
@@ -17147,6 +17167,7 @@
 				84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */,
 				842EBB3B2890B06500B952D8 /* WalletSelectionPresenter.swift in Sources */,
 				88D1F1B22981212700316A1A /* InAppUpdatesServiceWireframeProtocol.swift in Sources */,
+				84C1DBC329C27A6600F295A5 /* Paras.swift in Sources */,
 				846B749228B420FC00C39B93 /* ChainAccountAddTableViewCell.swift in Sources */,
 				842822A2289BCB5500163031 /* SwitchAccount+ParitySignerScanWireframe.swift in Sources */,
 				8436B6D828480D2F00F24360 /* ModalPickerActionTableViewCell.swift in Sources */,
@@ -17508,6 +17529,7 @@
 				84838A3C299CD38300E030C4 /* GovernanceUndelegateValidatingParams.swift in Sources */,
 				AEA0C8BE2681141700F9666F /* YourValidatorList+SelectedList.swift in Sources */,
 				F466AA90273D188600D14021 /* SettingsRow.swift in Sources */,
+				84C1DBC029C276E000F295A5 /* RewardCalculatorParamsService.swift in Sources */,
 				8430AAE926022F69005B1066 /* StashState.swift in Sources */,
 				84644B3325685915004EAA4B /* WalletHistoryBackgroundView.swift in Sources */,
 				847ABE3128532E1B00851218 /* ConsesusType.swift in Sources */,
@@ -19387,6 +19409,7 @@
 				84CEF28E29050A3300BA25BB /* DataValidationRunner+GovVote.swift in Sources */,
 				95EBC71EAE906B0DFA758AB8 /* LedgerTxConfirmProtocols.swift in Sources */,
 				992678FD5D3F9D39FFC2BB53 /* LedgerTxConfirmWireframe.swift in Sources */,
+				84C1DBC529C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift in Sources */,
 				ED529AA4ED05E8847C4C067F /* LedgerTxConfirmPresenter.swift in Sources */,
 				E488F3E052650FF525D41D63 /* LedgerTxConfirmInteractor.swift in Sources */,
 				75DAB313623E900EC475E215 /* LedgerTxConfirmViewFactory.swift in Sources */,
@@ -19422,6 +19445,7 @@
 				E221892A5B6A41A944B88336 /* ParaStkYieldBoostStartProtocols.swift in Sources */,
 				8465DA3B298EC97D00C7CFF1 /* TitleDetailsSheetViewFactory.swift in Sources */,
 				8F131D86B269B7FAB96CF3B5 /* ParaStkYieldBoostStartWireframe.swift in Sources */,
+				84C1DBBE29C2615F00F295A5 /* InflationCurveRewardConfig.swift in Sources */,
 				EEDDE41F8445C0CB2E99AFE4 /* ParaStkYieldBoostStartPresenter.swift in Sources */,
 				84A1742728ED607B0096F943 /* GovernanceOperationProtocols.swift in Sources */,
 				B6D4C073B3F984FE0348B7D4 /* ParaStkYieldBoostStartInteractor.swift in Sources */,
