@@ -58,7 +58,7 @@ protocol StakingErrorPresentable: BaseErrorPresentable {
 
 extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentAmountTooLow(value: String, from view: ControllerBackedProtocol, locale: Locale?) {
-        let message = R.string.localizable.stakingSetupAmountTooLow(value)
+        let message = R.string.localizable.stakingSetupAmountTooLow(value, preferredLanguages: locale?.rLanguages)
         let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
