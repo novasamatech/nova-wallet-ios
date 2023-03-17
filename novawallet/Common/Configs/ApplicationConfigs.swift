@@ -133,10 +133,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var evmAssetsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v1/assets.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v2/assets.json")!
         #else
             URL(
-                string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v1/assets_dev.json"
+                string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v2/assets_dev.json"
             )!
         #endif
     }
