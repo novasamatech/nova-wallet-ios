@@ -6,6 +6,10 @@ extension AssetModel {
         type == AssetType.evm.rawValue
     }
 
+    var isEvmNative: Bool {
+        type == AssetType.evmNative.rawValue
+    }
+
     var evmContractAddress: AccountAddress? {
         guard isEvm else {
             return nil
