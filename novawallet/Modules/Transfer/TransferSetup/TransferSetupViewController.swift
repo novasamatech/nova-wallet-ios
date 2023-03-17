@@ -283,6 +283,11 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
             for: .touchUpInside
         )
     }
+
+    func didReceiveKiltRecipient(viewModel: ReceipientKiltView.Model?) {
+        rootView.didReceiveKiltRecipient(viewModel: viewModel)
+        rootView.receipientKiltView?.delegate = self
+    }
 }
 
 extension TransferSetupViewController {
@@ -336,5 +341,13 @@ extension TransferSetupViewController: AmountInputAccessoryViewDelegate {
 
     func didSelectDone(on _: AmountInputAccessoryView) {
         rootView.amountInputView.textField.resignFirstResponder()
+    }
+}
+
+extension TransferSetupViewController: ReceipientKiltViewDelegate {
+    func didTapOnAccountList() {}
+
+    func didTapOnAccount(address: AccountAddress) {
+        presenter.showOptions(for: address)
     }
 }
