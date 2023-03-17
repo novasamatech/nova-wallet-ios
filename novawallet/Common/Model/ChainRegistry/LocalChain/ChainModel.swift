@@ -124,6 +124,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(where: { $0 == .governance }) ?? false
     }
 
+    var noSubstrateRuntime: Bool {
+        options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
+    }
+
     var isRelaychain: Bool { parentId == nil }
 
     func utilityAssets() -> Set<AssetModel> {
@@ -173,6 +177,7 @@ enum ChainOptions: String, Codable {
     case crowdloans
     case governance
     case governanceV1 = "governance-v1"
+    case noSubstrateRuntime
 }
 
 extension ChainModel {
