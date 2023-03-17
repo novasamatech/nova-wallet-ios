@@ -4684,31 +4684,31 @@ import Foundation
     
     
     
-     func setupRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol {
+     func setupRuntimeProviderIfNeeded(for chain: ChainModel) -> RuntimeProviderProtocol {
         
-    return cuckoo_manager.call("setupRuntimeProvider(for: ChainModel) -> RuntimeProviderProtocol",
+    return cuckoo_manager.call("setupRuntimeProviderIfNeeded(for: ChainModel) -> RuntimeProviderProtocol",
             parameters: (chain),
             escapingParameters: (chain),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.setupRuntimeProvider(for: chain))
+            defaultCall: __defaultImplStub!.setupRuntimeProviderIfNeeded(for: chain))
         
     }
     
     
     
-     func destroyRuntimeProvider(for chainId: ChainModel.Id)  {
+     func destroyRuntimeProviderIfExists(for chainId: ChainModel.Id)  {
         
-    return cuckoo_manager.call("destroyRuntimeProvider(for: ChainModel.Id)",
+    return cuckoo_manager.call("destroyRuntimeProviderIfExists(for: ChainModel.Id)",
             parameters: (chainId),
             escapingParameters: (chainId),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.destroyRuntimeProvider(for: chainId))
+            defaultCall: __defaultImplStub!.destroyRuntimeProviderIfExists(for: chainId))
         
     }
     
@@ -4736,14 +4736,14 @@ import Foundation
 	    }
 	    
 	    
-	    func setupRuntimeProvider<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel), RuntimeProviderProtocol> where M1.MatchedType == ChainModel {
+	    func setupRuntimeProviderIfNeeded<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel), RuntimeProviderProtocol> where M1.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderPoolProtocol.self, method: "setupRuntimeProvider(for: ChainModel) -> RuntimeProviderProtocol", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderPoolProtocol.self, method: "setupRuntimeProviderIfNeeded(for: ChainModel) -> RuntimeProviderProtocol", parameterMatchers: matchers))
 	    }
 	    
-	    func destroyRuntimeProvider<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id)> where M1.MatchedType == ChainModel.Id {
+	    func destroyRuntimeProviderIfExists<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id)> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderPoolProtocol.self, method: "destroyRuntimeProvider(for: ChainModel.Id)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeProviderPoolProtocol.self, method: "destroyRuntimeProviderIfExists(for: ChainModel.Id)", parameterMatchers: matchers))
 	    }
 	    
 	    func getRuntimeProvider<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id), RuntimeProviderProtocol?> where M1.MatchedType == ChainModel.Id {
@@ -4768,15 +4768,15 @@ import Foundation
 	
 	    
 	    @discardableResult
-	    func setupRuntimeProvider<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), RuntimeProviderProtocol> where M1.MatchedType == ChainModel {
+	    func setupRuntimeProviderIfNeeded<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), RuntimeProviderProtocol> where M1.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return cuckoo_manager.verify("setupRuntimeProvider(for: ChainModel) -> RuntimeProviderProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("setupRuntimeProviderIfNeeded(for: ChainModel) -> RuntimeProviderProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func destroyRuntimeProvider<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), Void> where M1.MatchedType == ChainModel.Id {
+	    func destroyRuntimeProviderIfExists<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), Void> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
-	        return cuckoo_manager.verify("destroyRuntimeProvider(for: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("destroyRuntimeProviderIfExists(for: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -4796,13 +4796,13 @@ import Foundation
     
     
     
-     func setupRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol  {
+     func setupRuntimeProviderIfNeeded(for chain: ChainModel) -> RuntimeProviderProtocol  {
         return DefaultValueRegistry.defaultValue(for: (RuntimeProviderProtocol).self)
     }
     
     
     
-     func destroyRuntimeProvider(for chainId: ChainModel.Id)   {
+     func destroyRuntimeProviderIfExists(for chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -4864,16 +4864,16 @@ import SubstrateSdk
     
     
     
-     func unregister(chainId: ChainModel.Id)  {
+     func unregisterIfExists(chainId: ChainModel.Id)  {
         
-    return cuckoo_manager.call("unregister(chainId: ChainModel.Id)",
+    return cuckoo_manager.call("unregisterIfExists(chainId: ChainModel.Id)",
             parameters: (chainId),
             escapingParameters: (chainId),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.unregister(chainId: chainId))
+            defaultCall: __defaultImplStub!.unregisterIfExists(chainId: chainId))
         
     }
     
@@ -4936,9 +4936,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeSyncServiceProtocol.self, method: "register(chain: ChainModel, with: ChainConnection)", parameterMatchers: matchers))
 	    }
 	    
-	    func unregister<M1: Cuckoo.Matchable>(chainId: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id)> where M1.MatchedType == ChainModel.Id {
+	    func unregisterIfExists<M1: Cuckoo.Matchable>(chainId: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainModel.Id)> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeSyncServiceProtocol.self, method: "unregister(chainId: ChainModel.Id)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockRuntimeSyncServiceProtocol.self, method: "unregisterIfExists(chainId: ChainModel.Id)", parameterMatchers: matchers))
 	    }
 	    
 	    func apply<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(version: M1, for chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(RuntimeVersion, ChainModel.Id)> where M1.MatchedType == RuntimeVersion, M2.MatchedType == ChainModel.Id {
@@ -4979,9 +4979,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func unregister<M1: Cuckoo.Matchable>(chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), Void> where M1.MatchedType == ChainModel.Id {
+	    func unregisterIfExists<M1: Cuckoo.Matchable>(chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), Void> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
-	        return cuckoo_manager.verify("unregister(chainId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("unregisterIfExists(chainId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5019,7 +5019,7 @@ import SubstrateSdk
     
     
     
-     func unregister(chainId: ChainModel.Id)   {
+     func unregisterIfExists(chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
