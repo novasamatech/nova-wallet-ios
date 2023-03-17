@@ -2361,6 +2361,10 @@
 		84ED6BE428698D2E00B3C558 /* TransferCrossChainConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ED6BE328698D2E00B3C558 /* TransferCrossChainConfirmInteractor.swift */; };
 		84ED6BE6286995F400B3C558 /* TransferCrossChainConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ED6BE5286995F400B3C558 /* TransferCrossChainConfirmPresenter.swift */; };
 		84ED6BE82869A18F00B3C558 /* TransferConfirmCrossChainViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ED6BE72869A18E00B3C558 /* TransferConfirmCrossChainViewFactory.swift */; };
+		84EDF66929C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF66829C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift */; };
+		84EDF66B29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF66A29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift */; };
+		84EDF66D29C4F41C002173E6 /* EvmBalanceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF66C29C4F41C002173E6 /* EvmBalanceMessage.swift */; };
+		84EDF66F29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF66E29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift */; };
 		84EE2FA52891205500A98816 /* WalletManageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE2FA42891205500A98816 /* WalletManageViewController.swift */; };
 		84EE2FA72891207500A98816 /* WalletManageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE2FA62891207500A98816 /* WalletManageViewLayout.swift */; };
 		84EE2FA9289120A100A98816 /* WalletManagePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE2FA8289120A100A98816 /* WalletManagePresenter.swift */; };
@@ -5755,6 +5759,10 @@
 		84ED6BE328698D2E00B3C558 /* TransferCrossChainConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferCrossChainConfirmInteractor.swift; sourceTree = "<group>"; };
 		84ED6BE5286995F400B3C558 /* TransferCrossChainConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferCrossChainConfirmPresenter.swift; sourceTree = "<group>"; };
 		84ED6BE72869A18E00B3C558 /* TransferConfirmCrossChainViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferConfirmCrossChainViewFactory.swift; sourceTree = "<group>"; };
+		84EDF66829C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNativeBalanceUpdatingService.swift; sourceTree = "<group>"; };
+		84EDF66A29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNativeSubscriptionManager.swift; sourceTree = "<group>"; };
+		84EDF66C29C4F41C002173E6 /* EvmBalanceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceMessage.swift; sourceTree = "<group>"; };
+		84EDF66E29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNativeBalanceUpdateService.swift; sourceTree = "<group>"; };
 		84EE2FA42891205500A98816 /* WalletManageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManageViewController.swift; sourceTree = "<group>"; };
 		84EE2FA62891207500A98816 /* WalletManageViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManageViewLayout.swift; sourceTree = "<group>"; };
 		84EE2FA8289120A100A98816 /* WalletManagePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManagePresenter.swift; sourceTree = "<group>"; };
@@ -12761,18 +12769,18 @@
 		84BCC7142924ADDC00354DE0 /* Evm */ = {
 			isa = PBXGroup;
 			children = (
+				84EDF67129C4F596002173E6 /* ERC20 */,
+				84EDF67029C4F58E002173E6 /* Native */,
 				84BCC7152924AE0000354DE0 /* EvmRemoteSubscriptionService.swift */,
 				84BCC7172924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift */,
 				84BCC7192924B53500354DE0 /* EvmRemoteSubscription.swift */,
-				84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */,
 				8437F7C02924FF6400DB6366 /* EvmSubscriptionMessage.swift */,
 				8437F7C2292506D000DB6366 /* EvmSubscriptionMessageFactory.swift */,
 				844CED2229260737001A7757 /* EvmQueryMessage.swift */,
+				84EDF66C29C4F41C002173E6 /* EvmBalanceMessage.swift */,
 				844CED2429260B6A001A7757 /* EvmQueryContractMessageFactory.swift */,
-				84FBECF52926B38300FBEB83 /* ERC20BalanceUpdateService.swift */,
 				84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */,
 				84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */,
-				84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */,
 				84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */,
 				84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */,
 				84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */,
@@ -13730,6 +13738,26 @@
 				84ED6BE5286995F400B3C558 /* TransferCrossChainConfirmPresenter.swift */,
 			);
 			path = CrossChain;
+			sourceTree = "<group>";
+		};
+		84EDF67029C4F58E002173E6 /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				84EDF66829C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift */,
+				84EDF66A29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift */,
+				84EDF66E29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift */,
+			);
+			path = Native;
+			sourceTree = "<group>";
+		};
+		84EDF67129C4F596002173E6 /* ERC20 */ = {
+			isa = PBXGroup;
+			children = (
+				84FBECF52926B38300FBEB83 /* ERC20BalanceUpdateService.swift */,
+				84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */,
+				84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */,
+			);
+			path = ERC20;
 			sourceTree = "<group>";
 		};
 		84EE2FA32891203700A98816 /* Manage */ = {
@@ -17299,6 +17327,7 @@
 				8407716028CD3739007DBD24 /* ParaStkYieldBoostValidatorFactory.swift in Sources */,
 				8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */,
 				8460E1162541E03400826F55 /* WalletFormCellStyle+Internal.swift in Sources */,
+				84EDF66929C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift in Sources */,
 				84F4A9A42551A8F3000CF0A3 /* AccountExportPasswordError.swift in Sources */,
 				84B73ADE279D90BD0071AE16 /* AssetsTransfer.swift in Sources */,
 				84CFF1E726526FBC00DB7CF7 /* StakingBondMoreViewLayout.swift in Sources */,
@@ -17306,6 +17335,7 @@
 				AE39839A272BFC2300BC8A85 /* ImportChainAccount.swift in Sources */,
 				8463A72D25E3A8E1003B8160 /* ChainStorageDecodedItem.swift in Sources */,
 				84DD5F30263D84F300425ACF /* RuntimeConstantFetching.swift in Sources */,
+				84EDF66F29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift in Sources */,
 				84B64E412704569D00914E88 /* StakingLocalSubscriptionHandler.swift in Sources */,
 				847A25C828D84C0A006AC9F5 /* Referenda+CodingPath.swift in Sources */,
 				880855F428D09A26004255E7 /* RemoteCrowdloanContribution.swift in Sources */,
@@ -18063,6 +18093,7 @@
 				84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */,
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,
+				84EDF66D29C4F41C002173E6 /* EvmBalanceMessage.swift in Sources */,
 				84FB1F792527065A00E0242B /* HistoryConstants.swift in Sources */,
 				845F49ED2928F31100BD6D11 /* ChainModel+Evm.swift in Sources */,
 				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
@@ -19663,6 +19694,7 @@
 				8F97A52ED6D3703A90373387 /* GovernanceDelegateSearchWireframe.swift in Sources */,
 				C6DA3ABD47E72ED1661830A9 /* GovernanceDelegateSearchPresenter.swift in Sources */,
 				7C98D0A579FDC879CC5DBF2F /* GovernanceDelegateSearchInteractor.swift in Sources */,
+				84EDF66B29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift in Sources */,
 				8C68C4CFAF7CB9312C86D5B8 /* GovernanceDelegateSearchViewController.swift in Sources */,
 				F0C3DCA3CD4F850C16406716 /* GovernanceDelegateSearchViewFactory.swift in Sources */,
 				C98A02D4DEAC6E4CACB9E47E /* StakingRebagConfirmProtocols.swift in Sources */,

@@ -6,6 +6,12 @@ struct RemoteEvmSubscriptionInfo {
     let assets: Set<AssetModel.Id>
 }
 
+struct RemoteEvmNativeSubscriptionInfo {
+    let accountId: AccountId
+    let chain: ChainModel
+    let assetId: AssetModel.Id
+}
+
 protocol WalletRemoteEvmSubscriptionServiceProtocol {
     func attachERC20Balance(
         for info: RemoteEvmSubscriptionInfo,
@@ -21,12 +27,31 @@ protocol WalletRemoteEvmSubscriptionServiceProtocol {
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     )
+
+    func attachNativeBalance(
+        for info: RemoteEvmNativeSubscriptionInfo,
+        transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol?,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    ) -> UUID?
+
+    func detachNativeBalance(
+        for subscriptionId: UUID,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    )
 }
 
 final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
     WalletRemoteEvmSubscriptionServiceProtocol {
     private func createERC20CacheKey(for chainId: ChainModel.Id, accountId: AccountId) -> String {
         "erc20" + "-" + chainId + "-" + accountId.toHex()
+    }
+
+    private func createNativeCacheKey(for chainId: ChainModel.Id, accountId: AccountId) -> String {
+        "native" + "-" + chainId + "-" + accountId.toHex()
     }
 
     func attachERC20Balance(
@@ -94,6 +119,56 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
         closure: RemoteSubscriptionClosure?
     ) {
         let cacheKey = createERC20CacheKey(for: chainId, accountId: accountId)
+
+        detachFromSubscription(cacheKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
+    }
+
+    func attachNativeBalance(
+        for info: RemoteEvmNativeSubscriptionInfo,
+        transactionHistoryUpdaterFactory _: EvmTransactionHistoryUpdaterFactoryProtocol?,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    ) -> UUID? {
+        let chain = info.chain
+        let accountId = info.accountId
+        let cacheKey = createERC20CacheKey(for: chain.chainId, accountId: accountId)
+
+        guard let holder = try? accountId.toAddress(using: chain.chainFormat) else {
+            let error = AccountAddressConversionError.invalidEthereumAddress
+            dispatchInQueueWhenPossible(queue) { closure?(.failure(error)) }
+            return nil
+        }
+
+        do {
+            // TODO: Add transaction updater
+
+            let request = EvmNativeBalanceSubscriptionRequest(
+                holder: holder,
+                assetId: info.assetId,
+                transactionHistoryUpdater: nil
+            )
+
+            return try attachToSubscription(
+                on: chain.chainId,
+                request: .native(request),
+                cacheKey: cacheKey,
+                queue: queue,
+                closure: closure
+            )
+        } catch {
+            dispatchInQueueWhenPossible(queue) { closure?(.failure(error)) }
+            return nil
+        }
+    }
+
+    func detachNativeBalance(
+        for subscriptionId: UUID,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    ) {
+        let cacheKey = createNativeCacheKey(for: chainId, accountId: accountId)
 
         detachFromSubscription(cacheKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
     }
