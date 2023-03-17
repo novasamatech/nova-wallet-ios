@@ -8,7 +8,8 @@ enum ChainModelGenerator {
         withTypes: Bool = true,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasGovernance: Bool = false
+        hasGovernance: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> [ChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -50,6 +51,10 @@ enum ChainModelGenerator {
                 options.append(.governance)
             }
 
+            if !hasSubstrateRuntime {
+                options.append(.noSubstrateRuntime)
+            }
+
             let externalApis = generateExternaApis(
                 for: chainId,
                 hasStaking: hasStaking,
@@ -87,7 +92,8 @@ enum ChainModelGenerator {
         count: Int,
         withTypes: Bool = true,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> [RemoteChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -120,6 +126,10 @@ enum ChainModelGenerator {
 
             if hasCrowdloans {
                 options.append(.crowdloans)
+            }
+
+            if !hasSubstrateRuntime {
+                options.append(.noSubstrateRuntime)
             }
 
             let externalApi = generateRemoteExternaApis(
@@ -162,7 +172,8 @@ enum ChainModelGenerator {
         addressPrefix: UInt16,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> ChainModel {
         let assets = (0..<count).map { index in
             generateAssetWithId(
@@ -178,7 +189,8 @@ enum ChainModelGenerator {
             addressPrefix: addressPrefix,
             assetPresicion: assetPresicion,
             hasStaking: hasStaking,
-            hasCrowdloans: hasCrowdloans
+            hasCrowdloans: hasCrowdloans,
+            hasSubstrateRuntime: hasSubstrateRuntime
         )
     }
 
@@ -188,7 +200,8 @@ enum ChainModelGenerator {
         addressPrefix: UInt16,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
@@ -205,6 +218,10 @@ enum ChainModelGenerator {
 
         if hasCrowdloans {
             options.append(.crowdloans)
+        }
+
+        if !hasSubstrateRuntime {
+            options.append(.noSubstrateRuntime)
         }
 
         let externalApis = generateExternaApis(

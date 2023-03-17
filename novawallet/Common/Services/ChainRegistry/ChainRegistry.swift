@@ -98,27 +98,29 @@ final class ChainRegistry {
             do {
                 switch change {
                 case let .insert(newChain):
+                    availableChains.insert(newChain)
+
                     let connection = try connectionPool.setupConnection(for: newChain)
 
                     setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
-                    availableChains.insert(newChain)
                 case let .update(updatedChain):
-                    let connection = try connectionPool.setupConnection(for: updatedChain)
-
-                    setupRuntimeHandlingIfNeeded(for: updatedChain, connection: connection)
-
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == updatedChain.chainId }) {
                         availableChains.remove(at: currentChain)
                     }
+
                     availableChains.insert(updatedChain)
+
+                    let connection = try connectionPool.setupConnection(for: updatedChain)
+
+                    setupRuntimeHandlingIfNeeded(for: updatedChain, connection: connection)
                 case let .delete(chainId):
-                    clearRuntimeHandlingIfNeeded(for: chainId)
-
-                    logger?.debug("Cleared runtime for: \(chainId)")
-
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == chainId }) {
                         availableChains.remove(at: currentChain)
                     }
+
+                    clearRuntimeHandlingIfNeeded(for: chainId)
+
+                    logger?.debug("Cleared runtime for: \(chainId)")
                 }
             } catch {
                 logger?.error("Unexpected error on handling chains update: \(error)")
@@ -185,7 +187,7 @@ extension ChainRegistry: ChainRegistryProtocol {
             mutex.unlock()
         }
 
-        return Set(runtimeVersionSubscriptions.keys)
+        return Set(availableChains.map(\.chainId))
     }
 
     func getChain(for chainId: ChainModel.Id) -> ChainModel? {
