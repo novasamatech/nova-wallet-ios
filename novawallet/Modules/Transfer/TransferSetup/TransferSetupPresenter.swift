@@ -184,6 +184,19 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             delegate: self
         )
     }
+
+    func showOptions(for address: AccountAddress) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: originChainAsset.chain,
+            locale: view.selectedLocale
+        )
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
