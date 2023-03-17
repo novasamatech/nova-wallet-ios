@@ -99,29 +99,23 @@ final class ChainRegistry {
                 switch change {
                 case let .insert(newChain):
                     let connection = try connectionPool.setupConnection(for: newChain)
-                    _ = runtimeProviderPool.setupRuntimeProvider(for: newChain)
 
-                    runtimeSyncService.register(chain: newChain, with: connection)
-
-                    setupRuntimeVersionSubscription(for: newChain, connection: connection)
+                    setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
                     availableChains.insert(newChain)
-
-                    logger?.debug("Subscribed runtime for: \(newChain.name)")
                 case let .update(updatedChain):
                     let connection = try connectionPool.setupConnection(for: updatedChain)
-                    _ = runtimeProviderPool.setupRuntimeProvider(for: updatedChain)
 
-                    runtimeSyncService.register(chain: updatedChain, with: connection)
+                    setupRuntimeHandlingIfNeeded(for: updatedChain, connection: connection)
 
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == updatedChain.chainId }) {
                         availableChains.remove(at: currentChain)
                     }
                     availableChains.insert(updatedChain)
                 case let .delete(chainId):
-                    runtimeProviderPool.destroyRuntimeProvider(for: chainId)
-                    clearRuntimeSubscription(for: chainId)
+                    clearRuntimeHandlingIfNeeded(for: chainId)
 
-                    runtimeSyncService.unregister(chainId: chainId)
+                    logger?.debug("Cleared runtime for: \(chainId)")
+
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == chainId }) {
                         availableChains.remove(at: currentChain)
                     }
@@ -132,7 +126,26 @@ final class ChainRegistry {
         }
     }
 
-    private func setupRuntimeVersionSubscription(for chain: ChainModel, connection: ChainConnection) {
+    private func setupRuntimeHandlingIfNeeded(for chain: ChainModel, connection: ChainConnection) {
+        if chain.hasSubstrateRuntime {
+            _ = runtimeProviderPool.setupRuntimeProviderIfNeeded(for: chain)
+
+            runtimeSyncService.register(chain: chain, with: connection)
+            setupRuntimeVersionSubscriptionIfNeeded(for: chain, connection: connection)
+
+            logger?.debug("Subscribed runtime for: \(chain.name)")
+        } else {
+            clearRuntimeHandlingIfNeeded(for: chain.chainId)
+
+            logger?.debug("No runtime for: \(chain.chainId)")
+        }
+    }
+
+    private func setupRuntimeVersionSubscriptionIfNeeded(for chain: ChainModel, connection: ChainConnection) {
+        guard runtimeVersionSubscriptions[chain.chainId] == nil else {
+            return
+        }
+
         let subscription = specVersionSubscriptionFactory.createSubscription(
             for: chain.chainId,
             connection: connection
@@ -143,7 +156,14 @@ final class ChainRegistry {
         runtimeVersionSubscriptions[chain.chainId] = subscription
     }
 
-    private func clearRuntimeSubscription(for chainId: ChainModel.Id) {
+    private func clearRuntimeHandlingIfNeeded(for chainId: ChainModel.Id) {
+        runtimeProviderPool.destroyRuntimeProviderIfExists(for: chainId)
+        clearRuntimeSubscriptionIfExists(for: chainId)
+
+        runtimeSyncService.unregisterIfExists(chainId: chainId)
+    }
+
+    private func clearRuntimeSubscriptionIfExists(for chainId: ChainModel.Id) {
         if let subscription = runtimeVersionSubscriptions[chainId] {
             subscription.unsubscribe()
         }
