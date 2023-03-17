@@ -127,4 +127,21 @@ final class TransferSetupViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(originFeeView)
     }
+
+    private(set) var receipientKiltView: ReceipientKiltView?
+
+    func didReceiveKiltRecipient(viewModel: ReceipientKiltView.Model?) {
+        if let viewModel = viewModel {
+            if receipientKiltView == nil {
+                let receipientKiltView = ReceipientKiltView()
+                containerView.stackView.insertArranged(view: receipientKiltView, after: recepientInputView)
+                containerView.stackView.setCustomSpacing(16, after: receipientKiltView)
+                self.receipientKiltView = receipientKiltView
+            }
+
+            receipientKiltView?.bind(viewModel: viewModel)
+        } else {
+            receipientKiltView?.removeFromSuperview()
+        }
+    }
 }

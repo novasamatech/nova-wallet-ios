@@ -20,6 +20,7 @@ protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
     func didSwitchCrossChain()
     func didSwitchOnChain()
     func changeYourWalletsViewState(_ state: YourWalletsControl.State)
+    func didReceiveKiltRecipient(viewModel: ReceipientKiltView.Model?)
 }
 
 protocol TransferSetupCommonPresenterProtocol: AnyObject {
@@ -41,6 +42,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
+    func showOptions(for address: AccountAddress)
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
@@ -54,7 +56,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
