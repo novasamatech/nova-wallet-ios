@@ -103,6 +103,7 @@ final class ChainRegistry {
                     let connection = try connectionPool.setupConnection(for: newChain)
 
                     setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
+                    setupRuntimeVersionSubscriptionIfNeeded(for: newChain, connection: connection)
                 case let .update(updatedChain):
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == updatedChain.chainId }) {
                         availableChains.remove(at: currentChain)
@@ -113,11 +114,13 @@ final class ChainRegistry {
                     let connection = try connectionPool.setupConnection(for: updatedChain)
 
                     setupRuntimeHandlingIfNeeded(for: updatedChain, connection: connection)
+                    setupRuntimeVersionSubscriptionIfNeeded(for: updatedChain, connection: connection)
                 case let .delete(chainId):
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == chainId }) {
                         availableChains.remove(at: currentChain)
                     }
 
+                    clearRuntimeSubscriptionIfExists(for: chainId)
                     clearRuntimeHandlingIfNeeded(for: chainId)
 
                     logger?.debug("Cleared runtime for: \(chainId)")
@@ -133,7 +136,6 @@ final class ChainRegistry {
             _ = runtimeProviderPool.setupRuntimeProviderIfNeeded(for: chain)
 
             runtimeSyncService.register(chain: chain, with: connection)
-            setupRuntimeVersionSubscriptionIfNeeded(for: chain, connection: connection)
 
             logger?.debug("Subscribed runtime for: \(chain.name)")
         } else {
@@ -149,7 +151,7 @@ final class ChainRegistry {
         }
 
         let subscription = specVersionSubscriptionFactory.createSubscription(
-            for: chain.chainId,
+            for: chain,
             connection: connection
         )
 
@@ -160,8 +162,6 @@ final class ChainRegistry {
 
     private func clearRuntimeHandlingIfNeeded(for chainId: ChainModel.Id) {
         runtimeProviderPool.destroyRuntimeProviderIfExists(for: chainId)
-        clearRuntimeSubscriptionIfExists(for: chainId)
-
         runtimeSyncService.unregisterIfExists(chainId: chainId)
     }
 
@@ -187,7 +187,7 @@ extension ChainRegistry: ChainRegistryProtocol {
             mutex.unlock()
         }
 
-        return Set(availableChains.map(\.chainId))
+        return Set(runtimeVersionSubscriptions.keys)
     }
 
     func getChain(for chainId: ChainModel.Id) -> ChainModel? {

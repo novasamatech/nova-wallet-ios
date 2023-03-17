@@ -102,7 +102,7 @@ PODS:
   - SoraUI/Skrull (1.11.1)
   - Sourcery (1.4.1)
   - Starscream (4.0.5)
-  - SubstrateSdk (1.7.0):
+  - SubstrateSdk (1.8.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -149,7 +149,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.11.1`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.5`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.7.0`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `012b49b0f9c4cf141c52df271fb0580412a6ec88`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
@@ -200,8 +200,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.5
   SubstrateSdk:
+    :commit: 012b49b0f9c4cf141c52df271fb0580412a6ec88
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.7.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -225,8 +225,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.5
   SubstrateSdk:
+    :commit: 012b49b0f9c4cf141c52df271fb0580412a6ec88
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
-    :tag: 1.7.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -261,7 +261,7 @@ SPEC CHECKSUMS:
   SoraUI: e5ceb2cffe40145e589aa464e2e0a8d054011e0b
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 8cc648110705c09a15f0de84352c7f9595b7cb05
-  SubstrateSdk: d58d00adb21dc8a0db98369cae2fbc1cd2170207
+  SubstrateSdk: fe27e5303f41fb97fce75512be85c421a17e1f0a
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
@@ -273,6 +273,6 @@ SPEC CHECKSUMS:
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 23ccb5b38dea63ce0023064ad49322f49380d5e2
+PODFILE CHECKSUM: 4c7604f855160f9d0709b5924cec1f697ace98bb
 
 COCOAPODS: 1.11.3
