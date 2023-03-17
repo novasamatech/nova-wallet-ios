@@ -128,6 +128,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
     }
 
+    var hasSubstrateRuntime: Bool {
+        !noSubstrateRuntime
+    }
+
     var isRelaychain: Bool { parentId == nil }
 
     func utilityAssets() -> Set<AssetModel> {
