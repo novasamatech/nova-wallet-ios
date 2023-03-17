@@ -14,7 +14,8 @@ struct CustomAssetMapper {
         nativeHandler: () -> T,
         statemineHandler: (StatemineAssetExtras) -> T,
         ormlHandler: (OrmlTokenExtras) -> T,
-        evmHandler: (AccountId) -> T
+        evmHandler: (AccountId) -> T,
+        evmNativeHandler: () -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -45,6 +46,8 @@ struct CustomAssetMapper {
             let accountId = try contractAddress.toAccountId(using: .ethereum)
 
             return evmHandler(accountId)
+        case .evmNative:
+            return evmNativeHandler()
         case .none:
             return nativeHandler()
         }
@@ -54,7 +57,8 @@ struct CustomAssetMapper {
         nativeHandler: () -> T,
         statemineHandler: () -> T,
         ormlHandler: () -> T,
-        evmHandler: () -> T
+        evmHandler: () -> T,
+        evmNativeHandler: () -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -71,6 +75,8 @@ struct CustomAssetMapper {
             return ormlHandler()
         case .evm:
             return evmHandler()
+        case .evmNative:
+            return evmNativeHandler()
         case .none:
             return nativeHandler()
         }
@@ -83,7 +89,8 @@ extension CustomAssetMapper {
             nativeHandler: { nil },
             statemineHandler: { $0.assetId },
             ormlHandler: { $0.currencyIdScale },
-            evmHandler: { try? $0.toAddress(using: .ethereum) }
+            evmHandler: { try? $0.toAddress(using: .ethereum) },
+            evmNativeHandler: { nil }
         )
     }
 }

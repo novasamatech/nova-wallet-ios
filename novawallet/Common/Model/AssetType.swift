@@ -4,4 +4,5 @@ enum AssetType: String {
     case statemine
     case orml
     case evm
+    case evmNative
 }
