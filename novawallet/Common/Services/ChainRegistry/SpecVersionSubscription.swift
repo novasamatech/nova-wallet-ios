@@ -69,3 +69,23 @@ extension SpecVersionSubscription: SpecVersionSubscriptionProtocol {
         }
     }
 }
+
+final class NoRuntimeVersionSubscription: SpecVersionSubscriptionProtocol {
+    let chainId: ChainModel.Id
+    let connection: JSONRPCEngine
+    let logger: LoggerProtocol?
+
+    init(chainId: ChainModel.Id, connection: JSONRPCEngine, logger: LoggerProtocol?) {
+        self.chainId = chainId
+        self.connection = connection
+        self.logger = logger
+    }
+
+    func subscribe() {
+        logger?.warning("We do nothing but holding shared connection this can be changed in future")
+    }
+
+    func unsubscribe() {
+        logger?.warning("We do nothing but holding shared connection this can be changed in future")
+    }
+}

@@ -5209,16 +5209,16 @@ import SubstrateSdk
     
     
     
-     func createSubscription(for chainId: ChainModel.Id, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol {
+     func createSubscription(for chain: ChainModel, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol {
         
-    return cuckoo_manager.call("createSubscription(for: ChainModel.Id, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol",
-            parameters: (chainId, connection),
-            escapingParameters: (chainId, connection),
+    return cuckoo_manager.call("createSubscription(for: ChainModel, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol",
+            parameters: (chain, connection),
+            escapingParameters: (chain, connection),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createSubscription(for: chainId, connection: connection))
+            defaultCall: __defaultImplStub!.createSubscription(for: chain, connection: connection))
         
     }
     
@@ -5231,9 +5231,9 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    func createSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, connection: M2) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id, JSONRPCEngine), SpecVersionSubscriptionProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == JSONRPCEngine {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, JSONRPCEngine)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: connection) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSpecVersionSubscriptionFactoryProtocol.self, method: "createSubscription(for: ChainModel.Id, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol", parameterMatchers: matchers))
+	    func createSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chain: M1, connection: M2) -> Cuckoo.ProtocolStubFunction<(ChainModel, JSONRPCEngine), SpecVersionSubscriptionProtocol> where M1.MatchedType == ChainModel, M2.MatchedType == JSONRPCEngine {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel, JSONRPCEngine)>] = [wrap(matchable: chain) { $0.0 }, wrap(matchable: connection) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSpecVersionSubscriptionFactoryProtocol.self, method: "createSubscription(for: ChainModel, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -5253,9 +5253,9 @@ import SubstrateSdk
 	
 	    
 	    @discardableResult
-	    func createSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, connection: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, JSONRPCEngine), SpecVersionSubscriptionProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == JSONRPCEngine {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, JSONRPCEngine)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: connection) { $0.1 }]
-	        return cuckoo_manager.verify("createSubscription(for: ChainModel.Id, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createSubscription<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chain: M1, connection: M2) -> Cuckoo.__DoNotUse<(ChainModel, JSONRPCEngine), SpecVersionSubscriptionProtocol> where M1.MatchedType == ChainModel, M2.MatchedType == JSONRPCEngine {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel, JSONRPCEngine)>] = [wrap(matchable: chain) { $0.0 }, wrap(matchable: connection) { $0.1 }]
+	        return cuckoo_manager.verify("createSubscription(for: ChainModel, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -5269,7 +5269,7 @@ import SubstrateSdk
     
     
     
-     func createSubscription(for chainId: ChainModel.Id, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol  {
+     func createSubscription(for chain: ChainModel, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol  {
         return DefaultValueRegistry.defaultValue(for: (SpecVersionSubscriptionProtocol).self)
     }
     
