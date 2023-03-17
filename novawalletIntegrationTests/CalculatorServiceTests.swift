@@ -12,8 +12,7 @@ class CalculatorServiceTests: XCTestCase {
                 let storageFacade = SubstrateStorageTestFacade()
                 try performServiceTest(
                     for: Chain.westend.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -27,8 +26,7 @@ class CalculatorServiceTests: XCTestCase {
         do {
             try performServiceTest(
                 for: Chain.westend.genesisHash,
-                storageFacade: storageFacade,
-                assetPrecision: 12
+                storageFacade: storageFacade
             )
         } catch {
             XCTFail("unexpected error \(error)")
@@ -41,8 +39,7 @@ class CalculatorServiceTests: XCTestCase {
             do {
                 try performServiceTest(
                     for: Chain.westend.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -56,8 +53,7 @@ class CalculatorServiceTests: XCTestCase {
                 let storageFacade = SubstrateStorageTestFacade()
                 try performServiceTest(
                     for: Chain.kusama.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -71,8 +67,7 @@ class CalculatorServiceTests: XCTestCase {
         do {
             try performServiceTest(
                 for: Chain.kusama.genesisHash,
-                storageFacade: storageFacade,
-                assetPrecision: 12
+                storageFacade: storageFacade
             )
         } catch {
             XCTFail("unexpected error \(error)")
@@ -85,8 +80,7 @@ class CalculatorServiceTests: XCTestCase {
             do {
                 try performServiceTest(
                     for: Chain.kusama.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -569,12 +563,18 @@ class CalculatorServiceTests: XCTestCase {
 
     private func performServiceTest(
         for chainId: ChainModel.Id,
-        storageFacade: StorageFacadeProtocol,
-        assetPrecision: Int16
+        storageFacade: StorageFacadeProtocol
     ) throws {
         // given
 
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+
+        guard let chain = chainRegistry.getChain(for: chainId), let asset = chain.utilityAsset() else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+
         let operationQueue = OperationQueue()
 
         let chainItemRepository = SubstrateRepositoryFactory(
@@ -606,11 +606,18 @@ class CalculatorServiceTests: XCTestCase {
         let validatorService = try serviceFactory.createEraValidatorService(for: chainId)
         validatorService.setup()
 
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(),
+            logger: Logger.shared
+        )
+
         let calculatorService = try serviceFactory.createRewardCalculatorService(
-            for: chainId,
+            for: chainAsset,
             stakingType: .relaychain,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             stakingDurationFactory: BabeStakingDurationFactory(),
-            assetPrecision: assetPrecision,
             validatorService: validatorService
         )
 
