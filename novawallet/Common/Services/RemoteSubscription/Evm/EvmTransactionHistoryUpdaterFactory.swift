@@ -4,7 +4,7 @@ protocol EvmTransactionHistoryUpdaterFactoryProtocol {
     func createTransactionHistoryUpdater(
         for accountId: AccountId,
         assetContracts: Set<EvmAssetContractId>
-    ) -> EvmTransactionHistoryUpdaterProtocol
+    ) -> ContractTransactionHistoryUpdaterProtocol
 }
 
 final class EvmTransactionHistoryUpdaterFactory {
@@ -33,10 +33,10 @@ extension EvmTransactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFacto
     func createTransactionHistoryUpdater(
         for accountId: AccountId,
         assetContracts: Set<EvmAssetContractId>
-    ) -> EvmTransactionHistoryUpdaterProtocol {
+    ) -> ContractTransactionHistoryUpdaterProtocol {
         let repository = SubstrateRepositoryFactory(storageFacade: storageFacade).createTxRepository()
 
-        return EvmTransactionHistoryUpdater(
+        return ContractTransactionHistoryUpdater(
             repository: repository,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
