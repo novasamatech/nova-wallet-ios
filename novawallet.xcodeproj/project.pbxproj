@@ -2365,6 +2365,8 @@
 		84EDF66B29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF66A29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift */; };
 		84EDF66D29C4F41C002173E6 /* EvmBalanceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF66C29C4F41C002173E6 /* EvmBalanceMessage.swift */; };
 		84EDF66F29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF66E29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift */; };
+		84EDF67329C66015002173E6 /* EvmNativeTransactionHistoryUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF67229C66015002173E6 /* EvmNativeTransactionHistoryUpdater.swift */; };
+		84EDF67529C662AC002173E6 /* EthereumBlockObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EDF67429C662AC002173E6 /* EthereumBlockObject.swift */; };
 		84EE2FA52891205500A98816 /* WalletManageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE2FA42891205500A98816 /* WalletManageViewController.swift */; };
 		84EE2FA72891207500A98816 /* WalletManageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE2FA62891207500A98816 /* WalletManageViewLayout.swift */; };
 		84EE2FA9289120A100A98816 /* WalletManagePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE2FA8289120A100A98816 /* WalletManagePresenter.swift */; };
@@ -2507,7 +2509,7 @@
 		84FBECFD292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */; };
 		84FBECFF2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBECFE2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift */; };
 		84FBED0129277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */; };
-		84FBED0329279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */; };
+		84FBED0329279CF200FBEB83 /* ContractTransactionHistoryUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED0229279CF200FBEB83 /* ContractTransactionHistoryUpdater.swift */; };
 		84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */; };
 		84FBED072927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */; };
 		84FC190B29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FC190A29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift */; };
@@ -5763,6 +5765,8 @@
 		84EDF66A29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNativeSubscriptionManager.swift; sourceTree = "<group>"; };
 		84EDF66C29C4F41C002173E6 /* EvmBalanceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmBalanceMessage.swift; sourceTree = "<group>"; };
 		84EDF66E29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNativeBalanceUpdateService.swift; sourceTree = "<group>"; };
+		84EDF67229C66015002173E6 /* EvmNativeTransactionHistoryUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmNativeTransactionHistoryUpdater.swift; sourceTree = "<group>"; };
+		84EDF67429C662AC002173E6 /* EthereumBlockObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBlockObject.swift; sourceTree = "<group>"; };
 		84EE2FA42891205500A98816 /* WalletManageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManageViewController.swift; sourceTree = "<group>"; };
 		84EE2FA62891207500A98816 /* WalletManageViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManageViewLayout.swift; sourceTree = "<group>"; };
 		84EE2FA8289120A100A98816 /* WalletManagePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManagePresenter.swift; sourceTree = "<group>"; };
@@ -5903,7 +5907,7 @@
 		84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteEvmSubscriptionService.swift; sourceTree = "<group>"; };
 		84FBECFE2927797600FBEB83 /* AssetBalanceBatchBaseUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceBatchBaseUpdatingService.swift; sourceTree = "<group>"; };
 		84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmAssetBalanceUpdatingService.swift; sourceTree = "<group>"; };
-		84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdater.swift; sourceTree = "<group>"; };
+		84FBED0229279CF200FBEB83 /* ContractTransactionHistoryUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractTransactionHistoryUpdater.swift; sourceTree = "<group>"; };
 		84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmEventParser.swift; sourceTree = "<group>"; };
 		84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransactionHistoryUpdaterFactory.swift; sourceTree = "<group>"; };
 		84FC190A29B7DB9F00BCCAA5 /* ExtrinsicServiceTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicServiceTypes.swift; sourceTree = "<group>"; };
@@ -9886,6 +9890,7 @@
 				84CFBC6428756CCB00E93EDA /* EthereumError+Presentable.swift */,
 				84A7AC812946FC31001A39CF /* EthereumResultParser.swift */,
 				84D3BD60294C37A700BC8190 /* EthereumTransactionReceipt.swift */,
+				84EDF67429C662AC002173E6 /* EthereumBlockObject.swift */,
 			);
 			path = Ethereum;
 			sourceTree = "<group>";
@@ -12781,7 +12786,6 @@
 				844CED2429260B6A001A7757 /* EvmQueryContractMessageFactory.swift */,
 				84FBECFA2927499000FBEB83 /* EvmBalanceUpdateServiceFactory.swift */,
 				84FBECFC292764DA00FBEB83 /* WalletRemoteEvmSubscriptionService.swift */,
-				84FBED0229279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift */,
 				84FBED042927B1CA00FBEB83 /* EvmEventParser.swift */,
 				84FBED062927B3B000FBEB83 /* EvmTransactionHistoryUpdaterFactory.swift */,
 			);
@@ -13746,6 +13750,7 @@
 				84EDF66829C4B94C002173E6 /* EvmNativeBalanceUpdatingService.swift */,
 				84EDF66A29C4BFE9002173E6 /* EvmNativeSubscriptionManager.swift */,
 				84EDF66E29C4F566002173E6 /* EvmNativeBalanceUpdateService.swift */,
+				84EDF67229C66015002173E6 /* EvmNativeTransactionHistoryUpdater.swift */,
 			);
 			path = Native;
 			sourceTree = "<group>";
@@ -13756,6 +13761,7 @@
 				84FBECF52926B38300FBEB83 /* ERC20BalanceUpdateService.swift */,
 				84BCC71B2924B69D00354DE0 /* ERC20SubscriptionManager.swift */,
 				84FBED0029277CD700FBEB83 /* EvmAssetBalanceUpdatingService.swift */,
+				84FBED0229279CF200FBEB83 /* ContractTransactionHistoryUpdater.swift */,
 			);
 			path = ERC20;
 			sourceTree = "<group>";
@@ -17214,6 +17220,7 @@
 				84DF21AB25363C9F005454AE /* Chain+Info.swift in Sources */,
 				84A3B8A22836DA2600DE2669 /* LastAccountIdKeyWrapper.swift in Sources */,
 				847A258E29B5D25E0054F90C /* GovJsonLocalStorageSubscriber.swift in Sources */,
+				84EDF67329C66015002173E6 /* EvmNativeTransactionHistoryUpdater.swift in Sources */,
 				84A59164292B593E00BCCF8F /* TransactionFeeProxy.swift in Sources */,
 				84243095265B1888003E07EC /* CrowdloanMetadata.swift in Sources */,
 				84CFF1ED26526FBC00DB7CF7 /* StakingBondMoreConfirmationWireframe.swift in Sources */,
@@ -17754,6 +17761,7 @@
 				F43A597B26D53775005E973D /* AnalyticsBaseViewController.swift in Sources */,
 				84D8F16324D8194100AF43E9 /* TitleWithSubtitleTableViewCell.swift in Sources */,
 				F462B35C260C86880005AB01 /* ViewHolder.swift in Sources */,
+				84EDF67529C662AC002173E6 /* EthereumBlockObject.swift in Sources */,
 				84948C36287DD1C800E6DD3E /* NftListRMRKV2ViewModel.swift in Sources */,
 				84C515FB26D84F8C000DBA45 /* AccountImportWrapper.swift in Sources */,
 				849014DE24AA8F60008F705E /* MainTabBarInteractor.swift in Sources */,
@@ -17774,7 +17782,7 @@
 				8804AD81295B7567001C4E09 /* DAppSettingsInput.swift in Sources */,
 				8425EA8B25EA7AF200C307C9 /* UnappliedSlashes.swift in Sources */,
 				84EF8D39288FCE8100265346 /* WalletListLocalSubscriptionFactory.swift in Sources */,
-				84FBED0329279CF200FBEB83 /* EvmTransactionHistoryUpdater.swift in Sources */,
+				84FBED0329279CF200FBEB83 /* ContractTransactionHistoryUpdater.swift in Sources */,
 				84893BFE24DA0000008F6A3F /* FieldStatus.swift in Sources */,
 				84F51053263AB440005D15AE /* StakingUnbondSetupLayout.swift in Sources */,
 				84BC704B289F1338008A9758 /* ExpirationTimeViewModel.swift in Sources */,

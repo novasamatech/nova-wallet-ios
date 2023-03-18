@@ -3,11 +3,11 @@ import Core
 import RobinHood
 import BigInt
 
-protocol EvmTransactionHistoryUpdaterProtocol {
+protocol ContractTransactionHistoryUpdaterProtocol {
     func processERC20Transfer(event: EventLog)
 }
 
-final class EvmTransactionHistoryUpdater {
+final class ContractTransactionHistoryUpdater {
     let repository: AnyDataProviderRepository<TransactionHistoryItem>
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -157,7 +157,7 @@ final class EvmTransactionHistoryUpdater {
     }
 }
 
-extension EvmTransactionHistoryUpdater: EvmTransactionHistoryUpdaterProtocol {
+extension ContractTransactionHistoryUpdater: ContractTransactionHistoryUpdaterProtocol {
     func processERC20Transfer(event: EventLog) {
         if !event.removed {
             insertOrUpdateTransaction(for: event)
