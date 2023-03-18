@@ -6,6 +6,11 @@ struct EthereumTransactionReceipt: Codable {
     let transactionHash: String
     let effectiveGasPrice: String
     let gasUsed: String
+    let status: String?
+
+    var isSuccess: Bool? {
+        status.map { BigUInt.fromHexString($0) == 1 }
+    }
 
     var fee: BigUInt? {
         guard

@@ -5,6 +5,7 @@ import BigInt
 enum TransactionHistoryItemSource: Int16, Codable {
     case substrate = 0
     case evm = 1
+    case evmNative = 2
 }
 
 struct TransactionHistoryItem: Codable {
