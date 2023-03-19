@@ -87,7 +87,7 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
         }
 
         do {
-            let transactionHistoryUpdater = transactionHistoryUpdaterFactory?.createTransactionHistoryUpdater(
+            let transactionHistoryUpdater = transactionHistoryUpdaterFactory?.createCustomAssetHistoryUpdater(
                 for: accountId,
                 assetContracts: Set(assetContracts)
             )
@@ -125,7 +125,7 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
 
     func attachNativeBalance(
         for info: RemoteEvmNativeSubscriptionInfo,
-        transactionHistoryUpdaterFactory _: EvmTransactionHistoryUpdaterFactoryProtocol?,
+        transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol?,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
@@ -140,12 +140,15 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
         }
 
         do {
-            // TODO: Add transaction updater
+            let transactionUpdater = try transactionHistoryUpdaterFactory?.createNativeAssetHistoryUpdater(
+                for: info.accountId,
+                chainAssetId: ChainAssetId(chainId: info.chain.chainId, assetId: info.assetId)
+            )
 
             let request = EvmNativeBalanceSubscriptionRequest(
                 holder: holder,
                 assetId: info.assetId,
-                transactionHistoryUpdater: nil
+                transactionHistoryUpdater: transactionUpdater
             )
 
             return try attachToSubscription(

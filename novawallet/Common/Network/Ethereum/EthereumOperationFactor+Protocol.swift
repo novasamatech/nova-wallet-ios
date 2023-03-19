@@ -4,6 +4,31 @@ import BigInt
 import SubstrateSdk
 
 extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
+    func createBlockOperation(for blockNumber: BigUInt) -> RobinHood.BaseOperation<EthereumBlockObject> {
+        let url = node
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.post.rawValue
+
+            let method = EthereumMethod.blockByNumber.rawValue
+            let blockNumberString = blockNumber.toHexString()
+            let jsonRequest = EthereumRpcRequest(method: method, params: [blockNumberString])
+
+            request.httpBody = try JSONEncoder().encode(jsonRequest)
+            request.setValue(
+                HttpContentType.json.rawValue,
+                forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
+            )
+
+            return request
+        }
+
+        let resultFactory: AnyNetworkResultFactory<EthereumBlockObject> = createResultFactory()
+
+        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+    }
+
     func createGasLimitOperation(for transaction: EthereumTransaction) -> BaseOperation<String> {
         let url = node
 
