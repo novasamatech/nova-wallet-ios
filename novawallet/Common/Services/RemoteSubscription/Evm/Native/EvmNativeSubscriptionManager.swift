@@ -34,7 +34,9 @@ final class EvmNativeSubscriptionManager {
         self.logger = logger
     }
 
-    private func handleTransactions(for _: BigUInt) {}
+    private func handleTransactions(for blockNumber: BigUInt) {
+        params.transactionHistoryUpdater?.processEvmNativeTransactions(from: blockNumber)
+    }
 
     private func processBlock(_ blockNumber: BigUInt) {
         logProcessMutex.lock()
@@ -81,7 +83,8 @@ final class EvmNativeSubscriptionManager {
 
     private func performSubscription() {
         do {
-            let updateClosure: (JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>) -> Void = { [weak self] update in
+            let updateClosure: (JSONRPCSubscriptionUpdate<EvmSubscriptionMessage.NewHeadsUpdate>) -> Void
+            updateClosure = { [weak self] update in
                 let blockNumber = update.params.result.blockNumber
 
                 if let chainId = self?.chainId {
