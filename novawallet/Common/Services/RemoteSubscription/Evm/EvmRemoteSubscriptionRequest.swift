@@ -14,5 +14,5 @@ struct ERC20BalanceSubscriptionRequest {
 struct EvmNativeBalanceSubscriptionRequest {
     let holder: AccountAddress
     let assetId: AssetModel.Id
-    let transactionHistoryUpdater: ContractTransactionHistoryUpdaterProtocol?
+    let transactionHistoryUpdater: EvmNativeTransactionHistoryUpdaterProtocol?
 }
