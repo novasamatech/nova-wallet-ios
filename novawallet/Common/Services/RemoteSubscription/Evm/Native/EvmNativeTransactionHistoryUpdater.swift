@@ -39,6 +39,7 @@ final class EvmNativeTransactionHistoryUpdater {
         _ transaction: EthereumBlockObject.Transaction,
         receiptOperation: BaseOperation<EthereumTransactionReceipt?>,
         blockNumber: BigUInt,
+        timestamp: Int64,
         chainAssetId: ChainAssetId
     ) -> BaseOperation<Void> {
         repository.saveOperation({ [weak self] in
@@ -63,7 +64,7 @@ final class EvmNativeTransactionHistoryUpdater {
                 amountInPlank: amount,
                 status: receipt?.localStatus ?? .pending,
                 txHash: txHash,
-                timestamp: Int64(Date().timeIntervalSince1970),
+                timestamp: timestamp,
                 fee: fee,
                 blockNumber: UInt64(blockNumber),
                 txIndex: nil,
@@ -80,6 +81,7 @@ final class EvmNativeTransactionHistoryUpdater {
     private func processTransactions(
         transactions: [EthereumBlockObject.Transaction],
         blockNumber: BigUInt,
+        timestamp: Int64,
         chainAssetId: ChainAssetId
     ) {
         let wrappers = transactions.reduce([CompoundOperationWrapper<Void>]()) { accum, transaction in
@@ -90,6 +92,7 @@ final class EvmNativeTransactionHistoryUpdater {
                 transaction,
                 receiptOperation: transactionReceiptOperation,
                 blockNumber: blockNumber,
+                timestamp: timestamp,
                 chainAssetId: chainAssetId
             )
 
@@ -133,6 +136,12 @@ extension EvmNativeTransactionHistoryUpdater: EvmNativeTransactionHistoryUpdater
                     }
 
                     if !targetTransactions.isEmpty {
+                        self?.processTransactions(
+                            transactions: targetTransactions,
+                            blockNumber: blockNumber,
+                            timestamp: Int64(block.timestamp),
+                            chainAssetId: strongSelf.chainAssetId
+                        )
                     } else {
                         strongSelf.logger.debug("No target transactions found for block: \(String(blockNumber))")
                     }

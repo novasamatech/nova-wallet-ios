@@ -45,10 +45,6 @@ final class EvmNativeSubscriptionManager {
             logProcessMutex.unlock()
         }
 
-        guard processingBlockNumber != blockNumber else {
-            return
-        }
-
         processingBlockNumber = blockNumber
         syncService?.stopSyncUp()
         syncService = nil
