@@ -15,7 +15,7 @@ extension KiltTransferAssetRecipientRepository: KiltTransferAssetRecipientReposi
             defaultValue: [:]
         ) { fetchResult in
             fetchResult.reduce(into: TransferAssetRecipientResponse()) { result, next in
-                if let assetId = Caip19.AssetId(raw: next.key) {
+                if let assetId = try? Caip19.AssetId(raw: next.key) {
                     result[assetId] = next.value
                 }
             }

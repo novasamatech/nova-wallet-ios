@@ -4,6 +4,25 @@ extension Caip2 {
     struct ChainId: Hashable {
         let namespace: String
         let reference: String
+
+        init(raw: String) throws {
+            let chain = raw.split(by: .colon)
+            guard chain.count == 2 else {
+                throw ParseError.invalidInputString
+            }
+            let parsedNamespace = chain[0]
+            let parsedReference = chain[1]
+
+            if let namespaceCheckError = parsedNamespace.checkLength(min: 3, max: 8) {
+                throw ParseError.invalidNamespace(namespaceCheckError)
+            }
+            if let referenceCheckError = parsedNamespace.checkLength(min: 1, max: 32) {
+                throw ParseError.invalidReference(referenceCheckError)
+            }
+
+            namespace = parsedNamespace
+            reference = parsedReference
+        }
     }
 }
 

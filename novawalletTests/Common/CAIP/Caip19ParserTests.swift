@@ -6,7 +6,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testDot() {
         let tokenRaw = KnownToken.polkadot
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.knownChain, .polkadot(genesisHash: "411f057b9107718c9624d6aa4a3f23c1"))
         XCTAssertEqual(parsedToken!.knownToken, .slip44(coin: 2086))
@@ -14,7 +14,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testEther() {
         let tokenRaw = KnownToken.ether
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.knownChain, .eip155(id: 1))
         XCTAssertEqual(parsedToken!.knownToken, .slip44(coin: 60))
@@ -22,7 +22,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testBitcoin() {
         let tokenRaw = KnownToken.bitcoin
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.namespace, "bip122")
         XCTAssertEqual(parsedToken!.chainId.reference, "000000000019d6689c085ae165831e93")
@@ -31,7 +31,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testAtom() {
         let tokenRaw = KnownToken.atom
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.namespace, "cosmos")
         XCTAssertEqual(parsedToken!.chainId.reference, "cosmoshub-3")
@@ -40,7 +40,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testLitecoin() {
         let tokenRaw = KnownToken.litecoin
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.namespace, "bip122")
         XCTAssertEqual(parsedToken!.chainId.reference, "12a765e31ffd4059bada1e25190f6e98")
@@ -49,7 +49,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testBinance() {
         let tokenRaw = KnownToken.binance
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.namespace, "cosmos")
         XCTAssertEqual(parsedToken!.chainId.reference, "Binance-Chain-Tigris")
@@ -58,7 +58,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testIOV() {
         let tokenRaw = KnownToken.iov
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.namespace, "cosmos")
         XCTAssertEqual(parsedToken!.chainId.reference, "iov-mainnet")
@@ -67,7 +67,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testLisk() {
         let tokenRaw = KnownToken.lisk
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.namespace, "lip9")
         XCTAssertEqual(parsedToken!.chainId.reference, "9ee11e9df416b18b")
@@ -76,7 +76,7 @@ class Caip19ParserTests: XCTestCase {
     
     func testDAI() {
         let tokenRaw = KnownToken.dai
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.knownChain, .eip155(id: 1))
         XCTAssertEqual(parsedToken!.knownToken, .erc20(contract: "0x6b175474e89094c44da98b954eedeac495271d0f"))
@@ -85,8 +85,8 @@ class Caip19ParserTests: XCTestCase {
     func testCryptoKitties() {
         let collectionRaw = KnownToken.cryptoKittiesCollection
         let collectableRaw = KnownToken.cryptoKittiesCollectible
-        let parsedCollectionToken = Caip19.AssetId(raw: collectionRaw)
-        let parsedCollectableToken = Caip19.AssetId(raw: collectableRaw)
+        let parsedCollectionToken = try? Caip19.AssetId(raw: collectionRaw)
+        let parsedCollectableToken = try? Caip19.AssetId(raw: collectableRaw)
         let expectedBlockchain = Caip2.RegisteredChain.eip155(id: 1)
         let expectedToken = Caip19.RegisteredToken.erc721(contract: "0x06012c8cf97BEaD5deAe237070F9587f8E7A266d")
         XCTAssertNotNil(parsedCollectionToken)
@@ -101,13 +101,29 @@ class Caip19ParserTests: XCTestCase {
     
     func testHedera() {
         let tokenRaw = KnownToken.hedera
-        let parsedToken = Caip19.AssetId(raw: tokenRaw)
+        let parsedToken = try? Caip19.AssetId(raw: tokenRaw)
         XCTAssertNotNil(parsedToken)
         XCTAssertEqual(parsedToken!.chainId.namespace, "hedera")
         XCTAssertEqual(parsedToken!.chainId.reference, "mainnet")
         XCTAssertEqual(parsedToken!.assetNamespace, "nft")
         XCTAssertEqual(parsedToken!.assetReference, "0.0.55492")
         XCTAssertEqual(parsedToken!.tokenId, "12")
+    }
+    
+    func testWrongChain() {
+        let wrongChainString = "po:411f057b9107718c9624d6aa4a3f23c1/slip44:2086"
+        
+        XCTAssertThrowsError(try Caip19.AssetId(raw: wrongChainString)) { error in
+            XCTAssertEqual(error as? Caip2.ParseError, .invalidNamespace(.invalidLength(expected: 3...8, was: 2)))
+        }
+    }
+    
+    func testWrongAsset() {
+        let wrongAssetString = "polkadot:411f057b9107718c9624d6aa4a3f23c1/s:2086"
+        
+        XCTAssertThrowsError(try Caip19.AssetId(raw: wrongAssetString)) { error in
+            XCTAssertEqual(error as? Caip19.ParseError, .invalidAssetNamespace(.invalidLength(expected: 3...8, was: 1)))
+        }
     }
 }
 

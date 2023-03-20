@@ -9,27 +9,26 @@ extension Caip19 {
         let assetReference: String
         let tokenId: String?
 
-        init?(raw: String) {
+        init(raw: String) throws {
             let chainAsset = raw.split(by: .slash)
-            guard chainAsset.count >= 2 else {
-                return nil
-            }
-
-            let chain = chainAsset[0].split(by: .colon)
-            guard chain.count == 2 else {
-                return nil
-            }
-            chainId = .init(
-                namespace: chain[0],
-                reference: chain[1]
-            )
+            chainId = try .init(raw: chainAsset[0])
 
             let asset = chainAsset[1].split(by: .colon)
             guard asset.count == 2 else {
-                return nil
+                throw ParseError.invalidAssetString
             }
-            assetNamespace = asset[0]
-            assetReference = asset[1]
+            let parsedAssetNamespace = asset[0]
+            let parsedAssetReference = asset[1]
+
+            if let namespaceCheckError = parsedAssetNamespace.checkLength(min: 3, max: 8) {
+                throw ParseError.invalidAssetNamespace(namespaceCheckError)
+            }
+            if let referenceCheckError = parsedAssetReference.checkLength(min: 1, max: 128) {
+                throw ParseError.invalidAssetReference(referenceCheckError)
+            }
+
+            assetNamespace = parsedAssetNamespace
+            assetReference = parsedAssetReference
 
             tokenId = chainAsset[safe: 2]
         }
