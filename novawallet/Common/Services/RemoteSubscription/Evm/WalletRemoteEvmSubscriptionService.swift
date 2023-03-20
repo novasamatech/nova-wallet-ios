@@ -131,7 +131,7 @@ final class WalletRemoteEvmSubscriptionService: EvmRemoteSubscriptionService,
     ) -> UUID? {
         let chain = info.chain
         let accountId = info.accountId
-        let cacheKey = createERC20CacheKey(for: chain.chainId, accountId: accountId)
+        let cacheKey = createNativeCacheKey(for: chain.chainId, accountId: accountId)
 
         guard let holder = try? accountId.toAddress(using: chain.chainFormat) else {
             let error = AccountAddressConversionError.invalidEthereumAddress
