@@ -35,6 +35,48 @@ final class EvmNativeTransactionHistoryUpdater {
         self.logger = logger
     }
 
+    private func createTransactionSaveOperation(
+        _ transaction: EthereumBlockObject.Transaction,
+        receiptOperation: BaseOperation<EthereumTransactionReceipt?>,
+        blockNumber: BigUInt,
+        chainAssetId: ChainAssetId
+    ) -> BaseOperation<Void> {
+        repository.saveOperation({ [weak self] in
+            let txHash = transaction.hash.toHex(includePrefix: true)
+            let receipt = try receiptOperation.extractNoCancellableResultData()
+
+            self?.logger.debug("Tx receipt \(transaction.hash): \(String(describing: receipt))")
+
+            let fee = receipt?.fee.map { String($0) }
+
+            let amount = transaction.isNativeTransfer ? String(transaction.amount) : nil
+
+            let sender = try? transaction.sender.toAddress(using: .ethereum)
+            let receiver = try? transaction.recepient?.toAddress(using: .ethereum)
+
+            let historyItem = TransactionHistoryItem(
+                source: .evmNative,
+                chainId: chainAssetId.chainId,
+                assetId: chainAssetId.assetId,
+                sender: sender ?? "",
+                receiver: receiver,
+                amountInPlank: amount,
+                status: receipt?.localStatus ?? .pending,
+                txHash: txHash,
+                timestamp: Int64(Date().timeIntervalSince1970),
+                fee: fee,
+                blockNumber: UInt64(blockNumber),
+                txIndex: nil,
+                callPath: transaction.isNativeTransfer ? .evmNativeTransfer : .evmNativeTransaction,
+                call: nil
+            )
+
+            return [historyItem]
+        }, {
+            []
+        })
+    }
+
     private func processTransactions(
         transactions: [EthereumBlockObject.Transaction],
         blockNumber: BigUInt,
@@ -44,47 +86,12 @@ final class EvmNativeTransactionHistoryUpdater {
             let txHash = transaction.hash.toHex(includePrefix: true)
             let transactionReceiptOperation = operationFactory.createTransactionReceiptOperation(for: txHash)
 
-            let saveOperation = repository.saveOperation({ [weak self] in
-                let receipt = try transactionReceiptOperation.extractNoCancellableResultData()
-
-                self?.logger.debug("Tx receipt \(transaction.hash): \(String(describing: receipt))")
-
-                let fee = receipt?.fee.map { String($0) }
-
-                let amount = transaction.isNativeTransfer ? String(transaction.amount) : nil
-
-                let sender = try? transaction.sender.toAddress(using: .ethereum)
-                let receiver = try? transaction.recepient?.toAddress(using: .ethereum)
-
-                let status: TransactionHistoryItem.Status
-
-                if let isSuccess = receipt?.isSuccess {
-                    status = isSuccess ? .success : .failed
-                } else {
-                    status = .pending
-                }
-
-                let historyItem = TransactionHistoryItem(
-                    source: .evmNative,
-                    chainId: chainAssetId.chainId,
-                    assetId: chainAssetId.assetId,
-                    sender: sender ?? "",
-                    receiver: receiver,
-                    amountInPlank: amount,
-                    status: status,
-                    txHash: txHash,
-                    timestamp: Int64(Date().timeIntervalSince1970),
-                    fee: fee,
-                    blockNumber: UInt64(blockNumber),
-                    txIndex: nil,
-                    callPath: transaction.isNativeTransfer ? .evmNativeTransfer : .evmNativeTransaction,
-                    call: nil
-                )
-
-                return [historyItem]
-            }, {
-                []
-            })
+            let saveOperation = createTransactionSaveOperation(
+                transaction,
+                receiptOperation: transactionReceiptOperation,
+                blockNumber: blockNumber,
+                chainAssetId: chainAssetId
+            )
 
             transactionReceiptOperation.addDependency(saveOperation)
 
