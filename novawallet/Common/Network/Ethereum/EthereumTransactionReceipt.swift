@@ -22,3 +22,13 @@ struct EthereumTransactionReceipt: Codable {
         return gasPriceValue * gasUsedValue
     }
 }
+
+extension EthereumTransactionReceipt {
+    var localStatus: TransactionHistoryItem.Status {
+        if let success = isSuccess {
+            return success ? .success : .failed
+        } else {
+            return .pending
+        }
+    }
+}
