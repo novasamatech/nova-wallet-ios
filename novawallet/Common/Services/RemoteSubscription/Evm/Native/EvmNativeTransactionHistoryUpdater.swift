@@ -96,7 +96,7 @@ final class EvmNativeTransactionHistoryUpdater {
                 chainAssetId: chainAssetId
             )
 
-            transactionReceiptOperation.addDependency(saveOperation)
+            saveOperation.addDependency(transactionReceiptOperation)
 
             saveOperation.completionBlock = { [weak self] in
                 guard case .success = saveOperation.result else {

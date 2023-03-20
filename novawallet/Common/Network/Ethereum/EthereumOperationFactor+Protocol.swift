@@ -13,7 +13,15 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
 
             let method = EthereumMethod.blockByNumber.rawValue
             let blockNumberString = blockNumber.toHexString()
-            let jsonRequest = EthereumRpcRequest(method: method, params: [blockNumberString])
+
+            let params = JSON.arrayValue(
+                [
+                    JSON.stringValue(blockNumberString), // block number
+                    JSON.boolValue(true) // should return full transactions
+                ]
+            )
+
+            let jsonRequest = EthereumRpcRequest(method: method, params: params)
 
             request.httpBody = try JSONEncoder().encode(jsonRequest)
             request.setValue(

@@ -15,12 +15,19 @@ final class EvmWebSocketOperationFactory {
 
 extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
     func createBlockOperation(for blockNumber: BigUInt) -> RobinHood.BaseOperation<EthereumBlockObject> {
-        let parameters = [blockNumber.toHexString()]
+        let blockNumberString = blockNumber.toHexString()
 
-        return JSONRPCListOperation(
+        let params = JSON.arrayValue(
+            [
+                JSON.stringValue(blockNumberString), // block number
+                JSON.boolValue(true) // should return full transactions
+            ]
+        )
+
+        return JSONRPCOperation(
             engine: connection,
             method: EthereumMethod.blockByNumber.rawValue,
-            parameters: parameters,
+            parameters: params,
             timeout: timeout
         )
     }
