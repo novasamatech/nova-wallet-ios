@@ -23,4 +23,5 @@ struct EthereumBlockObject: Codable {
     }
 
     let transactions: [Transaction]
+    @HexCodable var timestamp: BigUInt
 }
