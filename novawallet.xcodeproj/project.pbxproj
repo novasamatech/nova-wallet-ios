@@ -1121,6 +1121,10 @@
 		845B822526EFE03E00D25C72 /* AccountGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822426EFE03E00D25C72 /* AccountGenerator.swift */; };
 		845B822726EFFE0200D25C72 /* MetaAccountMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822626EFFE0200D25C72 /* MetaAccountMapperTests.swift */; };
 		845B822926F0BB6700D25C72 /* CrowdloanChainSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822826F0BB6700D25C72 /* CrowdloanChainSettings.swift */; };
+		845B823229C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B823129C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift */; };
+		845B823429C8FF0700D187CB /* EtherscanNativeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B823329C8FF0700D187CB /* EtherscanNativeOperationFactory.swift */; };
+		845B823629C8FF2900D187CB /* EtherscanBaseOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B823529C8FF2900D187CB /* EtherscanBaseOperationFactory.swift */; };
+		845B823829C9031800D187CB /* EtherscanPagination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B823729C9031800D187CB /* EtherscanPagination.swift */; };
 		845B891C295960AD00EE25B0 /* SecuredPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B891B295960AD00EE25B0 /* SecuredPresentable.swift */; };
 		845B891E2959611C00EE25B0 /* SecurityLayerInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B891D2959611C00EE25B0 /* SecurityLayerInteractor.swift */; };
 		845B8920295961AC00EE25B0 /* SecurityLayerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B891F295961AC00EE25B0 /* SecurityLayerProtocols.swift */; };
@@ -1674,8 +1678,8 @@
 		8494D86B25247F9600614D8F /* Decimal+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8494D86A25247F9600614D8F /* Decimal+String.swift */; };
 		849528E326036997009DC845 /* RewardEstimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849528E226036997009DC845 /* RewardEstimationView.swift */; };
 		84953F662934C7D90033F47D /* EtherscanHistoryElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F652934C7D90033F47D /* EtherscanHistoryElement.swift */; };
-		84953F682934C8A70033F47D /* EtherscanHistoryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F672934C8A70033F47D /* EtherscanHistoryInfo.swift */; };
-		84953F6A2934C9E20033F47D /* EtherscanOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F692934C9E20033F47D /* EtherscanOperationFactory.swift */; };
+		84953F682934C8A70033F47D /* EtherscanERC20HistoryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F672934C8A70033F47D /* EtherscanERC20HistoryInfo.swift */; };
+		84953F6A2934C9E20033F47D /* EtherscanERC20OperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F692934C9E20033F47D /* EtherscanERC20OperationFactory.swift */; };
 		84953F6C2935E1A80033F47D /* UserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6B2935E1A80033F47D /* UserAgent.swift */; };
 		84953F6E2935E35D0033F47D /* EtherscanHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */; };
 		84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */; };
@@ -4506,6 +4510,10 @@
 		845B822426EFE03E00D25C72 /* AccountGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountGenerator.swift; sourceTree = "<group>"; };
 		845B822626EFFE0200D25C72 /* MetaAccountMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountMapperTests.swift; sourceTree = "<group>"; };
 		845B822826F0BB6700D25C72 /* CrowdloanChainSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanChainSettings.swift; sourceTree = "<group>"; };
+		845B823129C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanNativeHistoryInfo.swift; sourceTree = "<group>"; };
+		845B823329C8FF0700D187CB /* EtherscanNativeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanNativeOperationFactory.swift; sourceTree = "<group>"; };
+		845B823529C8FF2900D187CB /* EtherscanBaseOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanBaseOperationFactory.swift; sourceTree = "<group>"; };
+		845B823729C9031800D187CB /* EtherscanPagination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanPagination.swift; sourceTree = "<group>"; };
 		845B891B295960AD00EE25B0 /* SecuredPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuredPresentable.swift; sourceTree = "<group>"; };
 		845B891D2959611C00EE25B0 /* SecurityLayerInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityLayerInteractor.swift; sourceTree = "<group>"; };
 		845B891F295961AC00EE25B0 /* SecurityLayerProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityLayerProtocols.swift; sourceTree = "<group>"; };
@@ -5068,8 +5076,8 @@
 		8494D86A25247F9600614D8F /* Decimal+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+String.swift"; sourceTree = "<group>"; };
 		849528E226036997009DC845 /* RewardEstimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardEstimationView.swift; sourceTree = "<group>"; };
 		84953F652934C7D90033F47D /* EtherscanHistoryElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanHistoryElement.swift; sourceTree = "<group>"; };
-		84953F672934C8A70033F47D /* EtherscanHistoryInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanHistoryInfo.swift; sourceTree = "<group>"; };
-		84953F692934C9E20033F47D /* EtherscanOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanOperationFactory.swift; sourceTree = "<group>"; };
+		84953F672934C8A70033F47D /* EtherscanERC20HistoryInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanERC20HistoryInfo.swift; sourceTree = "<group>"; };
+		84953F692934C9E20033F47D /* EtherscanERC20OperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanERC20OperationFactory.swift; sourceTree = "<group>"; };
 		84953F6B2935E1A80033F47D /* UserAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgent.swift; sourceTree = "<group>"; };
 		84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanHistoryContext.swift; sourceTree = "<group>"; };
 		84953F6F293615D20033F47D /* AssetHistoryFactoryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHistoryFactoryFacade.swift; sourceTree = "<group>"; };
@@ -9342,6 +9350,24 @@
 			path = Treasury;
 			sourceTree = "<group>";
 		};
+		845B822F29C8F8E000D187CB /* ERC20 */ = {
+			isa = PBXGroup;
+			children = (
+				84953F672934C8A70033F47D /* EtherscanERC20HistoryInfo.swift */,
+				84953F692934C9E20033F47D /* EtherscanERC20OperationFactory.swift */,
+			);
+			path = ERC20;
+			sourceTree = "<group>";
+		};
+		845B823029C8FEAD00D187CB /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				845B823129C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift */,
+				845B823329C8FF0700D187CB /* EtherscanNativeOperationFactory.swift */,
+			);
+			path = Native;
+			sourceTree = "<group>";
+		};
 		845B891A2959608D00EE25B0 /* SecurityLayer */ = {
 			isa = PBXGroup;
 			children = (
@@ -11466,11 +11492,13 @@
 		84953F642934B2C90033F47D /* Etherscan */ = {
 			isa = PBXGroup;
 			children = (
+				845B823029C8FEAD00D187CB /* Native */,
+				845B822F29C8F8E000D187CB /* ERC20 */,
 				84953F652934C7D90033F47D /* EtherscanHistoryElement.swift */,
-				84953F672934C8A70033F47D /* EtherscanHistoryInfo.swift */,
-				84953F692934C9E20033F47D /* EtherscanOperationFactory.swift */,
 				84953F6D2935E35D0033F47D /* EtherscanHistoryContext.swift */,
 				84BAD20A2939C45900C55C49 /* EtherscanKeys.swift */,
+				845B823529C8FF2900D187CB /* EtherscanBaseOperationFactory.swift */,
+				845B823729C9031800D187CB /* EtherscanPagination.swift */,
 			);
 			path = Etherscan;
 			sourceTree = "<group>";
@@ -17603,6 +17631,7 @@
 				8418167528251BBC0007684A /* StorageListSyncResult.swift in Sources */,
 				84DD261929ACA9880032A598 /* BagList+CodingPath.swift in Sources */,
 				8465DA3F298EEC6C00C7CFF1 /* GovernanceAddDelegationTracksInteractor.swift in Sources */,
+				845B823429C8FF0700D187CB /* EtherscanNativeOperationFactory.swift in Sources */,
 				88D997B028ABC8C0006135A5 /* BlurredTableViewCell.swift in Sources */,
 				849ABE5B2627739400011A2A /* ListReducing.swift in Sources */,
 				88C5F07C297EE79C001CCADE /* Release.swift in Sources */,
@@ -18202,7 +18231,7 @@
 				84BB3D00267D364D00676FFE /* CompoundOperationWrapper+Dependency.swift in Sources */,
 				F4433D6726C1668E0002A91E /* AnalyticsValidatorsHeaderView.swift in Sources */,
 				8467FD5524EFD254005D486C /* StorageFacadeProtocol.swift in Sources */,
-				84953F682934C8A70033F47D /* EtherscanHistoryInfo.swift in Sources */,
+				84953F682934C8A70033F47D /* EtherscanERC20HistoryInfo.swift in Sources */,
 				84CFF1EF26526FBC00DB7CF7 /* StakingBondMoreConfirmationPresenter.swift in Sources */,
 				8828F4F528AD2763009E0B7C /* BalanceViewModelFactoryFacade.swift in Sources */,
 				F4CE0FEE273452BF0094CD8A /* AcalaContributionConfirmViewFactory.swift in Sources */,
@@ -18648,6 +18677,7 @@
 				88A5318028B9328E00AF18F5 /* YourWalletsViewSectionModel.swift in Sources */,
 				842EBB312890A76A00B952D8 /* WalletSelectionViewController.swift in Sources */,
 				8427495728FEBFA400B2B70B /* ConvictionVoting+ConstantPath.swift in Sources */,
+				845B823829C9031800D187CB /* EtherscanPagination.swift in Sources */,
 				84C5ADDF28133F3E006D7388 /* UnknownAddressView.swift in Sources */,
 				84F6B6502619E1ED0038F10D /* Int+Operations.swift in Sources */,
 				8487010E2907DF2F00F2C0C3 /* MultiValueView+Style.swift in Sources */,
@@ -19116,7 +19146,7 @@
 				8487580727EDEB9600495306 /* BorderedIconLabelView.swift in Sources */,
 				84AE7AAD27D3839D00495267 /* StackCellViewModel.swift in Sources */,
 				848CC94628D9FC46009EB4B0 /* ConvictionVotingTally.swift in Sources */,
-				84953F6A2934C9E20033F47D /* EtherscanOperationFactory.swift in Sources */,
+				84953F6A2934C9E20033F47D /* EtherscanERC20OperationFactory.swift in Sources */,
 				CD9359A2720F2EE1D4E09DF6 /* DAppTxDetailsWireframe.swift in Sources */,
 				0E364B6F05D390069D049CC2 /* DAppTxDetailsPresenter.swift in Sources */,
 				9BADFCBF3AF5186094DB8D67 /* DAppTxDetailsInteractor.swift in Sources */,
@@ -19442,6 +19472,7 @@
 				FF2E6053091276EBBA4D986C /* LedgerAccountConfirmationPresenter.swift in Sources */,
 				97872BDCD915B56F2F2E7E3B /* LedgerWalletAccountConfirmationInteractor.swift in Sources */,
 				E5DC2660D78D3CC9FC48E748 /* LedgerAccountConfirmationViewController.swift in Sources */,
+				845B823229C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift in Sources */,
 				CDAB179209D12B81430E377C /* LedgerAccountConfirmationViewLayout.swift in Sources */,
 				FA894DFA8EEBB0B4562CD788 /* LedgerAccountConfirmationViewFactory.swift in Sources */,
 				99A045F3C6403FB48B39971D /* LedgerWalletConfirmProtocols.swift in Sources */,
@@ -19651,6 +19682,7 @@
 				6B18B9B1EB93B1341B95E403 /* CommonDelegationTracksViewController.swift in Sources */,
 				A9A4846AB91BCB88E0416E38 /* CommonDelegationTracksViewLayout.swift in Sources */,
 				0754911527A21957BD25A1DA /* CommonDelegationTracksViewFactory.swift in Sources */,
+				845B823629C8FF2900D187CB /* EtherscanBaseOperationFactory.swift in Sources */,
 				473EDA64B1A18BA80189142D /* GovernanceRemoveVotesConfirmProtocols.swift in Sources */,
 				590717389ECBA34FA08F247B /* GovernanceRemoveVotesConfirmWireframe.swift in Sources */,
 				544C8EB3D71227FAF2FD4658 /* GovernanceRemoveVotesConfirmPresenter.swift in Sources */,
