@@ -39,13 +39,11 @@ extension ChainAssetId {
             return nil
         }
 
-        guard
-            let chainIdData = try? Data(hexString: String(components[0])),
-            let assetId = AssetModel.Id(String(components[1])) else {
+        guard let assetId = AssetModel.Id(String(components[1])) else {
             return nil
         }
 
-        chainId = chainIdData.toHex()
+        chainId = String(components[0])
         self.assetId = assetId
     }
 
