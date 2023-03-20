@@ -58,13 +58,7 @@ struct OptionHexCodable<T: HexConvertable>: Codable {
     }
 
     init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-
-        if let hexString = try container.decode(String?.self) {
-            wrappedValue = try T(hex: hexString)
-        } else {
-            wrappedValue = nil
-        }
+        wrappedValue = try HexCodable(from: decoder).wrappedValue
     }
 
     func encode(to encoder: Encoder) throws {
