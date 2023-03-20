@@ -61,3 +61,17 @@ extension TransactionHistoryItem {
         ChainAssetId(chainId: chainId, assetId: assetId).walletId
     }
 }
+
+extension TransactionHistoryItemSource {
+    init(assetTypeString: String?) {
+        let assetType: AssetType? = assetTypeString.flatMap { .init(rawValue: $0) }
+        switch assetType {
+        case .statemine, .orml, .none:
+            self = .substrate
+        case .evm:
+            self = .evm
+        case .evmNative:
+            self = .evmNative
+        }
+    }
+}
