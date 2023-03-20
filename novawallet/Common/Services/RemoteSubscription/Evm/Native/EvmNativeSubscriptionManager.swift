@@ -34,6 +34,10 @@ final class EvmNativeSubscriptionManager {
         self.logger = logger
     }
 
+    deinit {
+        unsubscribe()
+    }
+
     private func handleTransactions(for blockNumber: BigUInt) {
         params.transactionHistoryUpdater?.processEvmNativeTransactions(from: blockNumber)
     }
@@ -72,6 +76,8 @@ final class EvmNativeSubscriptionManager {
                     self?.handleTransactions(for: blockNumber)
                 }
             }
+
+            syncService?.setup()
         } catch {
             logger?.error("Can't create service to proccess block number: \(blockNumber.toHexString()) \(chainId)")
         }
@@ -97,6 +103,7 @@ final class EvmNativeSubscriptionManager {
             subscriptionId = try connection.subscribe(
                 EvmSubscriptionMessage.subscribeMethod,
                 params: EvmSubscriptionMessage.NewHeadsParams(),
+                unsubscribeMethod: EvmSubscriptionMessage.unsubscribeMethod,
                 updateClosure: updateClosure,
                 failureClosure: failureClosure
             )
@@ -104,6 +111,14 @@ final class EvmNativeSubscriptionManager {
             logger?.debug("Did create evm native balance subscription: \(params.holder) \(chainId)")
         } catch {
             logger?.error("Can't create evm subscription: \(chainId)")
+        }
+    }
+
+    private func unsubscribe() {
+        syncService?.stopSyncUp()
+
+        if let subscriptionId = subscriptionId {
+            connection.cancelForIdentifier(subscriptionId)
         }
     }
 
