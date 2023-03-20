@@ -18,7 +18,7 @@ extension BigUInt: HexConvertable {
     }
 
     init(hex: String) throws {
-        guard let value = try BigUInt.fromHexString(hex) else {
+        guard let value = BigUInt.fromHexString(hex) else {
             throw CommonError.dataCorruption
         }
 
@@ -69,5 +69,15 @@ struct OptionHexCodable<T: HexConvertable>: Codable {
         } else {
             try container.encodeNil()
         }
+    }
+}
+
+extension KeyedDecodingContainer {
+    func decode<T: HexConvertable>(_ type: OptionHexCodable<T>.Type, forKey key: K) throws -> OptionHexCodable<T> {
+        if let value = try decodeIfPresent(type, forKey: key) {
+            return value
+        }
+
+        return OptionHexCodable(wrappedValue: nil)
     }
 }

@@ -17,7 +17,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     let queryMessageFactory: EvmQueryContractMessageFactoryProtocol
     let completion: ERC20UpdateServiceCompletionClosure?
 
-    @Atomic(defaultValue: nil) private var queryId: UInt16?
+    @Atomic(defaultValue: nil) private var queryIds: [UInt16]?
     @Atomic(defaultValue: nil) private var cancellable: CancellableCall?
 
     init(
@@ -181,7 +181,7 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
                 try connection.addBatchCallMethod(EvmQueryMessage.method, params: params, batchId: batchId)
             }
 
-            queryId = try connection.submitBatch(
+            queryIds = try connection.submitBatch(
                 for: batchId,
                 options: JSONRPCOptions(resendOnReconnect: true)
             ) { [weak self] responses in
@@ -205,8 +205,8 @@ final class ERC20BalanceUpdateService: BaseSyncService, AnyCancellableCleaning {
     }
 
     override func stopSyncUp() {
-        if let queryId = queryId {
-            connection.cancelForIdentifier(queryId)
+        if let queryIds = queryIds {
+            connection.cancelForIdentifiers(queryIds)
         }
 
         clear(cancellable: &cancellable)
