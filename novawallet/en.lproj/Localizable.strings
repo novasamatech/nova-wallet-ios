@@ -1193,3 +1193,4 @@
 "common.multi.tx.error.has.details.message" = "There was an error while submitting some transactions (%@): %@. Do you want to retry?";
 "staking.rebag.confirm.completion" = "New queue slot request has been submitted";
 "evm.contract.call" = "Contract call";
+"evm.contract" = "Contract";

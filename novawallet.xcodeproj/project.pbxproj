@@ -2289,6 +2289,9 @@
 		84DF21B12536DDC1005454AE /* TransferConfirmCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DF21B02536DDC1005454AE /* TransferConfirmCommand.swift */; };
 		84DF21B525388B35005454AE /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DF21B425388B35005454AE /* Scheduler.swift */; };
 		84E0C34729B0E10F0033E0DC /* GovernanceDelegateSearchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0C34629B0E10F0033E0DC /* GovernanceDelegateSearchError.swift */; };
+		84E0C51E29CA40DA000B65C8 /* OperationContractCallModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0C51D29CA40DA000B65C8 /* OperationContractCallModel.swift */; };
+		84E0C52029CA413C000B65C8 /* OperationContractCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0C51F29CA413C000B65C8 /* OperationContractCallViewModel.swift */; };
+		84E0C52229CA421A000B65C8 /* OperationDetailsContractView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0C52129CA421A000B65C8 /* OperationDetailsContractView.swift */; };
 		84E0EE04292D336C008B2953 /* GovernanceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0EE03292D336C008B2953 /* GovernanceType.swift */; };
 		84E0EE06292D3A58008B2953 /* AssetSelectionBaseProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0EE05292D3A58008B2953 /* AssetSelectionBaseProtocols.swift */; };
 		84E0EE08292D3C2D008B2953 /* GovernanceAssetSelectionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E0EE07292D3C2D008B2953 /* GovernanceAssetSelectionProtocols.swift */; };
@@ -5695,6 +5698,9 @@
 		84DF21B02536DDC1005454AE /* TransferConfirmCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferConfirmCommand.swift; sourceTree = "<group>"; };
 		84DF21B425388B35005454AE /* Scheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scheduler.swift; sourceTree = "<group>"; };
 		84E0C34629B0E10F0033E0DC /* GovernanceDelegateSearchError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateSearchError.swift; sourceTree = "<group>"; };
+		84E0C51D29CA40DA000B65C8 /* OperationContractCallModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationContractCallModel.swift; sourceTree = "<group>"; };
+		84E0C51F29CA413C000B65C8 /* OperationContractCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationContractCallViewModel.swift; sourceTree = "<group>"; };
+		84E0C52129CA421A000B65C8 /* OperationDetailsContractView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationDetailsContractView.swift; sourceTree = "<group>"; };
 		84E0EE03292D336C008B2953 /* GovernanceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceType.swift; sourceTree = "<group>"; };
 		84E0EE05292D3A58008B2953 /* AssetSelectionBaseProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetSelectionBaseProtocols.swift; sourceTree = "<group>"; };
 		84E0EE07292D3C2D008B2953 /* GovernanceAssetSelectionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GovernanceAssetSelectionProtocols.swift; sourceTree = "<group>"; };
@@ -8290,6 +8296,7 @@
 				842A736327DB31A3006EE1EA /* OperationRewardModel.swift */,
 				842A736527DB485E006EE1EA /* OperationSlashModel.swift */,
 				842A736727DB4883006EE1EA /* OperationTransferModel.swift */,
+				84E0C51D29CA40DA000B65C8 /* OperationContractCallModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -8303,6 +8310,7 @@
 				842A737027DB7EF1006EE1EA /* OperationSlashViewModel.swift */,
 				842A737227DB7F75006EE1EA /* OperationRewardViewModel.swift */,
 				842A737427DB8338006EE1EA /* OperationDetailsViewModelFactory.swift */,
+				84E0C51F29CA413C000B65C8 /* OperationContractCallViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -8313,6 +8321,7 @@
 				842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */,
 				842A737D27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift */,
 				842A737F27DCD427006EE1EA /* OperationDetailsRewardView.swift */,
+				84E0C52129CA421A000B65C8 /* OperationDetailsContractView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -17884,6 +17893,7 @@
 				84C6801224D6F44400006BF5 /* ExpandableActionControl+Inspectable.swift in Sources */,
 				845C407B27027AA000BFA50B /* SubscriptionStorageKeys.swift in Sources */,
 				84F1CB2B27CE4E4B0095D523 /* NftListViewModel.swift in Sources */,
+				84E0C52229CA421A000B65C8 /* OperationDetailsContractView.swift in Sources */,
 				844ADE7B28CB273100EE29F7 /* ParaStkYieldBoostFeeRequest.swift in Sources */,
 				847119CD262EF61F00716580 /* PayoutValidatorForValidatorFactory.swift in Sources */,
 				F40966E426B29919008CD244 /* Stacks.swift in Sources */,
@@ -18042,6 +18052,7 @@
 				8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */,
 				840302E4292CFCF90013F356 /* AssetSelectionBasePresenter.swift in Sources */,
 				84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */,
+				84E0C52029CA413C000B65C8 /* OperationContractCallViewModel.swift in Sources */,
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
 				843461E8290BF14400379936 /* ReferendumsSorting.swift in Sources */,
 				843910C3253F39B100E3C217 /* WalletNetworkFacade+Storage.swift in Sources */,
@@ -19377,6 +19388,7 @@
 				97BF7157FE13F723BF4D5713 /* CreateWatchOnlyWireframe.swift in Sources */,
 				84770F25291F72D700852A33 /* ReferendumVotingInitData.swift in Sources */,
 				84A7AC822946FC31001A39CF /* EthereumResultParser.swift in Sources */,
+				84E0C51E29CA40DA000B65C8 /* OperationContractCallModel.swift in Sources */,
 				846A835D28B8D09600D92892 /* LedgerMessageSheetViewFactory.swift in Sources */,
 				60FFEE5B386E82D70333BE80 /* CreateWatchOnlyPresenter.swift in Sources */,
 				454D41CC5C7CC2FDAB778026 /* CreateWatchOnlyInteractor.swift in Sources */,
