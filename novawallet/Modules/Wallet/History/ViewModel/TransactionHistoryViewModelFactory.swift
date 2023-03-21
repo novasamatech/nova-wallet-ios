@@ -69,7 +69,8 @@ final class TransactionHistoryViewModelFactory {
             type: txType,
             status: data.status,
             imageViewModel: imageViewModel,
-            command: command
+            command: command,
+            titleType: .address
         )
     }
 
@@ -151,7 +152,7 @@ final class TransactionHistoryViewModelFactory {
         let subtitle: String
 
         if chainAsset.asset.isEvmNative {
-            title = data.peerId
+            title = (try? Data(hex: data.peerId).toAddress(using: chainAsset.chain.chainFormat)) ?? data.peerId
             subtitle = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
         } else {
             title = data.peerLastName?.displayCall ?? ""
@@ -166,7 +167,8 @@ final class TransactionHistoryViewModelFactory {
             type: txType,
             status: data.status,
             imageViewModel: imageViewModel,
-            command: command
+            command: command,
+            titleType: chainAsset.asset.isEvmNative ? .address : .rawString
         )
     }
 }
