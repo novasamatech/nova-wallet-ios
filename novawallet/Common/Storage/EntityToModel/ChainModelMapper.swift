@@ -276,6 +276,10 @@ final class ChainModelMapper {
             options.append(.governanceV1)
         }
 
+        if entity.noSubstrateRuntime {
+            options.append(.noSubstrateRuntime)
+        }
+
         return !options.isEmpty ? options : nil
     }
 }
@@ -350,6 +354,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasCrowdloans = model.hasCrowdloans
         entity.hasGovernanceV1 = model.hasGovernanceV1
         entity.hasGovernance = model.hasGovernanceV2
+        entity.noSubstrateRuntime = model.noSubstrateRuntime
         entity.order = model.order
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
