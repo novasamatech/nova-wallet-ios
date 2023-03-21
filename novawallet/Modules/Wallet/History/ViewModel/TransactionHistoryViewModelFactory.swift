@@ -147,9 +147,20 @@ final class TransactionHistoryViewModelFactory {
             chainAsset: chainAsset
         )
 
+        let title: String
+        let subtitle: String
+
+        if chainAsset.asset.isEvmNative {
+            title = data.peerId
+            subtitle = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
+        } else {
+            title = data.peerLastName?.displayCall ?? ""
+            subtitle = data.peerFirstName?.displayModule ?? ""
+        }
+
         return HistoryItemViewModel(
-            title: data.peerLastName?.displayCall ?? "",
-            subtitle: data.peerFirstName?.displayModule ?? "",
+            title: title,
+            subtitle: subtitle,
             amount: amount,
             time: time,
             type: txType,
