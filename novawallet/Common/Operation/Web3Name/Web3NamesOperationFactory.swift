@@ -28,7 +28,7 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<Web3NameSearchResponse?> {
         let requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: operationManager
         )
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -63,11 +63,11 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
                     $0.serviceTypes.contains { $0.wrappedValue == service }
                 })
 
-                let url = transferAssetService?.urls.first.map { URL(string: $0.wrappedValue) } ?? nil
+                let urls = transferAssetService?.urls.compactMap { URL(string: $0.wrappedValue) } ?? []
 
                 return Web3NameSearchResponse(
                     owner: ownership.owner,
-                    serviceURL: url
+                    serviceURLs: urls
                 )
             }
 
@@ -92,7 +92,7 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine
     ) -> CompoundOperationWrapper<[StorageResponse<KiltW3n.Ownership>]> {
-        guard let data = name.data(using: .utf8) else {
+        guard let data = name.data(using: .ascii) else {
             return CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
         }
 
