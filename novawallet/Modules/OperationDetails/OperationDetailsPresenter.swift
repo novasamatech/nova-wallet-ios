@@ -98,14 +98,21 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             if let validator = internalModel.validator {
                 presentAddressOptions(validator.address)
             }
+        case let .contract(contractModel):
+            presentAddressOptions(contractModel.sender.address)
         case .none:
             break
         }
     }
 
     func showRecepientActions() {
-        if case let .transfer(transferModel) = model?.operation {
+        switch model?.operation {
+        case let .transfer(transferModel):
             presentAddressOptions(transferModel.receiver.address)
+        case let .contract(contractModel):
+            presentAddressOptions(contractModel.contract.address)
+        default:
+            break
         }
     }
 
@@ -119,6 +126,8 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
             presentEventIdOptions(rewardModel.eventId)
         case let .slash(slashModel):
             presentEventIdOptions(slashModel.eventId)
+        case let .contract(contractModel):
+            presentTransactionHashOptions(contractModel.txHash)
         case .none:
             break
         }
