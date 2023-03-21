@@ -79,6 +79,8 @@ final class Web3NamesOperationFactoryTests: XCTestCase {
         )
         
         let result = try wrapper.targetOperation.extractNoCancellableResultData()
-        XCTAssertTrue(result?.serviceURL != nil)
+        XCTAssertNotNil(result)
+        XCTAssertTrue(!result!.serviceURLs.isEmpty)
     }
 }
+
