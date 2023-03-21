@@ -26,6 +26,20 @@ extension BigUInt: HexConvertable {
     }
 }
 
+extension Bool: HexConvertable {
+    func toHexWithPrefix() -> String {
+        BigUInt(self ? 1 : 0).toHexString()
+    }
+
+    init(hex: String) throws {
+        guard let value = BigUInt.fromHexString(hex) else {
+            throw CommonError.dataCorruption
+        }
+
+        self = value == 1
+    }
+}
+
 @propertyWrapper
 struct HexCodable<T: HexConvertable>: Codable {
     let wrappedValue: T

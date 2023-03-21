@@ -38,7 +38,12 @@ final class EtherscanERC20OperationFactory: EtherscanBaseOperationFactory {
             return CompoundOperationWrapper.createWithError(NetworkBaseError.invalidUrl)
         }
 
-        return createFetchWrapper(for: url, page: info.page, offset: info.offset)
+        return createFetchWrapper(
+            for: url,
+            page: info.page,
+            offset: info.offset,
+            responseType: EtherscanERC20HistoryResponse.self
+        )
     }
 }
 
