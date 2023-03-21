@@ -67,6 +67,14 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
         isTransfer ? .transfers : .extrinsics
     }
 
+    var assetTransactionStatus: AssetTransactionStatus {
+        if let status = status {
+            return status == 1 ? .commited : .rejected
+        } else {
+            return .pending
+        }
+    }
+
     func createTransactionForAddress(
         _ address: String,
         assetId: String,
@@ -84,6 +92,7 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
 
         let amount: Decimal
         let feeModels: [AssetTransactionFee]
+        let type: TransactionType
 
         if isTransfer {
             amount = Decimal.fromSubstrateAmount(value, precision: chainAsset.asset.decimalPrecision) ?? .zero
@@ -96,16 +105,17 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
             )
 
             feeModels = [feeModel]
+
+            type = isSender ? .outgoing : .incoming
         } else {
             amount = fee
             feeModels = []
+            type = .extrinsic
         }
-
-        let type: TransactionType = isSender ? .outgoing : .incoming
 
         return AssetTransactionData(
             transactionId: hash.toHex(includePrefix: true),
-            status: .commited,
+            status: assetTransactionStatus,
             assetId: assetId,
             peerId: peerId?.toHex(includePrefix: true) ?? "",
             peerFirstName: nil,
