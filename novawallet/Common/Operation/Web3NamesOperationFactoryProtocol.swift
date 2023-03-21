@@ -14,6 +14,7 @@ protocol Web3NamesOperationFactoryProtocol {
 
 final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
     private let operationQueue: OperationQueue
+    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
     init(operationQueue: OperationQueue) {
         self.operationQueue = operationQueue
@@ -38,89 +39,87 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
             connection: connection
         )
 
-        let services = fetchServicesWrapper(
-            dependingOn: fetchWrapper.targetOperation,
-            codingFactoryOperation: codingFactoryOperation,
-            requestFactory: requestFactory,
-            connection: connection
-        )
+        fetchWrapper.addDependency(operations: [codingFactoryOperation])
 
-        services.addDependency(operations: [codingFactoryOperation, fetchWrapper.targetOperation])
-
-        let mappingOperation = ClosureOperation<Web3NameSearchResponse?> {
-            guard let ownership = try fetchWrapper.targetOperation.extractNoCancellableResultData() else {
+        let searchWeb3NameWrapper = OperationCombiningService<Web3NameSearchResponse>.compoundWrapper(operationManager: operationManager) { [weak self] in
+            guard let self = self,
+                  let ownership = try fetchWrapper.targetOperation.extractNoCancellableResultData().first?.value else {
                 return nil
             }
 
-            let services = try services.targetOperation.extractNoCancellableResultData()
-            let transferAssetService = services.values.first(where: { $0.serviceTypes.contains(service) })
-            let url = transferAssetService?.urls.first.map { URL(string: $0) } ?? nil
+            let fetchServicesWrapper = self.fetchServicesWrapper(
+                ownership: ownership,
+                codingFactoryOperation: codingFactoryOperation,
+                requestFactory: requestFactory,
+                connection: connection
+            )
 
-            return Web3NameSearchResponse(
-                owner: ownership.owner,
-                serviceURL: url
+            fetchServicesWrapper.addDependency(operations: [codingFactoryOperation])
+
+            let mappingOperation = ClosureOperation<Web3NameSearchResponse> {
+                let services = try fetchServicesWrapper.targetOperation.extractNoCancellableResultData()
+
+                let transferAssetService = services.values.first(where: {
+                    $0.serviceTypes.contains { $0.wrappedValue == service }
+                })
+
+                let url = transferAssetService?.urls.first.map { URL(string: $0.wrappedValue) } ?? nil
+
+                return Web3NameSearchResponse(
+                    owner: ownership.owner,
+                    serviceURL: url
+                )
+            }
+
+            mappingOperation.addDependency(fetchServicesWrapper.targetOperation)
+            let dependencies = fetchServicesWrapper.allOperations
+
+            return CompoundOperationWrapper(
+                targetOperation: mappingOperation,
+                dependencies: dependencies
             )
         }
 
-        let dependencies = fetchWrapper.allOperations + services.allOperations
+        let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations + searchWeb3NameWrapper.dependencies
+        searchWeb3NameWrapper.addDependency(wrapper: fetchWrapper)
 
-        dependencies.forEach { mappingOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+        return .init(targetOperation: searchWeb3NameWrapper.targetOperation, dependencies: dependencies)
     }
 
-    private func fetchOwnershipWrapper(
+    func fetchOwnershipWrapper(
         for name: String,
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<Web3NameOwnership?> {
+    ) -> CompoundOperationWrapper<[StorageResponse<KiltW3n.Ownership>]> {
         guard let data = name.data(using: .utf8) else {
             return CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
         }
 
-        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<Web3NameOwnership>]> = requestFactory.queryItems(
+        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<KiltW3n.Ownership>]> = requestFactory.queryItems(
             engine: connection,
             keyParams: { [BytesCodable(wrappedValue: data)] },
             factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-            storagePath: StorageCodingPath.web3Names
+            storagePath: KiltW3n.web3Names
         )
 
-        fetchWrapper.addDependency(operations: [codingFactoryOperation])
-
-        let mappingOperation = ClosureOperation<Web3NameOwnership?> {
-            guard let ownership = try fetchWrapper.targetOperation.extractNoCancellableResultData().first?.value else {
-                return nil
-            }
-
-            return ownership
-        }
-
-        let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
-
-        dependencies.forEach { mappingOperation.addDependency($0) }
-
-        return .init(targetOperation: mappingOperation, dependencies: dependencies)
+        return fetchWrapper
     }
 
-    private func fetchServicesWrapper(
-        dependingOn ownershipOperation: BaseOperation<Web3NameOwnership?>,
+    func fetchServicesWrapper(
+        ownership: KiltW3n.Ownership,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         requestFactory: StorageRequestFactoryProtocol,
         connection: JSONRPCEngine
-    ) -> CompoundOperationWrapper<[DigitalIdentifierService.Key: DigitalIdentifierService.Endpoint]> {
-        let request = MapRemoteStorageRequest(storagePath: StorageCodingPath.digitalIdentityEndpoints) {
-            let ownership = try ownershipOperation.extractNoCancellableResultData()
-            guard let owner = ownership?.owner else {
-                throw CommonError.dataCorruption
-            }
-            return owner
+    ) -> CompoundOperationWrapper<[KiltDid.Key: KiltDid.Endpoint]> {
+        let request = MapRemoteStorageRequest(storagePath: KiltDid.endpoints) {
+            ownership.owner
         }
 
         return requestFactory.queryByPrefix(
             engine: connection,
             request: request,
-            storagePath: StorageCodingPath.digitalIdentityEndpoints,
+            storagePath: KiltDid.endpoints,
             factory: { try codingFactoryOperation.extractNoCancellableResultData() }
         )
     }
