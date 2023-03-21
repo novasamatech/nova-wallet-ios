@@ -11,7 +11,12 @@ class EtherscanBaseOperationFactory {
         self.chainId = chainId
     }
 
-    func createFetchWrapper(for url: URL, page: Int, offset: Int) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
+    func createFetchWrapper<R: EtherscanWalletHistoryDecodable>(
+        for url: URL,
+        page: Int,
+        offset: Int,
+        responseType: R.Type
+    ) -> CompoundOperationWrapper<WalletRemoteHistoryData> {
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
 
@@ -23,7 +28,7 @@ class EtherscanBaseOperationFactory {
         }
 
         let resultFactory = AnyNetworkResultFactory<WalletRemoteHistoryData> { data in
-            let items = try JSONDecoder().decode(EtherscanResponse.self, from: data).result
+            let items = try JSONDecoder().decode(responseType, from: data).historyItems
 
             let isComplete = items.count < offset
             let context = EtherscanHistoryContext(
