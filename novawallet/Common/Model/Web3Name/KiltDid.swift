@@ -1,7 +1,7 @@
 import SubstrateSdk
 import BigInt
 
-enum DigitalIdentifierService {
+enum KiltDid {
     struct Key: JSONListConvertible, Hashable {
         let didIdentifier: AccountId
         let serviceId: String
@@ -17,28 +17,19 @@ enum DigitalIdentifierService {
             }
 
             didIdentifier = try jsonList[0].map(to: BytesCodable.self, with: context).wrappedValue
-            let data = try jsonList[1].map(to: BytesCodable.self, with: context).wrappedValue
-            serviceId = String(data: data, encoding: .utf8) ?? ""
+            serviceId = try jsonList[1].map(to: AsciiDataString.self, with: context).wrappedValue
         }
     }
 
     struct Endpoint: Decodable {
-        var id: String
-        var serviceTypes: [String]
-        var urls: [String]
+        @AsciiDataString var serviceId: String
+        var serviceTypes: [AsciiDataString]
+        var urls: [AsciiDataString]
 
         enum CodingKeys: String, CodingKey {
-            case id
+            case serviceId = "id"
             case serviceTypes
             case urls
-        }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            let id = try container.decode(BytesCodable.self, forKey: .id).wrappedValue
-            self.id = String(data: id, encoding: .utf8) ?? ""
-            serviceTypes = try container.decode([StringContainer].self, forKey: .serviceTypes).map(\.value)
-            urls = try container.decode([StringContainer].self, forKey: .urls).map(\.value)
         }
     }
 }
