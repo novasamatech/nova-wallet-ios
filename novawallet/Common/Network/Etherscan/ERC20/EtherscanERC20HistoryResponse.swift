@@ -16,7 +16,6 @@ struct EtherscanERC20HistoryResponse: Decodable {
             case value
             case gasPrice
             case gasUsed
-            case status = "txreceipt_status"
         }
 
         @StringCodable var blockNumber: UInt64
@@ -28,7 +27,6 @@ struct EtherscanERC20HistoryResponse: Decodable {
         @HexCodable var value: BigUInt
         @HexCodable var gasPrice: BigUInt
         @HexCodable var gasUsed: BigUInt
-        @OptionStringCodable var status: Int8?
     }
 
     let result: [Element]
@@ -57,14 +55,6 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
 
     var label: WalletRemoteHistorySourceLabel {
         .transfers
-    }
-
-    var assetTransactionStatus: AssetTransactionStatus {
-        if let status = status {
-            return status == 1 ? .commited : .rejected
-        } else {
-            return .pending
-        }
     }
 
     func createTransactionForAddress(
@@ -101,7 +91,7 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
 
         return AssetTransactionData(
             transactionId: hash.toHex(includePrefix: true),
-            status: assetTransactionStatus,
+            status: .commited,
             assetId: assetId,
             peerId: peerId.toHex(),
             peerFirstName: nil,
