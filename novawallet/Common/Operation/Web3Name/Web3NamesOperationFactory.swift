@@ -41,44 +41,45 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
 
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let searchWeb3NameWrapper = OperationCombiningService<Web3NameSearchResponse>.compoundWrapper(operationManager: operationManager) { [weak self] in
-            guard let self = self,
-                  let ownership = try fetchWrapper.targetOperation.extractNoCancellableResultData().first?.value else {
-                return nil
-            }
+        let searchWeb3NameWrapper =
+            OperationCombiningService<Web3NameSearchResponse>.compoundWrapper(operationManager: operationManager) { [weak self] in
+                guard let self = self,
+                      let ownership = try fetchWrapper.targetOperation.extractNoCancellableResultData().first?.value else {
+                    return nil
+                }
 
-            let fetchServicesWrapper = self.fetchServicesWrapper(
-                ownership: ownership,
-                codingFactoryOperation: codingFactoryOperation,
-                requestFactory: requestFactory,
-                connection: connection
-            )
+                let fetchServicesWrapper = self.fetchServicesWrapper(
+                    ownership: ownership,
+                    codingFactoryOperation: codingFactoryOperation,
+                    requestFactory: requestFactory,
+                    connection: connection
+                )
 
-            fetchServicesWrapper.addDependency(operations: [codingFactoryOperation])
+                fetchServicesWrapper.addDependency(operations: [codingFactoryOperation])
 
-            let mappingOperation = ClosureOperation<Web3NameSearchResponse> {
-                let services = try fetchServicesWrapper.targetOperation.extractNoCancellableResultData()
+                let mappingOperation = ClosureOperation<Web3NameSearchResponse> {
+                    let services = try fetchServicesWrapper.targetOperation.extractNoCancellableResultData()
 
-                let transferAssetService = services.values.first(where: {
-                    $0.serviceTypes.contains { $0.wrappedValue == service }
-                })
+                    let transferAssetService = services.values.first(where: {
+                        $0.serviceTypes.contains { $0.wrappedValue == service }
+                    })
 
-                let urls = transferAssetService?.urls.compactMap { URL(string: $0.wrappedValue) } ?? []
+                    let urls = transferAssetService?.urls.compactMap { URL(string: $0.wrappedValue) } ?? []
 
-                return Web3NameSearchResponse(
-                    owner: ownership.owner,
-                    serviceURLs: urls
+                    return Web3NameSearchResponse(
+                        owner: ownership.owner,
+                        serviceURLs: urls
+                    )
+                }
+
+                mappingOperation.addDependency(fetchServicesWrapper.targetOperation)
+                let dependencies = fetchServicesWrapper.allOperations
+
+                return CompoundOperationWrapper(
+                    targetOperation: mappingOperation,
+                    dependencies: dependencies
                 )
             }
-
-            mappingOperation.addDependency(fetchServicesWrapper.targetOperation)
-            let dependencies = fetchServicesWrapper.allOperations
-
-            return CompoundOperationWrapper(
-                targetOperation: mappingOperation,
-                dependencies: dependencies
-            )
-        }
 
         let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations + searchWeb3NameWrapper.dependencies
         searchWeb3NameWrapper.addDependency(wrapper: fetchWrapper)
