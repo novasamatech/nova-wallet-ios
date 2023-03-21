@@ -37,7 +37,12 @@ final class EtherscanNativeOperationFactory: EtherscanBaseOperationFactory {
             return CompoundOperationWrapper.createWithError(NetworkBaseError.invalidUrl)
         }
 
-        return createFetchWrapper(for: url, page: info.page, offset: info.offset)
+        return createFetchWrapper(
+            for: url,
+            page: info.page,
+            offset: info.offset,
+            responseType: EtherscanTxHistoryResponse.self
+        )
     }
 
     func createFilterOperation(
