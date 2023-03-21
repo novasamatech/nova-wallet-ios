@@ -107,8 +107,10 @@ class JSONRPCTests: XCTestCase {
 
         // when
 
-        let operation = JSONRPCListOperation<Health>(engine: engine,
-                                                     method: "system_health")
+        let operation = JSONRPCListOperation<SubstrateHealthResult>(
+            engine: engine,
+            method: "system_health"
+        )
 
         operationQueue.addOperations([operation], waitUntilFinished: true)
 
