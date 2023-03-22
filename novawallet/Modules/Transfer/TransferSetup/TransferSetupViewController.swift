@@ -97,6 +97,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.recepientInputView.locale = selectedLocale
+        rootView.recepientInputView.delegate = self
         rootView.originFeeView.locale = selectedLocale
 
         rootView.networkContainerView.locale = selectedLocale
@@ -284,7 +285,7 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         )
     }
 
-    func didReceiveKiltRecipient(viewModel: ReceipientKiltView.Model?) {
+    func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>?) {
         rootView.didReceiveKiltRecipient(viewModel: viewModel)
         rootView.receipientKiltView?.delegate = self
     }
@@ -349,5 +350,14 @@ extension TransferSetupViewController: ReceipientKiltViewDelegate {
 
     func didTapOnAccount(address: AccountAddress) {
         presenter.showOptions(for: address)
+    }
+}
+
+extension TransferSetupViewController: AccountInputViewDelegate {
+    func accountInputViewWillStartEditing(_: AccountInputView) {}
+
+    func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
+        presenter.search(recipient: inputView.textField.text ?? "")
+        return true
     }
 }
