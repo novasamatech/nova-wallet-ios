@@ -1,0 +1,5 @@
+"NSCameraUsageDescription" = "La caméra est utilisée pour capturer le code QR";
+"NSFaceIDUsageDescription" = "Face ID est utilisé pour l'autorisation dans l'application";
+"NSPhotoLibraryUsageDescription" = "Télécharger des photos à partir de la bibliothèque";
+"NSPhotoLibraryAddUsageDescription" = "Enregistrer la demande de transfert en tant que code QR";
+"NSBluetoothAlwaysUsageDescription" = "Le Bluetooth est utilisé pour communiquer avec la Ledger Nano X.";
