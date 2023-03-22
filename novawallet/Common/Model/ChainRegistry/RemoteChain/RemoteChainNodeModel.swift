@@ -1,7 +1,6 @@
 import Foundation
 
 struct RemoteChainNodeModel: Equatable, Codable, Hashable {
-    let url: URL
+    let url: String
     let name: String
-    let apikey: ChainNodeModel.ApiKey?
 }

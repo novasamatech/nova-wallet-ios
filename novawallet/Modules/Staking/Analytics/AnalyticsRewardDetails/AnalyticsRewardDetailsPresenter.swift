@@ -37,7 +37,7 @@ final class AnalyticsRewardDetailsPresenter {
         chain.explorers?.compactMap { explorer in
             guard
                 let urlTemplate = explorer.event,
-                let url = try? EndpointBuilder(urlTemplate: urlTemplate).buildParameterURL(
+                let url = try? URLBuilder(urlTemplate: urlTemplate).buildParameterURL(
                     urlTemplate
                 ) else {
                 return nil
