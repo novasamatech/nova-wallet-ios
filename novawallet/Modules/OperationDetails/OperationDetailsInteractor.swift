@@ -181,6 +181,42 @@ final class OperationDetailsInteractor: AccountFetching {
         completion(.extrinsic(model))
     }
 
+    private func extractContractOperationData(
+        newFee: BigUInt?,
+        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+    ) {
+        let precision = Int16(bitPattern: chainAsset.asset.precision)
+        let fee: BigUInt = newFee ?? txData.amount.decimalValue.toSubstrateAmount(
+            precision: precision
+        ) ?? 0
+
+        guard
+            let accountResponse = wallet.fetch(for: chain.accountRequest()),
+            let currentAccountAddress = try? accountResponse.accountId.toAddress(
+                using: chain.chainFormat
+            ) else {
+            completion(nil)
+            return
+        }
+
+        let currentDisplayAddress = DisplayAddress(
+            address: currentAccountAddress,
+            username: wallet.name
+        )
+
+        let contractAddress = try? Data(hex: txData.peerId).toAddress(using: chain.chainFormat)
+        let contractDisplayAddress = DisplayAddress(address: contractAddress ?? "", username: "")
+
+        let model = OperationContractCallModel(
+            txHash: txData.transactionId,
+            fee: fee,
+            sender: currentDisplayAddress,
+            contract: contractDisplayAddress
+        )
+
+        completion(.contract(model))
+    }
+
     private func extractTransferOperationData(
         newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
@@ -256,7 +292,11 @@ final class OperationDetailsInteractor: AccountFetching {
         case .slash:
             extractSlashOperationData(completion)
         case .extrinsic:
-            extractExtrinsicOperationData(newFee: newFee, completion)
+            if chainAsset.asset.isEvmNative {
+                extractContractOperationData(newFee: newFee, completion)
+            } else {
+                extractExtrinsicOperationData(newFee: newFee, completion)
+            }
         case .none:
             completion(nil)
         }
@@ -297,7 +337,7 @@ extension OperationDetailsInteractor: OperationDetailsInteractorInputProtocol {
     func setup() {
         provideModel(overridingBy: nil, newFee: nil)
 
-        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+        let source = TransactionHistoryItemSource(assetTypeString: chainAsset.asset.type)
         let identifier = TransactionHistoryItem.createIdentifier(from: txData.transactionId, source: source)
         transactionProvider = subscribeToTransaction(for: identifier, chainId: chain.chainId)
     }
