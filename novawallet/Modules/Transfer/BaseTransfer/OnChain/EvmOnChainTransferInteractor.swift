@@ -3,10 +3,24 @@ import BigInt
 import RobinHood
 
 class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
+    enum TransferType {
+        case native
+        case erc20(AccountAddress)
+
+        var transactionSource: TransactionHistoryItemSource {
+            switch self {
+            case .native:
+                return .evmNative
+            case .erc20:
+                return .evmAsset
+            }
+        }
+    }
+
     let feeProxy: EvmTransactionFeeProxyProtocol
     let extrinsicService: EvmTransactionServiceProtocol
 
-    private(set) var contractAddress: AccountAddress?
+    private(set) var transferType: TransferType?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -44,17 +58,24 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
         to builder: EvmTransactionBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
         recepient: AccountAddress,
-        contract: AccountAddress
+        type: TransferType
     ) throws -> (EvmTransactionBuilderProtocol, CallCodingPath?) {
         let amountValue = amount.value
 
-        let newBuilder = try builder.erc20Transfer(
-            to: recepient,
-            contract: contract,
-            amount: amountValue
-        )
+        switch type {
+        case .native:
+            let newBuilder = try builder.nativeTransfer(to: recepient, amount: amountValue)
 
-        return (newBuilder, CallCodingPath.erc20Tranfer)
+            return (newBuilder, CallCodingPath.evmNativeTransfer)
+        case let .erc20(contract):
+            let newBuilder = try builder.erc20Transfer(
+                to: recepient,
+                contract: contract,
+                amount: amountValue
+            )
+
+            return (newBuilder, CallCodingPath.erc20Tranfer)
+        }
     }
 
     private func continueSetup() {
@@ -97,12 +118,16 @@ class EvmOnChainTransferInteractor: OnChainTransferBaseInteractor {
 
 extension EvmOnChainTransferInteractor {
     func setup() {
-        if let address = asset.typeExtras?.stringValue, (try? address.toEthereumAccountId()) != nil {
-            contractAddress = address
+        if asset.isEvmNative {
+            transferType = .native
+
+            continueSetup()
+        } else if let address = asset.typeExtras?.stringValue, (try? address.toEthereumAccountId()) != nil {
+            transferType = .erc20(address)
 
             continueSetup()
         } else {
-            contractAddress = nil
+            transferType = nil
             presenter?.didReceiveError(AccountAddressConversionError.invalidEthereumAddress)
         }
     }
@@ -112,7 +137,7 @@ extension EvmOnChainTransferInteractor {
             let recepientAccountId = recepient ?? AccountId.nonzeroAccountId(of: chain.accountIdSize)
             let recepientAddress = try recepientAccountId.toAddress(using: chain.chainFormat)
 
-            guard let contractAddress = contractAddress else {
+            guard let transferType = transferType else {
                 return
             }
 
@@ -126,7 +151,7 @@ extension EvmOnChainTransferInteractor {
                     to: builder,
                     amount: amount,
                     recepient: recepientAddress,
-                    contract: contractAddress
+                    type: transferType
                 ) ?? (builder, nil)
 
                 return newBuilder
