@@ -130,7 +130,7 @@ final class TransferSetupViewLayout: UIView {
 
     private(set) var receipientKiltView: ReceipientKiltView?
 
-    func didReceiveKiltRecipient(viewModel: ReceipientKiltView.Model?) {
+    func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>?) {
         if let viewModel = viewModel {
             if receipientKiltView == nil {
                 let receipientKiltView = ReceipientKiltView()
