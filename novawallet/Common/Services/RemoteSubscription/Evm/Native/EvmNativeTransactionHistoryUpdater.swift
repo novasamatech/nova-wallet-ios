@@ -98,14 +98,6 @@ final class EvmNativeTransactionHistoryUpdater {
 
             saveOperation.addDependency(transactionReceiptOperation)
 
-            saveOperation.completionBlock = { [weak self] in
-                guard case .success = saveOperation.result else {
-                    return
-                }
-
-                self?.eventCenter.notify(with: WalletTransactionListUpdated())
-            }
-
             let wrapper = CompoundOperationWrapper(
                 targetOperation: saveOperation,
                 dependencies: [transactionReceiptOperation]
@@ -116,7 +108,23 @@ final class EvmNativeTransactionHistoryUpdater {
             return accum + [wrapper]
         }
 
-        let allOperations = wrappers.flatMap(\.allOperations)
+        let notifyOperation = ClosureOperation<Void> { [weak self] in
+            let hasSuccessfulSave = wrappers.contains { wrapper in
+                if case .success = wrapper.targetOperation.result {
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+            if hasSuccessfulSave {
+                self?.eventCenter.notify(with: WalletTransactionListUpdated())
+            }
+        }
+
+        wrappers.forEach { notifyOperation.addDependency($0.targetOperation) }
+
+        let allOperations = wrappers.flatMap(\.allOperations) + [notifyOperation]
 
         operationQueue.addOperations(allOperations, waitUntilFinished: false)
     }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct EtherscanHistoryInfo: Encodable {
+struct EtherscanERC20HistoryInfo: Encodable {
     let address: AccountAddress
     let contractaddress: AccountAddress
     let page: Int
