@@ -1192,3 +1192,5 @@
 "common.multi.tx.error.no.details.message" = "При отправке транзакций возникла ошибка (%@). Вы хотите повторить?";
 "common.multi.tx.error.has.details.message" = "При отправке транзакций возникла ошибка (%@): %@. Вы хотите повторить?";
 "staking.rebag.confirm.completion" = "Запрос на изменение слота очереди отправлен";
+"evm.contract.call" = "Вызов контракта";
+"evm.contract" = "Контракт";

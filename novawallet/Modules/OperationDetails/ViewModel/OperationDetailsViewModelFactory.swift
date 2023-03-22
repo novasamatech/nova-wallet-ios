@@ -50,7 +50,7 @@ final class OperationDetailsViewModelFactory {
         case .reward, .slash:
             let image = R.image.iconRewardOperation()!
             return StaticImageViewModel(image: image)
-        case .extrinsic:
+        case .extrinsic, .contract:
             if let url = assetInfo.icon {
                 return RemoteImageViewModel(url: url)
             } else {
@@ -74,6 +74,9 @@ final class OperationDetailsViewModelFactory {
         case let .extrinsic(model):
             amount = model.fee
             prefix = "−"
+        case let .contract(model):
+            amount = model.fee
+            prefix = "−"
         case let .reward(model):
             amount = model.amount
             prefix = "+"
@@ -90,6 +93,15 @@ final class OperationDetailsViewModelFactory {
                 .value(for: locale)
             return prefix + amountString
         } ?? ""
+    }
+
+    private func createContractViewModel(
+        from model: OperationContractCallModel
+    ) -> OperationContractCallViewModel {
+        let sender = displayAddressViewModelFactory.createViewModel(from: model.sender)
+        let contract = displayAddressViewModelFactory.createViewModel(from: model.contract)
+
+        return .init(sender: sender, transactionHash: model.txHash, contract: contract)
     }
 
     private func createTransferViewModel(
@@ -215,6 +227,9 @@ final class OperationDetailsViewModelFactory {
             )
 
             return .slash(viewModel)
+        case let .contract(model):
+            let viewModel = createContractViewModel(from: model)
+            return .contract(viewModel)
         }
     }
 }

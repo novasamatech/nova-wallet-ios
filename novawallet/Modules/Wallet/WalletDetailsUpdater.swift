@@ -78,7 +78,9 @@ final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
             assetId: chainAsset.asset.assetId
         )
 
-        crowdloanContributionsDataProvider = subscribeToCrowdloansProvider(for: accountId, chain: chainAsset.chain)
+        if chainAsset.chain.hasCrowdloans {
+            crowdloanContributionsDataProvider = subscribeToCrowdloansProvider(for: accountId, chain: chainAsset.chain)
+        }
     }
 
     private func updateAccount() {
