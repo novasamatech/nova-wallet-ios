@@ -21,3 +21,21 @@ class JsonFileRepository<Model> where Model: Decodable {
         return fetchOperation
     }
 }
+
+extension JsonFileRepository {
+    func fetchAndMapOperation<Result>(
+        by url: URL?,
+        defaultValue: Model,
+        mapper: @escaping (Model) -> Result
+    ) -> CompoundOperationWrapper<Result> {
+        let fetchOperation = fetchOperation(by: url, defaultValue: defaultValue)
+        let mapOperation = ClosureOperation {
+            let result = try fetchOperation.extractNoCancellableResultData()
+            return mapper(result)
+        }
+
+        mapOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+    }
+}
