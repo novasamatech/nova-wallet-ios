@@ -54,7 +54,8 @@ final class TransactionHistoryConfigurator {
         balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         assets: [WalletAsset]
     ) {
-        supportsFilters = chainAsset.asset.assetId == chainAsset.chain.utilityAssets().first?.assetId
+        supportsFilters = chainAsset.asset.assetId == chainAsset.chain.utilityAssets().first?.assetId &&
+            !chainAsset.asset.isEvmNative
 
         viewModelFactory = TransactionHistoryViewModelFactory(
             chainAsset: chainAsset,

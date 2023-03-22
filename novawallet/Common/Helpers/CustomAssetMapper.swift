@@ -38,7 +38,7 @@ struct CustomAssetMapper {
             }
 
             return ormlHandler(wrappedExtras)
-        case .evm:
+        case .evmAsset:
             guard let contractAddress = typeExtras?.stringValue else {
                 throw MapperError.invalidJson(type)
             }
@@ -73,7 +73,7 @@ struct CustomAssetMapper {
             return statemineHandler()
         case .orml:
             return ormlHandler()
-        case .evm:
+        case .evmAsset:
             return evmHandler()
         case .evmNative:
             return evmNativeHandler()

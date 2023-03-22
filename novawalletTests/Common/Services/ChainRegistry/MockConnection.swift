@@ -47,15 +47,15 @@ extension MockConnection: ChainConnection {
         )
     }
 
-    func cancelForIdentifier(_ identifier: UInt16) {
-        internalConnection.cancelForIdentifier(identifier)
+    func cancelForIdentifiers(_ identifiers: [UInt16]) {
+        internalConnection.cancelForIdentifiers(identifiers)
     }
 
     func submitBatch(
         for batchId: JSONRPCBatchId,
         options: JSONRPCOptions,
         completion closure: (([Result<JSON, Error>]) -> Void)?
-    ) throws -> UInt16 {
+    ) throws -> [UInt16] {
         try internalConnection.submitBatch(
             for: batchId,
             options: options,
