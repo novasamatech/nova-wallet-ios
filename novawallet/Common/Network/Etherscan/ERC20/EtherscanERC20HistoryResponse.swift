@@ -38,7 +38,7 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
     }
 
     var localIdentifier: String {
-        TransactionHistoryItem.createIdentifier(from: remoteIdentifier, source: .evm)
+        TransactionHistoryItem.createIdentifier(from: remoteIdentifier, source: .evmAsset)
     }
 
     var itemBlockNumber: UInt64 {
