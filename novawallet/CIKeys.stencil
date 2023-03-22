@@ -18,3 +18,7 @@ enum MoonbeamCrowdloanCIKeys {
     static var apiKey: String = "{{ argument.moonbeamApiKey }}"
     static var apiTestKey: String = "{{ argument.moonbeamApiTestKey }}"
 }
+
+enum ConnectionApiKeys {
+    static var infuraApiKey: String = "{{ argument.infuraApiKey }}"
+}

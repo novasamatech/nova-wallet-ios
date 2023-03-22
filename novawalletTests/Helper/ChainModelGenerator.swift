@@ -30,9 +30,8 @@ enum ChainModelGenerator {
             )
 
             let node = ChainNodeModel(
-                url: URL(string: "wss://node.io/\(chainId)")!,
+                url: "wss://node.io/\(chainId)",
                 name: chainId,
-                apikey: nil,
                 order: 0
             )
 
@@ -112,9 +111,8 @@ enum ChainModelGenerator {
             )
 
             let node = RemoteChainNodeModel(
-                url: URL(string: "wss://node.io/\(chainId)")!,
-                name: chainId,
-                apikey: nil
+                url: "wss://node.io/\(chainId)",
+                name: chainId
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -208,9 +206,8 @@ enum ChainModelGenerator {
         let urlString = "node\(Data.random(of: 32)!.toHex()).io"
 
         let node = ChainNodeModel(
-            url: URL(string: urlString)!,
+            url: urlString,
             name: UUID().uuidString,
-            apikey: nil,
             order: 0
         )
 
