@@ -1,7 +1,8 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
-final class TransferSetupInteractor: AccountFetching {
+final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     weak var presenter: TransferSetupInteractorOutputProtocol?
 
     let originChainAssetId: ChainAssetId
@@ -9,20 +10,33 @@ final class TransferSetupInteractor: AccountFetching {
     let chainsStore: ChainsStoreProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
+    let web3NamesOperationFactory: Web3NamesOperationFactoryProtocol
+    let runtimeService: RuntimeCodingServiceProtocol
+    let connection: JSONRPCEngine
+    let kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol
 
     private var xcmTransfers: XcmTransfers?
+    private var kiltRecipientsCancellableCall: CancellableCall?
 
     init(
         originChainAssetId: ChainAssetId,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        web3NamesOperationFactory: Web3NamesOperationFactoryProtocol,
+        runtimeService: RuntimeCodingServiceProtocol,
+        connection: JSONRPCEngine,
+        kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository
+        self.web3NamesOperationFactory = web3NamesOperationFactory
+        self.connection = connection
+        self.runtimeService = runtimeService
+        self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
         self.operationManager = operationManager
     }
 
@@ -99,6 +113,62 @@ final class TransferSetupInteractor: AccountFetching {
             presenter?.didReceive(metaChainAccountResponses: notWatchOnlyAccounts)
         }
     }
+
+    private func provideKiltRecipient(_ name: String) {
+        guard let caipAsset = caipAsset else {
+            return
+        }
+        clear(cancellable: &kiltRecipientsCancellableCall)
+        let web3NamesWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
+            name: name,
+            service: KnownServices.transferAssetRecipient,
+            connection: connection,
+            runtimeService: runtimeService
+        )
+        let wrapper: CompoundOperationWrapper<TransferAssetRecipientResponse?> = OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
+            guard let self = self else {
+                return nil
+            }
+            guard let web3Name = try web3NamesWrapper.targetOperation.extractNoCancellableResultData() else {
+                throw TransferSetupWeb3NameSearchError.accountNotFound(name)
+            }
+            guard let serviceURL = web3Name.serviceURLs.first else {
+                throw TransferSetupWeb3NameSearchError.serviceNotFound(name)
+            }
+
+            return self.kiltTransferAssetRecipientRepository.fetchRecipients(url: serviceURL)
+        }
+
+        wrapper.addDependency(wrapper: web3NamesWrapper)
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            guard wrapper === self?.kiltRecipientsCancellableCall else {
+                return
+            }
+            self?.kiltRecipientsCancellableCall = nil
+            DispatchQueue.main.async {
+                do {
+                    let searchResult = try wrapper.targetOperation.extractNoCancellableResultData()
+                    let recipients = searchResult?[caipAsset] ?? []
+
+                    self?.presenter?.didReceive(kiltRecipients: recipients)
+                } catch {
+                    self?.presenter?.didReceive(error: error)
+                }
+            }
+        }
+
+        kiltRecipientsCancellableCall = wrapper
+
+        operationManager.enqueue(
+            operations: web3NamesWrapper.allOperations + wrapper.allOperations,
+            in: .transient
+        )
+    }
+
+    private var caipAsset: Caip19.AssetId? {
+        try? .init(raw: "polkadot:91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3/slip44:354")
+    }
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
@@ -111,10 +181,41 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
     func destinationChainDidChanged(_ chain: ChainModel) {
         fetchAccounts(for: chain)
     }
+
+    func search(web3Name: String) {
+        provideKiltRecipient(web3Name)
+    }
 }
 
 extension TransferSetupInteractor: ChainsStoreDelegate {
     func didUpdateChainsStore(_: ChainsStoreProtocol) {
         provideAvailableTransfers()
+    }
+}
+
+enum TransferSetupWeb3NameSearchError: Error {
+    case accountNotFound(String)
+    case serviceNotFound(String)
+    case kiltService(Error)
+}
+
+extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
+    func toErrorContent(for _: Locale?) -> ErrorContent {
+        let title: String
+        let message: String
+
+        switch self {
+        case let .accountNotFound(name):
+            title = "Invalid recipient"
+            message = "\(name) not found"
+        case let .serviceNotFound(name):
+            title = "Invalid recipient"
+            message = "No valid address was found for \(name) on the KILT network"
+        default:
+            title = "Error resolving w3n"
+            message = "KILT w3n services are unavailable. Try again later or enter the KILT address manually"
+        }
+
+        return ErrorContent(title: title, message: message)
     }
 }

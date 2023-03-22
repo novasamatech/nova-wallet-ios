@@ -13,7 +13,10 @@ struct TransferSetupViewFactory {
             return nil
         }
 
-        let interactor = createInteractor(for: chainAsset)
+        guard let interactor = createInteractor(for: chainAsset) else {
+            return nil
+        }
+
         let initPresenterState = TransferSetupInputState(recepient: recepient?.address, amount: nil)
 
         let presenterFactory = createPresenterFactory(for: wallet, commandFactory: commandFactory)
@@ -69,24 +72,36 @@ struct TransferSetupViewFactory {
 
     private static func createInteractor(
         for chainAsset: ChainAsset
-    ) -> TransferSetupInteractor {
+    ) -> TransferSetupInteractor? {
+        let chainId = "a0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21"
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard let connection = chainRegistry.getConnection(for: chainId),
+              let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            return nil
+        }
         let syncService = XcmTransfersSyncService(
             remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
-
-        let chainsStore = ChainsStore(chainRegistry: ChainRegistryFacade.sharedRegistry)
+        let chainsStore = ChainsStore(chainRegistry: chainRegistry)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(
             for: nil,
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
+        let operationQueue = OperationQueue()
+
         return TransferSetupInteractor(
             originChainAssetId: chainAsset.chainAssetId,
             xcmTransfersSyncService: syncService,
             chainsStore: chainsStore,
             accountRepository: accountRepository,
-            operationManager: OperationManager()
+            web3NamesOperationFactory: KiltWeb3NamesOperationFactory(operationQueue: operationQueue),
+            runtimeService: runtimeService,
+            connection: connection,
+            kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepository(),
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
 }
