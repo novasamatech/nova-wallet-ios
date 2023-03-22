@@ -72,8 +72,18 @@ class EvmRemoteSubscriptionService {
                 eventCenter: eventCenter,
                 logger: logger
             )
-            try container.start()
+        case let .native(params):
+            container = EvmNativeSubscriptionManager(
+                chainId: chainId,
+                params: params,
+                serviceFactory: balanceUpdateServiceFactory,
+                connection: connection,
+                eventCenter: eventCenter,
+                logger: logger
+            )
         }
+
+        try container.start()
 
         subscriptions[cacheKey] = Active(subscriptionIds: [subscriptionId], container: container)
 
