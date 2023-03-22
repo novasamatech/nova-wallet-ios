@@ -34762,6 +34762,51 @@ import Foundation
     
     
     
+     func didReceiveBagListSize(result: Result<UInt32?, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveBagListSize(result: Result<UInt32?, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveBagListSize(result: result))
+        
+    }
+    
+    
+    
+     func didReceiveBagListNode(result: Result<BagList.Node?, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveBagListNode(result: Result<BagList.Node?, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveBagListNode(result: result))
+        
+    }
+    
+    
+    
+     func didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveBagListScoreFactor(result: result))
+        
+    }
+    
+    
+    
      func didReceive(eraCountdownResult: Result<EraCountdown, Error>)  {
         
     return cuckoo_manager.call("didReceive(eraCountdownResult: Result<EraCountdown, Error>)",
@@ -34952,6 +34997,21 @@ import Foundation
 	    func didReceiveMaxNominatorsCount<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<UInt32?, Error>)> where M1.MatchedType == Result<UInt32?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<UInt32?, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainInteractorOutputProtocol.self, method: "didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveBagListSize<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<UInt32?, Error>)> where M1.MatchedType == Result<UInt32?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<UInt32?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainInteractorOutputProtocol.self, method: "didReceiveBagListSize(result: Result<UInt32?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveBagListNode<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<BagList.Node?, Error>)> where M1.MatchedType == Result<BagList.Node?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<BagList.Node?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainInteractorOutputProtocol.self, method: "didReceiveBagListNode(result: Result<BagList.Node?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveBagListScoreFactor<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<BigUInt?, Error>)> where M1.MatchedType == Result<BigUInt?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainInteractorOutputProtocol.self, method: "didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.Matchable>(eraCountdownResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<EraCountdown, Error>)> where M1.MatchedType == Result<EraCountdown, Error> {
@@ -35154,6 +35214,24 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveBagListSize<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<UInt32?, Error>), Void> where M1.MatchedType == Result<UInt32?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<UInt32?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveBagListSize(result: Result<UInt32?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveBagListNode<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<BagList.Node?, Error>), Void> where M1.MatchedType == Result<BagList.Node?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<BagList.Node?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveBagListNode(result: Result<BagList.Node?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveBagListScoreFactor<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<BigUInt?, Error>), Void> where M1.MatchedType == Result<BigUInt?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceive<M1: Cuckoo.Matchable>(eraCountdownResult: M1) -> Cuckoo.__DoNotUse<(Result<EraCountdown, Error>), Void> where M1.MatchedType == Result<EraCountdown, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<EraCountdown, Error>)>] = [wrap(matchable: eraCountdownResult) { $0 }]
 	        return cuckoo_manager.verify("didReceive(eraCountdownResult: Result<EraCountdown, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -35345,6 +35423,24 @@ import Foundation
     
     
      func didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveBagListSize(result: Result<UInt32?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveBagListNode(result: Result<BagList.Node?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveBagListScoreFactor(result: Result<BigUInt?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -35575,6 +35671,21 @@ import Foundation
     
     
     
+     func showRebagConfirm(from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("showRebagConfirm(from: ControllerBackedProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showRebagConfirm(from: view))
+        
+    }
+    
+    
+    
      func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)  {
         
     return cuckoo_manager.call("showAnalytics(from: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)",
@@ -35702,6 +35813,11 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showRebond(from: ControllerBackedProtocol?, option: StakingRebondOption)", parameterMatchers: matchers))
 	    }
 	    
+	    func showRebagConfirm<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?)> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showRebagConfirm(from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
 	    func showAnalytics<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, mode: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, AnalyticsContainerViewMode)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == AnalyticsContainerViewMode {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, AnalyticsContainerViewMode)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: mode) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRelaychainWireframeProtocol.self, method: "showAnalytics(from: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)", parameterMatchers: matchers))
@@ -35811,6 +35927,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func showRebagConfirm<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showRebagConfirm(from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showAnalytics<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, mode: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, AnalyticsContainerViewMode), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == AnalyticsContainerViewMode {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, AnalyticsContainerViewMode)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: mode) { $0.1 }]
 	        return cuckoo_manager.verify("showAnalytics(from: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -35912,6 +36034,12 @@ import Foundation
     
     
      func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showRebagConfirm(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36490,6 +36618,21 @@ import SoraFoundation
     
     
     
+     func performRebag()  {
+        
+    return cuckoo_manager.call("performRebag()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performRebag())
+        
+    }
+    
+    
+    
      func performAnalyticsAction()  {
         
     return cuckoo_manager.call("performAnalyticsAction()",
@@ -36592,6 +36735,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRebondAction()", parameterMatchers: matchers))
 	    }
 	    
+	    func performRebag() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRebag()", parameterMatchers: matchers))
+	    }
+	    
 	    func performAnalyticsAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performAnalyticsAction()", parameterMatchers: matchers))
@@ -36684,6 +36832,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func performRebag() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("performRebag()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func performAnalyticsAction() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("performAnalyticsAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -36767,6 +36921,12 @@ import SoraFoundation
     
     
      func performRebondAction()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performRebag()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -37504,6 +37664,21 @@ import SoraFoundation
     
     
     
+     func performRebag()  {
+        
+    return cuckoo_manager.call("performRebag()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.performRebag())
+        
+    }
+    
+    
+    
      func performAnalyticsAction()  {
         
     return cuckoo_manager.call("performAnalyticsAction()",
@@ -37581,6 +37756,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performRebondAction()", parameterMatchers: matchers))
 	    }
 	    
+	    func performRebag() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performRebag()", parameterMatchers: matchers))
+	    }
+	    
 	    func performAnalyticsAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainChildPresenterProtocol.self, method: "performAnalyticsAction()", parameterMatchers: matchers))
@@ -37656,6 +37836,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func performRebag() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("performRebag()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func performAnalyticsAction() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("performAnalyticsAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -37721,6 +37907,12 @@ import SoraFoundation
     
     
      func performRebondAction()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func performRebag()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

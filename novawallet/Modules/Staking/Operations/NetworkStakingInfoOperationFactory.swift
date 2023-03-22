@@ -13,8 +13,14 @@ final class NetworkStakingInfoOperationFactory {
     // MARK: - Private functions
 
     let durationOperationFactory: StakingDurationOperationFactoryProtocol
-    init(durationFactory: StakingDurationOperationFactoryProtocol) {
+    let votersOperationFactory: VotersInfoOperationFactoryProtocol
+
+    init(
+        durationFactory: StakingDurationOperationFactoryProtocol,
+        votersOperationFactory: VotersInfoOperationFactoryProtocol
+    ) {
         durationOperationFactory = durationFactory
+        self.votersOperationFactory = votersOperationFactory
     }
 
     private func createConstOperation<T>(
@@ -81,12 +87,14 @@ final class NetworkStakingInfoOperationFactory {
         extractActiveNominators(from: eraStakersInfo, limitedBy: maxNominators).count
     }
 
+    // swiftlint:disable:next function_parameter_count
     private func createMapOperation(
         dependingOn eraValidatorsOperation: BaseOperation<EraStakersInfo>,
         maxNominatorsOperation: BaseOperation<UInt32>,
         lockUpPeriodOperation: BaseOperation<UInt32>,
         minBalanceOperation: BaseOperation<BigUInt>,
-        durationOperation: BaseOperation<StakingDuration>
+        durationOperation: BaseOperation<StakingDuration>,
+        votersOperation: BaseOperation<VotersStakingInfo?>
     ) -> BaseOperation<NetworkStakingInfo> {
         ClosureOperation<NetworkStakingInfo> {
             let eraStakersInfo = try eraValidatorsOperation.extractNoCancellableResultData()
@@ -108,13 +116,16 @@ final class NetworkStakingInfoOperationFactory {
 
             let stakingDuration = try durationOperation.extractNoCancellableResultData()
 
+            let votersInfo = try votersOperation.extractNoCancellableResultData()
+
             return NetworkStakingInfo(
                 totalStake: totalStake,
                 minStakeAmongActiveNominators: minimalStake,
                 minimalBalance: minBalance,
                 activeNominatorsCount: activeNominatorsCount,
                 lockUpPeriod: lockUpPeriod,
-                stakingDuration: stakingDuration
+                stakingDuration: stakingDuration,
+                votersInfo: votersInfo
             )
         }
     }
@@ -154,12 +165,15 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
 
         let stakingDurationWrapper = durationOperationFactory.createDurationOperation(from: runtimeService)
 
+        let votersWrapper = votersOperationFactory.createVotersInfoWrapper(for: runtimeService)
+
         let mapOperation = createMapOperation(
             dependingOn: eraValidatorsOperation,
             maxNominatorsOperation: maxNominatorsOperation,
             lockUpPeriodOperation: lockUpPeriodOperation,
             minBalanceOperation: existentialDepositOperation,
-            durationOperation: stakingDurationWrapper.targetOperation
+            durationOperation: stakingDurationWrapper.targetOperation,
+            votersOperation: votersWrapper.targetOperation
         )
 
         mapOperation.addDependency(eraValidatorsOperation)
@@ -167,6 +181,7 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
         mapOperation.addDependency(lockUpPeriodOperation)
         mapOperation.addDependency(existentialDepositOperation)
         mapOperation.addDependency(stakingDurationWrapper.targetOperation)
+        mapOperation.addDependency(votersWrapper.targetOperation)
 
         let dependencies = [
             runtimeOperation,
@@ -174,7 +189,7 @@ extension NetworkStakingInfoOperationFactory: NetworkStakingInfoOperationFactory
             maxNominatorsOperation,
             lockUpPeriodOperation,
             existentialDepositOperation
-        ] + stakingDurationWrapper.allOperations
+        ] + stakingDurationWrapper.allOperations + votersWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }

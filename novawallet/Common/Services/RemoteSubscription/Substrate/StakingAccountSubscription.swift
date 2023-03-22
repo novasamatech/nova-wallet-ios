@@ -9,6 +9,28 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         let subscriptionId: UInt16
     }
 
+    struct Request {
+        let remotePath: StorageCodingPath
+        let localPath: StorageCodingPath
+        let accountId: AccountId
+
+        init(
+            remotePath: StorageCodingPath,
+            localPath: StorageCodingPath,
+            accountId: AccountId
+        ) {
+            self.remotePath = remotePath
+            self.localPath = localPath
+            self.accountId = accountId
+        }
+
+        init(storagePath: StorageCodingPath, accountId: AccountId) {
+            remotePath = storagePath
+            localPath = storagePath
+            self.accountId = accountId
+        }
+    }
+
     let accountId: AccountId
     let chainId: ChainModel.Id
     let chainFormat: ChainFormat
@@ -91,26 +113,33 @@ final class StakingAccountSubscription: WebSocketSubscribing {
         mutex.unlock()
     }
 
-    private func createRequest(for stashItem: StashItem) throws -> [(StorageCodingPath, Data)] {
-        var requests: [(StorageCodingPath, Data)] = []
+    private func createRequest(for stashItem: StashItem) throws -> [Request] {
+        var requests: [Request] = []
 
         let stashId = try stashItem.stash.toAccountId(using: chainFormat)
 
         if stashId != accountId {
-            requests.append((.controller, stashId))
-            requests.append((.account, stashId))
+            requests.append(.init(storagePath: .controller, accountId: stashId))
+            requests.append(.init(storagePath: .account, accountId: stashId))
         }
 
         let controllerId = try stashItem.controller.toAccountId(using: chainFormat)
 
         if controllerId != accountId {
-            requests.append((.stakingLedger, controllerId))
-            requests.append((.account, controllerId))
+            requests.append(.init(storagePath: .stakingLedger, accountId: controllerId))
+            requests.append(.init(storagePath: .account, accountId: controllerId))
         }
 
-        requests.append((.nominators, stashId))
-        requests.append((.validatorPrefs, stashId))
-        requests.append((.payee, stashId))
+        requests.append(.init(storagePath: .nominators, accountId: stashId))
+        requests.append(.init(storagePath: .validatorPrefs, accountId: stashId))
+        requests.append(.init(storagePath: .payee, accountId: stashId))
+
+        BagList.possibleModuleNames.forEach { moduleName in
+            let storagePath = BagList.bagListNode(for: moduleName)
+            requests.append(
+                .init(remotePath: storagePath, localPath: BagList.defaultBagListNodePath, accountId: stashId)
+            )
+        }
 
         return requests
     }
@@ -131,7 +160,7 @@ final class StakingAccountSubscription: WebSocketSubscribing {
 
             let localKeyFactory = LocalStorageKeyFactory()
             let localKeys = try requests.map {
-                try localKeyFactory.createFromStoragePath($0.0, accountId: $0.1, chainId: chainId)
+                try localKeyFactory.createFromStoragePath($0.localPath, accountId: $0.accountId, chainId: chainId)
             }
 
             let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
@@ -140,16 +169,24 @@ final class StakingAccountSubscription: WebSocketSubscribing {
 
             let codingOperations: [MapKeyEncodingOperation<Data>] = requests.map { request in
                 MapKeyEncodingOperation(
-                    path: request.0,
+                    path: request.remotePath,
                     storageKeyFactory: storageKeyFactory,
-                    keyParams: [request.1]
+                    keyParams: [request.accountId]
                 )
             }
 
             configureMapOperations(codingOperations, coderFactoryOperation: codingFactoryOperation)
 
-            let mapOperation = ClosureOperation {
-                try codingOperations.map { try $0.extractNoCancellableResultData()[0] }
+            let mapOperation = ClosureOperation<[Data?]> { [weak self] in
+                try codingOperations.map { operation in
+                    do {
+                        return try operation.extractNoCancellableResultData().first
+                    } catch StorageKeyEncodingOperationError.invalidStoragePath {
+                        // ignore keys if path missing in runtime
+                        self?.logger?.warning("Subscription path missing in runtime: \(operation.path)")
+                        return nil
+                    }
+                }
             }
 
             codingOperations.forEach { mapOperation.addDependency($0) }
@@ -157,8 +194,12 @@ final class StakingAccountSubscription: WebSocketSubscribing {
             mapOperation.completionBlock = { [weak self] in
                 do {
                     let remoteKeys = try mapOperation.extractNoCancellableResultData()
-                    let keysList = zip(remoteKeys, localKeys).map {
-                        SubscriptionStorageKeys(remote: $0.0, local: $0.1)
+                    let keysList = zip(remoteKeys, localKeys).compactMap { remoteLocal in
+                        if let remoteKey = remoteLocal.0 {
+                            return SubscriptionStorageKeys(remote: remoteKey, local: remoteLocal.1)
+                        } else {
+                            return nil
+                        }
                     }
 
                     self?.subscribeToRemote(with: keysList)
