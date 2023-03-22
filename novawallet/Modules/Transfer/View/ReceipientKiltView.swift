@@ -87,8 +87,19 @@ extension ReceipientKiltView {
         case accountSelected(AccountAddress)
     }
 
-    func bind(viewModel: Model?) {
-        switch viewModel {
+    func bind(viewModel: LoadableViewModelState<Model>?) {
+        guard let value = viewModel?.value else {
+            accountNotFound.isHidden = true
+            accountSelected.isHidden = true
+            accountListControl.isHidden = true
+            return
+        }
+        if viewModel?.isLoading == true {
+            accountSelected.isHidden = false
+            accountNotFound.detailsLabel.text = "Loading"
+            return
+        }
+        switch value {
         case let .accountList(title):
             accountNotFound.isHidden = true
             accountSelected.isHidden = true
@@ -104,12 +115,8 @@ extension ReceipientKiltView {
             accountSelected.isHidden = true
             accountNotFound.isHidden = false
             accountNotFound.detailsLabel.text = title
-        case .none:
-            accountNotFound.isHidden = true
-            accountSelected.isHidden = true
-            accountListControl.isHidden = true
         }
 
-        currentModel = viewModel
+        currentModel = value
     }
 }

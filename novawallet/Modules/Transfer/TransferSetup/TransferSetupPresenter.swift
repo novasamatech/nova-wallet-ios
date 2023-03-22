@@ -185,6 +185,16 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         )
     }
 
+    func search(recipient: String) {
+        let schema = recipient.split(by: .colon)
+        if schema.first == "w3n", let name = schema[safe: 1] {
+            view?.didReceiveKiltRecipient(viewModel: .loading)
+            interactor.search(web3Name: name)
+        } else {
+            view?.didReceiveKiltRecipient(viewModel: nil)
+        }
+    }
+
     func showOptions(for address: AccountAddress) {
         guard let view = view else {
             return
@@ -228,6 +238,16 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
         self.metaChainAccountResponses = metaChainAccountResponses
         updateYourWalletsButton()
+    }
+
+    func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount]) {
+        if kiltRecipients.count > 1 {
+            // present list
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: .accountList("Recipient’s KILT addresses")))
+        } else if let recipient = kiltRecipients.first {
+            let address = try? recipient.account.toAccountId().toAddress(using: originChainAsset.chain.chainFormat)
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: .accountSelected(address ?? "")))
+        }
     }
 }
 
