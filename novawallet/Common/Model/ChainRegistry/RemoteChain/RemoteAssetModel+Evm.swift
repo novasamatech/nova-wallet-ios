@@ -23,7 +23,7 @@ extension RemoteAssetModel {
             precision: UInt16(evmToken.precision),
             priceId: evmToken.priceId,
             staking: nil,
-            type: AssetType.evm.rawValue,
+            type: AssetType.evmAsset.rawValue,
             typeExtras: JSON.stringValue(evmInstance.contractAddress),
             buyProviders: nil
         )
