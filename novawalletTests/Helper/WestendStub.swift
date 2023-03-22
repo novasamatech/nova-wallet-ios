@@ -145,7 +145,9 @@ struct WestendStub {
             assetPrecision: Chain.westend.addressType.precision,
             totalIssuance: total,
             validators: eraValidators,
-            eraDurationInSeconds: 21600
+            eraDurationInSeconds: 21600,
+            config: InflationCurveRewardConfig(),
+            parachainsCount: 0
         )
     }()
 }

@@ -9,7 +9,8 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
         stashItem: StashItem,
         ledgerInfo: StakingLedger,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?
+        payee: RewardDestinationArg?,
+        bagListNode: BagList.Node?
     ) {
         self.ledgerInfo = ledgerInfo
 
@@ -18,7 +19,8 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
             commonData: commonData,
             stashItem: stashItem,
             totalReward: totalReward,
-            payee: payee
+            payee: payee,
+            bagListNode: bagListNode
         )
     }
 
@@ -43,7 +45,8 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
                 commonData: commonData,
                 stashItem: stashItem,
                 ledgerInfo: nil,
-                totalReward: totalReward
+                totalReward: totalReward,
+                bagListNode: bagListNode
             )
         }
 
@@ -65,7 +68,8 @@ final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
                 ledgerInfo: ledgerInfo,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else {
             newState = self

@@ -3,11 +3,16 @@ import SoraFoundation
 import BigInt
 import SoraKeystore
 
+struct NetworkInfoViewModelParams {
+    let minNominatorBond: BigUInt?
+    let votersCount: UInt32?
+}
+
 protocol NetworkInfoViewModelFactoryProtocol {
     func createNetworkStakingInfoViewModel(
         with networkStakingInfo: NetworkStakingInfo,
         chainAsset: ChainAsset,
-        minNominatorBond: BigUInt?,
+        params: NetworkInfoViewModelParams,
         priceData: PriceData?
     ) -> LocalizableResource<NetworkStakingInfoViewModel>
 }
@@ -51,7 +56,8 @@ final class NetworkInfoViewModelFactory {
 
         let stakedPair = balanceViewModelFactory.balanceFromPrice(
             stakedAmount,
-            priceData: priceData
+            priceData: priceData,
+            roundingMode: .up
         )
 
         return LocalizableResource { locale in
@@ -75,10 +81,13 @@ final class NetworkInfoViewModelFactory {
         with networkStakingInfo: NetworkStakingInfo,
         chainAsset: ChainAsset,
         minNominatorBond: BigUInt?,
+        votersCount: UInt32?,
         priceData: PriceData?
     ) -> LocalizableResource<BalanceViewModelProtocol> {
-        createStakeViewModel(
-            stake: networkStakingInfo.calculateMinimumStake(given: minNominatorBond),
+        let minStake = networkStakingInfo.calculateMinimumStake(given: minNominatorBond, votersCount: votersCount)
+
+        return createStakeViewModel(
+            stake: minStake,
             chainAsset: chainAsset,
             priceData: priceData
         )
@@ -114,7 +123,7 @@ extension NetworkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol {
     func createNetworkStakingInfoViewModel(
         with networkStakingInfo: NetworkStakingInfo,
         chainAsset: ChainAsset,
-        minNominatorBond: BigUInt?,
+        params: NetworkInfoViewModelParams,
         priceData: PriceData?
     ) -> LocalizableResource<NetworkStakingInfoViewModel> {
         let localizedTotalStake = createTotalStakeViewModel(
@@ -126,7 +135,8 @@ extension NetworkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol {
         let localizedMinimalStake = createMinimalStakeViewModel(
             with: networkStakingInfo,
             chainAsset: chainAsset,
-            minNominatorBond: minNominatorBond,
+            minNominatorBond: params.minNominatorBond,
+            votersCount: params.votersCount,
             priceData: priceData
         )
 

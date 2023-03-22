@@ -62,6 +62,7 @@ protocol SubstrateCallFactoryProtocol {
     func addMemo(to paraId: ParaId, memo: Data) -> RuntimeCall<CrowdloanAddMemo>
     func remark(remark: Data) -> RuntimeCall<SystemRemarkCall>
     func remarkWithEvent(remark: Data) -> RuntimeCall<SystemRemarkCall>
+    func rebag(accountId: AccountId) -> RuntimeCall<BagList.RebagCall>
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
@@ -225,6 +226,10 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
     func remarkWithEvent(remark: Data) -> RuntimeCall<SystemRemarkCall> {
         let args = SystemRemarkCall(remark: remark)
         return RuntimeCall(moduleName: "System", callName: "remark_with_event", args: args)
+    }
+
+    func rebag(accountId: AccountId) -> RuntimeCall<BagList.RebagCall> {
+        BagList.RebagCall(dislocated: .accoundId(accountId)).runtimeCall
     }
 }
 
