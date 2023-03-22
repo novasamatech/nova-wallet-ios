@@ -86,7 +86,7 @@ extension AssetHistoryFacade: AssetHistoryFactoryFacadeProtocol {
     ) -> WalletRemoteHistoryFactoryProtocol? {
         if chainAsset.asset.isEvmNative {
             return createEtherscanFactoryForNativeAsset(for: chainAsset, filter: filter)
-        } else if chainAsset.asset.isEvm {
+        } else if chainAsset.asset.isEvmAsset {
             return createEtherscanFactoryForContractAsset(for: chainAsset, filter: filter)
         } else {
             return createSubqueryFactory(for: chainAsset, filter: filter)
