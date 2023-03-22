@@ -24,9 +24,9 @@ struct EtherscanERC20HistoryResponse: Decodable {
         @HexCodable var hash: Data
         @HexCodable var sender: AccountId
         @HexCodable var recepient: AccountId
-        @HexCodable var value: BigUInt
-        @HexCodable var gasPrice: BigUInt
-        @HexCodable var gasUsed: BigUInt
+        @StringCodable var value: BigUInt
+        @StringCodable var gasPrice: BigUInt
+        @StringCodable var gasUsed: BigUInt
     }
 
     let result: [Element]
@@ -38,7 +38,7 @@ extension EtherscanERC20HistoryResponse.Element: WalletRemoteHistoryItemProtocol
     }
 
     var localIdentifier: String {
-        TransactionHistoryItem.createIdentifier(from: remoteIdentifier, source: .evm)
+        TransactionHistoryItem.createIdentifier(from: remoteIdentifier, source: .evmAsset)
     }
 
     var itemBlockNumber: UInt64 {

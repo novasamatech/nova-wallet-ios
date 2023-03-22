@@ -4,7 +4,7 @@ import BigInt
 
 enum TransactionHistoryItemSource: Int16, Codable {
     case substrate = 0
-    case evm = 1
+    case evmAsset = 1
     case evmNative = 2
 }
 
@@ -68,8 +68,8 @@ extension TransactionHistoryItemSource {
         switch assetType {
         case .statemine, .orml, .none:
             self = .substrate
-        case .evm:
-            self = .evm
+        case .evmAsset:
+            self = .evmAsset
         case .evmNative:
             self = .evmNative
         }

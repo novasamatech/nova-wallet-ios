@@ -72,7 +72,7 @@ final class ContractTransactionHistoryUpdater {
             let fee = receipt?.fee.map { String($0) }
 
             let historyItem = TransactionHistoryItem(
-                source: .evm,
+                source: .evmAsset,
                 chainId: assetContract.chainAssetId.chainId,
                 assetId: assetContract.chainAssetId.assetId,
                 sender: transferEvent.sender,
