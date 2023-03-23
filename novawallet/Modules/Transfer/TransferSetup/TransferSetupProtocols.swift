@@ -79,4 +79,13 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
     )
 
     func hideYourWallets(from view: TransferSetupViewProtocol?)
+
+    func showAddressPicker(
+        from view: TransferSetupViewProtocol?,
+        title: LocalizableResource<String>?,
+        items: [LocalizableResource<SelectableAddressTableViewCell.Model>],
+        selectedIndex: Int?,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    )
 }

@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 import SoraFoundation
 
 final class TransferSetupPresenter {
@@ -20,6 +21,7 @@ final class TransferSetupPresenter {
     private(set) var availableDestinations: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
+    private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
 
     private var isOnChainTransfer: Bool {
         destinationChainAsset == nil
@@ -33,6 +35,7 @@ final class TransferSetupPresenter {
         childPresenterFactory: TransferSetupPresenterFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -42,6 +45,7 @@ final class TransferSetupPresenter {
         self.childPresenterFactory = childPresenterFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
+        self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.logger = logger
     }
 
@@ -242,8 +246,30 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
     func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount]) {
         if kiltRecipients.count > 1 {
-            // present list
-            view?.didReceiveKiltRecipient(viewModel: .loaded(value: .accountList("Recipient’s KILT addresses")))
+            let title = LocalizableResource<String> { _ in
+                "KILT addresses for w3n:smth"
+            }
+
+            let items = kiltRecipients.map {
+                let addressModel = displayAddressViewModelFactory.createViewModel(from: DisplayAddress(address: $0.account, username: ""))
+                return SelectableAddressTableViewCell.Model(
+                    address: addressModel,
+                    selected: false
+                )
+            }.map { item in
+                LocalizableResource { _ in
+                    item
+                }
+            }
+            let context = KiltAddressesSelectionState(accounts: kiltRecipients, name: "")
+            wireframe.showAddressPicker(
+                from: view,
+                title: title,
+                items: items,
+                selectedIndex: nil,
+                delegate: self,
+                context: context
+            )
         } else if let recipient = kiltRecipients.first {
             let address = try? recipient.account.toAccountId().toAddress(using: originChainAsset.chain.chainFormat)
             view?.didReceiveKiltRecipient(viewModel: .loaded(value: .accountSelected(address ?? "")))
@@ -280,7 +306,20 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
         }
     }
 
-    func modalPickerDidCancel(context _: AnyObject?) {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let selectionState = context as? KiltAddressesSelectionState else {
+            return
+        }
+
+        let selectedAccount = selectionState.accounts[index]
+        view?.didReceiveKiltRecipient(viewModel: .loaded(value: .accountSelected(selectedAccount.account)))
+    }
+
+    func modalPickerDidCancel(context: AnyObject?) {
+        guard context as? CrossChainDestinationSelectionState != nil else {
+            return
+        }
+
         view?.didCompleteDestinationSelection()
     }
 }
