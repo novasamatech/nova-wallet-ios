@@ -132,9 +132,7 @@ struct AcalaContributionSetupViewFactory {
             logger: Logger.shared
         )
 
-        let priceLocalSubscriptionFactory = PriceProviderFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
+        let priceLocalSubscriptionFactory = PriceProviderFactory.shared
 
         let jsonLocalSubscriptionFactory = JsonDataProviderFactory(
             storageFacade: SubstrateDataStorageFacade.shared
