@@ -21,7 +21,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
     private var crowdloans: [ChainModel.Id: [CrowdloanContributionData]] = [:]
     private var crowdloanChainIds = Set<ChainModel.Id>()
 
-    private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
+    private(set) var priceSubscription: StreamableProvider<PriceData>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private(set) var availableChains: [ChainModel.Id: ChainModel] = [:]
     private(set) var enabledChains: [ChainModel.Id: ChainModel] = [:]
@@ -257,43 +257,49 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
             return
         }
 
-        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(
+        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
             for: priceIds,
             currency: currency
         )
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
-            let finalValue = changes.reduceToLastChange()
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
+            guard let strongSelf = self else {
+                return
+            }
 
-            switch finalValue {
-            case let .some(prices):
-                let chainPrices = zip(priceIds, prices).reduce(
-                    into: [ChainAssetId: PriceData]()
-                ) { result, item in
-                    guard let chainAssetIds = self?.availableTokenPrice.filter({ $0.value == item.0 })
-                        .map(\.key) else {
-                        return
-                    }
+            let mappedChanges = changes.reduce(into: [ChainAssetId: DataProviderChange<PriceData>]()) { accum, change in
+                let targetIdentifier: String
 
-                    for chainAssetId in chainAssetIds {
-                        result[chainAssetId] = item.1
-                    }
+                switch change {
+                case let .insert(newItem), let .update(newItem):
+                    targetIdentifier = newItem.identifier
+
+                case let .delete(identifier):
+                    targetIdentifier = identifier
                 }
 
-                self?.basePresenter?.didReceivePrices(result: .success(chainPrices))
-            case .none:
-                self?.basePresenter?.didReceivePrices(result: nil)
+                let chainAssetIds: [ChainAssetId] = strongSelf.availableTokenPrice.filter {
+                    PriceData.createIdentifier(for: $0.value, currencyId: currency.id) == targetIdentifier
+                }.map(\.key)
+
+                for chainAssetId in chainAssetIds {
+                    accum[chainAssetId] = change
+                }
             }
+
+            self?.basePresenter?.didReceivePrice(changes: mappedChanges)
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.basePresenter?.didReceivePrices(result: .failure(error))
+            self?.basePresenter?.didReceivePrice(error: error)
             return
         }
 
-        let options = DataProviderObserverOptions(
+        let options = StreamableProviderObserverOptions(
             alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
         )
 
         priceSubscription?.addObserver(
@@ -303,6 +309,8 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
             failing: failureClosure,
             options: options
         )
+
+        priceSubscription?.refresh()
     }
 
     func updateCrowdloansSubscription(from allChains: [ChainModel]) {
