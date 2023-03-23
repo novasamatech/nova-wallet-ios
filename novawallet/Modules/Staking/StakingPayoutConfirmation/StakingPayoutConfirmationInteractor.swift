@@ -18,7 +18,7 @@ final class StakingPayoutConfirmationInteractor {
     let logger: LoggerProtocol?
     let payouts: [PayoutInfo]
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
 
     weak var presenter: StakingPayoutConfirmationInteractorOutputProtocol?

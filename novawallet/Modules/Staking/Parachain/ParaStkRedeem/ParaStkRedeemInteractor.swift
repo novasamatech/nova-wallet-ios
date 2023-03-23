@@ -15,7 +15,7 @@ final class ParaStkRedeemInteractor {
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
     private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
 
