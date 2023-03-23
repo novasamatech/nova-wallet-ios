@@ -27,6 +27,7 @@ struct TransferSetupViewFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+        let displayAddressViewModelFactory = DisplayAddressViewModelFactory(imagePlaceholder: R.image.iconAddressPlaceholder())
 
         let presenter = TransferSetupPresenter(
             interactor: interactor,
@@ -36,6 +37,7 @@ struct TransferSetupViewFactory {
             childPresenterFactory: presenterFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
+            displayAddressViewModelFactory: displayAddressViewModelFactory,
             logger: Logger.shared
         )
 
@@ -76,6 +78,11 @@ struct TransferSetupViewFactory {
         let chainId = "a0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21"
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
+        let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
+        let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
+            for: slip44CoinsUrl
+        )
+
         guard let connection = chainRegistry.getConnection(for: chainId),
               let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
             return nil
@@ -101,6 +108,7 @@ struct TransferSetupViewFactory {
             runtimeService: runtimeService,
             connection: connection,
             kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepository(),
+            slip44CoinsProvider: slip44CoinsProvider,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
