@@ -434,4 +434,12 @@ extension NSPredicate {
 
         return NSPredicate(format: "%K == %@", #keyPath(CDPrice.identifier), identifier)
     }
+
+    static func pricesByIds(_ identifiers: [String]) -> NSPredicate {
+        let predicates = identifiers.map {
+            NSPredicate(format: "%K == %@", #keyPath(CDPrice.identifier), $0)
+        }
+
+        return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+    }
 }

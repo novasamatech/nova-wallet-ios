@@ -14,33 +14,35 @@ extension WalletNetworkFacade {
                 let chainAssetId = ChainAssetId(walletId: walletAsset.identifier),
                 let chain = chains[chainAssetId.chainId],
                 let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-                let priceId = asset.priceId else {
+                let assetPriceId = asset.priceId else {
                 return
             }
+
+            let priceId = PriceData.createIdentifier(for: assetPriceId, currencyId: currency.id)
 
             result[priceId] = walletAsset
         }
 
-        let allPriceIds = [String](priceIdMapping.keys)
+        guard !priceIdMapping.isEmpty else {
+            return CompoundOperationWrapper.createWithResult([:])
+        }
 
-        let priceOperation = coingeckoOperationFactory.fetchPriceOperation(
-            for: allPriceIds,
-            currency: currency
+        let mapper = PriceDataMapper()
+        let repository = storageFacade.createRepository(
+            filter: NSPredicate.pricesByIds([String](priceIdMapping.keys)),
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
         )
+
+        let priceOperation = repository.fetchAllOperation(with: .init())
 
         let mappingOperation: BaseOperation<[String: Price]> = ClosureOperation {
             let priceDataList = try priceOperation.extractNoCancellableResultData()
 
-            guard priceDataList.count == allPriceIds.count else {
-                throw BaseOperationError.unexpectedDependentResult
-            }
-
-            return zip(allPriceIds, priceDataList).reduce(into: [:]) { result, pair in
-                guard let asset = priceIdMapping[pair.0] else {
+            return priceDataList.reduce(into: [String: Price]()) { accum, priceData in
+                guard let asset = priceIdMapping[priceData.identifier] else {
                     return
                 }
-
-                let priceData = pair.1
 
                 let price = Price(
                     lastValue: Decimal(string: priceData.price) ?? 0.0,
@@ -48,15 +50,12 @@ extension WalletNetworkFacade {
                     currencyId: priceData.currencyId
                 )
 
-                result[asset.identifier] = price
+                accum[asset.identifier] = price
             }
         }
 
         mappingOperation.addDependency(priceOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: mappingOperation,
-            dependencies: [priceOperation]
-        )
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: [priceOperation])
     }
 }
