@@ -14,9 +14,11 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol
+    let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>
 
     private var xcmTransfers: XcmTransfers?
     private var kiltRecipientsCancellableCall: CancellableCall?
+    private var slip44CoinList: Slip44CoinList = []
 
     init(
         originChainAssetId: ChainAssetId,
@@ -27,6 +29,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         runtimeService: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
         kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol,
+        slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
@@ -37,6 +40,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         self.connection = connection
         self.runtimeService = runtimeService
         self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
+        self.slip44CoinsProvider = slip44CoinsProvider
         self.operationManager = operationManager
     }
 
@@ -62,6 +66,35 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         chainsStore.delegate = self
 
         chainsStore.setup()
+    }
+
+    private func subscribeSlip44CoinList() {
+        slip44CoinsProvider.removeObserver(self)
+
+        let updateClosure: ([DataProviderChange<Slip44CoinList>]) -> Void = { [weak self] changes in
+            if let result = changes.reduceToLastChange() {
+                self?.slip44CoinList = result
+            } else {
+                self?.slip44CoinList = []
+            }
+        }
+
+        let failureClosure: (Error) -> Void = { [weak self] error in
+            self?.presenter?.didReceive(error: error)
+        }
+
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
+        )
+
+        slip44CoinsProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
     }
 
     private func provideAvailableTransfers() {
@@ -135,6 +168,9 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
             guard let serviceURL = web3Name.serviceURLs.first else {
                 throw TransferSetupWeb3NameSearchError.serviceNotFound(name)
             }
+            guard !self.slip44CoinList.isEmpty else {
+                throw TransferSetupWeb3NameSearchError.coinsListIsEmpty
+            }
 
             return self.kiltTransferAssetRecipientRepository.fetchRecipients(url: serviceURL)
         }
@@ -176,6 +212,7 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
         setupChainsStore()
         setupXcmTransfersSyncService()
         fetchAccounts(for: destinationChain)
+        subscribeSlip44CoinList()
     }
 
     func destinationChainDidChanged(_ chain: ChainModel) {
@@ -196,6 +233,7 @@ extension TransferSetupInteractor: ChainsStoreDelegate {
 enum TransferSetupWeb3NameSearchError: Error {
     case accountNotFound(String)
     case serviceNotFound(String)
+    case coinsListIsEmpty
     case kiltService(Error)
 }
 
