@@ -23,7 +23,7 @@ final class ReferendumDetailsInteractor: AnyCancellableCleaning {
     let dAppsProvider: AnySingleValueProvider<GovernanceDAppList>
     let operationQueue: OperationQueue
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
     private var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
 

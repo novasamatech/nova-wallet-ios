@@ -10,7 +10,7 @@ final class AnalyticsRewardsInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationManager: OperationManagerProtocol
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
 
     init(

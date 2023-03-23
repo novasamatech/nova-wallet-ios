@@ -267,25 +267,11 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber, WalletLocalSubscrip
                 return
             }
 
-            let mappedChanges = changes.reduce(into: [ChainAssetId: DataProviderChange<PriceData>]()) { accum, change in
-                let targetIdentifier: String
-
-                switch change {
-                case let .insert(newItem), let .update(newItem):
-                    targetIdentifier = newItem.identifier
-
-                case let .delete(identifier):
-                    targetIdentifier = identifier
-                }
-
-                let chainAssetIds: [ChainAssetId] = strongSelf.availableTokenPrice.filter {
-                    PriceData.createIdentifier(for: $0.value, currencyId: currency.id) == targetIdentifier
-                }.map(\.key)
-
-                for chainAssetId in chainAssetIds {
-                    accum[chainAssetId] = change
-                }
-            }
+            let mappedChanges = changes.reduce(
+                using: .init(),
+                availableTokenPrice: strongSelf.availableTokenPrice,
+                currency: currency
+            )
 
             self?.basePresenter?.didReceivePrice(changes: mappedChanges)
         }

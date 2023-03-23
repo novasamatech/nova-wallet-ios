@@ -9,7 +9,7 @@ final class ParaStkCollatorInfoInteractor: AnyProviderAutoCleaning {
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
 
     init(
