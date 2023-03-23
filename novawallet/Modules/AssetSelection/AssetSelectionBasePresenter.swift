@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import BigInt
+import RobinHood
 
 class AssetSelectionBasePresenter {
     weak var view: AssetSelectionViewProtocol?
@@ -164,17 +165,17 @@ extension AssetSelectionBasePresenter: AssetSelectionInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
-        switch result {
-        case let .success(prices):
-            assetPrices = prices
-
-            updateSorting()
-            updateView()
-        case .failure, .none:
-            // ignore any price errors as it is needed only for sorting
-            break
+    func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
+        assetPrices = changes.reduce(into: assetPrices) { accum, keyValue in
+            accum[keyValue.key] = keyValue.value.item
         }
+
+        updateSorting()
+        updateView()
+    }
+
+    func didReceivePrice(error _: Error) {
+        // ignore error because price only needed for sorting
     }
 }
 

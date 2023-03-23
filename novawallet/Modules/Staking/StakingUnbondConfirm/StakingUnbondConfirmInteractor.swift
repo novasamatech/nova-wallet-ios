@@ -26,7 +26,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var nominationProvider: AnyDataProvider<DecodedNomination>?
     private var payeeProvider: AnyDataProvider<DecodedPayee>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var signingWrapper: SigningWrapperProtocol?
