@@ -68,6 +68,8 @@ extension ReferendumsMetadataPreviewProviderSource: StreamableSourceProtocol {
             }
         }
 
+        localFetchOperation.addDependency(remoteFetchOperation)
+
         changesOperation.addDependency(remoteFetchOperation)
         changesOperation.addDependency(localFetchOperation)
 

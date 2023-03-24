@@ -20,7 +20,7 @@ class BaseSubsquareOperationFactory {
             return url
         }
 
-        urlComponents.queryItems = [URLQueryItem(name: "pageSize", value: "\(pageSize)")]
+        urlComponents.queryItems = [URLQueryItem(name: "page_size", value: "\(pageSize)")]
 
         return urlComponents.url ?? url
     }
@@ -49,7 +49,9 @@ class BaseSubsquareOperationFactory {
         }
     }
 
-    func createPreviewResultFactory(for chainId: ChainModel.Id) -> AnyNetworkResultFactory<[ReferendumMetadataPreview]> {
+    func createPreviewResultFactory(
+        for chainId: ChainModel.Id
+    ) -> AnyNetworkResultFactory<[ReferendumMetadataPreview]> {
         AnyNetworkResultFactory<[ReferendumMetadataPreview]> { data in
             let resultData = try JSONDecoder().decode(JSON.self, from: data)
             let items = resultData.items?.arrayValue ?? []
@@ -97,7 +99,7 @@ class BaseSubsquareOperationFactory {
                     return nil
                 }
 
-                return .init(time: Date(timeIntervalSince1970: TimeInterval(blockTime)), status: status)
+                return .init(time: Date(timeIntervalSince1970: TimeInterval(blockTime).seconds), status: status)
             }
 
             return .init(
