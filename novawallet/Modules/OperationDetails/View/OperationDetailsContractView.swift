@@ -20,6 +20,8 @@ final class OperationDetailsContractView: LocalizableView {
         return view
     }()
 
+    private(set) var functionView: StackTableCell?
+
     var locale = Locale.current {
         didSet {
             if oldValue != locale {
@@ -52,6 +54,8 @@ final class OperationDetailsContractView: LocalizableView {
         contractView.bind(viewModel: viewModel.contract.cellViewModel)
 
         transactionHashView.bind(details: viewModel.transactionHash)
+
+        setupFunctionName(for: viewModel.functionName)
     }
 
     private func setupLocalization() {
@@ -69,6 +73,30 @@ final class OperationDetailsContractView: LocalizableView {
         transactionHashView.titleLabel.text = R.string.localizable.commonTxId(
             preferredLanguages: locale.rLanguages
         )
+    }
+
+    private func setupFunctionFieldLocalization() {
+        functionView?.titleLabel.text = R.string.localizable.evmContractFunction(
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    private func setupFunctionName(for value: String?) {
+        if let value = value {
+            if functionView == nil {
+                let view = StackTableCell()
+                contractTableView.addArrangedSubview(view)
+
+                functionView = view
+            }
+
+            functionView?.bind(details: value)
+
+            setupFunctionFieldLocalization()
+        } else {
+            functionView?.removeFromSuperview()
+            functionView = nil
+        }
     }
 
     private func setupLayout() {
