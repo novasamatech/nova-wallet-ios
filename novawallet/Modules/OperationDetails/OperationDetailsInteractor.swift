@@ -211,7 +211,8 @@ final class OperationDetailsInteractor: AccountFetching {
             txHash: txData.transactionId,
             fee: fee,
             sender: currentDisplayAddress,
-            contract: contractDisplayAddress
+            contract: contractDisplayAddress,
+            functionSignature: !txData.details.isEmpty ? txData.details : nil
         )
 
         completion(.contract(model))

@@ -18,6 +18,7 @@ struct EtherscanTxHistoryResponse: Decodable {
             case gasUsed
             case input
             case status = "txreceipt_status"
+            case functionName
         }
 
         @StringCodable var blockNumber: UInt64
@@ -31,6 +32,7 @@ struct EtherscanTxHistoryResponse: Decodable {
         @StringCodable var gasUsed: BigUInt
         @OptionHexCodable var input: Data?
         @OptionStringCodable var status: Int8?
+        let functionName: String?
 
         var isTransfer: Bool {
             (input ?? Data()).isEmpty
@@ -119,7 +121,7 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
             peerFirstName: nil,
             peerLastName: nil,
             peerName: peerAddress ?? "",
-            details: "",
+            details: functionName ?? "",
             amount: AmountDecimal(value: amount),
             fees: feeModels,
             timestamp: itemTimestamp,

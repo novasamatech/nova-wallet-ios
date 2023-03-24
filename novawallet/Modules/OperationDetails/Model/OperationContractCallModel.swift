@@ -6,4 +6,5 @@ struct OperationContractCallModel {
     let fee: BigUInt
     let sender: DisplayAddress
     let contract: DisplayAddress
+    let functionSignature: String?
 }

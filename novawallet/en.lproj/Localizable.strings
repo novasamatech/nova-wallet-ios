@@ -1194,3 +1194,4 @@
 "staking.rebag.confirm.completion" = "New queue slot request has been submitted";
 "evm.contract.call" = "Contract call";
 "evm.contract" = "Contract";
+"evm.contract.function" = "Function";
