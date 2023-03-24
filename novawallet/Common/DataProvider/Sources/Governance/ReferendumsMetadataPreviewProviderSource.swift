@@ -5,13 +5,13 @@ import SubstrateSdk
 final class ReferendumsMetadataPreviewProviderSource {
     typealias Model = ReferendumMetadataLocal
 
-    let operationFactory: PolkassemblyOperationFactoryProtocol
+    let operationFactory: GovMetadataOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ReferendumMetadataLocal>
     let operationQueue: OperationQueue
     let apiParameters: JSON?
 
     init(
-        operationFactory: PolkassemblyOperationFactoryProtocol,
+        operationFactory: GovMetadataOperationFactoryProtocol,
         apiParameters: JSON?,
         repository: AnyDataProviderRepository<ReferendumMetadataLocal>,
         operationQueue: OperationQueue
