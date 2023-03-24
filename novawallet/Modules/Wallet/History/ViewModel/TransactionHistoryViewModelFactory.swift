@@ -150,13 +150,23 @@ final class TransactionHistoryViewModelFactory {
 
         let title: String
         let subtitle: String
+        let titleType: HistoryItemViewModel.TextType
 
         if chainAsset.asset.isEvmNative {
-            title = (try? Data(hex: data.peerId).toAddress(using: chainAsset.chain.chainFormat)) ?? data.peerId
+            // display contract function name or address
+            if !data.details.isEmpty {
+                title = data.details.displayContractFunction
+                titleType = .rawString
+            } else {
+                title = (try? Data(hex: data.peerId).toAddress(using: chainAsset.chain.chainFormat)) ?? data.peerId
+                titleType = .address
+            }
+
             subtitle = R.string.localizable.evmContractCall(preferredLanguages: locale.rLanguages)
         } else {
             title = data.peerLastName?.displayCall ?? ""
             subtitle = data.peerFirstName?.displayModule ?? ""
+            titleType = .rawString
         }
 
         return HistoryItemViewModel(
@@ -168,7 +178,7 @@ final class TransactionHistoryViewModelFactory {
             status: data.status,
             imageViewModel: imageViewModel,
             command: command,
-            titleType: chainAsset.asset.isEvmNative ? .address : .rawString
+            titleType: titleType
         )
     }
 }
