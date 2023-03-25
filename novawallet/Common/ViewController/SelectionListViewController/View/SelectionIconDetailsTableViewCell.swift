@@ -94,12 +94,14 @@ extension SelectionIconDetailsTableViewCell: SelectionItemViewProtocol {
             return
         }
 
+        self.viewModel?.icon?.cancel(on: iconImageView)
+        iconImageView.image = nil
+
         self.viewModel = iconDetailsViewModel
 
         titleLabel.text = iconDetailsViewModel.title
         subtitleLabel.text = iconDetailsViewModel.subtitle
 
-        iconImageView.image = nil
         iconDetailsViewModel.icon?.loadImage(
             on: iconImageView,
             targetSize: CGSize(width: 32.0, height: 32.0),
