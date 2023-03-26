@@ -191,7 +191,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
     func search(recipient: String) {
         let schema = recipient.split(by: .colon)
-        if schema.first == "w3n", let name = schema[safe: 1] {
+        if KiltW3n.match(schema[safe: 0]), let name = schema[safe: 1] {
             view?.didReceiveKiltRecipient(viewModel: .loading)
             interactor.search(web3Name: name)
         } else {
@@ -236,6 +236,11 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
     func didReceive(error: Error) {
         logger.error("Did receive error: \(error)")
 
+        if error is TransferSetupWeb3NameSearchError {
+            view?.didReceiveRecipientInputState(focused: true)
+            view?.didReceiveKiltRecipient(viewModel: nil)
+        }
+
         _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
     }
 
@@ -272,7 +277,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
             )
         } else if let recipient = kiltRecipients.first {
             let address = try? recipient.account.toAccountId().toAddress(using: originChainAsset.chain.chainFormat)
-            view?.didReceiveKiltRecipient(viewModel: .loaded(value: .accountSelected(address ?? "")))
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: address ?? ""))
         }
     }
 }
@@ -312,15 +317,15 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
         }
 
         let selectedAccount = selectionState.accounts[index]
-        view?.didReceiveKiltRecipient(viewModel: .loaded(value: .accountSelected(selectedAccount.account)))
+        view?.didReceiveKiltRecipient(viewModel: .loaded(value: selectedAccount.account))
     }
 
     func modalPickerDidCancel(context: AnyObject?) {
-        guard context as? CrossChainDestinationSelectionState != nil else {
-            return
+        if context is CrossChainDestinationSelectionState {
+            view?.didCompleteDestinationSelection()
+        } else if context is KiltAddressesSelectionState {
+            view?.didReceiveRecipientInputState(focused: true)
         }
-
-        view?.didCompleteDestinationSelection()
     }
 }
 
