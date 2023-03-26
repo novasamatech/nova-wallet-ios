@@ -72,4 +72,11 @@ extension Caip19.AssetId {
             return nil
         }
     }
+
+    var slip44Code: Int? {
+        guard case let .slip44(coin) = knownToken else {
+            return nil
+        }
+        return coin
+    }
 }

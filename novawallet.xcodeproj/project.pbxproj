@@ -2660,6 +2660,8 @@
 		887C44FD29AC7BCA00950F98 /* DelegateSingleVoteCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C44FC29AC7BCA00950F98 /* DelegateSingleVoteCollectionViewCell.swift */; };
 		887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C44FF29AC7ED600950F98 /* DelegationReferendumVotersModel.swift */; };
 		887C450229AC7FD900950F98 /* DelegationReferendumVotersError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */; };
+		8886020B29D101B000C6344C /* TransferSetupWeb3NameSearchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8886020A29D101B000C6344C /* TransferSetupWeb3NameSearchError.swift */; };
+		8886020D29D1024900C6344C /* KiltWeb3n+schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8886020C29D1024900C6344C /* KiltWeb3n+schema.swift */; };
 		8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */; };
 		8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */; };
 		8887814028B7AAB700E7290F /* RoundedIconTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */; };
@@ -6078,6 +6080,8 @@
 		887C44FF29AC7ED600950F98 /* DelegationReferendumVotersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationReferendumVotersModel.swift; sourceTree = "<group>"; };
 		887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationReferendumVotersError.swift; sourceTree = "<group>"; };
 		8881572D295AE5C600912F69 /* MultiassetUserDataModel7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel7.xcdatamodel; sourceTree = "<group>"; };
+		8886020A29D101B000C6344C /* TransferSetupWeb3NameSearchError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupWeb3NameSearchError.swift; sourceTree = "<group>"; };
+		8886020C29D1024900C6344C /* KiltWeb3n+schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "KiltWeb3n+schema.swift"; sourceTree = "<group>"; };
 		8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleSpaceView.swift; sourceTree = "<group>"; };
 		8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleCollectionHeaderView.swift; sourceTree = "<group>"; };
 		8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleView.swift; sourceTree = "<group>"; };
@@ -10470,6 +10474,7 @@
 				84B28FC328C54441007A1006 /* OnChainTransferAmount.swift */,
 				88F33F1229CC1ECD006125D5 /* KiltAddressesSelectionState.swift */,
 				88F33F1429CC1F92006125D5 /* Slip44CoinList.swift */,
+				8886020A29D101B000C6344C /* TransferSetupWeb3NameSearchError.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -14314,6 +14319,7 @@
 			isa = PBXGroup;
 			children = (
 				885547EA29C8915A008782C1 /* KiltWeb3n.swift */,
+				8886020C29D1024900C6344C /* KiltWeb3n+schema.swift */,
 				885547E729C8908D008782C1 /* KiltWeb3n+StoragePath.swift */,
 				88BB0B3C29C1E16300D041C1 /* KiltWeb3n+Ownership.swift */,
 			);
@@ -16785,6 +16791,7 @@
 				84DA3B1224C6D29100B5E27F /* RuntimeVersion.swift in Sources */,
 				8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */,
 				8472C39E298BE5F600043061 /* ReferendumTrackGroup.swift in Sources */,
+				8886020D29D1024900C6344C /* KiltWeb3n+schema.swift in Sources */,
 				8445F41628C8CFEC009E61C4 /* ParaStkYieldBoostSelectionViewModel.swift in Sources */,
 				84C1706F299643A800CBE531 /* GovernanceDelegateViewModelFactory.swift in Sources */,
 				84FBED052927B1CA00FBEB83 /* EvmEventParser.swift in Sources */,
@@ -18500,6 +18507,7 @@
 				2AFF4BA0274D1E4D00D790B4 /* UsernameSetupViewController.swift in Sources */,
 				843A2C6F26A8548B00266F53 /* RowView.swift in Sources */,
 				8434B608298D4FD500FACF4C /* GovernanceAddDelegationTracksWireframe.swift in Sources */,
+				8886020B29D101B000C6344C /* TransferSetupWeb3NameSearchError.swift in Sources */,
 				84EBAB06265DC24C0015E446 /* CrowdloanContributionViewModelFactory.swift in Sources */,
 				84CA68DF26BEAA0F003B9453 /* ChainModelMapper.swift in Sources */,
 				846A682C274693F700D1A47A /* CrowdloanExternalContributionSource.swift in Sources */,

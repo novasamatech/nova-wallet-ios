@@ -58,4 +58,11 @@ extension Caip2.ChainId {
             return nil
         }
     }
+
+    var genesisHash: String? {
+        guard case let .polkadot(genesisHash) = knownChain else {
+            return nil
+        }
+        return genesisHash
+    }
 }

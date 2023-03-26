@@ -7,11 +7,11 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
     }
 
     var identityView: IdentityAccountInfoView {
-        view.titleView
+        view.fView
     }
 
     var selectorView: RadioSelectorView {
-        view.valueView
+        view.sView
     }
 
     var checkmarked: Bool {
@@ -24,7 +24,7 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
         }
     }
 
-    private let view = GenericTitleValueView<IdentityAccountInfoView, RadioSelectorView>()
+    private let view = GenericPairValueView<IdentityAccountInfoView, RadioSelectorView>()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -49,11 +49,23 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
         selectorView.snp.makeConstraints {
             $0.size.equalTo(2 * selectorView.outerRadius)
         }
+
+        identityView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        identityView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        identityView.actionIcon = nil
+        identityView.isUserInteractionEnabled = false
+        identityView.roundedBackgroundView.roundingCorners = []
+        identityView.roundedBackgroundView.applyFilledBackgroundStyle()
+        identityView.roundedBackgroundView.fillColor = .clear
+        identityView.roundedBackgroundView.highlightedFillColor = .clear
+
+        view.setHorizontalAndSpacing(8)
     }
 
     func bind(model: Model) {
         identityView.bind(viewModel: model.address)
         selectorView.selected = model.selected
+        identityView.invalidateIntrinsicContentSize()
     }
 
     func applyStyle() {
