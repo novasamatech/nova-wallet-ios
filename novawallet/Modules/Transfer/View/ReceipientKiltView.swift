@@ -3,44 +3,36 @@ import SnapKit
 
 @objc
 protocol ReceipientKiltViewDelegate {
-    func didTapOnAccountList()
     func didTapOnAccount(address: AccountAddress)
 }
 
 final class ReceipientKiltView: UIView {
-    var delegate: ReceipientKiltViewDelegate?
+    weak var delegate: ReceipientKiltViewDelegate?
 
-    let accountNotFound: IconDetailsView = .create {
-        $0.detailsLabel.apply(style: .footnoteSecondary)
-        $0.imageView.image = R.image.iconWarningApp()
+    let activityIndicator: UIActivityIndicatorView = .create {
+        $0.hidesWhenStopped = true
+        $0.style = .medium
+        $0.tintColor = R.color.colorIndicatorShimmering()
+    }
+
+    let accountSelected: IconDetailsGenericView<IconDetailsView> = .create {
+        $0.mode = .detailsIcon
+        $0.detailsView.detailsLabel.textColor = R.color.colorIconPositive()
+        $0.detailsView.detailsLabel.font = .regularFootnote
+        $0.detailsView.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        $0.detailsView.imageView.image = R.image.iconAlgoItem()
+        $0.detailsView.spacing = 4
+        $0.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         $0.spacing = 4
-        $0.isHidden = true
     }
 
-    let accountSelected: GenericPairValueView<IconDetailsView, UIImageView> = .create {
-        $0.fView.detailsLabel.textColor = R.color.colorIconPositive()
-        $0.fView.detailsLabel.font = .regularFootnote
-        $0.fView.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        $0.fView.imageView.image = R.image.iconAlgoItem()
-        $0.fView.spacing = 4
-        $0.sView.image = R.image.iconInfoFilled()
-        $0.spacing = 4
-        $0.isHidden = true
-    }
-
-    let accountListControl: YourWalletsControl = .create {
-        $0.apply(state: .hidden)
-        $0.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        $0.setContentCompressionResistancePriority(.required, for: .horizontal)
-    }
-
-    private var currentModel: Model?
+    private var model: Model?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapOnView)))
     }
 
     @available(*, unavailable)
@@ -49,74 +41,44 @@ final class ReceipientKiltView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(accountNotFound)
         addSubview(accountSelected)
-        addSubview(accountListControl)
+        addSubview(activityIndicator)
 
-        accountNotFound.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
         accountSelected.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.leading.top.bottom.equalToSuperview()
+            $0.trailing.lessThanOrEqualToSuperview()
         }
-        accountListControl.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        activityIndicator.snp.makeConstraints {
+            $0.leading.top.bottom.equalToSuperview()
         }
     }
 
-    @objc private func didTap() {
-        guard let delegate = delegate else {
+    @objc private func didTapOnView() {
+        guard let delegate = delegate, let address = model else {
             return
         }
 
-        switch currentModel {
-        case .accountList:
-            delegate.didTapOnAccountList()
-        case let .accountSelected(address):
-            delegate.didTapOnAccount(address: address)
-        default:
-            break
-        }
+        delegate.didTapOnAccount(address: address)
     }
 }
 
 extension ReceipientKiltView {
-    enum Model {
-        case accountNotFound(String)
-        case accountList(String)
-        case accountSelected(AccountAddress)
-    }
+    typealias Model = AccountAddress
 
     func bind(viewModel: LoadableViewModelState<Model>?) {
-        guard let value = viewModel?.value else {
-            accountNotFound.isHidden = true
+        switch viewModel {
+        case .none:
             accountSelected.isHidden = true
-            accountListControl.isHidden = true
-            return
-        }
-        if viewModel?.isLoading == true {
+            activityIndicator.stopAnimating()
+        case .loading:
+            accountSelected.isHidden = true
+            activityIndicator.startAnimating()
+        case let .loaded(value), let .cached(value):
             accountSelected.isHidden = false
-            accountNotFound.detailsLabel.text = "Loading"
-            return
-        }
-        switch value {
-        case let .accountList(title):
-            accountNotFound.isHidden = true
-            accountSelected.isHidden = true
-            accountListControl.isHidden = false
-            accountListControl.bind(model: .init(name: title, image: nil))
-        case let .accountSelected(address):
-            accountNotFound.isHidden = true
-            accountListControl.isHidden = true
-            accountSelected.isHidden = false
-            accountSelected.fView.detailsLabel.text = address
-        case let .accountNotFound(title):
-            accountListControl.isHidden = true
-            accountSelected.isHidden = true
-            accountNotFound.isHidden = false
-            accountNotFound.detailsLabel.text = title
+            activityIndicator.stopAnimating()
+            accountSelected.detailsView.detailsLabel.text = value
         }
 
-        currentModel = value
+        model = viewModel?.value
     }
 }

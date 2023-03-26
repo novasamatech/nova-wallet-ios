@@ -298,6 +298,8 @@ extension CreateWatchOnlyViewController: TextInputViewDelegate {
 }
 
 extension CreateWatchOnlyViewController: AccountInputViewDelegate {
+    func accountInputViewDidEndEditing(_: AccountInputView) {}
+
     func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
         completeInputOn(field: inputView)
         return true

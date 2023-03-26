@@ -19,6 +19,8 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     private var xcmTransfers: XcmTransfers?
     private var kiltRecipientsCancellableCall: CancellableCall?
     private var slip44CoinList: Slip44CoinList = []
+    private var slip44AssetCode: Int?
+    private var chainModelId: ChainModel.Id
 
     init(
         originChainAssetId: ChainAssetId,
@@ -42,6 +44,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
         self.slip44CoinsProvider = slip44CoinsProvider
         self.operationManager = operationManager
+        chainModelId = originChainAssetId.chainId
     }
 
     deinit {
@@ -148,9 +151,6 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     }
 
     private func provideKiltRecipient(_ name: String) {
-        guard let caipAsset = caipAsset else {
-            return
-        }
         clear(cancellable: &kiltRecipientsCancellableCall)
         let web3NamesWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
             name: name,
@@ -185,9 +185,11 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
             DispatchQueue.main.async {
                 do {
                     let searchResult = try wrapper.targetOperation.extractNoCancellableResultData()
-                    let recipients = searchResult?[caipAsset] ?? []
+                    let recipients = searchResult?.first(where: {
+                        $0.key.chainId.genesisHash == self?.originChainAssetId.chainId && self?.slip44AssetCode == $0.key.slip44Code
+                    })?.value
 
-                    self?.presenter?.didReceive(kiltRecipients: recipients)
+                    self?.presenter?.didReceive(kiltRecipients: recipients ?? [])
                 } catch {
                     self?.presenter?.didReceive(error: error)
                 }
@@ -202,8 +204,13 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         )
     }
 
-    private var caipAsset: Caip19.AssetId? {
-        try? .init(raw: "polkadot:91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3/slip44:354")
+    private func provideSlip44AssetCode(symbol: String) {
+        guard let coin = slip44CoinList.first(where: {
+            $0.symbol == symbol
+        }) else {
+            return []
+        }
+        slip44AssetCode = Int(coin.index)
     }
 }
 
@@ -227,33 +234,5 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
 extension TransferSetupInteractor: ChainsStoreDelegate {
     func didUpdateChainsStore(_: ChainsStoreProtocol) {
         provideAvailableTransfers()
-    }
-}
-
-enum TransferSetupWeb3NameSearchError: Error {
-    case accountNotFound(String)
-    case serviceNotFound(String)
-    case coinsListIsEmpty
-    case kiltService(Error)
-}
-
-extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
-    func toErrorContent(for _: Locale?) -> ErrorContent {
-        let title: String
-        let message: String
-
-        switch self {
-        case let .accountNotFound(name):
-            title = "Invalid recipient"
-            message = "\(name) not found"
-        case let .serviceNotFound(name):
-            title = "Invalid recipient"
-            message = "No valid address was found for \(name) on the KILT network"
-        default:
-            title = "Error resolving w3n"
-            message = "KILT w3n services are unavailable. Try again later or enter the KILT address manually"
-        }
-
-        return ErrorContent(title: title, message: message)
     }
 }
