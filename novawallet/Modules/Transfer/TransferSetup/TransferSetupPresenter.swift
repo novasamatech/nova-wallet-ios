@@ -20,6 +20,8 @@ final class TransferSetupPresenter {
     private(set) var destinationChainAsset: ChainAsset?
     private(set) var availableDestinations: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
+    private(set) var recipientAddress: AccountAddress?
+
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
     private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
 
@@ -120,15 +122,16 @@ final class TransferSetupPresenter {
         view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
     }
 
-    private func kiltRecipientCellModel(kiltRecipient: KiltTransferAssetRecipientAccount) -> SelectableAddressTableViewCell.Model {
+    private func kiltRecipientCellModel(kiltRecipient: KiltTransferAssetRecipientAccount) ->
+        SelectableAddressTableViewCell.Model {
         let displayAddress = DisplayAddress(
             address: kiltRecipient.account,
-            username: ""
+            username: kiltRecipient.description ?? ""
         )
         let addressModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
         return SelectableAddressTableViewCell.Model(
             address: addressModel,
-            selected: false
+            selected: recipientAddress == kiltRecipient.account
         )
     }
 
@@ -144,7 +147,7 @@ final class TransferSetupPresenter {
             LocalizableResource { _ in item }
         }
 
-        let context = KiltAddressesSelectionState(accounts: kiltRecipients, name: "")
+        let context = KiltAddressesSelectionState(accounts: kiltRecipients, name: name)
         wireframe.showAddressPicker(
             from: view,
             title: title,
@@ -156,11 +159,18 @@ final class TransferSetupPresenter {
     }
 
     private func provideKiltRecipientViewModel(_ recipient: KiltTransferAssetRecipientAccount?) {
-        guard let recipient = recipient else {
-            return
+        if
+            let recipient = recipient,
+            let destinationChainAsset = destinationChainAsset,
+            let accountId = try? recipient.account.toAccountId(),
+            let formattedAddress = try? accountId.toAddress(using: destinationChainAsset.chain.chainFormat) {
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: formattedAddress))
+            recipientAddress = formattedAddress
+        } else {
+            didReceive(error: TransferSetupWeb3NameSearchError.invalidAddress(
+                chainName: destinationChainAsset?.chain.name ?? ""))
+            recipientAddress = nil
         }
-        let address = try? recipient.account.toAccountId().toAddress(using: originChainAsset.chain.chainFormat)
-        view?.didReceiveKiltRecipient(viewModel: .loaded(value: address ?? ""))
     }
 }
 
@@ -169,11 +179,11 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         provideChainsViewModel()
         childPresenter?.setup()
 
-        let destinationChain = destinationChainAsset?.chain ?? originChainAsset.chain
-        interactor.setup(destinationChain: destinationChain)
+        interactor.setup(destinationChainAsset: destinationChainAsset ?? originChainAsset)
     }
 
     func updateRecepient(partialAddress: String) {
+        recipientAddress = partialAddress
         childPresenter?.updateRecepient(partialAddress: partialAddress)
     }
 
@@ -196,6 +206,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             return
         }
 
+        recipientAddress = address
         childPresenter?.changeRecepient(address: address)
     }
 
@@ -322,10 +333,10 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
-            interactor.destinationChainDidChanged(destinationChainAsset.chain)
+            interactor.destinationChainAssetDidChanged(destinationChainAsset)
         } else {
             setupOnChainChildPresenter()
-            interactor.destinationChainDidChanged(originChainAsset.chain)
+            interactor.destinationChainAssetDidChanged(originChainAsset)
         }
     }
 
@@ -335,7 +346,8 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
         }
 
         let selectedAccount = selectionState.accounts[index]
-        view?.didReceiveKiltRecipient(viewModel: .loaded(value: selectedAccount.account))
+        provideKiltRecipientViewModel(selectedAccount)
+        recipientAddress = selectedAccount.account
     }
 
     func modalPickerDidCancel(context: AnyObject?) {
@@ -352,6 +364,7 @@ extension TransferSetupPresenter: AddressScanDelegate {
         wireframe.hideRecepientScan(from: view)
 
         provideKiltRecipientViewModel(nil)
+        recipientAddress = address
         childPresenter?.changeRecepient(address: address)
     }
 }
@@ -363,6 +376,7 @@ extension TransferSetupPresenter: YourWalletsDelegate {
         provideKiltRecipientViewModel(nil)
         childPresenter?.changeRecepient(address: address)
         view?.changeYourWalletsViewState(.inactive)
+        recipientAddress = address
     }
 
     func didCloseYourWalletSelection() {
