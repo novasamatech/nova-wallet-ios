@@ -16,4 +16,5 @@ enum KnowChainId {
     static let moonriver = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
     static let ethereum = "eip155:1"
     static let rococo = "a84b46a3e602245284bb9a72c4abd58ee979aa7a5d7f8c4dfdddfaaf0665a4ae"
+    static let westend = "e143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e"
 }
