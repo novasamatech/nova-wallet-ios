@@ -159,13 +159,13 @@ final class TransferSetupPresenter {
     }
 
     private func provideKiltRecipientViewModel(_ recipient: KiltTransferAssetRecipientAccount?) {
-        if
-            let recipient = recipient,
-            let destinationChainAsset = destinationChainAsset,
-            let accountId = try? recipient.account.toAccountId(),
-            let formattedAddress = try? accountId.toAddress(using: destinationChainAsset.chain.chainFormat) {
-            view?.didReceiveKiltRecipient(viewModel: .loaded(value: formattedAddress))
-            recipientAddress = formattedAddress
+        guard let recipient = recipient else {
+            view?.didReceiveKiltRecipient(viewModel: nil)
+            return
+        }
+        if (try? recipient.account.toAccountId()) != nil {
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
+            recipientAddress = recipient.account
         } else {
             didReceive(error: TransferSetupWeb3NameSearchError.invalidAddress(
                 chainName: destinationChainAsset?.chain.name ?? ""))
@@ -330,6 +330,7 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         provideChainsViewModel()
         updateYourWalletsButton()
+        provideKiltRecipientViewModel(nil)
 
         if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
