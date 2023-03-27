@@ -15,7 +15,7 @@ final class RootWireframe: RootWireframeProtocol {
         if let inAppUpdatesService = inAppUpdatesServiceFactory?.createService() {
             navigationController = OnBoardingNavigationController(inAppUpdatesService: inAppUpdatesService)
         } else {
-            navigationController = FearlessNavigationController()
+            navigationController = NovaNavigationController()
         }
 
         navigationController.viewControllers = [onboardingController]
@@ -44,7 +44,7 @@ final class RootWireframe: RootWireframeProtocol {
     }
 }
 
-final class OnBoardingNavigationController: FearlessNavigationController {
+final class OnBoardingNavigationController: NovaNavigationController {
     let inAppUpdatesService: SyncServiceProtocol
 
     init(inAppUpdatesService: SyncServiceProtocol) {

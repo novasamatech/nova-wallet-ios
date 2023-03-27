@@ -6,7 +6,7 @@ final class DAppListWireframe: DAppListWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: searchView.controller)
+        let navigationController = NovaNavigationController(rootViewController: searchView.controller)
         navigationController.barSettings = NavigationBarSettings.defaultSettings.bySettingCloseButton(false)
 
         navigationController.modalTransitionStyle = .crossDissolve
@@ -28,7 +28,7 @@ final class DAppListWireframe: DAppListWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: settingsView.controller)
+        let navigationController = NovaNavigationController(rootViewController: settingsView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

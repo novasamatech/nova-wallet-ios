@@ -872,7 +872,7 @@
 		843910D4253F8DAD00E3C217 /* NetworkAvailabilityLayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910D0253F8DAD00E3C217 /* NetworkAvailabilityLayerPresenter.swift */; };
 		843910D6253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910D2253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift */; };
 		843910D9253F8DFB00E3C217 /* StatusPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910D8253F8DFB00E3C217 /* StatusPresentable.swift */; };
-		843910DB253F90C400E3C217 /* FearlessWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910DA253F90C400E3C217 /* FearlessWindow.swift */; };
+		843910DB253F90C400E3C217 /* NovaWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910DA253F90C400E3C217 /* NovaWindow.swift */; };
 		843910DE253F912500E3C217 /* ApplicationStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843910DD253F912500E3C217 /* ApplicationStatusView.swift */; };
 		8439398A2636E8840087658D /* YourValidatorListViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843939892636E8840087658D /* YourValidatorListViewLayout.swift */; };
 		843939902636F88F0087658D /* YourValidatorsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8439398F2636F88F0087658D /* YourValidatorsModel.swift */; };
@@ -1603,10 +1603,10 @@
 		8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142924A935FE008F705E /* LoadableViewProtocol.swift */; };
 		8490142F24A935FE008F705E /* ControllerBackedProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */; };
 		8490143024A935FE008F705E /* AlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142B24A935FE008F705E /* AlertPresentable.swift */; };
-		8490144C24A93D0B008F705E /* FearlessNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144A24A93D0B008F705E /* FearlessNavigationController.swift */; };
+		8490144C24A93D0B008F705E /* NovaNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144A24A93D0B008F705E /* NovaNavigationController.swift */; };
 		8490144F24A93E2E008F705E /* UIImage+Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144E24A93E2E008F705E /* UIImage+Drawing.swift */; };
-		8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145024A93FD1008F705E /* FearlessLoadingViewPresenter.swift */; };
-		8490145324A93FD1008F705E /* FearlessLoadingViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145124A93FD1008F705E /* FearlessLoadingViewFactory.swift */; };
+		8490145224A93FD1008F705E /* NovaLoadingViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145024A93FD1008F705E /* NovaLoadingViewPresenter.swift */; };
+		8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145124A93FD1008F705E /* NovaLoadingViewFactory.swift */; };
 		8490145624A9404E008F705E /* AttributedStringDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145524A9404E008F705E /* AttributedStringDecorator.swift */; };
 		8490145824A9406D008F705E /* LegalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145724A9406D008F705E /* LegalData.swift */; };
 		8490145E24A94373008F705E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8490146024A94373008F705E /* Localizable.strings */; };
@@ -4199,7 +4199,7 @@
 		843910D0253F8DAD00E3C217 /* NetworkAvailabilityLayerPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkAvailabilityLayerPresenter.swift; sourceTree = "<group>"; };
 		843910D2253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkAvailabilityLayerProtocols.swift; sourceTree = "<group>"; };
 		843910D8253F8DFB00E3C217 /* StatusPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusPresentable.swift; sourceTree = "<group>"; };
-		843910DA253F90C400E3C217 /* FearlessWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FearlessWindow.swift; sourceTree = "<group>"; };
+		843910DA253F90C400E3C217 /* NovaWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaWindow.swift; sourceTree = "<group>"; };
 		843910DD253F912500E3C217 /* ApplicationStatusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationStatusView.swift; sourceTree = "<group>"; };
 		843939892636E8840087658D /* YourValidatorListViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorListViewLayout.swift; sourceTree = "<group>"; };
 		8439398F2636F88F0087658D /* YourValidatorsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorsModel.swift; sourceTree = "<group>"; };
@@ -4941,10 +4941,10 @@
 		8490142924A935FE008F705E /* LoadableViewProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadableViewProtocol.swift; sourceTree = "<group>"; };
 		8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerBackedProtocol.swift; sourceTree = "<group>"; };
 		8490142B24A935FE008F705E /* AlertPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPresentable.swift; sourceTree = "<group>"; };
-		8490144A24A93D0B008F705E /* FearlessNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FearlessNavigationController.swift; sourceTree = "<group>"; };
+		8490144A24A93D0B008F705E /* NovaNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaNavigationController.swift; sourceTree = "<group>"; };
 		8490144E24A93E2E008F705E /* UIImage+Drawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Drawing.swift"; sourceTree = "<group>"; };
-		8490145024A93FD1008F705E /* FearlessLoadingViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FearlessLoadingViewPresenter.swift; sourceTree = "<group>"; };
-		8490145124A93FD1008F705E /* FearlessLoadingViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FearlessLoadingViewFactory.swift; sourceTree = "<group>"; };
+		8490145024A93FD1008F705E /* NovaLoadingViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaLoadingViewPresenter.swift; sourceTree = "<group>"; };
+		8490145124A93FD1008F705E /* NovaLoadingViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaLoadingViewFactory.swift; sourceTree = "<group>"; };
 		8490145524A9404E008F705E /* AttributedStringDecorator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributedStringDecorator.swift; sourceTree = "<group>"; };
 		8490145724A9406D008F705E /* LegalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalData.swift; sourceTree = "<group>"; };
 		8490145B24A94328008F705E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -10744,8 +10744,8 @@
 		8490143124A9373E008F705E /* LoadingView */ = {
 			isa = PBXGroup;
 			children = (
-				8490145124A93FD1008F705E /* FearlessLoadingViewFactory.swift */,
-				8490145024A93FD1008F705E /* FearlessLoadingViewPresenter.swift */,
+				8490145124A93FD1008F705E /* NovaLoadingViewFactory.swift */,
+				8490145024A93FD1008F705E /* NovaLoadingViewPresenter.swift */,
 			);
 			path = LoadingView;
 			sourceTree = "<group>";
@@ -10766,7 +10766,7 @@
 		8490144224A93CDC008F705E /* NavigationController */ = {
 			isa = PBXGroup;
 			children = (
-				8490144A24A93D0B008F705E /* FearlessNavigationController.swift */,
+				8490144A24A93D0B008F705E /* NovaNavigationController.swift */,
 				8467F4C826B2943A00C5B6F4 /* ImportantFlowNavigationController.swift */,
 				8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */,
 				8423ADD126B2C9D000057EDD /* ImportantViewProtocol.swift */,
@@ -10987,7 +10987,7 @@
 				842D1E7724D063E500C30A7A /* TriangularedView */,
 				8467FD4024ED3C72005D486C /* AlignableContentControl.swift */,
 				84C5ADE928147BC2006D7388 /* InlineAlertView.swift */,
-				843910DA253F90C400E3C217 /* FearlessWindow.swift */,
+				843910DA253F90C400E3C217 /* NovaWindow.swift */,
 				8460E11C2542011200826F55 /* DetailsTriangularedView.swift */,
 				8460E11E25420A2C00826F55 /* DetailsTriangularedView+Inspectable.swift */,
 				847C963425534E41002D288F /* UIFactory.swift */,
@@ -16359,7 +16359,7 @@
 				AE8D028E2638074D00780D18 /* CIKeys.generated.swift in Sources */,
 				8472C39C298BD8CE00043061 /* GovernanceSelectTracksInteractorError.swift in Sources */,
 				F4CE0FC727344F600094CD8A /* AcalaContributionConfirmProtocols.swift in Sources */,
-				8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */,
+				8490145224A93FD1008F705E /* NovaLoadingViewPresenter.swift in Sources */,
 				880855F828D09DA8004255E7 /* CrowdloanContributionDataMapper.swift in Sources */,
 				882AA13028AE64DC0093BC63 /* CrowdloanYourContributionsTotalCell.swift in Sources */,
 				88D271EF298A6B14000AABF7 /* VotesTableViewCell.swift in Sources */,
@@ -16399,7 +16399,7 @@
 				842D1E7D24D0686D00C30A7A /* TriangularedButton+Inspectable.swift in Sources */,
 				845D8ED92977F18300F22133 /* GovernanceDelegateStats.swift in Sources */,
 				84CF00C327F6C1E4004DB322 /* CustomAssetMapper.swift in Sources */,
-				843910DB253F90C400E3C217 /* FearlessWindow.swift in Sources */,
+				843910DB253F90C400E3C217 /* NovaWindow.swift in Sources */,
 				84DD5F4C263DE82C00425ACF /* DataValidationRunner.swift in Sources */,
 				84D6D7FC27A7F4B40094FC33 /* AssetListNetworkView.swift in Sources */,
 				84D8F16B24D8263300AF43E9 /* ModalPickerFactory.swift in Sources */,
@@ -16605,7 +16605,7 @@
 				84038FF226FFBE1900C73F3F /* JsonLocalSubscriptionHandler.swift in Sources */,
 				842898D1265A955A002D5D65 /* ImageViewModel.swift in Sources */,
 				88F34FDB28FFE6AA00712BDE /* RequestedAmountRow.swift in Sources */,
-				8490145324A93FD1008F705E /* FearlessLoadingViewFactory.swift in Sources */,
+				8490145324A93FD1008F705E /* NovaLoadingViewFactory.swift in Sources */,
 				8472976C260B1CAD009B86D0 /* InitiatedBondingConfirmInteractor.swift in Sources */,
 				887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */,
 				84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */,
@@ -16792,7 +16792,7 @@
 				8407715E28CBE28D007DBD24 /* ParaStkYieldBoostSetupPresenter+Cancel.swift in Sources */,
 				88DC3E27292CABCB00DBCE4D /* AssetListStyles.swift in Sources */,
 				8472975D260B1B71009B86D0 /* ExistingBonding.swift in Sources */,
-				8490144C24A93D0B008F705E /* FearlessNavigationController.swift in Sources */,
+				8490144C24A93D0B008F705E /* NovaNavigationController.swift in Sources */,
 				848077D02837C637003B7C79 /* ParachainStakingValidatorFactory.swift in Sources */,
 				84D6D7F827A7DE120094FC33 /* AssetListAccountCell.swift in Sources */,
 				84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */,
