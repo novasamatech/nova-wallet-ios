@@ -17,31 +17,31 @@ struct WestendStub {
 
     static let activeEra: DecodedActiveEra = {
         let era = ActiveEraInfo(index: 777)
-        return DecodedActiveEra(identifier: Chain.westend.genesisHash + "_active_era",
+        return DecodedActiveEra(identifier: KnowChainId.westend + "_active_era",
                                 item: era)
     }()
 
     static let currentEra: DecodedEraIndex = {
-        DecodedEraIndex(identifier: Chain.westend.genesisHash + "_current_era", item: StringScaleMapper(value: 777))
+        DecodedEraIndex(identifier: KnowChainId.westend + "_current_era", item: StringScaleMapper(value: 777))
     }()
 
     static let minNominatorBond: DecodedBigUInt = {
         DecodedBigUInt(
-            identifier: Chain.westend.genesisHash + "_minbond",
+            identifier: KnowChainId.westend + "_minbond",
             item: StringScaleMapper(value: BigUInt(1e+12))
         )
     }()
 
     static let counterForNominators: DecodedU32 = {
         DecodedU32(
-            identifier: Chain.westend.genesisHash + "_counterForNominators",
+            identifier: KnowChainId.westend + "_counterForNominators",
             item: StringScaleMapper(value: 100)
         )
     }()
 
     static let maxNominatorsCount: DecodedU32 = {
         DecodedU32(
-            identifier: Chain.westend.genesisHash + "_maxNominatorsCount",
+            identifier: KnowChainId.westend + "_maxNominatorsCount",
             item: StringScaleMapper(value: 1000)
         )
     }()
@@ -137,8 +137,8 @@ struct WestendStub {
         let total = eraValidators.reduce(BigUInt(0)) { $0 + $1.exposure.total }
 
         return InflationCurveRewardEngine(
-            chainId: Chain.westend.genesisHash,
-            assetPrecision: Chain.westend.addressType.precision,
+            chainId: KnowChainId.westend,
+            assetPrecision: 12,
             totalIssuance: total,
             validators: eraValidators,
             eraDurationInSeconds: 21600,
