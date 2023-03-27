@@ -73,12 +73,15 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
             )
 
             return tokenIds.compactMap { assetId in
+                let identifier = PriceData.createIdentifier(for: assetId, currencyId: currency.id)
+
                 guard let assetPriceData = priceData[assetId],
                       let priceData = assetPriceData.rates[currency.coingeckoId] else {
-                    return returnsZeroIfUnsupported ? PriceData.zero(for: currency.id) : nil
+                    return returnsZeroIfUnsupported ? PriceData.zero(for: identifier, currencyId: currency.id) : nil
                 }
 
                 return PriceData(
+                    identifier: identifier,
                     price: priceData.price.stringWithPointSeparator,
                     dayChange: priceData.dayChange,
                     currencyId: currency.id

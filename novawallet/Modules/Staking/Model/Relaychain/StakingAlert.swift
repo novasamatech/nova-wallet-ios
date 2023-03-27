@@ -9,13 +9,14 @@ enum StakingAlert {
     case nominatorAllOversubscribed
     case redeemUnbonded(LocalizableResource<String>)
     case waitingNextEra
+    case rebag
 }
 
 extension StakingAlert {
     var hasAssociatedAction: Bool {
         switch self {
         case .nominatorLowStake, .nominatorChangeValidators, .redeemUnbonded, .bondedSetValidators,
-             .nominatorAllOversubscribed:
+             .nominatorAllOversubscribed, .rebag:
             return true
         case .waitingNextEra:
             return false
@@ -25,7 +26,7 @@ extension StakingAlert {
     var icon: UIImage? {
         switch self {
         case .nominatorChangeValidators, .nominatorLowStake, .redeemUnbonded, .bondedSetValidators,
-             .nominatorAllOversubscribed:
+             .nominatorAllOversubscribed, .rebag:
             return R.image.iconWarning()
         case .waitingNextEra:
             return R.image.iconPending()
@@ -46,6 +47,8 @@ extension StakingAlert {
             return R.string.localizable.stakingSetValidatorsTitle(preferredLanguages: locale.rLanguages)
         case .waitingNextEra:
             return R.string.localizable.stakingNominatorStatusAlertWaitingMessage(preferredLanguages: locale.rLanguages)
+        case .rebag:
+            return R.string.localizable.stakingImprovements(preferredLanguages: locale.rLanguages)
         }
     }
 
@@ -64,6 +67,8 @@ extension StakingAlert {
             return R.string.localizable.stakingSetValidatorsMessage(preferredLanguages: locale.rLanguages)
         case .waitingNextEra:
             return R.string.localizable.stakingAlertStartNextEraMessage(preferredLanguages: locale.rLanguages)
+        case .rebag:
+            return R.string.localizable.stakingRebagAlertMessage(preferredLanguages: locale.rLanguages)
         }
     }
 }

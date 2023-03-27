@@ -20,7 +20,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
 
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var crowdloanProvider: AnyDataProvider<DecodedCrowdloanFunds>?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
 
@@ -100,7 +100,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
     }
 
     private func subscribeToDisplayInfo() {
-        if let displayInfoUrl = chain.externalApi?.crowdloans?.url {
+        if let displayInfoUrl = chain.externalApis?.crowdloans()?.first?.url {
             displayInfoProvider = subscribeToCrowdloanDisplayInfo(
                 for: displayInfoUrl,
                 chainId: chain.chainId

@@ -24,7 +24,7 @@ extension AddressScanPresentable {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: scanView.controller
         )
 

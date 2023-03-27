@@ -38,7 +38,7 @@ extension WalletNetworkFacade {
         chainAsset: ChainAsset
     ) -> AnyDataProviderRepository<TransactionHistoryItem> {
         let utilityAsset = chainAsset.chain.utilityAssets().first
-        let source: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+        let source = TransactionHistoryItemSource(assetTypeString: chainAsset.asset.type)
 
         if let utilityAssetId = utilityAsset?.assetId, utilityAssetId == chainAsset.asset.assetId {
             return repositoryFactory.createUtilityAssetTxRepository(

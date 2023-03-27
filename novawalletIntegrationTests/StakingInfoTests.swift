@@ -8,36 +8,28 @@ class StakingInfoTests: XCTestCase {
     func testRewardsPolkadot() throws {
         try performCalculatorServiceTest(
             address: "13mAjFVjFDpfa42k2dLdSnUyrSzK8vAySsoudnxX2EKVtfaq",
-            chainId: Chain.polkadot.genesisHash,
-            chainFormat: .substrate(0),
-            assetPrecision: 10
+            chainId: KnowChainId.polkadot
         )
     }
 
     func testRewardsKusama() throws {
         try performCalculatorServiceTest(
             address: "DayVh23V32nFhvm2WojKx2bYZF1CirRgW2Jti9TXN9zaiH5",
-            chainId: Chain.kusama.genesisHash,
-            chainFormat: .substrate(2),
-            assetPrecision: 12
+            chainId: KnowChainId.kusama
         )
     }
 
     func testRewardsWestend() throws {
         try performCalculatorServiceTest(
             address: "5CDayXd3cDCWpBkSXVsVfhE5bWKyTZdD3D1XUinR1ezS1sGn",
-            chainId: Chain.westend.genesisHash,
-            chainFormat: .substrate(42),
-            assetPrecision: 12
+            chainId: KnowChainId.westend
         )
     }
 
     // MARK: - Private
     private func performCalculatorServiceTest(
         address: String,
-        chainId: ChainModel.Id,
-        chainFormat: ChainFormat,
-        assetPrecision: Int16
+        chainId: ChainModel.Id
     ) throws {
 
         // given
@@ -45,6 +37,12 @@ class StakingInfoTests: XCTestCase {
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+
+        guard let chain = chainRegistry.getChain(for: chainId), let asset = chain.utilityAsset() else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
         let stakingServiceFactory = StakingServiceFactory(
             chainRegisty: chainRegistry,
@@ -58,11 +56,18 @@ class StakingInfoTests: XCTestCase {
             for: chainId
         )
 
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(),
+            logger: logger
+        )
+
         let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
-            for: chainId,
+            for: chainAsset,
             stakingType: .relaychain,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             stakingDurationFactory: BabeStakingDurationFactory(),
-            assetPrecision: assetPrecision,
             validatorService: validatorService
         )
 
@@ -101,7 +106,7 @@ class StakingInfoTests: XCTestCase {
                                               isCompound: false,
                                               period: .year)
 
-                let address = try validator.accountId.toAddress(using: chainFormat)
+                let address = try validator.accountId.toAddress(using: chainAsset.chain.chainFormat)
                 return (address, reward * 100.0)
             }
 

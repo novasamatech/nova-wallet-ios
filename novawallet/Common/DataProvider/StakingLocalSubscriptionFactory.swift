@@ -19,6 +19,13 @@ protocol StakingLocalSubscriptionFactoryProtocol {
         missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32>
 
+    func getBagListSizeProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32>
+
+    func getTotalIssuanceProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBigUInt>
+
     func getNominationProvider(for accountId: AccountId, chainId: ChainModel.Id) throws
         -> AnyDataProvider<DecodedNomination>
 
@@ -39,13 +46,18 @@ protocol StakingLocalSubscriptionFactoryProtocol {
 
     func getTotalReward(
         for address: AccountAddress,
-        api: ChainModel.ExternalApi,
+        api: LocalChainExternalApi,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem>
 
     func getStashItemProvider(
         for address: AccountAddress
     ) -> StreamableProvider<StashItem>
+
+    func getBagListNodeProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedBagListNode>
 }
 
 final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -67,6 +79,18 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             chainId: chainId,
             storageCodingPath: codingPath,
             fallback: fallback
+        )
+    }
+
+    func getTotalIssuanceProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBigUInt> {
+        let codingPath = StorageCodingPath.totalIssuance
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: codingPath,
+            shouldUseFallback: false
         )
     }
 
@@ -106,6 +130,32 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             for: localKey,
             chainId: chainId,
             storageCodingPath: codingPath,
+            fallback: fallback
+        )
+    }
+
+    func getBagListSizeProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
+        let possibleCodingPaths = BagList.possibleModuleNames.map {
+            BagList.bagListSizePath(for: $0)
+        }
+
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            BagList.defaultBagListSizePath,
+            chainId: chainId
+        )
+
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            possibleCodingPaths: possibleCodingPaths,
             fallback: fallback
         )
     }
@@ -167,6 +217,28 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         )
     }
 
+    func getBagListNodeProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedBagListNode> {
+        let possibleCodingPaths = BagList.possibleModuleNames.map {
+            BagList.bagListNode(for: $0)
+        }
+
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            BagList.defaultBagListNodePath,
+            accountId: accountId,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            possibleCodingPaths: possibleCodingPaths,
+            shouldUseFallback: false
+        )
+    }
+
     func getActiveEra(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedActiveEra> {
         let codingPath = StorageCodingPath.activeEra
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
@@ -212,7 +284,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
 
     func getTotalReward(
         for address: AccountAddress,
-        api: ChainModel.ExternalApi,
+        api: LocalChainExternalApi,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem> {
         clearIfNeeded()

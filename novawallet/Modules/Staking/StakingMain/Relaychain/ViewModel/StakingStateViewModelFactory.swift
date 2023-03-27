@@ -8,13 +8,7 @@ protocol StakingStateViewModelFactoryProtocol {
     func createViewModel(from state: StakingStateProtocol) -> StakingViewState
 }
 
-typealias AnalyticsRewardsViewModelFactoryBuilder = (
-    ChainAsset,
-    BalanceViewModelFactoryProtocol
-) -> AnalyticsRewardsViewModelFactoryProtocol
-
 final class StakingStateViewModelFactory {
-    let analyticsRewardsViewModelFactoryBuilder: AnalyticsRewardsViewModelFactoryBuilder
     let logger: LoggerProtocol?
 
     private var lastViewModel: StakingViewState = .undefined
@@ -24,11 +18,9 @@ final class StakingStateViewModelFactory {
     private var cachedChainAsset: ChainAsset?
 
     init(
-        analyticsRewardsViewModelFactoryBuilder: @escaping AnalyticsRewardsViewModelFactoryBuilder,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
-        self.analyticsRewardsViewModelFactoryBuilder = analyticsRewardsViewModelFactoryBuilder
         self.priceAssetInfoFactory = priceAssetInfoFactory
         self.logger = logger
     }
@@ -153,30 +145,6 @@ final class StakingStateViewModelFactory {
                 totalStakedPrice: stakedViewModel.price ?? "",
                 status: viewStatus,
                 hasPrice: commonData.price != nil
-            )
-        }
-    }
-
-    private func createAnalyticsViewModel(
-        commonData: StakingStateCommonData,
-        chainAsset: ChainAsset
-    ) -> LocalizableResource<RewardAnalyticsWidgetViewModel>? {
-        guard let rewardsForPeriod = commonData.subqueryRewards, let rewards = rewardsForPeriod.0 else {
-            return nil
-        }
-        let balanceViewModelFactory = getBalanceViewModelFactory(for: chainAsset)
-
-        let analyticsViewModelFactory = analyticsRewardsViewModelFactoryBuilder(chainAsset, balanceViewModelFactory)
-        let fullViewModel = analyticsViewModelFactory.createViewModel(
-            from: rewards,
-            priceData: commonData.price,
-            period: rewardsForPeriod.1,
-            selectedChartIndex: nil
-        )
-        return LocalizableResource { locale in
-            RewardAnalyticsWidgetViewModel(
-                summary: fullViewModel.value(for: locale).summaryViewModel,
-                chartData: fullViewModel.value(for: locale).chartData
             )
         }
     }
@@ -321,11 +289,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             state: state
         )
 
-        let analyticsViewModel = createAnalyticsViewModel(
-            commonData: state.commonData,
-            chainAsset: chainAsset
-        )
-
         let alerts = stakingAlertsForBondedState(state)
 
         let actions: [StakingManageOption] = [
@@ -348,7 +311,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel,
             unbondings: unbondings,
             actions: actions
         )
@@ -390,11 +352,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             state: state
         )
 
-        let analyticsViewModel = createAnalyticsViewModel(
-            commonData: state.commonData,
-            chainAsset: chainAsset
-        )
-
         let alerts = stakingAlertsForNominatorState(state)
 
         let actions: [StakingManageOption] = [
@@ -418,7 +375,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel,
             unbondings: unbondings,
             actions: actions
         )
@@ -462,11 +418,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
 
         let alerts = stakingAlertsForValidatorState(state)
 
-        let analyticsViewModel = createAnalyticsViewModel(
-            commonData: state.commonData,
-            chainAsset: chainAsset
-        )
-
         let actions: [StakingManageOption] = [
             .stakeMore,
             .unstake,
@@ -488,7 +439,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel,
             unbondings: unbondings,
             actions: actions
         )

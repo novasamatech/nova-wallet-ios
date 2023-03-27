@@ -57,7 +57,7 @@ final class TransactionSubscriptionFactory: BaseLocalSubscriptionFactory {
     ) -> CoreDataRepository<TransactionHistoryItem, CDTransactionItem> {
         let chainId = chainAsset.chainAssetId.chainId
         let assetId = chainAsset.chainAssetId.assetId
-        let sourceFilter: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+        let sourceFilter: TransactionHistoryItemSource = .init(assetTypeString: chainAsset.asset.type)
         var filter: NSPredicate
         if let utilityAssetId = chainAsset.chain.utilityAsset()?.assetId,
            utilityAssetId == chainAsset.asset.assetId {

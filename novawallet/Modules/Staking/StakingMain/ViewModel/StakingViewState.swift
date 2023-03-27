@@ -7,7 +7,6 @@ enum StakingViewState {
         viewModel: LocalizableResource<NominationViewModel>,
         alerts: [StakingAlert],
         reward: LocalizableResource<StakingRewardViewModel>?,
-        analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?,
         unbondings: StakingUnbondingViewModel?,
         actions: [StakingManageOption]
     )
@@ -15,7 +14,6 @@ enum StakingViewState {
         viewModel: LocalizableResource<ValidationViewModel>,
         alerts: [StakingAlert],
         reward: LocalizableResource<StakingRewardViewModel>?,
-        analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?,
         unbondings: StakingUnbondingViewModel?,
         actions: [StakingManageOption]
     )

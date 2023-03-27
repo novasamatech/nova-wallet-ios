@@ -12,6 +12,7 @@ struct OperationDetailsModel {
         case reward(_ model: OperationRewardModel)
         case slash(_ model: OperationSlashModel)
         case extrinsic(_ model: OperationExtrinsicModel)
+        case contract(_ model: OperationContractCallModel)
     }
 
     let time: Date

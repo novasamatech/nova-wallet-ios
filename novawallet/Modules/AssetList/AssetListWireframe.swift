@@ -42,7 +42,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: assetsManageView.controller
         )
 
@@ -54,7 +54,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: tokensManageView.controller
         )
 
@@ -104,7 +104,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         viewController.controller.modalTransitioningFactory = factory
         viewController.controller.modalPresentationStyle = .custom
 

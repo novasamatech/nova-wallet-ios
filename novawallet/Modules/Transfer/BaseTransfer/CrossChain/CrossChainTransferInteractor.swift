@@ -32,8 +32,8 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
     private var sendingAssetProvider: StreamableProvider<AssetBalance>?
     private var utilityAssetProvider: StreamableProvider<AssetBalance>?
-    private var sendingAssetPriceProvider: AnySingleValueProvider<PriceData>?
-    private var utilityAssetPriceProvider: AnySingleValueProvider<PriceData>?
+    private var sendingAssetPriceProvider: StreamableProvider<PriceData>?
+    private var utilityAssetPriceProvider: StreamableProvider<PriceData>?
 
     private var recepientAccountId: AccountId?
 
@@ -113,9 +113,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: assetStorageInfo,
-            chainId: chainId,
-            storage: chainStorage,
-            runtimeService: runtimeService
+            chainId: chainId
         )
 
         wrapper.targetOperation.completionBlock = {
@@ -262,16 +260,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
     private func setupSendingAssetPriceProviderIfNeeded() {
         if let priceId = originChainAsset.asset.priceId {
-            let options = DataProviderObserverOptions(
-                alwaysNotifyOnRefresh: false,
-                waitsInProgressSyncOnAdd: false
-            )
-
-            sendingAssetPriceProvider = subscribeToPrice(
-                for: priceId,
-                currency: selectedCurrency,
-                options: options
-            )
+            sendingAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceiveSendingAssetPrice(nil)
         }
@@ -283,9 +272,11 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         }
 
         if let priceId = utilityAsset.priceId {
-            let options = DataProviderObserverOptions(
+            let options = StreamableProviderObserverOptions(
                 alwaysNotifyOnRefresh: false,
-                waitsInProgressSyncOnAdd: false
+                waitsInProgressSyncOnAdd: false,
+                initialSize: 0,
+                refreshWhenEmpty: true
             )
 
             utilityAssetPriceProvider = subscribeToPrice(

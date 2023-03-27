@@ -1,5 +1,6 @@
 import UIKit
 import SubstrateSdk
+import RobinHood
 
 final class ReferendumFullDetailsInteractor {
     weak var presenter: ReferendumFullDetailsInteractorOutputProtocol?
@@ -9,7 +10,7 @@ final class ReferendumFullDetailsInteractor {
     let processingOperationFactory: PrettyPrintedJSONOperationFactoryProtocol
     let referendumAction: ReferendumActionLocal
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     init(
         chain: ChainModel,

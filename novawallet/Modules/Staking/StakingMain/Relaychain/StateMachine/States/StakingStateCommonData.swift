@@ -13,8 +13,9 @@ struct StakingStateCommonData {
     let minNominatorBond: BigUInt?
     let counterForNominators: UInt32?
     let maxNominatorsCount: UInt32?
+    let bagListSize: UInt32?
+    let bagListScoreFactor: BigUInt?
     let eraCountdown: EraCountdown?
-    let subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod)?
 }
 
 extension StakingStateCommonData {
@@ -31,8 +32,9 @@ extension StakingStateCommonData {
             minNominatorBond: nil,
             counterForNominators: nil,
             maxNominatorsCount: nil,
-            eraCountdown: nil,
-            subqueryRewards: nil
+            bagListSize: nil,
+            bagListScoreFactor: nil,
+            eraCountdown: nil
         )
     }
 
@@ -49,8 +51,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -67,8 +70,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -85,8 +89,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -103,8 +108,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -121,8 +127,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -139,8 +146,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -157,8 +165,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -175,8 +184,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -193,8 +203,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -211,8 +222,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -229,8 +241,47 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
+        )
+    }
+
+    func byReplacing(bagListSize: UInt32?) -> StakingStateCommonData {
+        StakingStateCommonData(
+            address: address,
+            chainAsset: chainAsset,
+            accountBalance: accountBalance,
+            price: price,
+            calculatorEngine: calculatorEngine,
+            eraStakersInfo: eraStakersInfo,
+            minStake: minStake,
+            maxNominatorsPerValidator: maxNominatorsPerValidator,
+            minNominatorBond: minNominatorBond,
+            counterForNominators: counterForNominators,
+            maxNominatorsCount: maxNominatorsCount,
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
+        )
+    }
+
+    func byReplacing(bagListScoreFactor: BigUInt?) -> StakingStateCommonData {
+        StakingStateCommonData(
+            address: address,
+            chainAsset: chainAsset,
+            accountBalance: accountBalance,
+            price: price,
+            calculatorEngine: calculatorEngine,
+            eraStakersInfo: eraStakersInfo,
+            minStake: minStake,
+            maxNominatorsPerValidator: maxNominatorsPerValidator,
+            minNominatorBond: minNominatorBond,
+            counterForNominators: counterForNominators,
+            maxNominatorsCount: maxNominatorsCount,
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -247,26 +298,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
-        )
-    }
-
-    func byReplacing(subqueryRewards: [SubqueryRewardItemData]?, period: AnalyticsPeriod) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: (subqueryRewards, period)
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 }

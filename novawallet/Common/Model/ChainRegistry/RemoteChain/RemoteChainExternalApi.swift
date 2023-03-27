@@ -1,14 +1,24 @@
 import Foundation
+import SubstrateSdk
 
-struct RemoteChainExternalApiSet: Codable, Hashable {
-    let staking: ChainModel.ExternalApi?
-    let history: [RemoteTransactionHistoryApi]?
-    let crowdloans: ChainModel.ExternalApi?
-    let governance: ChainModel.ExternalApi?
-}
-
-struct RemoteTransactionHistoryApi: Codable, Hashable {
+struct RemoteChainExternalApi: Equatable, Codable {
     let type: String
     let url: URL
-    let assetType: String?
+    let parameters: JSON?
+}
+
+struct RemoteChainExternalApiSet: Equatable, Codable {
+    enum CodingKeys: String, CodingKey {
+        case staking
+        case history
+        case crowdloans
+        case governance
+        case goverananceDelegations = "governance-delegations"
+    }
+
+    let staking: [RemoteChainExternalApi]?
+    let history: [RemoteChainExternalApi]?
+    let crowdloans: [RemoteChainExternalApi]?
+    let governance: [RemoteChainExternalApi]?
+    let goverananceDelegations: [RemoteChainExternalApi]?
 }

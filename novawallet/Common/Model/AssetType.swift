@@ -3,5 +3,6 @@ import Foundation
 enum AssetType: String {
     case statemine
     case orml
-    case evm
+    case evmAsset = "evm"
+    case evmNative
 }

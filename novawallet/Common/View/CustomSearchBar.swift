@@ -43,6 +43,20 @@ final class CustomSearchBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        super.becomeFirstResponder()
+
+        return textField.becomeFirstResponder()
+    }
+
+    @discardableResult
+    override func resignFirstResponder() -> Bool {
+        super.resignFirstResponder()
+
+        return textField.resignFirstResponder()
+    }
+
     private func setupLayout() {
         addSubview(textFieldBackgroundView)
         textFieldBackgroundView.snp.makeConstraints { make in

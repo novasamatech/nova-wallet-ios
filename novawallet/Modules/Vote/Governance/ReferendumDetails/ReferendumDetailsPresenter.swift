@@ -24,13 +24,14 @@ final class ReferendumDetailsPresenter {
     private var referendum: ReferendumLocal
     private var actionDetails: ReferendumActionLocal?
     private var accountVotes: ReferendumAccountVoteLocal?
-    private var votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+    private var offchainVoting: GovernanceOffchainVotesLocal.Single?
     private var referendumMetadata: ReferendumMetadataLocal?
     private var identities: [AccountAddress: AccountIdentity]?
     private var price: PriceData?
     private var blockNumber: BlockNumber?
     private var blockTime: BlockTime?
     private var dApps: [GovernanceDApps.DApp]?
+    private let votingAvailable: Bool
 
     private lazy var iconGenerator = PolkadotIconGenerator()
 
@@ -72,10 +73,11 @@ final class ReferendumDetailsPresenter {
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         referendum = initData.referendum
         accountVotes = initData.accountVotes
-        votingDistribution = initData.votesResult
+        offchainVoting = initData.offchainVoting
         blockNumber = initData.blockNumber
         blockTime = initData.blockTime
         referendumMetadata = initData.metadata
+        votingAvailable = initData.votingAvailable
         self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
@@ -157,23 +159,39 @@ final class ReferendumDetailsPresenter {
     }
 
     private func provideYourVote() {
+        let viewModel: [YourVoteRow.Model]
+
         if let accountVotes = accountVotes {
-            let viewModel = referendumStringsFactory.createYourVotesViewModel(
+            viewModel = referendumStringsFactory.createDirectVotesViewModel(
                 from: accountVotes,
                 chain: chain,
                 locale: selectedLocale
             )
-
-            view?.didReceive(yourVoteModel: viewModel)
+        } else if let offchainVoting = offchainVoting {
+            switch offchainVoting.voteType {
+            case let .direct(directVote):
+                viewModel = referendumStringsFactory.createDirectVotesViewModel(
+                    from: directVote,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+            case let .delegated(delegateVote):
+                viewModel = referendumStringsFactory.createDelegatorVotesViaDelegateViewModel(
+                    from: delegateVote,
+                    delegateName: offchainVoting.identity?.displayName ?? offchainVoting.metadata?.name,
+                    chain: chain,
+                    locale: selectedLocale
+                )
+            }
         } else {
-            view?.didReceive(yourVoteModel: nil)
+            viewModel = []
         }
+
+        view?.didReceive(yourVoteModel: viewModel)
     }
 
     private func provideVotingDetails() {
-        guard
-            let blockNumber = blockNumber,
-            let blockTime = blockTime else {
+        guard let blockNumber = blockNumber, let blockTime = blockTime else {
             return
         }
 
@@ -184,11 +202,14 @@ final class ReferendumDetailsPresenter {
         )
 
         let referendumViewModel = referendumViewModelFactory.createViewModel(
-            from: referendum,
-            metadata: referendumMetadata,
-            vote: accountVotes,
-            chainInfo: chainInfo,
-            selectedLocale: selectedLocale
+            input: .init(
+                referendum: referendum,
+                metadata: referendumMetadata,
+                onchainVotes: accountVotes,
+                offchainVotes: nil,
+                chainInfo: chainInfo,
+                selectedLocale: selectedLocale
+            )
         )
 
         let votingProgress = referendumViewModel.progress
@@ -203,7 +224,7 @@ final class ReferendumDetailsPresenter {
 
         let button: String?
 
-        if referendum.canVote {
+        if referendum.canVote, votingAvailable {
             if accountVotes != nil {
                 button = R.string.localizable.govRevote(preferredLanguages: selectedLocale.rLanguages)
             } else {
@@ -484,10 +505,9 @@ extension ReferendumDetailsPresenter: ReferendumDetailsInteractorOutputProtocol 
 
     func didReceiveAccountVotes(
         _ votes: ReferendumAccountVoteLocal?,
-        votingDistribution: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
+        votingDistribution _: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     ) {
         accountVotes = votes
-        self.votingDistribution = votingDistribution
 
         provideYourVote()
     }

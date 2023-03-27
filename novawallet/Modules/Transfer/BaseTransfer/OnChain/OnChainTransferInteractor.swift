@@ -77,9 +77,7 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     ) {
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: assetStorageInfo,
-            chainId: chain.chainId,
-            storage: chainStorage,
-            runtimeService: runtimeService
+            chainId: chain.chainId
         )
 
         wrapper.targetOperation.completionBlock = {
@@ -319,8 +317,8 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
                 recepient: recepient,
                 canTransferAll: canTransferAll
             )
-        case .erc20:
-            // we have a separate flow for erc20
+        case .erc20, .evmNative:
+            // we have a separate flow for evm
             return (builder, nil)
         }
     }

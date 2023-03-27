@@ -133,8 +133,8 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         childPresenter?.performRebondAction()
     }
 
-    func performAnalyticsAction() {
-        childPresenter?.performAnalyticsAction()
+    func performRebag() {
+        childPresenter?.performRebag()
     }
 
     func networkInfoViewDidChangeExpansion(isExpanded: Bool) {

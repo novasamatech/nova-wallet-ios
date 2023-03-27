@@ -15,6 +15,7 @@ protocol SkeletonableView: UIView {
     func startLoadingIfNeeded()
     func stopLoadingIfNeeded()
     func createSkeletons(for spaceSize: CGSize) -> [Skeletonable]
+    func createDecorations(for spaceSize: CGSize) -> [Decorable]
     func updateLoadingState()
 }
 
@@ -66,7 +67,7 @@ extension SkeletonableView {
 
         var builder = Skrull(
             size: spaceSize,
-            decorations: [],
+            decorations: createDecorations(for: spaceSize),
             skeletons: createSkeletons(for: spaceSize)
         )
 
@@ -94,6 +95,8 @@ extension SkeletonableView {
 
         currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
     }
+
+    func createDecorations(for _: CGSize) -> [Decorable] { [] }
 }
 
 extension BlurredTableViewCell: SkeletonableViewCell where TContentView: SkeletonableView {

@@ -31,9 +31,19 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let chipStyle = UILabel.Style(
+        textColor: R.color.colorChipText(),
+        font: .semiBoldFootnote
+    )
+
     static let caption1Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .caption1
+    )
+
+    static let caption2Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .caption2
     )
 
     static let regularSubhedlinePrimary = UILabel.Style(

@@ -6,11 +6,11 @@ import CommonWallet
 extension StakingRelaychainInteractor {
     func handle(stashItem: StashItem?) {
         clear(dataProvider: &ledgerProvider)
+        clear(dataProvider: &bagListNodeProvider)
         clear(dataProvider: &nominatorProvider)
         clear(dataProvider: &validatorProvider)
         clear(singleValueProvider: &totalRewardProvider)
         clear(dataProvider: &payeeProvider)
-        clear(singleValueProvider: &rewardAnalyticsProvider)
         clear(streamableProvider: &controllerAccountProvider)
         clear(streamableProvider: &stashAccountProvider)
 
@@ -21,11 +21,12 @@ extension StakingRelaychainInteractor {
             let controllerId = try? stashItem.controller.toAccountId() {
             let chainId = chainAsset.chain.chainId
             ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainId)
+            bagListNodeProvider = subscribeBagListNode(for: stashAccountId, chainId: chainId)
             nominatorProvider = subscribeNomination(for: stashAccountId, chainId: chainId)
             validatorProvider = subscribeValidator(for: stashAccountId, chainId: chainId)
             payeeProvider = subscribePayee(for: stashAccountId, chainId: chainId)
 
-            if let rewardApi = chainAsset.chain.externalApi?.staking {
+            if let rewardApi = chainAsset.chain.externalApis?.staking()?.first {
                 totalRewardProvider = subscribeTotalReward(
                     for: stashItem.stash,
                     api: rewardApi,
@@ -44,9 +45,6 @@ extension StakingRelaychainInteractor {
             if stashItem.controller != stashItem.stash {
                 subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
             }
-
-            // TODO: Temporary disable Analytics feature
-            // subscribeRewardsAnalytics(for: stashItem.stash)
         }
 
         presenter?.didReceive(stashItem: stashItem)
@@ -90,11 +88,11 @@ extension StakingRelaychainInteractor {
 
     func clearStashControllerSubscription() {
         clear(dataProvider: &ledgerProvider)
+        clear(dataProvider: &bagListNodeProvider)
         clear(dataProvider: &nominatorProvider)
         clear(dataProvider: &validatorProvider)
         clear(singleValueProvider: &totalRewardProvider)
         clear(dataProvider: &payeeProvider)
-        clear(singleValueProvider: &rewardAnalyticsProvider)
         clear(streamableProvider: &stashControllerProvider)
     }
 
@@ -123,13 +121,7 @@ extension StakingRelaychainInteractor {
         stashAccountProvider = subscribeForAccountId(accountId, chain: chain)
     }
 
-    func clearNominatorsLimitProviders() {
-        clear(dataProvider: &minNominatorBondProvider)
-        clear(dataProvider: &counterForNominatorsProvider)
-        clear(dataProvider: &maxNominatorsCountProvider)
-    }
-
-    func performNominatorLimitsSubscripion() {
+    func performNominatorLimitsSubscription() {
         guard let chainId = selectedChainAsset?.chain.chainId else {
             return
         }
@@ -139,15 +131,13 @@ extension StakingRelaychainInteractor {
         maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainId)
     }
 
-    private func subscribeRewardsAnalytics(for stash: AccountAddress) {
-        if let analyticsURL = selectedChainAsset?.chain.externalApi?.staking?.url {
-            rewardAnalyticsProvider = subscribeWeaklyRewardAnalytics(for: stash, url: analyticsURL)
-        } else {
-            presenter?.didReceieve(
-                subqueryRewards: .success(nil),
-                period: .week
-            )
+    func performBagListParamsSubscription() {
+        guard let chainId = selectedChainAsset?.chain.chainId else {
+            return
         }
+
+        bagListSizeProvider = subscribeBagsListSize(for: chainId)
+        totalIssuanceProvider = subscribeTotalIssuance(for: chainId)
     }
 }
 
@@ -174,6 +164,14 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
         case let .failure(error):
             presenter?.didReceive(ledgerInfoError: error)
         }
+    }
+
+    func handleBagListNode(
+        result: Result<BagList.Node?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        presenter?.didReceiveBagListNode(result: result)
     }
 
     func handleNomination(
@@ -218,7 +216,7 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: ChainModel.ExternalApi
+        api _: LocalChainExternalApi
     ) {
         switch result {
         case let .success(totalReward):
@@ -238,6 +236,20 @@ extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLoc
 
     func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         presenter?.didReceiveMaxNominatorsCount(result: result)
+    }
+
+    func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
+        presenter?.didReceiveBagListSize(result: result)
+    }
+
+    func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(totalIssuance):
+            let scoreFactor = totalIssuance.map { BagList.scoreFactor(for: $0) }
+            presenter?.didReceiveBagListScoreFactor(result: .success(scoreFactor))
+        case let .failure(error):
+            presenter?.didReceiveBagListScoreFactor(result: .failure(error))
+        }
     }
 }
 
@@ -267,17 +279,6 @@ extension StakingRelaychainInteractor: WalletLocalStorageSubscriber, WalletLocal
         case let .failure(error):
             presenter?.didReceive(balanceError: error)
         }
-    }
-}
-
-extension StakingRelaychainInteractor: StakingAnalyticsLocalStorageSubscriber,
-    StakingAnalyticsLocalSubscriptionHandler {
-    func handleWeaklyRewardAnalytics(
-        result: Result<[SubqueryRewardItemData]?, Error>,
-        address _: AccountAddress,
-        url _: URL
-    ) {
-        presenter?.didReceieve(subqueryRewards: result, period: .week)
     }
 }
 

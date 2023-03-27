@@ -181,6 +181,43 @@ final class OperationDetailsInteractor: AccountFetching {
         completion(.extrinsic(model))
     }
 
+    private func extractContractOperationData(
+        newFee: BigUInt?,
+        _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
+    ) {
+        let precision = Int16(bitPattern: chainAsset.asset.precision)
+        let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
+
+        guard
+            let accountResponse = wallet.fetch(for: chain.accountRequest()),
+            let currentAccountAddress = try? accountResponse.accountId.toAddress(
+                using: chain.chainFormat
+            ) else {
+            completion(nil)
+            return
+        }
+
+        let currentDisplayAddress = DisplayAddress(
+            address: currentAccountAddress,
+            username: wallet.name
+        )
+
+        let contractAddress = transaction.receiver.flatMap { try? Data(hex: $0).toAddress(using: chain.chainFormat) }
+        let contractDisplayAddress = DisplayAddress(address: contractAddress ?? "", username: "")
+
+        let functionSignature = transaction.call.flatMap { String(data: $0, encoding: .utf8) }
+
+        let model = OperationContractCallModel(
+            txHash: transaction.txHash,
+            fee: fee,
+            sender: currentDisplayAddress,
+            contract: contractDisplayAddress,
+            functionSignature: functionSignature
+        )
+
+        completion(.contract(model))
+    }
+
     private func extractTransferOperationData(
         newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
@@ -255,7 +292,11 @@ final class OperationDetailsInteractor: AccountFetching {
         case .slash:
             extractSlashOperationData(completion)
         case .extrinsic:
-            extractExtrinsicOperationData(newFee: newFee, completion)
+            if chainAsset.asset.isEvmNative {
+                extractContractOperationData(newFee: newFee, completion)
+            } else {
+                extractExtrinsicOperationData(newFee: newFee, completion)
+            }
         case .none:
             completion(nil)
         }
@@ -295,6 +336,7 @@ final class OperationDetailsInteractor: AccountFetching {
 extension OperationDetailsInteractor: OperationDetailsInteractorInputProtocol {
     func setup() {
         provideModel(overridingBy: nil, newFee: nil)
+
         transactionProvider = subscribeToTransaction(for: transaction.identifier, chainId: chain.chainId)
     }
 }

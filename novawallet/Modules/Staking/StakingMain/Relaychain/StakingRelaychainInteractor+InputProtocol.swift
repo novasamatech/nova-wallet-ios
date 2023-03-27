@@ -27,7 +27,8 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
         performPriceSubscription()
         performAccountInfoSubscription()
         performStashControllerSubscription()
-        performNominatorLimitsSubscripion()
+        performNominatorLimitsSubscription()
+        performBagListParamsSubscription()
 
         provideRewardCalculator(from: rewardCalculationService)
         provideEraStakersInfo(from: eraValidatorService)
@@ -59,10 +60,10 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
             let stakingDurationFactory = try sharedState.createStakingDurationOperationFactory(for: chainAsset.chain)
 
             let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
-                for: chainAsset.chain.chainId,
+                for: chainAsset,
                 stakingType: StakingType(rawType: chainAsset.asset.staking),
+                stakingLocalSubscriptionFactory: sharedState.stakingLocalSubscriptionFactory,
                 stakingDurationFactory: stakingDurationFactory,
-                assetPrecision: Int16(chainAsset.asset.precision),
                 validatorService: eraValidatorService
             )
 
@@ -123,6 +124,5 @@ extension StakingRelaychainInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
         priceProvider?.refresh()
         totalRewardProvider?.refresh()
-        rewardAnalyticsProvider?.refresh()
     }
 }

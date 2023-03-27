@@ -20,6 +20,15 @@ final class GradientBannerInfoView: UIView {
 
     let imageView = UIImageView()
 
+    var imageInsets: UIEdgeInsets = .zero {
+        didSet {
+            imageView.snp.remakeConstraints { make in
+                make.top.equalToSuperview().inset(imageInsets.top)
+                make.trailing.equalToSuperview().inset(imageInsets.right)
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -36,7 +45,8 @@ final class GradientBannerInfoView: UIView {
     private func setupLayout() {
         addSubview(imageView)
         imageView.snp.makeConstraints { make in
-            make.top.trailing.equalToSuperview()
+            make.top.equalToSuperview().inset(imageInsets.top)
+            make.trailing.equalToSuperview().inset(imageInsets.right)
         }
 
         addSubview(titleLabel)
