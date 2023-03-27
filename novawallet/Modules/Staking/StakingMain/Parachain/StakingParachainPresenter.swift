@@ -219,8 +219,6 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         }
     }
 
-    func performAnalyticsAction() {}
-
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:

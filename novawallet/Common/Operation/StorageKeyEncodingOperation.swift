@@ -254,27 +254,3 @@ class DoubleMapKeyEncodingOperation<T1: Encodable, T2: Encodable>: BaseOperation
         return try encoder.encode()
     }
 }
-
-extension MapKeyEncodingOperation {
-    func localWrapper(for factory: ChainStorageIdFactoryProtocol) -> CompoundOperationWrapper<[String]> {
-        baseLocalWrapper(for: factory)
-    }
-}
-
-extension DoubleMapKeyEncodingOperation {
-    func localWrapper(for factory: ChainStorageIdFactoryProtocol) -> CompoundOperationWrapper<[String]> {
-        baseLocalWrapper(for: factory)
-    }
-}
-
-private extension BaseOperation where ResultType == [Data] {
-    func baseLocalWrapper(for factory: ChainStorageIdFactoryProtocol) -> CompoundOperationWrapper<[String]> {
-        let mapOperation = ClosureOperation<[String]> {
-            let keys = try self.extractNoCancellableResultData()
-            return keys.map { factory.createIdentifier(for: $0) }
-        }
-
-        mapOperation.addDependency(self)
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [self])
-    }
-}
