@@ -528,15 +528,6 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         }
     }
 
-    func didReceieve(subqueryRewards: Result<[SubqueryRewardItemData]?, Error>) {
-        switch subqueryRewards {
-        case let .success(rewards):
-            stateMachine.state.process(subqueryRewards: rewards)
-        case let .failure(error):
-            handle(error: error)
-        }
-    }
-
     func didReceiveMinNominatorBond(result: Result<BigUInt?, Error>) {
         switch result {
         case let .success(minNominatorBond):

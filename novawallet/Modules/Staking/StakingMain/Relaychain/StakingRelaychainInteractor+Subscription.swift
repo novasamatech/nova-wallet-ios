@@ -11,7 +11,6 @@ extension StakingRelaychainInteractor {
         clear(dataProvider: &validatorProvider)
         clear(singleValueProvider: &totalRewardProvider)
         clear(dataProvider: &payeeProvider)
-        clear(singleValueProvider: &rewardAnalyticsProvider)
         clear(streamableProvider: &controllerAccountProvider)
         clear(streamableProvider: &stashAccountProvider)
 
@@ -46,9 +45,6 @@ extension StakingRelaychainInteractor {
             if stashItem.controller != stashItem.stash {
                 subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
             }
-
-            // TODO: Temporary disable Analytics feature
-            // subscribeRewardsAnalytics(for: stashItem.stash)
         }
 
         presenter?.didReceive(stashItem: stashItem)
@@ -97,7 +93,6 @@ extension StakingRelaychainInteractor {
         clear(dataProvider: &validatorProvider)
         clear(singleValueProvider: &totalRewardProvider)
         clear(dataProvider: &payeeProvider)
-        clear(singleValueProvider: &rewardAnalyticsProvider)
         clear(streamableProvider: &stashControllerProvider)
     }
 
@@ -143,14 +138,6 @@ extension StakingRelaychainInteractor {
 
         bagListSizeProvider = subscribeBagsListSize(for: chainId)
         totalIssuanceProvider = subscribeTotalIssuance(for: chainId)
-    }
-
-    private func subscribeRewardsAnalytics(for stash: AccountAddress) {
-        if let analyticsURL = selectedChainAsset?.chain.externalApis?.staking()?.first?.url {
-            rewardAnalyticsProvider = subscribeWeaklyRewardAnalytics(for: stash, url: analyticsURL)
-        } else {
-            presenter?.didReceieve(subqueryRewards: .success(nil))
-        }
     }
 }
 
@@ -292,17 +279,6 @@ extension StakingRelaychainInteractor: WalletLocalStorageSubscriber, WalletLocal
         case let .failure(error):
             presenter?.didReceive(balanceError: error)
         }
-    }
-}
-
-extension StakingRelaychainInteractor: StakingAnalyticsLocalStorageSubscriber,
-    StakingAnalyticsLocalSubscriptionHandler {
-    func handleWeaklyRewardAnalytics(
-        result: Result<[SubqueryRewardItemData]?, Error>,
-        address _: AccountAddress,
-        url _: URL
-    ) {
-        presenter?.didReceieve(subqueryRewards: result)
     }
 }
 
