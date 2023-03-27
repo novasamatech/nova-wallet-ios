@@ -303,23 +303,4 @@ extension StakingStateCommonData {
             eraCountdown: eraCountdown
         )
     }
-
-    func byReplacing(subqueryRewards _: [SubqueryRewardItemData]?) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountBalance: accountBalance,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            bagListSize: bagListSize,
-            bagListScoreFactor: bagListScoreFactor,
-            eraCountdown: eraCountdown
-        )
-    }
 }

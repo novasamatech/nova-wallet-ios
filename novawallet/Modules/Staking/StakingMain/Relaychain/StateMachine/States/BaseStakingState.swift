@@ -38,7 +38,6 @@ class BaseStakingState: StakingStateProtocol {
             commonData = commonData
                 .byReplacing(address: address)
                 .byReplacing(accountBalance: nil)
-                .byReplacing(subqueryRewards: nil)
 
             guard let stateMachine = stateMachine else {
                 return
