@@ -119,6 +119,49 @@ final class TransferSetupPresenter {
 
         view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
     }
+
+    private func kiltRecipientCellModel(kiltRecipient: KiltTransferAssetRecipientAccount) -> SelectableAddressTableViewCell.Model {
+        let displayAddress = DisplayAddress(
+            address: kiltRecipient.account,
+            username: ""
+        )
+        let addressModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
+        return SelectableAddressTableViewCell.Model(
+            address: addressModel,
+            selected: false
+        )
+    }
+
+    private func showKiltAddressList(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String) {
+        let title = LocalizableResource<String> { locale in
+            R.string.localizable.transferSetupKiltAddressesTitle(
+                KiltW3n.fullName(for: name),
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        let items = kiltRecipients.map(kiltRecipientCellModel).map { item in
+            LocalizableResource { _ in item }
+        }
+
+        let context = KiltAddressesSelectionState(accounts: kiltRecipients, name: "")
+        wireframe.showAddressPicker(
+            from: view,
+            title: title,
+            items: items,
+            selectedIndex: nil,
+            delegate: self,
+            context: context
+        )
+    }
+
+    private func provideKiltRecipientViewModel(_ recipient: KiltTransferAssetRecipientAccount?) {
+        guard let recipient = recipient else {
+            return
+        }
+        let address = try? recipient.account.toAccountId().toAddress(using: originChainAsset.chain.chainFormat)
+        view?.didReceiveKiltRecipient(viewModel: .loaded(value: address ?? ""))
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -190,10 +233,9 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func search(recipient: String) {
-        let schema = recipient.split(by: .colon)
-        if KiltW3n.match(schema[safe: 0]), let name = schema[safe: 1] {
+        if let web3Name = KiltW3n.web3Name(nameWithScheme: recipient) {
+            interactor.search(web3Name: web3Name)
             view?.didReceiveKiltRecipient(viewModel: .loading)
-            interactor.search(web3Name: name)
         } else {
             view?.didReceiveKiltRecipient(viewModel: nil)
         }
@@ -249,35 +291,11 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         updateYourWalletsButton()
     }
 
-    func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount]) {
+    func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String) {
         if kiltRecipients.count > 1 {
-            let title = LocalizableResource<String> { _ in
-                "KILT addresses for w3n:smth"
-            }
-
-            let items = kiltRecipients.map {
-                let addressModel = displayAddressViewModelFactory.createViewModel(from: DisplayAddress(address: $0.account, username: ""))
-                return SelectableAddressTableViewCell.Model(
-                    address: addressModel,
-                    selected: false
-                )
-            }.map { item in
-                LocalizableResource { _ in
-                    item
-                }
-            }
-            let context = KiltAddressesSelectionState(accounts: kiltRecipients, name: "")
-            wireframe.showAddressPicker(
-                from: view,
-                title: title,
-                items: items,
-                selectedIndex: nil,
-                delegate: self,
-                context: context
-            )
-        } else if let recipient = kiltRecipients.first {
-            let address = try? recipient.account.toAccountId().toAddress(using: originChainAsset.chain.chainFormat)
-            view?.didReceiveKiltRecipient(viewModel: .loaded(value: address ?? ""))
+            showKiltAddressList(kiltRecipients: kiltRecipients, for: name)
+        } else {
+            provideKiltRecipientViewModel(kiltRecipients.first)
         }
     }
 }
@@ -333,6 +351,7 @@ extension TransferSetupPresenter: AddressScanDelegate {
     func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
         wireframe.hideRecepientScan(from: view)
 
+        provideKiltRecipientViewModel(nil)
         childPresenter?.changeRecepient(address: address)
     }
 }
@@ -341,6 +360,7 @@ extension TransferSetupPresenter: YourWalletsDelegate {
     func didSelectYourWallet(address: AccountAddress) {
         wireframe.hideYourWallets(from: view)
 
+        provideKiltRecipientViewModel(nil)
         childPresenter?.changeRecepient(address: address)
         view?.changeYourWalletsViewState(.inactive)
     }

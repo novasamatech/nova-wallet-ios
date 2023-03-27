@@ -699,6 +699,13 @@
 "common.same.receive.address.message" = "Recipient's address must differ from sender";
 "transfer.setup.enter.address" = "Enter the address...";
 "transfer.setup.enter.amount" = "Enter amount...";
+"transfer.setup.error.w3n.accountNotFound.title" = "Invalid recipient";
+"transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ not found";
+"transfer.setup.error.w3n.serviceNotFound.title" = "Invalid recipient";
+"transfer.setup.error.w3n.serviceNotFound.subtitle" = "No valid address was found for %@ on the KILT network";
+"transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Error resolving w3n";
+"transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "KILT w3n services are unavailable. Try again later or enter the KILT address manually";
+"transfer.setup.kilt.addresses.title" = "KILT addresses for %@";
 "common.not.now" = "Not now";
 "common.open.settings" = "Open settings";
 "qr.scan.error.camera.restricted" = "Unfortunately, access to the camera is restricted.";
