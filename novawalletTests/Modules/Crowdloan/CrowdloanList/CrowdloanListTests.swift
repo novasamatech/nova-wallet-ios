@@ -266,7 +266,7 @@ class CrowdloanListTests: XCTestCase {
             balance: BigUInt(1e+18)
         )
 
-        guard let crowdloanInfoURL = selectedChain.externalApi?.crowdloans?.url else {
+        guard let crowdloanInfoURL = selectedChain.externalApis?.crowdloans()?.first?.url else {
             return nil
         }
 
@@ -287,7 +287,12 @@ class CrowdloanListTests: XCTestCase {
         )
         
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "100", dayChange: 0.01, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "100",
+                dayChange: 0.01,
+                currencyId: Currency.usd.id
+            )
         )
         
         return CrowdloanListInteractor(

@@ -4,15 +4,15 @@ import IrohaCrypto
 
 class MortalEraFactoryTests: XCTestCase {
     func testMortalEraPolkadot() {
-        performMortalEraCalculation(chainId: Chain.polkadot.genesisHash)
+        performMortalEraCalculation(chainId: KnowChainId.polkadot)
     }
 
     func testMortalEraKusama() {
-        performMortalEraCalculation(chainId: Chain.kusama.genesisHash)
+        performMortalEraCalculation(chainId: KnowChainId.kusama)
     }
 
     func testMortalEraWestend() {
-        performMortalEraCalculation(chainId: Chain.westend.genesisHash)
+        performMortalEraCalculation(chainId: KnowChainId.westend)
     }
 
 

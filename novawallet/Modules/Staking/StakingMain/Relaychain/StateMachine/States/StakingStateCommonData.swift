@@ -4,7 +4,7 @@ import BigInt
 struct StakingStateCommonData {
     let address: String?
     let chainAsset: ChainAsset?
-    let accountInfo: AccountInfo?
+    let accountBalance: AssetBalance?
     let price: PriceData?
     let calculatorEngine: RewardCalculatorEngineProtocol?
     let eraStakersInfo: EraStakersInfo?
@@ -13,8 +13,9 @@ struct StakingStateCommonData {
     let minNominatorBond: BigUInt?
     let counterForNominators: UInt32?
     let maxNominatorsCount: UInt32?
+    let bagListSize: UInt32?
+    let bagListScoreFactor: BigUInt?
     let eraCountdown: EraCountdown?
-    let subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod)?
 }
 
 extension StakingStateCommonData {
@@ -22,7 +23,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: nil,
             chainAsset: nil,
-            accountInfo: nil,
+            accountBalance: nil,
             price: nil,
             calculatorEngine: nil,
             eraStakersInfo: nil,
@@ -31,8 +32,9 @@ extension StakingStateCommonData {
             minNominatorBond: nil,
             counterForNominators: nil,
             maxNominatorsCount: nil,
-            eraCountdown: nil,
-            subqueryRewards: nil
+            bagListSize: nil,
+            bagListScoreFactor: nil,
+            eraCountdown: nil
         )
     }
 
@@ -40,7 +42,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -49,8 +51,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -58,7 +61,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -67,16 +70,17 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
-    func byReplacing(accountInfo: AccountInfo?) -> StakingStateCommonData {
+    func byReplacing(accountBalance: AssetBalance?) -> StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -85,8 +89,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -94,7 +99,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -103,8 +108,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -112,7 +118,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -121,8 +127,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -130,7 +137,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -139,8 +146,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -148,7 +156,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -157,8 +165,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -166,7 +175,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -175,8 +184,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -184,7 +194,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -193,8 +203,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -202,7 +213,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -211,8 +222,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -220,7 +232,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -229,8 +241,47 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
+        )
+    }
+
+    func byReplacing(bagListSize: UInt32?) -> StakingStateCommonData {
+        StakingStateCommonData(
+            address: address,
+            chainAsset: chainAsset,
+            accountBalance: accountBalance,
+            price: price,
+            calculatorEngine: calculatorEngine,
+            eraStakersInfo: eraStakersInfo,
+            minStake: minStake,
+            maxNominatorsPerValidator: maxNominatorsPerValidator,
+            minNominatorBond: minNominatorBond,
+            counterForNominators: counterForNominators,
+            maxNominatorsCount: maxNominatorsCount,
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
+        )
+    }
+
+    func byReplacing(bagListScoreFactor: BigUInt?) -> StakingStateCommonData {
+        StakingStateCommonData(
+            address: address,
+            chainAsset: chainAsset,
+            accountBalance: accountBalance,
+            price: price,
+            calculatorEngine: calculatorEngine,
+            eraStakersInfo: eraStakersInfo,
+            minStake: minStake,
+            maxNominatorsPerValidator: maxNominatorsPerValidator,
+            minNominatorBond: minNominatorBond,
+            counterForNominators: counterForNominators,
+            maxNominatorsCount: maxNominatorsCount,
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 
@@ -238,7 +289,7 @@ extension StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
-            accountInfo: accountInfo,
+            accountBalance: accountBalance,
             price: price,
             calculatorEngine: calculatorEngine,
             eraStakersInfo: eraStakersInfo,
@@ -247,26 +298,9 @@ extension StakingStateCommonData {
             minNominatorBond: minNominatorBond,
             counterForNominators: counterForNominators,
             maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: subqueryRewards
-        )
-    }
-
-    func byReplacing(subqueryRewards: [SubqueryRewardItemData]?, period: AnalyticsPeriod) -> StakingStateCommonData {
-        StakingStateCommonData(
-            address: address,
-            chainAsset: chainAsset,
-            accountInfo: accountInfo,
-            price: price,
-            calculatorEngine: calculatorEngine,
-            eraStakersInfo: eraStakersInfo,
-            minStake: minStake,
-            maxNominatorsPerValidator: maxNominatorsPerValidator,
-            minNominatorBond: minNominatorBond,
-            counterForNominators: counterForNominators,
-            maxNominatorsCount: maxNominatorsCount,
-            eraCountdown: eraCountdown,
-            subqueryRewards: (subqueryRewards, period)
+            bagListSize: bagListSize,
+            bagListScoreFactor: bagListScoreFactor,
+            eraCountdown: eraCountdown
         )
     }
 }

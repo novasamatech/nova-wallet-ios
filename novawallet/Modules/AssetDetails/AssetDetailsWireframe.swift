@@ -15,7 +15,8 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         ) else {
             return
         }
-        present(purchaseView.controller, from: view)
+        purchaseView.controller.modalPresentationStyle = .fullScreen
+        view?.controller.present(purchaseView.controller, animated: true)
     }
 
     func showSendTokens(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
@@ -25,12 +26,9 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         ) else {
             return
         }
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-        let fearlessNavigationController = FearlessNavigationController(
-            rootViewController: transferSetupView.controller)
-        navigationController.present(fearlessNavigationController, animated: true)
+
+        let navigationController = NovaNavigationController(rootViewController: transferSetupView.controller)
+        view?.controller.navigationController?.present(navigationController, animated: true)
     }
 
     func showReceiveTokens(
@@ -44,12 +42,9 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         ) else {
             return
         }
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-        let fearlessNavigationController = FearlessNavigationController(
-            rootViewController: receiveTokensView.controller)
-        navigationController.present(fearlessNavigationController, animated: true)
+
+        let navigationController = NovaNavigationController(rootViewController: receiveTokensView.controller)
+        view?.controller.navigationController?.present(navigationController, animated: true)
     }
 
     func showPurchaseProviders(
@@ -102,7 +97,7 @@ final class AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         guard let navigationController = view?.controller.navigationController else {
             return
         }
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
         viewController.modalPresentationStyle = .custom
         navigationController.present(viewController, animated: true)

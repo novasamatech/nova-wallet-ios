@@ -14,9 +14,9 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     let feeProxy: ExtrinsicFeeProxyProtocol
     let operationManager: OperationManagerProtocol
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinisicService: ExtrinsicServiceProtocol?
 
@@ -95,7 +95,7 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
     AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            clear(dataProvider: &accountInfoProvider)
+            clear(streamableProvider: &balanceProvider)
             clear(dataProvider: &ledgerProvider)
 
             let maybeStashItem = try result.get()
@@ -106,9 +106,10 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
             if let controllerId = maybeControllerId {
                 ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
 
-                accountInfoProvider = subscribeToAccountInfoProvider(
+                balanceProvider = subscribeToAssetBalanceProvider(
                     for: controllerId,
-                    chainId: chainAsset.chain.chainId
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
                 )
 
                 fetchFirstMetaAccountResponse(
@@ -132,12 +133,12 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
 
             } else {
                 presenter.didReceiveStakingLedger(result: .success(nil))
-                presenter.didReceiveAccountInfo(result: .success(nil))
+                presenter.didReceiveAccountBalance(result: .success(nil))
             }
 
         } catch {
             presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountInfo(result: .failure(error))
+            presenter.didReceiveAccountBalance(result: .failure(error))
             presenter.didReceiveStakingLedger(result: .failure(error))
         }
     }
@@ -152,12 +153,13 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
 }
 
 extension StakingRebondSetupInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 

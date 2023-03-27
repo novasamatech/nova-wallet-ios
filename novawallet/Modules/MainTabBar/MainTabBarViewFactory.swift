@@ -16,13 +16,17 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         }
 
         let localizationManager = LocalizationManager.shared
+        let securedLayer = SecurityLayerService.shared
 
         let serviceCoordinator = ServiceCoordinator.createDefault()
+        let inAppUpdatesService = InAppUpdatesServiceFactory().createService()
 
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
             serviceCoordinator: serviceCoordinator,
-            keystoreImportService: keystoreImportService
+            keystoreImportService: keystoreImportService,
+            securedLayer: securedLayer,
+            inAppUpdatesService: inAppUpdatesService
         )
 
         guard let walletController = createWalletController(for: localizationManager) else {
@@ -99,7 +103,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             viewController?.tabBarItem.title = currentTitle
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: viewController)
+        let navigationController = NovaNavigationController(rootViewController: viewController)
 
         return navigationController
     }
@@ -134,7 +138,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             viewController?.tabBarItem.title = currentTitle
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: viewController)
+        let navigationController = NovaNavigationController(rootViewController: viewController)
 
         return navigationController
     }
@@ -144,7 +148,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     ) -> UIViewController? {
         guard let viewController = SettingsViewFactory.createView()?.controller else { return nil }
 
-        let navigationController = FearlessNavigationController(rootViewController: viewController)
+        let navigationController = NovaNavigationController(rootViewController: viewController)
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarSettingsTitle(preferredLanguages: locale.rLanguages)
@@ -178,7 +182,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: view.controller)
+        let navigationController = NovaNavigationController(rootViewController: view.controller)
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarVoteTitle(preferredLanguages: locale.rLanguages)
@@ -212,7 +216,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: dappsView.controller)
+        let navigationController = NovaNavigationController(rootViewController: dappsView.controller)
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarDappsTitle_2_4_3(preferredLanguages: locale.rLanguages)

@@ -3,7 +3,7 @@ import SoraUI
 import UIKit
 
 extension ModalSheetPresentationStyle {
-    static var fearless: ModalSheetPresentationStyle {
+    static var nova: ModalSheetPresentationStyle {
         let indicatorSize = CGSize(width: 32.0, height: 3.0)
         let headerStyle = ModalSheetPresentationHeaderStyle(
             preferredHeight: 20.0,
@@ -22,7 +22,7 @@ extension ModalSheetPresentationStyle {
 }
 
 extension ModalSheetPresentationConfiguration {
-    static var fearless: ModalSheetPresentationConfiguration {
+    static var nova: ModalSheetPresentationConfiguration {
         let appearanceAnimator = BlockViewAnimator(
             duration: 0.25,
             delay: 0.0,
@@ -37,7 +37,7 @@ extension ModalSheetPresentationConfiguration {
         let configuration = ModalSheetPresentationConfiguration(
             contentAppearanceAnimator: appearanceAnimator,
             contentDissmisalAnimator: dismissalAnimator,
-            style: ModalSheetPresentationStyle.fearless,
+            style: ModalSheetPresentationStyle.nova,
             extendUnderSafeArea: true,
             dismissFinishSpeedFactor: 0.6,
             dismissCancelSpeedFactor: 0.6

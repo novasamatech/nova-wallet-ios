@@ -1,7 +1,7 @@
 import UIKit
 
 extension MultiValueView: BindableView {
-    struct Model {
+    struct Model: Equatable {
         let topValue: String
         let bottomValue: String?
     }

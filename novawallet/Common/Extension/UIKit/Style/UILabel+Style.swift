@@ -31,9 +31,19 @@ extension UILabel.Style {
         font: .regularFootnote
     )
 
+    static let chipStyle = UILabel.Style(
+        textColor: R.color.colorChipText(),
+        font: .semiBoldFootnote
+    )
+
     static let caption1Secondary = UILabel.Style(
         textColor: R.color.colorTextSecondary(),
         font: .caption1
+    )
+
+    static let caption2Secondary = UILabel.Style(
+        textColor: R.color.colorTextSecondary(),
+        font: .caption2
     )
 
     static let regularSubhedlinePrimary = UILabel.Style(
@@ -54,5 +64,15 @@ extension UILabel.Style {
     static let rowLink = UILabel.Style(
         textColor: R.color.colorButtonTextAccent(),
         font: .p2Paragraph
+    )
+
+    static let secondaryScreenTitle = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .boldTitle2
+    )
+
+    static let bottomSheetTitle = UILabel.Style(
+        textColor: R.color.colorTextPrimary()!,
+        font: .semiBoldBody
     )
 }

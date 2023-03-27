@@ -37,8 +37,7 @@ class BaseStakingState: StakingStateProtocol {
         if commonData.address != address {
             commonData = commonData
                 .byReplacing(address: address)
-                .byReplacing(accountInfo: nil)
-                .byReplacing(subqueryRewards: nil, period: .week)
+                .byReplacing(accountBalance: nil)
 
             guard let stateMachine = stateMachine else {
                 return
@@ -53,8 +52,8 @@ class BaseStakingState: StakingStateProtocol {
         }
     }
 
-    func process(accountInfo: AccountInfo?) {
-        commonData = commonData.byReplacing(accountInfo: accountInfo)
+    func process(accountBalance: AssetBalance?) {
+        commonData = commonData.byReplacing(accountBalance: accountBalance)
 
         stateMachine?.transit(to: self)
     }
@@ -107,21 +106,30 @@ class BaseStakingState: StakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
+    func process(bagListSize: UInt32?) {
+        commonData = commonData.byReplacing(bagListSize: bagListSize)
+
+        stateMachine?.transit(to: self)
+    }
+
+    func process(bagListScoreFactor: BigUInt?) {
+        if bagListScoreFactor != commonData.bagListScoreFactor {
+            commonData = commonData.byReplacing(bagListScoreFactor: bagListScoreFactor)
+
+            stateMachine?.transit(to: self)
+        }
+    }
+
     func process(stashItem _: StashItem?) {}
     func process(ledgerInfo _: StakingLedger?) {}
     func process(nomination _: Nomination?) {}
     func process(validatorPrefs _: ValidatorPrefs?) {}
     func process(totalReward _: TotalRewardItem?) {}
     func process(payee _: RewardDestinationArg?) {}
+    func process(bagListNode _: BagList.Node?) {}
 
     func process(eraCountdown: EraCountdown) {
         commonData = commonData.byReplacing(eraCountdown: eraCountdown)
-
-        stateMachine?.transit(to: self)
-    }
-
-    func process(subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod)) {
-        commonData = commonData.byReplacing(subqueryRewards: subqueryRewards.0, period: subqueryRewards.1)
 
         stateMachine?.transit(to: self)
     }

@@ -69,7 +69,7 @@ struct SupportAndVotesLocal {
     let ayes: BigUInt
     let nays: BigUInt
     let support: BigUInt
-    let totalIssuance: BigUInt
+    let electorate: BigUInt
 
     /// fraction of ayes
     var approvalFraction: Decimal? {
@@ -85,7 +85,7 @@ struct SupportAndVotesLocal {
     /// fraction of voted tokens
     var supportFraction: Decimal {
         guard
-            let totalDecimal = Decimal(totalIssuance), totalDecimal > 0,
+            let totalDecimal = Decimal(electorate), totalDecimal > 0,
             let supportDecimal = Decimal(support) else {
             return 0.0
         }
@@ -183,7 +183,7 @@ enum ReferendumStateLocal {
 
     struct Preparing {
         let track: GovernanceTrackLocal
-        let proposal: SupportPallet.Bounded<RuntimeCall<JSON>>
+        let proposal: SupportPallet.Bounded<BytesCodable>
         let voting: Voting
         let deposit: BigUInt?
         let since: BlockNumber
@@ -230,7 +230,7 @@ enum ReferendumStateLocal {
         }
     }
 
-    var proposal: SupportPallet.Bounded<RuntimeCall<JSON>>? {
+    var proposal: SupportPallet.Bounded<BytesCodable>? {
         switch self {
         case let .preparing(model):
             return model.proposal
@@ -243,7 +243,12 @@ enum ReferendumStateLocal {
 }
 
 struct GovernanceTrackLocal {
-    let trackId: UInt16
+    let trackId: TrackIdLocal
     let name: String
     let totalTracksCount: Int
+}
+
+struct GovernanceTrackInfoLocal {
+    let trackId: TrackIdLocal
+    let name: String
 }

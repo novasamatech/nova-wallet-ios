@@ -79,16 +79,32 @@ final class AccountInfoUpdatingService {
         }
     }
 
+    private func checkSubscription(for chainId: ChainModel.Id) -> Bool {
+        subscribedChains[chainId] != nil
+    }
+
+    private func checkChainReadyForSubscription(_ chain: ChainModel) -> Bool {
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return false
+        }
+
+        return runtimeProvider.hasSnapshot
+    }
+
     private func updateSubscription(for chain: ChainModel) {
-        let hasSubscription = subscribedChains[chain.chainId] != nil
+        let hasSubscription = checkSubscription(for: chain.chainId)
 
         guard let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
-            logger.warning("Native asset not found for chain \(chain.chainId)")
+            logger.debug("No substrate native asset for chain: \(chain.name) \(chain.chainId)")
 
             if hasSubscription {
                 removeSubscription(for: chain.chainId)
             }
 
+            return
+        }
+
+        guard checkChainReadyForSubscription(chain) else {
             return
         }
 
@@ -193,10 +209,14 @@ final class AccountInfoUpdatingService {
 extension AccountInfoUpdatingService: AccountInfoUpdatingServiceProtocol {
     func setup() {
         subscribeToChains()
+
+        eventCenter.add(observer: self)
     }
 
     func throttle() {
         unsubscribeFromChains()
+
+        eventCenter.remove(observer: self)
     }
 
     func update(selectedMetaAccount: MetaAccountModel) {
@@ -205,5 +225,23 @@ extension AccountInfoUpdatingService: AccountInfoUpdatingServiceProtocol {
         self.selectedMetaAccount = selectedMetaAccount
 
         subscribeToChains()
+    }
+}
+
+extension AccountInfoUpdatingService: EventVisitorProtocol {
+    func processRuntimeCoderReady(event: RuntimeCoderCreated) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard
+            !checkSubscription(for: event.chainId),
+            let chain = chainRegistry.getChain(for: event.chainId) else {
+            return
+        }
+
+        updateSubscription(for: chain)
     }
 }

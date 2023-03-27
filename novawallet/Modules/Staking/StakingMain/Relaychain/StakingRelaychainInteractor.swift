@@ -10,10 +10,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         sharedState.stakingLocalSubscriptionFactory
     }
 
-    var stakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscriptionFactoryProtocol {
-        sharedState.stakingAnalyticsLocalSubscriptionFactory
-    }
-
     var stakingSettings: StakingAssetSettings { sharedState.settings }
 
     let selectedWalletSettings: SelectedWalletSettings
@@ -40,12 +36,13 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     private var eraCompletionTimeCancellable: CancellableCall?
     private var rewardCalculatorCancellable: CancellableCall?
 
-    var priceProvider: AnySingleValueProvider<PriceData>?
-    var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
+    var priceProvider: StreamableProvider<PriceData>?
+    var balanceProvider: StreamableProvider<AssetBalance>?
     var stashControllerProvider: StreamableProvider<StashItem>?
     var validatorProvider: AnyDataProvider<DecodedValidator>?
     var nominatorProvider: AnyDataProvider<DecodedNomination>?
     var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
+    var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
     var payeeProvider: AnyDataProvider<DecodedPayee>?
     var controllerAccountProvider: StreamableProvider<MetaAccountModel>?
@@ -53,7 +50,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
     var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
-    var rewardAnalyticsProvider: AnySingleValueProvider<[SubqueryRewardItemData]>?
+    var bagListSizeProvider: AnyDataProvider<DecodedU32>?
+    var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
 
     init(
         selectedWalletSettings: SelectedWalletSettings,

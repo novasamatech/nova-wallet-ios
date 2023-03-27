@@ -4,17 +4,20 @@ class BaseStashNextState: BaseStakingState {
     let stashItem: StashItem
     private(set) var totalReward: TotalRewardItem?
     private(set) var payee: RewardDestinationArg?
+    private(set) var bagListNode: BagList.Node?
 
     init(
         stateMachine: StakingStateMachineProtocol,
         commonData: StakingStateCommonData,
         stashItem: StashItem,
         totalReward: TotalRewardItem?,
-        payee: RewardDestinationArg?
+        payee: RewardDestinationArg?,
+        bagListNode: BagList.Node?
     ) {
         self.stashItem = stashItem
         self.totalReward = totalReward
         self.payee = payee
+        self.bagListNode = bagListNode
 
         super.init(stateMachine: stateMachine, commonData: commonData)
     }
@@ -37,7 +40,8 @@ class BaseStashNextState: BaseStakingState {
                 commonData: commonData,
                 stashItem: stashItem,
                 ledgerInfo: nil,
-                totalReward: nil
+                totalReward: nil,
+                bagListNode: nil
             )
         } else {
             newState = NoStashState(
@@ -57,6 +61,12 @@ class BaseStashNextState: BaseStakingState {
 
     override func process(payee: RewardDestinationArg?) {
         self.payee = payee
+
+        stateMachine?.transit(to: self)
+    }
+
+    override func process(bagListNode: BagList.Node?) {
+        self.bagListNode = bagListNode
 
         stateMachine?.transit(to: self)
     }

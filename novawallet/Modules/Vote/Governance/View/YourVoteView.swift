@@ -10,6 +10,10 @@ final class YourVotesView: UIView {
         $0.apply(style: .nay)
     }
 
+    let abstainView: YourVoteView = .create {
+        $0.apply(style: .abstain)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -27,7 +31,8 @@ final class YourVotesView: UIView {
             [
                 topLine,
                 ayeView,
-                nayView
+                nayView,
+                abstainView
             ]
         )
 
@@ -45,6 +50,7 @@ extension YourVotesView {
     struct Model {
         let aye: YourVoteView.Model?
         let nay: YourVoteView.Model?
+        let abstain: YourVoteView.Model?
     }
 
     func bind(viewModel: Model) {
@@ -52,6 +58,8 @@ extension YourVotesView {
         ayeView.bind(viewModel: viewModel.aye)
         nayView.isHidden = viewModel.nay == nil
         nayView.bind(viewModel: viewModel.nay)
+        abstainView.isHidden = viewModel.abstain == nil
+        abstainView.bind(viewModel: viewModel.abstain)
     }
 }
 
@@ -60,7 +68,7 @@ final class YourVoteView: UIView {
         $0.contentInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
     }
 
-    let voteLabel = UILabel(style: .votes, textAlignment: .left)
+    let voteLabel = UILabel(style: .votes, textAlignment: .left, numberOfLines: 1)
     lazy var content: UIStackView = UIView.hStack(
         spacing: 6,
         [
@@ -82,6 +90,8 @@ final class YourVoteView: UIView {
 
     private func setupLayout() {
         voteLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        voteLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        typeView.titleLabel.setContentHuggingPriority(.required, for: .horizontal)
         addSubview(content)
         content.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -140,6 +150,11 @@ extension YourVoteView.Style {
         typeView: .nayType,
         mode: .typeTitle
     )
+    static let abstain = YourVoteView.Style(
+        voteLabel: .votes,
+        typeView: .abstainType,
+        mode: .typeTitle
+    )
     static let ayeInverse = YourVoteView.Style(
         voteLabel: .votes,
         typeView: .ayeType,
@@ -148,6 +163,11 @@ extension YourVoteView.Style {
     static let nayInverse = YourVoteView.Style(
         voteLabel: .votes,
         typeView: .nayType,
+        mode: .titleType
+    )
+    static let abstainInverse = YourVoteView.Style(
+        voteLabel: .votes,
+        typeView: .abstainType,
         mode: .titleType
     )
 }
@@ -159,6 +179,10 @@ extension UILabel.Style {
     )
     static let nayType = UILabel.Style(
         textColor: R.color.colorTextNegative(),
+        font: .semiBoldCaps1
+    )
+    static let abstainType = UILabel.Style(
+        textColor: R.color.colorChipText(),
         font: .semiBoldCaps1
     )
     static let votes = UILabel.Style(

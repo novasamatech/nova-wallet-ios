@@ -19,7 +19,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
     private var blockNumberSubscriptionId: UUID?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var crowdloansRequest: CompoundOperationWrapper<[Crowdloan]>?
     private var onchainContributionsOperation: Operation?
     private var latestCrowdloanIndexes: [UInt32]?
@@ -27,7 +27,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var leaseInfoParams: [LeaseParam]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     deinit {
         if let subscriptionId = blockNumberSubscriptionId, let chain = crowdloanState.settings.value {
@@ -227,7 +227,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func subscribeToDisplayInfo(for chain: ChainModel) {
         displayInfoProvider = nil
 
-        guard let crowdloanUrl = chain.externalApi?.crowdloans?.url else {
+        guard let crowdloanUrl = chain.externalApis?.crowdloans()?.first?.url else {
             presenter?.didReceiveDisplayInfo(result: .success([:]))
             return
         }
@@ -255,8 +255,16 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         )
     }
 
-    private func subscribeToAccountInfo(for accountId: AccountId, chain: ChainModel) {
-        accountInfoProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chain.chainId)
+    private func subscribeToAccountBalance(for accountId: AccountId, chain: ChainModel) {
+        guard let chainAssetId = chain.utilityChainAssetId() else {
+            return
+        }
+
+        balanceProvider = subscribeToAssetBalanceProvider(
+            for: accountId,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId
+        )
     }
 
     private func subscribeToExternalContributions(for accountId: AccountId, chain: ChainModel) {
@@ -315,10 +323,10 @@ extension CrowdloanListInteractor {
         presenter?.didReceiveSelectedChain(result: .success(chain))
 
         if let accountId = accountId {
-            subscribeToAccountInfo(for: accountId, chain: chain)
+            subscribeToAccountBalance(for: accountId, chain: chain)
             subscribeToExternalContributions(for: accountId, chain: chain)
         } else {
-            presenter?.didReceiveAccountInfo(result: .success(nil))
+            presenter?.didReceiveAccountBalance(result: .success(nil))
             presenter?.didReceiveExternalContributions(result: .success([]))
         }
 
@@ -345,7 +353,7 @@ extension CrowdloanListInteractor {
         }
 
         clear(singleValueProvider: &displayInfoProvider)
-        clear(dataProvider: &accountInfoProvider)
+        clear(streamableProvider: &balanceProvider)
         clear(singleValueProvider: &externalContributionsProvider)
 
         cancelCrowdloansOnchainRequests()

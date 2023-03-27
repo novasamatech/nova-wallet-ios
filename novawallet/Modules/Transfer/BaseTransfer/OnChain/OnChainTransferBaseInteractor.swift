@@ -20,8 +20,8 @@ class OnChainTransferBaseInteractor {
 
     private var sendingAssetProvider: StreamableProvider<AssetBalance>?
     private var utilityAssetProvider: StreamableProvider<AssetBalance>?
-    private var sendingAssetPriceProvider: AnySingleValueProvider<PriceData>?
-    private var utilityAssetPriceProvider: AnySingleValueProvider<PriceData>?
+    private var sendingAssetPriceProvider: StreamableProvider<PriceData>?
+    private var utilityAssetPriceProvider: StreamableProvider<PriceData>?
 
     var isUtilityTransfer: Bool { chain.utilityAssets().first?.assetId == asset.assetId }
 
@@ -61,12 +61,7 @@ class OnChainTransferBaseInteractor {
 
     func setupSendingAssetPriceProviderIfNeeded() {
         if let priceId = asset.priceId {
-            let options = DataProviderObserverOptions(
-                alwaysNotifyOnRefresh: false,
-                waitsInProgressSyncOnAdd: false
-            )
-
-            sendingAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
+            sendingAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceiveSendingAssetPrice(nil)
         }
@@ -78,12 +73,7 @@ class OnChainTransferBaseInteractor {
         }
 
         if let priceId = utilityAsset.priceId {
-            let options = DataProviderObserverOptions(
-                alwaysNotifyOnRefresh: false,
-                waitsInProgressSyncOnAdd: false
-            )
-
-            utilityAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
+            utilityAssetPriceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
         } else {
             presenter?.didReceiveUtilityAssetPrice(nil)
         }

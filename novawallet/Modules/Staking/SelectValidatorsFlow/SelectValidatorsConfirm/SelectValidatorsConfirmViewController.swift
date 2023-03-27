@@ -108,7 +108,7 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
         if isEnabled {
             rootView.actionButton.applyEnabledStyle()
         } else {
-            rootView.actionButton.applyTranslucentDisabledStyle()
+            rootView.actionButton.applyDisabledStyle()
         }
     }
 

@@ -24,7 +24,9 @@ extension StakingMainPresenterFactory {
         // MARK: - Presenter
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
+        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory(
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
         let stateViewModelFactory = ParaStkStateViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let presenter = StakingParachainPresenter(
@@ -59,14 +61,16 @@ extension StakingMainPresenterFactory {
         let stakingAccountService = ParachainStaking.AccountSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 
         let stakingAssetService = ParachainStaking.StakingRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 
@@ -114,7 +118,7 @@ extension StakingMainPresenterFactory {
             yieldBoostSupport: ParaStkYieldBoostSupport(),
             yieldBoostProviderFactory: ParaStkYieldBoostProviderFactory.shared,
             eventCenter: eventCenter,
-            applicationHandler: ApplicationHandler(),
+            applicationHandler: applicationHandler,
             currencyManager: currencyManager,
             operationQueue: operationQueue,
             logger: logger

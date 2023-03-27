@@ -12,68 +12,6 @@ struct ChainModel: Equatable, Codable, Hashable {
         let overridesCommon: Bool
     }
 
-    struct ExternalApi: Codable, Hashable {
-        let type: String
-        let url: URL
-    }
-
-    struct TransactionHistoryApi: Codable, Hashable {
-        let serviceType: String
-        let url: URL
-        let assetType: String?
-
-        init(
-            serviceType: String,
-            url: URL,
-            assetType: String?
-        ) {
-            self.serviceType = serviceType
-            self.url = url
-            self.assetType = assetType
-        }
-
-        init(remoteModel: RemoteTransactionHistoryApi) {
-            serviceType = remoteModel.type
-            url = remoteModel.url
-            assetType = remoteModel.assetType
-        }
-    }
-
-    struct ExternalApiSet: Codable, Hashable {
-        let staking: ExternalApi?
-        let history: Set<TransactionHistoryApi>?
-        let crowdloans: ExternalApi?
-        let governance: ExternalApi?
-
-        init(
-            staking: ExternalApi?,
-            history: Set<TransactionHistoryApi>?,
-            crowdloans: ExternalApi?,
-            governance: ExternalApi?
-        ) {
-            self.staking = staking
-            self.history = history
-            self.crowdloans = crowdloans
-            self.governance = governance
-        }
-
-        init(remoteModel: RemoteChainExternalApiSet) {
-            staking = remoteModel.staking
-            crowdloans = remoteModel.crowdloans
-            governance = remoteModel.governance
-
-            let optHistoryApis = remoteModel.history?.map {
-                TransactionHistoryApi(remoteModel: $0)
-            }
-
-            if let historyApis = optHistoryApis {
-                history = Set(historyApis)
-            } else {
-                history = nil
-            }
-        }
-    }
-
     struct Explorer: Codable, Hashable {
         let name: String
         let account: String?
@@ -96,7 +34,7 @@ struct ChainModel: Equatable, Codable, Hashable {
     let types: TypesSettings?
     let icon: URL
     let options: [ChainOptions]?
-    let externalApi: ExternalApiSet?
+    let externalApis: LocalChainExternalApiSet?
     let explorers: [Explorer]?
     let order: Int64
     let additional: JSON?
@@ -111,7 +49,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         types: TypesSettings?,
         icon: URL,
         options: [ChainOptions]?,
-        externalApi: ExternalApiSet?,
+        externalApis: LocalChainExternalApiSet?,
         explorers: [Explorer]?,
         order: Int64,
         additional: JSON?
@@ -125,7 +63,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.types = types
         self.icon = icon
         self.options = options
-        self.externalApi = externalApi
+        self.externalApis = externalApis
         self.explorers = explorers
         self.order = order
         self.additional = additional
@@ -147,7 +85,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         types = remoteModel.types
         icon = remoteModel.icon
         options = remoteModel.options?.compactMap { ChainOptions(rawValue: $0) }
-        externalApi = remoteModel.externalApi.map { ExternalApiSet(remoteModel: $0) }
+        externalApis = remoteModel.externalApi.map { LocalChainExternalApiSet(remoteApi: $0) }
         explorers = remoteModel.explorers
         additional = remoteModel.additional
 
@@ -184,6 +122,14 @@ struct ChainModel: Equatable, Codable, Hashable {
 
     var hasGovernanceV2: Bool {
         options?.contains(where: { $0 == .governance }) ?? false
+    }
+
+    var noSubstrateRuntime: Bool {
+        options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
+    }
+
+    var hasSubstrateRuntime: Bool {
+        !noSubstrateRuntime
     }
 
     var isRelaychain: Bool { parentId == nil }
@@ -235,6 +181,7 @@ enum ChainOptions: String, Codable {
     case crowdloans
     case governance
     case governanceV1 = "governance-v1"
+    case noSubstrateRuntime
 }
 
 extension ChainModel {
@@ -249,7 +196,7 @@ extension ChainModel {
             types: types,
             icon: icon,
             options: options,
-            externalApi: externalApi,
+            externalApis: externalApis,
             explorers: explorers,
             order: order,
             additional: additional
@@ -270,7 +217,7 @@ extension ChainModel {
             types: types,
             icon: icon,
             options: options,
-            externalApi: externalApi,
+            externalApis: externalApis,
             explorers: explorers,
             order: order,
             additional: additional

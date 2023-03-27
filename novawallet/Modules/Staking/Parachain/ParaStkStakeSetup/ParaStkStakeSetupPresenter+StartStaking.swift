@@ -4,7 +4,8 @@ import BigInt
 extension ParaStkStakeSetupPresenter {
     private func createStartStakingValidationRunner(
         for inputAmount: Decimal?,
-        precision: Int16
+        allowedAmountToStake: BigUInt?,
+        assetDisplayInfo: AssetBalanceDisplayInfo
     ) -> DataValidationRunner {
         let minStake: BigUInt?
 
@@ -14,6 +15,8 @@ extension ParaStkStakeSetupPresenter {
             minStake = minTechStake
         }
 
+        let precision = assetDisplayInfo.assetPrecision
+
         return DataValidationRunner(validators: [
             dataValidatingFactory.hasInPlank(
                 fee: fee,
@@ -21,8 +24,14 @@ extension ParaStkStakeSetupPresenter {
                 precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
+            dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
+                fee: fee,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canPayFeeAndAmountInPlank(
+                balance: allowedAmountToStake,
                 fee: fee,
                 spendingAmount: inputAmount,
                 precision: precision,
@@ -54,11 +63,14 @@ extension ParaStkStakeSetupPresenter {
         ])
     }
 
-    func startStaking() {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
+    func startStaking(for allowedAmountToStake: BigUInt?) {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
 
-        let validator = createStartStakingValidationRunner(for: inputAmount, precision: precision)
+        let validator = createStartStakingValidationRunner(
+            for: inputAmount,
+            allowedAmountToStake: allowedAmountToStake,
+            assetDisplayInfo: chainAsset.assetDisplayInfo
+        )
 
         validator.runValidation { [weak self] in
             guard let collator = self?.collatorDisplayAddress, let amount = inputAmount else {

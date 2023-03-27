@@ -13,10 +13,8 @@ protocol ValidatorSearchDelegate: AnyObject {
     func validatorSearchDidUpdate(selectedValidatorList: [SelectedValidatorInfo])
 }
 
-protocol ValidatorSearchViewProtocol: ControllerBackedProtocol, Localizable {
+protocol ValidatorSearchViewProtocol: TableSearchViewProtocol, Localizable {
     func didReload(_ viewModel: ValidatorSearchViewModel)
-    func didStartSearch()
-    func didStopSearch()
     func didReset()
 }
 
@@ -28,10 +26,8 @@ protocol ValidatorSearchInteractorOutputProtocol: AnyObject {
     func didReceiveValidatorInfo(result: Result<SelectedValidatorInfo?, Error>)
 }
 
-protocol ValidatorSearchPresenterProtocol: Localizable {
-    func setup()
+protocol ValidatorSearchPresenterProtocol: TableSearchPresenterProtocol, Localizable {
     func changeValidatorSelection(at index: Int)
-    func search(for textEntry: String)
     func didSelectValidator(at index: Int)
     func applyChanges()
 }

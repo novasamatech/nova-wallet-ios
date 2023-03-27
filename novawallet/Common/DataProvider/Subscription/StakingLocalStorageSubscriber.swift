@@ -15,6 +15,9 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
     func subscribeMaxNominatorsCount(for chainId: ChainModel.Id)
         -> AnyDataProvider<DecodedU32>?
 
+    func subscribeBagsListSize(for chainId: ChainModel.Id)
+        -> AnyDataProvider<DecodedU32>?
+
     func subscribeNomination(for accountId: AccountId, chainId: ChainModel.Id)
         -> AnyDataProvider<DecodedNomination>?
 
@@ -24,15 +27,25 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
     func subscribeLedgerInfo(for accountId: AccountId, chainId: ChainModel.Id)
         -> AnyDataProvider<DecodedLedgerInfo>?
 
+    func subscribeBagListNode(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedBagListNode>?
+
     func subscribeActiveEra(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedActiveEra>?
 
     func subscribeCurrentEra(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedEraIndex>?
 
     func subscribePayee(for accountId: AccountId, chainId: ChainModel.Id) -> AnyDataProvider<DecodedPayee>?
 
+    func subscribeTotalIssuance(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedBigUInt>?
+
     func subscribeTotalReward(
         for address: AccountAddress,
-        api: ChainModel.ExternalApi,
+        api: LocalChainExternalApi,
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>?
 
@@ -164,6 +177,42 @@ extension StakingLocalStorageSubscriber {
         return maxNominatorsCountProvider
     }
 
+    func subscribeBagsListSize(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
+        guard let bagListSizeProvider = try? stakingLocalSubscriptionFactory
+            .getBagListSizeProvider(
+                for: chainId,
+                missingEntryStrategy: .defaultValue(StringScaleMapper(value: UInt32.max))
+            ) else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<DecodedU32>]) in
+            let bagListSize = changes.reduceToLastChange()
+            self?.stakingLocalSubscriptionHandler.handleBagListSize(
+                result: .success(bagListSize?.item?.value),
+                chainId: chainId
+            )
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.stakingLocalSubscriptionHandler.handleBagListSize(
+                result: .failure(error),
+                chainId: chainId
+            )
+            return
+        }
+
+        bagListSizeProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+        )
+
+        return bagListSizeProvider
+    }
+
     func subscribeNomination(
         for accountId: AccountId,
         chainId: ChainModel.Id
@@ -265,38 +314,132 @@ extension StakingLocalStorageSubscriber {
             return nil
         }
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<DecodedLedgerInfo>]) in
-            let ledgerInfo = changes.reduceToLastChange()
-            self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
-                result: .success(ledgerInfo?.item),
-                accountId: accountId,
-                chainId: chainId
-            )
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
-                result: .failure(error),
-                accountId: accountId,
-                chainId: chainId
-            )
-            return
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        ledgerProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
+        addDataProviderObserver(
+            for: ledgerProvider,
+            updateClosure: { [weak self] value in
+                self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
+                    result: .success(value),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleLedgerInfo(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            }
         )
 
         return ledgerProvider
+    }
+
+    func subscribeBagListNode(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> AnyDataProvider<DecodedBagListNode>? {
+        guard
+            let nodeProvider = try? stakingLocalSubscriptionFactory.getBagListNodeProvider(
+                for: accountId,
+                chainId: chainId
+            ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: nodeProvider,
+            updateClosure: { [weak self] value in
+                self?.stakingLocalSubscriptionHandler.handleBagListNode(
+                    result: .success(value),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleBagListNode(
+                    result: .failure(error),
+                    accountId: accountId,
+                    chainId: chainId
+                )
+            }
+        )
+
+        return nodeProvider
+    }
+
+    func subscribeTotalIssuance(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedBigUInt>? {
+        subscribeTotalIssuance(for: chainId, callbackQueue: .main)
+    }
+
+    func subscribeTotalIssuance(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedBigUInt>? {
+        guard
+            let provider = try? stakingLocalSubscriptionFactory.getTotalIssuanceProvider(
+                for: chainId
+            ) else {
+            return nil
+        }
+
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: { [weak self] valueWrapper in
+                self?.stakingLocalSubscriptionHandler.handleTotalIssuance(
+                    result: .success(valueWrapper?.value),
+                    chainId: chainId
+                )
+            },
+            failureClosure: { [weak self] error in
+                self?.stakingLocalSubscriptionHandler.handleTotalIssuance(
+                    result: .failure(error),
+                    chainId: chainId
+                )
+            },
+            callbackQueue: callbackQueue
+        )
+
+        return provider
+    }
+
+    private func addDataProviderObserver<T: Decodable>(
+        for provider: AnyDataProvider<ChainStorageDecodedItem<T>>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        options _: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+    ) {
+        addDataProviderObserver(
+            for: provider,
+            updateClosure: updateClosure,
+            failureClosure: failureClosure,
+            callbackQueue: .main
+        )
+    }
+
+    private func addDataProviderObserver<T: Decodable>(
+        for provider: AnyDataProvider<ChainStorageDecodedItem<T>>,
+        updateClosure: @escaping (T?) -> Void,
+        failureClosure: @escaping (Error) -> Void,
+        callbackQueue: DispatchQueue,
+        options: DataProviderObserverOptions = .init(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
+    ) {
+        let update = { (changes: [DataProviderChange<ChainStorageDecodedItem<T>>]) in
+            let value = changes.reduceToLastChange()
+            updateClosure(value?.item)
+        }
+
+        let failure = { error in
+            failureClosure(error)
+        }
+
+        provider.addObserver(
+            self,
+            deliverOn: callbackQueue,
+            executing: update,
+            failing: failure,
+            options: options
+        )
     }
 
     func subscribeActiveEra(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedActiveEra>? {
@@ -424,7 +567,7 @@ extension StakingLocalStorageSubscriber {
 
     func subscribeTotalReward(
         for address: AccountAddress,
-        api: ChainModel.ExternalApi,
+        api: LocalChainExternalApi,
         assetPrecision: Int16
     ) -> AnySingleValueProvider<TotalRewardItem>? {
         guard let totalRewardProvider = try? stakingLocalSubscriptionFactory.getTotalReward(

@@ -4,7 +4,7 @@ import SubstrateSdk
 
 protocol RuntimeSyncServiceProtocol {
     func register(chain: ChainModel, with connection: ChainConnection)
-    func unregister(chainId: ChainModel.Id)
+    func unregisterIfExists(chainId: ChainModel.Id)
     func apply(version: RuntimeVersion, for chainId: ChainModel.Id)
 
     func hasChain(with chainId: ChainModel.Id) -> Bool
@@ -43,6 +43,7 @@ final class RuntimeSyncService {
     let operationQueue: OperationQueue
     let dataHasher: StorageHasher
     let logger: LoggerProtocol?
+    let rpcTimeout: Int
 
     private(set) var knownChains: [ChainModel.Id: SyncInfo] = [:]
     private(set) var syncingChains: [ChainModel.Id: CompoundOperationWrapper<SyncResult>] = [:]
@@ -58,6 +59,7 @@ final class RuntimeSyncService {
         operationQueue: OperationQueue,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
         dataHasher: StorageHasher = .twox256,
+        rpcTimeout: Int = Int.max,
         logger: LoggerProtocol? = nil
     ) {
         self.repository = repository
@@ -66,6 +68,7 @@ final class RuntimeSyncService {
         self.retryStrategy = retryStrategy
         self.eventCenter = eventCenter
         self.dataHasher = dataHasher
+        self.rpcTimeout = rpcTimeout
         self.logger = logger
         self.operationQueue = operationQueue
     }
@@ -263,7 +266,8 @@ final class RuntimeSyncService {
 
         let remoteMetadaOperation = JSONRPCOperation<[String], String>(
             engine: connection,
-            method: RPCMethod.getRuntimeMetadata
+            method: RPCMethod.getRuntimeMetadata,
+            timeout: rpcTimeout
         )
 
         remoteMetadaOperation.configurationBlock = {
@@ -361,7 +365,7 @@ extension RuntimeSyncService: RuntimeSyncServiceProtocol {
         }
     }
 
-    func unregister(chainId: ChainModel.Id) {
+    func unregisterIfExists(chainId: ChainModel.Id) {
         mutex.lock()
 
         defer {

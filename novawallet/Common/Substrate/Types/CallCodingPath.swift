@@ -1,13 +1,13 @@
 import Foundation
 
-struct CallCodingPath: Equatable, Codable {
+struct CallCodingPath: Hashable, Codable {
     let moduleName: String
     let callName: String
 }
 
 extension CallCodingPath {
     var isSubstrateOrEvmTransfer: Bool {
-        isTransfer || isERC20Transfer
+        isTransfer || isERC20Transfer || isEvmNativeTransfer
     }
 
     var isTransfer: Bool {

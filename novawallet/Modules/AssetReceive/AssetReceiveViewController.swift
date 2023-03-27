@@ -36,11 +36,13 @@ final class AssetReceiveViewController: UIViewController, ViewHolder {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        guard cachedBounds != view.bounds else {
+        guard cachedBounds != view.bounds,
+              let qrCodeSize = AssetReceiveViewLayout.Constants.calculateQRsize(view.bounds) else {
             return
         }
+
         cachedBounds = view.bounds
-        presenter.set(qrCodeSize: AssetReceiveViewLayout.Constants.calculateQRsize(view.bounds))
+        presenter.set(qrCodeSize: qrCodeSize)
     }
 
     private func setupLocalization() {

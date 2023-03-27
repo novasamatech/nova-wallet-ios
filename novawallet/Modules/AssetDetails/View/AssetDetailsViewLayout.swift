@@ -125,10 +125,16 @@ final class AssetDetailsViewLayout: UIView {
         addSubview(assetView)
         assetView.snp.makeConstraints {
             $0.leading.greaterThanOrEqualToSuperview()
-            $0.trailing.lessThanOrEqualToSuperview()
             $0.centerX.equalToSuperview()
             $0.height.equalTo(Constants.assetHeight)
             $0.bottom.equalTo(priceStack.snp.top).offset(-7)
+        }
+
+        addSubview(chainView)
+        chainView.snp.makeConstraints {
+            $0.trailing.equalToSuperview().offset(-16)
+            $0.leading.greaterThanOrEqualTo(assetView.snp.trailing).offset(8)
+            $0.centerY.equalTo(assetView.snp.centerY)
         }
 
         addSubview(containerView)

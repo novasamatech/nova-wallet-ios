@@ -17,8 +17,8 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     let signer: SigningWrapperProtocol
     let operationManager: OperationManagerProtocol
 
-    private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
@@ -59,7 +59,11 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
         }
 
         if let accountId = try? balanceAccountAddress.toAccountId() {
-            balanceProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chainAsset.chain.chainId)
+            balanceProvider = subscribeToAssetBalanceProvider(
+                for: accountId,
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId
+            )
         }
 
         minBondProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
@@ -97,8 +101,13 @@ extension SelectValidatorsConfirmInteractorBase: StakingLocalStorageSubscriber, 
 }
 
 extension SelectValidatorsConfirmInteractorBase: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
-        presenter.didReceiveAccountInfo(result: result)
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 

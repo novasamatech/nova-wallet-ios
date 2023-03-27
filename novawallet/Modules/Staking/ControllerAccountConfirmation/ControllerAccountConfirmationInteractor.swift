@@ -23,8 +23,8 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
 
     private lazy var callFactory = SubstrateCallFactory()
     private var stashItemProvider: StreamableProvider<StashItem>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var priceProvider: StreamableProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinsicService: ExtrinsicServiceProtocol?
 
@@ -172,7 +172,7 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
     AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            clear(dataProvider: &accountInfoProvider)
+            clear(streamableProvider: &balanceProvider)
 
             let maybeStashItem = try result.get()
             let maybeStashId = try maybeStashItem?.stash.toAccountId()
@@ -180,9 +180,10 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
             presenter.didReceiveStashItem(result: .success(maybeStashItem))
 
             if let stashId = maybeStashId {
-                accountInfoProvider = subscribeToAccountInfoProvider(
+                balanceProvider = subscribeToAssetBalanceProvider(
                     for: stashId,
-                    chainId: chainAsset.chain.chainId
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
                 )
 
                 let chain = chainAsset.chain
@@ -224,12 +225,13 @@ extension ControllerAccountConfirmationInteractor: PriceLocalStorageSubscriber,
 
 extension ControllerAccountConfirmationInteractor: WalletLocalStorageSubscriber,
     WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 

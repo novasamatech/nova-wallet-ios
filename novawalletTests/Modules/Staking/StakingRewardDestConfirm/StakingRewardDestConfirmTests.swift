@@ -119,7 +119,12 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+14))
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: 0.1,
+                currencyId: Currency.usd.id
+            )
         )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
@@ -190,6 +195,17 @@ class StakingRewardDestConfirmTests: XCTestCase {
         // then
 
         wait(for: [feeExpectation, rewardDestinationExpectation], timeout: 10)
+
+        // no way to wait balance receive in presenter
+        presenter.didReceiveAccountBalance(
+            result: .success(
+                walletLocalSubscriptionFactory.getDummyBalance(
+                    for: selectedAccount.accountId,
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
+                )
+            )
+        )
 
         return presenter
     }

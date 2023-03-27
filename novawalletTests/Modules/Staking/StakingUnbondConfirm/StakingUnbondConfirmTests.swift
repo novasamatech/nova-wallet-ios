@@ -112,7 +112,12 @@ class StakingUnbondConfirmTests: XCTestCase {
         )
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: nil, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: nil,
+                currencyId: Currency.usd.id
+            )
         )
 
         let stakingDurationOperationFactory = BabeStakingDurationFactory()
@@ -201,6 +206,17 @@ class StakingUnbondConfirmTests: XCTestCase {
             bondingDurationExpectation,
             resetsRewardsDestinationExpectation
         ], timeout: 10)
+
+        // no way to wait balance receive in presenter
+        presenter.didReceiveAccountBalance(
+            result: .success(
+                walletLocalSubscriptionFactory.getDummyBalance(
+                    for: selectedAccount.accountId,
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
+                )
+            )
+        )
 
         return presenter
     }

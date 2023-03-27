@@ -22,7 +22,7 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
-    func performAnalyticsAction()
+    func performRebag()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
 }
@@ -34,7 +34,7 @@ protocol StakingMainInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingMainInteractorOutputProtocol: AnyObject {
-    func didReceiveAccountInfo(_ accountInfo: AccountInfo?)
+    func didReceiveAccountBalance(_ assetBalance: AssetBalance?)
     func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)
     func didReceiveStakingSettings(_ stakingSettings: StakingAssetSettings)
     func didReceiveExpansion(_ isExpanded: Bool)
@@ -65,6 +65,6 @@ protocol StakingMainChildPresenterProtocol: AnyObject {
     func performStakeMoreAction()
     func performRedeemAction()
     func performRebondAction()
-    func performAnalyticsAction()
+    func performRebag()
     func performManageAction(_ action: StakingManageOption)
 }
