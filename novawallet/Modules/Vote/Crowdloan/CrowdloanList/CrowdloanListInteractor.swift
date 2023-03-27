@@ -27,7 +27,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var leaseInfoParams: [LeaseParam]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     deinit {
         if let subscriptionId = blockNumberSubscriptionId, let chain = crowdloanState.settings.value {
@@ -227,7 +227,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func subscribeToDisplayInfo(for chain: ChainModel) {
         displayInfoProvider = nil
 
-        guard let crowdloanUrl = chain.externalApi?.crowdloans?.url else {
+        guard let crowdloanUrl = chain.externalApis?.crowdloans()?.first?.url else {
             presenter?.didReceiveDisplayInfo(result: .success([:]))
             return
         }

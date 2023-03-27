@@ -7,7 +7,7 @@ enum ConvictionVoting {
 
     static var lockId: String = "pyconvot"
 
-    enum Conviction: UInt8, Decodable {
+    enum Conviction: UInt8, Codable, Equatable {
         /// 0.1x votes, unlocked.
         case none
         /// 1x votes, locked for an enactment period following a successful vote.
@@ -111,9 +111,42 @@ enum ConvictionVoting {
                 self = .unknown
             }
         }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+            let type: String
+
+            switch self {
+            case .none:
+                type = "None"
+            case .locked1x:
+                type = "Locked1x"
+            case .locked2x:
+                type = "Locked2x"
+            case .locked3x:
+                type = "Locked3x"
+            case .locked4x:
+                type = "Locked4x"
+            case .locked5x:
+                type = "Locked5x"
+            case .locked6x:
+                type = "Locked6x"
+            case .unknown:
+                throw EncodingError.invalidValue(
+                    self,
+                    EncodingError.Context(
+                        codingPath: container.codingPath,
+                        debugDescription: "Can't encode unknown value"
+                    )
+                )
+            }
+
+            try container.encode(type)
+            try container.encodeNil()
+        }
     }
 
-    struct Vote: Codable {
+    struct Vote: Codable, Equatable {
         static let ayeMask: UInt8 = 1 << 7
         static var voteMask: UInt8 { ~ayeMask }
 
@@ -145,19 +178,26 @@ enum ConvictionVoting {
         }
     }
 
-    struct AccountVoteStandard: Codable {
+    struct AccountVoteStandard: Codable, Equatable {
         let vote: Vote
         @StringCodable var balance: BigUInt
     }
 
-    struct AccountVoteSplit: Codable {
+    struct AccountVoteSplit: Codable, Equatable {
         @StringCodable var aye: BigUInt
         @StringCodable var nay: BigUInt
+    }
+
+    struct AccountVoteSplitAbstain: Codable, Equatable {
+        @StringCodable var aye: BigUInt
+        @StringCodable var nay: BigUInt
+        @StringCodable var abstain: BigUInt
     }
 
     enum AccountVote: Codable {
         static let standardField = "Standard"
         static let splitField = "Split"
+        static let splitAbstainField = "SplitAbstain"
 
         case unknown
 
@@ -170,6 +210,13 @@ enum ConvictionVoting {
          */
         case split(_ vote: AccountVoteSplit)
 
+        /**
+         *  A split vote with balances given for both ways as well as abstentions, and with no
+         *  conviction, useful for parachains when voting, other off-chain aggregate accounts and
+         *  individuals who wish to abstain.
+         */
+        case splitAbstain(_ vote: AccountVoteSplitAbstain)
+
         public init(from decoder: Decoder) throws {
             var container = try decoder.unkeyedContainer()
             let type = try container.decode(String.self)
@@ -181,6 +228,9 @@ enum ConvictionVoting {
             case Self.splitField:
                 let vote = try container.decode(AccountVoteSplit.self)
                 self = .split(vote)
+            case Self.splitAbstainField:
+                let vote = try container.decode(AccountVoteSplitAbstain.self)
+                self = .splitAbstain(vote)
             default:
                 self = .unknown
             }
@@ -195,6 +245,9 @@ enum ConvictionVoting {
                 try container.encode(model)
             case let .split(model):
                 try container.encode(Self.splitField)
+                try container.encode(model)
+            case let .splitAbstain(model):
+                try container.encode(Self.splitAbstainField)
                 try container.encode(model)
             case .unknown:
                 throw EncodingError.invalidValue(

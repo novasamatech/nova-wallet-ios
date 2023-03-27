@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import BigInt
+import SubstrateSdk
 
 protocol AssetStorageInfoOperationFactoryProtocol {
     func createStorageInfoWrapper(
@@ -10,13 +11,22 @@ protocol AssetStorageInfoOperationFactoryProtocol {
 
     func createAssetBalanceExistenceOperation(
         for assetStorageInfo: AssetStorageInfo,
-        chainId: ChainModel.Id,
-        storage: AnyDataProviderRepository<ChainStorageItem>,
-        runtimeService: RuntimeCodingServiceProtocol
+        chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<AssetBalanceExistence>
 }
 
-final class AssetStorageInfoOperationFactory {}
+final class AssetStorageInfoOperationFactory {
+    let chainRegistry: ChainRegistryProtocol
+    let operationQueue: OperationQueue
+
+    init(
+        chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue
+    ) {
+        self.chainRegistry = chainRegistry
+        self.operationQueue = operationQueue
+    }
+}
 
 extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProtocol {
     func createStorageInfoWrapper(
@@ -41,48 +51,40 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
     private func createAssetsExistenceOperation(
         for extras: StatemineAssetExtras,
-        chainId: ChainModel.Id,
-        storage: AnyDataProviderRepository<ChainStorageItem>,
+        connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
-        do {
-            let assetsDetailsPath = StorageCodingPath.assetsDetails(from: extras.palletName)
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                assetsDetailsPath,
-                encodableElement: extras.assetId,
-                chainId: chainId
+        let assetsDetailsPath = StorageCodingPath.assetsDetails(from: extras.palletName)
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<AssetDetails>]> = requestFactory.queryItems(
+            engine: connection,
+            keyParams: { [StringScaleMapper(value: extras.assetId)] },
+            factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+            storagePath: assetsDetailsPath
+        )
+
+        fetchWrapper.addDependency(operations: [codingFactoryOperation])
+
+        let mappingOperation = ClosureOperation<AssetBalanceExistence> {
+            let details = try fetchWrapper.targetOperation.extractNoCancellableResultData().first?.value
+
+            return AssetBalanceExistence(
+                minBalance: details?.minBalance ?? 0,
+                isSelfSufficient: details?.isSufficient ?? false
             )
-
-            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-            let localRequestFactory = LocalStorageRequestFactory()
-
-            let fetchWrapper: CompoundOperationWrapper<LocalStorageResponse<AssetDetails>> =
-                localRequestFactory.queryItems(
-                    repository: storage,
-                    key: { localKey },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    params: StorageRequestParams(path: assetsDetailsPath, shouldFallback: false)
-                )
-
-            fetchWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<AssetBalanceExistence> {
-                let details = try fetchWrapper.targetOperation.extractNoCancellableResultData().value
-                return AssetBalanceExistence(
-                    minBalance: details?.minBalance ?? 0,
-                    isSelfSufficient: details?.isSufficient ?? false
-                )
-            }
-
-            let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
-
-            dependencies.forEach { mappingOperation.addDependency($0) }
-
-            return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
-        } catch {
-            return CompoundOperationWrapper.createWithError(error)
         }
+
+        let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
+
+        dependencies.forEach { mappingOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 
     private func createNativeAssetExistenceOperation(
@@ -114,24 +116,33 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
     func createAssetBalanceExistenceOperation(
         for assetStorageInfo: AssetStorageInfo,
-        chainId: ChainModel.Id,
-        storage: AnyDataProviderRepository<ChainStorageItem>,
-        runtimeService: RuntimeCodingServiceProtocol
+        chainId: ChainModel.Id
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         switch assetStorageInfo {
         case .native:
+            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+                return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            }
+
             return createNativeAssetExistenceOperation(for: runtimeService)
         case let .statemine(extras):
+            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+                return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            }
+
+            guard let connection = chainRegistry.getConnection(for: chainId) else {
+                return .createWithError(ChainRegistryError.connectionUnavailable)
+            }
+
             return createAssetsExistenceOperation(
                 for: extras,
-                chainId: chainId,
-                storage: storage,
+                connection: connection,
                 runtimeService: runtimeService
             )
         case let .orml(info):
             let assetExistence = AssetBalanceExistence(minBalance: info.existentialDeposit, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
-        case .erc20:
+        case .erc20, .evmNative:
             let assetExistence = AssetBalanceExistence(minBalance: 0, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
         }

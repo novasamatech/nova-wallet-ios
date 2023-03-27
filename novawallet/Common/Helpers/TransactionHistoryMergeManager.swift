@@ -102,11 +102,11 @@ final class TransactionHistoryMergeManager {
         remoteItems: [WalletRemoteHistoryItemProtocol],
         localItems: [TransactionHistoryItem]
     ) -> TransactionHistoryMergeResult {
-        let existingHashes = Set(remoteItems.map(\.localIdentifier))
+        let existingIds = Set(remoteItems.map(\.localIdentifier))
         let minRemoteItem = remoteItems.last
 
         let identifiersToRemove: [String] = localItems.compactMap { item in
-            if existingHashes.contains(item.identifier) {
+            if existingIds.contains(item.identifier) {
                 return item.identifier
             }
 

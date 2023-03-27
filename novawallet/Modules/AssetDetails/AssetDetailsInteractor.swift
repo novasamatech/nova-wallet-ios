@@ -12,7 +12,7 @@ final class AssetDetailsInteractor {
     let assetMapper: CustomAssetMapper
 
     private var assetLocksSubscription: StreamableProvider<AssetLock>?
-    private var priceSubscription: AnySingleValueProvider<PriceData>?
+    private var priceSubscription: StreamableProvider<PriceData>?
     private var assetBalanceSubscription: StreamableProvider<AssetBalance>?
     private var crowdloansSubscription: StreamableProvider<CrowdloanContributionData>?
 

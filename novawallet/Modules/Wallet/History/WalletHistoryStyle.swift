@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 
 extension HistoryViewStyle {
-    static var fearless: HistoryViewStyleProtocol {
+    static var nova: HistoryViewStyleProtocol {
         let borderStyle = WalletStrokeStyle(color: .clear, lineWidth: 0.0)
         let cornerRadius: CGFloat = 12.0
         let titleStyle = WalletTextStyle(

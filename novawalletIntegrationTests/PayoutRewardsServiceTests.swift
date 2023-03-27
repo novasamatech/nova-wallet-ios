@@ -44,7 +44,7 @@ class PayoutRewardsServiceTests: XCTestCase {
 
         guard
             let chainAsset = selectedChain.map({ ChainAsset(chain: $0, asset: $0.assets.first!) }),
-            let rewardUrl = selectedChain?.externalApi?.staking?.url else {
+            let rewardUrl = selectedChain?.externalApis?.staking()?.first?.url else {
             XCTFail("Unexpected empty reward api")
             return
         }
@@ -97,7 +97,7 @@ class PayoutRewardsServiceTests: XCTestCase {
 
     func testPayoutRewardsListForValidator() {
         let selectedAccount = "GqpApQStgzzGxYa1XQZQUq9L3aXhukxDWABccbeHEh7zPYR"
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)

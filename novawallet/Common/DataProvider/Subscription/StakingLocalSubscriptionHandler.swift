@@ -5,7 +5,7 @@ protocol StakingLocalSubscriptionHandler {
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for address: AccountAddress,
-        api: ChainModel.ExternalApi
+        api: LocalChainExternalApi
     )
 
     func handleStashItem(result: Result<StashItem?, Error>, for address: AccountAddress)
@@ -24,6 +24,12 @@ protocol StakingLocalSubscriptionHandler {
         chainId: ChainModel.Id
     )
 
+    func handleBagListNode(
+        result: Result<BagList.Node?, Error>,
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    )
+
     func handlePayee(
         result: Result<RewardDestinationArg?, Error>,
         accountId: AccountId,
@@ -32,9 +38,13 @@ protocol StakingLocalSubscriptionHandler {
 
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId: ChainModel.Id)
 
+    func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId: ChainModel.Id)
+
     func handleCounterForNominators(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
 
     func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
+
+    func handleBagListSize(result: Result<UInt32?, Error>, chainId: ChainModel.Id)
 
     func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId: ChainModel.Id)
 
@@ -45,7 +55,7 @@ extension StakingLocalSubscriptionHandler {
     func handleTotalReward(
         result _: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
-        api _: ChainModel.ExternalApi
+        api _: LocalChainExternalApi
     ) {}
 
     func handleStashItem(result _: Result<StashItem?, Error>, for _: AccountAddress) {}
@@ -68,17 +78,27 @@ extension StakingLocalSubscriptionHandler {
         chainId _: ChainModel.Id
     ) {}
 
+    func handleBagListNode(
+        result _: Result<BagList.Node?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {}
+
     func handlePayee(
         result _: Result<RewardDestinationArg?, Error>,
         accountId _: AccountId,
         chainId _: ChainModel.Id
     ) {}
 
+    func handleTotalIssuance(result _: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {}
+
     func handleMinNominatorBond(result _: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {}
 
     func handleCounterForNominators(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
 
     func handleMaxNominatorsCount(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
+
+    func handleBagListSize(result _: Result<UInt32?, Error>, chainId _: ChainModel.Id) {}
 
     func handleActiveEra(result _: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {}
 

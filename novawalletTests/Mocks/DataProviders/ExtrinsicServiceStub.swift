@@ -19,6 +19,32 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         }
     }
 
+    func estimateFee(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        runningIn queue: DispatchQueue,
+        indexes: IndexSet,
+        completion completionClosure: @escaping EstimateFeeIndexedClosure
+    ) {
+        let results = indexes.map { index in
+            FeeIndexedExtrinsicResult.IndexedResult(index: index, result: dispatchInfo)
+        }
+
+        let feeResult = FeeIndexedExtrinsicResult(builderClosure: closure, results: results)
+
+        completionClosure(feeResult)
+    }
+
+    func estimateFeeWithSplitter(
+        _ splitter: ExtrinsicSplitting,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping EstimateFeeIndexedClosure
+    ) {
+        let result = FeeIndexedExtrinsicResult.IndexedResult(index: 0, result: dispatchInfo)
+        let feeResult = FeeIndexedExtrinsicResult(builderClosure: nil, results: [result])
+
+        completionClosure(feeResult)
+    }
+
     func submit(_ closure: @escaping ExtrinsicBuilderClosure,
                 signer: SigningWrapperProtocol,
                 runningIn queue: DispatchQueue,
@@ -39,23 +65,29 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         }
     }
 
-    func estimateFee(
-        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
-        runningIn queue: DispatchQueue,
-        numberOfExtrinsics: Int,
-        completion completionClosure: @escaping EstimateFeeIndexedClosure
-    ) {
-        completionClosure([self.dispatchInfo])
-    }
-
     func submit(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        numberOfExtrinsics: Int,
+        indexes: IndexSet,
         completion completionClosure: @escaping ExtrinsicSubmitIndexedClosure
     ) {
-        completionClosure([self.txHash])
+        let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: txHash)
+        let submissionResult = SubmitIndexedExtrinsicResult(builderClosure: nil, results: [result])
+
+        completionClosure(submissionResult)
+    }
+
+    func submitWithTxSplitter(
+        _ splitter: novawallet.ExtrinsicSplitting,
+        signer: novawallet.SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping novawallet.ExtrinsicSubmitIndexedClosure
+    ) {
+        let result = SubmitIndexedExtrinsicResult.IndexedResult(index: 0, result: txHash)
+        let submissionResult = SubmitIndexedExtrinsicResult(builderClosure: nil, results: [result])
+
+        completionClosure(submissionResult)
     }
 
     func submitAndWatch(

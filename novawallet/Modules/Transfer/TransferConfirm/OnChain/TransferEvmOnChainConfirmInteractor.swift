@@ -43,10 +43,11 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     }
 
     private func persistExtrinsicAndComplete(
-        details: PersistTransferDetails
+        details: PersistTransferDetails,
+        type: TransferType
     ) {
         persistExtrinsicService.saveTransfer(
-            source: .evm,
+            source: type.transactionSource,
             chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             details: details,
             runningIn: .main
@@ -69,7 +70,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
 extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorInputProtocol {
     func submit(amount: OnChainTransferAmount<BigUInt>, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
-            guard let contractAddress = contractAddress else {
+            guard let transferType = transferType else {
                 return
             }
 
@@ -84,7 +85,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                     to: builder,
                     amount: amount,
                     recepient: recepient,
-                    contract: contractAddress
+                    type: transferType
                 )
 
                 callCodingPath = codingPath
@@ -113,7 +114,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                             fee: lastFee
                         )
 
-                        self?.persistExtrinsicAndComplete(details: details)
+                        self?.persistExtrinsicAndComplete(details: details, type: transferType)
                     } else {
                         self?.presenter?.didCompleteSetup()
                     }

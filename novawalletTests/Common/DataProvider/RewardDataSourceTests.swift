@@ -18,7 +18,7 @@ class RewardDataSourceTests: NetworkBaseTests {
             )
 
             guard
-                let url = chain.externalApi?.staking?.url,
+                let url = chain.externalApis?.staking()?.first?.url,
                 let assetPrecision = chain.assets.first?.displayInfo.assetPrecision else {
                 XCTFail("Unexpected chain")
                 return
@@ -63,7 +63,7 @@ class RewardDataSourceTests: NetworkBaseTests {
             )
 
             guard
-                let url = chain.externalApi?.staking?.url,
+                let url = chain.externalApis?.staking()?.first?.url,
                 let assetPrecision = chain.assets.first?.displayInfo.assetPrecision else {
                 XCTFail("Unexpected chain")
                 return

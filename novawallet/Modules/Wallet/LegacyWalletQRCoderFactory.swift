@@ -3,16 +3,12 @@ import IrohaCrypto
 import SubstrateSdk
 
 final class WalletQREncoder: NovaWalletQREncoderProtocol {
-    let username: String?
     let chainFormat: ChainFormat
     let publicKey: Data
 
-    private lazy var substrateEncoder = SubstrateQREncoder()
-
-    init(chainFormat: ChainFormat, publicKey: Data, username: String?) {
+    init(chainFormat: ChainFormat, publicKey: Data) {
         self.chainFormat = chainFormat
         self.publicKey = publicKey
-        self.username = username
     }
 
     func encode(receiverInfo: AssetReceiveInfo) throws -> Data {
@@ -20,12 +16,9 @@ final class WalletQREncoder: NovaWalletQREncoderProtocol {
 
         let address = try accountId.toAddress(using: chainFormat)
 
-        let info = SubstrateQRInfo(
-            address: address,
-            rawPublicKey: publicKey,
-            username: username
-        )
-        return try substrateEncoder.encode(info: info)
+        let addressEncoder = AddressQREncoder(addressFormat: chainFormat.QRAddressFormat)
+
+        return try addressEncoder.encode(address: address)
     }
 }
 
@@ -66,29 +59,16 @@ protocol NovaWalletQRDecoderProtocol {
 }
 
 final class WalletQRCoderFactory: NovaWalletQRCoderFactoryProtocol {
-    let addressPrefix: ChainType
     let chainFormat: ChainFormat
     let publicKey: Data
-    let username: String?
 
-    init(
-        addressPrefix: ChainType,
-        chainFormat: ChainFormat,
-        publicKey: Data,
-        username: String?
-    ) {
-        self.addressPrefix = addressPrefix
+    init(chainFormat: ChainFormat, publicKey: Data) {
         self.chainFormat = chainFormat
         self.publicKey = publicKey
-        self.username = username
     }
 
     func createEncoder() -> NovaWalletQREncoderProtocol {
-        WalletQREncoder(
-            chainFormat: chainFormat,
-            publicKey: publicKey,
-            username: username
-        )
+        WalletQREncoder(chainFormat: chainFormat, publicKey: publicKey)
     }
 
     func createDecoder() -> NovaWalletQRDecoderProtocol {

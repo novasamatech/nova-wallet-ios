@@ -31,7 +31,7 @@ final class GovMetadataLocalSubscriptionFactory {
         url: URL,
         chainId: ChainModel.Id,
         governanceType: GovernanceType
-    ) -> PolkassemblyOperationFactoryProtocol {
+    ) -> GovMetadataOperationFactoryProtocol {
         switch governanceType {
         case .governanceV1:
             return GovernanceV1PolkassemblyOperationFactory(
@@ -46,15 +46,36 @@ final class GovMetadataLocalSubscriptionFactory {
         }
     }
 
+    private func createSubsquareApiFactory(
+        url: URL,
+        chainId: ChainModel.Id,
+        governanceType: GovernanceType
+    ) -> GovMetadataOperationFactoryProtocol {
+        switch governanceType {
+        case .governanceV1:
+            return GovV1SubsquareOperationFactory(
+                baseUrl: url,
+                chainId: chainId
+            )
+        case .governanceV2:
+            return GovV2SubsquareOperationFactory(
+                baseUrl: url,
+                chainId: chainId
+            )
+        }
+    }
+
     private func createOperationFactory(
         for apiType: GovernanceOffchainApi,
         url: URL,
         chainId: ChainModel.Id,
         governanceType: GovernanceType
-    ) -> PolkassemblyOperationFactoryProtocol? {
+    ) -> GovMetadataOperationFactoryProtocol? {
         switch apiType {
         case .polkassembly:
             return createPolkassemblyApiFactory(url: url, chainId: chainId, governanceType: governanceType)
+        case .subsquare:
+            return createSubsquareApiFactory(url: url, chainId: chainId, governanceType: governanceType)
         }
     }
 }
@@ -64,8 +85,8 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         for option: GovernanceSelectedOption
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
         guard
-            let governanceApi = option.chain.externalApi?.governance,
-            let apiType = GovernanceOffchainApi(rawValue: governanceApi.type) else {
+            let governanceApi = option.chain.externalApis?.governance()?.first,
+            let apiType = GovernanceOffchainApi(rawValue: governanceApi.serviceType) else {
             return nil
         }
 
@@ -89,23 +110,20 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
             return nil
         }
 
-        let mapper = ReferendumMetadataMapper()
-        let repository = storageFacade.createRepository(
-            filter: NSPredicate.referendums(for: chainId),
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(mapper)
-        )
+        let mapper = AnyCoreDataMapper(ReferendumMetadataMapper())
+        let filter = NSPredicate.referendums(for: chainId)
+        let repository = storageFacade.createRepository(filter: filter, sortDescriptors: [], mapper: mapper)
 
         let source = ReferendumsMetadataPreviewProviderSource(
             operationFactory: operationFactory,
-            apiParameters: option.chain.externalApi?.governance?.parameters,
+            apiParameters: option.chain.externalApis?.governance()?.first?.parameters,
             repository: AnyDataProviderRepository(repository),
             operationQueue: operationQueue
         )
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
-            mapper: AnyCoreDataMapper(mapper),
+            mapper: mapper,
             predicate: { entity in
                 chainId == entity.chainId
             }
@@ -134,8 +152,8 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         referendumId: ReferendumIdLocal
     ) -> StreamableProvider<ReferendumMetadataLocal>? {
         guard
-            let governanceApi = option.chain.externalApi?.governance,
-            let apiType = GovernanceOffchainApi(rawValue: governanceApi.type) else {
+            let governanceApi = option.chain.externalApis?.governance()?.first,
+            let apiType = GovernanceOffchainApi(rawValue: governanceApi.serviceType) else {
             return nil
         }
 
@@ -167,7 +185,7 @@ extension GovMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFacto
         let source = ReferendumMetadataDetailsProviderSource(
             chainId: chainId,
             referendumId: referendumId,
-            apiParameters: option.chain.externalApi?.governance?.parameters,
+            apiParameters: option.chain.externalApis?.governance()?.first?.parameters,
             operationFactory: operationFactory,
             repository: AnyDataProviderRepository(repository),
             operationQueue: operationQueue

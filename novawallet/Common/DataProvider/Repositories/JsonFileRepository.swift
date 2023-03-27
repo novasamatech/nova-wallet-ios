@@ -13,8 +13,9 @@ class JsonFileRepository<Model> where Model: Decodable {
             }
 
             let data = try Data(contentsOf: jsonUrl)
-
-            return try JSONDecoder().decode(Model.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            return try decoder.decode(Model.self, from: data)
         }
 
         return fetchOperation

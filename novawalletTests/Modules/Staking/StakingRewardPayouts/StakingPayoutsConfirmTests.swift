@@ -58,7 +58,12 @@ class StakingPayoutsConfirmTests: XCTestCase {
         )
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: nil, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: nil,
+                currencyId: Currency.usd.id
+            )
         )
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
@@ -68,14 +73,12 @@ class StakingPayoutsConfirmTests: XCTestCase {
         let interactor = StakingPayoutConfirmationInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            extrinsicOperationFactory: extrinsicOperationFactory,
             extrinsicService: extrinsicService,
-            runtimeService: chainRegistry.getRuntimeProvider(for: chain.chainId)!,
+            feeProxy: MultiExtrinsicFeeProxy(),
+            chainRegistry: chainRegistry,
             signer: signer,
-            accountRepositoryFactory: accountRepositoryFactory,
             operationManager: OperationManager(),
             payouts: [PayoutInfo(era: 1000, validator: validatorAccountId, reward: 1, identity: nil)],
             currencyManager: CurrencyManagerStub()

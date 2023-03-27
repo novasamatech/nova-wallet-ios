@@ -67,16 +67,18 @@ struct ReferendumDetailsViewFactory {
         let statusViewModelFactory = ReferendumStatusViewModelFactory()
 
         let indexFormatter = NumberFormatter.index.localizableResource()
+        let referendumStringFactory = ReferendumDisplayStringFactory()
+
         let referendumViewModelFactory = ReferendumsModelFactory(
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
+            stringDisplayViewModelFactory: referendumStringFactory,
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: indexFormatter,
             quantityFormatter: NumberFormatter.quantity.localizableResource()
         )
 
-        let referendumStringFactory = ReferendumDisplayStringFactory()
         let timelineViewModelFactory = ReferendumTimelineViewModelFactory(
             statusViewModelFactory: statusViewModelFactory,
             timeFormatter: DateFormatter.shortDateAndTime

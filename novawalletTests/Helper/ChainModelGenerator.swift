@@ -8,7 +8,8 @@ enum ChainModelGenerator {
         withTypes: Bool = true,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasGovernance: Bool = false
+        hasGovernance: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> [ChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -29,9 +30,8 @@ enum ChainModelGenerator {
             )
 
             let node = ChainNodeModel(
-                url: URL(string: "wss://node.io/\(chainId)")!,
+                url: "wss://node.io/\(chainId)",
                 name: chainId,
-                apikey: nil,
                 order: 0
             )
 
@@ -50,7 +50,11 @@ enum ChainModelGenerator {
                 options.append(.governance)
             }
 
-            let externalApi: ChainModel.ExternalApiSet? = generateExternaApis(
+            if !hasSubstrateRuntime {
+                options.append(.noSubstrateRuntime)
+            }
+
+            let externalApis = generateExternaApis(
                 for: chainId,
                 hasStaking: hasStaking,
                 hasCrowdloans: hasCrowdloans
@@ -75,7 +79,7 @@ enum ChainModelGenerator {
                 types: types,
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
-                externalApi: externalApi,
+                externalApis: externalApis,
                 explorers: explorers,
                 order: Int64(index),
                 additional: nil
@@ -87,7 +91,8 @@ enum ChainModelGenerator {
         count: Int,
         withTypes: Bool = true,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> [RemoteChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -106,9 +111,8 @@ enum ChainModelGenerator {
             )
 
             let node = RemoteChainNodeModel(
-                url: URL(string: "wss://node.io/\(chainId)")!,
-                name: chainId,
-                apikey: nil
+                url: "wss://node.io/\(chainId)",
+                name: chainId
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -120,6 +124,10 @@ enum ChainModelGenerator {
 
             if hasCrowdloans {
                 options.append(.crowdloans)
+            }
+
+            if !hasSubstrateRuntime {
+                options.append(.noSubstrateRuntime)
             }
 
             let externalApi = generateRemoteExternaApis(
@@ -162,7 +170,8 @@ enum ChainModelGenerator {
         addressPrefix: UInt16,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> ChainModel {
         let assets = (0..<count).map { index in
             generateAssetWithId(
@@ -178,7 +187,8 @@ enum ChainModelGenerator {
             addressPrefix: addressPrefix,
             assetPresicion: assetPresicion,
             hasStaking: hasStaking,
-            hasCrowdloans: hasCrowdloans
+            hasCrowdloans: hasCrowdloans,
+            hasSubstrateRuntime: hasSubstrateRuntime
         )
     }
 
@@ -188,16 +198,16 @@ enum ChainModelGenerator {
         addressPrefix: UInt16,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
         let urlString = "node\(Data.random(of: 32)!.toHex()).io"
 
         let node = ChainNodeModel(
-            url: URL(string: urlString)!,
+            url: urlString,
             name: UUID().uuidString,
-            apikey: nil,
             order: 0
         )
 
@@ -207,7 +217,11 @@ enum ChainModelGenerator {
             options.append(.crowdloans)
         }
 
-        let externalApi: ChainModel.ExternalApiSet? = generateExternaApis(
+        if !hasSubstrateRuntime {
+            options.append(.noSubstrateRuntime)
+        }
+
+        let externalApis = generateExternaApis(
             for: chainId,
             hasStaking: hasStaking,
             hasCrowdloans: hasCrowdloans
@@ -232,7 +246,7 @@ enum ChainModelGenerator {
             types: nil,
             icon: Constants.dummyURL,
             options: options.isEmpty ? nil : options,
-            externalApi: externalApi,
+            externalApis: externalApis,
             explorers: explorers,
             order: 0,
             additional: nil
@@ -272,7 +286,7 @@ enum ChainModelGenerator {
         hasStaking: Bool,
         hasCrowdloans: Bool
     ) -> RemoteChainExternalApiSet? {
-        guard let externalApi = generateExternaApis(
+        guard let externalApis = generateExternaApis(
             for: chainId,
             hasStaking: hasStaking,
             hasCrowdloans: hasCrowdloans
@@ -280,58 +294,50 @@ enum ChainModelGenerator {
             return nil
         }
 
-        let remoteHistory = externalApi.history?.map { localHistory in
-            return RemoteTransactionHistoryApi(
-                type: localHistory.serviceType,
-                url: localHistory.url,
-                assetType: localHistory.assetType
-            )
-        }
-
         return .init(
-            staking: externalApi.staking,
-            history: remoteHistory,
-            crowdloans: externalApi.crowdloans,
-            governance: externalApi.governance
+            staking: externalApis.staking()?.map(generateRemoteExternal(from:)),
+            history: externalApis.history()?.map(generateRemoteExternal(from:)),
+            crowdloans: externalApis.crowdloans()?.map(generateRemoteExternal(from:)),
+            governance: externalApis.governance()?.map(generateRemoteExternal(from:)),
+            goverananceDelegations: externalApis.governanceDelegations()?.map(generateRemoteExternal(from:))
         )
+    }
+
+    private static func generateRemoteExternal(from local: LocalChainExternalApi) -> RemoteChainExternalApi {
+        .init(type: local.serviceType, url: local.url, parameters: local.parameters)
     }
 
     private static func generateExternaApis(
         for chainId: ChainModel.Id,
         hasStaking: Bool,
         hasCrowdloans: Bool
-    ) -> ChainModel.ExternalApiSet? {
-        let crowdloanApi: ChainModel.ExternalApi?
+    ) -> LocalChainExternalApiSet? {
+        var apis = Set<LocalChainExternalApi>()
 
         if hasCrowdloans {
-            crowdloanApi = ChainModel.ExternalApi(
-                type: "test",
+            let crowdloanApi = LocalChainExternalApi(
+                apiType: LocalChainApiExternalType.crowdloans.rawValue,
+                serviceType: "test",
                 url: URL(string: "https://crowdloan.io/\(chainId)-\(UUID().uuidString).json")!,
                 parameters: nil
             )
-        } else {
-            crowdloanApi = nil
+
+            apis.insert(crowdloanApi)
         }
 
-        let stakingApi: ChainModel.ExternalApi?
-
         if hasStaking {
-            stakingApi = ChainModel.ExternalApi(
-                type: "test",
+            let stakingApi = LocalChainExternalApi(
+                apiType: LocalChainApiExternalType.staking.rawValue,
+                serviceType: "test",
                 url: URL(string: "https://staking.io/\(chainId)-\(UUID().uuidString).json")!,
                 parameters: nil
             )
-        } else {
-            stakingApi = nil
+
+            apis.insert(stakingApi)
         }
 
-        if crowdloanApi != nil || stakingApi != nil {
-            return ChainModel.ExternalApiSet(
-                staking: stakingApi,
-                history: nil,
-                crowdloans: crowdloanApi,
-                governance: nil
-            )
+        if !apis.isEmpty {
+            return .init(localApis: apis)
         } else {
             return nil
         }

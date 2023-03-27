@@ -26,7 +26,7 @@ struct AmountFormatterFactory: NumberFormatterFactoryProtocol {
     }
 
     func createDisplayFormatter(for asset: WalletAsset?) -> LocalizableResource<LocalizableDecimalFormatting> {
-        let precision = asset?.identifier == WalletAssetId.usd.rawValue ? usdPrecision : assetPrecision
+        let precision = asset?.identifier == WalletAssetId.usd ? usdPrecision : assetPrecision
         let formatter = createCompoundFormatter(for: precision)
         return LocalizableResource { locale in
             formatter.locale = locale
@@ -46,10 +46,10 @@ struct AmountFormatterFactory: NumberFormatterFactoryProtocol {
         for asset: WalletAsset?,
         roundingMode: NumberFormatter.RoundingMode
     ) -> LocalizableResource<TokenFormatter> {
-        let precision = asset?.identifier == WalletAssetId.usd.rawValue ? usdPrecision : assetPrecision
+        let precision = asset?.identifier == WalletAssetId.usd ? usdPrecision : assetPrecision
         let formatter = createCompoundFormatter(for: precision, roundingMode: roundingMode)
 
-        if asset?.identifier == WalletAssetId.usd.rawValue {
+        if asset?.identifier == WalletAssetId.usd {
             let tokenFormatter = TokenFormatter(
                 decimalFormatter: formatter,
                 tokenSymbol: asset?.symbol ?? "",

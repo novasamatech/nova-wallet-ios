@@ -49,7 +49,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let priceAssetInfo = AssetBalanceDisplayInfo.usd()
         let priceAsset = WalletAsset(
-            identifier: WalletAssetId.usd.rawValue,
+            identifier: WalletAssetId.usd,
             name: LocalizableResource { _ in "" },
             platform: LocalizableResource { _ in "" },
             symbol: "$",
@@ -81,15 +81,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let operationManager = OperationManagerFacade.sharedManager
 
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
-
         let chainStorage = SubstrateRepositoryFactory(storageFacade: substrateFacade)
             .createChainStorageItemRepository()
-
-        let localStorageRequestFactory = LocalStorageRequestFactory()
 
         let coingeckoOperationFactory = CoingeckoOperationFactory()
 
