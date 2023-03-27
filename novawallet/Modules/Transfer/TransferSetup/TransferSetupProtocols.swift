@@ -57,7 +57,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceive(error: Error)
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
-    func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount])
+    func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String)
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {
