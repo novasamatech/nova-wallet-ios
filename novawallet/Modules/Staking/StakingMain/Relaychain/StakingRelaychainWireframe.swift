@@ -159,12 +159,6 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode) {
-        let analyticsView = AnalyticsContainerViewFactory.createView(mode: mode, stakingState: state)
-        analyticsView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(analyticsView.controller, animated: true)
-    }
-
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?) {
         guard let validatorInfoView = ValidatorInfoViewFactory.createView(
             with: stashAddress,

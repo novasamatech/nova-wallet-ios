@@ -27,19 +27,10 @@ extension StakingMainPresenterFactory {
         // MARK: - Presenter
 
         let viewModelFacade = StakingViewModelFacade()
-        let analyticsVMFactoryBuilder: AnalyticsRewardsViewModelFactoryBuilder
-            = { chainAsset, balanceViewModelFactory in
-                AnalyticsRewardsViewModelFactory(
-                    assetInfo: chainAsset.assetDisplayInfo,
-                    balanceViewModelFactory: balanceViewModelFactory,
-                    calendar: Calendar(identifier: .gregorian)
-                )
-            }
 
         let logger = Logger.shared
 
         let stateViewModelFactory = StakingStateViewModelFactory(
-            analyticsRewardsViewModelFactoryBuilder: analyticsVMFactoryBuilder,
             priceAssetInfoFactory: priceAssetInfoFactory,
             logger: logger
         )

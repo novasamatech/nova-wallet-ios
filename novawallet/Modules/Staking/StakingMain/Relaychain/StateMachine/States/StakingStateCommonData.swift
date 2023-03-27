@@ -16,7 +16,7 @@ struct StakingStateCommonData {
     let bagListSize: UInt32?
     let bagListScoreFactor: BigUInt?
     let eraCountdown: EraCountdown?
-    let subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod)?
+    let subqueryRewards: [SubqueryRewardItemData]?
 }
 
 extension StakingStateCommonData {
@@ -320,7 +320,7 @@ extension StakingStateCommonData {
         )
     }
 
-    func byReplacing(subqueryRewards: [SubqueryRewardItemData]?, period: AnalyticsPeriod) -> StakingStateCommonData {
+    func byReplacing(subqueryRewards: [SubqueryRewardItemData]?) -> StakingStateCommonData {
         StakingStateCommonData(
             address: address,
             chainAsset: chainAsset,
@@ -336,7 +336,7 @@ extension StakingStateCommonData {
             bagListSize: bagListSize,
             bagListScoreFactor: bagListScoreFactor,
             eraCountdown: eraCountdown,
-            subqueryRewards: (subqueryRewards, period)
+            subqueryRewards: subqueryRewards
         )
     }
 }

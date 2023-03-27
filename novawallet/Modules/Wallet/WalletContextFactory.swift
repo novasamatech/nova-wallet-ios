@@ -49,7 +49,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let priceAssetInfo = AssetBalanceDisplayInfo.usd()
         let priceAsset = WalletAsset(
-            identifier: WalletAssetId.usd.rawValue,
+            identifier: WalletAssetId.usd,
             name: LocalizableResource { _ in "" },
             platform: LocalizableResource { _ in "" },
             symbol: "$",
