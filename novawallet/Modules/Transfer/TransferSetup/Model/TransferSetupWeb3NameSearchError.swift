@@ -5,6 +5,7 @@ enum TransferSetupWeb3NameSearchError: Error {
     case serviceNotFound(String)
     case coinsListIsEmpty
     case kiltService(Error)
+    case invalidAddress(chainName: String)
 }
 
 extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
@@ -12,18 +13,23 @@ extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
         let title: String
         let message: String
         let strings = R.string.localizable.self
-
         switch self {
         case let .accountNotFound(name):
             title = strings.transferSetupErrorW3nAccountNotFoundTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nAccountNotFoundSubtitle(
-                name,
+                KiltW3n.fullName(for: name),
                 preferredLanguages: locale?.rLanguages
             )
         case let .serviceNotFound(name):
             title = strings.transferSetupErrorW3nServiceNotFoundTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nServiceNotFoundSubtitle(
-                name,
+                KiltW3n.fullName(for: name),
+                preferredLanguages: locale?.rLanguages
+            )
+        case let .invalidAddress(chainName):
+            title = strings.transferSetupErrorW3nInvalidAddressTitle(preferredLanguages: locale?.rLanguages)
+            message = strings.transferSetupErrorW3nInvalidAddressSubtitle(
+                chainName,
                 preferredLanguages: locale?.rLanguages
             )
         default:

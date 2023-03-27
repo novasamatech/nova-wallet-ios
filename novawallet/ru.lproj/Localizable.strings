@@ -701,8 +701,10 @@
 "transfer.setup.enter.amount" = "Введите сумму...";
 "transfer.setup.error.w3n.accountNotFound.title" = "Неверное имя получателя";
 "transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ не найдено";
-"transfer.setup.error.w3n.serviceNotFound.title" = "Неверное имя получателя";
+"transfer.setup.error.w3n.serviceNotFound.title" = "Неверный получатель";
 "transfer.setup.error.w3n.serviceNotFound.subtitle" = "Не найден корректный адрес для %@ в KILT сети";
+"transfer.setup.error.w3n.invalidAddress.title" = "Неверный получательt";
+"transfer.setup.error.w3n.invalidAddress.subtitle" = "Получатеь должен быть корректным адресом в %@ сети";
 "transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Ошибка при попытке получить w3n";
 "transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "KILT w3n сервисы недоступны. Повторите позже или введите KILT адрес самостоятельно";
 "transfer.setup.kilt.addresses.title" = "KILT адреса для %@";
