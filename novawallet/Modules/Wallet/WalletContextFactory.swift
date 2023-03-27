@@ -81,15 +81,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let operationManager = OperationManagerFacade.sharedManager
 
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
-
         let chainStorage = SubstrateRepositoryFactory(storageFacade: substrateFacade)
             .createChainStorageItemRepository()
-
-        let localStorageRequestFactory = LocalStorageRequestFactory()
 
         let coingeckoOperationFactory = CoingeckoOperationFactory()
 
