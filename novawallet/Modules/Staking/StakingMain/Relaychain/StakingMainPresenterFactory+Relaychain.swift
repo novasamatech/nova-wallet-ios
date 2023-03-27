@@ -144,18 +144,13 @@ extension StakingMainPresenterFactory {
             logger: Logger.shared
         )
 
-        let stakingAnalyticsLocalSubscriptionFactory = StakingAnalyticsLocalSubscriptionFactory(
-            storageFacade: storageFacade
-        )
-
         return StakingSharedState(
             consensus: consensus,
             settings: stakingAssetSettings,
             eraValidatorService: nil,
             rewardCalculationService: nil,
             blockTimeService: nil,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            stakingAnalyticsLocalSubscriptionFactory: stakingAnalyticsLocalSubscriptionFactory
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory
         )
     }
 }
