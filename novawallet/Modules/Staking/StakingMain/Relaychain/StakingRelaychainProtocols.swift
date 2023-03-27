@@ -30,7 +30,6 @@ protocol StakingRelaychainInteractorOutputProtocol: AnyObject {
     func didReceive(payee: RewardDestinationArg?)
     func didReceive(payeeError: Error)
     func didReceive(newChainAsset: ChainAsset)
-    func didReceieve(subqueryRewards: Result<[SubqueryRewardItemData]?, Error>)
     func didReceiveMinNominatorBond(result: Result<BigUInt?, Error>)
     func didReceiveCounterForNominators(result: Result<UInt32?, Error>)
     func didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)
