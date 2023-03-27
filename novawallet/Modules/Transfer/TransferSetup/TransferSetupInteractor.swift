@@ -19,7 +19,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     private var xcmTransfers: XcmTransfers?
     private var kiltRecipientsCancellableCall: CancellableCall?
     private var slip44CoinList: Slip44CoinList = []
-    private var destinationChain: ChainModel?
+    private var destinationChainAsset: ChainAsset?
 
     init(
         originChainAssetId: ChainAssetId,
@@ -185,8 +185,10 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
                 do {
                     let searchResult = try wrapper.targetOperation.extractNoCancellableResultData()
                     self?.handleSearchWeb3Name(response: searchResult, name: name)
-                } catch {
+                } catch let error as TransferSetupWeb3NameSearchError {
                     self?.presenter?.didReceive(error: error)
+                } catch {
+                    self?.presenter?.didReceive(error: TransferSetupWeb3NameSearchError.kiltService(error))
                 }
             }
         }
@@ -202,37 +204,42 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     private func handleSearchWeb3Name(response: TransferAssetRecipientResponse?, name: String) {
         guard
             let response = response,
-            let destinationChain = destinationChain,
-            let asset = destinationChain.asset(for: originChainAssetId.assetId),
+            let chainAsset = destinationChainAsset,
             let coin = slip44CoinList.first(where: {
-                $0.symbol == asset.symbol
+                $0.symbol == chainAsset.asset.symbol
             }),
             let coinCode = Int(coin.index)
         else {
-            presenter?.didReceive(kiltRecipients: [], for: name)
+            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name))
             return
         }
 
-        let recipients = response.first(where: {
-            $0.key.chainId.genesisHash == destinationChain.chainId && coinCode == $0.key.slip44Code
-        })?.value
+        guard let recipients = response.first(where: {
+            guard let genesisHash = $0.key.chainId.genesisHash else {
+                return false
+            }
+            return chainAsset.chain.chainId.hasPrefix(genesisHash) && coinCode == $0.key.slip44Code
+        })?.value else {
+            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name))
+            return
+        }
 
-        presenter?.didReceive(kiltRecipients: recipients ?? [], for: name)
+        presenter?.didReceive(kiltRecipients: recipients, for: name)
     }
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup(destinationChain: ChainModel) {
+    func setup(destinationChainAsset: ChainAsset) {
         setupChainsStore()
         setupXcmTransfersSyncService()
-        fetchAccounts(for: destinationChain)
+        fetchAccounts(for: destinationChainAsset.chain)
         subscribeSlip44CoinList()
-        self.destinationChain = destinationChain
+        self.destinationChainAsset = destinationChainAsset
     }
 
-    func destinationChainDidChanged(_ chain: ChainModel) {
-        fetchAccounts(for: chain)
-        destinationChain = chain
+    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset) {
+        fetchAccounts(for: chainAsset.chain)
+        destinationChainAsset = chainAsset
     }
 
     func search(web3Name: String) {

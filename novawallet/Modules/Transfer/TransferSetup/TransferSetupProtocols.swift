@@ -48,8 +48,8 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
-    func setup(destinationChain: ChainModel)
-    func destinationChainDidChanged(_ chain: ChainModel)
+    func setup(destinationChainAsset: ChainAsset)
+    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset)
     func search(web3Name: String)
 }
 

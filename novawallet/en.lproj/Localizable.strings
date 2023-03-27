@@ -703,6 +703,8 @@
 "transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ not found";
 "transfer.setup.error.w3n.serviceNotFound.title" = "Invalid recipient";
 "transfer.setup.error.w3n.serviceNotFound.subtitle" = "No valid address was found for %@ on the KILT network";
+"transfer.setup.error.w3n.invalidAddress.title" = "Invalid recipient";
+"transfer.setup.error.w3n.invalidAddress.subtitle" = "Recipient should be a valid %@ address";
 "transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Error resolving w3n";
 "transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "KILT w3n services are unavailable. Try again later or enter the KILT address manually";
 "transfer.setup.kilt.addresses.title" = "KILT addresses for %@";
