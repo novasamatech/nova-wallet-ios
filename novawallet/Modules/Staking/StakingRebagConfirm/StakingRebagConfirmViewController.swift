@@ -40,7 +40,9 @@ final class StakingRebagConfirmViewController: UIViewController, ViewHolder {
         rootView.currentBagList.titleLabel.text = strings.stakingRebagConfirmCurrentBagList(
             preferredLanguages: selectedLocale.rLanguages
         )
-        rootView.newBagList.titleLabel.text = strings.stakingRebagConfirmNewBagList(preferredLanguages: selectedLocale.rLanguages)
+        rootView.newBagList.titleLabel.text = strings.stakingRebagConfirmNewBagList(
+            preferredLanguages: selectedLocale.rLanguages
+        )
         rootView.confirmButton.imageWithTitleView?.title = strings.commonConfirm(
             preferredLanguages: selectedLocale.rLanguages
         )
