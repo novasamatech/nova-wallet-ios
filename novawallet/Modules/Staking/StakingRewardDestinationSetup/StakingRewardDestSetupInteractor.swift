@@ -18,8 +18,8 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
     let feeProxy: ExtrinsicFeeProxyProtocol
 
     private var stashItemProvider: StreamableProvider<StashItem>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var priceProvider: StreamableProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var payeeProvider: AnyDataProvider<DecodedPayee>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var nominationProvider: AnyDataProvider<DecodedNomination>?
@@ -194,7 +194,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
         do {
             clear(dataProvider: &ledgerProvider)
             clear(dataProvider: &payeeProvider)
-            clear(dataProvider: &accountInfoProvider)
+            clear(streamableProvider: &balanceProvider)
             clear(dataProvider: &nominationProvider)
 
             stashItem = try result.get()
@@ -220,16 +220,17 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
                     chainId: chainAsset.chain.chainId
                 )
 
-                accountInfoProvider = subscribeToAccountInfoProvider(
+                balanceProvider = subscribeToAssetBalanceProvider(
                     for: controllerId,
-                    chainId: chainAsset.chain.chainId
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
                 )
 
                 handleStashItemAccounts(for: stashId, controllerId: controllerId)
 
             } else {
                 presenter?.didReceiveStakingLedger(result: .success(nil))
-                presenter?.didReceiveAccountInfo(result: .success(nil))
+                presenter?.didReceiveAccountBalance(result: .success(nil))
                 presenter?.didReceiveRewardDestinationAccount(result: .success(nil))
                 presenter?.didReceiveNomination(result: .success(nil))
                 presenter?.didReceiveController(result: .success(nil))
@@ -239,7 +240,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
             presenter?.didReceiveStashItem(result: .failure(error))
             presenter?.didReceiveController(result: .failure(error))
             presenter?.didReceiveStakingLedger(result: .failure(error))
-            presenter?.didReceiveAccountInfo(result: .failure(error))
+            presenter?.didReceiveAccountBalance(result: .failure(error))
             presenter?.didReceiveRewardDestinationAccount(result: .failure(error))
             presenter?.didReceiveNomination(result: .failure(error))
         }
@@ -313,12 +314,12 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
 
 extension StakingRewardDestSetupInteractor: WalletLocalStorageSubscriber,
     WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
-        accountId _: AccountId,
-        chainId _: ChainModel.Id
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId, chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter?.didReceiveAccountInfo(result: result)
+        presenter?.didReceiveAccountBalance(result: result)
     }
 }
 

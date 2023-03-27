@@ -47,7 +47,7 @@ final class SettingsPresenter {
 
     private func show(url: URL) {
         if let view = view {
-            wireframe.showWeb(url: url, from: view, style: .automatic)
+            wireframe.show(url: url, from: view)
         }
     }
 

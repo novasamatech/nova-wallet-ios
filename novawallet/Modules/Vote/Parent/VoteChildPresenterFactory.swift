@@ -31,12 +31,12 @@ final class VoteChildPresenterFactory {
 
     init(
         currencyManager: CurrencyManagerProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol = WalletLocalSubscriptionFactory.shared,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol = JsonDataProviderFactory.shared,
         priceProviderFactory: PriceProviderFactoryProtocol = PriceProviderFactory.shared,
         repositoryFactory: SubstrateRepositoryFactoryProtocol = SubstrateRepositoryFactory(),
-        applicationHandler: ApplicationHandlerProtocol = ApplicationHandler(),
         substrateStorageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         eventCenter: EventCenterProtocol = EventCenter.shared,
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
@@ -68,7 +68,8 @@ final class VoteChildPresenterFactory {
         let crowdloanRemoteSubscriptionService = CrowdloanRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: AnyDataProviderRepository(repository),
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 
@@ -177,15 +178,21 @@ extension VoteChildPresenterFactory: VoteChildPresenterFactoryProtocol {
             referendumMetadataViewModelFactory: ReferendumMetadataViewModelFactory(indexFormatter: indexFormatter),
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
+            stringDisplayViewModelFactory: ReferendumDisplayStringFactory(),
             percentFormatter: NumberFormatter.referendumPercent.localizableResource(),
             indexFormatter: NumberFormatter.index.localizableResource(),
             quantityFormatter: NumberFormatter.quantity.localizableResource()
+        )
+
+        let activityViewModelFactory = ReferendumsActivityViewModelFactory(
+            assetBalanceFormatterFactory: assetBalanceFormatterFactory
         )
 
         let presenter = ReferendumsPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            activityViewModelFactory: activityViewModelFactory,
             statusViewModelFactory: statusViewModelFactory,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             sorting: ReferendumsTimeSortingProvider(),

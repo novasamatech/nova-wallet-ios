@@ -18,10 +18,11 @@ final class TransactionHistoryInteractor {
         metaAccount.fetch(for: chainAsset.chain.accountRequest())?.toAddress()
     }
 
-    private var currentFetchOpeartion: CancellableCall?
-    private var currentOffset: Int = 0
+    private var currentFetchOperation: CompoundOperationWrapper<[TransactionHistoryItem]>?
+    private var firstPageLoaded: Bool = false
     private var localDataProvider: StreamableProvider<TransactionHistoryItem>?
-    private var remoteDataProvider: StreamableProvider<TransactionHistoryItem>?
+    private var remoteDataProvider: RemoteHistoryTransactionsProviderProtocol?
+    private var firstPageItems: [TransactionHistoryItem] = []
 
     init(
         chainAsset: ChainAsset,
@@ -41,7 +42,7 @@ final class TransactionHistoryInteractor {
         self.fetchCount = fetchCount
     }
 
-    private func setupDataProvider(historyFilter: WalletHistoryFilter) {
+    private func setupDataProvider() {
         guard let accountAddress = accountAddress else {
             return
         }
@@ -49,10 +50,9 @@ final class TransactionHistoryInteractor {
             guard let self = self else {
                 return
             }
+            self.firstPageLoaded = true
+            self.firstPageItems = self.firstPageItems.applying(changes: changes)
             self.presenter.didReceive(changes: changes)
-            if self.currentOffset == 0 {
-                self.currentOffset = 1
-            }
         }
 
         let failBlock: (Error) -> Void = { [weak self] (error: Error) in
@@ -61,11 +61,10 @@ final class TransactionHistoryInteractor {
 
         let transactionsProvider = try? dataProviderFactory.getTransactionsProvider(
             address: accountAddress,
-            chainAsset: chainAsset,
-            historyFilter: historyFilter
+            chainAsset: chainAsset
         )
 
-        localDataProvider = transactionsProvider?.local
+        localDataProvider = transactionsProvider
 
         localDataProvider?.addObserver(
             self,
@@ -75,52 +74,97 @@ final class TransactionHistoryInteractor {
             options: .init(alwaysNotifyOnRefresh: true)
         )
 
-        remoteDataProvider = transactionsProvider?.remote
+        remoteDataProvider = try? dataProviderFactory.getRemoteTransactionsProvider(
+            address: accountAddress,
+            chainAsset: chainAsset
+        )
     }
 
     private func clearDataProvider() {
         localDataProvider?.removeObserver(self)
+        localDataProvider = nil
+        remoteDataProvider = nil
+        currentFetchOperation?.cancel()
     }
 }
 
 extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtocol {
     func loadNext() {
-        guard currentFetchOpeartion == nil, currentOffset > 0 else {
+        guard let remoteDataProvider = remoteDataProvider,
+              currentFetchOperation == nil,
+              firstPageLoaded else {
             return
         }
 
-        currentFetchOpeartion = remoteDataProvider?.fetch(
-            offset: currentOffset,
-            count: fetchCount,
-            synchronized: false,
-            with: { [weak self] result in
-                DispatchQueue.main.async {
-                    self?.currentFetchOpeartion = nil
-                    switch result {
-                    case let .failure(error):
-                        self?.presenter.didReceive(error: .fetchProvider(error))
-                    case let .success(items):
-                        self?.presenter.didReceive(nextItems: items)
-                    case .none:
-                        break
-                    }
+        guard let fetchOperation = remoteDataProvider.fetchNext(
+            by: historyFilter ?? .all,
+            count: fetchCount
+        ) else {
+            return
+        }
+
+        fetchOperation.targetOperation.completionBlock = { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                do {
+                    self.currentFetchOperation = nil
+                    let items = try fetchOperation.targetOperation.extractNoCancellableResultData()
+                    self.presenter.didReceive(nextItems: items)
+                } catch {
+                    self.presenter.didReceive(error: .fetchProvider(error))
                 }
             }
-        )
+        }
 
-        currentOffset += 1
+        currentFetchOperation = fetchOperation
+        operationQueue.addOperations(
+            fetchOperation.allOperations,
+            waitUntilFinished: false
+        )
     }
 
-    func setup(historyFilter: WalletHistoryFilter) {
-        guard historyFilter != self.historyFilter else {
-            return
-        }
+    func setup() {
         accountAddress.map {
             presenter.didReceive(accountAddress: $0)
         }
-        currentOffset = 0
         clearDataProvider()
-        setupDataProvider(historyFilter: historyFilter)
+        setupDataProvider()
         localDataProvider?.refresh()
+    }
+
+    func set(filter: WalletHistoryFilter) {
+        guard historyFilter != filter else {
+            return
+        }
+        historyFilter = filter
+
+        if let fetchOperation = remoteDataProvider?.fetch(
+            by: historyFilter ?? .all,
+            count: fetchCount
+        ) {
+            fetchOperation.targetOperation.completionBlock = { [weak self] in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    do {
+                        self.currentFetchOperation = nil
+                        let items = try fetchOperation.targetOperation.extractNoCancellableResultData()
+                        self.presenter.didReceive(filteredItems: items)
+                    } catch {
+                        self.presenter.didReceive(error: .filter(error))
+                    }
+                }
+            }
+
+            currentFetchOperation = fetchOperation
+            operationQueue.addOperations(
+                fetchOperation.allOperations,
+                waitUntilFinished: false
+            )
+        } else {
+            let filteredItems = firstPageItems.filter {
+                filter.isFit(callPath: $0.callPath)
+            }
+            presenter.didReceive(filteredItems: filteredItems)
+        }
     }
 }

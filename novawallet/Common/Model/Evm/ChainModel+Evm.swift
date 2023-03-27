@@ -2,12 +2,20 @@ import Foundation
 import BigInt
 
 extension AssetModel {
-    var isEvm: Bool {
-        type == AssetType.evm.rawValue
+    var isEvmAsset: Bool {
+        type == AssetType.evmAsset.rawValue
+    }
+
+    var isEvmNative: Bool {
+        type == AssetType.evmNative.rawValue
+    }
+
+    var isAnyEvm: Bool {
+        isEvmAsset || isEvmNative
     }
 
     var evmContractAddress: AccountAddress? {
-        guard isEvm else {
+        guard isEvmAsset else {
             return nil
         }
 
@@ -17,11 +25,11 @@ extension AssetModel {
 
 extension ChainModel {
     var allEvmAssets: [AssetModel] {
-        assets.filter { $0.isEvm }
+        assets.filter { $0.isEvmAsset }
     }
 
     var hasEvmAsset: Bool {
-        assets.contains { $0.isEvm }
+        assets.contains { $0.isEvmAsset }
     }
 
     var evmChainId: String {

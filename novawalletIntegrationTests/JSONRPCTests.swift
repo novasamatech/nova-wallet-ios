@@ -107,8 +107,10 @@ class JSONRPCTests: XCTestCase {
 
         // when
 
-        let operation = JSONRPCListOperation<Health>(engine: engine,
-                                                     method: "system_health")
+        let operation = JSONRPCListOperation<SubstrateHealthResult>(
+            engine: engine,
+            method: "system_health"
+        )
 
         operationQueue.addOperations([operation], waitUntilFinished: true)
 
@@ -293,7 +295,7 @@ class JSONRPCTests: XCTestCase {
     func testWestendStakersFetch() throws {
         // given
 
-        let chainId = Chain.westend.genesisHash
+        let chainId = KnowChainId.westend
         let storageFacade = SubstrateStorageTestFacade()
 
         let operationManager = OperationManagerFacade.sharedManager
@@ -355,7 +357,7 @@ class JSONRPCTests: XCTestCase {
     func performTestMultipleChangesQuery(keysCount: Int) throws {
         // given
 
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
         let storageFacade = SubstrateStorageTestFacade()
 
         let operationManager = OperationManager()

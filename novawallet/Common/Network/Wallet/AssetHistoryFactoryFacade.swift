@@ -12,9 +12,12 @@ final class AssetHistoryFacade {
         for chainAsset: ChainAsset,
         filter: WalletHistoryFilter
     ) -> WalletRemoteHistoryFactoryProtocol? {
-        let optApi = chainAsset.chain.externalApi?.history?.first { option in
+        let optApi = chainAsset.chain.externalApis?.history()?.first { option in
             option.serviceType == AssetHistoryServiceType.subquery.rawValue &&
-                (option.assetType == nil || option.assetType == chainAsset.asset.type)
+                (
+                    option.parameters?.assetType?.stringValue == nil ||
+                        option.parameters?.assetType?.stringValue == chainAsset.asset.type
+                )
         }
 
         guard let url = optApi?.url else {
@@ -36,13 +39,13 @@ final class AssetHistoryFacade {
         }
     }
 
-    func createEtherscanFactory(
+    func createEtherscanFactoryForContractAsset(
         for chainAsset: ChainAsset,
         filter: WalletHistoryFilter
     ) -> WalletRemoteHistoryFactoryProtocol? {
-        let optApi = chainAsset.chain.externalApi?.history?.first { option in
+        let optApi = chainAsset.chain.externalApis?.history()?.first { option in
             option.serviceType == AssetHistoryServiceType.etherscan.rawValue &&
-                option.assetType == chainAsset.asset.type
+                option.parameters?.assetType?.stringValue == chainAsset.asset.type
         }
 
         guard filter.contains(.transfers), let url = optApi?.url else {
@@ -53,11 +56,26 @@ final class AssetHistoryFacade {
             return nil
         }
 
-        return EtherscanOperationFactory(
+        return EtherscanERC20OperationFactory(
             contractAddress: contractAddress,
-            url: url,
+            baseUrl: url,
             chainId: chainAsset.chain.chainId
         )
+    }
+
+    func createEtherscanFactoryForNativeAsset(
+        for chainAsset: ChainAsset,
+        filter: WalletHistoryFilter
+    ) -> WalletRemoteHistoryFactoryProtocol? {
+        let optApi = chainAsset.chain.externalApis?.history()?.first { option in
+            option.serviceType == AssetHistoryServiceType.etherscan.rawValue
+        }
+
+        guard let url = optApi?.url else {
+            return nil
+        }
+
+        return EtherscanNativeOperationFactory(filter: filter, baseUrl: url, chainId: chainAsset.chain.chainId)
     }
 }
 
@@ -66,8 +84,10 @@ extension AssetHistoryFacade: AssetHistoryFactoryFacadeProtocol {
         for chainAsset: ChainAsset,
         filter: WalletHistoryFilter
     ) -> WalletRemoteHistoryFactoryProtocol? {
-        if chainAsset.asset.isEvm {
-            return createEtherscanFactory(for: chainAsset, filter: filter)
+        if chainAsset.asset.isEvmNative {
+            return createEtherscanFactoryForNativeAsset(for: chainAsset, filter: filter)
+        } else if chainAsset.asset.isEvmAsset {
+            return createEtherscanFactoryForContractAsset(for: chainAsset, filter: filter)
         } else {
             return createSubqueryFactory(for: chainAsset, filter: filter)
         }

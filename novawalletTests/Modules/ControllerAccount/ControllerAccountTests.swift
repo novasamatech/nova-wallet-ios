@@ -103,7 +103,17 @@ class ControllerAccountTests: XCTestCase {
             nonce: 0,
             data: AccountData(free: 100000000000000, reserved: 0, miscFrozen: 0, feeFrozen: 0)
         )
-        presenter.didReceiveAccountInfo(result: .success(stashAccountInfo), address: stashAddress)
+
+        let stashAccountId = try! stashAddress.toAccountId()
+        let stashBalance = AssetBalance(
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: chain.utilityAsset()!.assetId),
+            accountId: stashAccountId,
+            freeInPlank: 100000000000000,
+            reservedInPlank: 0,
+            frozenInPlank: 0
+        )
+
+        presenter.didReceiveAccountBalance(result: .success(stashBalance), address: stashAddress)
 
         let fee = RuntimeDispatchInfo(fee: "12600002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(fee))
@@ -125,11 +135,15 @@ class ControllerAccountTests: XCTestCase {
             }
         }
 
-        let accountInfoSmallBalance = AccountInfo(
-            nonce: 0,
-            data: AccountData(free: 10, reserved: 0, miscFrozen: 0, feeFrozen: 0)
+        let assetSmallBalance = AssetBalance(
+            chainAssetId: chain.utilityChainAssetId()!,
+            accountId: stashAccountId,
+            freeInPlank: 10,
+            reservedInPlank: 0,
+            frozenInPlank: 0
         )
-        presenter.didReceiveAccountInfo(result: .success(accountInfoSmallBalance), address: stashAddress)
+
+        presenter.didReceiveAccountBalance(result: .success(assetSmallBalance), address: stashAddress)
 
         let extraFee = RuntimeDispatchInfo(fee: "126000002654", weight: 331759000)
         presenter.didReceiveFee(result: .success(extraFee))

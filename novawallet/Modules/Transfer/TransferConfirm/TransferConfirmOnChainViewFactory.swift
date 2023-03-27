@@ -89,7 +89,7 @@ struct TransferConfirmOnChainViewFactory {
         account: ChainAccountResponse,
         accountMetaId: String
     ) -> (OnChainTransferBaseInteractor & TransferConfirmOnChainInteractorInputProtocol)? {
-        if chainAsset.asset.isEvm {
+        if chainAsset.asset.isAnyEvm {
             return createEvmInteractor(for: chainAsset, account: account)
         } else {
             return createSubstrateInteractor(for: chainAsset, account: account, accountMetaId: accountMetaId)

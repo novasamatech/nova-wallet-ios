@@ -42,27 +42,26 @@ final class TokensManageViewModelFactory {
 
 extension TokensManageViewModelFactory: TokensManageViewModelFactoryProtocol {
     func createListViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel {
-        let imageViewModel = token.icon.map { RemoteImageViewModel(url: $0) }
-        let subtitle = createSubtitle(from: token, locale: locale)
+        let model = createSingleViewModel(from: token, locale: locale)
 
         var hasher = Hasher()
         hasher.combine(token.symbol)
         hasher.combine(token.icon)
-        hasher.combine(subtitle)
+        hasher.combine(model.subtitle)
         hasher.combine(token.enabled)
         let identifier = hasher.finalize()
 
         return .init(
             identifier: identifier,
-            symbol: token.symbol,
-            imageViewModel: imageViewModel,
-            subtitle: subtitle,
-            isOn: token.enabled
+            symbol: model.symbol,
+            imageViewModel: model.imageViewModel,
+            subtitle: model.subtitle,
+            isOn: model.isOn
         )
     }
 
     func createSingleViewModel(from token: MultichainToken, locale: Locale) -> TokenManageViewModel {
-        let imageViewModel = token.icon.map { RemoteImageViewModel(url: $0) }
+        let imageViewModel = ImageViewModelFactory.createAssetIconOrDefault(from: token.icon)
         let subtitle = createSubtitle(from: token, locale: locale)
 
         return .init(symbol: token.symbol, imageViewModel: imageViewModel, subtitle: subtitle, isOn: token.enabled)

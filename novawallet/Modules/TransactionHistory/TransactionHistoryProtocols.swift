@@ -15,7 +15,8 @@ protocol TransactionHistoryPresenterProtocol: AnyObject {
 }
 
 protocol TransactionHistoryInteractorInputProtocol: AnyObject {
-    func setup(historyFilter: WalletHistoryFilter)
+    func setup()
+    func set(filter: WalletHistoryFilter)
     func loadNext()
 }
 
@@ -23,6 +24,7 @@ protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
     func didReceive(error: TransactionHistoryError)
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>])
     func didReceive(nextItems: [TransactionHistoryItem])
+    func didReceive(filteredItems: [TransactionHistoryItem])
     func didReceive(accountAddress: AccountAddress)
 }
 
@@ -42,4 +44,5 @@ protocol TransactionHistoryWireframeProtocol: AnyObject {
 enum TransactionHistoryError: Error {
     case dataProvider(Error)
     case fetchProvider(Error)
+    case filter(Error)
 }

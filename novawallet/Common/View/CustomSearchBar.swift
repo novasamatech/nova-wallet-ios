@@ -20,7 +20,7 @@ final class CustomSearchBar: UIView {
         let searchButton = RoundedButton()
         searchButton.applyIconStyle()
         searchButton.contentInsets = .init(top: 0, left: 0, bottom: 0, right: 6)
-        searchButton.imageWithTitleView?.iconImage = R.image.iconSearch()?.tinted(with: R.color.colorIconSecondary()!)
+        searchButton.imageWithTitleView?.iconImage = R.image.iconSearch()
         view.leftViewMode = .always
         view.leftView = searchButton
         return view
@@ -41,6 +41,20 @@ final class CustomSearchBar: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        super.becomeFirstResponder()
+
+        return textField.becomeFirstResponder()
+    }
+
+    @discardableResult
+    override func resignFirstResponder() -> Bool {
+        super.resignFirstResponder()
+
+        return textField.resignFirstResponder()
     }
 
     private func setupLayout() {

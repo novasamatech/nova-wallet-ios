@@ -183,12 +183,12 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
         switch result {
-        case let .success(accountInfo):
-            if let accountInfo = accountInfo {
+        case let .success(assetBalance):
+            if let assetBalance = assetBalance {
                 balance = Decimal.fromSubstrateAmount(
-                    accountInfo.data.available,
+                    assetBalance.transferable,
                     precision: assetInfo.assetPrecision
                 )
             } else {

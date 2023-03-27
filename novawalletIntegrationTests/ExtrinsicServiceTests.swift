@@ -38,7 +38,7 @@ class ExtrinsicServiceTests: XCTestCase {
     }
 
     func testEstimateFeeForBondExtraCall() throws {
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
         let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
         let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12
@@ -83,7 +83,7 @@ class ExtrinsicServiceTests: XCTestCase {
     }
 
     func testEstimateFeeForPayoutRewardsCall() throws {
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
         let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
         let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12

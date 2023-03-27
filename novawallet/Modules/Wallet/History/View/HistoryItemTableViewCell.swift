@@ -161,6 +161,51 @@ final class HistoryItemTableViewCell: UITableViewCell {
             }
         }
     }
+
+    private func applyAmount(from itemViewModel: HistoryItemViewModel) {
+        switch itemViewModel.type {
+        case .incoming, .reward:
+            amountLabel.text = "+ \(itemViewModel.amount)"
+            amountLabel.textColor = R.color.colorTextPositive()!
+        case .outgoing, .slash, .extrinsic:
+            amountLabel.text = "- \(itemViewModel.amount)"
+            amountLabel.textColor = R.color.colorTextPrimary()!
+        }
+    }
+
+    private func applyTitle(from itemViewModel: HistoryItemViewModel) {
+        switch itemViewModel.titleType {
+        case .rawString:
+            titleLabel.lineBreakMode = .byTruncatingTail
+
+            titleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+                    .offset(-Constants.titleSpacingForOthers)
+            }
+        case .address:
+            titleLabel.lineBreakMode = .byTruncatingMiddle
+
+            titleLabel.snp.updateConstraints { make in
+                make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
+                    .offset(-Constants.titleSpacingForTransfer)
+            }
+        }
+    }
+
+    private func applyStatus(from itemViewModel: HistoryItemViewModel) {
+        switch itemViewModel.status {
+        case .commited:
+            removeStatusView()
+        case .rejected:
+            addStatusViewIfNeeded()
+            statusImageView?.image = R.image.iconErrorFilled()
+            amountLabel.textColor = R.color.colorTextSecondary()
+        case .pending:
+            addStatusViewIfNeeded()
+            statusImageView?.image = R.image.iconPending()
+            amountLabel.textColor = R.color.colorTextPrimary()
+        }
+    }
 }
 
 extension HistoryItemTableViewCell: WalletViewProtocol {
@@ -172,45 +217,11 @@ extension HistoryItemTableViewCell: WalletViewProtocol {
             subtitleLabel.text = itemViewModel.subtitle
             timeLabel.text = itemViewModel.time
 
-            switch itemViewModel.type {
-            case .incoming, .reward:
-                amountLabel.text = "+ \(itemViewModel.amount)"
-                amountLabel.textColor = R.color.colorTextPositive()!
-            case .outgoing, .slash, .extrinsic:
-                amountLabel.text = "- \(itemViewModel.amount)"
-                amountLabel.textColor = R.color.colorTextPrimary()!
-            }
+            applyAmount(from: itemViewModel)
 
-            switch itemViewModel.type {
-            case .incoming, .outgoing:
-                titleLabel.lineBreakMode = .byTruncatingMiddle
+            applyTitle(from: itemViewModel)
 
-                titleLabel.snp.updateConstraints { make in
-                    make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
-                        .offset(-Constants.titleSpacingForTransfer)
-                }
-
-            case .slash, .reward, .extrinsic:
-                titleLabel.lineBreakMode = .byTruncatingTail
-
-                titleLabel.snp.updateConstraints { make in
-                    make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
-                        .offset(-Constants.titleSpacingForOthers)
-                }
-            }
-
-            switch itemViewModel.status {
-            case .commited:
-                removeStatusView()
-            case .rejected:
-                addStatusViewIfNeeded()
-                statusImageView?.image = R.image.iconErrorFilled()
-                amountLabel.textColor = R.color.colorTextSecondary()
-            case .pending:
-                addStatusViewIfNeeded()
-                statusImageView?.image = R.image.iconPending()
-                amountLabel.textColor = R.color.colorTextPrimary()
-            }
+            applyStatus(from: itemViewModel)
 
             let settings = ImageViewModelSettings(
                 targetSize: Constants.displayImageSize,

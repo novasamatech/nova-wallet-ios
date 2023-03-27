@@ -81,7 +81,7 @@ extension TransferSetupPresenterFactory {
     private func createInteractor(
         for chainAsset: ChainAsset
     ) -> (OnChainTransferBaseInteractor & OnChainTransferSetupInteractorInputProtocol)? {
-        if chainAsset.asset.isEvm {
+        if chainAsset.asset.isAnyEvm {
             return createEvmInteractor(for: chainAsset)
         } else {
             return createSubstrateInteractor(for: chainAsset)

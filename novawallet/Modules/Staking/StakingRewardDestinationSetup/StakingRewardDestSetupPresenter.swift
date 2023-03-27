@@ -314,11 +314,11 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
         switch result {
-        case let .success(accountInfo):
-            balance = accountInfo.map {
-                Decimal.fromSubstrateAmount($0.data.available, precision: assetInfo.assetPrecision)
+        case let .success(assetBalance):
+            balance = assetBalance.map {
+                Decimal.fromSubstrateAmount($0.transferable, precision: assetInfo.assetPrecision)
             } ?? nil
         case let .failure(error):
             logger?.error("Account info error: \(error)")

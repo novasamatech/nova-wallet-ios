@@ -35,6 +35,10 @@ final class GovernanceUnlockTableViewCell: UITableViewCell {
             lockView.valueView.hidesIcon = true
             detailsLabel.textColor = R.color.colorTextPositive()
             detailsLabel.text = R.string.localizable.commonUnlockable(preferredLanguages: locale.rLanguages)
+        case .delegation:
+            lockView.valueView.hidesIcon = true
+            detailsLabel.textColor = R.color.colorTextSecondary()
+            detailsLabel.text = R.string.localizable.govYourDelegation(preferredLanguages: locale.rLanguages)
         }
     }
 

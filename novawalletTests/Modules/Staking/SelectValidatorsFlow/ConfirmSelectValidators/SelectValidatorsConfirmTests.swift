@@ -59,7 +59,12 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub()
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+14))
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: 0.1,
+                currencyId: Currency.usd.id
+            )
         )
 
         let interactor = InitiatedBondingConfirmInteractor(
@@ -141,6 +146,17 @@ class SelectValidatorsConfirmTests: XCTestCase {
              timeout: Constants.defaultExpectationDuration)
 
         // when
+
+        // no way to wait balance receive in presenter
+        presenter.didReceiveAccountBalance(
+            result: .success(
+                walletLocalSubscriptionFactory.getDummyBalance(
+                    for: selectedAccount.chainAccount.accountId,
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
+                )
+            )
+        )
 
         presenter.proceed()
 

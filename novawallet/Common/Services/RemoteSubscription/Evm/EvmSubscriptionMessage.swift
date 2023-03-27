@@ -1,15 +1,19 @@
 import Foundation
+import BigInt
+import Core
 
 enum EvmSubscriptionMessage {
     static let subscribeMethod = "eth_subscribe"
     static let unsubscribeMethod = "eth_unsubscribe"
+}
 
+extension EvmSubscriptionMessage {
     struct ERC20Transfer {
-        let incomingFilter: Params
-        let outgoingFilter: Params
+        let incomingFilter: LogsParams
+        let outgoingFilter: LogsParams
     }
 
-    struct Params: Encodable {
+    struct LogsParams: Encodable {
         static let type = "logs"
 
         let logs: LogsFilter
@@ -46,5 +50,30 @@ enum EvmSubscriptionMessage {
     struct LogsFilter: Encodable {
         let address: [AccountAddress]
         let topics: [Topic]
+    }
+}
+
+extension EvmSubscriptionMessage {
+    struct NewHeadsParams: Encodable {
+        static let type = "newHeads"
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+            try container.encode(Self.type)
+        }
+    }
+
+    struct NewHeadsUpdate: Decodable {
+        enum CodingKeys: String, CodingKey {
+            case blockNumber = "number"
+        }
+
+        let blockNumber: BigUInt
+
+        public init(from decoder: Decoder) throws {
+            var container = try decoder.container(keyedBy: CodingKeys.self)
+
+            blockNumber = try container.decodeHex(BigUInt.self, forKey: .blockNumber)
+        }
     }
 }

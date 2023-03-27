@@ -89,7 +89,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         _ reward: SubqueryRewardOrSlash,
         chainAssetId: ChainAssetId
     ) -> TransactionHistoryItem {
-        .init(
+        let context = HistoryRewardContext(
+            validator: reward.validator,
+            era: reward.era,
+            eventId: identifier
+        )
+        return .init(
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
@@ -103,7 +108,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             blockNumber: blockNumber,
             txIndex: nil,
             callPath: reward.isReward ? .reward : .slash,
-            call: nil
+            call: try? JSONEncoder().encode(context)
         )
     }
 

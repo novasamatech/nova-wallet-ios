@@ -5,16 +5,19 @@ import SubstrateSdk
 final class ReferendumsMetadataPreviewProviderSource {
     typealias Model = ReferendumMetadataLocal
 
-    let operationFactory: PolkassemblyOperationFactoryProtocol
+    let operationFactory: GovMetadataOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ReferendumMetadataLocal>
     let operationQueue: OperationQueue
+    let apiParameters: JSON?
 
     init(
-        operationFactory: PolkassemblyOperationFactoryProtocol,
+        operationFactory: GovMetadataOperationFactoryProtocol,
+        apiParameters: JSON?,
         repository: AnyDataProviderRepository<ReferendumMetadataLocal>,
         operationQueue: OperationQueue
     ) {
         self.operationFactory = operationFactory
+        self.apiParameters = apiParameters
         self.repository = repository
         self.operationQueue = operationQueue
     }
@@ -44,7 +47,7 @@ extension ReferendumsMetadataPreviewProviderSource: StreamableSourceProtocol {
         runningIn queue: DispatchQueue?,
         commitNotificationBlock: ((Result<Int, Error>?) -> Void)?
     ) {
-        let remoteFetchOperation = operationFactory.createPreviewsOperation()
+        let remoteFetchOperation = operationFactory.createPreviewsOperation(for: apiParameters)
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
         let changesOperation = ClosureOperation<[ReferendumMetadataLocal]> {
@@ -64,6 +67,8 @@ extension ReferendumsMetadataPreviewProviderSource: StreamableSourceProtocol {
                 )
             }
         }
+
+        localFetchOperation.addDependency(remoteFetchOperation)
 
         changesOperation.addDependency(remoteFetchOperation)
         changesOperation.addDependency(localFetchOperation)

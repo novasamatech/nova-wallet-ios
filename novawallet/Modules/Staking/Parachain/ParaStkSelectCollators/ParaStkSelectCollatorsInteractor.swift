@@ -1,4 +1,5 @@
 import UIKit
+import RobinHood
 
 final class ParaStkSelectCollatorsInteractor {
     weak var presenter: ParaStkSelectCollatorsInteractorOutputProtocol?
@@ -14,7 +15,7 @@ final class ParaStkSelectCollatorsInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     init(
         chainAsset: ChainAsset,

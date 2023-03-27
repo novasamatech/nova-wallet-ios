@@ -9,4 +9,12 @@ enum KnowChainId {
     static let edgeware = "742a2ca70c2fda6cee4f8df98d64c4c670a052d9568058982dad9d5a7a135c5b"
     static let karura = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
     static let nodle = "97da7ede98d7bad4e36b4d734b6055425a3be036da2a332ea5a7037656427a21"
+    static let polymesh = "6fbd74e5e1d0a61d52ccfe9d4adaed16dd3a7caa37c6bc4d0c2fa12e8b2f4063"
+    static let centrifuge = "b3db41421702df9a7fcac62b53ffeac85f7853cc4e689e0b93aeb3db18c09d82"
+    static let xxNetwork = "50dd5d206917bf10502c68fb4d18a59fc8aa31586f4e8856b493e43544aa82aa"
+    static let moonbeam = "fe58ea77779b7abda7da4ec526d14db9b1e9cd40a217c34892af80a9b332b76d"
+    static let moonriver = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+    static let ethereum = "eip155:1"
+    static let rococo = "a84b46a3e602245284bb9a72c4abd58ee979aa7a5d7f8c4dfdddfaaf0665a4ae"
+    static let westend = "e143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e"
 }

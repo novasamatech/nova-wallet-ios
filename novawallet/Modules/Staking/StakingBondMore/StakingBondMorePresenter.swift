@@ -13,10 +13,19 @@ final class StakingBondMorePresenter {
     var amount: Decimal = 0
     private let assetInfo: AssetBalanceDisplayInfo
     private var priceData: PriceData?
-    private var balance: Decimal?
+    private var freeBalance: Decimal?
+    private var transferableBalance: Decimal?
+    private var bondBalance: Decimal?
     private var fee: Decimal?
     private var stashItem: StashItem?
     private var stashAccount: ChainAccountResponse?
+
+    private var availableAmountToStake: Decimal? {
+        let free = freeBalance ?? 0
+        let bond = bondBalance ?? 0
+
+        return free >= bond ? free - bond : 0
+    }
 
     init(
         interactor: StakingBondMoreInteractorInputProtocol,
@@ -59,7 +68,7 @@ final class StakingBondMorePresenter {
     private func provideAsset() {
         let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
             amount,
-            balance: balance,
+            balance: availableAmountToStake,
             priceData: priceData
         )
         view?.didReceiveAsset(viewModel: viewModel)
@@ -80,8 +89,15 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
                 self?.interactor.estimateFee()
             }),
 
+            dataValidatingFactory.canPayFee(
+                balance: transferableBalance,
+                fee: fee,
+                asset: assetInfo,
+                locale: locale
+            ),
+
             dataValidatingFactory.canPayFeeAndAmount(
-                balance: balance,
+                balance: availableAmountToStake,
                 fee: fee,
                 spendingAmount: amount,
                 locale: locale
@@ -107,7 +123,7 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
     }
 
     func selectAmountPercentage(_ percentage: Float) {
-        if let balance = balance, let fee = fee {
+        if let balance = availableAmountToStake, let fee = fee {
             let newAmount = max(balance - fee, 0.0) * Decimal(Double(percentage))
 
             if newAmount > 0 {
@@ -126,21 +142,44 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
 }
 
 extension StakingBondMorePresenter: StakingBondMoreInteractorOutputProtocol {
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
         switch result {
-        case let .success(accountInfo):
-            if let accountInfo = accountInfo {
-                balance = Decimal.fromSubstrateAmount(
-                    accountInfo.data.available,
+        case let .success(assetBalance):
+            if let assetBalance = assetBalance {
+                freeBalance = Decimal.fromSubstrateAmount(
+                    assetBalance.freeInPlank,
                     precision: assetInfo.assetPrecision
                 )
+
+                transferableBalance = Decimal.fromSubstrateAmount(
+                    assetBalance.transferable,
+                    precision: assetInfo.assetPrecision
+                )
+
             } else {
-                balance = nil
+                freeBalance = nil
+                transferableBalance = nil
             }
 
             provideAsset()
         case let .failure(error):
             logger?.error("Did receive account info error: \(error)")
+        }
+    }
+
+    func didReceiveStakingLedger(result: Result<StakingLedger?, Error>) {
+        switch result {
+        case let .success(ledger):
+            if let ledger = ledger {
+                bondBalance = Decimal.fromSubstrateAmount(
+                    ledger.total,
+                    precision: assetInfo.assetPrecision
+                )
+            } else {
+                bondBalance = nil
+            }
+        case let .failure(error):
+            logger?.error("Did receive staking ledger error: \(error)")
         }
     }
 

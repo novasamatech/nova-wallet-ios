@@ -388,13 +388,13 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupInterac
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+    func didReceiveAccountBalance(result: Result<AssetBalance?, Error>) {
         switch result {
-        case let .success(accountInfo):
-            totalBalanceValue = accountInfo?.data.total ?? 0
+        case let .success(assetBalance):
+            totalBalanceValue = assetBalance?.totalInPlank ?? 0
 
-            balance = accountInfo.map {
-                Decimal.fromSubstrateAmount($0.data.available, precision: assetInfo.assetPrecision)
+            balance = assetBalance.map {
+                Decimal.fromSubstrateAmount($0.transferable, precision: assetInfo.assetPrecision)
             } ?? 0.0
 
             provideAssetVewModel()

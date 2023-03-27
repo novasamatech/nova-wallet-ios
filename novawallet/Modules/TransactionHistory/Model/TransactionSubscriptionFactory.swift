@@ -1,25 +1,16 @@
 import RobinHood
 import CommonWallet
 
-final class TransactionSubscriptionProvider {
-    let remote: StreamableProvider<TransactionHistoryItem>
-    let local: StreamableProvider<TransactionHistoryItem>
-
-    init(
-        local: StreamableProvider<TransactionHistoryItem>,
-        remote: StreamableProvider<TransactionHistoryItem>
-    ) {
-        self.local = local
-        self.remote = remote
-    }
-}
-
 protocol TransactionSubscriptionFactoryProtocol {
     func getTransactionsProvider(
         address: String,
-        chainAsset: ChainAsset,
-        historyFilter: WalletHistoryFilter
-    ) throws -> TransactionSubscriptionProvider
+        chainAsset: ChainAsset
+    ) throws -> StreamableProvider<TransactionHistoryItem>
+
+    func getRemoteTransactionsProvider(
+        address: String,
+        chainAsset: ChainAsset
+    ) throws -> RemoteHistoryTransactionsProviderProtocol
 }
 
 final class TransactionSubscriptionFactory: BaseLocalSubscriptionFactory {
@@ -45,28 +36,28 @@ final class TransactionSubscriptionFactory: BaseLocalSubscriptionFactory {
         self.repositoryFactory = repositoryFactory
         self.fetchCount = fetchCount
     }
-}
 
-extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol {
-    func getTransactionsProvider(
+    private func getSourceKey(
         address: String,
-        chainAsset: ChainAsset,
-        historyFilter: WalletHistoryFilter
-    ) throws -> TransactionSubscriptionProvider {
+        chainAssetId: ChainAssetId
+    ) -> String {
+        "source-\(chainAssetId.chainId)-\(chainAssetId.assetId)-\(address)"
+    }
+
+    private func getLocalProviderKey(
+        address: String,
+        chainAssetId: ChainAssetId
+    ) -> String {
+        "transactions-\(chainAssetId.chainId)-\(chainAssetId.assetId)-\(address)"
+    }
+
+    private func createRepository(
+        address: String,
+        chainAsset: ChainAsset
+    ) -> CoreDataRepository<TransactionHistoryItem, CDTransactionItem> {
         let chainId = chainAsset.chainAssetId.chainId
         let assetId = chainAsset.chainAssetId.assetId
-        let localCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-\(historyFilter.rawValue)-local"
-        let remoteCacheKey = "transactions-\(chainId)-\(assetId)-\(address)-\(historyFilter.rawValue)-remote"
-
-        if let localProvider = getProvider(for: localCacheKey) as? StreamableProvider<TransactionHistoryItem>,
-           let remoteProvider = getProvider(for: remoteCacheKey) as? StreamableProvider<TransactionHistoryItem> {
-            return .init(
-                local: localProvider,
-                remote: remoteProvider
-            )
-        }
-
-        let sourceFilter: TransactionHistoryItemSource = chainAsset.asset.isEvm ? .evm : .substrate
+        let sourceFilter: TransactionHistoryItemSource = .init(assetTypeString: chainAsset.asset.type)
         var filter: NSPredicate
         if let utilityAssetId = chainAsset.chain.utilityAsset()?.assetId,
            utilityAssetId == chainAsset.asset.assetId {
@@ -85,16 +76,34 @@ extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
             )
         }
 
-        let coreDataRepository: CoreDataRepository<TransactionHistoryItem, CDTransactionItem> = storageFacade.createRepository(filter: filter)
-        let repository = AnyDataProviderRepository(coreDataRepository)
+        return storageFacade.createRepository(filter: filter)
+    }
+}
+
+extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol {
+    func getTransactionsProvider(
+        address: String,
+        chainAsset: ChainAsset
+    ) throws -> StreamableProvider<TransactionHistoryItem> {
+        let chainId = chainAsset.chainAssetId.chainId
+        let assetId = chainAsset.chainAssetId.assetId
+        let cacheKey = getLocalProviderKey(address: address, chainAssetId: chainAsset.chainAssetId)
+        let sourceCacheKey = getSourceKey(address: address, chainAssetId: chainAsset.chainAssetId)
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<TransactionHistoryItem> {
+            return provider
+        }
+        let coreDataRepository = createRepository(
+            address: address,
+            chainAsset: chainAsset
+        )
 
         let observable = CoreDataContextObservable(
             service: storageFacade.databaseService,
             mapper: AnyCoreDataMapper(coreDataRepository.dataMapper),
-            predicate: { [historyFilter] entity in
+            predicate: { entity in
                 entity.chainId == chainId &&
-                    entity.assetId == assetId &&
-                    historyFilter.isFit(moduleName: entity.moduleName, callName: entity.callName)
+                    entity.assetId == assetId
             }
         )
 
@@ -104,37 +113,62 @@ extension TransactionSubscriptionFactory: TransactionSubscriptionFactoryProtocol
             }
         }
 
+        let repository = AnyDataProviderRepository(coreDataRepository)
+
+        let cachedSource = getProvider(for: sourceCacheKey) as? TransactionHistoryStreamableSource
+        let source: TransactionHistoryStreamableSource
+        if let cachedSource = getProvider(for: sourceCacheKey) as? TransactionHistoryStreamableSource {
+            source = cachedSource
+        } else {
+            source = TransactionHistoryStreamableSource(
+                historyFacade: historyFacade,
+                address: address,
+                chainAsset: chainAsset,
+                repository: repository,
+                fetchCount: fetchCount,
+                operationQueue: operationQueue
+            )
+            saveProvider(source, for: sourceCacheKey)
+        }
+
+        let provider = StreamableProvider(
+            source: AnyStreamableSource(source),
+            repository: repository,
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: OperationManager(operationQueue: operationQueue)
+        )
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
+    }
+
+    func getRemoteTransactionsProvider(
+        address: String,
+        chainAsset: ChainAsset
+    ) throws -> RemoteHistoryTransactionsProviderProtocol {
+        let sourceCacheKey = getSourceKey(address: address, chainAssetId: chainAsset.chainAssetId)
+
+        if let provider = getProvider(for: sourceCacheKey) as? TransactionHistoryStreamableSource {
+            return provider
+        }
+
+        let repository = AnyDataProviderRepository(createRepository(
+            address: address,
+            chainAsset: chainAsset
+        ))
+
         let source = TransactionHistoryStreamableSource(
             historyFacade: historyFacade,
             address: address,
             chainAsset: chainAsset,
             repository: repository,
-            filter: historyFilter,
             fetchCount: fetchCount,
             operationQueue: operationQueue
         )
 
-        let sharedSource = AnyStreamableSource(source)
+        saveProvider(source, for: sourceCacheKey)
 
-        let localProvider = StreamableProvider(
-            source: sharedSource,
-            repository: repository,
-            observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: OperationManager(operationQueue: operationQueue)
-        )
-
-        let emptyRepository = EmptyDataProviderRepository<TransactionHistoryItem>()
-
-        let remoteProvider = StreamableProvider(
-            source: sharedSource,
-            repository: AnyDataProviderRepository(emptyRepository),
-            observable: AnyDataProviderRepositoryObservable(observable),
-            operationManager: OperationManager(operationQueue: operationQueue)
-        )
-
-        saveProvider(localProvider, for: localCacheKey)
-        saveProvider(remoteProvider, for: remoteCacheKey)
-
-        return .init(local: localProvider, remote: remoteProvider)
+        return source
     }
 }

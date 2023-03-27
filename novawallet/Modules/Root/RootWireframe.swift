@@ -1,11 +1,23 @@
 import UIKit
 
 final class RootWireframe: RootWireframeProtocol {
+    let inAppUpdatesServiceFactory: InAppUpdatesServiceFactoryProtocol?
+
+    init(inAppUpdatesServiceFactory: InAppUpdatesServiceFactoryProtocol? = nil) {
+        self.inAppUpdatesServiceFactory = inAppUpdatesServiceFactory
+    }
+
     func showOnboarding(on view: UIWindow) {
         let onboardingView = OnboardingMainViewFactory.createViewForOnboarding()
         let onboardingController = onboardingView?.controller ?? UIViewController()
+        let navigationController: UINavigationController
 
-        let navigationController = FearlessNavigationController()
+        if let inAppUpdatesService = inAppUpdatesServiceFactory?.createService() {
+            navigationController = OnBoardingNavigationController(inAppUpdatesService: inAppUpdatesService)
+        } else {
+            navigationController = NovaNavigationController()
+        }
+
         navigationController.viewControllers = [onboardingController]
 
         view.rootViewController = navigationController
@@ -29,5 +41,27 @@ final class RootWireframe: RootWireframeProtocol {
     func showBroken(on view: UIWindow) {
         // normally user must not see this but on malicious devices it is possible
         view.backgroundColor = .red
+    }
+}
+
+final class OnBoardingNavigationController: NovaNavigationController {
+    let inAppUpdatesService: SyncServiceProtocol
+
+    init(inAppUpdatesService: SyncServiceProtocol) {
+        self.inAppUpdatesService = inAppUpdatesService
+        self.inAppUpdatesService.setup()
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        inAppUpdatesService.syncUp()
     }
 }

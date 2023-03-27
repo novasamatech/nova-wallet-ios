@@ -6,7 +6,7 @@ struct SubqueryPageInfo: Decodable {
     let endCursor: String?
 }
 
-struct SubqueryTransfer: Decodable {
+struct SubqueryTransfer: Codable {
     enum CodingKeys: String, CodingKey {
         case amount
         case receiver = "to"
@@ -24,7 +24,7 @@ struct SubqueryTransfer: Decodable {
     let success: Bool
 }
 
-struct SubqueryRewardOrSlash: Decodable {
+struct SubqueryRewardOrSlash: Codable {
     let amount: String
     let isReward: Bool
     let era: Int?

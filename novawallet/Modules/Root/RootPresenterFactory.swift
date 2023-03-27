@@ -5,7 +5,7 @@ import SoraFoundation
 final class RootPresenterFactory: RootPresenterFactoryProtocol {
     static func createPresenter(with view: UIWindow) -> RootPresenterProtocol {
         let presenter = RootPresenter()
-        let wireframe = RootWireframe()
+        let wireframe = RootWireframe(inAppUpdatesServiceFactory: InAppUpdatesServiceFactory())
         let keychain = Keychain()
         let settings = SettingsManager.shared
 
@@ -29,6 +29,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             settings: SelectedWalletSettings.shared,
             keystore: keychain,
             applicationConfig: ApplicationConfig.shared,
+            securityLayerInteractor: SecurityLayerService.shared.interactor,
             chainRegistryClosure: { ChainRegistryFacade.sharedRegistry },
             eventCenter: EventCenter.shared,
             migrators: [userStorageMigrator, substrateStorageMigrator],

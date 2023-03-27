@@ -48,7 +48,7 @@ final class TransactionHistoryWireframe: TransactionHistoryWireframeProtocol {
             return
         }
 
-        let operationNavigationController = FearlessNavigationController(rootViewController: viewController)
+        let operationNavigationController = NovaNavigationController(rootViewController: viewController)
 
         navigationController.present(operationNavigationController, animated: true)
     }

@@ -92,7 +92,12 @@ class BondMoreConfirmTests: XCTestCase {
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(stashItem: stashItem)
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+12))
         let priceSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.01", dayChange: nil, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.01",
+                dayChange: nil,
+                currencyId: Currency.usd.id
+            )
         )
 
         let interactor = StakingBondMoreConfirmationInteractor(
@@ -162,6 +167,17 @@ class BondMoreConfirmTests: XCTestCase {
         // then
 
         wait(for: [assetExpectation, feeExpectation, confirmViewModelExpectation], timeout: 10)
+
+        // no way to wait balance receive in presenter
+        presenter.didReceiveAccountBalance(
+            result: .success(
+                walletLocalSubscriptionFactory.getDummyBalance(
+                    for: accountResponse.accountId,
+                    chainId: chainAsset.chain.chainId,
+                    assetId: chainAsset.asset.assetId
+                )
+            )
+        )
 
         return presenter
     }

@@ -16,10 +16,11 @@ final class StakingBondMoreInteractor: AccountFetching {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let operationManager: OperationManagerProtocol
 
-    private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var extrinsicService: ExtrinsicServiceProtocol?
+    private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
 
     private lazy var callFactory = SubstrateCallFactory()
 
@@ -95,19 +96,29 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
     AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            let maybeStashItem = try result.get()
-            let maybeStashId = try maybeStashItem.map { try $0.stash.toAccountId() }
-
-            clear(dataProvider: &balanceProvider)
-            presenter.didReceiveStashItem(result: result)
-
-            guard let stashAccountId = maybeStashId else {
-                presenter.didReceiveAccountInfo(result: .success(nil))
+            guard let stashItem = try result.get() else {
+                presenter.didReceiveStashItem(result: .success(nil))
+                presenter.didReceiveAccountBalance(result: .success(nil))
+                presenter.didReceiveStakingLedger(result: .success(nil))
                 return
             }
 
-            balanceProvider = subscribeToAccountInfoProvider(
+            clear(streamableProvider: &balanceProvider)
+            clear(dataProvider: &ledgerProvider)
+
+            presenter.didReceiveStashItem(result: result)
+
+            let stashAccountId = try stashItem.stash.toAccountId(using: chainAsset.chain.chainFormat)
+            let controllerAccountId = try stashItem.controller.toAccountId(using: chainAsset.chain.chainFormat)
+
+            balanceProvider = subscribeToAssetBalanceProvider(
                 for: stashAccountId,
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId
+            )
+
+            ledgerProvider = subscribeLedgerInfo(
+                for: controllerAccountId,
                 chainId: chainAsset.chain.chainId
             )
 
@@ -132,8 +143,17 @@ extension StakingBondMoreInteractor: StakingLocalStorageSubscriber, StakingLocal
 
         } catch {
             presenter.didReceiveStashItem(result: .failure(error))
-            presenter.didReceiveAccountInfo(result: .failure(error))
+            presenter.didReceiveAccountBalance(result: .failure(error))
+            presenter.didReceiveStakingLedger(result: .failure(error))
         }
+    }
+
+    func handleLedgerInfo(
+        result: Result<StakingLedger?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        presenter.didReceiveStakingLedger(result: result)
     }
 }
 
@@ -144,12 +164,13 @@ extension StakingBondMoreInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
 }
 
 extension StakingBondMoreInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveAccountBalance(result: result)
     }
 }
 

@@ -5,4 +5,8 @@ struct DAppBrowserPage {
     let title: String
 
     var identifier: String { url.absoluteString }
+
+    var domain: String {
+        url.host ?? url.absoluteString
+    }
 }

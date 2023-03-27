@@ -87,9 +87,7 @@ struct MoonbeamTermsViewFactory {
 
         let feeProxy = ExtrinsicFeeProxy()
 
-        let priceLocalSubscriptionFactory = PriceProviderFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
+        let priceLocalSubscriptionFactory = PriceProviderFactory.shared
 
         let signingWrapper = SigningWrapperFactory().createSigningWrapper(
             for: selectedMetaAccount.metaId,

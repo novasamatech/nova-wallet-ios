@@ -14,6 +14,10 @@ extension RuntimeCoderFactoryProtocol {
         getTypeNode(for: type) is U64Node
     }
 
+    func isCompactType(_ type: String) -> Bool {
+        getTypeNode(for: type) is CompactNode
+    }
+
     func isStructHasFieldsCount(_ type: String, count: Int) -> Bool {
         guard let structNode = getTypeNode(for: type) as? StructNode else {
             return false

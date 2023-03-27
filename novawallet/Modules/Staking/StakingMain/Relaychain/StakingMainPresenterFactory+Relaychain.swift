@@ -27,19 +27,10 @@ extension StakingMainPresenterFactory {
         // MARK: - Presenter
 
         let viewModelFacade = StakingViewModelFacade()
-        let analyticsVMFactoryBuilder: AnalyticsRewardsViewModelFactoryBuilder
-            = { chainAsset, balanceViewModelFactory in
-                AnalyticsRewardsViewModelFactory(
-                    assetInfo: chainAsset.assetDisplayInfo,
-                    balanceViewModelFactory: balanceViewModelFactory,
-                    calendar: Calendar(identifier: .gregorian)
-                )
-            }
 
         let logger = Logger.shared
 
         let stateViewModelFactory = StakingStateViewModelFactory(
-            analyticsRewardsViewModelFactoryBuilder: analyticsVMFactoryBuilder,
             priceAssetInfoFactory: priceAssetInfoFactory,
             logger: logger
         )
@@ -89,7 +80,8 @@ extension StakingMainPresenterFactory {
         let stakingRemoteSubscriptionService = StakingRemoteSubscriptionService(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             repository: chainItemRepository,
-            operationManager: operationManager,
+            syncOperationManager: operationManager,
+            repositoryOperationManager: operationManager,
             logger: logger
         )
 
@@ -133,7 +125,7 @@ extension StakingMainPresenterFactory {
             accountProviderFactory: accountProviderFactory,
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
-            applicationHandler: ApplicationHandler(),
+            applicationHandler: applicationHandler,
             currencyManager: currencyManager,
             logger: logger
         )
@@ -152,18 +144,13 @@ extension StakingMainPresenterFactory {
             logger: Logger.shared
         )
 
-        let stakingAnalyticsLocalSubscriptionFactory = StakingAnalyticsLocalSubscriptionFactory(
-            storageFacade: storageFacade
-        )
-
         return StakingSharedState(
             consensus: consensus,
             settings: stakingAssetSettings,
             eraValidatorService: nil,
             rewardCalculationService: nil,
             blockTimeService: nil,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
-            stakingAnalyticsLocalSubscriptionFactory: stakingAnalyticsLocalSubscriptionFactory
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory
         )
     }
 }

@@ -1,10 +1,6 @@
 PODS:
   - BigInt (5.2.0)
-  - CDMarkdownKit (2.3.0)
-  - Charts (4.1.0):
-    - Charts/Core (= 4.1.0)
-  - Charts/Core (4.1.0):
-    - SwiftAlgorithms (~> 1.0)
+  - CDMarkdownKit (2.5.2)
   - CocoaLumberjack (3.7.2):
     - CocoaLumberjack/Core (= 3.7.2)
   - CocoaLumberjack/Core (3.7.2)
@@ -102,7 +98,7 @@ PODS:
   - SoraUI/Skrull (1.11.1)
   - Sourcery (1.4.1)
   - Starscream (4.0.5)
-  - SubstrateSdk (1.5.0):
+  - SubstrateSdk (1.10.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -117,7 +113,6 @@ PODS:
     - xxHash-Swift (~> 1.0.0)
   - SVGKit (2.1.0):
     - CocoaLumberjack (~> 3.0)
-  - SwiftAlgorithms (1.0.0)
   - SwiftFormat/CLI (0.47.13)
   - SwiftLint (0.43.1)
   - SwiftRLP (1.1):
@@ -134,8 +129,7 @@ PODS:
   - xxHash-Swift (1.0.13)
 
 DEPENDENCIES:
-  - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.4.0`)
-  - Charts
+  - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
   - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, tag `1.16.0`)
   - Cuckoo
   - FireMock
@@ -149,7 +143,7 @@ DEPENDENCIES:
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.11.1`)
   - Sourcery (~> 1.4)
   - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.5`)
-  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, commit `caa1c264e41d8ba5428db6c91b66a2d25154f341`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.10.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
@@ -160,7 +154,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - BigInt
-    - Charts
     - CocoaLumberjack
     - CryptoSwift
     - Cuckoo
@@ -178,7 +171,6 @@ SPEC REPOS:
     - SoraFoundation
     - SoraKeystore
     - Sourcery
-    - SwiftAlgorithms
     - SwiftFormat
     - SwiftLint
     - SwiftyBeaver
@@ -189,7 +181,7 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   CDMarkdownKit:
     :git: https://github.com/nova-wallet/CDMarkdownKit.git
-    :tag: 2.4.0
+    :tag: 2.5.2
   CommonWallet:
     :git: https://github.com/ERussel/Capital-iOS.git
     :tag: 1.16.0
@@ -200,8 +192,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.5
   SubstrateSdk:
-    :commit: caa1c264e41d8ba5428db6c91b66a2d25154f341
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 1.10.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -214,7 +206,7 @@ EXTERNAL SOURCES:
 CHECKOUT OPTIONS:
   CDMarkdownKit:
     :git: https://github.com/nova-wallet/CDMarkdownKit.git
-    :tag: 2.4.0
+    :tag: 2.5.2
   CommonWallet:
     :git: https://github.com/ERussel/Capital-iOS.git
     :tag: 1.16.0
@@ -225,8 +217,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ERussel/Starscream.git
     :tag: 4.0.5
   SubstrateSdk:
-    :commit: caa1c264e41d8ba5428db6c91b66a2d25154f341
     :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 1.10.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -239,8 +231,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
-  CDMarkdownKit: 9154c4e31f105e6a83b726412787d85e56edba46
-  Charts: 354f86803d11d9c35de280587fef50d1af063978
+  CDMarkdownKit: ed78cf1a5c57dbe362054633a0f802f0534531ff
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   CommonWallet: 59fdbf5511d6fcdc38496db4baf425dd0cf29274
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
@@ -261,9 +252,8 @@ SPEC CHECKSUMS:
   SoraUI: e5ceb2cffe40145e589aa464e2e0a8d054011e0b
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 8cc648110705c09a15f0de84352c7f9595b7cb05
-  SubstrateSdk: 6923efefde7463684701e9f4f5b0216eb6578a71
+  SubstrateSdk: e5853e2fa060b3f532315f84f13d85553ce18fc2
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
-  SwiftAlgorithms: 38dda4731d19027fdeee1125f973111bf3386b53
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
@@ -273,6 +263,6 @@ SPEC CHECKSUMS:
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: ba0e80e9495d7a239fdcaf67699da02a45068114
+PODFILE CHECKSUM: f0c2b290a1b38f8c6b5006f4c51370ed8626fb44
 
 COCOAPODS: 1.11.3

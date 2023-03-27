@@ -196,7 +196,7 @@ class CrowdloanContributionConfirmTests: XCTestCase {
             return nil
         }
 
-        guard let crowdloanInfoUrl = chain.externalApi?.crowdloans?.url else {
+        guard let crowdloanInfoUrl = chain.externalApis?.crowdloans()?.first?.url else {
             return nil
         }
 
@@ -212,7 +212,12 @@ class CrowdloanContributionConfirmTests: XCTestCase {
         )
 
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "100", dayChange: 0.01, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "100",
+                dayChange: 0.01,
+                currencyId: Currency.usd.id
+            )
         )
 
         let jsonProviderFactory = JsonDataProviderFactoryStub(

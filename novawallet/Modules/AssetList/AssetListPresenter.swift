@@ -381,8 +381,11 @@ final class AssetListPresenter: AssetListBasePresenter {
     }
 
     private func presentAssetDetails(for chainAssetId: ChainAssetId) {
+        // get chain from interactor that includes also disabled assets
+        let optChain = interactor.getFullChain(for: chainAssetId.chainId) ?? allChains[chainAssetId.chainId]
+
         guard
-            let chain = allChains[chainAssetId.chainId],
+            let chain = optChain,
             let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
             return
         }
@@ -397,10 +400,18 @@ final class AssetListPresenter: AssetListBasePresenter {
 
     // MARK: Interactor Output overridings
 
-    override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
+    override func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
         view?.didCompleteRefreshing()
 
-        super.didReceivePrices(result: result)
+        super.didReceivePrice(changes: changes)
+
+        updateAssetsView()
+    }
+
+    override func didReceivePrice(error: Error) {
+        view?.didCompleteRefreshing()
+
+        super.didReceivePrice(error: error)
 
         updateAssetsView()
     }

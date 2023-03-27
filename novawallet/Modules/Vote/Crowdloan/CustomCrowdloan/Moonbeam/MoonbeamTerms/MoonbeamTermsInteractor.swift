@@ -21,8 +21,8 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
     let chainConnection: ChainConnection
     let logger: LoggerProtocol?
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
-    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
+    private var priceProvider: StreamableProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var subscriptionId: UInt16?
 
     init(
@@ -153,7 +153,13 @@ extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
         feeProxy.delegate = self
         estimateFee()
         subscribeToPrice()
-        accountInfoProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chainId)
+
+        balanceProvider = subscribeToAssetBalanceProvider(
+            for: accountId,
+            chainId: chainId,
+            assetId: asset.assetId
+        )
+
         fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
@@ -210,12 +216,13 @@ extension MoonbeamTermsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscr
 }
 
 extension MoonbeamTermsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(
-        result: Result<AccountInfo?, Error>,
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
         accountId _: AccountId,
-        chainId _: ChainModel.Id
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result)
+        presenter.didReceiveBalance(result: result)
     }
 }
 

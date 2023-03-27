@@ -17,13 +17,16 @@ final class StakingAmountInteractor {
     let extrinsicService: ExtrinsicServiceProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let rewardService: RewardCalculatorServiceProtocol
+    let networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol
+    let eraValidatorService: EraValidatorServiceProtocol
     let operationManager: OperationManagerProtocol
 
-    private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
+    private var bagListSizeProvider: AnyDataProvider<DecodedU32>?
 
     init(
         selectedAccount: ChainAccountResponse,
@@ -35,6 +38,8 @@ final class StakingAmountInteractor {
         extrinsicService: ExtrinsicServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         rewardService: RewardCalculatorServiceProtocol,
+        networkInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
+        eraValidatorService: EraValidatorServiceProtocol,
         operationManager: OperationManagerProtocol,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -47,8 +52,28 @@ final class StakingAmountInteractor {
         self.extrinsicService = extrinsicService
         self.rewardService = rewardService
         self.runtimeService = runtimeService
+        self.networkInfoOperationFactory = networkInfoOperationFactory
+        self.eraValidatorService = eraValidatorService
         self.operationManager = operationManager
         self.currencyManager = currencyManager
+    }
+
+    private func provideNetworkInfo() {
+        let wrapper = networkInfoOperationFactory.networkStakingOperation(
+            for: eraValidatorService,
+            runtimeService: runtimeService
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            do {
+                let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                self?.presenter.didReceive(networkInfo: info)
+            } catch {
+                self?.presenter.didReceive(error: error)
+            }
+        }
+
+        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
     private func provideRewardCalculator() {
@@ -81,16 +106,19 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
             presenter.didReceive(price: nil)
         }
 
-        balanceProvider = subscribeToAccountInfoProvider(
+        balanceProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.accountId,
-            chainId: chainAsset.chain.chainId
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
         )
 
         minBondProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
         counterForNominatorsProvider = subscribeToCounterForNominators(for: chainAsset.chain.chainId)
         maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainAsset.chain.chainId)
+        bagListSizeProvider = subscribeBagsListSize(for: chainAsset.chain.chainId)
 
         provideRewardCalculator()
+        provideNetworkInfo()
 
         fetchConstant(
             for: .existentialDeposit,
@@ -192,13 +220,27 @@ extension StakingAmountInteractor: StakingLocalStorageSubscriber, StakingLocalSu
             presenter.didReceive(error: error)
         }
     }
+
+    func handleBagListSize(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(value):
+            presenter?.didReceive(bagListSize: value)
+        case let .failure(error):
+            presenter?.didReceive(error: error)
+        }
+    }
 }
 
 extension StakingAmountInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
         switch result {
-        case let .success(accountInfo):
-            presenter.didReceive(balance: accountInfo?.data)
+        case let .success(assetBalance):
+            presenter.didReceive(balance: assetBalance)
         case let .failure(error):
             presenter.didReceive(error: error)
         }

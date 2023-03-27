@@ -186,6 +186,29 @@ extension NSPredicate {
         NSPredicate(format: "%K == true", #keyPath(CDChain.hasCrowdloans))
     }
 
+    static func assetBalance(chainId: ChainModel.Id, assetId: AssetModel.Id) -> NSPredicate {
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainId),
+            chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetBalance.assetId),
+            assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainIdPredicate, assetIdPredicate
+        ])
+    }
+
+    static func assetBalance(chainAssetIds: Set<ChainAssetId>) -> NSPredicate {
+        let predicates = chainAssetIds.map { assetBalance(chainId: $0.chainId, assetId: $0.assetId) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
+    }
+
     static func assetBalance(
         for accountId: AccountId,
         chainId: ChainModel.Id,
@@ -240,6 +263,29 @@ extension NSPredicate {
             #keyPath(CDAssetBalance.chainAccountId),
             accountId.toHex()
         )
+    }
+
+    static func assetLock(chainId: ChainModel.Id, assetId: AssetModel.Id) -> NSPredicate {
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetLock.chainId),
+            chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetLock.assetId),
+            assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainIdPredicate, assetIdPredicate
+        ])
+    }
+
+    static func assetLock(chainAssetIds: Set<ChainAssetId>) -> NSPredicate {
+        let predicates = chainAssetIds.map { assetLock(chainId: $0.chainId, assetId: $0.assetId) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
     }
 
     static func assetLock(
@@ -317,6 +363,13 @@ extension NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDDAppSettings.metaId), metaId)
     }
 
+    static func crowdloanContribution(chainIds: Set<ChainModel.Id>) -> NSPredicate {
+        let predicates = chainIds.map {
+            NSPredicate(format: "%K == %@", #keyPath(CDCrowdloanContribution.chainId), $0)
+        }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: Array(predicates))
+    }
+
     static func crowdloanContribution(
         for chainId: ChainModel.Id,
         accountId: AccountId,
@@ -370,5 +423,23 @@ extension NSPredicate {
         )
 
         return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, referendumPredicate])
+    }
+
+    static func prices(for currencyId: Int) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDPrice.currency), currencyId)
+    }
+
+    static func price(for priceId: String, currencyId: Int) -> NSPredicate {
+        let identifier = PriceData.createIdentifier(for: priceId, currencyId: currencyId)
+
+        return NSPredicate(format: "%K == %@", #keyPath(CDPrice.identifier), identifier)
+    }
+
+    static func pricesByIds(_ identifiers: [String]) -> NSPredicate {
+        let predicates = identifiers.map {
+            NSPredicate(format: "%K == %@", #keyPath(CDPrice.identifier), $0)
+        }
+
+        return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
     }
 }

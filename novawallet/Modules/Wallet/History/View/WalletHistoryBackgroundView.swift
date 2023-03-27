@@ -41,12 +41,12 @@ extension WalletHistoryBackgroundView: HistoryBackgroundViewProtocol {
     func apply(style _: HistoryViewStyleProtocol) {}
 
     func applyFullscreen(progress: CGFloat) {
-        let sideLength = minimizedSideLength * progress
+        let sideLength = minimizedSideLength * (1 - progress)
 
         minimizedBackgroundView.sideLength = sideLength
-        minimizedBackgroundView.alpha = progress
+        minimizedBackgroundView.alpha = 1 - progress
 
         fullBackgroundView.sideLength = sideLength
-        fullBackgroundView.alpha = (1 - progress)
+        fullBackgroundView.alpha = progress
     }
 }

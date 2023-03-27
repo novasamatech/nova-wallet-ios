@@ -1,13 +1,12 @@
 import Foundation
 import SubstrateSdk
-import xxHash_Swift
 
 extension RemoteAssetModel {
     init?(evmToken: RemoteEvmToken, evmInstance: RemoteEvmToken.Instance) {
-        guard let ethereumAccountId = try? evmInstance.contractAddress.toEthereumAccountId() else {
+        guard let assetId = AssetModel.createAssetId(from: evmInstance.contractAddress) else {
             return nil
         }
-        let assetId = XXH32.digest(ethereumAccountId)
+
         let iconURL: URL?
 
         if let icon = evmToken.icon {
@@ -24,7 +23,7 @@ extension RemoteAssetModel {
             precision: UInt16(evmToken.precision),
             priceId: evmToken.priceId,
             staking: nil,
-            type: "evm",
+            type: AssetType.evmAsset.rawValue,
             typeExtras: JSON.stringValue(evmInstance.contractAddress),
             buyProviders: nil
         )

@@ -4,19 +4,21 @@ final class StashState: BaseStakingState {
     private(set) var stashItem: StashItem
     private(set) var totalReward: TotalRewardItem?
     private(set) var payee: RewardDestinationArg?
-
     private(set) var ledgerInfo: StakingLedger?
+    private(set) var bagListNode: BagList.Node?
 
     init(
         stateMachine: StakingStateMachineProtocol,
         commonData: StakingStateCommonData,
         stashItem: StashItem,
         ledgerInfo: StakingLedger?,
-        totalReward: TotalRewardItem?
+        totalReward: TotalRewardItem?,
+        bagListNode: BagList.Node?
     ) {
         self.stashItem = stashItem
         self.ledgerInfo = ledgerInfo
         self.totalReward = totalReward
+        self.bagListNode = bagListNode
 
         super.init(stateMachine: stateMachine, commonData: commonData)
     }
@@ -65,7 +67,8 @@ final class StashState: BaseStakingState {
                 ledgerInfo: ledgerInfo,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else if let nomination = nomination {
             newState = PendingNominatorState(
@@ -75,7 +78,8 @@ final class StashState: BaseStakingState {
                 ledgerInfo: nil,
                 nomination: nomination,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         } else {
             newState = PendingValidatorState(
@@ -127,7 +131,8 @@ final class StashState: BaseStakingState {
                 ledgerInfo: ledgerInfo,
                 nomination: nil,
                 totalReward: totalReward,
-                payee: payee
+                payee: payee,
+                bagListNode: bagListNode
             )
         }
 
@@ -142,6 +147,12 @@ final class StashState: BaseStakingState {
 
     override func process(payee: RewardDestinationArg?) {
         self.payee = payee
+
+        stateMachine?.transit(to: self)
+    }
+
+    override func process(bagListNode: BagList.Node?) {
+        self.bagListNode = bagListNode
 
         stateMachine?.transit(to: self)
     }

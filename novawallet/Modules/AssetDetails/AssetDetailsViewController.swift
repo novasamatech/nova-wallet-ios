@@ -31,7 +31,6 @@ final class AssetDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: rootView.chainView)
         addHandlers()
         applyLocalization()
         presenter.setup()

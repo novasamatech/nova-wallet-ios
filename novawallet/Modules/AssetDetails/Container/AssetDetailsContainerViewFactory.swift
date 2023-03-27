@@ -14,7 +14,7 @@ final class AssetDetailsContainerViewFactory: AssetDetailsContainerViewFactoryPr
 
         view.content = accountView
         view.draggable = historyView
-
+        view.hidesBottomBarWhenPushed = true
         return view
     }
 }

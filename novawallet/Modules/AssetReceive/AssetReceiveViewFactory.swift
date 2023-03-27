@@ -9,10 +9,8 @@ struct AssetReceiveViewFactory {
     ) -> AssetReceiveViewProtocol? {
         let chainAccount = metaChainAccountResponse.chainAccount
         let qrCoderFactory = WalletQRCoderFactory(
-            addressPrefix: chainAccount.addressPrefix,
             chainFormat: chainAccount.chainFormat,
-            publicKey: chainAccount.publicKey,
-            username: chainAccount.name
+            publicKey: chainAccount.publicKey
         )
 
         let interactor = AssetReceiveInteractor(

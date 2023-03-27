@@ -17,7 +17,8 @@ final class StakingAmountPresenter {
 
     private var calculator: RewardCalculatorEngineProtocol?
     private var priceData: PriceData?
-    private var balance: Decimal?
+    private var freeBalance: Decimal?
+    private var transferableBalance: Decimal?
     private var fee: Decimal?
     private var loadingFee: Bool = false
     private var amount: Decimal?
@@ -28,6 +29,8 @@ final class StakingAmountPresenter {
     private var minBondAmount: Decimal?
     private var counterForNominators: UInt32?
     private var maxNominatorsCount: UInt32?
+    private var bagListSize: UInt32?
+    private var networkInfo: NetworkStakingInfo?
 
     init(
         wireframe: StakingAmountWireframeProtocol,
@@ -100,7 +103,7 @@ final class StakingAmountPresenter {
     private func provideAsset() {
         let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
             amount ?? 0.0,
-            balance: balance,
+            balance: freeBalance,
             priceData: priceData
         )
         view?.didReceiveAsset(viewModel: viewModel)
@@ -164,7 +167,7 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
     }
 
     func selectAmountPercentage(_ percentage: Float) {
-        if let balance = balance, let fee = fee {
+        if let balance = freeBalance, let fee = fee {
             let newAmount = max(balance - fee, 0.0) * Decimal(Double(percentage))
 
             if newAmount > 0 {
@@ -212,8 +215,14 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
             dataValidatingFactory.has(fee: fee, locale: locale) { [weak self] in
                 self?.scheduleFeeEstimation()
             },
+            dataValidatingFactory.canPayFee(
+                balance: transferableBalance,
+                fee: fee,
+                asset: assetInfo,
+                locale: locale
+            ),
             dataValidatingFactory.canPayFeeAndAmount(
-                balance: balance,
+                balance: freeBalance,
                 fee: fee,
                 spendingAmount: amount,
                 locale: locale
@@ -228,6 +237,18 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
                 counterForNominators: counterForNominators,
                 maxNominatorsCount: maxNominatorsCount,
                 hasExistingNomination: false,
+                locale: locale
+            ),
+            dataValidatingFactory.minStakeIsNotViolated(
+                amount: amount,
+                params: .init(
+                    networkInfo: networkInfo,
+                    minNominatorBond: minBondAmount?.toSubstrateAmount(
+                        precision: assetInfo.assetPrecision
+                    ),
+                    votersCount: bagListSize
+                ),
+                assetInfo: assetInfo,
                 locale: locale
             )
         ]).runValidation { [weak self] in
@@ -280,11 +301,20 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
         provideRewardDestination()
     }
 
-    func didReceive(balance: AccountData?) {
-        if let availableValue = balance?.available {
-            self.balance = Decimal.fromSubstrateAmount(availableValue, precision: assetInfo.assetPrecision)
+    func didReceive(balance: AssetBalance?) {
+        if let assetBalance = balance {
+            freeBalance = Decimal.fromSubstrateAmount(
+                assetBalance.freeInPlank,
+                precision: assetInfo.assetPrecision
+            )
+
+            transferableBalance = Decimal.fromSubstrateAmount(
+                assetBalance.transferable,
+                precision: assetInfo.assetPrecision
+            )
         } else {
-            self.balance = 0.0
+            freeBalance = 0.0
+            transferableBalance = 0.0
         }
 
         provideAsset()
@@ -350,6 +380,14 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
 
     func didReceive(maxNominatorsCount: UInt32?) {
         self.maxNominatorsCount = maxNominatorsCount
+    }
+
+    func didReceive(bagListSize: UInt32?) {
+        self.bagListSize = bagListSize
+    }
+
+    func didReceive(networkInfo: NetworkStakingInfo) {
+        self.networkInfo = networkInfo
     }
 }
 

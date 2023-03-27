@@ -1,13 +1,16 @@
 import Foundation
 import BigInt
 
-enum ReferendumAccountVoteLocal {
+enum ReferendumAccountVoteLocal: Equatable {
     case split(ConvictionVoting.AccountVoteSplit)
     case standard(ConvictionVoting.AccountVoteStandard)
+    case splitAbstain(ConvictionVoting.AccountVoteSplitAbstain)
 
     var hasAyeVotes: Bool {
         switch self {
         case let .split(voting):
+            return voting.aye > 0
+        case let .splitAbstain(voting):
             return voting.aye > 0
         case let .standard(voting):
             return voting.vote.aye
@@ -18,8 +21,19 @@ enum ReferendumAccountVoteLocal {
         switch self {
         case let .split(voting):
             return voting.nay > 0
+        case let .splitAbstain(voting):
+            return voting.nay > 0
         case let .standard(voting):
             return !voting.vote.aye
+        }
+    }
+
+    var hasAbstainVotes: Bool {
+        switch self {
+        case let .splitAbstain(voting):
+            return voting.abstain > 0
+        case .standard, .split:
+            return false
         }
     }
 
@@ -27,8 +41,11 @@ enum ReferendumAccountVoteLocal {
     var ayes: BigUInt {
         switch self {
         case let .split(value):
-            let splitConviction = ConvictionVoting.Conviction.none
-            return splitConviction.votes(for: value.aye) ?? 0
+            let conviction = ConvictionVoting.Conviction.none
+            return conviction.votes(for: value.aye) ?? 0
+        case let .splitAbstain(value):
+            let conviction = ConvictionVoting.Conviction.none
+            return conviction.votes(for: value.aye) ?? 0
         case let .standard(value):
             if value.vote.aye {
                 return value.vote.conviction.votes(for: value.balance) ?? 0
@@ -41,8 +58,11 @@ enum ReferendumAccountVoteLocal {
     var nays: BigUInt {
         switch self {
         case let .split(value):
-            let splitConviction = ConvictionVoting.Conviction.none
-            return splitConviction.votes(for: value.nay) ?? 0
+            let conviction = ConvictionVoting.Conviction.none
+            return conviction.votes(for: value.nay) ?? 0
+        case let .splitAbstain(value):
+            let conviction = ConvictionVoting.Conviction.none
+            return conviction.votes(for: value.nay) ?? 0
         case let .standard(value):
             if !value.vote.aye {
                 return value.vote.conviction.votes(for: value.balance) ?? 0
@@ -52,9 +72,21 @@ enum ReferendumAccountVoteLocal {
         }
     }
 
+    var abstains: BigUInt {
+        switch self {
+        case let .splitAbstain(value):
+            let conviction = ConvictionVoting.Conviction.none
+            return conviction.votes(for: value.abstain) ?? 0
+        case .standard, .split:
+            return 0
+        }
+    }
+
     var ayeBalance: BigUInt {
         switch self {
         case let .split(value):
+            return value.aye
+        case let .splitAbstain(value):
             return value.aye
         case let .standard(value):
             if value.vote.aye {
@@ -69,6 +101,8 @@ enum ReferendumAccountVoteLocal {
         switch self {
         case let .split(value):
             return value.nay
+        case let .splitAbstain(value):
+            return value.nay
         case let .standard(value):
             if !value.vote.aye {
                 return value.balance
@@ -78,13 +112,22 @@ enum ReferendumAccountVoteLocal {
         }
     }
 
+    var abstainBalance: BigUInt {
+        switch self {
+        case let .splitAbstain(value):
+            return value.abstain
+        case .standard, .split:
+            return 0
+        }
+    }
+
     var totalBalance: BigUInt {
         ayeBalance + nayBalance
     }
 
     var conviction: Decimal? {
         switch self {
-        case .split:
+        case .split, .splitAbstain:
             return 0.1
         case let .standard(value):
             return value.vote.conviction.decimalValue
@@ -93,7 +136,7 @@ enum ReferendumAccountVoteLocal {
 
     var convictionValue: ConvictionVoting.Conviction {
         switch self {
-        case .split:
+        case .split, .splitAbstain:
             return .none
         case let .standard(voting):
             return voting.vote.conviction
@@ -106,6 +149,8 @@ enum ReferendumAccountVoteLocal {
             self = .split(split)
         case let .standard(standard):
             self = .standard(standard)
+        case let .splitAbstain(splitAbstain):
+            self = .splitAbstain(splitAbstain)
         case .unknown:
             return nil
         }

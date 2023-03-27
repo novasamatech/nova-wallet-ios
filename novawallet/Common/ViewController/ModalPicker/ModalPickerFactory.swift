@@ -28,7 +28,7 @@ enum ModalPickerFactory {
 
         viewController.viewModels = actions
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(actions.count) * viewController.cellHeight +
@@ -74,7 +74,7 @@ enum ModalPickerFactory {
             }
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(options.count) * viewController.cellHeight +
@@ -121,7 +121,7 @@ enum ModalPickerFactory {
             }
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(options.count) * viewController.cellHeight +
@@ -170,7 +170,7 @@ enum ModalPickerFactory {
             }
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(types.count) * viewController.cellHeight +
@@ -218,7 +218,7 @@ enum ModalPickerFactory {
             return optViewModel.map { viewModel in LocalizableResource { _ in viewModel } }
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(accounts.count) * viewController.cellHeight +
@@ -261,7 +261,7 @@ enum ModalPickerFactory {
             }
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
@@ -302,7 +302,7 @@ enum ModalPickerFactory {
 
         viewController.viewModels = items
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
@@ -380,7 +380,7 @@ enum ModalPickerFactory {
 
         viewController.viewModels = items
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
 
         let itemsCount = actionViewModel != nil ? items.count + 1 : items.count
@@ -425,7 +425,7 @@ enum ModalPickerFactory {
 
         viewController.viewModels = items
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
@@ -494,7 +494,7 @@ enum ModalPickerFactory {
             viewController.selectedIndex = NSNotFound
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
 
         let itemsCount = crossChainViewModels.count + 1
@@ -503,6 +503,40 @@ enum ModalPickerFactory {
             CGFloat(sectionsCount) * viewController.sectionHeaderHeight + viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+}
+
+extension ModalPickerFactory {
+    static func createSelectionList(
+        title: LocalizableResource<String>?,
+        items: [LocalizableResource<SelectableTitleTableViewCell.Model>],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate?
+    ) -> UIViewController? {
+        let viewController: ModalPickerViewController<SelectableTitleTableViewCell, SelectableTitleTableViewCell.Model>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 44
+        viewController.headerHeight = 42
+        viewController.footerHeight = 0
+        viewController.headerBorderType = []
+        viewController.actionType = .none
+        viewController.viewModels = items
+        viewController.selectedIndex = selectedIndex
+
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0, height: height)
         viewController.localizationManager = LocalizationManager.shared
 
         return viewController
