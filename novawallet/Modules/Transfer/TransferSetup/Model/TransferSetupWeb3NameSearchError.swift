@@ -29,7 +29,7 @@ extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
         case let .invalidAddress(chainName):
             title = strings.transferSetupErrorW3nInvalidAddressTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nInvalidAddressSubtitle(
-                chainName,
+                chainName.uppercased(),
                 preferredLanguages: locale?.rLanguages
             )
         default:
