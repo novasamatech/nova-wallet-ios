@@ -20,7 +20,7 @@ final class GovRemoveVotesConfirmWireframe: GovernanceRemoveVotesConfirmWirefram
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
         tracksView.controller.modalTransitioningFactory = factory
         tracksView.controller.modalPresentationStyle = .custom

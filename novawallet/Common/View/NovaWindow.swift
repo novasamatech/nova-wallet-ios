@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class FearlessWindow: UIWindow {
+final class NovaWindow: UIWindow {
     private enum Constants {
         static let statusHeight: CGFloat = 9.0
         static let appearanceAnimationDuration: TimeInterval = 0.2
@@ -74,7 +74,7 @@ final class FearlessWindow: UIWindow {
     }
 }
 
-extension FearlessWindow: ApplicationStatusPresentable {
+extension NovaWindow: ApplicationStatusPresentable {
     func presentStatus(title: String, style: ApplicationStatusStyle, animated: Bool) {
         if statusView != nil {
             changeStatus(title: title, style: style, animated: animated)

@@ -106,7 +106,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: selectionView.controller
         )
 

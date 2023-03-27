@@ -155,7 +155,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         guard let rebagConfirmView = StakingRebagConfirmViewFactory.createView(with: state) else {
             return
         }
-        let navigationController = FearlessNavigationController(rootViewController: rebagConfirmView.controller)
+        let navigationController = NovaNavigationController(rootViewController: rebagConfirmView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
@@ -164,7 +164,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             with: stashAddress,
             state: state
         ) else { return }
-        let navigationController = FearlessNavigationController(rootViewController: validatorInfoView.controller)
+        let navigationController = NovaNavigationController(rootViewController: validatorInfoView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }
