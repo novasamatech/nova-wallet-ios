@@ -37,7 +37,7 @@ protocol StakingStateProtocol {
     func process(bagListNode: BagList.Node?)
     func process(bagListScoreFactor: BigUInt?)
     func process(eraCountdown: EraCountdown)
-    func process(subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod))
+    func process(subqueryRewards: [SubqueryRewardItemData]?)
 }
 
 protocol StakingStateMachineProtocol: AnyObject {

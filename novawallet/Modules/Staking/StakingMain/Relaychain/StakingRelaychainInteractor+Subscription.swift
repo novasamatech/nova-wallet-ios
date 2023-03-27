@@ -149,10 +149,7 @@ extension StakingRelaychainInteractor {
         if let analyticsURL = selectedChainAsset?.chain.externalApis?.staking()?.first?.url {
             rewardAnalyticsProvider = subscribeWeaklyRewardAnalytics(for: stash, url: analyticsURL)
         } else {
-            presenter?.didReceieve(
-                subqueryRewards: .success(nil),
-                period: .week
-            )
+            presenter?.didReceieve(subqueryRewards: .success(nil))
         }
     }
 }
@@ -305,7 +302,7 @@ extension StakingRelaychainInteractor: StakingAnalyticsLocalStorageSubscriber,
         address _: AccountAddress,
         url _: URL
     ) {
-        presenter?.didReceieve(subqueryRewards: result, period: .week)
+        presenter?.didReceieve(subqueryRewards: result)
     }
 }
 
