@@ -8,20 +8,28 @@ enum TransferSetupWeb3NameSearchError: Error {
 }
 
 extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
-    func toErrorContent(for _: Locale?) -> ErrorContent {
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
         let title: String
         let message: String
+        let strings = R.string.localizable.self
 
         switch self {
         case let .accountNotFound(name):
-            title = "Invalid recipient"
-            message = "\(name) not found"
+            title = strings.transferSetupErrorW3nAccountNotFoundTitle(preferredLanguages: locale?.rLanguages)
+            message = strings.transferSetupErrorW3nAccountNotFoundSubtitle(
+                name,
+                preferredLanguages: locale?.rLanguages
+            )
         case let .serviceNotFound(name):
-            title = "Invalid recipient"
-            message = "No valid address was found for \(name) on the KILT network"
+            title = strings.transferSetupErrorW3nServiceNotFoundTitle(preferredLanguages: locale?.rLanguages)
+            message = strings.transferSetupErrorW3nServiceNotFoundSubtitle(
+                name,
+                preferredLanguages: locale?.rLanguages
+            )
         default:
-            title = "Error resolving w3n"
-            message = "KILT w3n services are unavailable. Try again later or enter the KILT address manually"
+            title = strings.transferSetupErrorW3nKiltServiceUnavailableTitle(preferredLanguages: locale?.rLanguages)
+            message = strings.transferSetupErrorW3nKiltServiceUnavailableSubtitle(
+                preferredLanguages: locale?.rLanguages)
         }
 
         return ErrorContent(title: title, message: message)
