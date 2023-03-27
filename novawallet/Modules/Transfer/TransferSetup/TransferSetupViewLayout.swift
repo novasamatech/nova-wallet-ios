@@ -133,15 +133,16 @@ final class TransferSetupViewLayout: UIView {
     func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>?) {
         if let viewModel = viewModel {
             if receipientKiltView == nil {
-                let receipientKiltView = ReceipientKiltView()
-                containerView.stackView.insertArranged(view: receipientKiltView, after: recepientInputView)
-                containerView.stackView.setCustomSpacing(16, after: receipientKiltView)
-                self.receipientKiltView = receipientKiltView
+                let newReceipientKiltView = ReceipientKiltView()
+                containerView.stackView.insertArranged(view: newReceipientKiltView, after: recepientInputView)
+                containerView.stackView.setCustomSpacing(16, after: newReceipientKiltView)
+                receipientKiltView = newReceipientKiltView
             }
 
             receipientKiltView?.bind(viewModel: viewModel)
         } else {
             receipientKiltView?.removeFromSuperview()
+            receipientKiltView = nil
         }
     }
 }
