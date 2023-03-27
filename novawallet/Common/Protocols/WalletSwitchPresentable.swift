@@ -10,7 +10,7 @@ extension WalletSwitchPresentable {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: accountManagement.controller
         )
 

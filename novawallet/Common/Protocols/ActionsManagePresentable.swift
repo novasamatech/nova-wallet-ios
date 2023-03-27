@@ -29,7 +29,7 @@ extension ActionsManagePresentable {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
         picker.modalTransitioningFactory = factory
         picker.modalPresentationStyle = .custom
