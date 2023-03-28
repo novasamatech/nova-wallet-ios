@@ -47,19 +47,10 @@ final class ChainModelMapper {
         )
     }
 
-    private func createChainNode(from entity: CDChainNode) -> ChainNodeModel {
-        let apiKey: ChainNodeModel.ApiKey?
-
-        if let queryName = entity.apiQueryName, let keyName = entity.apiKeyName {
-            apiKey = ChainNodeModel.ApiKey(queryName: queryName, keyName: keyName)
-        } else {
-            apiKey = nil
-        }
-
-        return ChainNodeModel(
+    private func createChainNode(from entity: CDChainNodeItem) -> ChainNodeModel {
+        ChainNodeModel(
             url: entity.url!,
             name: entity.name!,
-            apikey: apiKey,
             order: entity.order
         )
     }
@@ -126,22 +117,20 @@ final class ChainModelMapper {
         from model: ChainModel,
         context: NSManagedObjectContext
     ) {
-        let nodeEntities: [CDChainNode] = model.nodes.map { node in
-            let nodeEntity: CDChainNode
+        let nodeEntities: [CDChainNodeItem] = model.nodes.map { node in
+            let nodeEntity: CDChainNodeItem
 
             let maybeExistingEntity = entity.nodes?
-                .first { ($0 as? CDChainNode)?.url == node.url } as? CDChainNode
+                .first { ($0 as? CDChainNodeItem)?.url == node.url } as? CDChainNodeItem
 
             if let existingEntity = maybeExistingEntity {
                 nodeEntity = existingEntity
             } else {
-                nodeEntity = CDChainNode(context: context)
+                nodeEntity = CDChainNodeItem(context: context)
             }
 
             nodeEntity.url = node.url
             nodeEntity.name = node.name
-            nodeEntity.apiQueryName = node.apikey?.queryName
-            nodeEntity.apiKeyName = node.apikey?.keyName
             nodeEntity.order = node.order
 
             return nodeEntity
@@ -149,7 +138,7 @@ final class ChainModelMapper {
 
         let existingNodeIds = Set(model.nodes.map(\.url))
 
-        if let oldNodes = entity.nodes as? Set<CDChainNode> {
+        if let oldNodes = entity.nodes as? Set<CDChainNodeItem> {
             for oldNode in oldNodes {
                 if !existingNodeIds.contains(oldNode.url!) {
                     context.delete(oldNode)
@@ -295,7 +284,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         } ?? []
 
         let nodes: [ChainNodeModel] = entity.nodes?.compactMap { anyNode in
-            guard let node = anyNode as? CDChainNode else {
+            guard let node = anyNode as? CDChainNodeItem else {
                 return nil
             }
 
