@@ -42,6 +42,21 @@ final class EvmNativeSubscriptionManager {
         params.transactionHistoryUpdater?.processEvmNativeTransactions(from: blockNumber)
     }
 
+    private func notifyBalanceUpdate() {
+        guard let accountId = try? params.holder.toAccountId(using: .ethereum) else {
+            return
+        }
+
+        let event = AssetBalanceChanged(
+            chainAssetId: ChainAssetId(chainId: chainId, assetId: params.assetId),
+            accountId: accountId,
+            changes: nil,
+            block: nil
+        )
+
+        eventCenter.notify(with: event)
+    }
+
     private func processBlock(_ blockNumber: BigUInt) {
         logProcessMutex.lock()
 
@@ -73,6 +88,7 @@ final class EvmNativeSubscriptionManager {
                 self?.syncService = nil
 
                 if hasChanges {
+                    self?.notifyBalanceUpdate()
                     self?.handleTransactions(for: blockNumber)
                 }
             }
