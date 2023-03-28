@@ -2,15 +2,6 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-protocol PolkassemblyOperationFactoryProtocol {
-    func createPreviewsOperation(for parameters: JSON?) -> BaseOperation<[ReferendumMetadataPreview]>
-
-    func createDetailsOperation(
-        for referendumId: ReferendumIdLocal,
-        parameters: JSON?
-    ) -> BaseOperation<ReferendumMetadataLocal?>
-}
-
 class BasePolkassemblyOperationFactory {
     let chainId: ChainModel.Id
     let url: URL
@@ -30,7 +21,11 @@ class BasePolkassemblyOperationFactory {
         fatalError("Must be overriden by subclass")
     }
 
-    private func createRequestFactory(for url: URL, query: String, timeout: TimeInterval) -> NetworkRequestFactoryProtocol {
+    private func createRequestFactory(
+        for url: URL,
+        query: String,
+        timeout: TimeInterval
+    ) -> NetworkRequestFactoryProtocol {
         BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
             let info = JSON.dictionaryValue(["query": JSON.stringValue(query)])
@@ -58,7 +53,7 @@ class BasePolkassemblyOperationFactory {
     }
 }
 
-extension BasePolkassemblyOperationFactory: PolkassemblyOperationFactoryProtocol {
+extension BasePolkassemblyOperationFactory: GovMetadataOperationFactoryProtocol {
     func createPreviewsOperation(for parameters: JSON?) -> BaseOperation<[ReferendumMetadataPreview]> {
         let query = createPreviewQuery(for: parameters)
         let requestFactory = createRequestFactory(for: url, query: query, timeout: timeout)
