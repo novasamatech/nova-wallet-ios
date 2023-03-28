@@ -124,8 +124,10 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
         updateViewModels()
     }
 
-    func didReceivePrices(_ prices: [ChainAssetId: PriceData]) {
-        self.prices = prices
+    func didReceivePrice(_ changes: [ChainAssetId: DataProviderChange<PriceData>]) {
+        prices = changes.reduce(into: prices) { accum, keyValue in
+            accum[keyValue.key] = keyValue.value.item
+        }
 
         updateViewModels()
     }

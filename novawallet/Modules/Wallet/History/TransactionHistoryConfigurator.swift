@@ -54,7 +54,8 @@ final class TransactionHistoryConfigurator {
         balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         assets: [WalletAsset]
     ) {
-        supportsFilters = chainAsset.asset.assetId == chainAsset.chain.utilityAssets().first?.assetId
+        supportsFilters = chainAsset.asset.assetId == chainAsset.chain.utilityAssets().first?.assetId &&
+            !chainAsset.asset.isEvmNative
 
         viewModelFactory = TransactionHistoryViewModelFactory(
             chainAsset: chainAsset,
@@ -73,7 +74,7 @@ final class TransactionHistoryConfigurator {
         builder
             .with(itemViewModelFactory: viewModelFactory)
             .with(emptyStateDataSource: WalletEmptyStateDataSource.history)
-            .with(historyViewStyle: HistoryViewStyle.fearless)
+            .with(historyViewStyle: HistoryViewStyle.nova)
             .with(transactionCellStyle: transactionCellStyle)
             .with(cellClass: HistoryItemTableViewCell.self, for: HistoryConstants.historyCellId)
             .with(transactionHeaderStyle: headerStyle)

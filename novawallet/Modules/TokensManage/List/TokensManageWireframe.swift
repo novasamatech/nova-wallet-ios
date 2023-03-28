@@ -22,7 +22,7 @@ final class TokensManageWireframe: TokensManageWireframeProtocol {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         editView.controller.modalTransitioningFactory = factory
         editView.controller.modalPresentationStyle = .custom
 

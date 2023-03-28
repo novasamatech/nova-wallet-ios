@@ -22,7 +22,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?

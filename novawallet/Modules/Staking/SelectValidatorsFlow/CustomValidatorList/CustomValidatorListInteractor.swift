@@ -1,4 +1,5 @@
 import UIKit
+import RobinHood
 
 final class CustomValidatorListInteractor {
     weak var presenter: CustomValidatorListInteractorOutputProtocol!
@@ -6,7 +7,7 @@ final class CustomValidatorListInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let selectedAsset: AssetModel
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     init(
         selectedAsset: AssetModel,
