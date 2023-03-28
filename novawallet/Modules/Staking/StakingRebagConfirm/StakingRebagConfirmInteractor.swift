@@ -33,11 +33,11 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
-    private var bagListFeeModuleNameCancellable: CancellableCall?
-    private var bagsListSubmitModuleNameCancellable: CancellableCall?
+    private var bagListModuleNameCancellable: CancellableCall?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var signingWrapper: SigningWrapperProtocol?
+    private var moduleName: String?
 
     init(
         chainAsset: ChainAsset,
@@ -211,91 +211,78 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
+    private func provideModuleName() {
+        let wrapper = moduleNameResolver.resolveModuleName(possibleNames: BagList.possibleModuleNames)
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            guard let self = self, self.bagListModuleNameCancellable === wrapper else {
+                return
+            }
+            do {
+                self.moduleName = try wrapper.targetOperation.extractNoCancellableResultData()
+                self.continueSetup()
+            } catch {
+                DispatchQueue.main.async {
+                    self.presenter.didReceive(error: .cantResolveModuleName(error))
+                }
+            }
+
+            self.bagListModuleNameCancellable = nil
+        }
+
+        bagListModuleNameCancellable = wrapper
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
     private func estimateFee(stashItem: StashItem?) {
         guard let extrinsicService = extrinsicService,
-              let accountId = stashAccountId(stashItem: stashItem) else {
+              let accountId = stashAccountId(stashItem: stashItem),
+              let moduleName = moduleName else {
             presenter.didReceive(error: .fetchFeeFailed(CommonError.undefined))
             return
         }
 
-        let wrapper = moduleNameResolver.resolveModuleName(possibleNames: BagList.possibleModuleNames)
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            guard let self = self, self.bagListFeeModuleNameCancellable === wrapper else {
-                return
-            }
-
-            self.bagListFeeModuleNameCancellable = nil
-
-            do {
-                let moduleName = try wrapper.targetOperation.extractNoCancellableResultData()
-                let rebagCall = self.callFactory.rebag(accountId: accountId, module: moduleName)
-                let reuseIdentifier = rebagCall.callName + accountId.toHexString()
-                self.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { builder in
-                    try builder.adding(call: rebagCall)
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    self.presenter.didReceive(error: .fetchFeeFailed(error))
-                }
-            }
+        let rebagCall = callFactory.rebag(accountId: accountId, module: moduleName)
+        let reuseIdentifier = rebagCall.callName + accountId.toHexString()
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { builder in
+            try builder.adding(call: rebagCall)
         }
-
-        bagListFeeModuleNameCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func confirmRebag(stashItem: StashItem?) {
         guard let extrinsicService = extrinsicService,
               let signingWrapper = signingWrapper,
-              let accountId = stashAccountId(stashItem: stashItem) else {
+              let accountId = stashAccountId(stashItem: stashItem),
+              let moduleName = moduleName else {
             presenter.didReceive(error: .submitFailed(CommonError.undefined))
             return
         }
 
-        let wrapper = moduleNameResolver.resolveModuleName(possibleNames: BagList.possibleModuleNames)
+        let rebagCall = callFactory.rebag(accountId: accountId, module: moduleName)
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            guard let self = self, self.bagsListSubmitModuleNameCancellable === wrapper else {
-                return
-            }
-
-            self.bagsListSubmitModuleNameCancellable = nil
-
-            do {
-                let moduleName = try wrapper.targetOperation.extractNoCancellableResultData()
-                let rebagCall = self.callFactory.rebag(accountId: accountId, module: moduleName)
-
-                extrinsicService.submit(
-                    { builder in
-                        try builder.adding(call: rebagCall)
-                    },
-                    signer: signingWrapper,
-                    runningIn: .main,
-                    completion: { [weak self] result in
-                        switch result {
-                        case .success:
-                            self?.presenter.didSubmitRebag()
-                        case let .failure(error):
-                            self?.presenter.didReceive(error: .submitFailed(error))
-                        }
-                    }
-                )
-            } catch {
-                DispatchQueue.main.async {
-                    self.presenter.didReceive(error: .submitFailed(error))
+        extrinsicService.submit(
+            { builder in
+                try builder.adding(call: rebagCall)
+            },
+            signer: signingWrapper,
+            runningIn: .main,
+            completion: { [weak self] result in
+                switch result {
+                case .success:
+                    self?.presenter.didSubmitRebag()
+                case let .failure(error):
+                    self?.presenter.didReceive(error: .submitFailed(error))
                 }
             }
-        }
-
-        bagsListSubmitModuleNameCancellable = wrapper
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        )
     }
 
     private func makeSubscriptions() {
         subscribeAccountBalance()
         subscribePrice()
+    }
+
+    private func continueSetup() {
         subscribeStashItemSubscription()
         subscribeTotalIssuanceSubscription()
     }
@@ -306,6 +293,7 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
         feeProxy.delegate = self
         provideNetworkStakingInfo()
         makeSubscriptions()
+        provideModuleName()
     }
 
     func refreshFee(stashItem: StashItem) {
@@ -318,6 +306,7 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
 
     func remakeSubscriptions() {
         makeSubscriptions()
+        continueSetup()
     }
 
     func retryNetworkInfo() {
