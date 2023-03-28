@@ -20,7 +20,7 @@ enum GovernanceDApps {
             }
 
             if let url = urlTemplate {
-                return try EndpointBuilder(urlTemplate: url).buildParameterURL(String(referendumIndex))
+                return try URLBuilder(urlTemplate: url).buildParameterURL(String(referendumIndex))
             } else {
                 return nil
             }

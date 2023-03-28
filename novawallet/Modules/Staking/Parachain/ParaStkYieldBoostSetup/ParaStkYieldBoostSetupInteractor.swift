@@ -23,7 +23,7 @@ final class ParaStkYieldBoostSetupInteractor: AnyCancellableCleaning {
     let childCancelInteractor: ParaStkYieldBoostCancelInteractorInputProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
     private var yieldBoostProvider: AnySingleValueProvider<[ParaStkYieldBoostState.Task]>?

@@ -226,7 +226,10 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         locale: Locale?
     ) {
         let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.stakingMinStakeViolatedMessage(minStake, preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.stakingMinStakeViolatedMessage(
+            minStake,
+            preferredLanguages: locale?.rLanguages
+        )
 
         presentWarning(
             for: title,
