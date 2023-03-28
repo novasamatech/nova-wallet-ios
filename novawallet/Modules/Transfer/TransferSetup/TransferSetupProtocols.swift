@@ -21,7 +21,7 @@ protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
     func didSwitchOnChain()
     func changeYourWalletsViewState(_ state: YourWalletsControl.State)
     func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>?)
-    func didReceiveRecipientInputState(focused: Bool)
+    func didReceiveRecipientInputState(focused: Bool, empty: Bool?)
 }
 
 protocol TransferSetupCommonPresenterProtocol: AnyObject {
