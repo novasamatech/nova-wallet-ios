@@ -111,6 +111,10 @@ final class AssetSelectionInteractor {
                 result[accountId] = subscribeToAccountBalanceProvider(for: accountId)
             }
         }
+
+        if assetBalanceSubscriptions.isEmpty {
+            presenter?.didReceiveBalance(results: [:])
+        }
     }
 
     private func setupPriceSubscription(from chains: [ChainModel]) {
@@ -134,6 +138,7 @@ final class AssetSelectionInteractor {
         let priceIds = Array(priceIdSet).sorted()
 
         guard !priceIds.isEmpty else {
+            presenter?.didReceivePrice(changes: [:])
             return
         }
 

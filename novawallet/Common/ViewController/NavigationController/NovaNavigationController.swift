@@ -12,7 +12,7 @@ protocol NavigationControlling: AnyObject {
     func setNavigationBarHidden(_ hidden: Bool, animated: Bool)
 }
 
-class FearlessNavigationController: UINavigationController, UINavigationControllerDelegate {
+class NovaNavigationController: UINavigationController, UINavigationControllerDelegate {
     public var barSettings: NavigationBarSettings = .defaultSettings {
         didSet {
             applyBarStyle()
@@ -116,4 +116,4 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
     }
 }
 
-extension FearlessNavigationController: NavigationControlling {}
+extension NovaNavigationController: NavigationControlling {}

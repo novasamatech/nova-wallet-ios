@@ -4,4 +4,5 @@ struct OperationContractCallViewModel {
     let sender: DisplayAddressViewModel
     let transactionHash: String
     let contract: DisplayAddressViewModel
+    let functionName: String?
 }

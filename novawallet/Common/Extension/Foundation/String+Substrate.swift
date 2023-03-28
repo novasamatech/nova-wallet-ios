@@ -9,6 +9,17 @@ extension String {
         replacingSnakeCase().replacingCamelCase().capitalized
     }
 
+    var displayContractFunction: String {
+        cuttingOffArguments().replacingSnakeCase().replacingCamelCase().capitalized
+    }
+
+    func cuttingOffArguments() -> String {
+        // maps transfer(address _to, uint256 _value) to transfer
+        let result = prefix(while: { $0 != "(" })
+
+        return String(result)
+    }
+
     func replacingSnakeCase() -> String {
         replacingOccurrences(of: "_", with: " ")
     }

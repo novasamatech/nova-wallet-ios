@@ -1194,3 +1194,4 @@
 "staking.rebag.confirm.completion" = "Запрос на изменение слота очереди отправлен";
 "evm.contract.call" = "Вызов контракта";
 "evm.contract" = "Контракт";
+"evm.contract.function" = "Функция";
