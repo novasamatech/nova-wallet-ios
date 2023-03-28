@@ -89,7 +89,7 @@ extension AssetTransactionData {
 
     private static func createLocalExtrinsic(
         from item: TransactionHistoryItem,
-        address: String,
+        address _: String,
         chainAsset: ChainAsset
     ) -> AssetTransactionData {
         let assetId = chainAsset.chainAssetId.walletId
@@ -100,9 +100,9 @@ extension AssetTransactionData {
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
 
-        let accountId = try? item.sender.toAccountId(using: chainAsset.chain.chainFormat)
+        let accountId = try? item.receiver?.toAccountId(using: chainAsset.chain.chainFormat)
 
-        let peerId = accountId?.toHex() ?? address
+        let peerId = accountId?.toHex() ?? ""
 
         return AssetTransactionData(
             transactionId: item.txHash,
