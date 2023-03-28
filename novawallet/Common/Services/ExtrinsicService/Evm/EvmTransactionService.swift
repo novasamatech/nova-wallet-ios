@@ -64,7 +64,7 @@ final class EvmTransactionService {
                 }
 
                 return gasLimit
-            } catch _ as JSONRPCError {
+            } catch is JSONRPCError {
                 return Self.defaultRevertedFeeGasLimit
             }
         }
