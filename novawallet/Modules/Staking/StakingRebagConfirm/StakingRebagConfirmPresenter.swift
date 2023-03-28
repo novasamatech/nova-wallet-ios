@@ -265,10 +265,13 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
              .fetchBagListNodeFailed,
              .fetchLedgerInfoFailed,
              .fetchBalanceFailed,
-             .fetchStashItemFailed,
-             .cantResolveModuleName:
+             .fetchStashItemFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
+            }
+        case .cantResolveModuleName:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryModuleName()
             }
         case .fetchNetworkInfoFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
