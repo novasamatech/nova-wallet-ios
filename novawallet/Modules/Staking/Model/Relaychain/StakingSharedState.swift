@@ -11,7 +11,6 @@ final class StakingSharedState {
     private(set) var rewardCalculationService: RewardCalculatorServiceProtocol?
     private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
-    let stakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
 
     init(
@@ -21,7 +20,6 @@ final class StakingSharedState {
         rewardCalculationService: RewardCalculatorServiceProtocol?,
         blockTimeService: BlockTimeEstimationServiceProtocol?,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
-        stakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue
     ) {
         self.consensus = consensus
@@ -30,7 +28,6 @@ final class StakingSharedState {
         self.rewardCalculationService = rewardCalculationService
         self.blockTimeService = blockTimeService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
-        self.stakingAnalyticsLocalSubscriptionFactory = stakingAnalyticsLocalSubscriptionFactory
         self.operationQueue = operationQueue
     }
 

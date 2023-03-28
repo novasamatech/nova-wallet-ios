@@ -18,7 +18,7 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: selectionView.controller
         )
 

@@ -101,7 +101,12 @@ final class OperationDetailsViewModelFactory {
         let sender = displayAddressViewModelFactory.createViewModel(from: model.sender)
         let contract = displayAddressViewModelFactory.createViewModel(from: model.contract)
 
-        return .init(sender: sender, transactionHash: model.txHash, contract: contract)
+        return .init(
+            sender: sender,
+            transactionHash: model.txHash,
+            contract: contract,
+            functionName: model.functionSignature?.displayContractFunction
+        )
     }
 
     private func createTransferViewModel(

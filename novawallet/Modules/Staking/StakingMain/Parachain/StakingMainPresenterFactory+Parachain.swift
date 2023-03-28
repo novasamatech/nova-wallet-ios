@@ -24,7 +24,9 @@ extension StakingMainPresenterFactory {
         // MARK: - Presenter
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
+        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory(
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
         let stateViewModelFactory = ParaStkStateViewModelFactory(priceAssetInfoFactory: priceAssetInfoFactory)
 
         let presenter = StakingParachainPresenter(
