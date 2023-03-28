@@ -21,6 +21,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
     let runtimeService: RuntimeProviderProtocol
+    let moduleNameResolver: ModuleNameResolverProtocol
 
     private let operationQueue: OperationQueue
 
@@ -32,11 +33,11 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
-    private var bagsListModuleNameCancellable: CancellableCall?
+    private var bagListFeeModuleNameCancellable: CancellableCall?
+    private var bagsListSubmitModuleNameCancellable: CancellableCall?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var signingWrapper: SigningWrapperProtocol?
-    private var rebagModuleName: String?
 
     init(
         chainAsset: ChainAsset,
@@ -53,6 +54,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
+        moduleNameResolver: ModuleNameResolverProtocol,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
@@ -71,6 +73,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         self.accountRepositoryFactory = accountRepositoryFactory
         self.callFactory = callFactory
         self.runtimeService = runtimeService
+        self.moduleNameResolver = moduleNameResolver
         self.currencyManager = currencyManager
     }
 
@@ -215,18 +218,17 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             return
         }
 
-        let wrapper = createResolveBagsListModuleNameWrapper()
+        let wrapper = moduleNameResolver.resolveModuleName(possibleNames: BagList.possibleModuleNames)
 
         wrapper.targetOperation.completionBlock = { [weak self] in
-            guard let self = self, self.bagsListModuleNameCancellable === wrapper else {
+            guard let self = self, self.bagListFeeModuleNameCancellable === wrapper else {
                 return
             }
 
-            self.bagsListModuleNameCancellable = nil
+            self.bagListFeeModuleNameCancellable = nil
 
             do {
                 let moduleName = try wrapper.targetOperation.extractNoCancellableResultData()
-                self.rebagModuleName = moduleName
                 let rebagCall = self.callFactory.rebag(accountId: accountId, module: moduleName)
                 let reuseIdentifier = rebagCall.callName + accountId.toHexString()
                 self.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { builder in
@@ -239,7 +241,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             }
         }
 
-        bagsListModuleNameCancellable = wrapper
+        bagListFeeModuleNameCancellable = wrapper
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
@@ -252,42 +254,43 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             return
         }
 
-        let rebagCall = callFactory.rebag(accountId: accountId, module: rebagModuleName)
+        let wrapper = moduleNameResolver.resolveModuleName(possibleNames: BagList.possibleModuleNames)
 
-        extrinsicService.submit(
-            { builder in
-                try builder.adding(call: rebagCall)
-            },
-            signer: signingWrapper,
-            runningIn: .main,
-            completion: { [weak self] result in
-                switch result {
-                case .success:
-                    self?.presenter.didSubmitRebag()
-                case let .failure(error):
-                    self?.presenter.didReceive(error: .submitFailed(error))
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            guard let self = self, self.bagsListSubmitModuleNameCancellable === wrapper else {
+                return
+            }
+
+            self.bagsListSubmitModuleNameCancellable = nil
+
+            do {
+                let moduleName = try wrapper.targetOperation.extractNoCancellableResultData()
+                let rebagCall = ыудаюcallFactory.rebag(accountId: accountId, module: moduleName)
+
+                extrinsicService.submit(
+                    { builder in
+                        try builder.adding(call: rebagCall)
+                    },
+                    signer: signingWrapper,
+                    runningIn: .main,
+                    completion: { [weak self] result in
+                        switch result {
+                        case .success:
+                            self?.presenter.didSubmitRebag()
+                        case let .failure(error):
+                            self?.presenter.didReceive(error: .submitFailed(error))
+                        }
+                    }
+                )
+            } catch {
+                DispatchQueue.main.async {
+                    self.presenter.didReceive(error: .submitFailed(error))
                 }
             }
-        )
-    }
-
-    private func createResolveBagsListModuleNameWrapper() -> CompoundOperationWrapper<String?> {
-        if let rebagModuleName = rebagModuleName {
-            return CompoundOperationWrapper.createWithResult(rebagModuleName)
-        }
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        let resolveModuleNameOperation = ClosureOperation<String?> {
-            let metadata = try codingFactoryOperation.extractNoCancellableResultData().metadata
-
-            return BagList.possibleModuleNames.first { metadata.getModuleIndex($0) != nil }
         }
 
-        resolveModuleNameOperation.addDependency(codingFactoryOperation)
-        return CompoundOperationWrapper(
-            targetOperation: resolveModuleNameOperation,
-            dependencies: [codingFactoryOperation]
-        )
+        bagsListSubmitModuleNameCancellable = wrapper
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func makeSubscriptions() {
