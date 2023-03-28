@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class FearlessLoadingViewFactory: LoadingViewFactoryProtocol {
+final class NovaLoadingViewFactory: LoadingViewFactoryProtocol {
     static func createLoadingView() -> LoadingView {
         let icon = R.image.iconLoadingIndicator()?.tinted(with: R.color.colorIndicatorShimmering()!)
         let loadingView = LoadingView(
