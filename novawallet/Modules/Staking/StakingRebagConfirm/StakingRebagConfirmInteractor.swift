@@ -306,11 +306,14 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
 
     func remakeSubscriptions() {
         makeSubscriptions()
-        continueSetup()
     }
 
     func retryNetworkInfo() {
         provideNetworkStakingInfo()
+    }
+
+    func retryModuleName() {
+        provideModuleName()
     }
 }
 
