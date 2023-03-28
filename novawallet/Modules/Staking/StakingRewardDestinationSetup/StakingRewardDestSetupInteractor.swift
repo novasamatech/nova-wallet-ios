@@ -18,7 +18,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
     let feeProxy: ExtrinsicFeeProxyProtocol
 
     private var stashItemProvider: StreamableProvider<StashItem>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var payeeProvider: AnyDataProvider<DecodedPayee>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?

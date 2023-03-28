@@ -23,22 +23,29 @@ final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
     let eventCenter: EventCenterProtocol
     let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletSettings: SelectedWalletSettings
+    let currencyManager: CurrencyManager
 
     private var crowdloanContributionsDataProvider: StreamableProvider<CrowdloanContributionData>?
     private var assetsLockDataProvider: StreamableProvider<AssetLock>?
     private var balanceDataProvider: StreamableProvider<AssetBalance>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     init(
         eventCenter: EventCenterProtocol,
         crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        walletSettings: SelectedWalletSettings
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        walletSettings: SelectedWalletSettings,
+        currencyManager: CurrencyManager
     ) {
         self.eventCenter = eventCenter
         self.crowdloansLocalSubscriptionFactory = crowdloansLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletSettings = walletSettings
+        self.currencyManager = currencyManager
 
         eventCenter.add(observer: self, dispatchIn: .main)
     }
@@ -78,7 +85,13 @@ final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
             assetId: chainAsset.asset.assetId
         )
 
-        crowdloanContributionsDataProvider = subscribeToCrowdloansProvider(for: accountId, chain: chainAsset.chain)
+        if chainAsset.chain.hasCrowdloans {
+            crowdloanContributionsDataProvider = subscribeToCrowdloansProvider(for: accountId, chain: chainAsset.chain)
+        }
+
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId, currency: currencyManager.selectedCurrency)
+        }
     }
 
     private func updateAccount() {
@@ -95,6 +108,7 @@ final class WalletDetailsUpdater: WalletDetailsUpdating, EventVisitorProtocol {
         balanceDataProvider = nil
         crowdloanContributionsDataProvider = nil
         assetsLockDataProvider = nil
+        priceProvider = nil
     }
 }
 
@@ -126,6 +140,13 @@ extension WalletDetailsUpdater: CrowdloanContributionLocalSubscriptionHandler, C
         accountId _: AccountId,
         chain _: ChainModel
     ) {
+        clearProvidersIfNeeded()
+        updateAccount()
+    }
+}
+
+extension WalletDetailsUpdater: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result _: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         clearProvidersIfNeeded()
         updateAccount()
     }

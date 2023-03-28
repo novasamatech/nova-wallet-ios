@@ -29,11 +29,11 @@ class RuntimePoolTests: XCTestCase {
             )
         }
 
-        let newProvider = runtimePool.setupRuntimeProvider(for: chain)
-        let cachedProvider = runtimePool.setupRuntimeProvider(for: chain)
+        let newProvider = runtimePool.setupRuntimeProviderIfNeeded(for: chain)
+        let cachedProvider = runtimePool.setupRuntimeProviderIfNeeded(for: chain)
         let fetchedProvider = runtimePool.getRuntimeProvider(for: chain.chainId)
 
-        runtimePool.destroyRuntimeProvider(for: chain.chainId)
+        runtimePool.destroyRuntimeProviderIfExists(for: chain.chainId)
 
         let removedProvider = runtimePool.getRuntimeProvider(for: chain.chainId)
 

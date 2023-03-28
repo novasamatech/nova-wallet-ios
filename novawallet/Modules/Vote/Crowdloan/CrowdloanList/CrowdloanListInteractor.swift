@@ -27,7 +27,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var leaseInfoParams: [LeaseParam]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     deinit {
         if let subscriptionId = blockNumberSubscriptionId, let chain = crowdloanState.settings.value {

@@ -38,7 +38,10 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
 
     func subscribePayee(for accountId: AccountId, chainId: ChainModel.Id) -> AnyDataProvider<DecodedPayee>?
 
-    func subscribeTotalIssuance(for chainId: ChainModel.Id, callbackQueue: DispatchQueue) -> AnyDataProvider<DecodedBigUInt>?
+    func subscribeTotalIssuance(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedBigUInt>?
 
     func subscribeTotalReward(
         for address: AccountAddress,
@@ -369,7 +372,10 @@ extension StakingLocalStorageSubscriber {
         subscribeTotalIssuance(for: chainId, callbackQueue: .main)
     }
 
-    func subscribeTotalIssuance(for chainId: ChainModel.Id, callbackQueue: DispatchQueue) -> AnyDataProvider<DecodedBigUInt>? {
+    func subscribeTotalIssuance(
+        for chainId: ChainModel.Id,
+        callbackQueue: DispatchQueue
+    ) -> AnyDataProvider<DecodedBigUInt>? {
         guard
             let provider = try? stakingLocalSubscriptionFactory.getTotalIssuanceProvider(
                 for: chainId

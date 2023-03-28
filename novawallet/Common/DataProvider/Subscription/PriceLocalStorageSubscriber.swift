@@ -9,18 +9,20 @@ protocol PriceLocalStorageSubscriber where Self: AnyObject {
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
         currency: Currency,
-        options: DataProviderObserverOptions
-    ) -> AnySingleValueProvider<PriceData>?
+        options: StreamableProviderObserverOptions
+    ) -> StreamableProvider<PriceData>
 }
 
 extension PriceLocalStorageSubscriber {
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
         currency: Currency
-    ) -> AnySingleValueProvider<PriceData>? {
-        let options = DataProviderObserverOptions(
+    ) -> StreamableProvider<PriceData> {
+        let options = StreamableProviderObserverOptions(
             alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: true
         )
 
         return subscribeToPrice(for: priceId, currency: currency, options: options)
@@ -31,9 +33,9 @@ extension PriceLocalStorageSubscriber {
     func subscribeToPrice(
         for priceId: AssetModel.PriceId,
         currency: Currency,
-        options: DataProviderObserverOptions
-    ) -> AnySingleValueProvider<PriceData>? {
-        let priceProvider = priceLocalSubscriptionFactory.getPriceProvider(
+        options: StreamableProviderObserverOptions
+    ) -> StreamableProvider<PriceData> {
+        let priceProvider = priceLocalSubscriptionFactory.getPriceStreamableProvider(
             for: priceId,
             currency: currency
         )

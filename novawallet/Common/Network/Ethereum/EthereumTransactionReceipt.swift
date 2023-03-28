@@ -6,6 +6,11 @@ struct EthereumTransactionReceipt: Codable {
     let transactionHash: String
     let effectiveGasPrice: String
     let gasUsed: String
+    let status: String?
+
+    var isSuccess: Bool? {
+        status.map { BigUInt.fromHexString($0) == 1 }
+    }
 
     var fee: BigUInt? {
         guard
@@ -15,5 +20,15 @@ struct EthereumTransactionReceipt: Codable {
         }
 
         return gasPriceValue * gasUsedValue
+    }
+}
+
+extension EthereumTransactionReceipt {
+    var localStatus: TransactionHistoryItem.Status {
+        if let success = isSuccess {
+            return success ? .success : .failed
+        } else {
+            return .pending
+        }
     }
 }

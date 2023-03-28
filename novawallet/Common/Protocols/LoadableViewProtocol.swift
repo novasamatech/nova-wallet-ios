@@ -32,7 +32,7 @@ extension LoadableViewProtocol where Self: UIViewController {
             return
         }
 
-        let newIndicator = FearlessLoadingViewFactory.createLoadingView()
+        let newIndicator = NovaLoadingViewFactory.createLoadingView()
         newIndicator.accessibilityIdentifier = LoadableViewProtocolConstants.activityIndicatorIdentifier
         newIndicator.frame = loadableContentView.bounds
         newIndicator.autoresizingMask = UIView.AutoresizingMask.flexibleWidth.union(.flexibleHeight)

@@ -14,6 +14,8 @@ extension BigUInt {
     }
 
     func toHexString() -> String {
-        serialize().toHex(includePrefix: true)
+        let prefix = "0x"
+
+        return prefix + String(self, radix: 16)
     }
 }

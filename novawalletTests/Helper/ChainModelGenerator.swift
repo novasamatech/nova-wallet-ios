@@ -8,7 +8,8 @@ enum ChainModelGenerator {
         withTypes: Bool = true,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false,
-        hasGovernance: Bool = false
+        hasGovernance: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> [ChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -29,9 +30,8 @@ enum ChainModelGenerator {
             )
 
             let node = ChainNodeModel(
-                url: URL(string: "wss://node.io/\(chainId)")!,
+                url: "wss://node.io/\(chainId)",
                 name: chainId,
-                apikey: nil,
                 order: 0
             )
 
@@ -48,6 +48,10 @@ enum ChainModelGenerator {
 
             if hasGovernance {
                 options.append(.governance)
+            }
+
+            if !hasSubstrateRuntime {
+                options.append(.noSubstrateRuntime)
             }
 
             let externalApis = generateExternaApis(
@@ -87,7 +91,8 @@ enum ChainModelGenerator {
         count: Int,
         withTypes: Bool = true,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> [RemoteChainModel] {
         (0..<count).map { index in
             let chainId = Data.random(of: 32)!.toHex()
@@ -106,9 +111,8 @@ enum ChainModelGenerator {
             )
 
             let node = RemoteChainNodeModel(
-                url: URL(string: "wss://node.io/\(chainId)")!,
-                name: chainId,
-                apikey: nil
+                url: "wss://node.io/\(chainId)",
+                name: chainId
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -120,6 +124,10 @@ enum ChainModelGenerator {
 
             if hasCrowdloans {
                 options.append(.crowdloans)
+            }
+
+            if !hasSubstrateRuntime {
+                options.append(.noSubstrateRuntime)
             }
 
             let externalApi = generateRemoteExternaApis(
@@ -162,7 +170,8 @@ enum ChainModelGenerator {
         addressPrefix: UInt16,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> ChainModel {
         let assets = (0..<count).map { index in
             generateAssetWithId(
@@ -178,7 +187,8 @@ enum ChainModelGenerator {
             addressPrefix: addressPrefix,
             assetPresicion: assetPresicion,
             hasStaking: hasStaking,
-            hasCrowdloans: hasCrowdloans
+            hasCrowdloans: hasCrowdloans,
+            hasSubstrateRuntime: hasSubstrateRuntime
         )
     }
 
@@ -188,16 +198,16 @@ enum ChainModelGenerator {
         addressPrefix: UInt16,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
-        hasCrowdloans: Bool = false
+        hasCrowdloans: Bool = false,
+        hasSubstrateRuntime: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
         let urlString = "node\(Data.random(of: 32)!.toHex()).io"
 
         let node = ChainNodeModel(
-            url: URL(string: urlString)!,
+            url: urlString,
             name: UUID().uuidString,
-            apikey: nil,
             order: 0
         )
 
@@ -205,6 +215,10 @@ enum ChainModelGenerator {
 
         if hasCrowdloans {
             options.append(.crowdloans)
+        }
+
+        if !hasSubstrateRuntime {
+            options.append(.noSubstrateRuntime)
         }
 
         let externalApis = generateExternaApis(

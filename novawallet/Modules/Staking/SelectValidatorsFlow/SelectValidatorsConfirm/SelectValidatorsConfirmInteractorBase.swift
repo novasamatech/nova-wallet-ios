@@ -18,7 +18,7 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     let operationManager: OperationManagerProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var minBondProvider: AnyDataProvider<DecodedBigUInt>?
     private var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?

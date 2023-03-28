@@ -6,6 +6,7 @@ struct OperationDetailsViewModel {
         case reward(_ viewModel: OperationRewardViewModel)
         case slash(_ viewModel: OperationSlashViewModel)
         case extrinsic(_ viewModel: OperationExtrinsicViewModel)
+        case contract(_ viewModel: OperationContractCallViewModel)
     }
 
     let time: String

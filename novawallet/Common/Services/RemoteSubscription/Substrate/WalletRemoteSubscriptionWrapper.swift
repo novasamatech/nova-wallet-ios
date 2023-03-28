@@ -49,7 +49,6 @@ final class WalletRemoteSubscriptionWrapper {
         completion: RemoteSubscriptionClosure?
     ) -> UUID? {
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
-        let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
 
         let balanceUpdater = AssetsBalanceUpdater(
             chainAssetId: chainAssetId,
@@ -161,7 +160,7 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
             )
-        case .erc20:
+        case .erc20, .evmNative:
             // not supported
             return nil
         }
@@ -201,7 +200,8 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
-        case .erc20:
+        case .erc20, .evmNative:
+            // not supported
             return
         }
     }
