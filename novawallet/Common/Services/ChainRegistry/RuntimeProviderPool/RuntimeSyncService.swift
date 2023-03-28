@@ -4,7 +4,7 @@ import SubstrateSdk
 
 protocol RuntimeSyncServiceProtocol {
     func register(chain: ChainModel, with connection: ChainConnection)
-    func unregister(chainId: ChainModel.Id)
+    func unregisterIfExists(chainId: ChainModel.Id)
     func apply(version: RuntimeVersion, for chainId: ChainModel.Id)
 
     func hasChain(with chainId: ChainModel.Id) -> Bool
@@ -365,7 +365,7 @@ extension RuntimeSyncService: RuntimeSyncServiceProtocol {
         }
     }
 
-    func unregister(chainId: ChainModel.Id) {
+    func unregisterIfExists(chainId: ChainModel.Id) {
         mutex.lock()
 
         defer {

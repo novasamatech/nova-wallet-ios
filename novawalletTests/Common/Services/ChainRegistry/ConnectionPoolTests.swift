@@ -70,7 +70,7 @@ class ConnectionPoolTests: XCTestCase {
                 }
 
                 stub.updateConnection(any(), chain: any()).then { connection, chain in
-                    connection.changeUrls(chain.nodes.map { $0.url })
+                    connection.changeUrls(chain.nodes.compactMap { URL(string: $0.url) })
                 }
             }
 

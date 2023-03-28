@@ -10,7 +10,7 @@ class WalletsListInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let crowdloansLocalSubscriptionFactory: CrowdloanContributionLocalSubscriptionFactoryProtocol
 
-    private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
+    private(set) var priceSubscription: StreamableProvider<PriceData>?
     private(set) var assetsSubscription: StreamableProvider<AssetBalance>?
     private(set) var walletsSubscription: StreamableProvider<ManagedMetaAccountModel>?
     private(set) var crowdloansSubscription: StreamableProvider<CrowdloanContributionData>?
@@ -91,28 +91,25 @@ class WalletsListInteractor {
             return
         }
 
-        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(
+        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
             for: priceIds,
             currency: currency
         )
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
-            if let prices = changes.reduceToLastChange() {
-                let chainPrices = zip(priceIds, prices).reduce(
-                    into: [ChainAssetId: PriceData]()
-                ) { result, item in
-                    guard let chainAssetIds = self?.availableTokenPrice.filter({ $0.value == item.0 })
-                        .map(\.key) else {
-                        return
-                    }
-
-                    for chainAssetId in chainAssetIds {
-                        result[chainAssetId] = item.1
-                    }
-                }
-
-                self?.basePresenter?.didReceivePrices(chainPrices)
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
+            guard let strongSelf = self else {
+                return
             }
+
+            let mappedChanges = changes.reduce(
+                using: .init(),
+                availableTokenPrice: strongSelf.availableTokenPrice,
+                currency: currency
+            )
+
+            self?.basePresenter?.didReceivePrice(mappedChanges)
+
+            return
         }
 
         let failureClosure = { [weak self] (error: Error) in
@@ -120,9 +117,11 @@ class WalletsListInteractor {
             return
         }
 
-        let options = DataProviderObserverOptions(
+        let options = StreamableProviderObserverOptions(
             alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
         )
 
         priceSubscription?.addObserver(
@@ -132,6 +131,8 @@ class WalletsListInteractor {
             failing: failureClosure,
             options: options
         )
+
+        priceSubscription?.refresh()
     }
 }
 

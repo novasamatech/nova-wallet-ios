@@ -9,7 +9,7 @@ class CrowdloanTests: XCTestCase {
     func testFetchContributions() {
         do {
             let operationManager = OperationManagerFacade.sharedManager
-            let chainId = Chain.kusama.genesisHash
+            let chainId = KnowChainId.kusama
             let selectedAccountId = try "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf".toAccountId()
 
             let chainRegistry = ChainRegistryFactory.createDefaultRegistry(

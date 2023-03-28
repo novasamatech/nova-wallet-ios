@@ -17,7 +17,7 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: importController)
+        let navigationController = NovaNavigationController(rootViewController: importController)
 
         let presentingController = tabBarController.topModalViewController
         presentingController.present(navigationController, animated: true, completion: nil)

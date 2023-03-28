@@ -1,4 +1,5 @@
 import BigInt
+import RobinHood
 
 protocol AssetSelectionViewProtocol: SelectionListViewProtocol {}
 
@@ -23,5 +24,6 @@ protocol AssetSelectionInteractorInputProtocol: AnyObject {
 protocol AssetSelectionInteractorOutputProtocol: AnyObject {
     func didReceiveChainAssets(result: Result<[ChainAsset], Error>)
     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])
-    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)
+    func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])
+    func didReceivePrice(error: Error)
 }

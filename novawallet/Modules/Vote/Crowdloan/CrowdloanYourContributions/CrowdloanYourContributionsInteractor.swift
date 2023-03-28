@@ -15,7 +15,7 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
 
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     init(
         chain: ChainModel,

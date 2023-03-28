@@ -249,7 +249,6 @@ final class Gov2DelegationTests: XCTestCase {
         for chainId: ChainModel.Id,
         chainRegistry: ChainRegistryProtocol
     ) -> GovernanceDelegateListFactoryProtocol? {
-        let storageFacade = SubstrateStorageTestFacade()
         let chainId = KnowChainId.kusama
 
         guard

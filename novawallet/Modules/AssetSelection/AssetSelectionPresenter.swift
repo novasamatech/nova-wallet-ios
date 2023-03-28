@@ -27,6 +27,10 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
     }
 
     override func updateView() {
+        guard let assets = assets, isReadyForDisplay else {
+            return
+        }
+
         let viewModels: [SelectableIconDetailsListViewModel] = assets.compactMap { chainAsset in
             let chain = chainAsset.chain
             let asset = chainAsset.asset
@@ -51,7 +55,7 @@ final class AssetSelectionPresenter: AssetSelectionBasePresenter {
     }
 
     override func handleAssetSelection(at index: Int) {
-        guard let view = view else {
+        guard let view = view, let assets = assets else {
             return
         }
 

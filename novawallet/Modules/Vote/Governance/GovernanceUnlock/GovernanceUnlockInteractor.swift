@@ -17,7 +17,7 @@ class GovernanceUnlockInteractor: GovernanceUnlockInteractorInputProtocol, AnyCa
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
 
     private var blockTimeCancellable: CancellableCall?

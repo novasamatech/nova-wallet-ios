@@ -275,7 +275,6 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             viewModel: delegationViewModel,
             alerts: alerts,
             reward: reward,
-            analyticsViewModel: nil,
             unbondings: unbondings,
             actions: actions
         )
