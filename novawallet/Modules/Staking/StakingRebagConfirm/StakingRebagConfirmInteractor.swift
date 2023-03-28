@@ -265,7 +265,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
 
             do {
                 let moduleName = try wrapper.targetOperation.extractNoCancellableResultData()
-                let rebagCall = ыудаюcallFactory.rebag(accountId: accountId, module: moduleName)
+                let rebagCall = self.callFactory.rebag(accountId: accountId, module: moduleName)
 
                 extrinsicService.submit(
                     { builder in

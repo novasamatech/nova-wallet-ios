@@ -21,10 +21,13 @@ final class ModuleNameResolver: ModuleNameResolverProtocol {
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let resolveModuleNameOperation = ClosureOperation<String?> {
+        let resolveModuleNameOperation = ClosureOperation<String?> { [weak self] in
             let metadata = try codingFactoryOperation.extractNoCancellableResultData().metadata
+            let name = BagList.possibleModuleNames.first { metadata.getModuleIndex($0) != nil }
+            self?.cachedResult = name
+            self?.lastSearchPossibleNames = possibleNames
 
-            return BagList.possibleModuleNames.first { metadata.getModuleIndex($0) != nil }
+            return name
         }
 
         resolveModuleNameOperation.addDependency(codingFactoryOperation)
