@@ -164,7 +164,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
                 }
 
                 guard let web3Name = try web3NamesWrapper.targetOperation.extractNoCancellableResultData() else {
-                    throw TransferSetupWeb3NameSearchError.accountNotFound(name, chainName)
+                    throw TransferSetupWeb3NameSearchError.accountNotFound(name)
                 }
                 guard let serviceURL = web3Name.serviceURLs.first else {
                     throw TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName)
