@@ -82,10 +82,6 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
         utilityAsset: AssetModel
     ) -> AssetTransactionData {
         let accountId = try? address.toAccountId(using: .ethereum)
-        let isSender = sender == accountId
-
-        let peerId = isSender ? recepient : sender
-        let peerAddress = (try? peerId?.toAddress(using: .ethereum)) ?? peerId?.toHex(includePrefix: true)
 
         let feeInPlank = gasUsed * gasPrice
         let fee = Decimal.fromSubstrateAmount(feeInPlank, precision: utilityAsset.decimalPrecision) ?? .zero
@@ -93,8 +89,13 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
         let amount: Decimal
         let feeModels: [AssetTransactionFee]
         let type: TransactionType
+        let peerId: Data?
 
         if isTransfer {
+            let isSender = sender == accountId
+
+            peerId = isSender ? recepient : sender
+
             amount = Decimal.fromSubstrateAmount(value, precision: chainAsset.asset.decimalPrecision) ?? .zero
 
             let feeModel = AssetTransactionFee(
@@ -111,7 +112,10 @@ extension EtherscanTxHistoryResponse.Element: WalletRemoteHistoryItemProtocol {
             amount = fee
             feeModels = []
             type = .extrinsic
+            peerId = recepient
         }
+
+        let peerAddress = (try? peerId?.toAddress(using: .ethereum)) ?? peerId?.toHex(includePrefix: true)
 
         return AssetTransactionData(
             transactionId: hash.toHex(includePrefix: true),
