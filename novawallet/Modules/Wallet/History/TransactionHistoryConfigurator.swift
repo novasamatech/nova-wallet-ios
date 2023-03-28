@@ -74,7 +74,7 @@ final class TransactionHistoryConfigurator {
         builder
             .with(itemViewModelFactory: viewModelFactory)
             .with(emptyStateDataSource: WalletEmptyStateDataSource.history)
-            .with(historyViewStyle: HistoryViewStyle.fearless)
+            .with(historyViewStyle: HistoryViewStyle.nova)
             .with(transactionCellStyle: transactionCellStyle)
             .with(cellClass: HistoryItemTableViewCell.self, for: HistoryConstants.historyCellId)
             .with(transactionHeaderStyle: headerStyle)

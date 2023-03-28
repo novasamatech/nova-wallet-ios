@@ -25,7 +25,7 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: fullDetailsView.controller)
+        let navigationController = NovaNavigationController(rootViewController: fullDetailsView.controller)
 
         view?.controller.present(navigationController, animated: true)
     }
@@ -63,7 +63,7 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: votersView.controller)
+        let navigationController = NovaNavigationController(rootViewController: votersView.controller)
 
         view?.controller.present(navigationController, animated: true)
     }
@@ -78,7 +78,7 @@ final class ReferendumDetailsWireframe: ReferendumDetailsWireframeProtocol {
             description: description
         )
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: detailsView.controller
         )
 

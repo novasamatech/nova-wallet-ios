@@ -22,7 +22,7 @@ struct ReferralCrowdloanViewFactory {
 
         let accountAddressDependingOnChain: String? = {
             switch chain.chainId {
-            case Chain.rococo.genesisHash:
+            case KnowChainId.rococo:
                 // requires polkadot address even in rococo testnet
                 return try? accountResponse.accountId.toAddress(
                     using: ChainFormat.substrate(UInt16(SNAddressType.polkadotMain.rawValue))
