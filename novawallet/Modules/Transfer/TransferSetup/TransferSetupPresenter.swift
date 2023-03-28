@@ -24,6 +24,9 @@ final class TransferSetupPresenter {
 
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
     private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
+    private var destinationChainName: String {
+        destinationChainAsset?.chain.name ?? ""
+    }
 
     private var isOnChainTransfer: Bool {
         destinationChainAsset == nil
@@ -137,8 +140,9 @@ final class TransferSetupPresenter {
 
     private func showKiltAddressList(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String) {
         view?.didReceiveKiltRecipient(viewModel: .cached(value: nil))
-        let title = LocalizableResource<String> { locale in
+        let title = LocalizableResource<String> { [unowned self] locale in
             R.string.localizable.transferSetupKiltAddressesTitle(
+                self.destinationChainName.uppercased(),
                 KiltW3n.fullName(for: name),
                 preferredLanguages: locale.rLanguages
             )
@@ -170,8 +174,7 @@ final class TransferSetupPresenter {
             view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
             recipientAddress = recipient.account
         } else {
-            let chainName = destinationChainAsset?.chain.name ?? ""
-            didReceive(error: TransferSetupWeb3NameSearchError.invalidAddress(chainName))
+            didReceive(error: TransferSetupWeb3NameSearchError.invalidAddress(destinationChainName))
             recipientAddress = nil
         }
     }
