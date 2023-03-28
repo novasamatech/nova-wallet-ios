@@ -4,7 +4,7 @@ import RobinHood
 import CommonWallet
 
 final class TransactionHistoryInteractor {
-    weak var presenter: TransactionHistoryInteractorOutputProtocol!
+    weak var presenter: TransactionHistoryInteractorOutputProtocol?
     let historyFacade: AssetHistoryFactoryFacadeProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let dataProviderFactory: TransactionSubscriptionFactoryProtocol
@@ -52,11 +52,11 @@ final class TransactionHistoryInteractor {
             }
             self.firstPageLoaded = true
             self.firstPageItems = self.firstPageItems.applying(changes: changes)
-            self.presenter.didReceive(changes: changes)
+            self.presenter?.didReceive(changes: changes)
         }
 
         let failBlock: (Error) -> Void = { [weak self] (error: Error) in
-            self?.presenter.didReceive(error: .dataProvider(error))
+            self?.presenter?.didReceive(error: .dataProvider(error))
         }
 
         let transactionsProvider = try? dataProviderFactory.getTransactionsProvider(
@@ -109,7 +109,7 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
                 do {
                     self.currentFetchOperation = nil
                     let items = try fetchOperation.targetOperation.extractNoCancellableResultData()
-                    self.presenter.didReceive(nextItems: items)
+                    self.presenter?.didReceive(nextItems: items)
                 } catch {
                     self.presenter.didReceive(error: .fetchProvider(error))
                 }
@@ -124,9 +124,8 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
     }
 
     func setup() {
-        accountAddress.map {
-            presenter.didReceive(accountAddress: $0)
-        }
+        accountAddress.map { presenter?.didReceive(accountAddress: $0) }
+
         clearDataProvider()
         setupDataProvider()
         localDataProvider?.refresh()
@@ -148,9 +147,9 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
                     do {
                         self.currentFetchOperation = nil
                         let items = try fetchOperation.targetOperation.extractNoCancellableResultData()
-                        self.presenter.didReceive(filteredItems: items)
+                        self.presenter?.didReceive(filteredItems: items)
                     } catch {
-                        self.presenter.didReceive(error: .filter(error))
+                        self.presenter?.didReceive(error: .filter(error))
                     }
                 }
             }
@@ -164,7 +163,8 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
             let filteredItems = firstPageItems.filter {
                 filter.isFit(callPath: $0.callPath)
             }
-            presenter.didReceive(filteredItems: filteredItems)
+
+            presenter?.didReceive(filteredItems: filteredItems)
         }
     }
 }
