@@ -156,19 +156,21 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
             connection: connection,
             runtimeService: runtimeService
         )
+        let chainName = destinationChainAsset?.chain.name ?? ""
         let wrapper: CompoundOperationWrapper<TransferAssetRecipientResponse?> =
             OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
                 guard let self = self else {
                     return nil
                 }
+
                 guard let web3Name = try web3NamesWrapper.targetOperation.extractNoCancellableResultData() else {
-                    throw TransferSetupWeb3NameSearchError.accountNotFound(name)
+                    throw TransferSetupWeb3NameSearchError.accountNotFound(name, chainName)
                 }
                 guard let serviceURL = web3Name.serviceURLs.first else {
-                    throw TransferSetupWeb3NameSearchError.serviceNotFound(name)
+                    throw TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName)
                 }
                 guard !self.slip44CoinList.isEmpty else {
-                    throw TransferSetupWeb3NameSearchError.coinsListIsEmpty
+                    throw TransferSetupWeb3NameSearchError.slip44ListIsEmpty
                 }
 
                 return self.kiltTransferAssetRecipientRepository.fetchRecipients(url: serviceURL)
@@ -202,15 +204,17 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     }
 
     private func handleSearchWeb3Name(response: TransferAssetRecipientResponse?, name: String) {
+        let chainName = destinationChainAsset?.chain.name ?? ""
+
         guard
             let response = response,
             let chainAsset = destinationChainAsset,
             let coin = slip44CoinList.first(where: {
                 $0.symbol == chainAsset.asset.symbol
             }),
-            let coinCode = Int(coin.index)
+            let slip44Code = Int(coin.index)
         else {
-            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name))
+            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName))
             return
         }
 
@@ -218,9 +222,9 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
             guard let genesisHash = $0.key.chainId.genesisHash else {
                 return false
             }
-            return chainAsset.chain.chainId.hasPrefix(genesisHash) && coinCode == $0.key.slip44Code
+            return chainAsset.chain.chainId.hasPrefix(genesisHash) && slip44Code == $0.key.slip44Code
         })?.value else {
-            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name))
+            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName))
             return
         }
 

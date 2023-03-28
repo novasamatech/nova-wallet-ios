@@ -290,11 +290,14 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         rootView.receipientKiltView?.delegate = self
     }
 
-    func didReceiveRecipientInputState(focused: Bool) {
+    func didReceiveRecipientInputState(focused: Bool, empty: Bool?) {
         if focused {
             rootView.recepientInputView.textField.becomeFirstResponder()
         } else {
             rootView.recepientInputView.textField.resignFirstResponder()
+        }
+        if empty == true {
+            rootView.recepientInputView.actionClear()
         }
     }
 }
@@ -369,7 +372,7 @@ extension TransferSetupViewController: AccountInputViewDelegate {
     }
 
     func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
-        presenter.search(recipient: inputView.textField.text ?? "")
+        inputView.endEditing(true)
         return true
     }
 }

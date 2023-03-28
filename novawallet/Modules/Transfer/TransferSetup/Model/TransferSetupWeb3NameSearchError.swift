@@ -1,11 +1,14 @@
 import SoraFoundation
 
 enum TransferSetupWeb3NameSearchError: Error {
-    case accountNotFound(String)
-    case serviceNotFound(String)
-    case coinsListIsEmpty
+    typealias Chain = String
+    typealias Name = String
+
+    case accountNotFound(Name, Chain)
+    case serviceNotFound(Name, Chain)
+    case slip44ListIsEmpty
     case kiltService(Error)
-    case invalidAddress(chainName: String)
+    case invalidAddress(Chain)
 }
 
 extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
@@ -14,22 +17,24 @@ extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
         let message: String
         let strings = R.string.localizable.self
         switch self {
-        case let .accountNotFound(name):
+        case let .accountNotFound(name, chain):
             title = strings.transferSetupErrorW3nAccountNotFoundTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nAccountNotFoundSubtitle(
                 KiltW3n.fullName(for: name),
+                chain.uppercased(),
                 preferredLanguages: locale?.rLanguages
             )
-        case let .serviceNotFound(name):
+        case let .serviceNotFound(name, chain):
             title = strings.transferSetupErrorW3nServiceNotFoundTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nServiceNotFoundSubtitle(
                 KiltW3n.fullName(for: name),
+                chain.uppercased(),
                 preferredLanguages: locale?.rLanguages
             )
-        case let .invalidAddress(chainName):
+        case let .invalidAddress(chain):
             title = strings.transferSetupErrorW3nInvalidAddressTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nInvalidAddressSubtitle(
-                chainName.uppercased(),
+                chain.uppercased(),
                 preferredLanguages: locale?.rLanguages
             )
         default:
