@@ -75,7 +75,7 @@ struct TransferSetupViewFactory {
     private static func createInteractor(
         for chainAsset: ChainAsset
     ) -> TransferSetupInteractor? {
-        let chainId = "a0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21"
+        let chainId = KnowChainId.kilt
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let slip44CoinsUrl = ApplicationConfig.shared.slip44URL

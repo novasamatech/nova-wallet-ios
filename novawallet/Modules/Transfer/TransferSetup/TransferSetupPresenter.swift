@@ -136,6 +136,7 @@ final class TransferSetupPresenter {
     }
 
     private func showKiltAddressList(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String) {
+        view?.didReceiveKiltRecipient(viewModel: .cached(value: nil))
         let title = LocalizableResource<String> { locale in
             R.string.localizable.transferSetupKiltAddressesTitle(
                 KiltW3n.fullName(for: name),
@@ -143,7 +144,8 @@ final class TransferSetupPresenter {
             )
         }
 
-        let items = kiltRecipients.map(kiltRecipientCellModel).map { item in
+        let items = kiltRecipients.map(kiltRecipientCellModel)
+        let localizableItems = items.map { item in
             LocalizableResource { _ in item }
         }
 
@@ -151,8 +153,8 @@ final class TransferSetupPresenter {
         wireframe.showAddressPicker(
             from: view,
             title: title,
-            items: items,
-            selectedIndex: nil,
+            items: localizableItems,
+            selectedIndex: items.firstIndex(where: { $0.selected }),
             delegate: self,
             context: context
         )
@@ -161,14 +163,15 @@ final class TransferSetupPresenter {
     private func provideKiltRecipientViewModel(_ recipient: KiltTransferAssetRecipientAccount?) {
         guard let recipient = recipient else {
             view?.didReceiveKiltRecipient(viewModel: nil)
+            view?.didReceiveRecipientInputState(focused: true, empty: true)
             return
         }
         if (try? recipient.account.toAccountId()) != nil {
             view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
             recipientAddress = recipient.account
         } else {
-            didReceive(error: TransferSetupWeb3NameSearchError.invalidAddress(
-                chainName: destinationChainAsset?.chain.name ?? ""))
+            let chainName = destinationChainAsset?.chain.name ?? ""
+            didReceive(error: TransferSetupWeb3NameSearchError.invalidAddress(chainName))
             recipientAddress = nil
         }
     }
@@ -290,7 +293,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         logger.error("Did receive error: \(error)")
 
         if error is TransferSetupWeb3NameSearchError {
-            view?.didReceiveRecipientInputState(focused: true)
+            view?.didReceiveRecipientInputState(focused: true, empty: nil)
             view?.didReceiveKiltRecipient(viewModel: nil)
         }
 
@@ -355,7 +358,7 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
         if context is CrossChainDestinationSelectionState {
             view?.didCompleteDestinationSelection()
         } else if context is KiltAddressesSelectionState {
-            view?.didReceiveRecipientInputState(focused: true)
+            view?.didReceiveRecipientInputState(focused: true, empty: nil)
         }
     }
 }

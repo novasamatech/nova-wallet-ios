@@ -54,7 +54,9 @@ final class ReceipientKiltView: UIView {
     }
 
     @objc private func didTapOnView() {
-        guard let delegate = delegate, let address = model else {
+        guard let delegate = delegate,
+              let model = model,
+              let address = model else {
             return
         }
 
@@ -63,7 +65,7 @@ final class ReceipientKiltView: UIView {
 }
 
 extension ReceipientKiltView {
-    typealias Model = AccountAddress
+    typealias Model = AccountAddress?
 
     func bind(viewModel: LoadableViewModelState<Model>?) {
         switch viewModel {
@@ -74,9 +76,11 @@ extension ReceipientKiltView {
             accountSelected.isHidden = true
             activityIndicator.startAnimating()
         case let .loaded(value), let .cached(value):
-            accountSelected.isHidden = false
+            if let value = value {
+                accountSelected.isHidden = false
+                accountSelected.detailsView.detailsLabel.text = value
+            }
             activityIndicator.stopAnimating()
-            accountSelected.detailsView.detailsLabel.text = value
         }
 
         model = viewModel?.value
