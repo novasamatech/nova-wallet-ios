@@ -4,7 +4,7 @@ enum TransferSetupWeb3NameSearchError: Error {
     typealias Chain = String
     typealias Name = String
 
-    case accountNotFound(Name, Chain)
+    case accountNotFound(Name)
     case serviceNotFound(Name, Chain)
     case slip44ListIsEmpty
     case kiltService(Error)
@@ -17,11 +17,10 @@ extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
         let message: String
         let strings = R.string.localizable.self
         switch self {
-        case let .accountNotFound(name, chain):
+        case let .accountNotFound(name):
             title = strings.transferSetupErrorW3nAccountNotFoundTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nAccountNotFoundSubtitle(
                 KiltW3n.fullName(for: name),
-                chain.uppercased(),
                 preferredLanguages: locale?.rLanguages
             )
         case let .serviceNotFound(name, chain):
