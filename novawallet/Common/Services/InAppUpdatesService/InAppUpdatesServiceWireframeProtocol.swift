@@ -13,7 +13,7 @@ final class InAppUpdatesServiceWireframe: InAppUpdatesServiceWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: view.controller)
+        let navigationController = NovaNavigationController(rootViewController: view.controller)
         navigationController.barSettings = .defaultSettings.bySettingCloseButton(false)
         topViewController.present(navigationController, animated: true)
     }

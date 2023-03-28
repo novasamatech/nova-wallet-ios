@@ -64,7 +64,7 @@ final class EvmTransactionService {
                 }
 
                 return gasLimit
-            } catch let error as JSONRPCError where error.isEvmContractReverted {
+            } catch is JSONRPCError {
                 return Self.defaultRevertedFeeGasLimit
             }
         }

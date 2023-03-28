@@ -16,7 +16,7 @@ final class AssetSelectionInteractor {
     private var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
     private var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
     private var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
-    private var priceSubscription: AnySingleValueProvider<[PriceData]>?
+    private var priceSubscription: StreamableProvider<PriceData>?
 
     init(
         selectedMetaAccount: MetaAccountModel,
@@ -111,6 +111,10 @@ final class AssetSelectionInteractor {
                 result[accountId] = subscribeToAccountBalanceProvider(for: accountId)
             }
         }
+
+        if assetBalanceSubscriptions.isEmpty {
+            presenter?.didReceiveBalance(results: [:])
+        }
     }
 
     private func setupPriceSubscription(from chains: [ChainModel]) {
@@ -134,46 +138,39 @@ final class AssetSelectionInteractor {
         let priceIds = Array(priceIdSet).sorted()
 
         guard !priceIds.isEmpty else {
+            presenter?.didReceivePrice(changes: [:])
             return
         }
 
-        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(
+        priceSubscription = priceLocalSubscriptionFactory.getAllPricesStreamableProvider(
             for: priceIds,
             currency: currency
         )
 
-        let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
-            let finalValue = changes.reduceToLastChange()
-
-            switch finalValue {
-            case let .some(prices):
-                let chainPrices = zip(priceIds, prices).reduce(
-                    into: [ChainAssetId: PriceData]()
-                ) { result, item in
-                    guard let chainAssetIds = self?.availableTokenPrice.filter({ $0.value == item.0 })
-                        .map(\.key) else {
-                        return
-                    }
-
-                    for chainAssetId in chainAssetIds {
-                        result[chainAssetId] = item.1
-                    }
-                }
-
-                self?.presenter?.didReceivePrices(result: .success(chainPrices))
-            case .none:
-                self?.presenter?.didReceivePrices(result: nil)
+        let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
+            guard let strongSelf = self else {
+                return
             }
+
+            let mappedChanges = changes.reduce(
+                using: .init(),
+                availableTokenPrice: strongSelf.availableTokenPrice,
+                currency: currency
+            )
+
+            self?.presenter?.didReceivePrice(changes: mappedChanges)
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.presenter?.didReceivePrices(result: .failure(error))
+            self?.presenter?.didReceivePrice(error: error)
             return
         }
 
-        let options = DataProviderObserverOptions(
+        let options = StreamableProviderObserverOptions(
             alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
         )
 
         priceSubscription?.addObserver(
@@ -183,6 +180,8 @@ final class AssetSelectionInteractor {
             failing: failureClosure,
             options: options
         )
+
+        priceSubscription?.refresh()
     }
 }
 

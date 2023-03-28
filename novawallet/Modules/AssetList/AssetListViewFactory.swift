@@ -25,7 +25,9 @@ struct AssetListViewFactory {
             eventCenter: EventCenter.shared,
             crowdloansLocalSubscriptionFactory: interactor.crowdloansLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: interactor.walletLocalSubscriptionFactory,
-            walletSettings: interactor.selectedWalletSettings
+            priceLocalSubscriptionFactory: interactor.priceLocalSubscriptionFactory,
+            walletSettings: interactor.selectedWalletSettings,
+            currencyManager: currencyManager
         )
 
         let wireframe = AssetListWireframe(walletUpdater: walletUpdater)
