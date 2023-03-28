@@ -111,7 +111,7 @@ extension TransactionHistoryInteractor: TransactionHistoryInteractorInputProtoco
                     let items = try fetchOperation.targetOperation.extractNoCancellableResultData()
                     self.presenter?.didReceive(nextItems: items)
                 } catch {
-                    self.presenter.didReceive(error: .fetchProvider(error))
+                    self.presenter?.didReceive(error: .fetchProvider(error))
                 }
             }
         }
