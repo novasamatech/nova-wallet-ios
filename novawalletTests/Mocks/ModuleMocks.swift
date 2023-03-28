@@ -6916,6 +6916,7 @@ import Cuckoo
 @testable import novawallet
 
 import BigInt
+import RobinHood
 
 
  class MockAssetSelectionViewProtocol: AssetSelectionViewProtocol, Cuckoo.ProtocolMock {
@@ -7601,16 +7602,31 @@ import BigInt
     
     
     
-     func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)  {
+     func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])  {
         
-    return cuckoo_manager.call("didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)",
-            parameters: (result),
-            escapingParameters: (result),
+    return cuckoo_manager.call("didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])",
+            parameters: (changes),
+            escapingParameters: (changes),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceivePrices(result: result))
+            defaultCall: __defaultImplStub!.didReceivePrice(changes: changes))
+        
+    }
+    
+    
+    
+     func didReceivePrice(error: Error)  {
+        
+    return cuckoo_manager.call("didReceivePrice(error: Error)",
+            parameters: (error),
+            escapingParameters: (error),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceivePrice(error: error))
         
     }
     
@@ -7633,9 +7649,14 @@ import BigInt
 	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceivePrices<M1: Cuckoo.OptionalMatchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ChainAssetId: PriceData], Error>?)> where M1.OptionalMatchedType == Result<[ChainAssetId: PriceData], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAssetId: PriceData], Error>?)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)", parameterMatchers: matchers))
+	    func didReceivePrice<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAssetId: DataProviderChange<PriceData>])> where M1.MatchedType == [ChainAssetId: DataProviderChange<PriceData>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: DataProviderChange<PriceData>])>] = [wrap(matchable: changes) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceivePrice<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetSelectionInteractorOutputProtocol.self, method: "didReceivePrice(error: Error)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -7667,9 +7688,15 @@ import BigInt
 	    }
 	    
 	    @discardableResult
-	    func didReceivePrices<M1: Cuckoo.OptionalMatchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<[ChainAssetId: PriceData], Error>?), Void> where M1.OptionalMatchedType == Result<[ChainAssetId: PriceData], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAssetId: PriceData], Error>?)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceivePrice<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.__DoNotUse<([ChainAssetId: DataProviderChange<PriceData>]), Void> where M1.MatchedType == [ChainAssetId: DataProviderChange<PriceData>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([ChainAssetId: DataProviderChange<PriceData>])>] = [wrap(matchable: changes) { $0 }]
+	        return cuckoo_manager.verify("didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceivePrice<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
+	        return cuckoo_manager.verify("didReceivePrice(error: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -7695,7 +7722,13 @@ import BigInt
     
     
     
-     func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)   {
+     func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceivePrice(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

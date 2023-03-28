@@ -14,7 +14,7 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     let feeProxy: ExtrinsicFeeProxyProtocol
     let operationManager: OperationManagerProtocol
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?

@@ -21,7 +21,7 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
     let chainConnection: ChainConnection
     let logger: LoggerProtocol?
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var subscriptionId: UInt16?
 
