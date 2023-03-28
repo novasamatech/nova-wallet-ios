@@ -11,7 +11,7 @@ final class DAppOperationConfirmWireframe: DAppOperationConfirmWireframeProtocol
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: detailsView.controller)
+        let navigationController = NovaNavigationController(rootViewController: detailsView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

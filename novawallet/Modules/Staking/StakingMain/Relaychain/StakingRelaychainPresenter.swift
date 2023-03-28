@@ -333,28 +333,6 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
         wireframe.showRebagConfirm(from: view)
     }
 
-    func performAnalyticsAction() {
-        let isNominator: AnalyticsContainerViewMode = {
-            if stateMachine.viewState(using: { (state: ValidatorState) in state }) != nil {
-                return .none
-            }
-
-            if stateMachine.viewState(using: { (state: BaseStashNextState) in state }) != nil {
-                return .accountIsNominator
-            }
-            return .none
-        }()
-
-        let includeValidators: AnalyticsContainerViewMode = {
-            if stateMachine.viewState(using: { (state: ValidatorState) in state }) != nil {
-                return .none
-            }
-            return nomination != nil ? .includeValidatorsTab : .none
-        }()
-
-        wireframe.showAnalytics(from: view, mode: isNominator.union(includeValidators))
-    }
-
     // swiftlint:disable:next cyclomatic_complexity
     func performManageAction(_ action: StakingManageOption) {
         switch action {
@@ -545,15 +523,6 @@ extension StakingRelaychainPresenter: StakingRelaychainInteractorOutputProtocol 
         switch result {
         case let .success(maxNominatorsPerValidator):
             stateMachine.state.process(maxNominatorsPerValidator: maxNominatorsPerValidator)
-        case let .failure(error):
-            handle(error: error)
-        }
-    }
-
-    func didReceieve(subqueryRewards: Result<[SubqueryRewardItemData]?, Error>, period: AnalyticsPeriod) {
-        switch subqueryRewards {
-        case let .success(rewards):
-            stateMachine.state.process(subqueryRewards: (rewards, period))
         case let .failure(error):
             handle(error: error)
         }

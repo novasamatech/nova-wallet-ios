@@ -38,7 +38,6 @@ class BaseStakingState: StakingStateProtocol {
             commonData = commonData
                 .byReplacing(address: address)
                 .byReplacing(accountBalance: nil)
-                .byReplacing(subqueryRewards: nil, period: .week)
 
             guard let stateMachine = stateMachine else {
                 return
@@ -131,12 +130,6 @@ class BaseStakingState: StakingStateProtocol {
 
     func process(eraCountdown: EraCountdown) {
         commonData = commonData.byReplacing(eraCountdown: eraCountdown)
-
-        stateMachine?.transit(to: self)
-    }
-
-    func process(subqueryRewards: ([SubqueryRewardItemData]?, AnalyticsPeriod)) {
-        commonData = commonData.byReplacing(subqueryRewards: subqueryRewards.0, period: subqueryRewards.1)
 
         stateMachine?.transit(to: self)
     }
