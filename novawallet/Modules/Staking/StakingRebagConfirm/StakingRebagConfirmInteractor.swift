@@ -215,7 +215,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             return
         }
 
-        let wrapper = createBagsListModuleNameResolveWrapper()
+        let wrapper = createResolveBagsListModuleNameWrapper()
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             guard let self = self, self.bagsListModuleNameCancellable === wrapper else {
@@ -271,7 +271,10 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         )
     }
 
-    private func createBagsListModuleNameResolveWrapper() -> CompoundOperationWrapper<String?> {
+    private func createResolveBagsListModuleNameWrapper() -> CompoundOperationWrapper<String?> {
+        if let rebagModuleName = rebagModuleName {
+            return CompoundOperationWrapper.createWithResult(rebagModuleName)
+        }
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let resolveModuleNameOperation = ClosureOperation<String?> {
