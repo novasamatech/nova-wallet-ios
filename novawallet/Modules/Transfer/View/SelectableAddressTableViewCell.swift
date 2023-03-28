@@ -41,9 +41,9 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
     private func setupLayout() {
         contentView.addSubview(view)
 
-        let inset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
         view.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(inset)
+            $0.edges.equalToSuperview().inset(insets)
         }
 
         selectorView.snp.makeConstraints {
