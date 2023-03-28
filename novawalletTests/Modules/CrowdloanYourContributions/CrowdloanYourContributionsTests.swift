@@ -99,7 +99,12 @@ final class CrowdloanYourContributionsTests: XCTestCase {
         }
         let crowdloanSubscriptionFactory = CrowdloanLocalSubscriptionFactoryStub(blockNumber: Crowdloan.currentBlockNumber)
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "100", dayChange: 0.01, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "100",
+                dayChange: 0.01,
+                currencyId: Currency.usd.id
+            )
         )
         let crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactoryStub(
             externalContributions: externalContributions

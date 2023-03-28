@@ -22,7 +22,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     private var extrinisicService: ExtrinsicServiceProtocol?
 

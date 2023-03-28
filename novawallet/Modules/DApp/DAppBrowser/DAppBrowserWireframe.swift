@@ -16,7 +16,7 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova
         )
 
         confirmationView.controller.modalTransitioningFactory = factory
@@ -34,7 +34,7 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: searchView.controller)
+        let navigationController = NovaNavigationController(rootViewController: searchView.controller)
         navigationController.barSettings = NavigationBarSettings.defaultSettings.bySettingCloseButton(false)
 
         navigationController.modalTransitionStyle = .crossDissolve
@@ -52,7 +52,7 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         }
 
         let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.fearless
+            configuration: ModalSheetPresentationConfiguration.nova
         )
         authVew.controller.modalTransitioningFactory = factory
         authVew.controller.modalPresentationStyle = .custom
@@ -69,7 +69,7 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         }
 
         let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.fearless
+            configuration: ModalSheetPresentationConfiguration.nova
         )
         phishingView.controller.modalTransitioningFactory = factory
         phishingView.controller.modalPresentationStyle = .custom
@@ -82,7 +82,7 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: addFavoriteView.controller)
+        let navigationController = NovaNavigationController(rootViewController: addFavoriteView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
@@ -99,7 +99,7 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         }
 
         let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.fearless
+            configuration: ModalSheetPresentationConfiguration.nova
         )
         dappSettingsView.controller.modalTransitioningFactory = factory
         dappSettingsView.controller.modalPresentationStyle = .custom

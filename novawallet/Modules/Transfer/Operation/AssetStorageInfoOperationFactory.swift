@@ -142,7 +142,7 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
         case let .orml(info):
             let assetExistence = AssetBalanceExistence(minBalance: info.existentialDeposit, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
-        case .erc20:
+        case .erc20, .evmNative:
             let assetExistence = AssetBalanceExistence(minBalance: 0, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
         }

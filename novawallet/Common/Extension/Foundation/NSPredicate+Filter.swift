@@ -424,4 +424,22 @@ extension NSPredicate {
 
         return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, referendumPredicate])
     }
+
+    static func prices(for currencyId: Int) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDPrice.currency), currencyId)
+    }
+
+    static func price(for priceId: String, currencyId: Int) -> NSPredicate {
+        let identifier = PriceData.createIdentifier(for: priceId, currencyId: currencyId)
+
+        return NSPredicate(format: "%K == %@", #keyPath(CDPrice.identifier), identifier)
+    }
+
+    static func pricesByIds(_ identifiers: [String]) -> NSPredicate {
+        let predicates = identifiers.map {
+            NSPredicate(format: "%K == %@", #keyPath(CDPrice.identifier), $0)
+        }
+
+        return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+    }
 }

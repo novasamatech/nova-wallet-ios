@@ -37,7 +37,12 @@ class AssetSelectionTests: XCTestCase {
         )
 
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "1.5", dayChange: nil, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "1.5",
+                dayChange: nil,
+                currencyId: Currency.usd.id
+            )
         )
 
         let interactor = AssetSelectionInteractor(

@@ -11,7 +11,7 @@ class ParaStkYieldBoostCommonInteractor {
     let yieldBoostProviderFactory: ParaStkYieldBoostProviderFactoryProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var yieldBoostProvider: AnySingleValueProvider<[ParaStkYieldBoostState.Task]>?
 
     init(

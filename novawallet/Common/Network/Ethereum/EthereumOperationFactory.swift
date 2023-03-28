@@ -18,6 +18,8 @@ protocol EthereumOperationFactoryProtocol {
     ) -> BaseOperation<String>
 
     func createTransactionReceiptOperation(for transactionHash: String) -> BaseOperation<EthereumTransactionReceipt?>
+
+    func createBlockOperation(for blockNumber: BigUInt) -> RobinHood.BaseOperation<EthereumBlockObject>
 }
 
 enum EthereumBlock: String {
@@ -32,6 +34,7 @@ enum EthereumMethod: String {
     case transactionCount = "eth_getTransactionCount"
     case sendRawTransaction = "eth_sendRawTransaction"
     case transactionReceipt = "eth_getTransactionReceipt"
+    case blockByNumber = "eth_getBlockByNumber"
 }
 
 final class EthereumOperationFactory {
