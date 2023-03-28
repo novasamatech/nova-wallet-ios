@@ -32,9 +32,11 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var bagListNodeProvider: AnyDataProvider<DecodedBagListNode>?
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
+    private var bagsListModuleNameCancellable: CancellableCall?
 
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var signingWrapper: SigningWrapperProtocol?
+    private var rebagModuleName: String?
 
     init(
         chainAsset: ChainAsset,
@@ -213,11 +215,33 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             return
         }
 
-        let rebagCall = callFactory.rebag(accountId: accountId)
-        let reuseIdentifier = rebagCall.callName + accountId.toHexString()
-        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { builder in
-            try builder.adding(call: rebagCall)
+        let wrapper = createBagsListModuleNameResolveWrapper()
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            guard let self = self, self.bagsListModuleNameCancellable === wrapper else {
+                return
+            }
+
+            self.bagsListModuleNameCancellable = nil
+
+            do {
+                let moduleName = try wrapper.targetOperation.extractNoCancellableResultData()
+                self.rebagModuleName = moduleName
+                let rebagCall = self.callFactory.rebag(accountId: accountId, module: moduleName)
+                let reuseIdentifier = rebagCall.callName + accountId.toHexString()
+                self.feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: reuseIdentifier) { builder in
+                    try builder.adding(call: rebagCall)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.presenter.didReceive(error: .fetchFeeFailed(error))
+                }
+            }
         }
+
+        bagsListModuleNameCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func confirmRebag(stashItem: StashItem?) {
@@ -228,7 +252,7 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
             return
         }
 
-        let rebagCall = callFactory.rebag(accountId: accountId)
+        let rebagCall = callFactory.rebag(accountId: accountId, module: rebagModuleName)
 
         extrinsicService.submit(
             { builder in
@@ -244,6 +268,22 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
                     self?.presenter.didReceive(error: .submitFailed(error))
                 }
             }
+        )
+    }
+
+    private func createBagsListModuleNameResolveWrapper() -> CompoundOperationWrapper<String?> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let resolveModuleNameOperation = ClosureOperation<String?> {
+            let metadata = try codingFactoryOperation.extractNoCancellableResultData().metadata
+
+            return BagList.possibleModuleNames.first { metadata.getModuleIndex($0) != nil }
+        }
+
+        resolveModuleNameOperation.addDependency(codingFactoryOperation)
+        return CompoundOperationWrapper(
+            targetOperation: resolveModuleNameOperation,
+            dependencies: [codingFactoryOperation]
         )
     }
 
