@@ -489,6 +489,8 @@
 		840D627129CB3FD900D5E894 /* URLBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D627029CB3FD900D5E894 /* URLBuilderTests.swift */; };
 		840D627529CB46E900D5E894 /* ConnectionApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D627429CB46E900D5E894 /* ConnectionApiKeys.swift */; };
 		840D627729CB487100D5E894 /* EnviromentVariables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D627629CB487100D5E894 /* EnviromentVariables.swift */; };
+		840D627A29CC362500D5E894 /* PriceDataMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D627929CC362500D5E894 /* PriceDataMapper.swift */; };
+		840D627C29CC369100D5E894 /* CoingeckoStreamableSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D627B29CC369100D5E894 /* CoingeckoStreamableSource.swift */; };
 		840D8918262429C900AB231B /* LocalStorageRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D8917262429C900AB231B /* LocalStorageRequestFactory.swift */; };
 		840D891D26242AE500AB231B /* StorageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D891C26242AE500AB231B /* StorageRequest.swift */; };
 		840D929F278D8D2E0007B979 /* DAppBrowserInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */; };
@@ -1851,6 +1853,7 @@
 		84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */; };
 		84A6AB5E290AA7DF001B57B2 /* ReferendumFullDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6AB5D290AA7DF001B57B2 /* ReferendumFullDetailsViewModel.swift */; };
 		84A6AB64290B021E001B57B2 /* CopyPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6AB63290B021E001B57B2 /* CopyPresentable.swift */; };
+		84A70D9929CC7F0200C648AD /* PriceDataChange+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A70D9829CC7F0200C648AD /* PriceDataChange+Mapping.swift */; };
 		84A7AC8029465BF9001A39CF /* TokenAddErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A7AC7F29465BF9001A39CF /* TokenAddErrorPresentable.swift */; };
 		84A7AC822946FC31001A39CF /* EthereumResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A7AC812946FC31001A39CF /* EthereumResultParser.swift */; };
 		84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */; };
@@ -3881,6 +3884,9 @@
 		840D627029CB3FD900D5E894 /* URLBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLBuilderTests.swift; sourceTree = "<group>"; };
 		840D627429CB46E900D5E894 /* ConnectionApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionApiKeys.swift; sourceTree = "<group>"; };
 		840D627629CB487100D5E894 /* EnviromentVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnviromentVariables.swift; sourceTree = "<group>"; };
+		840D627829CC314500D5E894 /* SubstrateDataModel13.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel13.xcdatamodel; sourceTree = "<group>"; };
+		840D627929CC362500D5E894 /* PriceDataMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceDataMapper.swift; sourceTree = "<group>"; };
+		840D627B29CC369100D5E894 /* CoingeckoStreamableSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoStreamableSource.swift; sourceTree = "<group>"; };
 		840D8917262429C900AB231B /* LocalStorageRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageRequestFactory.swift; sourceTree = "<group>"; };
 		840D891C26242AE500AB231B /* StorageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRequest.swift; sourceTree = "<group>"; };
 		840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserInteractorError.swift; sourceTree = "<group>"; };
@@ -5260,6 +5266,7 @@
 		84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeMetadata+Internal.swift"; sourceTree = "<group>"; };
 		84A6AB5D290AA7DF001B57B2 /* ReferendumFullDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsViewModel.swift; sourceTree = "<group>"; };
 		84A6AB63290B021E001B57B2 /* CopyPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPresentable.swift; sourceTree = "<group>"; };
+		84A70D9829CC7F0200C648AD /* PriceDataChange+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PriceDataChange+Mapping.swift"; sourceTree = "<group>"; };
 		84A7AC7F29465BF9001A39CF /* TokenAddErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenAddErrorPresentable.swift; sourceTree = "<group>"; };
 		84A7AC812946FC31001A39CF /* EthereumResultParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumResultParser.swift; sourceTree = "<group>"; };
 		84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmData.swift; sourceTree = "<group>"; };
@@ -9290,6 +9297,7 @@
 				84F3B27727F4179A00D64CF5 /* PhishingSiteMapper.swift */,
 				849E07F5284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift */,
 				8493FF37291A59D800F09F1B /* ReferendumMetadataMapper.swift */,
+				840D627929CC362500D5E894 /* PriceDataMapper.swift */,
 			);
 			path = EntityToModel;
 			sourceTree = "<group>";
@@ -9544,6 +9552,7 @@
 				AEAC68FD26EA3C2A00346599 /* CoingeckoPriceSource.swift */,
 				84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */,
 				84B91AEC287078B0001A0420 /* StorageProviderSourceFallback.swift */,
+				840D627B29CC369100D5E894 /* CoingeckoStreamableSource.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -10259,6 +10268,7 @@
 				847F2D4E27AA695F00AFD476 /* AssetListGroupModel.swift */,
 				88F19DDD28D8D0A100F6E459 /* Either.swift */,
 				88F19DDF28D8D0F600F6E459 /* LoadableViewModelState+Addition.swift */,
+				84A70D9829CC7F0200C648AD /* PriceDataChange+Mapping.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -17993,6 +18003,7 @@
 				8428765F24ADE0BB00D91AD8 /* UserSettings.swift in Sources */,
 				84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */,
 				8472974D260A9CDF009B86D0 /* SelectValidatorsConfirmationModel.swift in Sources */,
+				840D627C29CC369100D5E894 /* CoingeckoStreamableSource.swift in Sources */,
 				84FF267C28494B13003EC78D /* ParaStkStakeSetupPresenter+StartStaking.swift in Sources */,
 				842BDB2A278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift in Sources */,
 				84FEADF228783F55001DFC26 /* BaseParaStakingRewardCalculatoService.swift in Sources */,
@@ -18163,6 +18174,7 @@
 				84D17ED828053E3200F7BAFF /* DAppFavoriteMapper.swift in Sources */,
 				8493D0DF26FE7D7400A28008 /* ChainRepositoryFactory.swift in Sources */,
 				8411707C285B1214006F4DFB /* XcmTransfers.swift in Sources */,
+				840D627A29CC362500D5E894 /* PriceDataMapper.swift in Sources */,
 				84BCC7182924B36700354DE0 /* EvmRemoteSubscriptionRequest.swift in Sources */,
 				84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */,
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
@@ -19021,6 +19033,7 @@
 				84E5D14227E32E8B00D27B1E /* AccountInputView.swift in Sources */,
 				2B0FC94B4AE9AFE9532F493F /* ReferralCrowdloanViewFactory.swift in Sources */,
 				84B91AED287078B0001A0420 /* StorageProviderSourceFallback.swift in Sources */,
+				84A70D9929CC7F0200C648AD /* PriceDataChange+Mapping.swift in Sources */,
 				59745D3C9602745E1417D2F6 /* AssetSelectionInteractor.swift in Sources */,
 				849976D227B3AC3000B14A6C /* MetamaskChain.swift in Sources */,
 				84468A112867BCD400BCBE00 /* XcmTransferService+Protocol.swift in Sources */,
@@ -20613,6 +20626,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				840D627829CC314500D5E894 /* SubstrateDataModel13.xcdatamodel */,
 				840D626D29CB32F100D5E894 /* SubstrateDataModel12.xcdatamodel */,
 				8471A19E29C4536600956FF7 /* SubstrateDataModel11.xcdatamodel */,
 				84AFAEF2295ECEB7001D4BAC /* SubstrateDataModel10.xcdatamodel */,
@@ -20626,7 +20640,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 840D626D29CB32F100D5E894 /* SubstrateDataModel12.xcdatamodel */;
+			currentVersion = 840D627829CC314500D5E894 /* SubstrateDataModel13.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
