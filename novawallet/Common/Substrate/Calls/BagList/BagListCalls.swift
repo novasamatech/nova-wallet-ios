@@ -17,7 +17,13 @@ extension BagList.RebagCall {
         dislocated.accountId?.toHexString() ?? ""
     }
 
-    var runtimeCall: RuntimeCall<BagList.RebagCall> {
-        RuntimeCall(moduleName: "VoterList", callName: "rebag", args: self)
+    var runtimeCalls: [RuntimeCall<BagList.RebagCall>] {
+        BagList.possibleModuleNames.map {
+            RuntimeCall(moduleName: $0, callName: "rebag", args: self)
+        }
+    }
+
+    var defaultRuntimeCall: RuntimeCall<BagList.RebagCall> {
+        RuntimeCall(moduleName: BagList.defaultModuleName, callName: "rebag", args: self)
     }
 }
