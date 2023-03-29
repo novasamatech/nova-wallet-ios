@@ -43,7 +43,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
-    func search(recipient: String)
+    func complete(recipient: String)
     func showOptions(for address: AccountAddress)
 }
 
