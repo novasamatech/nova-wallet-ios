@@ -277,12 +277,9 @@ final class StakingRebagConfirmInteractor: AnyProviderAutoCleaning, AnyCancellab
         )
     }
 
-    private func makeSubscriptions() {
+    private func continueSetup() {
         subscribeAccountBalance()
         subscribePrice()
-    }
-
-    private func continueSetup() {
         subscribeStashItemSubscription()
         subscribeTotalIssuanceSubscription()
     }
@@ -292,7 +289,6 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
     func setup() {
         feeProxy.delegate = self
         provideNetworkStakingInfo()
-        makeSubscriptions()
         provideModuleName()
     }
 
@@ -305,7 +301,7 @@ extension StakingRebagConfirmInteractor: StakingRebagConfirmInteractorInputProto
     }
 
     func remakeSubscriptions() {
-        makeSubscriptions()
+        continueSetup()
     }
 
     func retryNetworkInfo() {
