@@ -23,9 +23,6 @@ protocol TransactionHistoryInteractorInputProtocol: AnyObject {
 protocol TransactionHistoryInteractorOutputProtocol: AnyObject {
     func didReceive(error: TransactionHistoryError)
     func didReceive(changes: [DataProviderChange<TransactionHistoryItem>])
-    func didReceive(nextItems: [TransactionHistoryItem])
-    func didReceive(filteredItems: [TransactionHistoryItem])
-    func didReceive(accountAddress: AccountAddress)
 }
 
 protocol TransactionHistoryWireframeProtocol: AnyObject {
@@ -42,7 +39,6 @@ protocol TransactionHistoryWireframeProtocol: AnyObject {
 }
 
 enum TransactionHistoryError: Error {
-    case dataProvider(Error)
-    case fetchProvider(Error)
-    case filter(Error)
+    case fetchFailed(Error)
+    case setupFailed(Error)
 }

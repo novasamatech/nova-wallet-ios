@@ -9,8 +9,8 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     let chainAsset: ChainAsset
     let pageSize: Int
 
-    @Atomic private var pagination: Pagination?
-    @Atomic private var pendingOperation: CancellableCall?
+    @Atomic(defaultValue: nil) private var pagination: Pagination?
+    @Atomic(defaultValue: nil) private var pendingOperation: CancellableCall?
 
     weak var delegate: TransactionHistoryFetcherDelegate?
 
@@ -27,7 +27,7 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
         self.operationFactory = operationFactory
         self.operationQueue = operationQueue
         self.pageSize = pageSize
-        self.pagination = initPagination
+        pagination = initPagination
     }
 
     deinit {
@@ -41,7 +41,15 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
 
         let currentPagination = pagination ?? Pagination(count: pageSize, context: nil)
 
-        let wrapper = operationFactory.createOperationWrapper(for: address, pagination: currentPagination)
+        let remoteAddress: AccountAddress
+
+        if chainAsset.chain.isEthereumBased {
+            remoteAddress = address.toEthereumAddressWithChecksum() ?? address
+        } else {
+            remoteAddress = address
+        }
+
+        let wrapper = operationFactory.createOperationWrapper(for: remoteAddress, pagination: currentPagination)
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
