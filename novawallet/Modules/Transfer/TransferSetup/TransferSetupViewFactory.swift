@@ -97,17 +97,23 @@ struct TransferSetupViewFactory {
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
         let operationQueue = OperationQueue()
+        let slip44CoinsRepository = Slip44CoinRepository(appConfig: ApplicationConfig.shared)
+        let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
+        let web3NameService = Web3NameService(
+            slip44CoinsRepository: slip44CoinsRepository,
+            web3NamesOperationFactory: web3NamesOperationFactory,
+            runtimeService: runtimeService,
+            connection: connection,
+            kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepository(),
+            operationQueue: operationQueue
+        )
 
         return TransferSetupInteractor(
             originChainAssetId: chainAsset.chainAssetId,
             xcmTransfersSyncService: syncService,
             chainsStore: chainsStore,
             accountRepository: accountRepository,
-            web3NamesOperationFactory: KiltWeb3NamesOperationFactory(operationQueue: operationQueue),
-            runtimeService: runtimeService,
-            connection: connection,
-            kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepository(),
-            slip44CoinsProvider: slip44CoinsProvider,
+            web3NamesService: web3NameService,
             operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
