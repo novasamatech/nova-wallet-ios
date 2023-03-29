@@ -2,7 +2,7 @@ extension KiltW3n {
     static let scheme: String = "w3n"
 
     static func web3Name(nameWithScheme: String) -> String? {
-        let nameWithScheme = nameWithScheme.split(by: .colon)
+        let nameWithScheme = nameWithScheme.split(by: .colon, maxSplits: 1)
         guard let scheme = nameWithScheme[safe: 0]?.trimmingCharacters(in: .whitespacesAndNewlines),
               KiltW3n.scheme.compare(scheme, options: .caseInsensitive) == .orderedSame else {
             return nil

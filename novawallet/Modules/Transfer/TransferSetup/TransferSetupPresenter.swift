@@ -125,30 +125,33 @@ final class TransferSetupPresenter {
         view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
     }
 
-    private func kiltRecipientCellModel(kiltRecipient: KiltTransferAssetRecipientAccount) ->
+    private func w3nRecipientCellModel(recipient: KiltTransferAssetRecipientAccount) ->
         SelectableAddressTableViewCell.Model {
         let displayAddress = DisplayAddress(
-            address: kiltRecipient.account,
-            username: kiltRecipient.description ?? ""
+            address: recipient.account,
+            username: recipient.description ?? ""
         )
-        let addressModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
+        let addressModel = displayAddressViewModelFactory
+            .createViewModel(from: displayAddress)
+            .withPlaceholder(image: R.image.iconAddressPlaceholder()!)
+
         return SelectableAddressTableViewCell.Model(
             address: addressModel,
-            selected: recipientAddress == kiltRecipient.account
+            selected: recipientAddress == recipient.account
         )
     }
 
     private func showKiltAddressList(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String) {
         view?.didReceiveKiltRecipient(viewModel: .cached(value: nil))
-        let title = LocalizableResource<String> { [unowned self] locale in
+        let title = LocalizableResource<String> { [weak self] locale in
             R.string.localizable.transferSetupKiltAddressesTitle(
-                self.destinationChainName.uppercased(),
+                self?.destinationChainName ?? "",
                 KiltW3n.fullName(for: name),
                 preferredLanguages: locale.rLanguages
             )
         }
 
-        let items = kiltRecipients.map(kiltRecipientCellModel)
+        let items = kiltRecipients.map(w3nRecipientCellModel)
         let localizableItems = items.map { item in
             LocalizableResource { _ in item }
         }
@@ -165,12 +168,14 @@ final class TransferSetupPresenter {
     }
 
     private func provideKiltRecipientViewModel(_ recipient: KiltTransferAssetRecipientAccount?) {
-        guard let recipient = recipient else {
+        guard let recipient = recipient,
+              let chainFormat = destinationChainAsset?.chain.chainFormat else {
             view?.didReceiveKiltRecipient(viewModel: nil)
             view?.didReceiveRecipientInputState(focused: true, empty: true)
             return
         }
-        if (try? recipient.account.toAccountId()) != nil {
+        let accountId = try? recipient.account.toAccountId(using: chainFormat)
+        if accountId != nil {
             view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
             recipientAddress = recipient.account
         } else {
@@ -249,7 +254,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         )
     }
 
-    func search(recipient: String) {
+    func complete(recipient: String) {
         if let web3Name = KiltW3n.web3Name(nameWithScheme: recipient) {
             interactor.search(web3Name: web3Name)
             view?.didReceiveKiltRecipient(viewModel: .loading)
