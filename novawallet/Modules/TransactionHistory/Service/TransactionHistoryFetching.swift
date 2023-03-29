@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 
-enum TransactionHistoryFetcherError {
+enum TransactionHistoryFetcherError: Error {
     case remoteFetchFailed(Error)
 }
 
