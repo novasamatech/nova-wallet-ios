@@ -10,15 +10,9 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let chainsStore: ChainsStoreProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
-    let web3NamesOperationFactory: Web3NamesOperationFactoryProtocol
-    let runtimeService: RuntimeCodingServiceProtocol
-    let connection: JSONRPCEngine
-    let kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol
-    let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>
+    let web3NamesService: Web3NameServiceProtocol
 
     private var xcmTransfers: XcmTransfers?
-    private var kiltRecipientsCancellableCall: CancellableCall?
-    private var slip44CoinList: Slip44CoinList = []
     private var destinationChainAsset: ChainAsset?
 
     init(
@@ -26,22 +20,14 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
-        web3NamesOperationFactory: Web3NamesOperationFactoryProtocol,
-        runtimeService: RuntimeCodingServiceProtocol,
-        connection: JSONRPCEngine,
-        kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol,
-        slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>,
+        web3NamesService: Web3NameServiceProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository
-        self.web3NamesOperationFactory = web3NamesOperationFactory
-        self.connection = connection
-        self.runtimeService = runtimeService
-        self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
-        self.slip44CoinsProvider = slip44CoinsProvider
+        self.web3NamesService = web3NamesService
         self.operationManager = operationManager
     }
 
@@ -67,35 +53,6 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         chainsStore.delegate = self
 
         chainsStore.setup()
-    }
-
-    private func subscribeSlip44CoinList() {
-        slip44CoinsProvider.removeObserver(self)
-
-        let updateClosure: ([DataProviderChange<Slip44CoinList>]) -> Void = { [weak self] changes in
-            if let result = changes.reduceToLastChange() {
-                self?.slip44CoinList = result
-            } else {
-                self?.slip44CoinList = []
-            }
-        }
-
-        let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.presenter?.didReceive(error: error)
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        slip44CoinsProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
     }
 
     private func provideAvailableTransfers() {
@@ -147,86 +104,6 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
             presenter?.didReceive(metaChainAccountResponses: notWatchOnlyAccounts)
         }
     }
-
-    private func provideKiltRecipient(_ name: String) {
-        clear(cancellable: &kiltRecipientsCancellableCall)
-        let web3NamesWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
-            name: name,
-            service: KnownServices.transferAssetRecipient,
-            connection: connection,
-            runtimeService: runtimeService
-        )
-        let chainName = destinationChainAsset?.chain.name ?? ""
-        let wrapper: CompoundOperationWrapper<TransferAssetRecipientResponse?> =
-            OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
-                guard let self = self else {
-                    return nil
-                }
-
-                guard let web3Name = try web3NamesWrapper.targetOperation.extractNoCancellableResultData() else {
-                    throw TransferSetupWeb3NameSearchError.accountNotFound(name)
-                }
-                guard let serviceURL = web3Name.serviceURLs.first else {
-                    throw TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName)
-                }
-                guard !self.slip44CoinList.isEmpty else {
-                    throw TransferSetupWeb3NameSearchError.slip44ListIsEmpty
-                }
-
-                return self.kiltTransferAssetRecipientRepository.fetchRecipients(url: serviceURL)
-            }
-
-        wrapper.addDependency(wrapper: web3NamesWrapper)
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            guard wrapper === self?.kiltRecipientsCancellableCall else {
-                return
-            }
-            self?.kiltRecipientsCancellableCall = nil
-            DispatchQueue.main.async {
-                do {
-                    let searchResult = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.handleSearchWeb3Name(response: searchResult, name: name)
-                } catch let error as TransferSetupWeb3NameSearchError {
-                    self?.presenter?.didReceive(error: error)
-                } catch {
-                    self?.presenter?.didReceive(error: TransferSetupWeb3NameSearchError.kiltService(error))
-                }
-            }
-        }
-
-        kiltRecipientsCancellableCall = wrapper
-
-        operationManager.enqueue(
-            operations: web3NamesWrapper.allOperations + wrapper.allOperations,
-            in: .transient
-        )
-    }
-
-    private func handleSearchWeb3Name(response: TransferAssetRecipientResponse?, name: String) {
-        let chainName = destinationChainAsset?.chain.name ?? ""
-
-        guard
-            let response = response,
-            let chainAsset = destinationChainAsset,
-            let coin = slip44CoinList.first(where: {
-                $0.symbol == chainAsset.asset.symbol
-            }),
-            let slip44Code = Int(coin.index)
-        else {
-            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName))
-            return
-        }
-
-        guard let recipients = response.first(where: {
-            $0.key.chainId.match(chainAsset.chain.chainId) && slip44Code == $0.key.slip44Code
-        })?.value else {
-            presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName))
-            return
-        }
-
-        presenter?.didReceive(kiltRecipients: recipients, for: name)
-    }
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
@@ -234,7 +111,6 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
         setupChainsStore()
         setupXcmTransfersSyncService()
         fetchAccounts(for: destinationChainAsset.chain)
-        subscribeSlip44CoinList()
         self.destinationChainAsset = destinationChainAsset
     }
 
@@ -244,7 +120,23 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
     }
 
     func search(web3Name: String) {
-        provideKiltRecipient(web3Name)
+        guard let destinationChainAsset = destinationChainAsset else {
+            return
+        }
+        web3NamesService.cancel()
+        web3NamesService.search(
+            w3nName: web3Name,
+            for: destinationChainAsset
+        ) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(recipients):
+                    self.presenter?.didReceive(kiltRecipients: recipients, for: web3Name)
+                case let .failure(error):
+                    self.presenter?.didReceive(error: error)
+                }
+            }
+        }
     }
 }
 
