@@ -4,15 +4,17 @@ import SubstrateSdk
 typealias Web3NameSearchResult = Result<[KiltTransferAssetRecipientAccount], TransferSetupWeb3NameSearchError>
 
 protocol Web3NameServiceProtocol {
-    func search(w3nName: String,
-                for chainAsset: ChainAsset,
-                completionHandler: @escaping (Web3NameSearchResult) -> Void)
+    func search(
+        w3nName: String,
+        for chainAsset: ChainAsset,
+        completionHandler: @escaping (Web3NameSearchResult) -> Void
+    )
     func cancel()
 }
 
 final class Web3NameService: AnyCancellableCleaning, Web3NameServiceProtocol {
     @Atomic(defaultValue: nil) private var executingOperation: CancellableCall?
-    
+
     private let operationQueue: OperationQueue
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
