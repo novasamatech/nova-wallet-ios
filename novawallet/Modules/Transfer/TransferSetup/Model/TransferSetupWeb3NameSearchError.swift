@@ -27,13 +27,13 @@ extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
             title = strings.transferSetupErrorW3nServiceNotFoundTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nServiceNotFoundSubtitle(
                 KiltW3n.fullName(for: name),
-                chain.uppercased(),
+                chain,
                 preferredLanguages: locale?.rLanguages
             )
         case let .invalidAddress(chain):
             title = strings.transferSetupErrorW3nInvalidAddressTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nInvalidAddressSubtitle(
-                chain.uppercased(),
+                chain,
                 preferredLanguages: locale?.rLanguages
             )
         default:

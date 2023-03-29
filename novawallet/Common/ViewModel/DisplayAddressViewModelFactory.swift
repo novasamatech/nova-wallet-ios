@@ -14,11 +14,6 @@ extension DisplayAddressViewModelFactoryProtocol {
 
 final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol {
     private lazy var iconGenerator = PolkadotIconGenerator()
-    private let imagePlaceholder: UIImage?
-
-    init(imagePlaceholder: UIImage? = nil) {
-        self.imagePlaceholder = imagePlaceholder
-    }
 
     func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel {
         let imageViewModel: ImageViewModelProtocol?
@@ -28,7 +23,7 @@ final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtoc
             let icon = try? iconGenerator.generateFromAccountId(accountId) {
             imageViewModel = DrawableIconViewModel(icon: icon)
         } else {
-            imageViewModel = imagePlaceholder.map { StaticImageViewModel(image: $0) }
+            imageViewModel = nil
         }
 
         let name = model.username.isEmpty ? nil : model.username

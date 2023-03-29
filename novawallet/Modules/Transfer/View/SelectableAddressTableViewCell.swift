@@ -76,3 +76,12 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
         self.selectedBackgroundView = selectedBackgroundView
     }
 }
+
+extension DisplayAddressViewModel {
+    func withPlaceholder(image: UIImage) -> DisplayAddressViewModel {
+        guard imageViewModel == nil else {
+            return self
+        }
+        return .init(address: address, name: name, imageViewModel: StaticImageViewModel(image: image))
+    }
+}

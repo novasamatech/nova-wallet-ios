@@ -27,7 +27,6 @@ struct TransferSetupViewFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
-        let displayAddressViewModelFactory = DisplayAddressViewModelFactory(imagePlaceholder: R.image.iconAddressPlaceholder())
 
         let presenter = TransferSetupPresenter(
             interactor: interactor,
@@ -37,7 +36,7 @@ struct TransferSetupViewFactory {
             childPresenterFactory: presenterFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
-            displayAddressViewModelFactory: displayAddressViewModelFactory,
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             logger: Logger.shared
         )
 

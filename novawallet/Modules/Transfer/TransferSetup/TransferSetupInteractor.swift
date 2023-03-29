@@ -219,10 +219,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         }
 
         guard let recipients = response.first(where: {
-            guard let genesisHash = $0.key.chainId.genesisHash else {
-                return false
-            }
-            return chainAsset.chain.chainId.hasPrefix(genesisHash) && slip44Code == $0.key.slip44Code
+            $0.key.chainId.match(chainAsset.chain.chainId) && slip44Code == $0.key.slip44Code
         })?.value else {
             presenter?.didReceive(error: TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName))
             return

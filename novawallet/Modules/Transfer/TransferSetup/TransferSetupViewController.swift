@@ -368,7 +368,7 @@ extension TransferSetupViewController: AccountInputViewDelegate {
     func accountInputViewWillStartEditing(_: AccountInputView) {}
 
     func accountInputViewDidEndEditing(_ inputView: AccountInputView) {
-        presenter.search(recipient: inputView.textField.text ?? "")
+        presenter.complete(recipient: inputView.textField.text ?? "")
     }
 
     func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
