@@ -86,16 +86,13 @@ enum TransactionHistoryMergeItem {
 final class TransactionHistoryMergeManager {
     let address: String
     let chainAsset: ChainAsset
-    let utilityAsset: AssetModel
 
     init(
         address: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
+        chainAsset: ChainAsset
     ) {
         self.address = address
         self.chainAsset = chainAsset
-        self.utilityAsset = utilityAsset
     }
 
     func merge(

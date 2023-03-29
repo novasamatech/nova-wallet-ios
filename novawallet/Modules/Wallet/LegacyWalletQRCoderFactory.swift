@@ -16,7 +16,7 @@ final class WalletQREncoder: NovaWalletQREncoderProtocol {
 
         let address = try accountId.toAddress(using: chainFormat)
 
-        let addressEncoder = AddressQREncoder(addressFormat: chainFormat.QRAddressFormat)
+        let addressEncoder = AddressQREncoder(addressFormat: chainFormat.qrAddressFormat)
 
         return try addressEncoder.encode(address: address)
     }
@@ -35,7 +35,7 @@ final class WalletQRDecoder: NovaWalletQRDecoderProtocol {
 }
 
 extension ChainFormat {
-    var substrateQRAddressFormat: QRAddressFormat {
+    var qrAddressFormat: QRAddressFormat {
         switch self {
         case .ethereum:
             return .ethereum

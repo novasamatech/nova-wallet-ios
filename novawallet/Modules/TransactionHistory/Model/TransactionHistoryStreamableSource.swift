@@ -129,7 +129,7 @@ final class TransactionHistoryStreamableSource {
         dependingOn remoteOperation: BaseOperation<WalletRemoteHistoryData>?,
         localOperation: BaseOperation<[TransactionHistoryItem]>?,
         chainAsset: ChainAsset,
-        utilityAsset: AssetModel,
+        utilityAsset _: AssetModel,
         address: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
         ClosureOperation {
@@ -145,8 +145,7 @@ final class TransactionHistoryStreamableSource {
                !localTransactions.isEmpty {
                 let manager = TransactionHistoryMergeManager(
                     address: address,
-                    chainAsset: chainAsset,
-                    utilityAsset: utilityAsset
+                    chainAsset: chainAsset
                 )
 
                 return manager.merge(remoteItems: remoteTransactions, localItems: localTransactions)
