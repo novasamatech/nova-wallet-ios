@@ -1705,6 +1705,9 @@
 		84981EE229D31A6900948306 /* TransactionHistorySyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84981EE129D31A6900948306 /* TransactionHistorySyncService.swift */; };
 		84981EE429D3352600948306 /* TransactionHistoryFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84981EE329D3352600948306 /* TransactionHistoryFetching.swift */; };
 		84981EE629D38B3800948306 /* NSPredicate+Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84981EE529D38B3800948306 /* NSPredicate+Transaction.swift */; };
+		84981EE829D42BF800948306 /* TransactionHistoryLocalFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84981EE729D42BF800948306 /* TransactionHistoryLocalFetcher.swift */; };
+		84981EEA29D4349300948306 /* TransactionHistoryRemoteFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84981EE929D4349300948306 /* TransactionHistoryRemoteFetcher.swift */; };
+		84981EEC29D4385F00948306 /* TransactionHistoryHybridFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84981EEB29D4385F00948306 /* TransactionHistoryHybridFetcher.swift */; };
 		849842E626587573006BBB9F /* MultilineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849842E526587573006BBB9F /* MultilineTableViewCell.swift */; };
 		849842FE26592C2B006BBB9F /* StatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849842FD26592C2B006BBB9F /* StatusSectionView.swift */; };
 		8498430326592D29006BBB9F /* VoteStatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498430226592D29006BBB9F /* VoteStatusSectionView.swift */; };
@@ -5095,6 +5098,9 @@
 		84981EE129D31A6900948306 /* TransactionHistorySyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistorySyncService.swift; sourceTree = "<group>"; };
 		84981EE329D3352600948306 /* TransactionHistoryFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryFetching.swift; sourceTree = "<group>"; };
 		84981EE529D38B3800948306 /* NSPredicate+Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSPredicate+Transaction.swift"; sourceTree = "<group>"; };
+		84981EE729D42BF800948306 /* TransactionHistoryLocalFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryLocalFetcher.swift; sourceTree = "<group>"; };
+		84981EE929D4349300948306 /* TransactionHistoryRemoteFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryRemoteFetcher.swift; sourceTree = "<group>"; };
+		84981EEB29D4385F00948306 /* TransactionHistoryHybridFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryHybridFetcher.swift; sourceTree = "<group>"; };
 		849842E526587573006BBB9F /* MultilineTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTableViewCell.swift; sourceTree = "<group>"; };
 		849842FD26592C2B006BBB9F /* StatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSectionView.swift; sourceTree = "<group>"; };
 		8498430226592D29006BBB9F /* VoteStatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoteStatusSectionView.swift; sourceTree = "<group>"; };
@@ -11525,6 +11531,9 @@
 			children = (
 				84981EE129D31A6900948306 /* TransactionHistorySyncService.swift */,
 				84981EE329D3352600948306 /* TransactionHistoryFetching.swift */,
+				84981EE729D42BF800948306 /* TransactionHistoryLocalFetcher.swift */,
+				84981EE929D4349300948306 /* TransactionHistoryRemoteFetcher.swift */,
+				84981EEB29D4385F00948306 /* TransactionHistoryHybridFetcher.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -17316,6 +17325,7 @@
 				842A736B27DB7A2E006EE1EA /* OperationDetailsViewModel.swift in Sources */,
 				8425EA9A25EA83FA00C307C9 /* ChainData+Value.swift in Sources */,
 				8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */,
+				84981EE829D42BF800948306 /* TransactionHistoryLocalFetcher.swift in Sources */,
 				88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */,
 				AEA2C1BA2681E9C50069492E /* ValidatorSearchInteractor.swift in Sources */,
 				8824D42629032B410022D778 /* BlurredView.swift in Sources */,
@@ -18624,6 +18634,7 @@
 				84350ACC284569560031EF24 /* ParaStkCollatorInfoViewController.swift in Sources */,
 				84B73AE2279E95810071AE16 /* TransferInfoContext.swift in Sources */,
 				6A977B56FD6441F52660771C /* StakingRewardDetailsPresenter.swift in Sources */,
+				84981EEA29D4349300948306 /* TransactionHistoryRemoteFetcher.swift in Sources */,
 				849F144B29444C3E00D9F9BA /* AssetModel+Id.swift in Sources */,
 				F4B39C4927326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift in Sources */,
 				845B821926EF808D00D25C72 /* MetaAccountMapper.swift in Sources */,
@@ -19148,6 +19159,7 @@
 				7050A26051FE62DB06B695F1 /* ParaStkStakeSetupInteractor.swift in Sources */,
 				0CD1F4D100ED82D137AB9834 /* ParaStkStakeSetupViewController.swift in Sources */,
 				D9ECCCCF1449EFAFD0FA886E /* ParaStkStakeSetupViewLayout.swift in Sources */,
+				84981EEC29D4385F00948306 /* TransactionHistoryHybridFetcher.swift in Sources */,
 				A714CEAF7A86292E8D679056 /* ParaStkStakeSetupViewFactory.swift in Sources */,
 				84350AD62845836C0031EF24 /* IdentityPresentable.swift in Sources */,
 				8A19EC93E6A6972327116D80 /* ParaStkStakeConfirmProtocols.swift in Sources */,
