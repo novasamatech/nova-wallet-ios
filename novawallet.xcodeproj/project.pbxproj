@@ -2589,6 +2589,7 @@
 		8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */; };
 		8824D42629032B410022D778 /* BlurredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D42529032B410022D778 /* BlurredView.swift */; };
 		8824D42829032BF60022D778 /* ReferendumStateLocal+Presenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D42729032BF60022D778 /* ReferendumStateLocal+Presenter.swift */; };
+		8825018E29D2E31F001BE6FB /* ModuleNameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8825018D29D2E31F001BE6FB /* ModuleNameResolver.swift */; };
 		882808C829009CA500AE8089 /* DotsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882808C729009CA500AE8089 /* DotsView.swift */; };
 		882808CA29009CDC00AE8089 /* UIView+frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882808C929009CDC00AE8089 /* UIView+frame.swift */; };
 		8828C05828B4A67000555CB6 /* Prism.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8828C05728B4A67000555CB6 /* Prism.swift */; };
@@ -5937,6 +5938,7 @@
 		8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrettyPrintedJSONOperationFactory.swift; sourceTree = "<group>"; };
 		8824D42529032B410022D778 /* BlurredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredView.swift; sourceTree = "<group>"; };
 		8824D42729032BF60022D778 /* ReferendumStateLocal+Presenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReferendumStateLocal+Presenter.swift"; sourceTree = "<group>"; };
+		8825018D29D2E31F001BE6FB /* ModuleNameResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleNameResolver.swift; sourceTree = "<group>"; };
 		882808C729009CA500AE8089 /* DotsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotsView.swift; sourceTree = "<group>"; };
 		882808C929009CDC00AE8089 /* UIView+frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+frame.swift"; sourceTree = "<group>"; };
 		8828C05728B4A67000555CB6 /* Prism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prism.swift; sourceTree = "<group>"; };
@@ -14261,6 +14263,7 @@
 				88B1C34129BA046000DCA101 /* StakingRebagConfirmError.swift */,
 				88B1C34329BA0CB900DCA101 /* NetworkStakingInfo+BagList.swift */,
 				88B1C34529BA0CEE00DCA101 /* BagListBounds.swift */,
+				8825018D29D2E31F001BE6FB /* ModuleNameResolver.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -18707,6 +18710,7 @@
 				84540172292F907B00213402 /* BlurBackgroundView.swift in Sources */,
 				DC682E96D056C069902B9C31 /* DAppSearchViewController.swift in Sources */,
 				286577D8FE44D1F9E7BBDCA9 /* DAppSearchViewLayout.swift in Sources */,
+				8825018E29D2E31F001BE6FB /* ModuleNameResolver.swift in Sources */,
 				84350AD02845724E0031EF24 /* IdentityAccountInfoView.swift in Sources */,
 				E325FBFE10A037E58525DA66 /* DAppSearchViewFactory.swift in Sources */,
 				65C06FCE82EEC0B476DB1CEF /* DAppBrowserProtocols.swift in Sources */,
