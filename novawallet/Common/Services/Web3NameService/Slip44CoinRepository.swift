@@ -1,3 +1,5 @@
+import RobinHood
+
 protocol Slip44CoinRepositoryProtocol {
     func fetch() -> BaseOperation<Slip44CoinList>
 }

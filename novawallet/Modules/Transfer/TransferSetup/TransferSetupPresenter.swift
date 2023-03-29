@@ -14,6 +14,7 @@ final class TransferSetupPresenter {
     let originChainAsset: ChainAsset
     let childPresenterFactory: TransferSetupPresenterFactoryProtocol
     let logger: LoggerProtocol
+    let web3NameViewModelFactory: Web3NameViewModelFactoryProtocol
 
     var childPresenter: TransferSetupChildPresenterProtocol?
 
@@ -23,7 +24,6 @@ final class TransferSetupPresenter {
     private(set) var recipientAddress: AccountAddress?
 
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
-    private let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
     private var destinationChainName: String {
         destinationChainAsset?.chain.name ?? ""
     }
@@ -40,7 +40,7 @@ final class TransferSetupPresenter {
         childPresenterFactory: TransferSetupPresenterFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
+        web3NameViewModelFactory: Web3NameViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -50,7 +50,7 @@ final class TransferSetupPresenter {
         self.childPresenterFactory = childPresenterFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
-        self.displayAddressViewModelFactory = displayAddressViewModelFactory
+        self.web3NameViewModelFactory = web3NameViewModelFactory
         self.logger = logger
     }
 
@@ -125,22 +125,6 @@ final class TransferSetupPresenter {
         view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
     }
 
-    private func w3nRecipientCellModel(recipient: KiltTransferAssetRecipientAccount) ->
-        SelectableAddressTableViewCell.Model {
-        let displayAddress = DisplayAddress(
-            address: recipient.account,
-            username: recipient.description ?? ""
-        )
-        let addressModel = displayAddressViewModelFactory
-            .createViewModel(from: displayAddress)
-            .withPlaceholder(image: R.image.iconAddressPlaceholder()!)
-
-        return SelectableAddressTableViewCell.Model(
-            address: addressModel,
-            selected: recipientAddress == recipient.account
-        )
-    }
-
     private func showKiltAddressList(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String) {
         view?.didReceiveKiltRecipient(viewModel: .cached(value: nil))
         let title = LocalizableResource<String> { [weak self] locale in
@@ -151,7 +135,12 @@ final class TransferSetupPresenter {
             )
         }
 
-        let items = kiltRecipients.map(w3nRecipientCellModel)
+        let items = kiltRecipients.map {
+            web3NameViewModelFactory.w3nRecipientCellModel(
+                selectedRecipientAddress: recipientAddress,
+                recipient: $0
+            )
+        }
         let localizableItems = items.map { item in
             LocalizableResource { _ in item }
         }

@@ -27,6 +27,7 @@ struct TransferSetupViewFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+        let viewModelFactory = Web3NameViewModelFactory(displayAddressViewModelFactory: DisplayAddressViewModelFactory())
 
         let presenter = TransferSetupPresenter(
             interactor: interactor,
@@ -36,7 +37,7 @@ struct TransferSetupViewFactory {
             childPresenterFactory: presenterFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
-            displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
+            web3NameViewModelFactory: viewModelFactory,
             logger: Logger.shared
         )
 
