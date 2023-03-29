@@ -11,11 +11,11 @@ protocol TransactionHistoryFetcherDelegate: AnyObject {
         changes: [DataProviderChange<TransactionHistoryItem>]
     )
 
-    func didReceiveHistoryError(_ error: TransactionHistoryFetcherError)
+    func didReceiveHistoryError(_ fetcher: TransactionHistoryFetching, error: TransactionHistoryFetcherError)
 }
 
 protocol TransactionHistoryFetching: AnyObject {
-    var delegate: TransactionHistoryFetcherDelegate { get set }
+    var delegate: TransactionHistoryFetcherDelegate? { get set }
 
     var isComplete: Bool { get }
 
