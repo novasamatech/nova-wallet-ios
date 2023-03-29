@@ -2642,6 +2642,8 @@
 		8860F3E2289D4FFD00C0BF86 /* SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */; };
 		8860F3E4289D50BA00C0BF86 /* Array+SectionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */; };
 		8860F3E8289D7CF400C0BF86 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860F3E7289D7CF400C0BF86 /* Atomic.swift */; };
+		8863C7AC29D499D30068AD54 /* Web3NameService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8863C7AB29D499D30068AD54 /* Web3NameService.swift */; };
+		8863C7AE29D49AC10068AD54 /* Slip44CoinRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8863C7AD29D49AC10068AD54 /* Slip44CoinRepository.swift */; };
 		886CA9622977E9B300FC255A /* GovernanceDelegateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886CA9602977E9B200FC255A /* GovernanceDelegateTableViewCell.swift */; };
 		886CA9632977E9B300FC255A /* GovernanceDelegateBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886CA9612977E9B200FC255A /* GovernanceDelegateBanner.swift */; };
 		886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62FA66143B25AA70B02CE461 /* ExportSeedViewFactory.swift */; };
@@ -6060,6 +6062,8 @@
 		8860F3E1289D4FFD00C0BF86 /* SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionProtocol.swift; sourceTree = "<group>"; };
 		8860F3E3289D50BA00C0BF86 /* Array+SectionProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SectionProtocol.swift"; sourceTree = "<group>"; };
 		8860F3E7289D7CF400C0BF86 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		8863C7AB29D499D30068AD54 /* Web3NameService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameService.swift; sourceTree = "<group>"; };
+		8863C7AD29D49AC10068AD54 /* Slip44CoinRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slip44CoinRepository.swift; sourceTree = "<group>"; };
 		886CA9602977E9B200FC255A /* GovernanceDelegateTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateTableViewCell.swift; sourceTree = "<group>"; };
 		886CA9612977E9B200FC255A /* GovernanceDelegateBanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateBanner.swift; sourceTree = "<group>"; };
 		887248072924F54900B0D2CC /* URL+Matchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Matchable.swift"; sourceTree = "<group>"; };
@@ -8005,6 +8009,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				8863C7AA29D499BC0068AD54 /* Web3NameService */,
 				880855EE28D099BD004255E7 /* CrowdloanService */,
 				8411707D285B15C8006F4DFB /* XcmService */,
 				8466781427EC9B6C007935D3 /* PersistExtrinsicService */,
@@ -14341,6 +14346,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		8863C7AA29D499BC0068AD54 /* Web3NameService */ = {
+			isa = PBXGroup;
+			children = (
+				8863C7AB29D499D30068AD54 /* Web3NameService.swift */,
+				8863C7AD29D49AC10068AD54 /* Slip44CoinRepository.swift */,
+			);
+			path = Web3NameService;
+			sourceTree = "<group>";
+		};
 		886CA96429785D9200FC255A /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -18318,6 +18332,7 @@
 				9DFB37659A6B911A4D54623E /* AccountConfirmInteractor.swift in Sources */,
 				84BAFCD626AF64CB00871E86 /* SelectValidatorsViewLayout.swift in Sources */,
 				84C5ADD52812745F006D7388 /* WalletAccountViewModel.swift in Sources */,
+				8863C7AC29D499D30068AD54 /* Web3NameService.swift in Sources */,
 				8892284828F353A5003F8B9E /* ReferendumsModelFactory.swift in Sources */,
 				849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */,
 				84B018AC26E01A4100C75E28 /* StakingStateView.swift in Sources */,
@@ -18908,6 +18923,7 @@
 				8401AEC52642A71D000B03E3 /* StakingRebondConfirmationViewFactory.swift in Sources */,
 				27FA1D57A06AA3A030D226B6 /* StakingUnbondConfirmWireframe.swift in Sources */,
 				88A95FA628F8664100BE26F3 /* ReferendumTimelineView.swift in Sources */,
+				8863C7AE29D49AC10068AD54 /* Slip44CoinRepository.swift in Sources */,
 				88BB0B3F29C1E17F00D041C1 /* KiltDid+StoragePath.swift in Sources */,
 				843A2C7326A8641400266F53 /* MultiValueView.swift in Sources */,
 				3FF8EE1158A273D0D50BC7A6 /* StakingUnbondConfirmPresenter.swift in Sources */,
