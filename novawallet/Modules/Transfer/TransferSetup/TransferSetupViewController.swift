@@ -81,6 +81,8 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             action: #selector(actionYourWallets),
             for: .touchUpInside
         )
+
+        rootView.receipientKiltView.delegate = self
     }
 
     private func setupLocalization() {
@@ -285,9 +287,8 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         )
     }
 
-    func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>?) {
-        rootView.didReceiveKiltRecipient(viewModel: viewModel)
-        rootView.receipientKiltView?.delegate = self
+    func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>) {
+        rootView.receipientKiltView.bind(viewModel: viewModel)
     }
 
     func didReceiveRecipientInputState(focused: Bool, empty: Bool?) {
@@ -372,7 +373,7 @@ extension TransferSetupViewController: AccountInputViewDelegate {
     }
 
     func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
-        inputView.endEditing(true)
+        inputView.textField.resignFirstResponder()
         return true
     }
 }

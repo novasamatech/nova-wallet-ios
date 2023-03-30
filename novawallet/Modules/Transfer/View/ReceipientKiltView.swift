@@ -20,9 +20,7 @@ final class ReceipientKiltView: UIView {
         $0.detailsView.detailsLabel.textColor = R.color.colorIconPositive()
         $0.detailsView.detailsLabel.font = .regularFootnote
         $0.detailsView.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        $0.detailsView.imageView.image = R.image.iconAlgoItem()
         $0.detailsView.spacing = 4
-        $0.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
         $0.spacing = 4
     }
 
@@ -67,22 +65,26 @@ final class ReceipientKiltView: UIView {
 extension ReceipientKiltView {
     typealias Model = AccountAddress?
 
-    func bind(viewModel: LoadableViewModelState<Model>?) {
+    func bind(viewModel: LoadableViewModelState<Model>) {
         switch viewModel {
-        case .none:
-            accountSelected.isHidden = true
-            activityIndicator.stopAnimating()
         case .loading:
             accountSelected.isHidden = true
             activityIndicator.startAnimating()
         case let .loaded(value), let .cached(value):
+            activityIndicator.stopAnimating()
+
             if let value = value {
                 accountSelected.isHidden = false
                 accountSelected.detailsView.detailsLabel.text = value
+                accountSelected.detailsView.imageView.image = R.image.iconAlgoItem()
+                accountSelected.imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
+            } else {
+                accountSelected.detailsView.detailsLabel.text = ""
+                accountSelected.detailsView.imageView.image = nil
+                accountSelected.imageView.image = nil
             }
-            activityIndicator.stopAnimating()
         }
 
-        model = viewModel?.value
+        model = viewModel.value
     }
 }
