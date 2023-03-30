@@ -1,18 +1,18 @@
 import RobinHood
 import SubstrateSdk
 
-typealias Web3NameSearchResult = Result<[KiltTransferAssetRecipientAccount], TransferSetupWeb3NameSearchError>
+typealias Web3NameSearchResult = Result<[KiltTransferAssetRecipientAccount], Web3NameServiceError>
 
 protocol Web3NameServiceProtocol {
     func search(
-        w3nName: String,
+        name: String,
         for chainAsset: ChainAsset,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     )
     func cancel()
 }
 
-final class Web3NameService: AnyCancellableCleaning, Web3NameServiceProtocol {
+final class Web3NameService: AnyCancellableCleaning {
     @Atomic(defaultValue: nil) private var executingOperation: CancellableCall?
 
     private let operationQueue: OperationQueue
@@ -41,11 +41,12 @@ final class Web3NameService: AnyCancellableCleaning, Web3NameServiceProtocol {
     }
 
     private func fetchSlip44CoinListWrapper() -> BaseOperation<Slip44CoinList> {
-        slip44CoinsRepository.fetch()
+        slip44CoinsRepository.fetchCoinList()
     }
 
-    private func kiltRecipient(by name: String, for chainAsset: ChainAsset) -> CompoundOperationWrapper<TransferAssetRecipientResponse?> {
-        let web3NamesWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
+    private func kiltRecipient(by name: String, for chainAsset: ChainAsset) ->
+        CompoundOperationWrapper<TransferAssetRecipientResponse?> {
+        let searchNameWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
             name: name,
             service: KnownServices.transferAssetRecipient,
             connection: connection,
@@ -53,48 +54,48 @@ final class Web3NameService: AnyCancellableCleaning, Web3NameServiceProtocol {
         )
         let chainName = chainAsset.chain.name
 
-        let wrapper: CompoundOperationWrapper<TransferAssetRecipientResponse?> =
+        let recipientsWrapper: CompoundOperationWrapper<TransferAssetRecipientResponse?> =
             OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
                 guard let self = self else {
                     return nil
                 }
 
-                guard let web3Name = try web3NamesWrapper.targetOperation.extractNoCancellableResultData() else {
-                    throw TransferSetupWeb3NameSearchError.accountNotFound(name)
+                guard let web3Name = try searchNameWrapper.targetOperation.extractNoCancellableResultData() else {
+                    throw Web3NameServiceError.accountNotFound(name)
                 }
                 guard let serviceURL = web3Name.serviceURLs.first else {
-                    throw TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName)
+                    throw Web3NameServiceError.serviceNotFound(name, chainName)
                 }
 
                 return self.kiltTransferAssetRecipientRepository.fetchRecipients(url: serviceURL)
             }
 
-        wrapper.addDependency(wrapper: web3NamesWrapper)
+        recipientsWrapper.addDependency(wrapper: searchNameWrapper)
 
-        let dependencies = web3NamesWrapper.allOperations + wrapper.dependencies
-        return .init(targetOperation: wrapper.targetOperation, dependencies: dependencies)
+        let dependencies = searchNameWrapper.allOperations + recipientsWrapper.dependencies
+        return .init(targetOperation: recipientsWrapper.targetOperation, dependencies: dependencies)
     }
 
-    private func provideKiltRecipient(
+    private func searchWeb3NameRecipients(
         _ name: String,
         chainAsset: ChainAsset,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     ) {
-        let slip44Wrapper = fetchSlip44CoinListWrapper()
-        let kiltRecipientWrapper = kiltRecipient(by: name, for: chainAsset)
+        let slip44CoinListOperation = fetchSlip44CoinListWrapper()
+        let recipientsWrapper = kiltRecipient(by: name, for: chainAsset)
 
         let mergeOperation = ClosureOperation {
-            let slip44CoinList = try slip44Wrapper.extractNoCancellableResultData()
-            let kiltRecipients = try kiltRecipientWrapper.targetOperation.extractNoCancellableResultData()
-            return try self.handleSearchWeb3Name(
-                response: kiltRecipients,
+            let coinList = try slip44CoinListOperation.extractNoCancellableResultData()
+            let recipients = try recipientsWrapper.targetOperation.extractNoCancellableResultData()
+            return try self.handleSearchWeb3NameResult(
+                response: recipients,
                 name: name,
                 chainAsset: chainAsset,
-                slip44CoinList: slip44CoinList
+                slip44CoinList: coinList
             )
         }
 
-        let dependencies = [slip44Wrapper] + kiltRecipientWrapper.allOperations
+        let dependencies = [slip44CoinListOperation] + recipientsWrapper.allOperations
         dependencies.forEach { mergeOperation.addDependency($0) }
 
         mergeOperation.completionBlock = { [weak self] in
@@ -105,10 +106,10 @@ final class Web3NameService: AnyCancellableCleaning, Web3NameServiceProtocol {
             do {
                 let result = try mergeOperation.extractNoCancellableResultData()
                 completionHandler(.success(result))
-            } catch let error as TransferSetupWeb3NameSearchError {
+            } catch let error as Web3NameServiceError {
                 completionHandler(.failure(error))
             } catch {
-                completionHandler(.failure(TransferSetupWeb3NameSearchError.kiltService(error)))
+                completionHandler(.failure(Web3NameServiceError.kiltService(error)))
             }
         }
 
@@ -120,13 +121,13 @@ final class Web3NameService: AnyCancellableCleaning, Web3NameServiceProtocol {
         )
     }
 
-    private func handleSearchWeb3Name(
+    private func handleSearchWeb3NameResult(
         response: TransferAssetRecipientResponse?,
         name: String,
         chainAsset: ChainAsset,
         slip44CoinList: Slip44CoinList
     ) throws -> [KiltTransferAssetRecipientAccount] {
-        let chainName = chainAsset.chain.name
+        let chain = chainAsset.chain
 
         guard
             let response = response,
@@ -135,24 +136,31 @@ final class Web3NameService: AnyCancellableCleaning, Web3NameServiceProtocol {
             }),
             let slip44Code = Int(coin.index)
         else {
-            throw TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName)
+            throw Web3NameServiceError.serviceNotFound(name, chain.name)
         }
 
         guard let recipients = response.first(where: {
             $0.key.chainId.match(chainAsset.chain.chainId) && slip44Code == $0.key.slip44Code
         })?.value else {
-            throw TransferSetupWeb3NameSearchError.serviceNotFound(name, chainName)
+            throw Web3NameServiceError.serviceNotFound(name, chain.name)
+        }
+
+        if recipients.count == 1,
+           (try? recipients[0].account.toAccountId(using: chain.chainFormat)) == nil {
+            throw Web3NameServiceError.invalidAddress(chain.name)
         }
 
         return recipients
     }
+}
 
+extension Web3NameService: Web3NameServiceProtocol {
     func search(
-        w3nName: String,
+        name: String,
         for chainAsset: ChainAsset,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     ) {
-        provideKiltRecipient(w3nName, chainAsset: chainAsset, completionHandler: completionHandler)
+        searchWeb3NameRecipients(name, chainAsset: chainAsset, completionHandler: completionHandler)
     }
 
     func cancel() {

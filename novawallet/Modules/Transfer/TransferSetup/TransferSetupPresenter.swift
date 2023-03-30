@@ -126,51 +126,30 @@ final class TransferSetupPresenter {
     }
 
     private func showKiltAddressList(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String) {
-        view?.didReceiveKiltRecipient(viewModel: .cached(value: nil))
-        let title = LocalizableResource<String> { [weak self] locale in
-            R.string.localizable.transferSetupKiltAddressesTitle(
-                self?.destinationChainName ?? "",
-                KiltW3n.fullName(for: name),
-                preferredLanguages: locale.rLanguages
-            )
+        guard let view = view else {
+            return
         }
 
-        let items = kiltRecipients.map {
-            web3NameViewModelFactory.w3nRecipientCellModel(
-                selectedRecipientAddress: recipientAddress,
-                recipient: $0
-            )
-        }
-        let localizableItems = items.map { item in
-            LocalizableResource { _ in item }
-        }
-
-        let context = KiltAddressesSelectionState(accounts: kiltRecipients, name: name)
-        wireframe.showAddressPicker(
-            from: view,
-            title: title,
-            items: localizableItems,
-            selectedIndex: items.firstIndex(where: { $0.selected }),
-            delegate: self,
-            context: context
+        view.didReceiveKiltRecipient(viewModel: .cached(value: nil))
+        let viewModel = web3NameViewModelFactory.recipientListViewModel(
+            kiltRecipients: kiltRecipients,
+            for: name,
+            chainName: destinationChainName,
+            selectedAddress: recipientAddress
         )
+
+        wireframe.presentWeb3NameAddressListPicker(from: view, viewModel: viewModel, delegate: self)
     }
 
     private func provideKiltRecipientViewModel(_ recipient: KiltTransferAssetRecipientAccount?) {
-        guard let recipient = recipient,
-              let chainFormat = destinationChainAsset?.chain.chainFormat else {
+        guard let recipient = recipient else {
             view?.didReceiveKiltRecipient(viewModel: nil)
             view?.didReceiveRecipientInputState(focused: true, empty: true)
             return
         }
-        let accountId = try? recipient.account.toAccountId(using: chainFormat)
-        if accountId != nil {
-            view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
-            recipientAddress = recipient.account
-        } else {
-            didReceive(error: TransferSetupWeb3NameSearchError.invalidAddress(destinationChainName))
-            recipientAddress = nil
-        }
+
+        view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
+        recipientAddress = recipient.account
     }
 }
 
@@ -289,7 +268,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
     func didReceive(error: Error) {
         logger.error("Did receive error: \(error)")
 
-        if error is TransferSetupWeb3NameSearchError {
+        if error is Web3NameServiceError {
             view?.didReceiveRecipientInputState(focused: true, empty: nil)
             view?.didReceiveKiltRecipient(viewModel: nil)
         }
