@@ -64,26 +64,4 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
     func hideYourWallets(from view: TransferSetupViewProtocol?) {
         view?.controller.dismiss(animated: true)
     }
-
-    func showAddressPicker(
-        from view: TransferSetupViewProtocol?,
-        title: LocalizableResource<String>?,
-        items: [LocalizableResource<SelectableAddressTableViewCell.Model>],
-        selectedIndex: Int?,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    ) {
-        guard let pickerView = ModalPickerFactory.createSelectableAddressesList(
-            title: title,
-            items: items,
-            selectedIndex: selectedIndex,
-            delegate: delegate,
-            context: context
-        )
-        else {
-            return
-        }
-
-        view?.controller.present(pickerView, animated: true)
-    }
 }

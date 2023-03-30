@@ -60,7 +60,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable, Web3NameAddressListPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
@@ -80,13 +80,4 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
     )
 
     func hideYourWallets(from view: TransferSetupViewProtocol?)
-
-    func showAddressPicker(
-        from view: TransferSetupViewProtocol?,
-        title: LocalizableResource<String>?,
-        items: [LocalizableResource<SelectableAddressTableViewCell.Model>],
-        selectedIndex: Int?,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    )
 }
