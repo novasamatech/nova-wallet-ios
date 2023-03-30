@@ -111,6 +111,7 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
         setupChainsStore()
         setupXcmTransfersSyncService()
         fetchAccounts(for: destinationChainAsset.chain)
+        web3NamesService.setup()
         self.destinationChainAsset = destinationChainAsset
     }
 
