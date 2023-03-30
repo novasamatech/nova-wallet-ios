@@ -147,9 +147,13 @@ final class TransferSetupPresenter {
             view?.didReceiveRecipientInputState(focused: true, empty: true)
             return
         }
-
-        view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
-        recipientAddress = recipient.account
+        if recipient.isValid(using: destinationChainAsset?.chain.chainFormat) {
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
+            recipientAddress = recipient.account
+        } else {
+            didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
+            recipientAddress = nil
+        }
     }
 }
 

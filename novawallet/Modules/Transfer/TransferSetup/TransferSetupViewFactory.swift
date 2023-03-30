@@ -98,10 +98,9 @@ struct TransferSetupViewFactory {
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
         let operationQueue = OperationQueue()
-        let slip44CoinsRepository = Slip44CoinRepository(appConfig: ApplicationConfig.shared)
         let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
         let web3NameService = Web3NameService(
-            slip44CoinsRepository: slip44CoinsRepository,
+            slip44CoinsProvider: slip44CoinsProvider,
             web3NamesOperationFactory: web3NamesOperationFactory,
             runtimeService: runtimeService,
             connection: connection,
