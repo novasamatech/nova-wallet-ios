@@ -177,19 +177,6 @@ extension TransactionLocalSubscriptionFactory: TransactionLocalSubscriptionFacto
             for: predicate,
             entityFilter: { entity in
                 predicate.evaluate(with: entity)
-                /* let baseMatching = entity.chainId == chainAssetId.chainId &&
-                     entity.source == source.rawValue &&
-                     (entity.sender == address || (entity.assetId == chainAssetId.assetId && entity.receiver == address))
-
-                 if let filter = filter {
-                     let filterMatching = CallCodingPath(
-                         moduleName: entity.moduleName ?? "",
-                         callName: entity.callName ?? ""
-                     ).matches(filter: filter)
-                     return baseMatching && filterMatching
-                 } else {
-                     return baseMatching
-                 } */
             }
         )
 
@@ -222,20 +209,6 @@ extension TransactionLocalSubscriptionFactory: TransactionLocalSubscriptionFacto
             for: predicate,
             entityFilter: { entity in
                 predicate.evaluate(with: entity)
-                /* let baseMatching = entity.chainId == chainAssetId.chainId &&
-                     entity.assetId == chainAssetId.assetId &&
-                     entity.source == source.rawValue &&
-                     (entity.sender == address || entity.receiver == address)
-
-                 if let filter = filter {
-                     let filterMatching = CallCodingPath(
-                         moduleName: entity.moduleName ?? "",
-                         callName: entity.callName ?? ""
-                     ).matches(filter: filter)
-                     return baseMatching && filterMatching
-                 } else {
-                     return baseMatching
-                 } */
             }
         )
 
