@@ -125,7 +125,7 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
         }
         web3NamesService.cancel()
         web3NamesService.search(
-            w3nName: web3Name,
+            name: web3Name,
             for: destinationChainAsset
         ) { result in
             DispatchQueue.main.async {

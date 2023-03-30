@@ -1,7 +1,7 @@
 import RobinHood
 
 protocol Slip44CoinRepositoryProtocol {
-    func fetch() -> BaseOperation<Slip44CoinList>
+    func fetchCoinList() -> BaseOperation<Slip44CoinList>
 }
 
 final class Slip44CoinRepository: JsonFileRepository<Slip44CoinList>, Slip44CoinRepositoryProtocol {
@@ -11,7 +11,7 @@ final class Slip44CoinRepository: JsonFileRepository<Slip44CoinList>, Slip44Coin
         self.appConfig = appConfig
     }
 
-    func fetch() -> BaseOperation<Slip44CoinList> {
+    func fetchCoinList() -> BaseOperation<Slip44CoinList> {
         super.fetchOperation(by: appConfig.slip44URL, defaultValue: [])
     }
 }

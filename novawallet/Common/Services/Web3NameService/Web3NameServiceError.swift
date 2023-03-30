@@ -1,6 +1,6 @@
 import SoraFoundation
 
-enum TransferSetupWeb3NameSearchError: Error {
+enum Web3NameServiceError: Error {
     typealias Chain = String
     typealias Name = String
 
@@ -11,7 +11,7 @@ enum TransferSetupWeb3NameSearchError: Error {
     case invalidAddress(Chain)
 }
 
-extension TransferSetupWeb3NameSearchError: ErrorContentConvertible {
+extension Web3NameServiceError: ErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         let title: String
         let message: String
