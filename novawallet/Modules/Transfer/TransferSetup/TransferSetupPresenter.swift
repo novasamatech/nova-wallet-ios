@@ -143,7 +143,7 @@ final class TransferSetupPresenter {
 
     private func provideKiltRecipientViewModel(_ recipient: KiltTransferAssetRecipientAccount?) {
         guard let recipient = recipient else {
-            view?.didReceiveKiltRecipient(viewModel: nil)
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
             view?.didReceiveRecipientInputState(focused: true, empty: true)
             return
         }
@@ -228,10 +228,10 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
     func complete(recipient: String) {
         if let web3Name = KiltW3n.web3Name(nameWithScheme: recipient) {
-            interactor.search(web3Name: web3Name)
             view?.didReceiveKiltRecipient(viewModel: .loading)
+            interactor.search(web3Name: web3Name)
         } else {
-            view?.didReceiveKiltRecipient(viewModel: nil)
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
         }
     }
 
@@ -274,7 +274,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
         if error is Web3NameServiceError {
             view?.didReceiveRecipientInputState(focused: true, empty: nil)
-            view?.didReceiveKiltRecipient(viewModel: nil)
+            view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
         }
 
         _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
