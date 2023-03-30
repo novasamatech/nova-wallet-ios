@@ -10,38 +10,36 @@ protocol Web3NameServiceProtocol {
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     )
     func cancel()
+    func setup()
 }
 
 final class Web3NameService: AnyCancellableCleaning {
-    @Atomic(defaultValue: nil) private var executingOperation: CancellableCall?
+    @Atomic(defaultValue: nil) private var fetchRecipientsCancellableCall: CancellableCall?
+    @Atomic(defaultValue: nil) private var fetchCoinListCancellableCall: CancellableCall?
 
     private let operationQueue: OperationQueue
     private lazy var operationManager = OperationManager(operationQueue: operationQueue)
 
-    let slip44CoinsRepository: Slip44CoinRepositoryProtocol
+    let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>
     let web3NamesOperationFactory: Web3NamesOperationFactoryProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol
 
     init(
-        slip44CoinsRepository: Slip44CoinRepositoryProtocol,
+        slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>,
         web3NamesOperationFactory: Web3NamesOperationFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
         kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol,
         operationQueue: OperationQueue
     ) {
-        self.slip44CoinsRepository = slip44CoinsRepository
+        self.slip44CoinsProvider = slip44CoinsProvider
         self.web3NamesOperationFactory = web3NamesOperationFactory
         self.runtimeService = runtimeService
         self.connection = connection
         self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
         self.operationQueue = operationQueue
-    }
-
-    private func fetchSlip44CoinListWrapper() -> BaseOperation<Slip44CoinList> {
-        slip44CoinsRepository.fetchCoinList()
     }
 
     private func kiltRecipient(by name: String, for chainAsset: ChainAsset) ->
@@ -79,32 +77,25 @@ final class Web3NameService: AnyCancellableCleaning {
     private func searchWeb3NameRecipients(
         _ name: String,
         chainAsset: ChainAsset,
+        slip44CoinList: Slip44CoinList,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     ) {
-        let slip44CoinListOperation = fetchSlip44CoinListWrapper()
         let recipientsWrapper = kiltRecipient(by: name, for: chainAsset)
 
-        let mergeOperation = ClosureOperation {
-            let coinList = try slip44CoinListOperation.extractNoCancellableResultData()
-            let recipients = try recipientsWrapper.targetOperation.extractNoCancellableResultData()
-            return try self.handleSearchWeb3NameResult(
-                response: recipients,
-                name: name,
-                chainAsset: chainAsset,
-                slip44CoinList: coinList
-            )
-        }
-
-        let dependencies = [slip44CoinListOperation] + recipientsWrapper.allOperations
-        dependencies.forEach { mergeOperation.addDependency($0) }
-
-        mergeOperation.completionBlock = { [weak self] in
-            guard mergeOperation === self?.executingOperation else {
+        recipientsWrapper.targetOperation.completionBlock = { [weak self] in
+            guard let self = self, recipientsWrapper === self.fetchRecipientsCancellableCall else {
                 return
             }
-            self?.executingOperation = nil
+
+            self.fetchRecipientsCancellableCall = nil
             do {
-                let result = try mergeOperation.extractNoCancellableResultData()
+                let response = try recipientsWrapper.targetOperation.extractNoCancellableResultData()
+                let result = try self.handleSearchWeb3NameResult(
+                    response: response,
+                    name: name,
+                    chainAsset: chainAsset,
+                    slip44CoinList: slip44CoinList
+                )
                 completionHandler(.success(result))
             } catch let error as Web3NameServiceError {
                 completionHandler(.failure(error))
@@ -113,10 +104,10 @@ final class Web3NameService: AnyCancellableCleaning {
             }
         }
 
-        executingOperation = mergeOperation
+        fetchRecipientsCancellableCall = recipientsWrapper
 
         operationManager.enqueue(
-            operations: dependencies + [mergeOperation],
+            operations: recipientsWrapper.allOperations,
             in: .transient
         )
     }
@@ -146,7 +137,7 @@ final class Web3NameService: AnyCancellableCleaning {
         }
 
         if recipients.count == 1,
-           (try? recipients[0].account.toAccountId(using: chain.chainFormat)) == nil {
+           !recipients[0].isValid(using: chain.chainFormat) {
             throw Web3NameServiceError.invalidAddress(chain.name)
         }
 
@@ -155,15 +146,44 @@ final class Web3NameService: AnyCancellableCleaning {
 }
 
 extension Web3NameService: Web3NameServiceProtocol {
+    func setup() {
+        slip44CoinsProvider.refresh()
+    }
+
     func search(
         name: String,
         for chainAsset: ChainAsset,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     ) {
-        searchWeb3NameRecipients(name, chainAsset: chainAsset, completionHandler: completionHandler)
+        var fetchCoinListWrapper: CompoundOperationWrapper<Slip44CoinList?>?
+        fetchCoinListWrapper = slip44CoinsProvider.fetch { [weak self] result in
+            guard fetchCoinListWrapper === self?.fetchCoinListCancellableCall else {
+                return
+            }
+            self?.fetchCoinListCancellableCall = nil
+
+            switch result {
+            case let .success(list):
+                guard let list = list, !list.isEmpty else {
+                    completionHandler(.failure(.slip44ListIsEmpty))
+                    return
+                }
+                self?.searchWeb3NameRecipients(
+                    name,
+                    chainAsset: chainAsset,
+                    slip44CoinList: list,
+                    completionHandler: completionHandler
+                )
+            case .failure, .none:
+                completionHandler(.failure(.slip44ListIsEmpty))
+            }
+        }
+
+        fetchCoinListCancellableCall = fetchCoinListWrapper
     }
 
     func cancel() {
-        clear(cancellable: &executingOperation)
+        clear(cancellable: &fetchCoinListCancellableCall)
+        clear(cancellable: &fetchRecipientsCancellableCall)
     }
 }
