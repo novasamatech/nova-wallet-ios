@@ -1,3 +1,5 @@
+import BigInt
+
 enum Caip2 {}
 
 extension Caip2 {
@@ -29,7 +31,7 @@ extension Caip2 {
 extension Caip2 {
     enum RegisteredChain: Equatable {
         case polkadot(genesisHash: String)
-        case eip155(id: Int)
+        case eip155(id: BigUInt)
 
         static func == (lhs: Self, rhs: Self) -> Bool {
             switch (lhs, rhs) {
@@ -48,7 +50,7 @@ extension Caip2.ChainId {
     var knownChain: Caip2.RegisteredChain? {
         switch namespace {
         case "eip155":
-            guard let id = Int(reference) else {
+            guard let id = BigUInt(reference) else {
                 return nil
             }
             return .eip155(id: id)
@@ -56,6 +58,19 @@ extension Caip2.ChainId {
             return .polkadot(genesisHash: reference)
         default:
             return nil
+        }
+    }
+}
+
+extension Caip2.ChainId {
+    func match(_ identifier: String) -> Bool {
+        switch knownChain {
+        case let .polkadot(chainId):
+            return identifier.hasPrefix(chainId)
+        case let .eip155(id):
+            return identifier.caseInsensitiveCompare("eip155:\(id)") == .orderedSame
+        default:
+            return false
         }
     }
 }

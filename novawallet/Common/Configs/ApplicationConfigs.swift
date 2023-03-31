@@ -34,6 +34,7 @@ protocol ApplicationConfigProtocol {
     var learnGovernanceDelegateMetadata: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
+    var slip44URL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -221,5 +222,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
         #endif
+    }
+
+    var slip44URL: URL {
+        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
     }
 }
