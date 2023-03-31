@@ -551,8 +551,9 @@ extension ModalPickerFactory {
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
     ) -> UIViewController? {
-        let viewController: ModalPickerViewController<SelectableAddressTableViewCell, SelectableAddressTableViewCell.Model>
-            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+        let viewController: ModalPickerViewController<
+            SelectableAddressTableViewCell, SelectableAddressTableViewCell.Model
+        > = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         viewController.localizedTitle = title
         viewController.delegate = delegate
@@ -567,7 +568,7 @@ extension ModalPickerFactory {
         viewController.selectedIndex = selectedIndex ?? NSNotFound
         viewController.context = context
 
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
