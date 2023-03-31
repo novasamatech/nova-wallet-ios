@@ -8,21 +8,21 @@ class StakingInfoTests: XCTestCase {
     func testRewardsPolkadot() throws {
         try performCalculatorServiceTest(
             address: "13mAjFVjFDpfa42k2dLdSnUyrSzK8vAySsoudnxX2EKVtfaq",
-            chainId: Chain.polkadot.genesisHash
+            chainId: KnowChainId.polkadot
         )
     }
 
     func testRewardsKusama() throws {
         try performCalculatorServiceTest(
             address: "DayVh23V32nFhvm2WojKx2bYZF1CirRgW2Jti9TXN9zaiH5",
-            chainId: Chain.kusama.genesisHash
+            chainId: KnowChainId.kusama
         )
     }
 
     func testRewardsWestend() throws {
         try performCalculatorServiceTest(
             address: "5CDayXd3cDCWpBkSXVsVfhE5bWKyTZdD3D1XUinR1ezS1sGn",
-            chainId: Chain.westend.genesisHash
+            chainId: KnowChainId.westend
         )
     }
 

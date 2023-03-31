@@ -2,6 +2,11 @@ import Foundation
 import CommonWallet
 
 final class HistoryItemViewModel: WalletViewModelProtocol {
+    enum TextType {
+        case rawString
+        case address
+    }
+
     var cellReuseIdentifier: String { HistoryConstants.historyCellId }
     var itemHeight: CGFloat { HistoryConstants.historyHeight }
 
@@ -11,6 +16,7 @@ final class HistoryItemViewModel: WalletViewModelProtocol {
     let amount: String
     let type: TransactionType
     let status: AssetTransactionStatus
+    let titleType: TextType
     let imageViewModel: ImageViewModelProtocol?
     let command: WalletCommandProtocol?
 
@@ -22,7 +28,8 @@ final class HistoryItemViewModel: WalletViewModelProtocol {
         type: TransactionType,
         status: AssetTransactionStatus,
         imageViewModel: ImageViewModelProtocol?,
-        command: WalletCommandProtocol?
+        command: WalletCommandProtocol?,
+        titleType: TextType = .rawString
     ) {
         self.title = title
         self.subtitle = subtitle
@@ -30,6 +37,7 @@ final class HistoryItemViewModel: WalletViewModelProtocol {
         self.time = time
         self.type = type
         self.status = status
+        self.titleType = titleType
         self.imageViewModel = imageViewModel
         self.command = command
     }

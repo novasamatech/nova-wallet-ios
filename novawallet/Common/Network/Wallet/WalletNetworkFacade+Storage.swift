@@ -19,14 +19,6 @@ extension WalletNetworkFacade {
                 )
             }
 
-            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-                return CompoundOperationWrapper.createWithResult(
-                    BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
-                )
-            }
-
-            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
             let balanceId = AssetBalance.createIdentifier(
                 for: ChainAssetId(chainId: chain.chainId, assetId: remoteAsset.assetId),
                 accountId: selectedAccount.accountId
@@ -63,13 +55,12 @@ extension WalletNetworkFacade {
             let storageOperations = [balanceOperation, balanceLocksOperation, crowdloanContributionsOperation]
 
             storageOperations.forEach { storageOperation in
-                storageOperation.addDependency(codingFactoryOperation)
                 mappingOperation.addDependency(storageOperation)
             }
 
             return CompoundOperationWrapper(
                 targetOperation: mappingOperation,
-                dependencies: [codingFactoryOperation] + storageOperations
+                dependencies: storageOperations
             )
         }
 
@@ -110,7 +101,10 @@ extension WalletNetworkFacade {
 
             let contributionsInPlank = contributions.reduce(BigUInt(0)) { $0 + $1.amount }
 
-            if let contributionsDecimal = Decimal.fromSubstrateAmount(contributionsInPlank, precision: asset.precision) {
+            if let contributionsDecimal = Decimal.fromSubstrateAmount(
+                contributionsInPlank,
+                precision: asset.precision
+            ) {
                 context = context.byChangingCrowdloans(contributionsDecimal)
             }
 

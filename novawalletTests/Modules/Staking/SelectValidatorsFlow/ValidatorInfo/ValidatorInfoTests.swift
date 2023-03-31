@@ -25,7 +25,12 @@ class ValidatorInfoTests: XCTestCase {
         let wireframe = MockValidatorInfoWireframeProtocol()
 
         let priceProvider = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: 0.1,
+                currencyId: Currency.usd.id
+            )
         )
 
         let interactor = AnyValidatorInfoInteractor(
@@ -91,7 +96,12 @@ class ValidatorInfoTests: XCTestCase {
         )
 
         let priceProvider = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: 0.1,
+                currencyId: Currency.usd.id
+            )
         )
 
         let interactor = YourValidatorInfoInteractor(

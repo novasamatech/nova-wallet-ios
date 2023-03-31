@@ -1,6 +1,7 @@
-enum MoonscanCIKeys {
+enum EtherscanCIKeys {
     static var moonbeamApiKey: String = "{{ argument.moonbeamHistoryApiKey }}"
     static var moonriverApiKey: String = "{{ argument.moonriverHistoryApiKey }}"
+    static var etherscanApiKey: String = "{{ argument.etherscanHistoryApiKey }}"
 }
 
 enum MercuryoCIKeys {
@@ -16,4 +17,8 @@ enum AcalaCIKeys {
 enum MoonbeamCrowdloanCIKeys {
     static var apiKey: String = "{{ argument.moonbeamApiKey }}"
     static var apiTestKey: String = "{{ argument.moonbeamApiTestKey }}"
+}
+
+enum ConnectionApiKeys {
+    static var infuraApiKey: String = "{{ argument.infuraApiKey }}"
 }

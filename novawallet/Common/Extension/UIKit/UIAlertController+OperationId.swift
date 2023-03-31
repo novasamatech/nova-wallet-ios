@@ -1,5 +1,4 @@
 import UIKit
-import SoraFoundation
 
 private typealias NamedUrlTemplate = (name: String, template: String)
 
@@ -87,7 +86,7 @@ extension UIAlertController {
         alertController.addAction(copy)
 
         let actions: [UIAlertAction] = namedTemplates?.compactMap { namedTemplate in
-            guard let url = try? EndpointBuilder(urlTemplate: namedTemplate.template)
+            guard let url = try? URLBuilder(urlTemplate: namedTemplate.template)
                 .buildParameterURL(operationId) else {
                 return nil
             }

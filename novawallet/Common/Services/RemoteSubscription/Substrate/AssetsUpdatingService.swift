@@ -124,7 +124,7 @@ final class AssetsUpdatingService {
         switch assetType {
         case .statemine, .orml:
             return true
-        case .evm:
+        case .evmAsset, .evmNative:
             return false
         }
     }
@@ -193,7 +193,7 @@ final class AssetsUpdatingService {
                 chainId: chain.chainId,
                 transactionSubscription: transactionSubscription
             )
-        case .evm:
+        case .evmAsset, .evmNative:
             return nil
         }
     }
@@ -211,7 +211,6 @@ final class AssetsUpdatingService {
         }
 
         let assetRepository = repositoryFactory.createAssetBalanceRepository()
-        let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
         let chainAssetId = ChainAssetId(chainId: chainId, assetId: asset.assetId)
 
         let assetBalanceUpdater = AssetsBalanceUpdater(
@@ -333,7 +332,7 @@ final class AssetsUpdatingService {
                 queue: nil,
                 closure: nil
             )
-        case .evm:
+        case .evmAsset, .evmNative:
             break
         }
     }

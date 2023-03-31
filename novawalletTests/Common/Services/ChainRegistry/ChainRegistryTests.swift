@@ -14,7 +14,7 @@ class ChainRegistryTests: XCTestCase {
 
         stub(runtimeSyncService) { stub in
             stub.register(chain: any(), with: any()).thenDoNothing()
-            stub.unregister(chainId: any()).thenDoNothing()
+            stub.unregisterIfExists(chainId: any()).thenDoNothing()
         }
 
         let commonTypesSyncService = MockCommonTypesSyncServiceProtocol()
@@ -31,9 +31,13 @@ class ChainRegistryTests: XCTestCase {
             stub.notify(with: any()).thenDoNothing()
         }
 
-        let chainCount = 10
-        let expectedChains = ChainModelGenerator.generate(count: chainCount)
+        let substrateChainsCount = 5
+        let noRuntimeChainsCount = 5
+        let substrateChains = ChainModelGenerator.generate(count: substrateChainsCount)
+        let noRuntimeChains = ChainModelGenerator.generate(count: noRuntimeChainsCount, hasSubstrateRuntime: false)
+        let expectedChains = substrateChains + noRuntimeChains
         let expectedChainIds = Set(expectedChains.map { $0.chainId })
+        let substrateChainIds = Set(substrateChains.map { $0.chainId })
         let chainsData = try JSONEncoder().encode(expectedChains)
         let evmTokensData = try JSONEncoder().encode([RemoteEvmToken]())
         let chainURL = URL(string: "https://github.com")!
@@ -46,8 +50,24 @@ class ChainRegistryTests: XCTestCase {
 
         stub(runtimeProviderPool) { stub in
             let runtimeProvider = MockRuntimeProviderProtocol()
-            stub.setupRuntimeProvider(for: any()).thenReturn(runtimeProvider)
-            stub.getRuntimeProvider(for: any()).thenReturn(runtimeProvider)
+            stub.setupRuntimeProviderIfNeeded(for: any()).then { chain in
+                if substrateChainIds.contains(chain.chainId) {
+                    return runtimeProvider
+                } else {
+                    XCTFail("no runtime chains can't have runtime provider")
+                    return runtimeProvider
+                }
+            }
+
+            stub.getRuntimeProvider(for: any()).then { chainId in
+                if substrateChainIds.contains(chainId) {
+                    return runtimeProvider
+                } else {
+                    return nil
+                }
+            }
+
+            stub.destroyRuntimeProviderIfExists(for: any()).thenDoNothing()
         }
 
         stub(connectionPool) { stub in
@@ -144,9 +164,14 @@ class ChainRegistryTests: XCTestCase {
 
         for chain in expectedChains {
             XCTAssertNotNil(registry.getConnection(for: chain.chainId))
-            XCTAssertNotNil(registry.getRuntimeProvider(for: chain.chainId))
+
+            if substrateChainIds.contains(chain.chainId) {
+                XCTAssertNotNil(registry.getRuntimeProvider(for: chain.chainId))
+            } else {
+                XCTAssertNil(registry.getRuntimeProvider(for: chain.chainId))
+            }
         }
 
-        verify(runtimeSyncService, times(chainCount)).register(chain: any(), with: any())
+        verify(runtimeSyncService, times(substrateChainsCount)).register(chain: any(), with: any())
     }
 }
