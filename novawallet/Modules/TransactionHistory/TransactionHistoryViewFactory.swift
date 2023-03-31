@@ -5,31 +5,15 @@ import RobinHood
 
 struct TransactionHistoryViewFactory {
     static func createView(chainAsset: ChainAsset) -> TransactionHistoryViewProtocol? {
-        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+        guard
+            let selectedMetaAccount = SelectedWalletSettings.shared.value,
+            let accountId = selectedMetaAccount.fetch(for: chainAsset.chain.accountRequest())?.accountId,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return nil
         }
 
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared)
-        let fetchCount = 100
-        let transactionSubscriptionFactory = TransactionSubscriptionFactory(
-            storageFacade: repositoryFactory.storageFacade,
-            operationQueue: operationQueue,
-            historyFacade: AssetHistoryFacade(),
-            repositoryFactory: repositoryFactory,
-            fetchCount: fetchCount,
-            logger: Logger.shared
-        )
+        let interactor = createInteractor(for: accountId, chainAsset: chainAsset)
 
-        let interactor = TransactionHistoryInteractor(
-            chainAsset: chainAsset,
-            metaAccount: selectedMetaAccount,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            repositoryFactory: repositoryFactory,
-            historyFacade: AssetHistoryFacade(),
-            dataProviderFactory: transactionSubscriptionFactory,
-            fetchCount: fetchCount
-        )
         let wireframe = TransactionHistoryWireframe(chainAsset: chainAsset)
 
         let tokenFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: chainAsset.assetDisplayInfo)
@@ -39,7 +23,9 @@ struct TransactionHistoryViewFactory {
             dateFormatter: DateFormatter.txHistory,
             groupDateFormatter: DateFormatter.txHistoryDate.localizableResource()
         )
+
         let presenter = TransactionHistoryPresenter(
+            address: address,
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
@@ -53,5 +39,27 @@ struct TransactionHistoryViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        for accountId: AccountId,
+        chainAsset: ChainAsset
+    ) -> TransactionHistoryInteractor {
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared)
+
+        let subscriptionFactory = TransactionLocalSubscriptionFactory(
+            storageFacade: SubstrateDataStorageFacade.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let fetcherFactory = TransactionHistoryFetcherFactory(
+            remoteHistoryFacade: AssetHistoryFacade(),
+            providerFactory: subscriptionFactory,
+            repositoryFactory: repositoryFactory,
+            operationQueue: operationQueue
+        )
+
+        return .init(accountId: accountId, chainAsset: chainAsset, fetcherFactory: fetcherFactory, pageSize: 100)
     }
 }
