@@ -16,7 +16,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
 
     var processedResult: DAppOperationProcessedResult?
 
-    var priceProvider: AnySingleValueProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
     var feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>?
     var signWrapper: CompoundOperationWrapper<Data>?
 

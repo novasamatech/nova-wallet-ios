@@ -93,7 +93,7 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: acalaView.controller
         )
 
@@ -117,7 +117,7 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: karuraView.controller
         )
 
@@ -141,7 +141,7 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: bifrostView.controller
         )
 
@@ -165,7 +165,7 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: astarView.controller
         )
 

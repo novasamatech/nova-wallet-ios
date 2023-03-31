@@ -200,6 +200,32 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         )
     }
 
+    func applyContract(viewModel: OperationContractCallViewModel, networkViewModel: NetworkViewModel) {
+        let contentView: OperationDetailsContractView = rootView.setupLocalizableView()
+        contentView.locale = selectedLocale
+        contentView.bind(viewModel: viewModel, networkViewModel: networkViewModel)
+
+        rootView.removeActionButton()
+
+        contentView.senderView.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        contentView.contractView.addTarget(
+            self,
+            action: #selector(actionRecepient),
+            for: .touchUpInside
+        )
+
+        contentView.transactionHashView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
+    }
+
     @objc func actionSender() {
         presenter.showSenderActions()
     }
@@ -235,6 +261,8 @@ extension OperationDetailsViewController: OperationDetailsViewProtocol {
             applyReward(viewModel: rewardViewModel, networkViewModel: networkViewModel)
         case let .slash(slashViewModel):
             applySlash(viewModel: slashViewModel, networkViewModel: networkViewModel)
+        case let .contract(contractViewModel):
+            applyContract(viewModel: contractViewModel, networkViewModel: networkViewModel)
         }
     }
 }

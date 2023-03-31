@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         guard !isUnitTesting else { return true }
 
-        let rootWindow = FearlessWindow()
+        let rootWindow = NovaWindow()
         window = rootWindow
 
         let presenter = RootPresenterFactory.createPresenter(with: rootWindow)

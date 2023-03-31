@@ -159,7 +159,7 @@ final class XcmTransfersSyncService: BaseSyncService, XcmTransfersSyncServicePro
 
     override func performSyncUp() {
         guard let localPath = creteLocalFilePath() else {
-            complete(XcmTransfersSyncServiceError.invalidLocalFile(remote: remoteUrl))
+            completeImmediate(XcmTransfersSyncServiceError.invalidLocalFile(remote: remoteUrl))
             return
         }
 

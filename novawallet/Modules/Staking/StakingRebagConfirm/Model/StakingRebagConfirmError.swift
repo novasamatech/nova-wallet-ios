@@ -8,4 +8,5 @@ enum StakingRebagConfirmError: Error {
     case fetchLedgerInfoFailed(Error)
     case fetchNetworkInfoFailed(Error)
     case submitFailed(Error)
+    case cantResolveModuleName(Error)
 }

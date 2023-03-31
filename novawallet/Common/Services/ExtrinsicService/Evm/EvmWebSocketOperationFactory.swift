@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 final class EvmWebSocketOperationFactory {
     let connection: JSONRPCEngine
@@ -13,6 +14,24 @@ final class EvmWebSocketOperationFactory {
 }
 
 extension EvmWebSocketOperationFactory: EthereumOperationFactoryProtocol {
+    func createBlockOperation(for blockNumber: BigUInt) -> RobinHood.BaseOperation<EthereumBlockObject> {
+        let blockNumberString = blockNumber.toHexString()
+
+        let params = JSON.arrayValue(
+            [
+                JSON.stringValue(blockNumberString), // block number
+                JSON.boolValue(true) // should return full transactions
+            ]
+        )
+
+        return JSONRPCOperation(
+            engine: connection,
+            method: EthereumMethod.blockByNumber.rawValue,
+            parameters: params,
+            timeout: timeout
+        )
+    }
+
     func createTransactionReceiptOperation(
         for transactionHash: String
     ) -> RobinHood.BaseOperation<EthereumTransactionReceipt?> {
