@@ -8,6 +8,7 @@ struct RemoteChainModel: Equatable, Codable {
     let name: String
     let assets: [RemoteAssetModel]
     let nodes: [RemoteChainNodeModel]
+    let nodeSelectionStrategy: String?
     let addressPrefix: UInt16
     let types: ChainModel.TypesSettings?
     let icon: URL
@@ -25,6 +26,7 @@ extension RemoteChainModel {
             name: name,
             assets: assets,
             nodes: nodes,
+            nodeSelectionStrategy: nodeSelectionStrategy,
             addressPrefix: addressPrefix,
             types: types,
             icon: icon,
