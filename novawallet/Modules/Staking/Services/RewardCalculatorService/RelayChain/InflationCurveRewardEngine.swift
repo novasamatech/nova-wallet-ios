@@ -1,26 +1,45 @@
 import Foundation
+import BigInt
 
 final class InflationCurveRewardEngine: RewardCalculatorEngine {
-    private let decayRate: Decimal = 0.05
+    let config: InflationCurveRewardConfig
+    let parachainsCount: Int
 
-    // For all the cases we suggest that parachains are disabled
-    // Thus, i_ideal = 0.1 and x_ideal = 0.75
-    private let idealStakePortion: Decimal = 0.75
-    private let idealInflation: Decimal = 0.1
+    init(
+        chainId: ChainModel.Id,
+        assetPrecision: Int16,
+        totalIssuance: BigUInt,
+        validators: [EraValidatorInfo],
+        eraDurationInSeconds: TimeInterval,
+        config: InflationCurveRewardConfig,
+        parachainsCount: Int
+    ) {
+        self.config = config
+        self.parachainsCount = parachainsCount
 
-    private let minimalInflation: Decimal = 0.025
+        super.init(
+            chainId: chainId,
+            assetPrecision: assetPrecision,
+            totalIssuance: totalIssuance,
+            validators: validators,
+            eraDurationInSeconds: eraDurationInSeconds
+        )
+    }
 
     override func calculateAnnualInflation() -> Decimal {
-        let idealInterest = idealInflation / idealStakePortion
+        let deltaAnnualInflation = config.maxAnnualInflation - config.minAnnualInflation
+        let idealStakePortion = config.idealStakePortion(for: parachainsCount)
 
-        if stakedPortion <= idealStakePortion {
-            return minimalInflation + stakedPortion * (idealInterest - minimalInflation / idealStakePortion)
+        let adjustment: Decimal
+        if stakedPortion < idealStakePortion {
+            adjustment = stakedPortion / idealStakePortion
         } else {
-            let powerValue = (idealStakePortion - stakedPortion) / decayRate
+            let powerValue = (idealStakePortion - stakedPortion) / config.fallof
             let doublePowerValue = Double(truncating: powerValue as NSNumber)
-            let decayCoefficient = Decimal(pow(2, doublePowerValue))
-            return minimalInflation + (idealInterest * idealStakePortion - minimalInflation) * decayCoefficient
+            adjustment = Decimal(pow(2, doublePowerValue))
         }
+
+        return config.minAnnualInflation + deltaAnnualInflation * adjustment
     }
 
     // We are solving equation to find era interest - x: yr * T = T * (1 + x)^t - T

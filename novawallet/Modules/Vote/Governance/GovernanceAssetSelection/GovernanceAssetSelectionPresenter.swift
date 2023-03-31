@@ -56,6 +56,10 @@ final class GovernanceAssetSelectionPresenter: AssetSelectionBasePresenter {
     }
 
     override func updateView() {
+        guard let assets = assets, isReadyForDisplay else {
+            return
+        }
+
         // show gov2 options first but not testnets
         availableOptions = assets.reduce(into: [Option]()) { accum, chainAsset in
             if chainAsset.chain.hasGovernanceV2, !chainAsset.chain.isTestnet {

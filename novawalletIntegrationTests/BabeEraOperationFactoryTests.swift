@@ -8,7 +8,7 @@ class EraCountdownOperationFactoryTests: XCTestCase {
     func testService() {
         let operationManager = OperationManagerFacade.sharedManager
 
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: SubstrateStorageTestFacade())
         let connection = chainRegistry.getConnection(for: chainId)!
         let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!

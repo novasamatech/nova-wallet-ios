@@ -155,14 +155,8 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
         guard let rebagConfirmView = StakingRebagConfirmViewFactory.createView(with: state) else {
             return
         }
-        let navigationController = FearlessNavigationController(rootViewController: rebagConfirmView.controller)
+        let navigationController = NovaNavigationController(rootViewController: rebagConfirmView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
-    func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode) {
-        let analyticsView = AnalyticsContainerViewFactory.createView(mode: mode, stakingState: state)
-        analyticsView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.navigationController?.pushViewController(analyticsView.controller, animated: true)
     }
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?) {
@@ -170,7 +164,7 @@ extension StakingRelaychainWireframe: StakingRelaychainWireframeProtocol {
             with: stashAddress,
             state: state
         ) else { return }
-        let navigationController = FearlessNavigationController(rootViewController: validatorInfoView.controller)
+        let navigationController = NovaNavigationController(rootViewController: validatorInfoView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 }

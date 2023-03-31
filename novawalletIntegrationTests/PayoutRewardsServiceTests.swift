@@ -97,7 +97,7 @@ class PayoutRewardsServiceTests: XCTestCase {
 
     func testPayoutRewardsListForValidator() {
         let selectedAccount = "GqpApQStgzzGxYa1XQZQUq9L3aXhukxDWABccbeHEh7zPYR"
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)

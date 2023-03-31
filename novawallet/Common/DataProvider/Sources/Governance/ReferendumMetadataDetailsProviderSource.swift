@@ -8,7 +8,7 @@ final class ReferendumMetadataDetailsProviderSource {
     let chainId: ChainModel.Id
     let referendumId: ReferendumIdLocal
     let apiParameters: JSON?
-    let operationFactory: PolkassemblyOperationFactoryProtocol
+    let operationFactory: GovMetadataOperationFactoryProtocol
     let repository: AnyDataProviderRepository<ReferendumMetadataLocal>
     let operationQueue: OperationQueue
 
@@ -16,7 +16,7 @@ final class ReferendumMetadataDetailsProviderSource {
         chainId: ChainModel.Id,
         referendumId: ReferendumIdLocal,
         apiParameters: JSON?,
-        operationFactory: PolkassemblyOperationFactoryProtocol,
+        operationFactory: GovMetadataOperationFactoryProtocol,
         repository: AnyDataProviderRepository<ReferendumMetadataLocal>,
         operationQueue: OperationQueue
     ) {
