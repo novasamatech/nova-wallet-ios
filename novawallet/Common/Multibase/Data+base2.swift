@@ -43,6 +43,41 @@ extension Data {
         self = decodedData
     }
 
+    init?(base32padEncoded input: String) {
+        guard let decodedData = input.base32padDecodedData() else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(base32hexPadEncoded input: String) {
+        guard let decodedData = input.base32hexPadDecodedData() else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(base36Encoded input: String) {
+        guard let decodedData = input.base36DecodedData() else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(base64padEncoded input: String) {
+        guard let decodedData = input.base64padDecodedData() else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(base58btcEncoded input: String) {
+        guard let decodedData = input.base58BTCDecodedData() else {
+            return nil
+        }
+        self = decodedData
+    }
+
     init?(base58FlickrEncoded input: String) {
         guard let decodedData = input.base58FlickrDecodedData() else {
             return nil
@@ -51,7 +86,35 @@ extension Data {
     }
 
     init?(base64UrlEncoded input: String) {
-        guard let decodedData = input.base64URLDecodedData() else {
+        guard let decodedData = input.base64URLDecodedData(withPadding: false) else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(base64UrlPadEncoded input: String) {
+        guard let decodedData = input.base64URLDecodedData(withPadding: true) else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(proquint input: String) {
+        guard let decodedData = input.proquintDecoded() else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(base256emojiEncoded input: String) {
+        guard let decodedData = input.base256emojiDecodedData() else {
+            return nil
+        }
+        self = decodedData
+    }
+
+    init?(base32zEncoded input: String) {
+        guard let decodedData = input.base32zDecodedData() else {
             return nil
         }
         self = decodedData
