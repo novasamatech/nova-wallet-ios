@@ -11,13 +11,13 @@ protocol SpecVersionSubscriptionFactoryProtocol: AnyObject {
      *  Creates a subsription for runtime version in particular chain.
      *
      *  - Parameters:
-     *      - chainId: Identifier of the chain for which subscription should be created;
+     *      - chain: Chain for which subscription should be created;
      *      - connection: Connection to send request to the chain and receive updates.
      *
      *  - Returns: `SpecVersionSubscriptionProtocol` conforming subscription.
      */
     func createSubscription(
-        for chainId: ChainModel.Id,
+        for chain: ChainModel,
         connection: JSONRPCEngine
     ) -> SpecVersionSubscriptionProtocol
 }
@@ -47,13 +47,21 @@ final class SpecVersionSubscriptionFactory {
 
 extension SpecVersionSubscriptionFactory: SpecVersionSubscriptionFactoryProtocol {
     func createSubscription(
-        for chainId: ChainModel.Id,
+        for chain: ChainModel,
         connection: JSONRPCEngine
     ) -> SpecVersionSubscriptionProtocol {
-        SpecVersionSubscription(
-            chainId: chainId,
-            runtimeSyncService: runtimeSyncService,
-            connection: connection
-        )
+        if chain.hasSubstrateRuntime {
+            return SpecVersionSubscription(
+                chainId: chain.chainId,
+                runtimeSyncService: runtimeSyncService,
+                connection: connection
+            )
+        } else {
+            return NoRuntimeVersionSubscription(
+                chainId: chain.chainId,
+                connection: connection,
+                logger: logger
+            )
+        }
     }
 }

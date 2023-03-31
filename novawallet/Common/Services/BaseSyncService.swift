@@ -45,6 +45,10 @@ class BaseSyncService {
             mutex.unlock()
         }
 
+        completeImmediate(error)
+    }
+
+    func completeImmediate(_ error: Error?) {
         guard isActive else {
             return
         }

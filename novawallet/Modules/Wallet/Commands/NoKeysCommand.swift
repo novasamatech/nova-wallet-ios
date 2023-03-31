@@ -8,7 +8,7 @@ final class NoKeysCommand: WalletCommandProtocol {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
         confirmationView.controller.modalTransitioningFactory = factory
         confirmationView.controller.modalPresentationStyle = .custom

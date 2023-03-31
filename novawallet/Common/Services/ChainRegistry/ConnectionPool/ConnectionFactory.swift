@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 protocol ConnectionFactoryProtocol {
     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection
@@ -14,12 +15,23 @@ final class ConnectionFactory {
     }
 }
 
+enum ConnectionFactoryError: Error {
+    case noNodes
+}
+
 extension ConnectionFactory: ConnectionFactoryProtocol {
     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
         let urls = extractNodeUrls(from: chain)
 
-        guard let connection = WebSocketEngine(urls: urls, name: chain.name, logger: logger) else {
-            throw JSONRPCEngineError.unknownError
+        let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
+        guard
+            let connection = WebSocketEngine(
+                urls: urls,
+                healthCheckMethod: healthCheckMethod,
+                name: chain.name,
+                logger: logger
+            ) else {
+            throw ConnectionFactoryError.noNodes
         }
 
         connection.delegate = delegate
@@ -35,6 +47,16 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     private func extractNodeUrls(from chain: ChainModel) -> [URL] {
-        chain.nodes.sorted(by: { $0.order < $1.order }).map(\.url)
+        chain.nodes.sorted(by: { $0.order < $1.order }).compactMap { node in
+            let builder = URLBuilder(urlTemplate: node.url)
+
+            return try? builder.buildBy { apiKeyType in
+                guard let apiKey = ConnectionApiKeys.getKey(by: apiKeyType) else {
+                    throw CommonError.undefined
+                }
+
+                return apiKey
+            }
+        }
     }
 }

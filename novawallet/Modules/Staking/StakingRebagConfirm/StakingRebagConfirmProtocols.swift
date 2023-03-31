@@ -23,6 +23,7 @@ protocol StakingRebagConfirmInteractorInputProtocol: AnyObject {
     func refreshFee(stashItem: StashItem)
     func remakeSubscriptions()
     func retryNetworkInfo()
+    func retryModuleName()
     func submit(stashItem: StashItem)
 }
 

@@ -400,10 +400,18 @@ final class AssetListPresenter: AssetListBasePresenter {
 
     // MARK: Interactor Output overridings
 
-    override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
+    override func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
         view?.didCompleteRefreshing()
 
-        super.didReceivePrices(result: result)
+        super.didReceivePrice(changes: changes)
+
+        updateAssetsView()
+    }
+
+    override func didReceivePrice(error: Error) {
+        view?.didCompleteRefreshing()
+
+        super.didReceivePrice(error: error)
 
         updateAssetsView()
     }

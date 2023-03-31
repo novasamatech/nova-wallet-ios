@@ -16,7 +16,7 @@ extension SwitchAccount {
                 return
             }
 
-            let navigationController = FearlessNavigationController(rootViewController: advancedView.controller)
+            let navigationController = NovaNavigationController(rootViewController: advancedView.controller)
 
             view?.controller.present(navigationController, animated: true)
         }

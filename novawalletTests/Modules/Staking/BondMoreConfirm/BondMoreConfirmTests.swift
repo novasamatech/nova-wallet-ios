@@ -92,7 +92,12 @@ class BondMoreConfirmTests: XCTestCase {
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(stashItem: stashItem)
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+12))
         let priceSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.01", dayChange: nil, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.01",
+                dayChange: nil,
+                currencyId: Currency.usd.id
+            )
         )
 
         let interactor = StakingBondMoreConfirmationInteractor(

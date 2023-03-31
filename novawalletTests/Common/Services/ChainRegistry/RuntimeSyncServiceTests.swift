@@ -39,7 +39,7 @@ class RuntimeSyncServiceTests: XCTestCase {
 
         // when
 
-        unregisterChains.forEach { syncService.unregister(chainId: $0.chainId) }
+        unregisterChains.forEach { syncService.unregisterIfExists(chainId: $0.chainId) }
 
         // then
 

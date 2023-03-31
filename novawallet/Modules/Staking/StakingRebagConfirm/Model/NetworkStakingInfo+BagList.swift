@@ -1,15 +1,20 @@
 import BigInt
 
 extension NetworkStakingInfo {
-    func searchBounds(for node: BagList.Node) -> BagListBounds? {
+    func searchBounds(for node: BagList.Node, totalIssuance: BigUInt) -> BagListBounds? {
         guard let votersInfo = votersInfo, let currentBagListIndex = votersInfo
             .bagsThresholds
             .firstIndex(where: { $0 == node.bagUpper }) else {
             return nil
         }
 
-        let lowerBound = votersInfo.bagsThresholds[safe: currentBagListIndex - 1] ?? 0
-        return .init(lower: lowerBound, upper: node.bagUpper)
+        let lowerBoundScore = votersInfo.bagsThresholds[safe: currentBagListIndex - 1] ?? 0
+        let upperBoundScore = node.bagUpper
+
+        let lowerBound = BagList.stake(score: lowerBoundScore, totalIssuance: totalIssuance)
+        let upperBound = BagList.stake(score: upperBoundScore, totalIssuance: totalIssuance)
+
+        return .init(lower: lowerBound, upper: upperBound)
     }
 
     func searchBounds(ledgerInfo: StakingLedger, totalIssuance: BigUInt) -> BagListBounds? {
@@ -22,16 +27,19 @@ extension NetworkStakingInfo {
             totalIssuance: totalIssuance
         )
 
-        let lowerBound: BigUInt
-        let upperBound: BigUInt
+        let lowerBoundScore: BagList.Score
+        let upperBoundScore: BagList.Score
 
         if let targetTresholdIndex = votersInfo.bagsThresholds.firstIndex(where: { $0 >= score }) {
-            lowerBound = votersInfo.bagsThresholds[safe: targetTresholdIndex - 1] ?? 0
-            upperBound = votersInfo.bagsThresholds[targetTresholdIndex]
+            lowerBoundScore = votersInfo.bagsThresholds[safe: targetTresholdIndex - 1] ?? 0
+            upperBoundScore = votersInfo.bagsThresholds[targetTresholdIndex]
         } else {
-            lowerBound = votersInfo.bagsThresholds.last ?? 0
-            upperBound = BagList.maxScore
+            lowerBoundScore = votersInfo.bagsThresholds.last ?? 0
+            upperBoundScore = BagList.maxScore
         }
+
+        let lowerBound = BagList.stake(score: lowerBoundScore, totalIssuance: totalIssuance)
+        let upperBound = BagList.stake(score: upperBoundScore, totalIssuance: totalIssuance)
 
         return .init(lower: lowerBound, upper: upperBound)
     }

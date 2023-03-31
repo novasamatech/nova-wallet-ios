@@ -96,14 +96,29 @@ class AssetListBasePresenter: AssetListBaseInteractorOutputProtocol {
         )
     }
 
-    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
-        guard let result = result else {
-            return
+    func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
+        var currentPrices: [ChainAssetId: PriceData] = (try? priceResult?.get()) ?? [:]
+
+        currentPrices = changes.reduce(into: currentPrices) { accum, keyValue in
+            switch keyValue.value {
+            case let .insert(newItem), let .update(newItem):
+                accum[keyValue.key] = newItem
+            case .delete:
+                accum[keyValue.key] = nil
+            }
         }
 
-        priceResult = result
+        priceResult = .success(currentPrices)
 
         updateAssetModels()
+    }
+
+    func didReceivePrice(error: Error) {
+        if priceResult == nil {
+            priceResult = .failure(error)
+
+            updateAssetModels()
+        }
     }
 
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
