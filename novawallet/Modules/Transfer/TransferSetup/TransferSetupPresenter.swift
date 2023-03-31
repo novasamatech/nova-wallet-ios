@@ -247,6 +247,10 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             locale: view.selectedLocale
         )
     }
+
+    func changeRecipient(_: String?) {
+        view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
