@@ -185,7 +185,6 @@ final class OperationDetailsInteractor: AccountFetching {
         newFee: BigUInt?,
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
-        let precision = Int16(bitPattern: chainAsset.asset.precision)
         let fee: BigUInt = newFee ?? transaction.feeInPlankIntOrZero
 
         guard

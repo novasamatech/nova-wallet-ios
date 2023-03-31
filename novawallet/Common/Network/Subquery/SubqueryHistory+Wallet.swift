@@ -41,22 +41,26 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         if let transfer = transfer {
             return createTransactionFromTransfer(
                 transfer,
-                chainAssetId: chainAsset.chainAssetId
+                chainAssetId: chainAsset.chainAssetId,
+                chainFormat: chainAsset.chain.chainFormat
             )
         } else if let reward = reward {
             return createTransactionFromReward(
                 reward,
-                chainAssetId: chainAsset.chainAssetId
+                chainAssetId: chainAsset.chainAssetId,
+                chainFormat: chainAsset.chain.chainFormat
             )
         } else if let extrinsic = extrinsic {
             return createTransactionFromExtrinsic(
                 extrinsic,
-                chainAssetId: chainAsset.chainAssetId
+                chainAssetId: chainAsset.chainAssetId,
+                chainFormat: chainAsset.chain.chainFormat
             )
         } else if let assetTransfer = assetTransfer {
             return createTransactionFromTransfer(
                 assetTransfer,
-                chainAssetId: chainAsset.chainAssetId
+                chainAssetId: chainAsset.chainAssetId,
+                chainFormat: chainAsset.chain.chainFormat
             )
         } else {
             return nil
@@ -65,14 +69,15 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
 
     private func createTransactionFromTransfer(
         _ transfer: SubqueryTransfer,
-        chainAssetId: ChainAssetId
+        chainAssetId: ChainAssetId,
+        chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
         .init(
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
-            sender: transfer.sender,
-            receiver: transfer.receiver,
+            sender: transfer.sender.normalize(for: chainFormat) ?? transfer.sender,
+            receiver: transfer.receiver.normalize(for: chainFormat) ?? transfer.receiver,
             amountInPlank: transfer.amount,
             status: transfer.success ? .success : .failed,
             txHash: extrinsicHash ?? identifier,
@@ -87,7 +92,8 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
 
     private func createTransactionFromReward(
         _ reward: SubqueryRewardOrSlash,
-        chainAssetId: ChainAssetId
+        chainAssetId: ChainAssetId,
+        chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
         let context = HistoryRewardContext(
             validator: reward.validator,
@@ -98,7 +104,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
-            sender: reward.validator ?? "",
+            sender: reward.validator?.normalize(for: chainFormat) ?? "",
             receiver: nil,
             amountInPlank: reward.amount,
             status: .success,
@@ -114,13 +120,14 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
 
     private func createTransactionFromExtrinsic(
         _ extrinsic: SubqueryExtrinsic,
-        chainAssetId: ChainAssetId
+        chainAssetId: ChainAssetId,
+        chainFormat: ChainFormat
     ) -> TransactionHistoryItem {
         .init(
             source: .substrate,
             chainId: chainAssetId.chainId,
             assetId: chainAssetId.assetId,
-            sender: address,
+            sender: address.normalize(for: chainFormat) ?? address,
             receiver: nil,
             amountInPlank: nil,
             status: extrinsic.success ? .success : .failed,

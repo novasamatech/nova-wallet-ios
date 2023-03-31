@@ -14,8 +14,12 @@ extension CallCodingPath {
         isBalancesTransfer || isAssetsTransfer || isTokensTransfer
     }
 
+    static var substrateTransfers: [CallCodingPath] {
+        [.transfer, .transferKeepAlive, .forceTransfer, .transferAll]
+    }
+
     var isBalancesTransfer: Bool {
-        [.transfer, .transferKeepAlive, .forceTransfer, .transferAll].contains(self)
+        Self.substrateTransfers.contains(self)
     }
 
     var isAssetsTransfer: Bool {
@@ -142,5 +146,29 @@ extension CallCodingPath {
 
     static var reward: CallCodingPath {
         CallCodingPath(moduleName: "Substrate", callName: "reward")
+    }
+
+    var isRewardOrSlash: Bool {
+        [.slash, .reward].contains(self)
+    }
+}
+
+// MARK: Filter
+
+extension CallCodingPath {
+    func matches(filter: WalletHistoryFilter) -> Bool {
+        if !filter.contains(.transfers), isSubstrateOrEvmTransfer {
+            return false
+        }
+
+        if !filter.contains(.rewardsAndSlashes), isRewardOrSlash {
+            return false
+        }
+
+        if !filter.contains(.extrinsics), !isSubstrateOrEvmTransfer, !isRewardOrSlash {
+            return false
+        }
+
+        return true
     }
 }
