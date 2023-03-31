@@ -4,7 +4,7 @@ extension String {
         case colon = ":"
     }
 
-    func split(by separator: Separator) -> [String] {
-        split(separator: separator.rawValue).map { String($0) }
+    func split(by separator: Separator, maxSplits: Int = .max) -> [String] {
+        split(separator: separator.rawValue, maxSplits: maxSplits).map { String($0) }
     }
 }

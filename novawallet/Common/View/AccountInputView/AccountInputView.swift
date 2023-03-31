@@ -488,6 +488,10 @@ extension AccountInputView: UITextFieldDelegate {
         delegate?.accountInputViewWillStartEditing(self)
         return true
     }
+
+    func textFieldDidEndEditing(_: UITextField, reason _: UITextField.DidEndEditingReason) {
+        delegate?.accountInputViewDidEndEditing(self)
+    }
 }
 
 extension AccountInputView: PasteboardHandlerDelegate {
