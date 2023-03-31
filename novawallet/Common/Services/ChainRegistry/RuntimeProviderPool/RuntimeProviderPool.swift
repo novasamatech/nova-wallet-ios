@@ -1,8 +1,8 @@
 import Foundation
 
 protocol RuntimeProviderPoolProtocol {
-    func setupRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol
-    func destroyRuntimeProvider(for chainId: ChainModel.Id)
+    func setupRuntimeProviderIfNeeded(for chain: ChainModel) -> RuntimeProviderProtocol
+    func destroyRuntimeProviderIfExists(for chainId: ChainModel.Id)
     func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol?
 }
 
@@ -18,7 +18,7 @@ final class RuntimeProviderPool {
 }
 
 extension RuntimeProviderPool: RuntimeProviderPoolProtocol {
-    func setupRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol {
+    func setupRuntimeProviderIfNeeded(for chain: ChainModel) -> RuntimeProviderProtocol {
         mutex.lock()
 
         defer {
@@ -40,7 +40,7 @@ extension RuntimeProviderPool: RuntimeProviderPoolProtocol {
         }
     }
 
-    func destroyRuntimeProvider(for chainId: ChainModel.Id) {
+    func destroyRuntimeProviderIfExists(for chainId: ChainModel.Id) {
         mutex.lock()
 
         defer {

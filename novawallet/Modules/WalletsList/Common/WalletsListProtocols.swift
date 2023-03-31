@@ -22,7 +22,7 @@ protocol WalletsListInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>])
     func didReceiveBalancesChanges(_ changes: [DataProviderChange<AssetBalance>])
     func didReceiveChainChanges(_ changes: [DataProviderChange<ChainModel>])
-    func didReceivePrices(_ prices: [ChainAssetId: PriceData])
+    func didReceivePrice(_ changes: [ChainAssetId: DataProviderChange<PriceData>])
     func didReceiveCrowdloanContributionChanges(_ changes: [DataProviderChange<CrowdloanContributionData>])
     func didReceiveError(_ error: Error)
 }

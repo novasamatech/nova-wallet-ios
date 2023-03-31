@@ -229,7 +229,7 @@
 "staking.recommended.custom.title" = "Выбрать других валидаторов";
 "fee.not.yet.loaded.title" = "Расчет комиссии в процессе";
 "fee.not.yet.loaded.message" = "Подождите, пока будет рассчитана комиссия";
-"staking.setup.amount.too.low" = "Вы не можете застейкать меньше минимального значения сети (%s)";
+"staking.setup.amount.too.low" = "Вы не можете застейкать меньше минимального значения сети (%@)";
 "common.confirm.title" = "Подтверждение";
 "staking.stash.title" = "Аккаунт";
 "staking.setup.sent.message" = "Транзакция на установку стейкинга отправлена";
@@ -332,7 +332,7 @@
 "staking.stash.can.hint" = "С помощью стэш аккаунта можно застейкать больше и установить контроллер аккаунт";
 "staking.controller.can.hint" = "Контроллер аккаунт может вывести из стейка, забрать, вернуть в стейк, сменить назначение вознаграждений и валидаторов.";
 "staking.switch.account.to.stash" = "Для установки контроллер аккаунта смените аккаунт на стэш.";
-"staking.inactive.current.minimal.stake" = "Ваш стейк меньше минимума %s.\nСтейк меньше минимума, уменьшает шансы получить вознаграждение";
+"staking.inactive.current.minimal.stake" = "Ваш стейк меньше минимума %@.\nСтейк меньше минимума уменьшает шансы получить вознаграждение";
 "staking.change.your.validators" = "Смените своих валидаторов.";
 "staking.bond.more.tokens" = "Застейкайте ещё токенов";
 "staking.redeem.unbonded.tokens" = "Заберите токены после вывода";
@@ -1185,6 +1185,11 @@
 "delegations.account.missing.message" = "Вы должны добавить %@ аккаунт в кошелек, чтобы иметь возможность делегировать";
 "wallet.account.locks.democracy.version2" = "OpenGov";
 "search.by.address.name.placeholder" = "Поиск по адресу или имени";
+"staking.rebag.alert.message" = "Устаревшая позиция в очереди назначения стейка валидатору может приостановить получение вознаграждений";
+"staking.improvements" = "Улучшения стейкинга";
+"staking.rebag.confirm.new.bag.list" = "Новый слот очереди";
+"staking.rebag.confirm.current.bag.list" = "Текущий слот очереди";
+"staking.min.stake.violated.message" = "Рекомендуемый минимальный стейк для постоянного получения вознаграждений составляет %@.";
 "common.multi.tx.error.title" = "Не удалось отправить некоторые транзакции";
 "in.app.updates.fetch.change.logs.error" = "Не удалось получить описание обновления";
 "gov.remove.votes.ask.details" = "Вы ранее голосовали в референдумах в %@. Для того, чтобы сделать эти треки доступными для делегирования, вам необходимо удалить голоса.";
@@ -1195,11 +1200,7 @@
 "gov.revoke.delegate.missing.error.message" = "Вы уже отменили делегацию в одном из треков";
 "common.multi.tx.error.no.details.message" = "При отправке транзакций возникла ошибка (%@). Вы хотите повторить?";
 "common.multi.tx.error.has.details.message" = "При отправке транзакций возникла ошибка (%@): %@. Вы хотите повторить?";
-"staking.improvements" = "Улучшения стейкинга";
-"staking.rebag.alert.message" = "Устаревшая позиция в очереди на передачу стейка валидатору может привести к остановке поступления наград";
-"staking.min.stake.violated.message" = "Рекомендованный минимальный стейк для стабильного получения наград %@.";
-"staking.hint.rebag.confirm" = "Устаревшая позиция в очереди назначения стейка валидатору может приостановить получение вознаграждений";
-"staking.rebag.confirm.title" = "Улучшения стейкинга";
-"staking.rebag.confirm.new.bag.list" = "Новый слот очереди";
-"staking.rebag.confirm.current.bag.list" = "Текущий слот очереди";
 "staking.rebag.confirm.completion" = "Запрос на изменение слота очереди отправлен";
+"evm.contract.call" = "Вызов контракта";
+"evm.contract" = "Контракт";
+"evm.contract.function" = "Функция";

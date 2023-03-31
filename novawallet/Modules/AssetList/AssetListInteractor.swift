@@ -179,7 +179,7 @@ extension AssetListInteractor: AssetListInteractorInputProtocol {
         if let provider = priceSubscription {
             provider.refresh()
         } else {
-            presenter?.didReceivePrices(result: nil)
+            presenter?.didReceivePrice(changes: [:])
         }
 
         nftSubscription?.refresh()

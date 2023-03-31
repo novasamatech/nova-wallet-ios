@@ -11,9 +11,8 @@ class CalculatorServiceTests: XCTestCase {
             do {
                 let storageFacade = SubstrateStorageTestFacade()
                 try performServiceTest(
-                    for: Chain.westend.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    for: KnowChainId.westend,
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -26,9 +25,8 @@ class CalculatorServiceTests: XCTestCase {
 
         do {
             try performServiceTest(
-                for: Chain.westend.genesisHash,
-                storageFacade: storageFacade,
-                assetPrecision: 12
+                for: KnowChainId.westend,
+                storageFacade: storageFacade
             )
         } catch {
             XCTFail("unexpected error \(error)")
@@ -40,9 +38,8 @@ class CalculatorServiceTests: XCTestCase {
         measure {
             do {
                 try performServiceTest(
-                    for: Chain.westend.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    for: KnowChainId.westend,
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -55,9 +52,8 @@ class CalculatorServiceTests: XCTestCase {
             do {
                 let storageFacade = SubstrateStorageTestFacade()
                 try performServiceTest(
-                    for: Chain.kusama.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    for: KnowChainId.kusama,
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -70,9 +66,8 @@ class CalculatorServiceTests: XCTestCase {
 
         do {
             try performServiceTest(
-                for: Chain.kusama.genesisHash,
-                storageFacade: storageFacade,
-                assetPrecision: 12
+                for: KnowChainId.kusama,
+                storageFacade: storageFacade
             )
         } catch {
             XCTFail("unexpected error \(error)")
@@ -84,9 +79,8 @@ class CalculatorServiceTests: XCTestCase {
         measure {
             do {
                 try performServiceTest(
-                    for: Chain.kusama.genesisHash,
-                    storageFacade: storageFacade,
-                    assetPrecision: 12
+                    for: KnowChainId.kusama,
+                    storageFacade: storageFacade
                 )
             } catch {
                 XCTFail("unexpected error \(error)")
@@ -95,17 +89,17 @@ class CalculatorServiceTests: XCTestCase {
     }
 
     func testDecodeLocalEncodedValidatorsForWestend() {
-        performTestDecodeLocalEncodedValidators(for: Chain.westend.genesisHash)
+        performTestDecodeLocalEncodedValidators(for: KnowChainId.westend)
     }
 
     func testDecodeLocalEncodedValidatorsForKusama() {
-        performTestDecodeLocalEncodedValidators(for: Chain.kusama.genesisHash)
+        performTestDecodeLocalEncodedValidators(for: KnowChainId.kusama)
     }
 
     func testFetchingLocalEncodedValidatorsForKusama() {
         do {
             let storageFacade = SubstrateDataStorageFacade.shared
-            let chainId = Chain.kusama.genesisHash
+            let chainId = KnowChainId.kusama
 
             let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
@@ -140,7 +134,7 @@ class CalculatorServiceTests: XCTestCase {
 
     func testFetchingLocalElectedValidatorsForKusama() {
         let storageFacade = SubstrateDataStorageFacade.shared
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
 
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
@@ -157,7 +151,7 @@ class CalculatorServiceTests: XCTestCase {
     }
 
     func testCoderFactoryFetchForKusama() {
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
 
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(
             with: SubstrateDataStorageFacade.shared
@@ -173,7 +167,7 @@ class CalculatorServiceTests: XCTestCase {
     }
 
     func testCoderFactoryFetchAndActiveEraForKusama() {
-        let chainId = Chain.kusama.genesisHash
+        let chainId = KnowChainId.kusama
         let facade = SubstrateDataStorageFacade.shared
 
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(
@@ -192,7 +186,7 @@ class CalculatorServiceTests: XCTestCase {
 
     func testValidatorPrefsFetchForKusama() {
         do {
-            let chainId = Chain.kusama.genesisHash
+            let chainId = KnowChainId.kusama
             let storageFacade = SubstrateDataStorageFacade.shared
 
             let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
@@ -238,7 +232,7 @@ class CalculatorServiceTests: XCTestCase {
     func testKusamaCalculatorSetupWithCacheAlternative() throws {
         measure {
             do {
-                let chainId = Chain.kusama.genesisHash
+                let chainId = KnowChainId.kusama
                 let storageFacade = SubstrateDataStorageFacade.shared
 
                 let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
@@ -280,7 +274,7 @@ class CalculatorServiceTests: XCTestCase {
     func testSubscriptionToEra() {
         measure {
             do {
-                let chainId = Chain.kusama.genesisHash
+                let chainId = KnowChainId.kusama
                 let storageFacade = SubstrateDataStorageFacade.shared
                 let syncQueue = DispatchQueue(label: "test.\(UUID().uuidString)")
 
@@ -569,12 +563,18 @@ class CalculatorServiceTests: XCTestCase {
 
     private func performServiceTest(
         for chainId: ChainModel.Id,
-        storageFacade: StorageFacadeProtocol,
-        assetPrecision: Int16
+        storageFacade: StorageFacadeProtocol
     ) throws {
         // given
 
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+
+        guard let chain = chainRegistry.getChain(for: chainId), let asset = chain.utilityAsset() else {
+            throw ChainRegistryError.noChain(chainId)
+        }
+
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+
         let operationQueue = OperationQueue()
 
         let chainItemRepository = SubstrateRepositoryFactory(
@@ -606,11 +606,18 @@ class CalculatorServiceTests: XCTestCase {
         let validatorService = try serviceFactory.createEraValidatorService(for: chainId)
         validatorService.setup()
 
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
+            chainRegistry: chainRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManager(),
+            logger: Logger.shared
+        )
+
         let calculatorService = try serviceFactory.createRewardCalculatorService(
-            for: chainId,
+            for: chainAsset,
             stakingType: .relaychain,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             stakingDurationFactory: BabeStakingDurationFactory(),
-            assetPrecision: assetPrecision,
             validatorService: validatorService
         )
 

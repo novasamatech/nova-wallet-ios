@@ -10,10 +10,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         sharedState.stakingLocalSubscriptionFactory
     }
 
-    var stakingAnalyticsLocalSubscriptionFactory: StakingAnalyticsLocalSubscriptionFactoryProtocol {
-        sharedState.stakingAnalyticsLocalSubscriptionFactory
-    }
-
     var stakingSettings: StakingAssetSettings { sharedState.settings }
 
     let selectedWalletSettings: SelectedWalletSettings
@@ -40,7 +36,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     private var eraCompletionTimeCancellable: CancellableCall?
     private var rewardCalculatorCancellable: CancellableCall?
 
-    var priceProvider: AnySingleValueProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
     var stashControllerProvider: StreamableProvider<StashItem>?
     var validatorProvider: AnyDataProvider<DecodedValidator>?
@@ -56,7 +52,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
     var bagListSizeProvider: AnyDataProvider<DecodedU32>?
     var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
-    var rewardAnalyticsProvider: AnySingleValueProvider<[SubqueryRewardItemData]>?
 
     init(
         selectedWalletSettings: SelectedWalletSettings,

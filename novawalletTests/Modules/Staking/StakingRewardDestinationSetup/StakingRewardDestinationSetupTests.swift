@@ -147,7 +147,12 @@ class StakingRewardDestinationSetupTests: XCTestCase {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+14))
 
         let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: 0.1,
+                currencyId: Currency.usd.id
+            )
         )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(

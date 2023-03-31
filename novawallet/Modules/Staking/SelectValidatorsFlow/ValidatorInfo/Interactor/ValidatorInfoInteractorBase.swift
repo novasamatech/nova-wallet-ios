@@ -6,7 +6,7 @@ class ValidatorInfoInteractorBase: ValidatorInfoInteractorInputProtocol {
     let selectedAsset: AssetModel
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     init(
         selectedAsset: AssetModel,
