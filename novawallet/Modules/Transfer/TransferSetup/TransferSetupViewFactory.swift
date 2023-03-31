@@ -13,7 +13,10 @@ struct TransferSetupViewFactory {
             return nil
         }
 
-        let interactor = createInteractor(for: chainAsset)
+        guard let interactor = createInteractor(for: chainAsset) else {
+            return nil
+        }
+
         let initPresenterState = TransferSetupInputState(recepient: recepient?.address, amount: nil)
 
         let presenterFactory = createPresenterFactory(for: wallet, commandFactory: commandFactory)
@@ -24,6 +27,7 @@ struct TransferSetupViewFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+        let viewModelFactory = Web3NameViewModelFactory(displayAddressViewModelFactory: DisplayAddressViewModelFactory())
 
         let presenter = TransferSetupPresenter(
             interactor: interactor,
@@ -33,6 +37,7 @@ struct TransferSetupViewFactory {
             childPresenterFactory: presenterFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
+            web3NameViewModelFactory: viewModelFactory,
             logger: Logger.shared
         )
 
@@ -69,24 +74,47 @@ struct TransferSetupViewFactory {
 
     private static func createInteractor(
         for chainAsset: ChainAsset
-    ) -> TransferSetupInteractor {
+    ) -> TransferSetupInteractor? {
+        let chainId = KnowChainId.kilt
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
+        let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
+            for: slip44CoinsUrl
+        )
+
+        guard let connection = chainRegistry.getConnection(for: chainId),
+              let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            return nil
+        }
         let syncService = XcmTransfersSyncService(
             remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
-
-        let chainsStore = ChainsStore(chainRegistry: ChainRegistryFacade.sharedRegistry)
+        let chainsStore = ChainsStore(chainRegistry: chainRegistry)
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(
             for: nil,
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
+        let operationQueue = OperationQueue()
+        let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
+        let web3NameService = Web3NameService(
+            slip44CoinsProvider: slip44CoinsProvider,
+            web3NamesOperationFactory: web3NamesOperationFactory,
+            runtimeService: runtimeService,
+            connection: connection,
+            kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepository(),
+            operationQueue: operationQueue
+        )
+
         return TransferSetupInteractor(
             originChainAssetId: chainAsset.chainAssetId,
             xcmTransfersSyncService: syncService,
             chainsStore: chainsStore,
             accountRepository: accountRepository,
-            operationManager: OperationManager()
+            web3NamesService: web3NameService,
+            operationManager: OperationManager(operationQueue: operationQueue)
         )
     }
 }
