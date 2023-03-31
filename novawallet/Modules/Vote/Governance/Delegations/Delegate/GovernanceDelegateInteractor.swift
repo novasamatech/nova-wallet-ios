@@ -21,7 +21,7 @@ class GovernanceDelegateInteractor: AnyCancellableCleaning {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
 

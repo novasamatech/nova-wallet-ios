@@ -6,7 +6,7 @@ class WalletBaseManageWireframe: WalletsListWireframe {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: onboarding.controller)
+        let navigationController = NovaNavigationController(rootViewController: onboarding.controller)
 
         let rootAnimator = RootControllerAnimationCoordinator()
         rootAnimator.animateTransition(to: navigationController)

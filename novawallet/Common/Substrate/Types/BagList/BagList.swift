@@ -33,4 +33,9 @@ enum BagList {
         let factor = scoreFactor(for: totalIssuance)
         return scoreOf(stake: stake, given: factor)
     }
+
+    static func stake(score: Score, totalIssuance: BigUInt) -> BigUInt {
+        let factor = scoreFactor(for: totalIssuance)
+        return factor * score
+    }
 }

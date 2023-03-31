@@ -14,7 +14,7 @@ final class StakingRewardPayoutsInteractor {
     private let operationManager: OperationManagerProtocol
     private let logger: LoggerProtocol?
 
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
     private var payoutOperationsWrapper: CompoundOperationWrapper<PayoutsInfo>?
 

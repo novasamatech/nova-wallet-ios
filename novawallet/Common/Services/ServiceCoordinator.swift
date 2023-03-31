@@ -13,6 +13,7 @@ final class ServiceCoordinator {
     let accountInfoService: AccountInfoUpdatingServiceProtocol
     let assetsService: AssetsUpdatingServiceProtocol
     let evmAssetsService: AssetsUpdatingServiceProtocol
+    let evmNativeService: AssetsUpdatingServiceProtocol
     let githubPhishingService: ApplicationServiceProtocol
 
     init(
@@ -20,22 +21,25 @@ final class ServiceCoordinator {
         accountInfoService: AccountInfoUpdatingServiceProtocol,
         assetsService: AssetsUpdatingServiceProtocol,
         evmAssetsService: AssetsUpdatingServiceProtocol,
+        evmNativeService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
         self.assetsService = assetsService
         self.evmAssetsService = evmAssetsService
+        self.evmNativeService = evmNativeService
         self.githubPhishingService = githubPhishingService
     }
 }
 
 extension ServiceCoordinator: ServiceCoordinatorProtocol {
     func updateOnAccountChange() {
-        if let seletedMetaAccount = walletSettings.value {
-            accountInfoService.update(selectedMetaAccount: seletedMetaAccount)
-            assetsService.update(selectedMetaAccount: seletedMetaAccount)
-            evmAssetsService.update(selectedMetaAccount: seletedMetaAccount)
+        if let selectedMetaAccount = walletSettings.value {
+            accountInfoService.update(selectedMetaAccount: selectedMetaAccount)
+            assetsService.update(selectedMetaAccount: selectedMetaAccount)
+            evmAssetsService.update(selectedMetaAccount: selectedMetaAccount)
+            evmNativeService.update(selectedMetaAccount: selectedMetaAccount)
         }
     }
 
@@ -44,6 +48,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         accountInfoService.setup()
         assetsService.setup()
         evmAssetsService.setup()
+        evmNativeService.setup()
     }
 
     func throttle() {
@@ -51,6 +56,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         accountInfoService.throttle()
         assetsService.throttle()
         evmAssetsService.throttle()
+        evmNativeService.throttle()
     }
 }
 
@@ -115,11 +121,20 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let evmNativeService = EvmNativeBalanceUpdatingService(
+            selectedAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
+            remoteSubscriptionService: evmWalletRemoteSubscription,
+            transactionHistoryUpdaterFactory: evmTransactionHistoryUpdaterFactory,
+            logger: logger
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
             assetsService: assetsService,
             evmAssetsService: evmAssetsService,
+            evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService
         )
     }

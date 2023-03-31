@@ -15,7 +15,7 @@ final class GovernanceRemoveVotesConfirmInteractor: AnyProviderAutoCleaning {
     let signer: SigningWrapperProtocol
 
     private var assetBalanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
 
     init(
         selectedAccount: ChainAccountResponse,

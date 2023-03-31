@@ -40,7 +40,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var delegationsCancellable: CancellableCall?
     var durationCancellable: CancellableCall?
 
-    var priceProvider: AnySingleValueProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
     var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?

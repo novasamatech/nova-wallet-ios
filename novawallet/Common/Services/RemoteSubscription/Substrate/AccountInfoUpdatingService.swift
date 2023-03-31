@@ -95,7 +95,7 @@ final class AccountInfoUpdatingService {
         let hasSubscription = checkSubscription(for: chain.chainId)
 
         guard let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
-            logger.warning("Native asset not found for chain \(chain.chainId)")
+            logger.debug("No substrate native asset for chain: \(chain.name) \(chain.chainId)")
 
             if hasSubscription {
                 removeSubscription(for: chain.chainId)

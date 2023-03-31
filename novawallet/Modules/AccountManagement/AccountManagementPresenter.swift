@@ -1,5 +1,4 @@
 import Foundation
-import RobinHood
 import IrohaCrypto
 import SoraFoundation
 
@@ -314,7 +313,7 @@ final class AccountManagementPresenter {
         chain.explorers?.compactMap { explorer in
             guard
                 let urlTemplate = explorer.account,
-                let url = try? RobinHood.EndpointBuilder(urlTemplate: urlTemplate)
+                let url = try? URLBuilder(urlTemplate: urlTemplate)
                 .buildParameterURL(address) else {
                 return nil
             }
