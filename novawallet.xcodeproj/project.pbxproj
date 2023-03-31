@@ -2619,6 +2619,14 @@
 		8846F73129D6BE5000B8B776 /* Data+base58BTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73029D6BE5000B8B776 /* Data+base58BTC.swift */; };
 		8846F73329D6BEEA00B8B776 /* Data+base64url.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73229D6BEEA00B8B776 /* Data+base64url.swift */; };
 		8846F73529D6C7B600B8B776 /* multibase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73429D6C7B600B8B776 /* multibase.swift */; };
+		8846F73829D6F57700B8B776 /* MultibaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73729D6F57700B8B776 /* MultibaseTests.swift */; };
+		8846F73A29D747F200B8B776 /* Data+base32pad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73929D747F200B8B776 /* Data+base32pad.swift */; };
+		8846F73C29D754FB00B8B776 /* Data+base32hexPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73B29D754FB00B8B776 /* Data+base32hexPad.swift */; };
+		8846F73E29D7561100B8B776 /* Data+base36.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73D29D7561100B8B776 /* Data+base36.swift */; };
+		8846F74029D757FE00B8B776 /* Data+base64pad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F73F29D757FD00B8B776 /* Data+base64pad.swift */; };
+		8846F74229D759DD00B8B776 /* Data+proquint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F74129D759DC00B8B776 /* Data+proquint.swift */; };
+		8846F74429D75AAC00B8B776 /* Data+base256emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F74329D75AAC00B8B776 /* Data+base256emoji.swift */; };
+		8846F74629D75B7E00B8B776 /* Data+base32z.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846F74529D75B7E00B8B776 /* Data+base32z.swift */; };
 		8846FFA629C850CE00796A7E /* AsciiDataString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8846FFA529C850CE00796A7E /* AsciiDataString.swift */; };
 		8849AD5D29C3088800F4F7FF /* Caip19ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD5C29C3088800F4F7FF /* Caip19ParserTests.swift */; };
 		8849AD6029C3526700F4F7FF /* Caip2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD5F29C3526700F4F7FF /* Caip2.swift */; };
@@ -6042,6 +6050,14 @@
 		8846F73029D6BE5000B8B776 /* Data+base58BTC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base58BTC.swift"; sourceTree = "<group>"; };
 		8846F73229D6BEEA00B8B776 /* Data+base64url.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base64url.swift"; sourceTree = "<group>"; };
 		8846F73429D6C7B600B8B776 /* multibase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = multibase.swift; sourceTree = "<group>"; };
+		8846F73729D6F57700B8B776 /* MultibaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultibaseTests.swift; sourceTree = "<group>"; };
+		8846F73929D747F200B8B776 /* Data+base32pad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base32pad.swift"; sourceTree = "<group>"; };
+		8846F73B29D754FB00B8B776 /* Data+base32hexPad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base32hexPad.swift"; sourceTree = "<group>"; };
+		8846F73D29D7561100B8B776 /* Data+base36.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base36.swift"; sourceTree = "<group>"; };
+		8846F73F29D757FD00B8B776 /* Data+base64pad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base64pad.swift"; sourceTree = "<group>"; };
+		8846F74129D759DC00B8B776 /* Data+proquint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+proquint.swift"; sourceTree = "<group>"; };
+		8846F74329D75AAC00B8B776 /* Data+base256emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base256emoji.swift"; sourceTree = "<group>"; };
+		8846F74529D75B7E00B8B776 /* Data+base32z.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+base32z.swift"; sourceTree = "<group>"; };
 		8846FFA529C850CE00796A7E /* AsciiDataString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsciiDataString.swift; sourceTree = "<group>"; };
 		8849AD5C29C3088800F4F7FF /* Caip19ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Caip19ParserTests.swift; sourceTree = "<group>"; };
 		8849AD5F29C3526700F4F7FF /* Caip2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Caip2.swift; sourceTree = "<group>"; };
@@ -8404,6 +8420,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				8846F73629D6F4FB00B8B776 /* Multibase */,
 				844DAAE228AD24E0008E11DA /* Ledger */,
 				8836AF4228AA290300A94EDD /* Currency */,
 				8489EDD8264DE40800FF997E /* Migration */,
@@ -14275,10 +14292,25 @@
 				8846F72629D6BAD700B8B776 /* Data+base10.swift */,
 				8846F72829D6BB5300B8B776 /* Data+base16.swift */,
 				8846F72A29D6BC1300B8B776 /* Data+base32.swift */,
+				8846F74529D75B7E00B8B776 /* Data+base32z.swift */,
+				8846F73D29D7561100B8B776 /* Data+base36.swift */,
 				8846F72C29D6BC7600B8B776 /* Data+base32hex.swift */,
+				8846F73929D747F200B8B776 /* Data+base32pad.swift */,
+				8846F73F29D757FD00B8B776 /* Data+base64pad.swift */,
+				8846F73B29D754FB00B8B776 /* Data+base32hexPad.swift */,
 				8846F72E29D6BDC400B8B776 /* Data+baset58flickr.swift */,
+				8846F74129D759DC00B8B776 /* Data+proquint.swift */,
 				8846F73029D6BE5000B8B776 /* Data+base58BTC.swift */,
 				8846F73229D6BEEA00B8B776 /* Data+base64url.swift */,
+				8846F74329D75AAC00B8B776 /* Data+base256emoji.swift */,
+			);
+			path = Multibase;
+			sourceTree = "<group>";
+		};
+		8846F73629D6F4FB00B8B776 /* Multibase */ = {
+			isa = PBXGroup;
+			children = (
+				8846F73729D6F57700B8B776 /* MultibaseTests.swift */,
 			);
 			path = Multibase;
 			sourceTree = "<group>";
@@ -16766,6 +16798,7 @@
 				F4B39C66273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift in Sources */,
 				841E5559282E6A7700C8438F /* ParaStkDurationOperationFactory.swift in Sources */,
 				841E553E282D469F00C8438F /* ParachainStakingDelegator.swift in Sources */,
+				8846F74429D75AAC00B8B776 /* Data+base256emoji.swift in Sources */,
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
 				843612C92790109100DC739E /* SigningWrapperFactory.swift in Sources */,
 				88FF5C7F29C8364500D1CB5D /* Caip2+ParseError.swift in Sources */,
@@ -17272,6 +17305,7 @@
 				844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */,
 				849014B924AA87E3008F705E /* PinSetupViewController.swift in Sources */,
 				84F98D8A25E3DD3F0040418E /* StorageCodingPath.swift in Sources */,
+				8846F74229D759DD00B8B776 /* Data+proquint.swift in Sources */,
 				F4D6FF4D26B3EB65002313AF /* AnalyticsHistoryCell.swift in Sources */,
 				8814E858297E35D600A722FF /* GoveranaceDelegatePicker.swift in Sources */,
 				84F43C0F25DF016600AEDA56 /* DispatchQueueHelper.swift in Sources */,
@@ -17750,6 +17784,7 @@
 				8467FCFC24E5C3BD005D486C /* URLHandlingService.swift in Sources */,
 				84FB1F6F2526AA6800E0242B /* TransactionHistoryViewModelFactory.swift in Sources */,
 				F40966BA26B297D6008CD244 /* AnalyticsSummaryRewardViewModel.swift in Sources */,
+				8846F73A29D747F200B8B776 /* Data+base32pad.swift in Sources */,
 				8428228D289B2D5300163031 /* BaseUsernameSetupPresenter.swift in Sources */,
 				842A736427DB31A3006EE1EA /* OperationRewardModel.swift in Sources */,
 				8487584727F1816300495306 /* QRExtractionService.swift in Sources */,
@@ -17881,6 +17916,7 @@
 				F43A597B26D53775005E973D /* AnalyticsBaseViewController.swift in Sources */,
 				84D8F16324D8194100AF43E9 /* TitleWithSubtitleTableViewCell.swift in Sources */,
 				F462B35C260C86880005AB01 /* ViewHolder.swift in Sources */,
+				8846F73E29D7561100B8B776 /* Data+base36.swift in Sources */,
 				84948C36287DD1C800E6DD3E /* NftListRMRKV2ViewModel.swift in Sources */,
 				84C515FB26D84F8C000DBA45 /* AccountImportWrapper.swift in Sources */,
 				849014DE24AA8F60008F705E /* MainTabBarInteractor.swift in Sources */,
@@ -18122,6 +18158,7 @@
 				84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */,
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
 				843461E8290BF14400379936 /* ReferendumsSorting.swift in Sources */,
+				8846F74029D757FE00B8B776 /* Data+base64pad.swift in Sources */,
 				843910C3253F39B100E3C217 /* WalletNetworkFacade+Storage.swift in Sources */,
 				84EC2D16276B92CB009B0BE1 /* DAppScriptResponse.swift in Sources */,
 				F43A596A26D520E0005E973D /* EmptyStateViewCell.swift in Sources */,
@@ -19650,6 +19687,7 @@
 				F3BB50CCA38C9B47FDBEDF53 /* ReferendumVotersInteractor.swift in Sources */,
 				4D44B178F1F57FD8607E8095 /* VotesViewLayout.swift in Sources */,
 				89724EA9F732D0C967253597 /* ReferendumOnChainVotersViewFactory.swift in Sources */,
+				8846F73C29D754FB00B8B776 /* Data+base32hexPad.swift in Sources */,
 				1F496969FEE3E160BABDAC66 /* ReferendumVoteSetupProtocols.swift in Sources */,
 				F1BED07F67119E1BD052952A /* ReferendumVoteSetupWireframe.swift in Sources */,
 				7E2800371BE3B166F3475E90 /* ReferendumVoteSetupPresenter.swift in Sources */,
@@ -19835,6 +19873,7 @@
 				7C98D0A579FDC879CC5DBF2F /* GovernanceDelegateSearchInteractor.swift in Sources */,
 				8C68C4CFAF7CB9312C86D5B8 /* GovernanceDelegateSearchViewController.swift in Sources */,
 				F0C3DCA3CD4F850C16406716 /* GovernanceDelegateSearchViewFactory.swift in Sources */,
+				8846F74629D75B7E00B8B776 /* Data+base32z.swift in Sources */,
 				C98A02D4DEAC6E4CACB9E47E /* StakingRebagConfirmProtocols.swift in Sources */,
 				B09F155D14D146377FB2952A /* StakingRebagConfirmWireframe.swift in Sources */,
 				29404996F9C572C11738632F /* StakingRebagConfirmPresenter.swift in Sources */,
@@ -19873,6 +19912,7 @@
 				84B7C73C289BFA79001A3566 /* StakingRewardPayoutsTests.swift in Sources */,
 				84B7C747289BFA79001A3566 /* AccountManagementTests.swift in Sources */,
 				843612CB279011B400DC739E /* SigningWrapperFactoryStub.swift in Sources */,
+				8846F73829D6F57700B8B776 /* MultibaseTests.swift in Sources */,
 				84300B2F26C1112300D64514 /* ConnectionPoolTests.swift in Sources */,
 				84B7C72A289BFA79001A3566 /* RecommendationsComposerTests.swift in Sources */,
 				84B7C73B289BFA79001A3566 /* StakingUnbondConfirmTests.swift in Sources */,
