@@ -45,6 +45,7 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func didTapOnYourWallets()
     func complete(recipient: String)
     func showOptions(for address: AccountAddress)
+    func changeRecipient(_ recipient: String?)
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {

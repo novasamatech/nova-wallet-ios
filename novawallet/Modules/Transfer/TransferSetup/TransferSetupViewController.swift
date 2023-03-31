@@ -82,6 +82,12 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
+        rootView.recepientInputView.addTarget(
+            self,
+            action: #selector(actionRecipientChanged),
+            for: .editingChanged
+        )
+
         rootView.receipientKiltView.delegate = self
     }
 
@@ -196,6 +202,10 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
     @objc func actionYourWallets() {
         presenter.didTapOnYourWallets()
+    }
+
+    @objc func actionRecipientChanged(sender: AccountInputView) {
+        presenter.changeRecipient(sender.textField.text)
     }
 }
 
