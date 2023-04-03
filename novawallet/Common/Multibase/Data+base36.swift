@@ -8,7 +8,7 @@ extension String {
         var result = BigUInt(0)
         var power = BigUInt(1)
 
-        for char in reversed() {
+        for char in uppercased().reversed() {
             guard let index = charset.firstIndex(of: char) else {
                 return nil
             }
