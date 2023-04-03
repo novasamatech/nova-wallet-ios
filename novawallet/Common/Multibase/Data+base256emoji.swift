@@ -2,36 +2,28 @@ import Foundation
 
 extension String {
     func base256emojiDecodedData() -> Data? {
-        // Split the string into an array of Unicode scalar values
-        let scalars = unicodeScalars
-
-        // Create a mutable array to hold the bytes
-        var bytes = [UInt8]()
-
-        // Loop through each scalar value in the array
-        for scalar in scalars {
-            // Check that the scalar represents a valid emoji character
-            guard let codepoint = scalar.value.base256EmojiCodepoint else {
-                return nil
-            }
-
-            // Append the decoded byte to the array
-            bytes.append(codepoint)
+        guard let data = data(using: .utf8),
+              let valueUniCode = NSString(
+                  data: data,
+                  encoding: String.Encoding.nonLossyASCII.rawValue
+              ) else {
+            return nil
         }
 
-        // Return the decoded data
-        return Data(bytes: bytes)
+        return valueUniCode.data(using: String.Encoding.utf8.rawValue)
     }
 }
 
 extension UInt32 {
-    var base256EmojiCodepoint: UInt8? {
-        // Check that the value is in the range of valid codepoints
-        guard self >= 0x1F600, self <= 0x1F64F else {
-            return nil
+    func toBase256() -> [UInt8] {
+        // Convert the UInt32 value to a byte array in base256
+        var result = [UInt8]()
+        var value = self
+        while value > 0 {
+            let byte = UInt8(value & 0xFF)
+            result.insert(byte, at: 0)
+            value >>= 8
         }
-
-        // Convert the value to a byte by subtracting the base codepoint
-        return UInt8(self - 0x1F600)
+        return result
     }
 }

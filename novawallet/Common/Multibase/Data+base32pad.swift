@@ -1,50 +1,43 @@
 import Foundation
 
 extension String {
+    private static let base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567="
+
     func base32padDecodedData() -> Data? {
-        let base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
-        let paddingChar = "="
-        let paddingLength = count % 8
-        let chunkLength = 8
-        var currentIndex = startIndex
-        var result = Data()
+        // Check that the number of characters is a multiple of 8
+        guard count % 8 == 0 else {
+            return nil
+        }
 
-        while currentIndex < endIndex {
-            var bits: UInt64 = 0
-            var bitCount: UInt8 = 0
-
-            for _ in 0 ..< chunkLength {
-                guard currentIndex < endIndex else { break }
-
-                let char = Character(self[currentIndex].uppercased())
-                currentIndex = index(after: currentIndex)
-
-                guard let charIndex = base32Alphabet.firstIndex(of: char) else {
-                    return nil
-                }
-
-                let charValue = UInt64(base32Alphabet.position(charIndex))
-
-                bits <<= 5
-                bits |= charValue
-                bitCount += 5
+        // Convert the string to a sequence of base32 characters
+        let base32Chars = uppercased().filter { char in
+            // Ignore any invalid characters
+            guard let index = String.base32Alphabet.firstIndex(of: char) else {
+                return false
             }
+            // Ignore padding characters
+            return index != String.base32Alphabet.index(of: "=")!
+        }
 
-            let byteCount = bitCount / 8
-
-            for _ in 0 ..< byteCount {
-                let byte = UInt8((bits >> (bitCount - 8)) & 0xFF)
-                result.append(byte)
-                bitCount -= 8
+        // Decode the base32 data
+        var data = Data()
+        var bits = UInt64()
+        var bitsRemaining = 0
+        for char in base32Chars {
+            guard let index = String.base32Alphabet.firstIndex(of: char) else {
+                return nil
+            }
+            let value = UInt64(String.base32Alphabet.position(index))
+            bits <<= 5
+            bits |= value
+            bitsRemaining += 5
+            if bitsRemaining >= 8 {
+                let byte = UInt8((bits >> (bitsRemaining - 8)) & 0xFF)
+                data.append(byte)
+                bitsRemaining -= 8
             }
         }
 
-        if paddingLength > 0 {
-            let padding = String(repeating: paddingChar, count: 8 - paddingLength)
-            let encodedPadding = Data(padding.utf8)
-            result = result.dropLast(Int(paddingLength)) + encodedPadding
-        }
-
-        return result
+        return data
     }
 }
