@@ -32,7 +32,8 @@ enum ChainModelGenerator {
             let node = ChainNodeModel(
                 url: "wss://node.io/\(chainId)",
                 name: chainId,
-                order: 0
+                order: 0,
+                features: nil
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -75,6 +76,7 @@ enum ChainModelGenerator {
                 name: String(chainId.reversed()),
                 assets: [asset],
                 nodes: [node],
+                nodeSwitchStrategy: .roundRobin,
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
@@ -112,7 +114,8 @@ enum ChainModelGenerator {
 
             let node = RemoteChainNodeModel(
                 url: "wss://node.io/\(chainId)",
-                name: chainId
+                name: chainId,
+                features: nil
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -153,6 +156,7 @@ enum ChainModelGenerator {
                 name: String(chainId.reversed()),
                 assets: [asset],
                 nodes: [node],
+                nodeSelectionStrategy: nil,
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
@@ -208,7 +212,8 @@ enum ChainModelGenerator {
         let node = ChainNodeModel(
             url: urlString,
             name: UUID().uuidString,
-            order: 0
+            order: 0,
+            features: nil
         )
 
         var options: [ChainOptions] = []
@@ -242,6 +247,7 @@ enum ChainModelGenerator {
             name: UUID().uuidString,
             assets: Set(assets),
             nodes: [node],
+            nodeSwitchStrategy: .roundRobin,
             addressPrefix: addressPrefix,
             types: nil,
             icon: Constants.dummyURL,
