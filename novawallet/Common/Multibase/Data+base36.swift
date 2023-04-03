@@ -8,6 +8,8 @@ extension String {
         var result = BigUInt(0)
         var power = BigUInt(1)
 
+        let leadingZeroCount = max(prefix(while: { $0 == "0" }).count, 0)
+
         for char in uppercased().reversed() {
             guard let index = charset.firstIndex(of: char) else {
                 return nil
@@ -16,11 +18,10 @@ extension String {
             power *= base
         }
 
-        var data = result.serialize()
-        while !data.isEmpty, data[0] == 0 {
-            data.remove(at: 0)
+        var bytes = result.serialize().drop(while: { $0 == 0 })
+        if leadingZeroCount > 0 {
+            bytes = Array(repeating: 0, count: leadingZeroCount) + bytes
         }
-
-        return data.isEmpty ? Data([0]) : data
+        return bytes
     }
 }

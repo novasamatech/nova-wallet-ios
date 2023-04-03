@@ -17,6 +17,9 @@ extension String {
         }
 
         let bytes = answer.serialize()
-        return Data(Array(byteString.prefix { idx in idx == alphabet[0] }) + bytes)
+        // For every leading one on the input we need to add a leading 0 on the output
+        let leadingOnes = byteString.prefix(while: { value in value == alphabet[0] })
+        let leadingZeros: [UInt8] = Array(repeating: 0, count: leadingOnes.count)
+        return leadingZeros + bytes
     }
 }

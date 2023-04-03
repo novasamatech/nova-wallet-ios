@@ -2,14 +2,7 @@ import Foundation
 
 extension String {
     func base8DecodedData() -> Data? {
-        let paddingChar = "0"
-        let paddingLength = count % 3
-        var base8 = self
-        if paddingLength > 0 {
-            let padding = String(repeating: paddingChar, count: 3 - paddingLength)
-            base8.insert(contentsOf: padding, at: base8.startIndex)
-        }
-        guard let data = base8.data(using: .utf8) else { return nil }
+        guard let data = data(using: .utf8) else { return nil }
         var result = ""
         var buffer: UInt64 = 0
         var bitsLeft: UInt64 = 0

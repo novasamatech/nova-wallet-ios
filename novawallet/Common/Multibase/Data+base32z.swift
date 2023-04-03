@@ -19,11 +19,6 @@ extension String {
             }
         }
 
-        if bitsRemaining > 0 {
-            let finalByte = UInt8(truncatingIfNeeded: bits << (8 - bitsRemaining))
-            decodedBytes.append(finalByte)
-        }
-
         return Data(decodedBytes)
     }
 }
