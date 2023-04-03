@@ -64,8 +64,8 @@ extension Data {
         self = decodedData
     }
 
-    init?(base64padEncoded input: String) {
-        guard let decodedData = input.base64padDecodedData() else {
+    init?(base64Encoded input: String, padding _: Bool) {
+        guard let decodedData = input.base64padDecodedData(padding: true) else {
             return nil
         }
         self = decodedData
