@@ -24,9 +24,12 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         let urls = extractNodeUrls(from: chain)
 
         let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
+        let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
+
         guard
             let connection = WebSocketEngine(
                 urls: urls,
+                customNodeSwitcher: nodeSwitcher,
                 healthCheckMethod: healthCheckMethod,
                 name: chain.name,
                 logger: logger
