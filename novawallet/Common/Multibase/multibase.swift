@@ -59,7 +59,7 @@ enum MultibaseEncoding: Character {
         case .base58flickr:
             return Data(base58FlickrEncoded: input)
         case .base64:
-            return Data(base64Encoded: input)
+            return Data(base64padEncoded: input)
         case .base64url:
             return Data(base64UrlEncoded: input)
         case .base16upper:
