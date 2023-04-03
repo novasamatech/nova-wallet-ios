@@ -2247,6 +2247,7 @@
 		84DBEA56265ED62700FDF73C /* BaseErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA55265ED62700FDF73C /* BaseErrorPresentable.swift */; };
 		84DBEA5E265EDAD300FDF73C /* BaseDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA5D265EDAD300FDF73C /* BaseDataValidatorFactory.swift */; };
 		84DBEA7729DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA7629DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift */; };
+		84DBEA7929DB09BB00A504A7 /* ConnectionNodeSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA7829DB09BB00A504A7 /* ConnectionNodeSchema.swift */; };
 		84DC3CE12795DEBF0038E2ED /* SubqueryHistoryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84412EE026DAC3300049577A /* SubqueryHistoryOperationFactory.swift */; };
 		84DC3CE32795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC3CE22795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift */; };
 		84DC3CE52796768A0038E2ED /* SubqueryHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */; };
@@ -5593,6 +5594,7 @@
 		84DBEA55265ED62700FDF73C /* BaseErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseErrorPresentable.swift; sourceTree = "<group>"; };
 		84DBEA5D265EDAD300FDF73C /* BaseDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseDataValidatorFactory.swift; sourceTree = "<group>"; };
 		84DBEA7629DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionNodeSwitchCode.swift; sourceTree = "<group>"; };
+		84DBEA7829DB09BB00A504A7 /* ConnectionNodeSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionNodeSchema.swift; sourceTree = "<group>"; };
 		84DC3CE22795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubqueryHistoryOperationFactory+RemoteHistory.swift"; sourceTree = "<group>"; };
 		84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryHistoryContext.swift; sourceTree = "<group>"; };
 		84DC3CE6279679230038E2ED /* SubqueryHistory+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubqueryHistory+Wallet.swift"; sourceTree = "<group>"; };
@@ -8001,6 +8003,7 @@
 				846A68282746234000D1A47A /* ChainConnection.swift */,
 				840D627429CB46E900D5E894 /* ConnectionApiKeys.swift */,
 				84DBEA7629DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift */,
+				84DBEA7829DB09BB00A504A7 /* ConnectionNodeSchema.swift */,
 			);
 			path = ConnectionPool;
 			sourceTree = "<group>";
@@ -16736,6 +16739,7 @@
 				849ABE63262785F200011A2A /* ControllerMapper.swift in Sources */,
 				841BFD6727BA4865000A16CE /* EthereumSerializationFactory.swift in Sources */,
 				8467FD0224E5D2D9005D486C /* OnboardingMainInteractor.swift in Sources */,
+				84DBEA7929DB09BB00A504A7 /* ConnectionNodeSchema.swift in Sources */,
 				F4C086BD26D114F700716AEC /* SubqueryEraValidatorInfo.swift in Sources */,
 				8467FD5824EFD5C2005D486C /* CDAccountItem+CoreDataDecodable.swift in Sources */,
 				84939B1826E1690D000111DA /* TreasuryDepositEvent.swift in Sources */,

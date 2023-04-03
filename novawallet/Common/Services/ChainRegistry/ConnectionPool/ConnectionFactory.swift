@@ -60,6 +60,11 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         }
 
         return nodes.compactMap { node in
+            // use only websocket nodes
+            guard node.url.hasPrefix(ConnectionNodeSchema.wss) else {
+                return nil
+            }
+
             let builder = URLBuilder(urlTemplate: node.url)
 
             return try? builder.buildBy { apiKeyType in
