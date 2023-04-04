@@ -707,6 +707,8 @@
 "transfer.setup.error.w3n.invalidAddress.subtitle" = "Получатель должен быть корректным адресом в %@ сети";
 "transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Ошибка при попытке получить w3n";
 "transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "KILT w3n сервисы недоступны. Повторите позже или введите KILT адрес самостоятельно";
+"transfer.setup.error.w3n.integrity.not.passed.title" = "Проверка целостности не удалась";
+"transfer.setup.error.w3n.integrity.not.passed.subtitle" = "Приложение Nova обнаружило проблему с целостностью информации об адресах %@. Пожалуйста, свяжитесь с владельцем %@, чтобы решить проблему целостности";
 "transfer.setup.kilt.addresses.title" = "%@ адреса для %@";
 "common.not.now" = "Не сейчас";
 "common.open.settings" = "Открыть настройки";

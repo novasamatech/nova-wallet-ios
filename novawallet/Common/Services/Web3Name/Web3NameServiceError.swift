@@ -9,6 +9,7 @@ enum Web3NameServiceError: Error {
     case slip44ListIsEmpty
     case kiltService(Error)
     case invalidAddress(Chain)
+    case integrityNotPassed(Name)
 }
 
 extension Web3NameServiceError: ErrorContentConvertible {
@@ -34,6 +35,14 @@ extension Web3NameServiceError: ErrorContentConvertible {
             title = strings.transferSetupErrorW3nInvalidAddressTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nInvalidAddressSubtitle(
                 chain,
+                preferredLanguages: locale?.rLanguages
+            )
+        case let .integrityNotPassed(name):
+            title = strings.transferSetupErrorW3nIntegrityNotPassedTitle(preferredLanguages: locale?.rLanguages)
+            let fullName = KiltW3n.fullName(for: name)
+            message = strings.transferSetupErrorW3nIntegrityNotPassedSubtitle(
+                fullName,
+                fullName,
                 preferredLanguages: locale?.rLanguages
             )
         default:
