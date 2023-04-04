@@ -13,7 +13,7 @@ final class Web3NameIntegrityVerifier: Web3NameIntegrityVerifierProtocol {
             return false
         }
 
-        let decodedExpectedHash = decodeMultibase(expectedHash)
+        let decodedExpectedHash = Data(multibaseEncoded: expectedHash)
 
         return decodedExpectedHash == actualHash
     }
