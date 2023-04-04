@@ -73,7 +73,8 @@ extension StakingStateViewModelFactory {
 
             let localizedString = LocalizableResource<String> { locale in
                 let minActiveAmount = localizedMinActiveAmount.value(for: locale)
-                let message = minActiveAmount.price.map { "\(minActiveAmount.amount) (\($0)" } ?? minActiveAmount.amount
+                let message = minActiveAmount.price.map { "\(minActiveAmount.amount) (\($0))" }
+                    ?? minActiveAmount.amount
 
                 return R.string.localizable.stakingInactiveCurrentMinimalStake(
                     message,

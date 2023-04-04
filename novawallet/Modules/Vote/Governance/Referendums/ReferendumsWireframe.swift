@@ -21,7 +21,7 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: selectionView.controller
         )
 

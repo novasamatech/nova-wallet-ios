@@ -81,6 +81,14 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             action: #selector(actionYourWallets),
             for: .touchUpInside
         )
+
+        rootView.recepientInputView.addTarget(
+            self,
+            action: #selector(actionRecipientChanged),
+            for: .editingChanged
+        )
+
+        rootView.receipientKiltView.delegate = self
     }
 
     private func setupLocalization() {
@@ -97,6 +105,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.recepientInputView.locale = selectedLocale
+        rootView.recepientInputView.delegate = self
         rootView.originFeeView.locale = selectedLocale
 
         rootView.networkContainerView.locale = selectedLocale
@@ -194,6 +203,10 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     @objc func actionYourWallets() {
         presenter.didTapOnYourWallets()
     }
+
+    @objc func actionRecipientChanged(sender: AccountInputView) {
+        presenter.changeRecipient(sender.textField.text)
+    }
 }
 
 extension TransferSetupViewController: TransferSetupViewProtocol {
@@ -283,6 +296,21 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
             for: .touchUpInside
         )
     }
+
+    func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>) {
+        rootView.receipientKiltView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveRecipientInputState(focused: Bool, empty: Bool?) {
+        if focused {
+            rootView.recepientInputView.textField.becomeFirstResponder()
+        } else {
+            rootView.recepientInputView.textField.resignFirstResponder()
+        }
+        if empty == true {
+            rootView.recepientInputView.actionClear()
+        }
+    }
 }
 
 extension TransferSetupViewController {
@@ -336,5 +364,26 @@ extension TransferSetupViewController: AmountInputAccessoryViewDelegate {
 
     func didSelectDone(on _: AmountInputAccessoryView) {
         rootView.amountInputView.textField.resignFirstResponder()
+    }
+}
+
+extension TransferSetupViewController: ReceipientKiltViewDelegate {
+    func didTapOnAccountList() {}
+
+    func didTapOnAccount(address: AccountAddress) {
+        presenter.showOptions(for: address)
+    }
+}
+
+extension TransferSetupViewController: AccountInputViewDelegate {
+    func accountInputViewWillStartEditing(_: AccountInputView) {}
+
+    func accountInputViewDidEndEditing(_ inputView: AccountInputView) {
+        presenter.complete(recipient: inputView.textField.text ?? "")
+    }
+
+    func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
+        inputView.textField.resignFirstResponder()
+        return true
     }
 }

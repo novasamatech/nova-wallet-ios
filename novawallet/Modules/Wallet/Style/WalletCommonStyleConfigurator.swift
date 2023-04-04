@@ -58,6 +58,6 @@ extension WalletCommonStyleConfigurator {
             .with(closeIcon: R.image.iconClose())
             .with(shareIcon: R.image.iconShare())
             .with(accessoryStyle: accessoryStyle)
-            .with(formCellStyle: WalletFormCellStyle.fearless)
+            .with(formCellStyle: WalletFormCellStyle.nova)
     }
 }

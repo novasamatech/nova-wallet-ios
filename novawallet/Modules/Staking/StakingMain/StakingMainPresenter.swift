@@ -137,10 +137,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         childPresenter?.performRebag()
     }
 
-    func performAnalyticsAction() {
-        childPresenter?.performAnalyticsAction()
-    }
-
     func networkInfoViewDidChangeExpansion(isExpanded: Bool) {
         interactor.saveNetworkInfoViewExpansion(isExpanded: isExpanded)
     }

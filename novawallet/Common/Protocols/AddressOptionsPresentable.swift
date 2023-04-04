@@ -1,7 +1,6 @@
 import UIKit
 import Foundation
 import SoraFoundation
-import RobinHood
 
 protocol AddressOptionsPresentable {
     func presentAccountOptions(
@@ -92,7 +91,7 @@ enum AddressOptionsPresentableFactory {
         (chain.explorers ?? []).forEach { explorer in
             guard
                 let accountTemplate = explorer.account,
-                let url = try? RobinHood.EndpointBuilder(urlTemplate: accountTemplate)
+                let url = try? URLBuilder(urlTemplate: accountTemplate)
                 .buildParameterURL(address) else {
                 return
             }
