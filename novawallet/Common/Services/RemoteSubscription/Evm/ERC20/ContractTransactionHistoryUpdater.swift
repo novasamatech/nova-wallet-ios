@@ -40,7 +40,7 @@ final class ContractTransactionHistoryUpdater {
         for chainId: ChainModel.Id,
         transactionHash: String
     ) -> CompoundOperationWrapper<EthereumTransactionReceipt?> {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
+        guard let connection = chainRegistry.getOneShotConnection(for: chainId) else {
             return CompoundOperationWrapper.createWithResult(nil)
         }
 

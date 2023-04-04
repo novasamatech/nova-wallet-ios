@@ -143,7 +143,7 @@ extension TransferSetupPresenterFactory {
 
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let connection = chainRegistry.getOneShotConnection(for: chain.chainId),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
