@@ -15,7 +15,7 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
     let chainRepository: AnyDataProviderRepository<ChainModel>
     let operationQueue: OperationQueue
 
-    private var pendingQueryId: UInt16?
+    private var pendingQueryIds: [UInt16]?
 
     init(
         chain: ChainModel,
@@ -178,9 +178,9 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
 
 extension TokensManageAddInteractor: TokensManageAddInteractorInputProtocol {
     func provideDetails(for address: AccountAddress) {
-        if let pendingQueryId = pendingQueryId {
-            self.pendingQueryId = nil
-            connection.cancelForIdentifier(pendingQueryId)
+        if let pendingQueryIds = pendingQueryIds {
+            self.pendingQueryIds = nil
+            connection.cancelForIdentifiers(pendingQueryIds)
         }
 
         let batchId = UUID().uuidString
@@ -196,13 +196,13 @@ extension TokensManageAddInteractor: TokensManageAddInteractorInputProtocol {
                 try connection.addBatchCallMethod(EvmQueryMessage.method, params: params, batchId: batchId)
             }
 
-            pendingQueryId = try connection.submitBatch(for: batchId) { [weak self] results in
+            pendingQueryIds = try connection.submitBatch(for: batchId) { [weak self] results in
                 DispatchQueue.main.async {
-                    guard self?.pendingQueryId != nil else {
+                    guard self?.pendingQueryIds != nil else {
                         return
                     }
 
-                    self?.pendingQueryId = nil
+                    self?.pendingQueryIds = nil
 
                     guard calls.count == results.count else {
                         return

@@ -159,8 +159,14 @@ final class AssetsSearchPresenter: AssetListBasePresenter {
         filterAndUpdateView()
     }
 
-    override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
-        super.didReceivePrices(result: result)
+    override func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
+        super.didReceivePrice(changes: changes)
+
+        filterAndUpdateView()
+    }
+
+    override func didReceivePrice(error: Error) {
+        super.didReceivePrice(error: error)
 
         filterAndUpdateView()
     }

@@ -53,7 +53,8 @@ extension ExtrinsicOperationFactoryProtocol {
         )
 
         let resultMappingOperation = ClosureOperation<RuntimeDispatchInfo> {
-            guard let result = try feeOperation.targetOperation.extractNoCancellableResultData().results.first?.result else {
+            guard let result = try feeOperation.targetOperation.extractNoCancellableResultData()
+                .results.first?.result else {
                 throw BaseOperationError.unexpectedDependentResult
             }
 
@@ -83,7 +84,8 @@ extension ExtrinsicOperationFactoryProtocol {
         )
 
         let resultMappingOperation = ClosureOperation<String> {
-            guard let result = try submitOperation.targetOperation.extractNoCancellableResultData().results.first?.result else {
+            guard let result = try submitOperation.targetOperation.extractNoCancellableResultData()
+                .results.first?.result else {
                 throw BaseOperationError.unexpectedDependentResult
             }
 
