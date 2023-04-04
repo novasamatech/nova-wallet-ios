@@ -1,8 +1,8 @@
 import Foundation
 
-extension String {
-    func base64padDecodedData(padding: Bool) -> Data? {
-        var base64 = self
+extension Data {
+    init?(base64Encoded input: String, padding: Bool) {
+        var base64 = input
 
         if padding {
             // add padding if necessary
@@ -21,6 +21,6 @@ extension String {
             return nil
         }
 
-        return data
+        self = data
     }
 }

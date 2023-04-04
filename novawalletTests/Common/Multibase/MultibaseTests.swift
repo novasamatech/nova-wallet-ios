@@ -148,14 +148,8 @@ final class MultibaseTests: XCTestCase {
         testDecoding(string: "UAAB5ZXMgbWFuaSAh", expected: "\0\0yes mani !")
     }
     
-    //    func testBase256emojiDecoding() {
-    //        testDecoding(string: "🚀🏃✋🌈😅🌷🤤😻🌟😅👏", expected: "yes mani !")
-    //    testDecoding(string: "🚀🚀🏃✋🌈😅🌷🤤😻🌟😅👏", expected: "\0yes mani !")
-    //    testDecoding(string: "🚀🚀🚀🏃✋🌈😅🌷🤤😻🌟😅👏", expected: "\0\0yes mani !")
-    //    }
-    
     private func testDecoding(string: String, expected expectedString: String) {
-        let decoded = decodeMultibase(string)
+        let decoded = Data(multibaseEncoded: string)
         XCTAssertEqual(decoded.map { String(data: $0, encoding: .utf8) }, expectedString)
     }
 
