@@ -1,11 +1,11 @@
 import Foundation
 
-extension String {
-    func proquintDecoded() -> Data? {
+extension Data {
+    init?(proquint input: String) {
         let consonants = "bdfghjklmnprstvz"
         let vowels = "aiou"
 
-        let parts = components(separatedBy: "-")
+        let parts = input.components(separatedBy: "-")
 
         guard parts.count == 2 else { return nil }
 
@@ -31,6 +31,6 @@ extension String {
 
         result >>= 2
 
-        return Data(bytes: &result, count: MemoryLayout<UInt32>.size)
+        self = Data(bytes: &result, count: MemoryLayout<UInt32>.size)
     }
 }
