@@ -1,0 +1,35 @@
+{
+	"polkadot:91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3/slip44:354": [{
+			"account": "121eb2BdXbD2AbSno4qSpiGKL28TNGngzvfvLXQtN6qCmG7N",
+			"description": "🏡 Day 7"
+		},
+		{
+			"account": "1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ"
+		},
+		{
+			"account": "0x7981bf847603d89f11254b4eb4c251ED2593863b"
+		},
+		{
+			"account": "0x7981bf847603d89f11254b4eb4c251ED2593863b",
+			"description": "Personal account"
+		},
+		{
+			"account": "0x3d89f11254b4eb4c251ED2593863b",
+			"description": "Invalid Personal account"
+		},
+		{
+			"account": "0x11254b4eb4c251ED2593863b"
+		}
+	],
+	"eip155:1/erc20:0x2170ed0880ac9a755fd29b2688956bd959f933f8": [{
+		"account": "0x7981bf847603d89f11254b4eb4c251ED2593863b"
+	}],
+	"eip:1/slip44:60": [{
+			"account": "0x8f8221AFBB33998D8584A2B05749BA73C37A938A",
+			"description": "NFT sales"
+		},
+		{
+			"account": "0x6b175474e89094c44da98b954eedeac495271d0f"
+		}
+	]
+}
