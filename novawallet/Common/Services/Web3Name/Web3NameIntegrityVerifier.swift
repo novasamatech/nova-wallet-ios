@@ -1,3 +1,5 @@
+import Foundation
+
 protocol Web3NameIntegrityVerifierProtocol {
     func verify(serviceEndpointId: String, serviceEndpointContent: String) -> Bool
 }
