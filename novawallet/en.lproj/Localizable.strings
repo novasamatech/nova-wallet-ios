@@ -707,6 +707,8 @@
 "transfer.setup.error.w3n.invalidAddress.subtitle" = "Recipient should be a valid %@ address";
 "transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Error resolving w3n";
 "transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "KILT w3n services are unavailable. Try again later or enter the KILT address manually";
+"transfer.setup.error.w3n.integrity.not.passed.title" = "Integrity check failed";
+"transfer.setup.error.w3n.integrity.not.passed.subtitle" = "Nova detected issues with integrity of information about %@ addresses. Please contact owner of %@ to resolve integrity issues";
 "transfer.setup.kilt.addresses.title" = "%@ addresses for %@";
 "common.not.now" = "Not now";
 "common.open.settings" = "Open settings";

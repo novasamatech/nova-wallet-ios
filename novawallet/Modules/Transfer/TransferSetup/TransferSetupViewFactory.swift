@@ -105,6 +105,7 @@ struct TransferSetupViewFactory {
             runtimeService: runtimeService,
             connection: connection,
             kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepository(),
+            integrityVerifier: Web3NameIntegrityVerifier(),
             operationQueue: operationQueue
         )
 
