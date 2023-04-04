@@ -34,6 +34,7 @@ protocol ApplicationConfigProtocol {
     var learnGovernanceDelegateMetadata: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
+    var slip44URL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -125,18 +126,18 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v8/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v9/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v8/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v9/chains_dev.json")!
         #endif
     }
 
     var evmAssetsURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v1/assets.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v2/assets.json")!
         #else
             URL(
-                string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v1/assets_dev.json"
+                string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/evm/v2/assets_dev.json"
             )!
         #endif
     }
@@ -207,6 +208,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/governance/add-delegate-information")!
     }
 
+    // swiftlint:disable line_length
     var inAppUpdatesEntrypointURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/v1/entrypoint_release.json")!
@@ -222,4 +224,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
         #endif
     }
+
+    var slip44URL: URL {
+        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
+    }
+    // swiftlint:enable line_length
 }

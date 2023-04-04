@@ -21,7 +21,7 @@ class ParaStkBaseUnstakeInteractor {
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     private var schduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
 

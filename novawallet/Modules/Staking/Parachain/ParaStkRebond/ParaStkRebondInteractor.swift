@@ -19,7 +19,7 @@ final class ParaStkRebondInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
     private var identityFetchCall: CancellableCall?
 

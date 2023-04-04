@@ -4,6 +4,7 @@ import BigInt
 protocol RewardCalculatorEngineFactoryProtocol {
     func createRewardCalculator(
         for totalIssuance: BigUInt,
+        params: RewardCalculatorParams,
         validators: [EraValidatorInfo],
         eraDurationInSeconds: TimeInterval
     ) -> RewardCalculatorEngineProtocol
@@ -22,6 +23,7 @@ final class RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol
 
     func createRewardCalculator(
         for totalIssuance: BigUInt,
+        params: RewardCalculatorParams,
         validators: [EraValidatorInfo],
         eraDurationInSeconds: TimeInterval
     ) -> RewardCalculatorEngineProtocol {
@@ -46,7 +48,9 @@ final class RewardCalculatorEngineFactory: RewardCalculatorEngineFactoryProtocol
                 assetPrecision: assetPrecision,
                 totalIssuance: totalIssuance,
                 validators: validators,
-                eraDurationInSeconds: eraDurationInSeconds
+                eraDurationInSeconds: eraDurationInSeconds,
+                config: InflationCurveRewardConfig(),
+                parachainsCount: params.parachainsCount ?? 0
             )
         }
     }

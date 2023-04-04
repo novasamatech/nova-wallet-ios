@@ -31,7 +31,12 @@ class CustomValidatorListTests: XCTestCase {
         )
 
         let priceProviderFactory = PriceProviderFactoryStub(
-            priceData: PriceData(price: "0.1", dayChange: 0.1, currencyId: Currency.usd.id)
+            priceData: PriceData(
+                identifier: "id",
+                price: "0.1",
+                dayChange: 0.1,
+                currencyId: Currency.usd.id
+            )
         )
 
         let interactor = CustomValidatorListInteractor(
