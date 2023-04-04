@@ -1,20 +1,5 @@
 import Foundation
 
-func decodeMultibase(_ input: String) -> Data? {
-    // Check if the input starts with a multibase prefix
-    guard let prefix = input.first else { return nil }
-    let encoding = MultibaseEncoding(rawValue: prefix)
-    guard encoding != nil else { return nil }
-
-    // Remove the prefix from the input
-    let dataString = String(input.dropFirst())
-
-    // Decode the input using the specified encoding
-    guard let data = encoding?.decode(dataString) else { return nil }
-
-    return data
-}
-
 enum MultibaseEncoding: Character {
     case base2 = "0"
     case base8 = "7"
@@ -39,9 +24,9 @@ enum MultibaseEncoding: Character {
     case base64url = "u"
     case base64urlPad = "U"
     case proquint = "p"
-    case base256emoji = "🚀"
 
     // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable function_body_length
     func decode(_ input: String) -> Data? {
         switch self {
         case .base2:
@@ -90,9 +75,8 @@ enum MultibaseEncoding: Character {
             return Data(base64UrlPadEncoded: input)
         case .proquint:
             return Data(proquint: input)
-        case .base256emoji:
-            return Data(base256emojiEncoded: input)
         }
     }
     // swiftlint:enable cyclomatic_complexity
+    // swiftlint:enable function_body_length
 }
