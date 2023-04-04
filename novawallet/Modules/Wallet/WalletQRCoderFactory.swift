@@ -4,16 +4,12 @@ import IrohaCrypto
 import SubstrateSdk
 
 final class WalletQREncoder: WalletQREncoderProtocol {
-    let username: String?
     let chainFormat: ChainFormat
     let publicKey: Data
 
-    private lazy var substrateEncoder = SubstrateQREncoder()
-
-    init(chainFormat: ChainFormat, publicKey: Data, username: String?) {
+    init(chainFormat: ChainFormat, publicKey: Data) {
         self.chainFormat = chainFormat
         self.publicKey = publicKey
-        self.username = username
     }
 
     func encode(receiverInfo: ReceiveInfo) throws -> Data {
@@ -21,12 +17,9 @@ final class WalletQREncoder: WalletQREncoderProtocol {
 
         let address = try accountId.toAddress(using: chainFormat)
 
-        let info = SubstrateQRInfo(
-            address: address,
-            rawPublicKey: publicKey,
-            username: username
-        )
-        return try substrateEncoder.encode(info: info)
+        let addressEncoder = AddressQREncoder(addressFormat: chainFormat.QRAddressFormat)
+
+        return try addressEncoder.encode(address: address)
     }
 }
 
@@ -42,7 +35,7 @@ final class WalletQRDecoder: WalletQRDecoderProtocol {
     func decode(data: Data) throws -> ReceiveInfo {
         if SubstrateQR.isSubstrateQR(data: data) {
             let substrateDecoder = SubstrateQRDecoder(
-                addressFormat: chainFormat.substrateQRAddressFormat
+                addressFormat: chainFormat.QRAddressFormat
             )
             let info = try substrateDecoder.decode(data: data)
 
@@ -56,7 +49,7 @@ final class WalletQRDecoder: WalletQRDecoderProtocol {
             )
         } else {
             let addressDecoder = AddressQRDecoder(
-                addressFormat: chainFormat.substrateQRAddressFormat
+                addressFormat: chainFormat.QRAddressFormat
             )
 
             let address = try addressDecoder.decode(data: data)
@@ -95,11 +88,7 @@ final class WalletQRCoderFactory: WalletQRCoderFactoryProtocol {
     }
 
     func createEncoder() -> WalletQREncoderProtocol {
-        WalletQREncoder(
-            chainFormat: chainFormat,
-            publicKey: publicKey,
-            username: username
-        )
+        WalletQREncoder(chainFormat: chainFormat, publicKey: publicKey)
     }
 
     func createDecoder() -> WalletQRDecoderProtocol {
@@ -108,7 +97,7 @@ final class WalletQRCoderFactory: WalletQRCoderFactoryProtocol {
 }
 
 extension ChainFormat {
-    var substrateQRAddressFormat: QRAddressFormat {
+    var QRAddressFormat: QRAddressFormat {
         switch self {
         case .ethereum:
             return .ethereum

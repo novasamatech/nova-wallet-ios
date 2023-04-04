@@ -28,7 +28,7 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
         presentingView.controller.modalTransitioningFactory = factory
         presentingView.controller.modalPresentationStyle = .custom
@@ -85,7 +85,7 @@ final class GovernanceAddDelegationTracksWireframe: GovernanceSelectTracksWirefr
             preferredContentSize: CGSize(width: 0, height: 200)
         )
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
 
         bottomSheet.controller.modalTransitioningFactory = factory
         bottomSheet.controller.modalPresentationStyle = .custom

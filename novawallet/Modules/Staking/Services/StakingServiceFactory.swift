@@ -4,10 +4,10 @@ import RobinHood
 protocol StakingServiceFactoryProtocol {
     func createEraValidatorService(for chainId: ChainModel.Id) throws -> EraValidatorServiceProtocol
     func createRewardCalculatorService(
-        for chainId: ChainModel.Id,
+        for chainAsset: ChainAsset,
         stakingType: StakingType,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         stakingDurationFactory: StakingDurationOperationFactoryProtocol,
-        assetPrecision: Int16,
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol
 
@@ -65,28 +65,41 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
     }
 
     func createRewardCalculatorService(
-        for chainId: ChainModel.Id,
+        for chainAsset: ChainAsset,
         stakingType: StakingType,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         stakingDurationFactory: StakingDurationOperationFactoryProtocol,
-        assetPrecision: Int16,
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol {
+        let chainId = chainAsset.chain.chainId
         guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
             throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+
+        guard let connection = chainRegisty.getConnection(for: chainId) else {
+            throw ChainRegistryError.connectionUnavailable
         }
 
         let rewardCalculatorFactory = RewardCalculatorEngineFactory(
             chainId: chainId,
             stakingType: stakingType,
-            assetPrecision: assetPrecision
+            assetPrecision: chainAsset.assetDisplayInfo.assetPrecision
+        )
+
+        let rewardCalculatorParamsFactory = RewardCalculatorParamsServiceFactory(
+            stakingType: stakingType,
+            connection: connection,
+            runtimeService: runtimeService,
+            operationQueue: operationQueue
         )
 
         return RewardCalculatorService(
             chainId: chainId,
             rewardCalculatorFactory: rewardCalculatorFactory,
+            rewardCalculatorParamsFactory: rewardCalculatorParamsFactory,
             eraValidatorsService: validatorService,
             operationManager: OperationManager(operationQueue: operationQueue),
-            providerFactory: substrateDataProviderFactory,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             runtimeCodingService: runtimeService,
             stakingDurationFactory: stakingDurationFactory,
             storageFacade: storageFacade,

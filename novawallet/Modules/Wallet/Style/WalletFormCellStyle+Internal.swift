@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 
 extension WalletFormCellStyle {
-    static var fearless: WalletFormCellStyle {
+    static var nova: WalletFormCellStyle {
         let title = WalletTextStyle(
             font: UIFont.p1Paragraph,
             color: R.color.colorTextSecondary()!

@@ -35,7 +35,7 @@ final class EvmSubscriptionMessageFactory: EvmSubscriptionMessageFactoryProtocol
             throw EvmSubscriptionMessageFactoryError.invalidAddress(holder)
         }
 
-        let incomingFilter = EvmSubscriptionMessage.Params(
+        let incomingFilter = EvmSubscriptionMessage.LogsParams(
             logs: .init(
                 address: Array(contracts),
                 topics: [
@@ -46,7 +46,7 @@ final class EvmSubscriptionMessageFactory: EvmSubscriptionMessageFactoryProtocol
             )
         )
 
-        let outgoingFilter = EvmSubscriptionMessage.Params(
+        let outgoingFilter = EvmSubscriptionMessage.LogsParams(
             logs: .init(
                 address: Array(contracts),
                 topics: [

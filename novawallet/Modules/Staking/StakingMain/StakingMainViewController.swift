@@ -32,8 +32,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
     private var rewardView: StakingRewardView?
     private lazy var alertsContainerView = UIView()
     private lazy var alertsView = AlertsView()
-    private lazy var analyticsContainerView = UIView()
-    private lazy var analyticsView = RewardAnalyticsWidgetView()
 
     private var actionsView: StakingActionsView?
     private var unbondingsView: StakingUnbondingsView?
@@ -76,7 +74,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         setupAssetSelectionView()
         setupNetworkInfoView()
         setupAlertsView()
-        setupAnalyticsView()
         setupScrollView()
         setupLocalization()
         presenter.setup()
@@ -86,7 +83,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         super.viewDidAppear(animated)
 
         networkInfoView.didAppearSkeleton()
-        analyticsView.didAppearSkeleton()
 
         if let skeletonState = stateView as? SkeletonLoadable {
             skeletonState.didAppearSkeleton()
@@ -99,7 +95,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         super.viewDidDisappear(animated)
 
         networkInfoView.didDisappearSkeleton()
-        analyticsView.didDisappearSkeleton()
 
         if let skeletonState = stateView as? SkeletonLoadable {
             skeletonState.didDisappearSkeleton()
@@ -112,7 +107,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         super.viewDidLayoutSubviews()
 
         networkInfoView.didUpdateSkeletonLayout()
-        analyticsView.didUpdateSkeletonLayout()
 
         if let skeletonState = stateView as? SkeletonLoadable {
             skeletonState.didUpdateSkeletonLayout()
@@ -189,17 +183,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         stackView.insertArranged(view: alertsContainerView, after: networkInfoContainerView)
 
         alertsView.delegate = self
-    }
-
-    private func setupAnalyticsView() {
-        analyticsContainerView.translatesAutoresizingMaskIntoConstraints = false
-        analyticsContainerView.addSubview(analyticsView)
-
-        applyConstraints(for: analyticsContainerView, innerView: analyticsView)
-
-        stackView.addArrangedSubview(analyticsContainerView)
-        analyticsView.snp.makeConstraints { $0.height.equalTo(228) }
-        analyticsView.backgroundButton.addTarget(self, action: #selector(handleAnalyticsWidgetTap), for: .touchUpInside)
     }
 
     private func setupStakingRewardViewIfNeeded() {
@@ -284,11 +267,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         unbondingsView?.bind(viewModel: unbondingViewModel)
     }
 
-    @objc
-    private func handleAnalyticsWidgetTap() {
-        presenter.performAnalyticsAction()
-    }
-
     private func clearStateView() {
         if let containerView = stateContainerView {
             stackView.removeArrangedSubview(containerView)
@@ -298,7 +276,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         stateContainerView = nil
         stateView = nil
         alertsContainerView.isHidden = true
-        analyticsContainerView.isHidden = true
     }
 
     private func applyConstraints(for containerView: UIView, innerView: UIView) {
@@ -420,12 +397,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable, Vie
         rewardView?.bind(viewModel: viewModel)
     }
 
-    private func applyAnalyticsRewards(viewModel _: LocalizableResource<RewardAnalyticsWidgetViewModel>?) {
-        // TODO: Temporary disable Analytics feature
-        // analyticsContainerView.isHidden = false
-        // analyticsView.bind(viewModel: viewModel)
-    }
-
     @objc func actionAssetSelection() {
         presenter.performAssetSelection()
     }
@@ -443,7 +414,6 @@ extension StakingMainViewController: Localizable {
         networkInfoView.locale = locale
         stateView?.locale = locale
         alertsView.locale = locale
-        analyticsView.locale = locale
         rewardView?.locale = locale
         actionsView?.locale = locale
         unbondingsView?.locale = locale
@@ -522,7 +492,7 @@ extension StakingMainViewController: StakingMainViewProtocol {
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
-        case let .nominator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
+        case let .nominator(viewModel, alerts, optReward, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
 
@@ -532,15 +502,13 @@ extension StakingMainViewController: StakingMainViewProtocol {
                 clearStakingRewardViewIfNeeded()
             }
 
-            applyAnalyticsRewards(viewModel: analyticsViewModel)
-
             if !hasSameTypes {
                 expandNetworkInfoView(false)
             }
 
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
-        case let .validator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
+        case let .validator(viewModel, alerts, optReward, unbondings, actions):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
 
@@ -549,8 +517,6 @@ extension StakingMainViewController: StakingMainViewProtocol {
             } else {
                 clearStakingRewardViewIfNeeded()
             }
-
-            applyAnalyticsRewards(viewModel: analyticsViewModel)
 
             if !hasSameTypes {
                 expandNetworkInfoView(false)

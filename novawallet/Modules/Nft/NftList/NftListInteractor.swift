@@ -16,7 +16,7 @@ final class NftListInteractor {
     private var nfts: [NftModel.Id: NftChainModel] = [:]
     private var nftChains: [ChainModel.Id: ChainModel] = [:]
     private var nftPrices: [AssetModel.PriceId: PriceData] = [:]
-    private var priceProviders: [AssetModel.PriceId: AnySingleValueProvider<PriceData>] = [:]
+    private var priceProviders: [AssetModel.PriceId: StreamableProvider<PriceData>] = [:]
 
     private var nftProvider: StreamableProvider<NftModel>?
 
@@ -172,8 +172,7 @@ final class NftListInteractor {
         let priceIdsToAdd = newPriceIdSet.symmetricDifference(currentPriceSet)
 
         priceIdsToAdd.forEach { priceId in
-            let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: false, waitsInProgressSyncOnAdd: false)
-            priceProviders[priceId] = subscribeToPrice(for: priceId, currency: selectedCurrency, options: options)
+            priceProviders[priceId] = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
     }
 

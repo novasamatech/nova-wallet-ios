@@ -16,33 +16,42 @@ final class RewardCalculatorService {
         let queue: DispatchQueue?
     }
 
+    private struct Snapshot {
+        let totalIssuance: BigUInt
+        let params: RewardCalculatorParams
+    }
+
     private let syncQueue = DispatchQueue(
         label: "\(queueLabelPrefix).\(UUID().uuidString)",
         qos: .userInitiated
     )
 
     private var isActive: Bool = false
-    private var snapshot: BigUInt?
+    private var totalIssuance: BigUInt?
+    private var params: RewardCalculatorParams?
 
-    private var totalIssuanceDataProvider: StreamableProvider<ChainStorageItem>?
+    private var totalIssuanceDataProvider: AnyDataProvider<DecodedBigUInt>?
+    private var paramsService: RewardCalculatorParamsServiceProtocol?
     private var pendingRequests: [PendingRequest] = []
 
     let chainId: ChainModel.Id
     let eraValidatorsService: EraValidatorServiceProtocol
     let logger: LoggerProtocol?
     let operationManager: OperationManagerProtocol
-    let providerFactory: SubstrateDataProviderFactoryProtocol
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let storageFacade: StorageFacadeProtocol
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let stakingDurationFactory: StakingDurationOperationFactoryProtocol
     let rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol
+    let rewardCalculatorParamsFactory: RewardCalculatorParamsServiceFactoryProtocol
 
     init(
         chainId: ChainModel.Id,
         rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol,
+        rewardCalculatorParamsFactory: RewardCalculatorParamsServiceFactoryProtocol,
         eraValidatorsService: EraValidatorServiceProtocol,
         operationManager: OperationManagerProtocol,
-        providerFactory: SubstrateDataProviderFactoryProtocol,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         stakingDurationFactory: StakingDurationOperationFactoryProtocol,
         storageFacade: StorageFacadeProtocol,
@@ -50,8 +59,9 @@ final class RewardCalculatorService {
     ) {
         self.chainId = chainId
         self.rewardCalculatorFactory = rewardCalculatorFactory
+        self.rewardCalculatorParamsFactory = rewardCalculatorParamsFactory
         self.storageFacade = storageFacade
-        self.providerFactory = providerFactory
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.operationManager = operationManager
         self.eraValidatorsService = eraValidatorsService
         self.stakingDurationFactory = stakingDurationFactory
@@ -67,11 +77,10 @@ final class RewardCalculatorService {
     ) {
         let request = PendingRequest(resultClosure: closure, queue: queue)
 
-        if let snapshot = snapshot {
+        if let totalIssuance = totalIssuance, let params = params {
             deliver(
-                snapshot: snapshot,
+                snapshot: .init(totalIssuance: totalIssuance, params: params),
                 to: request,
-                chainId: chainId,
                 rewardCalculatorFactory: rewardCalculatorFactory
             )
         } else {
@@ -80,9 +89,8 @@ final class RewardCalculatorService {
     }
 
     private func deliver(
-        snapshot: BigUInt,
+        snapshot: Snapshot,
         to request: PendingRequest,
-        chainId _: ChainModel.Id,
         rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol
     ) {
         let durationWrapper = stakingDurationFactory.createDurationOperation(
@@ -96,7 +104,8 @@ final class RewardCalculatorService {
             let stakingDuration = try durationWrapper.targetOperation.extractNoCancellableResultData()
 
             return rewardCalculatorFactory.createRewardCalculator(
-                for: snapshot,
+                for: snapshot.totalIssuance,
+                params: snapshot.params,
                 validators: eraStakersInfo.validators,
                 eraDurationInSeconds: stakingDuration.era
             )
@@ -124,7 +133,13 @@ final class RewardCalculatorService {
         )
     }
 
-    private func notifyPendingClosures(with totalIssuance: BigUInt) {
+    private func notifyPendingClosuresIfReady() {
+        guard let totalIssuance = totalIssuance, let params = params else {
+            return
+        }
+
+        let snapshot = Snapshot(totalIssuance: totalIssuance, params: params)
+
         logger?.debug("Attempt fulfill pendings \(pendingRequests.count)")
 
         guard !pendingRequests.isEmpty else {
@@ -136,9 +151,8 @@ final class RewardCalculatorService {
 
         requests.forEach {
             deliver(
-                snapshot: totalIssuance,
+                snapshot: snapshot,
                 to: $0,
-                chainId: chainId,
                 rewardCalculatorFactory: rewardCalculatorFactory
             )
         }
@@ -146,97 +160,39 @@ final class RewardCalculatorService {
         logger?.debug("Fulfilled pendings")
     }
 
-    private func handleTotalIssuanceDecodingResult(
-        result: Result<StringScaleMapper<BigUInt>, Error>?
-    ) {
-        switch result {
-        case let .success(totalIssuance):
-            snapshot = totalIssuance.value
-            notifyPendingClosures(with: totalIssuance.value)
-        case let .failure(error):
-            logger?.error("Did receive total issuance decoding error: \(error)")
-        case .none:
-            logger?.warning("Error decoding operation canceled")
-        }
-    }
-
-    private func didUpdateTotalIssuanceItem(_ totalIssuanceItem: ChainStorageItem?) {
-        guard let totalIssuanceItem = totalIssuanceItem else {
-            return
-        }
-
-        let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
-        let decodingOperation =
-            StorageDecodingOperation<StringScaleMapper<BigUInt>>(
-                path: .totalIssuance,
-                data: totalIssuanceItem.data
-            )
-        decodingOperation.configurationBlock = {
-            do {
-                decodingOperation.codingFactory = try codingFactoryOperation
-                    .extractNoCancellableResultData()
-            } catch {
-                decodingOperation.result = .failure(error)
-            }
-        }
-
-        decodingOperation.addDependency(codingFactoryOperation)
-
-        decodingOperation.completionBlock = { [weak self] in
-            self?.syncQueue.async {
-                self?.handleTotalIssuanceDecodingResult(result: decodingOperation.result)
-            }
-        }
-
-        operationManager.enqueue(
-            operations: [codingFactoryOperation, decodingOperation],
-            in: .transient
-        )
-    }
-
     private func subscribe() {
-        do {
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                .totalIssuance,
-                chainId: chainId
-            )
+        totalIssuanceDataProvider = subscribeTotalIssuance(for: chainId, callbackQueue: syncQueue)
 
-            let totalIssuanceDataProvider = providerFactory.createStorageProvider(for: localKey)
-
-            let updateClosure: ([DataProviderChange<ChainStorageItem>]) -> Void = { [weak self] changes in
-                let finalValue: ChainStorageItem? = changes.reduce(nil) { _, item in
-                    switch item {
-                    case let .insert(newItem), let .update(newItem):
-                        return newItem
-                    case .delete:
-                        return nil
-                    }
-                }
-
-                self?.didUpdateTotalIssuanceItem(finalValue)
+        paramsService = rewardCalculatorParamsFactory.createRewardCalculatorParamsService()
+        paramsService?.subcribe(using: syncQueue) { [weak self] result in
+            switch result {
+            case let .success(params):
+                self?.params = params
+                self?.notifyPendingClosuresIfReady()
+            case let .failure(error):
+                self?.logger?.error("Can't fetch params: \(error)")
             }
-
-            let failureClosure: (Error) -> Void = { [weak self] error in
-                self?.logger?.error("Did receive error: \(error)")
-            }
-
-            totalIssuanceDataProvider.addObserver(
-                self,
-                deliverOn: syncQueue,
-                executing: updateClosure,
-                failing: failureClosure,
-                options: StreamableProviderObserverOptions.substrateSource()
-            )
-
-            self.totalIssuanceDataProvider = totalIssuanceDataProvider
-        } catch {
-            logger?.error("Can't make subscription")
         }
     }
 
     private func unsubscribe() {
         totalIssuanceDataProvider?.removeObserver(self)
         totalIssuanceDataProvider = nil
+
+        paramsService?.unsubscribe()
+        paramsService = nil
+    }
+}
+
+extension RewardCalculatorService: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
+    func handleTotalIssuance(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(totalIssuance):
+            self.totalIssuance = totalIssuance
+            notifyPendingClosuresIfReady()
+        case let .failure(error):
+            logger?.error("Did receive total issuance decoding error: \(error)")
+        }
     }
 }
 
