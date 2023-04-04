@@ -1,5 +1,6 @@
 import RobinHood
 import SubstrateSdk
+import Foundation
 
 typealias Web3NameSearchResult = Result<[KiltTransferAssetRecipientAccount], Web3NameServiceError>
 
@@ -25,6 +26,7 @@ final class Web3NameService: AnyCancellableCleaning {
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol
+    let integrityVerifier: Web3NameIntegrityVerifierProtocol
 
     init(
         slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>,
@@ -32,6 +34,7 @@ final class Web3NameService: AnyCancellableCleaning {
         runtimeService: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
         kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol,
+        integrityVerifier: Web3NameIntegrityVerifierProtocol,
         operationQueue: OperationQueue
     ) {
         self.slip44CoinsProvider = slip44CoinsProvider
@@ -39,6 +42,7 @@ final class Web3NameService: AnyCancellableCleaning {
         self.runtimeService = runtimeService
         self.connection = connection
         self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
+        self.integrityVerifier = integrityVerifier
         self.operationQueue = operationQueue
     }
 
@@ -63,6 +67,17 @@ final class Web3NameService: AnyCancellableCleaning {
                 }
                 guard let serviceURL = web3Name.serviceURLs.first else {
                     throw Web3NameServiceError.serviceNotFound(name, chainName)
+                }
+                guard let contentData = try? Data(contentsOf: serviceURL),
+                      let content = String(data: contentData, encoding: .utf8) else {
+                    throw Web3NameServiceError.serviceNotFound(name, chainName)
+                }
+                let formattedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard self.integrityVerifier.verify(
+                    serviceEndpointId: serviceURL.absoluteString,
+                    serviceEndpointContent: formattedContent
+                ) else {
+                    throw Web3NameServiceError.integrityNotPassed(name)
                 }
 
                 return self.kiltTransferAssetRecipientRepository.fetchRecipients(url: serviceURL)
