@@ -2865,6 +2865,7 @@ import Cuckoo
 
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 
  class MockChainRegistryProtocol: ChainRegistryProtocol, Cuckoo.ProtocolMock {
@@ -2931,6 +2932,21 @@ import RobinHood
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.getConnection(for: chainId))
+        
+    }
+    
+    
+    
+     func getOneShotConnection(for chainId: ChainModel.Id) -> JSONRPCEngine? {
+        
+    return cuckoo_manager.call("getOneShotConnection(for: ChainModel.Id) -> JSONRPCEngine?",
+            parameters: (chainId),
+            escapingParameters: (chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.getOneShotConnection(for: chainId))
         
     }
     
@@ -3048,6 +3064,11 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "getConnection(for: ChainModel.Id) -> ChainConnection?", parameterMatchers: matchers))
 	    }
 	    
+	    func getOneShotConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id), JSONRPCEngine?> where M1.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "getOneShotConnection(for: ChainModel.Id) -> JSONRPCEngine?", parameterMatchers: matchers))
+	    }
+	    
 	    func getRuntimeProvider<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id), RuntimeProviderProtocol?> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "getRuntimeProvider(for: ChainModel.Id) -> RuntimeProviderProtocol?", parameterMatchers: matchers))
@@ -3109,6 +3130,12 @@ import RobinHood
 	    func getConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), ChainConnection?> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
 	        return cuckoo_manager.verify("getConnection(for: ChainModel.Id) -> ChainConnection?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func getOneShotConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), JSONRPCEngine?> where M1.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
+	        return cuckoo_manager.verify("getOneShotConnection(for: ChainModel.Id) -> JSONRPCEngine?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -3175,6 +3202,12 @@ import RobinHood
     
      func getConnection(for chainId: ChainModel.Id) -> ChainConnection?  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection?).self)
+    }
+    
+    
+    
+     func getOneShotConnection(for chainId: ChainModel.Id) -> JSONRPCEngine?  {
+        return DefaultValueRegistry.defaultValue(for: (JSONRPCEngine?).self)
     }
     
     
@@ -3278,6 +3311,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
+        
+    return cuckoo_manager.call("createOnShotConnection(for: ChainModel) -> JSONRPCEngine?",
+            parameters: (chain),
+            escapingParameters: (chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createOnShotConnection(for: chain))
+        
+    }
+    
 
 	 struct __StubbingProxy_ConnectionFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -3295,6 +3343,11 @@ import SubstrateSdk
 	    func updateConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainConnection, ChainModel)> where M1.MatchedType == ChainConnection, M2.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "updateConnection(_: ChainConnection, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func createOnShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createOnShotConnection(for: ChainModel) -> JSONRPCEngine?", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -3325,6 +3378,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("updateConnection(_: ChainConnection, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func createOnShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return cuckoo_manager.verify("createOnShotConnection(for: ChainModel) -> JSONRPCEngine?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -3344,6 +3403,12 @@ import SubstrateSdk
     
      func updateConnection(_ connection: ChainConnection, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine?  {
+        return DefaultValueRegistry.defaultValue(for: (JSONRPCEngine?).self)
     }
     
 }
@@ -3441,6 +3506,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
+        
+    return cuckoo_manager.call("getOneShotConnection(for: ChainModel) -> JSONRPCEngine?",
+            parameters: (chain),
+            escapingParameters: (chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.getOneShotConnection(for: chain))
+        
+    }
+    
 
 	 struct __StubbingProxy_ConnectionPoolProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -3468,6 +3548,11 @@ import SubstrateSdk
 	    func unsubscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ConnectionStateSubscription, ChainModel.Id)> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "unsubscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)", parameterMatchers: matchers))
+	    }
+	    
+	    func getOneShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "getOneShotConnection(for: ChainModel) -> JSONRPCEngine?", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -3510,6 +3595,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("unsubscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func getOneShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return cuckoo_manager.verify("getOneShotConnection(for: ChainModel) -> JSONRPCEngine?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -3541,6 +3632,12 @@ import SubstrateSdk
     
      func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine?  {
+        return DefaultValueRegistry.defaultValue(for: (JSONRPCEngine?).self)
     }
     
 }
