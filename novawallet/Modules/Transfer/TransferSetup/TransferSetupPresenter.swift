@@ -150,6 +150,7 @@ final class TransferSetupPresenter {
         if recipient.isValid(using: destinationChainAsset?.chain.chainFormat) {
             view?.didReceiveKiltRecipient(viewModel: .loaded(value: recipient.account))
             recipientAddress = recipient.account
+            childPresenter?.updateRecepient(partialAddress: recipient.account)
         } else {
             didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
             recipientAddress = nil
@@ -162,12 +163,13 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         provideChainsViewModel()
         childPresenter?.setup()
 
-        interactor.setup(destinationChainAsset: destinationChainAsset ?? originChainAsset)
+        interactor.setup(destinationChain: destinationChainAsset?.chain ?? originChainAsset.chain)
     }
 
     func updateRecepient(partialAddress: String) {
         recipientAddress = partialAddress
         childPresenter?.updateRecepient(partialAddress: partialAddress)
+        view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -247,10 +249,6 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             locale: view.selectedLocale
         )
     }
-
-    func changeRecipient(_: String?) {
-        view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
-    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
@@ -277,11 +275,17 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         logger.error("Did receive error: \(error)")
 
         if error is Web3NameServiceError {
-            view?.didReceiveRecipientInputState(focused: true, empty: nil)
-            view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: view?.selectedLocale
+            ) { [weak view] in
+                view?.didReceiveRecipientInputState(focused: true, empty: nil)
+                view?.didReceiveKiltRecipient(viewModel: .loaded(value: nil))
+            }
+        } else {
+            _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
         }
-
-        _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
     }
 
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
@@ -321,10 +325,10 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
-            interactor.destinationChainAssetDidChanged(destinationChainAsset)
+            interactor.destinationChainDidChanged(destinationChainAsset.chain)
         } else {
             setupOnChainChildPresenter()
-            interactor.destinationChainAssetDidChanged(originChainAsset)
+            interactor.destinationChainDidChanged(originChainAsset.chain)
         }
     }
 
@@ -335,7 +339,6 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         let selectedAccount = selectionState.accounts[index]
         provideKiltRecipientViewModel(selectedAccount)
-        recipientAddress = selectedAccount.account
     }
 
     func modalPickerDidCancel(context: AnyObject?) {

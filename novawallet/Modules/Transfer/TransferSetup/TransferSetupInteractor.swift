@@ -13,7 +13,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let web3NamesService: Web3NameServiceProtocol
 
     private var xcmTransfers: XcmTransfers?
-    private var destinationChainAsset: ChainAsset?
+    private var destinationChain: ChainModel?
 
     init(
         originChainAssetId: ChainAssetId,
@@ -107,27 +107,30 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup(destinationChainAsset: ChainAsset) {
+    func setup(destinationChain: ChainModel) {
         setupChainsStore()
         setupXcmTransfersSyncService()
-        fetchAccounts(for: destinationChainAsset.chain)
+        fetchAccounts(for: destinationChain)
         web3NamesService.setup()
-        self.destinationChainAsset = destinationChainAsset
+        self.destinationChain = destinationChain
     }
 
-    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset) {
-        fetchAccounts(for: chainAsset.chain)
-        destinationChainAsset = chainAsset
+    func destinationChainDidChanged(_ chain: ChainModel) {
+        fetchAccounts(for: chain)
+        destinationChain = chain
     }
 
     func search(web3Name: String) {
-        guard let destinationChainAsset = destinationChainAsset else {
+        guard let destinationChain = destinationChain,
+              let originAsset = chainsStore.getChainAsset(for: originChainAssetId)?.asset else {
             return
         }
+
         web3NamesService.cancel()
         web3NamesService.search(
             name: web3Name,
-            for: destinationChainAsset
+            chain: destinationChain,
+            asset: originAsset
         ) { result in
             DispatchQueue.main.async {
                 switch result {

@@ -45,12 +45,11 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func didTapOnYourWallets()
     func complete(recipient: String)
     func showOptions(for address: AccountAddress)
-    func changeRecipient(_ recipient: String?)
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
-    func setup(destinationChainAsset: ChainAsset)
-    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset)
+    func setup(destinationChain: ChainModel)
+    func destinationChainDidChanged(_ chain: ChainModel)
     func search(web3Name: String)
 }
 

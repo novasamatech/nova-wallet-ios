@@ -33,6 +33,9 @@ final class TransferSetupViewLayout: UIView {
 
     let recepientInputView: AccountInputView = {
         let view = AccountInputView()
+        view.localizablePlaceholder = LocalizableResource { locale in
+            R.string.localizable.commonAddress(preferredLanguages: locale.rLanguages)
+        }
         return view
     }()
 
