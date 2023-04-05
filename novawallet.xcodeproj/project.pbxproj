@@ -2246,6 +2246,7 @@
 		84DBEA4E265ED5B600FDF73C /* CrowdloanDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA4D265ED5B600FDF73C /* CrowdloanDataValidatorFactory.swift */; };
 		84DBEA56265ED62700FDF73C /* BaseErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA55265ED62700FDF73C /* BaseErrorPresentable.swift */; };
 		84DBEA5E265EDAD300FDF73C /* BaseDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA5D265EDAD300FDF73C /* BaseDataValidatorFactory.swift */; };
+		84DBEA7729DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DBEA7629DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift */; };
 		84DC3CE12795DEBF0038E2ED /* SubqueryHistoryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84412EE026DAC3300049577A /* SubqueryHistoryOperationFactory.swift */; };
 		84DC3CE32795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC3CE22795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift */; };
 		84DC3CE52796768A0038E2ED /* SubqueryHistoryContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */; };
@@ -4878,6 +4879,7 @@
 		848DAF032822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParachainStakingCollatorService+Fetch.swift"; sourceTree = "<group>"; };
 		848DB992260638440055DDE7 /* rewardResponse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = rewardResponse.json; sourceTree = "<group>"; };
 		848DB997260639C70055DDE7 /* TotalRewardMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalRewardMock.swift; sourceTree = "<group>"; };
+		848DCD0A29D71C5200E8A300 /* SubstrateDataModel14.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel14.xcdatamodel; sourceTree = "<group>"; };
 		848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel.xcdatamodel; sourceTree = "<group>"; };
 		848DE76126D62AFE0045CD29 /* PersistentStoreCoordinator+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistentStoreCoordinator+Extensions.swift"; sourceTree = "<group>"; };
 		848DE76526D642670045CD29 /* StorageMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMigrator.swift; sourceTree = "<group>"; };
@@ -5590,6 +5592,7 @@
 		84DBEA4D265ED5B600FDF73C /* CrowdloanDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanDataValidatorFactory.swift; sourceTree = "<group>"; };
 		84DBEA55265ED62700FDF73C /* BaseErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseErrorPresentable.swift; sourceTree = "<group>"; };
 		84DBEA5D265EDAD300FDF73C /* BaseDataValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseDataValidatorFactory.swift; sourceTree = "<group>"; };
+		84DBEA7629DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionNodeSwitchCode.swift; sourceTree = "<group>"; };
 		84DC3CE22795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubqueryHistoryOperationFactory+RemoteHistory.swift"; sourceTree = "<group>"; };
 		84DC3CE42796768A0038E2ED /* SubqueryHistoryContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryHistoryContext.swift; sourceTree = "<group>"; };
 		84DC3CE6279679230038E2ED /* SubqueryHistory+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubqueryHistory+Wallet.swift"; sourceTree = "<group>"; };
@@ -7997,6 +8000,7 @@
 				84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */,
 				846A68282746234000D1A47A /* ChainConnection.swift */,
 				840D627429CB46E900D5E894 /* ConnectionApiKeys.swift */,
+				84DBEA7629DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift */,
 			);
 			path = ConnectionPool;
 			sourceTree = "<group>";
@@ -17929,6 +17933,7 @@
 				849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */,
 				849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */,
 				849E17F02791909C002D1744 /* DAppSettings.swift in Sources */,
+				84DBEA7729DAF5EC00A504A7 /* ConnectionNodeSwitchCode.swift in Sources */,
 				884048D428C723F00085FFA6 /* OrmlTokenSubscriptionHandlingFactory.swift in Sources */,
 				846A2C4D2529FBB700731018 /* NSPredicate+Filter.swift in Sources */,
 				84282292289BB45700163031 /* ParitySignerWallet.swift in Sources */,
@@ -20186,6 +20191,7 @@
 		843910CA253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				848DCD0A29D71C5200E8A300 /* SubstrateDataModel14.xcdatamodel */,
 				840D627829CC314500D5E894 /* SubstrateDataModel13.xcdatamodel */,
 				840D626D29CB32F100D5E894 /* SubstrateDataModel12.xcdatamodel */,
 				8471A19E29C4536600956FF7 /* SubstrateDataModel11.xcdatamodel */,
@@ -20200,7 +20206,7 @@
 				88787F0328DB3A7B00B115AB /* SubstrateDataModel2.xcdatamodel */,
 				843910CB253F7E6500E3C217 /* SubstrateDataModel.xcdatamodel */,
 			);
-			currentVersion = 840D627829CC314500D5E894 /* SubstrateDataModel13.xcdatamodel */;
+			currentVersion = 848DCD0A29D71C5200E8A300 /* SubstrateDataModel14.xcdatamodel */;
 			path = SubstrateDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
