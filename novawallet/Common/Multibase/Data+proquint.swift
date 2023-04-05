@@ -2,8 +2,8 @@ import Foundation
 
 extension Data {
     init?(proquint input: String) {
-        let consonants = "bdfghjklmnprstvz"
-        let vowels = "aiou"
+        let consonants = [UInt8]("bdfghjklmnprstvz".utf8)
+        let vowels = [UInt8]("aiou".utf8)
 
         let parts = input.components(separatedBy: "-")
 
@@ -14,18 +14,18 @@ extension Data {
 
         var result = UInt32(0)
 
-        for char in part1 {
+        for char in part1.utf8 {
             guard let index = consonants.firstIndex(of: char) else { return nil }
 
-            result = result * 5 + UInt32(consonants.position(index))
+            result = result * 5 + UInt32(index)
         }
 
         result <<= 16
 
-        for char in part2 {
+        for char in part2.utf8 {
             guard let index = vowels.firstIndex(of: char) else { return nil }
 
-            result += UInt32(vowels.position(index))
+            result += UInt32(index)
             result <<= 2
         }
 
