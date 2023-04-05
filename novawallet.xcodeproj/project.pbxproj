@@ -900,6 +900,7 @@
 		843EC7A82701F63600C7DC7E /* PriceProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843EC7A72701F63600C7DC7E /* PriceProviderFactoryStub.swift */; };
 		843F657126584D2C00829C14 /* JsonSingleProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */; };
 		843F657A265854A700829C14 /* CrowdloanDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */; };
+		843F9ABC29DDAF8F004F1737 /* JSONRPCTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F9ABB29DDAF8F004F1737 /* JSONRPCTimeout.swift */; };
 		84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84403D7E25E91BC100494FD4 /* SuperIdentity.swift */; };
 		8440F4A22959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8440F4A12959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift */; };
 		8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8440F4A4295AB4E300CAFBF9 /* SecurityLayerTests.swift */; };
@@ -4226,6 +4227,7 @@
 		843EC7A72701F63600C7DC7E /* PriceProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceProviderFactoryStub.swift; sourceTree = "<group>"; };
 		843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonSingleProviderSource.swift; sourceTree = "<group>"; };
 		843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanDisplayInfo.swift; sourceTree = "<group>"; };
+		843F9ABB29DDAF8F004F1737 /* JSONRPCTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPCTimeout.swift; sourceTree = "<group>"; };
 		84403D7E25E91BC100494FD4 /* SuperIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperIdentity.swift; sourceTree = "<group>"; };
 		84403D8725E92A9C00494FD4 /* InitiatedBonding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitiatedBonding.swift; sourceTree = "<group>"; };
 		8440F4A12959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuredApplicationHandlerProxy.swift; sourceTree = "<group>"; };
@@ -10860,6 +10862,7 @@
 				840AE2E229C9A715008FF665 /* OptionStringCodable+Empty.swift */,
 				840D626E29CB39EE00D5E894 /* URLBuilder.swift */,
 				840D627629CB487100D5E894 /* EnviromentVariables.swift */,
+				843F9ABB29DDAF8F004F1737 /* JSONRPCTimeout.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -18177,6 +18180,7 @@
 				84D6D7FA27A7EC810094FC33 /* AssetListAssetCell.swift in Sources */,
 				61E0DC83C1D60D677274D7CE /* AccountExportPasswordViewFactory.swift in Sources */,
 				84EBFCF4285E90F80006327E /* XcmWeightMessages.swift in Sources */,
+				843F9ABC29DDAF8F004F1737 /* JSONRPCTimeout.swift in Sources */,
 				841E5540282D524800C8438F /* ParastakingLocalStorageSubscriber.swift in Sources */,
 				84350AD228457CC30031EF24 /* BaseValidatorInfoViewModelFactory.swift in Sources */,
 				84C11F1F2842D5D5007F7C05 /* ParaStkCollatorsSearchViewModel.swift in Sources */,
