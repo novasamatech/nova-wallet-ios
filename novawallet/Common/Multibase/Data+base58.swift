@@ -2,18 +2,17 @@ import Foundation
 import BigInt
 
 extension Data {
-    static let btcAlphabet = [UInt8]("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".utf8)
-    static let flickrAlphabet = [UInt8]("123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ".utf8)
-
     init?(base58btcEncoded input: String) {
-        guard let data = Self.decodeBase58(input: input, alphabet: Self.btcAlphabet) else {
+        let alphabet = [UInt8]("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".utf8)
+        guard let data = Self.decodeBase58(input: input, alphabet: alphabet) else {
             return nil
         }
         self = data
     }
 
     init?(base58FlickrEncoded input: String) {
-        guard let data = Self.decodeBase58(input: input, alphabet: Self.flickrAlphabet) else {
+        let alphabet = [UInt8]("123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ".utf8)
+        guard let data = Self.decodeBase58(input: input, alphabet: alphabet) else {
             return nil
         }
         self = data
