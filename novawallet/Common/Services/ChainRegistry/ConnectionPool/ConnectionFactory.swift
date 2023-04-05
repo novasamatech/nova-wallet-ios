@@ -24,9 +24,12 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
         let urls = extractNodeUrls(from: chain)
 
         let healthCheckMethod: HealthCheckMethod = chain.hasSubstrateRuntime ? .substrate : .websocketPingPong
+        let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
+
         guard
             let connection = WebSocketEngine(
                 urls: urls,
+                customNodeSwitcher: nodeSwitcher,
                 healthCheckMethod: healthCheckMethod,
                 name: chain.name,
                 logger: logger
@@ -41,13 +44,22 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     func updateConnection(_ connection: ChainConnection, chain: ChainModel) {
         let newUrls = extractNodeUrls(from: chain)
 
-        if connection.urls != newUrls {
+        if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
         }
     }
 
     private func extractNodeUrls(from chain: ChainModel) -> [URL] {
-        chain.nodes.sorted(by: { $0.order < $1.order }).compactMap { node in
+        let nodes: [ChainNodeModel]
+
+        switch chain.nodeSwitchStrategy {
+        case .roundRobin:
+            nodes = chain.nodes.sorted(by: { $0.order < $1.order })
+        case .uniform:
+            nodes = chain.nodes.shuffled()
+        }
+
+        return nodes.compactMap { node in
             let builder = URLBuilder(urlTemplate: node.url)
 
             return try? builder.buildBy { apiKeyType in
