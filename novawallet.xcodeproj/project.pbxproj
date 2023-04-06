@@ -901,6 +901,16 @@
 		843F657126584D2C00829C14 /* JsonSingleProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */; };
 		843F657A265854A700829C14 /* CrowdloanDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */; };
 		843F9ABC29DDAF8F004F1737 /* JSONRPCTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F9ABB29DDAF8F004F1737 /* JSONRPCTimeout.swift */; };
+		843F9AC429DDBF8D004F1737 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F9AC329DDBF8D004F1737 /* SafariWebExtensionHandler.swift */; };
+		843F9AC729DDBF8D004F1737 /* _locales in Resources */ = {isa = PBXBuildFile; fileRef = 843F9AC629DDBF8D004F1737 /* _locales */; };
+		843F9AC929DDBF8D004F1737 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 843F9AC829DDBF8D004F1737 /* images */; };
+		843F9ACB29DDBF8D004F1737 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 843F9ACA29DDBF8D004F1737 /* manifest.json */; };
+		843F9ACD29DDBF8D004F1737 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 843F9ACC29DDBF8D004F1737 /* background.js */; };
+		843F9ACF29DDBF8D004F1737 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 843F9ACE29DDBF8D004F1737 /* content.js */; };
+		843F9AD129DDBF8D004F1737 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 843F9AD029DDBF8D004F1737 /* popup.html */; };
+		843F9AD329DDBF8D004F1737 /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = 843F9AD229DDBF8D004F1737 /* popup.css */; };
+		843F9AD529DDBF8D004F1737 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 843F9AD429DDBF8D004F1737 /* popup.js */; };
+		843F9AD929DDBF8D004F1737 /* novaWalletWebExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 843F9AC129DDBF8C004F1737 /* novaWalletWebExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84403D7E25E91BC100494FD4 /* SuperIdentity.swift */; };
 		8440F4A22959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8440F4A12959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift */; };
 		8440F4A5295AB4E300CAFBF9 /* SecurityLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8440F4A4295AB4E300CAFBF9 /* SecurityLayerTests.swift */; };
@@ -1768,6 +1778,8 @@
 		849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */; };
 		849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */; };
 		849C0671276516F900394C82 /* BaseOperation+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */; };
+		849C961E29DEF1AA00E8BB8A /* metamask_min.js in Resources */ = {isa = PBXBuildFile; fileRef = 841BFD6827BA55C2000A16CE /* metamask_min.js */; };
+		849C961F29DEF4E500E8BB8A /* nova_min.js in Resources */ = {isa = PBXBuildFile; fileRef = 84D2F19A2771AA140040C680 /* nova_min.js */; };
 		849D14CA2994D9BC0048E947 /* StackIconTitleValueCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D14C92994D9BC0048E947 /* StackIconTitleValueCell.swift */; };
 		849D14CC2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D14CB2994EEA50048E947 /* GovernanceDelegateFlowDisplayInfo.swift */; };
 		849D3220291C26BA00D25839 /* GovernanceDAppList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D321F291C26BA00D25839 /* GovernanceDAppList.swift */; };
@@ -3312,6 +3324,13 @@
 			remoteGlobalIDString = 849013A724A80984008F705E;
 			remoteInfo = fearless;
 		};
+		843F9AD729DDBF8D004F1737 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 849013A024A80984008F705E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 843F9AC029DDBF8C004F1737;
+			remoteInfo = novaWalletWebExtension;
+		};
 		849013BF24A80986008F705E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 849013A024A80984008F705E /* Project object */;
@@ -3320,6 +3339,20 @@
 			remoteInfo = fearless;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		843F9ADF29DDBF8D004F1737 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				843F9AD929DDBF8D004F1737 /* novaWalletWebExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		002A29AE58EB53E915330490 /* ControllerAccountViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewFactory.swift; sourceTree = "<group>"; };
@@ -4228,6 +4261,17 @@
 		843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonSingleProviderSource.swift; sourceTree = "<group>"; };
 		843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanDisplayInfo.swift; sourceTree = "<group>"; };
 		843F9ABB29DDAF8F004F1737 /* JSONRPCTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPCTimeout.swift; sourceTree = "<group>"; };
+		843F9AC129DDBF8C004F1737 /* novaWalletWebExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = novaWalletWebExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		843F9AC329DDBF8D004F1737 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		843F9AC629DDBF8D004F1737 /* _locales */ = {isa = PBXFileReference; lastKnownFileType = folder; path = _locales; sourceTree = "<group>"; };
+		843F9AC829DDBF8D004F1737 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
+		843F9ACA29DDBF8D004F1737 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		843F9ACC29DDBF8D004F1737 /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.js; sourceTree = "<group>"; };
+		843F9ACE29DDBF8D004F1737 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = content.js; sourceTree = "<group>"; };
+		843F9AD029DDBF8D004F1737 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = popup.html; sourceTree = "<group>"; };
+		843F9AD229DDBF8D004F1737 /* popup.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = popup.css; sourceTree = "<group>"; };
+		843F9AD429DDBF8D004F1737 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = popup.js; sourceTree = "<group>"; };
+		843F9AD629DDBF8D004F1737 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		84403D7E25E91BC100494FD4 /* SuperIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperIdentity.swift; sourceTree = "<group>"; };
 		84403D8725E92A9C00494FD4 /* InitiatedBonding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitiatedBonding.swift; sourceTree = "<group>"; };
 		8440F4A12959B63300CAFBF9 /* SecuredApplicationHandlerProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecuredApplicationHandlerProxy.swift; sourceTree = "<group>"; };
@@ -6668,6 +6712,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		843F9ABE29DDBF8C004F1737 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		849013A524A80984008F705E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -8792,6 +8843,31 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		843F9AC229DDBF8D004F1737 /* novaWalletWebExtension */ = {
+			isa = PBXGroup;
+			children = (
+				843F9AC329DDBF8D004F1737 /* SafariWebExtensionHandler.swift */,
+				843F9AD629DDBF8D004F1737 /* Info.plist */,
+				843F9AC529DDBF8D004F1737 /* Resources */,
+			);
+			path = novaWalletWebExtension;
+			sourceTree = "<group>";
+		};
+		843F9AC529DDBF8D004F1737 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				843F9AC629DDBF8D004F1737 /* _locales */,
+				843F9AC829DDBF8D004F1737 /* images */,
+				843F9ACA29DDBF8D004F1737 /* manifest.json */,
+				843F9ACC29DDBF8D004F1737 /* background.js */,
+				843F9ACE29DDBF8D004F1737 /* content.js */,
+				843F9AD029DDBF8D004F1737 /* popup.html */,
+				843F9AD229DDBF8D004F1737 /* popup.css */,
+				843F9AD429DDBF8D004F1737 /* popup.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		84403D8625E92A6300494FD4 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -10395,6 +10471,7 @@
 				849013AA24A80984008F705E /* novawallet */,
 				849013C124A80986008F705E /* novawalletTests */,
 				8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */,
+				843F9AC229DDBF8D004F1737 /* novaWalletWebExtension */,
 				849013A924A80984008F705E /* Products */,
 				2698CD398B0412EB85D620AB /* Pods */,
 				BFB3965A583F11EF3045E064 /* Frameworks */,
@@ -10407,6 +10484,7 @@
 				849013A824A80984008F705E /* novawallet.app */,
 				849013BE24A80986008F705E /* novawalletTests.xctest */,
 				8438E1CF24BFAAD2001BDB13 /* novawalletIntegrationTests.xctest */,
+				843F9AC129DDBF8C004F1737 /* novaWalletWebExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -15876,6 +15954,23 @@
 			productReference = 8438E1CF24BFAAD2001BDB13 /* novawalletIntegrationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		843F9AC029DDBF8C004F1737 /* novaWalletWebExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 843F9ADA29DDBF8D004F1737 /* Build configuration list for PBXNativeTarget "novaWalletWebExtension" */;
+			buildPhases = (
+				843F9ABD29DDBF8C004F1737 /* Sources */,
+				843F9ABE29DDBF8C004F1737 /* Frameworks */,
+				843F9ABF29DDBF8C004F1737 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = novaWalletWebExtension;
+			productName = novaWalletWebExtension;
+			productReference = 843F9AC129DDBF8C004F1737 /* novaWalletWebExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		849013A724A80984008F705E /* novawallet */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 849013C724A80986008F705E /* Build configuration list for PBXNativeTarget "novawallet" */;
@@ -15889,10 +15984,12 @@
 				849013A524A80984008F705E /* Frameworks */,
 				849013A624A80984008F705E /* Resources */,
 				814F6F81A24CB16EC99A1485 /* [CP] Embed Pods Frameworks */,
+				843F9ADF29DDBF8D004F1737 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				843F9AD829DDBF8D004F1737 /* PBXTargetDependency */,
 			);
 			name = novawallet;
 			productName = fearless;
@@ -15927,13 +16024,16 @@
 		849013A024A80984008F705E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1150;
+				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1150;
 				ORGANIZATIONNAME = "Nova Foundation";
 				TargetAttributes = {
 					8438E1CE24BFAAD2001BDB13 = {
 						CreatedOnToolsVersion = 11.5;
 						TestTargetID = 849013A724A80984008F705E;
+					};
+					843F9AC029DDBF8C004F1737 = {
+						CreatedOnToolsVersion = 14.1;
 					};
 					849013A724A80984008F705E = {
 						CreatedOnToolsVersion = 11.5;
@@ -15961,6 +16061,7 @@
 				849013A724A80984008F705E /* novawallet */,
 				849013BD24A80986008F705E /* novawalletTests */,
 				8438E1CE24BFAAD2001BDB13 /* novawalletIntegrationTests */,
+				843F9AC029DDBF8C004F1737 /* novaWalletWebExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -15970,6 +16071,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		843F9ABF29DDBF8C004F1737 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				843F9ACD29DDBF8D004F1737 /* background.js in Resources */,
+				849C961F29DEF4E500E8BB8A /* nova_min.js in Resources */,
+				843F9AD329DDBF8D004F1737 /* popup.css in Resources */,
+				843F9AD129DDBF8D004F1737 /* popup.html in Resources */,
+				843F9AC929DDBF8D004F1737 /* images in Resources */,
+				843F9ACB29DDBF8D004F1737 /* manifest.json in Resources */,
+				843F9AC729DDBF8D004F1737 /* _locales in Resources */,
+				849C961E29DEF1AA00E8BB8A /* metamask_min.js in Resources */,
+				843F9ACF29DDBF8D004F1737 /* content.js in Resources */,
+				843F9AD529DDBF8D004F1737 /* popup.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -16304,6 +16422,14 @@
 				847A25C328D84A9C006AC9F5 /* ReferendumFetchTests.swift in Sources */,
 				84161DB627C39013005DF668 /* NftSyncIntegrationTests.swift in Sources */,
 				84FACB6625F56D5000F32ED4 /* CalculatorServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		843F9ABD29DDBF8C004F1737 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				843F9AC429DDBF8D004F1737 /* SafariWebExtensionHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -19543,6 +19669,11 @@
 			target = 849013A724A80984008F705E /* novawallet */;
 			targetProxy = 8438E1D424BFAAD2001BDB13 /* PBXContainerItemProxy */;
 		};
+		843F9AD829DDBF8D004F1737 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 843F9AC029DDBF8C004F1737 /* novaWalletWebExtension */;
+			targetProxy = 843F9AD729DDBF8D004F1737 /* PBXContainerItemProxy */;
+		};
 		849013C024A80986008F705E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 849013A724A80984008F705E /* novawallet */;
@@ -19662,6 +19793,138 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/novawallet.app/novawallet";
 			};
 			name = Release;
+		};
+		843F9ADB29DDBF8D004F1737 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = novaWalletWebExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = novaWalletWebExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Nova Foundation. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.web;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		843F9ADC29DDBF8D004F1737 /* Dev */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = novaWalletWebExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = novaWalletWebExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Nova Foundation. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.web;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Dev;
+		};
+		843F9ADD29DDBF8D004F1737 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = novaWalletWebExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = novaWalletWebExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Nova Foundation. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.web;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		843F9ADE29DDBF8D004F1737 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = novaWalletWebExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = novaWalletWebExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Nova Foundation. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev.web;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Staging;
 		};
 		849013C524A80986008F705E /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -19783,6 +20046,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013FA24A92A05008F705E /* novawallet.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -19815,6 +20079,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013F924A92A05008F705E /* novawallet.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -19961,6 +20226,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 849013F824A92A05008F705E /* novawallet.dev.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -20073,6 +20339,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84AE11CA273C007E00B294B7 /* novawallet.staging.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -20156,6 +20423,17 @@
 				8438E1D824BFAAD2001BDB13 /* Dev */,
 				8438E1D924BFAAD2001BDB13 /* Release */,
 				84AE11CF273C068700B294B7 /* Staging */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		843F9ADA29DDBF8D004F1737 /* Build configuration list for PBXNativeTarget "novaWalletWebExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				843F9ADB29DDBF8D004F1737 /* Debug */,
+				843F9ADC29DDBF8D004F1737 /* Dev */,
+				843F9ADD29DDBF8D004F1737 /* Release */,
+				843F9ADE29DDBF8D004F1737 /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
