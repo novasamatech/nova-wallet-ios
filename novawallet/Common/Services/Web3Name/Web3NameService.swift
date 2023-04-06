@@ -26,7 +26,6 @@ final class Web3NameService: AnyCancellableCleaning {
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol
-    let integrityVerifier: Web3NameIntegrityVerifierProtocol
 
     init(
         slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>,
@@ -34,7 +33,6 @@ final class Web3NameService: AnyCancellableCleaning {
         runtimeService: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
         kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol,
-        integrityVerifier: Web3NameIntegrityVerifierProtocol,
         operationQueue: OperationQueue
     ) {
         self.slip44CoinsProvider = slip44CoinsProvider
@@ -42,7 +40,6 @@ final class Web3NameService: AnyCancellableCleaning {
         self.runtimeService = runtimeService
         self.connection = connection
         self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
-        self.integrityVerifier = integrityVerifier
         self.operationQueue = operationQueue
     }
 
@@ -61,32 +58,36 @@ final class Web3NameService: AnyCancellableCleaning {
                 guard let self = self else {
                     return nil
                 }
-
                 guard let web3Name = try searchNameWrapper.targetOperation.extractNoCancellableResultData() else {
                     throw Web3NameServiceError.accountNotFound(name)
                 }
-                guard let serviceURL = web3Name.serviceURLs.first else {
+                guard let serviceId = web3Name.serviceId,
+                      let serviceURL = web3Name.serviceURLs.first else {
                     throw Web3NameServiceError.serviceNotFound(name, chainName)
                 }
-                guard let contentData = try? Data(contentsOf: serviceURL),
-                      let content = String(data: contentData, encoding: .utf8) else {
-                    throw Web3NameServiceError.serviceNotFound(name, chainName)
-                }
-                let formattedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard self.integrityVerifier.verify(
-                    serviceEndpointId: serviceURL.absoluteString,
-                    serviceEndpointContent: formattedContent
-                ) else {
-                    throw Web3NameServiceError.integrityNotPassed(name)
-                }
-
-                return self.kiltTransferAssetRecipientRepository.fetchRecipients(url: serviceURL)
+                return self.kiltTransferAssetRecipientRepository.fetchRecipients(
+                    url: serviceURL,
+                    hash: serviceId
+                )
             }
 
         recipientsWrapper.addDependency(wrapper: searchNameWrapper)
 
         let dependencies = searchNameWrapper.allOperations + recipientsWrapper.dependencies
         return .init(targetOperation: recipientsWrapper.targetOperation, dependencies: dependencies)
+    }
+
+    private func map(anyError error: Error, name: String) -> Web3NameServiceError {
+        if let web3NameError = error as? Web3NameServiceError {
+            return web3NameError
+        } else {
+            switch error as? KiltTransferAssetRecipientError {
+            case .verificationFailed:
+                return .integrityNotPassed(name)
+            default:
+                return .kiltService(error)
+            }
+        }
     }
 
     private func searchWeb3NameRecipients(
@@ -112,10 +113,8 @@ final class Web3NameService: AnyCancellableCleaning {
                     slip44CoinList: slip44CoinList
                 )
                 completionHandler(.success(result))
-            } catch let error as Web3NameServiceError {
-                completionHandler(.failure(error))
             } catch {
-                completionHandler(.failure(Web3NameServiceError.kiltService(error)))
+                completionHandler(.failure(self.map(anyError: error, name: name)))
             }
         }
 

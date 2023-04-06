@@ -2696,6 +2696,7 @@
 		887C44FD29AC7BCA00950F98 /* DelegateSingleVoteCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C44FC29AC7BCA00950F98 /* DelegateSingleVoteCollectionViewCell.swift */; };
 		887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C44FF29AC7ED600950F98 /* DelegationReferendumVotersModel.swift */; };
 		887C450229AC7FD900950F98 /* DelegationReferendumVotersError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */; };
+		88840D8C29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */; };
 		8886020B29D101B000C6344C /* Web3NameServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8886020A29D101B000C6344C /* Web3NameServiceError.swift */; };
 		8886020D29D1024900C6344C /* KiltWeb3n+schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8886020C29D1024900C6344C /* KiltWeb3n+schema.swift */; };
 		8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */; };
@@ -6091,6 +6092,7 @@
 		887C44FF29AC7ED600950F98 /* DelegationReferendumVotersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationReferendumVotersModel.swift; sourceTree = "<group>"; };
 		887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationReferendumVotersError.swift; sourceTree = "<group>"; };
 		8881572D295AE5C600912F69 /* MultiassetUserDataModel7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel7.xcdatamodel; sourceTree = "<group>"; };
+		88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltTransferAssetRecipientError.swift; sourceTree = "<group>"; };
 		8886020A29D101B000C6344C /* Web3NameServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameServiceError.swift; sourceTree = "<group>"; };
 		8886020C29D1024900C6344C /* KiltWeb3n+schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "KiltWeb3n+schema.swift"; sourceTree = "<group>"; };
 		8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleSpaceView.swift; sourceTree = "<group>"; };
@@ -14313,6 +14315,7 @@
 			children = (
 				8849AD6529C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift */,
 				8849AD6729C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift */,
+				88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */,
 			);
 			path = Web3Names;
 			sourceTree = "<group>";
@@ -18131,6 +18134,7 @@
 				84DF21B12536DDC1005454AE /* TransferConfirmCommand.swift in Sources */,
 				887C44FD29AC7BCA00950F98 /* DelegateSingleVoteCollectionViewCell.swift in Sources */,
 				AEA0C8BC2681140700F9666F /* YourValidatorList+CustomList.swift in Sources */,
+				88840D8C29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift in Sources */,
 				84E83AA428632AF50000B418 /* XcmPalletTransfer.swift in Sources */,
 				880855FC28D0C3DF004255E7 /* CrowdloansLocalStorageSubscriber.swift in Sources */,
 				8499FE6827BD1EA600712589 /* DistributedStorageFactory.swift in Sources */,
