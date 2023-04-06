@@ -40,7 +40,10 @@ extension Web3NameServiceError: ErrorContentConvertible {
             )
         case let .searchInProgress(name):
             title = strings.transferSetupErrorW3nSearchInProgressTitle(preferredLanguages: locale?.rLanguages)
-            message = strings.transferSetupErrorW3nSearchInProgressSubtitle(name, preferredLanguages: locale?.rLanguages)
+            message = strings.transferSetupErrorW3nSearchInProgressSubtitle(
+                name,
+                preferredLanguages: locale?.rLanguages
+            )
         case let .slip44CodeNotFound(token):
             title = strings.transferSetupErrorW3nTokenNotFoundTitle(token, preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nTokenNotFoundSubtitle(token, preferredLanguages: locale?.rLanguages)

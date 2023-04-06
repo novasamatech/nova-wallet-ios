@@ -161,9 +161,10 @@ final class TransferSetupPresenter {
         if recipient.isValid(using: destinationChainAsset?.chain.chainFormat) {
             recipientAddress = .external(.init(name: name, address: recipient.account))
             childPresenter?.updateRecepient(partialAddress: recipient.account)
+            view?.didReceiveRecipientInputState(focused: false, empty: nil)
         } else {
-            didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
             recipientAddress = .external(.init(name: name))
+            didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
         }
     }
 }
@@ -333,6 +334,11 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
             return
         }
 
+        if recipientAddress?.isExternal == true {
+            recipientAddress = nil
+            childPresenter?.updateRecepient(partialAddress: "")
+        }
+
         if section == 0 {
             destinationChainAsset = nil
         } else {
@@ -344,10 +350,6 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         provideChainsViewModel()
         updateYourWalletsButton()
-
-        if recipientAddress?.isExternal == true {
-            recipientAddress = .external(.init(name: ""))
-        }
 
         if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
