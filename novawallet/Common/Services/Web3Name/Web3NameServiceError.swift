@@ -11,7 +11,7 @@ enum Web3NameServiceError: Error {
     case invalidAddress(Chain)
     case integrityNotPassed(Name)
     case searchInProgress(Name)
-    case slip44CodeNotFound(token: String)
+    case tokenNotFound(token: String)
 }
 
 extension Web3NameServiceError: ErrorContentConvertible {
@@ -53,7 +53,7 @@ extension Web3NameServiceError: ErrorContentConvertible {
                 name,
                 preferredLanguages: locale?.rLanguages
             )
-        case let .slip44CodeNotFound(token):
+        case let .tokenNotFound(token):
             title = strings.transferSetupErrorW3nTokenNotFoundTitle(token, preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nTokenNotFoundSubtitle(token, preferredLanguages: locale?.rLanguages)
         default:

@@ -129,11 +129,26 @@ final class Web3NameService: AnyCancellableCleaning {
         )
     }
 
+    private func tokenMatcher(
+        _ assetId: Caip19.AssetId,
+        slip44CoinCode: Int?,
+        evmContractAddress: String?
+    ) -> Bool {
+        switch assetId.knownToken {
+        case let .slip44(coin):
+            return slip44CoinCode == coin
+        case let .erc20(contract):
+            return evmContractAddress == contract
+        default:
+            return false
+        }
+    }
+
     private func handleSearchWeb3NameResult(
         response: TransferAssetRecipientResponse?,
         name: String,
         chainAsset: ChainAsset,
-        originAsset: AssetModel,
+        originAsset _: AssetModel,
         slip44CoinList: Slip44CoinList
     ) throws -> [Web3NameTransferAssetRecipientAccount] {
         let chain = chainAsset.chain
@@ -142,16 +157,21 @@ final class Web3NameService: AnyCancellableCleaning {
             throw Web3NameServiceError.serviceNotFound(name, chain.name)
         }
 
-        guard let coin = slip44CoinList.first(where: {
+        let evmContractAddress = chainAsset.asset.evmContractAddress
+        let coin = slip44CoinList.first(where: {
             $0.symbol == chainAsset.asset.symbol
-        }) ?? slip44CoinList.first(where: {
-            $0.symbol == originAsset.symbol
-        }), let slip44Code = Int(coin.index) else {
-            throw Web3NameServiceError.slip44CodeNotFound(token: chainAsset.asset.symbol)
+        }).map { Int($0.index) } ?? nil
+
+        if evmContractAddress == nil, coin == nil {
+            throw Web3NameServiceError.tokenNotFound(token: chainAsset.asset.symbol)
         }
 
         guard let recipients = response.first(where: {
-            $0.key.chainId.match(chain.chainId) && slip44Code == $0.key.slip44Code
+            $0.key.chainId.match(chain.chainId) && tokenMatcher(
+                $0.key,
+                slip44CoinCode: coin,
+                evmContractAddress: evmContractAddress
+            )
         })?.value else {
             throw Web3NameServiceError.serviceNotFound(name, chain.name)
         }
