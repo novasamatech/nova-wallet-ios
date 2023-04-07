@@ -25,10 +25,13 @@ window.addEventListener("message", ({ data, source }) => {
   }
 
   if (data.origin === "dapp-request") {
-    browser.runtime.sendMessage({ greeting: "dapp" }).then((response) => {
-        console.log("Received response: ", response);
+    console.log("Request: ", data);
+    browser.runtime.sendMessage(data).then((response) => {
+        console.log("Response: ", response);
+        const responseData = {id: data.id, response: response, origin: "content"};
+        window.postMessage(responseData, "*");
     });
-
-    // window.webkit.messageHandlers.\(name).postMessage(data);
   }
 });
+
+window.dispatchEvent(new Event('ethereum#initialized'));
