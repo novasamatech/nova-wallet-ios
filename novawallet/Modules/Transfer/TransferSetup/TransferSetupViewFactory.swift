@@ -75,7 +75,7 @@ struct TransferSetupViewFactory {
     private static func createInteractor(
         for chainAsset: ChainAsset
     ) -> TransferSetupInteractor? {
-        let chainId = KnowChainId.kilt
+        let kiltChainId = KnowChainId.kilt
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
@@ -83,8 +83,8 @@ struct TransferSetupViewFactory {
             for: slip44CoinsUrl
         )
 
-        guard let connection = chainRegistry.getConnection(for: chainId),
-              let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+        guard let kiltConnection = chainRegistry.getConnection(for: kiltChainId),
+              let kiltRuntimeService = chainRegistry.getRuntimeProvider(for: kiltChainId) else {
             return nil
         }
         let syncService = XcmTransfersSyncService(
@@ -102,8 +102,8 @@ struct TransferSetupViewFactory {
         let web3NameService = Web3NameService(
             slip44CoinsProvider: slip44CoinsProvider,
             web3NamesOperationFactory: web3NamesOperationFactory,
-            runtimeService: runtimeService,
-            connection: connection,
+            runtimeService: kiltRuntimeService,
+            connection: kiltConnection,
             kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepository(),
             operationQueue: operationQueue
         )
