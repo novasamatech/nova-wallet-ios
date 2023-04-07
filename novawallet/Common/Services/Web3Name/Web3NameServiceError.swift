@@ -45,9 +45,9 @@ extension Web3NameServiceError: ErrorContentConvertible {
             message = strings.transferSetupErrorW3nIntegrityNotPassedSubtitle(
                 fullName,
                 fullName,
-				preferredLanguages: locale?.rLanguages
+                preferredLanguages: locale?.rLanguages
             )
-  		case let .searchInProgress(name):
+        case let .searchInProgress(name):
             title = strings.transferSetupErrorW3nSearchInProgressTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nSearchInProgressSubtitle(
                 name,
