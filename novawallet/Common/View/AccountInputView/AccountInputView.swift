@@ -430,6 +430,7 @@ class AccountInputView: BackgroundedContentControl {
             if currentValue != inputViewModel.inputHandler.value {
                 textField.text = inputViewModel.inputHandler.value
                 sendActions(for: .editingChanged)
+                delegate?.accountInputViewDidPaste(self)
             }
 
             updateControlsState()

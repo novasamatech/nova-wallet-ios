@@ -1,6 +1,6 @@
-typealias KiltTransferAssetRecipientResponse = [String: [KiltTransferAssetRecipientAccount]]
+typealias KiltTransferAssetRecipientResponse = [String: [Web3NameTransferAssetRecipientAccount]]
 
-struct KiltTransferAssetRecipientAccount: Codable {
+struct Web3NameTransferAssetRecipientAccount: Codable {
     let account: String
     let description: String?
 

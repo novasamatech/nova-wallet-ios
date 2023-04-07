@@ -2650,7 +2650,7 @@
 		8849AD6629C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6529C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift */; };
 		8849AD6829C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6729C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift */; };
 		8849AD6A29C35D3300F4F7FF /* KiltTransferAssetRecipientRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6929C35D3300F4F7FF /* KiltTransferAssetRecipientRepositoryTests.swift */; };
-		8849AD6C29C37EB800F4F7FF /* ReceipientKiltView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6B29C37EB800F4F7FF /* ReceipientKiltView.swift */; };
+		8849AD6C29C37EB800F4F7FF /* Web3NameReceipientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6B29C37EB800F4F7FF /* Web3NameReceipientView.swift */; };
 		8849AD6E29C4690F00F4F7FF /* String+checkLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6D29C4690F00F4F7FF /* String+checkLength.swift */; };
 		8849C5E6297FA17500DE35CC /* ReleaseChangeLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849C5E5297FA17500DE35CC /* ReleaseChangeLog.swift */; };
 		8849C5E8297FBB1F00DE35CC /* InAppUpdatesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849C5E7297FBB1F00DE35CC /* InAppUpdatesService.swift */; };
@@ -2697,6 +2697,7 @@
 		887C450029AC7ED600950F98 /* DelegationReferendumVotersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C44FF29AC7ED600950F98 /* DelegationReferendumVotersModel.swift */; };
 		887C450229AC7FD900950F98 /* DelegationReferendumVotersError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */; };
 		88840D8C29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */; };
+		88840D8A29DEA975002EFFFD /* TransferSetupRecipientAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88840D8929DEA975002EFFFD /* TransferSetupRecipientAccount.swift */; };
 		8886020B29D101B000C6344C /* Web3NameServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8886020A29D101B000C6344C /* Web3NameServiceError.swift */; };
 		8886020D29D1024900C6344C /* KiltWeb3n+schema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8886020C29D1024900C6344C /* KiltWeb3n+schema.swift */; };
 		8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */; };
@@ -2772,7 +2773,7 @@
 		88E8CF5E28E3789600C90112 /* CrowdloanEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E8CF5D28E3789600C90112 /* CrowdloanEmptyView.swift */; };
 		88F19DDE28D8D0A100F6E459 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F19DDD28D8D0A100F6E459 /* Either.swift */; };
 		88F19DE028D8D0F600F6E459 /* LoadableViewModelState+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F19DDF28D8D0F600F6E459 /* LoadableViewModelState+Addition.swift */; };
-		88F33F1329CC1ECD006125D5 /* KiltAddressesSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F33F1229CC1ECD006125D5 /* KiltAddressesSelectionState.swift */; };
+		88F33F1329CC1ECD006125D5 /* Web3NameAddressesSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F33F1229CC1ECD006125D5 /* Web3NameAddressesSelectionState.swift */; };
 		88F33F1529CC1F92006125D5 /* Slip44CoinList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F33F1429CC1F92006125D5 /* Slip44CoinList.swift */; };
 		88F34FD228FF045400712BDE /* BindableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F34FD128FF045400712BDE /* BindableView.swift */; };
 		88F34FD428FFE64400712BDE /* ReferendumDAppCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F34FD328FFE64400712BDE /* ReferendumDAppCellView.swift */; };
@@ -6045,7 +6046,7 @@
 		8849AD6529C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltTransferAssetRecipientRepository.swift; sourceTree = "<group>"; };
 		8849AD6729C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltTransferAssetRecipientResponse.swift; sourceTree = "<group>"; };
 		8849AD6929C35D3300F4F7FF /* KiltTransferAssetRecipientRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltTransferAssetRecipientRepositoryTests.swift; sourceTree = "<group>"; };
-		8849AD6B29C37EB800F4F7FF /* ReceipientKiltView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceipientKiltView.swift; sourceTree = "<group>"; };
+		8849AD6B29C37EB800F4F7FF /* Web3NameReceipientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameReceipientView.swift; sourceTree = "<group>"; };
 		8849AD6D29C4690F00F4F7FF /* String+checkLength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+checkLength.swift"; sourceTree = "<group>"; };
 		8849C5E5297FA17500DE35CC /* ReleaseChangeLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseChangeLog.swift; sourceTree = "<group>"; };
 		8849C5E7297FBB1F00DE35CC /* InAppUpdatesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppUpdatesService.swift; sourceTree = "<group>"; };
@@ -6093,6 +6094,7 @@
 		887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationReferendumVotersError.swift; sourceTree = "<group>"; };
 		8881572D295AE5C600912F69 /* MultiassetUserDataModel7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel7.xcdatamodel; sourceTree = "<group>"; };
 		88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltTransferAssetRecipientError.swift; sourceTree = "<group>"; };
+		88840D8929DEA975002EFFFD /* TransferSetupRecipientAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupRecipientAccount.swift; sourceTree = "<group>"; };
 		8886020A29D101B000C6344C /* Web3NameServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameServiceError.swift; sourceTree = "<group>"; };
 		8886020C29D1024900C6344C /* KiltWeb3n+schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "KiltWeb3n+schema.swift"; sourceTree = "<group>"; };
 		8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleSpaceView.swift; sourceTree = "<group>"; };
@@ -6169,7 +6171,7 @@
 		88E8CF5D28E3789600C90112 /* CrowdloanEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanEmptyView.swift; sourceTree = "<group>"; };
 		88F19DDD28D8D0A100F6E459 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		88F19DDF28D8D0F600F6E459 /* LoadableViewModelState+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoadableViewModelState+Addition.swift"; sourceTree = "<group>"; };
-		88F33F1229CC1ECD006125D5 /* KiltAddressesSelectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltAddressesSelectionState.swift; sourceTree = "<group>"; };
+		88F33F1229CC1ECD006125D5 /* Web3NameAddressesSelectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameAddressesSelectionState.swift; sourceTree = "<group>"; };
 		88F33F1429CC1F92006125D5 /* Slip44CoinList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slip44CoinList.swift; sourceTree = "<group>"; };
 		88F34FD128FF045400712BDE /* BindableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableView.swift; sourceTree = "<group>"; };
 		88F34FD328FFE64400712BDE /* ReferendumDAppCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumDAppCellView.swift; sourceTree = "<group>"; };
@@ -10424,9 +10426,10 @@
 				848F8B212863BD1000204BC4 /* TransferSetupInputState.swift */,
 				842B17FE28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift */,
 				84B28FC328C54441007A1006 /* OnChainTransferAmount.swift */,
-				88F33F1229CC1ECD006125D5 /* KiltAddressesSelectionState.swift */,
+				88F33F1229CC1ECD006125D5 /* Web3NameAddressesSelectionState.swift */,
 				8863C7AF29D49CB70068AD54 /* Web3NameViewModelFactory.swift */,
 				8846F71D29D5675E00B8B776 /* Web3NameRecipientListViewModel.swift */,
+				88840D8929DEA975002EFFFD /* TransferSetupRecipientAccount.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -13724,7 +13727,7 @@
 				8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */,
 				88F7715F28BEA589008C028A /* YourWalletsIconDetailsView.swift */,
 				848F8B2A2864824200204BC4 /* AssetListChainControlView.swift */,
-				8849AD6B29C37EB800F4F7FF /* ReceipientKiltView.swift */,
+				8849AD6B29C37EB800F4F7FF /* Web3NameReceipientView.swift */,
 				88FA446529CB100500E9CF57 /* SelectableAddressTableViewCell.swift */,
 			);
 			path = View;
@@ -18330,6 +18333,7 @@
 				842A735E27DB2EC4006EE1EA /* OperationDetailsModel.swift in Sources */,
 				844DAADD28ABC5E2008E11DA /* LedgerDevice.swift in Sources */,
 				8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */,
+				88840D8A29DEA975002EFFFD /* TransferSetupRecipientAccount.swift in Sources */,
 				84EE780627C4DF130027357F /* DAppSearchInteractor.swift in Sources */,
 				84F3B27C27F419B100D64CF5 /* BaseSyncService.swift in Sources */,
 				84AE7AB727D3AC4B00495267 /* RMRKV1DetailsInteractor.swift in Sources */,
@@ -18786,7 +18790,7 @@
 				883DB17A297A416400EFB7D8 /* GovernanceDelegateView.swift in Sources */,
 				8434B5FC298D292E00FACF4C /* GovernanceBaseEditDelegationLayout.swift in Sources */,
 				84FF26862849530E003EC78D /* AccountId+Dummy.swift in Sources */,
-				8849AD6C29C37EB800F4F7FF /* ReceipientKiltView.swift in Sources */,
+				8849AD6C29C37EB800F4F7FF /* Web3NameReceipientView.swift in Sources */,
 				4040F1394A73AC2FE598242C /* ControllerAccountConfirmationViewController.swift in Sources */,
 				C6E5671768DA68535DA5B1C7 /* ControllerAccountConfirmationViewFactory.swift in Sources */,
 				270C21973CB61F0BF3D2D1E3 /* CrowdloanListProtocols.swift in Sources */,
@@ -19090,7 +19094,7 @@
 				D840B64C33EF47E723905378 /* OperationDetailsViewFactory.swift in Sources */,
 				84355CE628B507AD004E5C5E /* LedgerAccountAmount.swift in Sources */,
 				841E5553282E35D000C8438F /* StakingParachainPresenter.swift in Sources */,
-				88F33F1329CC1ECD006125D5 /* KiltAddressesSelectionState.swift in Sources */,
+				88F33F1329CC1ECD006125D5 /* Web3NameAddressesSelectionState.swift in Sources */,
 				EB8FCA00BD20C63D578D6F80 /* TransferSetupProtocols.swift in Sources */,
 				3B7EEC888C19F954B5EB1012 /* OnChainTransferSetupWireframe.swift in Sources */,
 				86EB789787B731691B36C827 /* OnChainTransferSetupPresenter.swift in Sources */,
