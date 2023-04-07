@@ -9,28 +9,26 @@ protocol KiltTransferAssetRecipientRepositoryProtocol {
     ) -> CompoundOperationWrapper<TransferAssetRecipientResponse>
 }
 
-final class KiltTransferAssetRecipientRepository {
+final class KiltTransferAssetRecipientRepository: BaseFetchOperationFactory {
     let integrityVerifier: Web3NameIntegrityVerifierProtocol
+    let timeout: TimeInterval?
 
-    init(integrityVerifier: Web3NameIntegrityVerifierProtocol) {
+    init(
+        integrityVerifier: Web3NameIntegrityVerifierProtocol,
+        timeout: TimeInterval? = 60
+    ) {
         self.integrityVerifier = integrityVerifier
+        self.timeout = timeout
     }
-}
 
-extension KiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol {
-    func fetchRecipients(
-        url: URL,
-        hash: String
-    ) -> CompoundOperationWrapper<TransferAssetRecipientResponse> {
-        let fetchOperation = ClosureOperation<KiltTransferAssetRecipientResponse> {
-            guard let data = try? Data(contentsOf: url) else {
-                throw KiltTransferAssetRecipientError.fileNotFound
-            }
-
+    override func createResultFactory<T>(hash: String?) -> AnyNetworkResultFactory<T> where T: Decodable {
+        AnyNetworkResultFactory<T> { data in
             guard let content = String(data: data, encoding: .utf8) else {
                 throw KiltTransferAssetRecipientError.corruptedData
             }
-
+            guard let hash = hash else {
+                throw KiltTransferAssetRecipientError.verificationFailed
+            }
             guard self.integrityVerifier.verify(
                 serviceEndpointId: hash,
                 serviceEndpointContent: content.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -40,12 +38,21 @@ extension KiltTransferAssetRecipientRepository: KiltTransferAssetRecipientReposi
 
             do {
                 let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                return try decoder.decode(KiltTransferAssetRecipientResponse.self, from: data)
+                return try decoder.decode(T.self, from: data)
             } catch {
                 throw KiltTransferAssetRecipientError.decodingDataFailed(error)
             }
         }
+    }
+}
+
+extension KiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol {
+    func fetchRecipients(
+        url: URL,
+        hash: String
+    ) -> CompoundOperationWrapper<TransferAssetRecipientResponse> {
+        let fetchOperation: BaseOperation<KiltTransferAssetRecipientResponse> =
+            createFetchOperation(from: url, timeout: timeout, hash: hash)
 
         let mapOperation = ClosureOperation {
             let fetchResult = try fetchOperation.extractNoCancellableResultData()
