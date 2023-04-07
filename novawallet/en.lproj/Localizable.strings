@@ -708,6 +708,11 @@
 "transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Error resolving w3n";
 "transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "KILT w3n services are unavailable. Try again later or enter the KILT address manually";
 "transfer.setup.kilt.addresses.title" = "%@ addresses for %@";
+"transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
+"transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
+"transfer.setup.error.w3n.token.not.found.title" = "Token %@ is not supported yet";
+"transfer.setup.error.w3n.token.not.found.subtitle" = "Nova can't resolve slip44 code for token %@";
+"transfer.setup.recipient.input.placeholder" = "Address or w3n";
 "common.not.now" = "Not now";
 "common.open.settings" = "Open settings";
 "qr.scan.error.camera.restricted" = "Unfortunately, access to the camera is restricted.";
