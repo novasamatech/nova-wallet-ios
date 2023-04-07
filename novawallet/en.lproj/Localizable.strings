@@ -713,7 +713,7 @@
 "transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
 "transfer.setup.error.w3n.token.not.found.title" = "Token %@ is not supported yet";
-"transfer.setup.error.w3n.token.not.found.subtitle" = "Nova can't resolve slip44 code for token %@";
+"transfer.setup.error.w3n.token.not.found.subtitle" = "Nova can't resolve code for token %@";
 "transfer.setup.recipient.input.placeholder" = "Address or w3n";
 "common.not.now" = "Not now";
 "common.open.settings" = "Open settings";
