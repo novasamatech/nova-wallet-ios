@@ -51,7 +51,7 @@ final class TransferSetupViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
-    let receipientKiltView = ReceipientKiltView()
+    let web3NameReceipientView = Web3NameReceipientView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -117,8 +117,8 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.setCustomSpacing(0, after: titleStackView)
         containerView.stackView.addArrangedSubview(recepientInputView)
         containerView.stackView.setCustomSpacing(8.0, after: recepientInputView)
-        containerView.stackView.addArrangedSubview(receipientKiltView)
-        containerView.stackView.setCustomSpacing(16, after: receipientKiltView)
+        containerView.stackView.addArrangedSubview(web3NameReceipientView)
+        containerView.stackView.setCustomSpacing(16, after: web3NameReceipientView)
 
         containerView.stackView.addArrangedSubview(amountView)
         amountView.snp.makeConstraints { make in

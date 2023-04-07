@@ -1,7 +1,7 @@
 import RobinHood
 import SubstrateSdk
 
-typealias Web3NameSearchResult = Result<[KiltTransferAssetRecipientAccount], Web3NameServiceError>
+typealias Web3NameSearchResult = Result<[Web3NameTransferAssetRecipientAccount], Web3NameServiceError>
 
 protocol Web3NameServiceProtocol {
     func search(
@@ -61,7 +61,7 @@ final class Web3NameService: AnyCancellableCleaning {
                 guard let web3Name = try searchNameWrapper.targetOperation.extractNoCancellableResultData() else {
                     throw Web3NameServiceError.accountNotFound(name)
                 }
-                guard let serviceURL = web3Name.serviceURLs.first else {
+                guard let serviceURL = web3Name.serviceURLs.last else {
                     throw Web3NameServiceError.serviceNotFound(name, chainName)
                 }
 
@@ -120,7 +120,7 @@ final class Web3NameService: AnyCancellableCleaning {
         chainAsset: ChainAsset,
         originAsset: AssetModel,
         slip44CoinList: Slip44CoinList
-    ) throws -> [KiltTransferAssetRecipientAccount] {
+    ) throws -> [Web3NameTransferAssetRecipientAccount] {
         let chain = chainAsset.chain
 
         guard let response = response else {

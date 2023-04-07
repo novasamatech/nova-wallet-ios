@@ -135,7 +135,7 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
             DispatchQueue.main.async {
                 switch result {
                 case let .success(recipients):
-                    self.presenter?.didReceive(kiltRecipients: recipients, for: web3Name)
+                    self.presenter?.didReceive(recipients: recipients, for: web3Name)
                 case let .failure(error):
                     self.presenter?.didReceive(error: error)
                 }

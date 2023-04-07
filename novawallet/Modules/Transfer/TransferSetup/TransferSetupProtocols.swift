@@ -20,7 +20,7 @@ protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
     func didSwitchCrossChain()
     func didSwitchOnChain()
     func changeYourWalletsViewState(_ state: YourWalletsControl.State)
-    func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>)
+    func didReceiveWeb3NameRecipient(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>)
     func didReceiveRecipientInputState(focused: Bool, empty: Bool?)
 }
 
@@ -57,7 +57,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceive(error: Error)
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
-    func didReceive(kiltRecipients: [KiltTransferAssetRecipientAccount], for name: String)
+    func didReceive(recipients: [Web3NameTransferAssetRecipientAccount], for name: String)
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable, Web3NameAddressListPresentable {

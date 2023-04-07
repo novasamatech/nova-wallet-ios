@@ -82,7 +82,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.receipientKiltView.delegate = self
+        rootView.web3NameReceipientView.delegate = self
     }
 
     private func setupLocalization() {
@@ -287,8 +287,8 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         )
     }
 
-    func didReceiveKiltRecipient(viewModel: LoadableViewModelState<ReceipientKiltView.Model>) {
-        rootView.receipientKiltView.bind(viewModel: viewModel)
+    func didReceiveWeb3NameRecipient(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>) {
+        rootView.web3NameReceipientView.bind(viewModel: viewModel)
     }
 
     func didReceiveRecipientInputState(focused: Bool, empty: Bool?) {
@@ -357,7 +357,7 @@ extension TransferSetupViewController: AmountInputAccessoryViewDelegate {
     }
 }
 
-extension TransferSetupViewController: ReceipientKiltViewDelegate {
+extension TransferSetupViewController: Web3NameReceipientViewDelegate {
     func didTapOnAccountList() {}
 
     func didTapOnAccount(address: AccountAddress) {
@@ -375,5 +375,11 @@ extension TransferSetupViewController: AccountInputViewDelegate {
     func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
         inputView.textField.resignFirstResponder()
         return true
+    }
+
+    func accountInputViewDidPaste(_ inputView: AccountInputView) {
+        if !inputView.textField.isFirstResponder {
+            presenter.complete(recipient: inputView.textField.text ?? "")
+        }
     }
 }

@@ -308,6 +308,8 @@ extension CreateWatchOnlyViewController: AccountInputViewDelegate {
     func accountInputViewWillStartEditing(_ inputView: AccountInputView) {
         updateReturnButton(for: inputView)
     }
+
+    func accountInputViewDidPaste(_: AccountInputView) {}
 }
 
 extension CreateWatchOnlyViewController: CreateWatchOnlyViewProtocol {

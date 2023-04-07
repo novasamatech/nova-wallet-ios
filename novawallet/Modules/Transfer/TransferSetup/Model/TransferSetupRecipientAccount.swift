@@ -4,7 +4,7 @@ enum TransferSetupRecipientAccount {
 
     struct ExternalAccount {
         var name: String
-        var address: AccountAddress?
+        var address: LoadableViewModelState<AccountAddress?>
     }
 
     var address: AccountAddress? {
@@ -12,7 +12,7 @@ enum TransferSetupRecipientAccount {
         case let .address(address):
             return address
         case let .external(external):
-            return external.address
+            return external.address.value ?? nil
         }
     }
 

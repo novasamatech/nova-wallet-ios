@@ -2,12 +2,12 @@ import UIKit
 import SnapKit
 
 @objc
-protocol ReceipientKiltViewDelegate {
+protocol Web3NameReceipientViewDelegate {
     func didTapOnAccount(address: AccountAddress)
 }
 
-final class ReceipientKiltView: UIView {
-    weak var delegate: ReceipientKiltViewDelegate?
+final class Web3NameReceipientView: UIView {
+    weak var delegate: Web3NameReceipientViewDelegate?
 
     let activityIndicator: UIActivityIndicatorView = .create {
         $0.hidesWhenStopped = true
@@ -62,7 +62,7 @@ final class ReceipientKiltView: UIView {
     }
 }
 
-extension ReceipientKiltView {
+extension Web3NameReceipientView {
     typealias Model = AccountAddress?
 
     func bind(viewModel: LoadableViewModelState<Model>) {
