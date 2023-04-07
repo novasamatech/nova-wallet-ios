@@ -5,7 +5,8 @@ class BaseFetchOperationFactory {
     func createFetchOperation<T>(
         from url: URL,
         shouldUseCache: Bool = true,
-        timeout: TimeInterval? = nil
+        timeout: TimeInterval? = nil,
+        hash: String? = nil
     ) -> BaseOperation<T> where T: Decodable {
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
@@ -27,10 +28,14 @@ class BaseFetchOperationFactory {
             return request
         }
 
-        let resultFactory = AnyNetworkResultFactory<T> { data in
-            try JSONDecoder().decode(T.self, from: data)
-        }
+        let resultFactory: AnyNetworkResultFactory<T> = createResultFactory(hash: hash)
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+    }
+
+    func createResultFactory<T>(hash _: String?) -> AnyNetworkResultFactory<T> where T: Decodable {
+        AnyNetworkResultFactory<T> { data in
+            try JSONDecoder().decode(T.self, from: data)
+        }
     }
 }
