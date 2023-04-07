@@ -5,7 +5,7 @@ final class Web3NameIntegrityVerifierTests: XCTestCase {
     private let verifier = Web3NameIntegrityVerifier()
     
     func testCorectHash() throws {
-        let serviceEndpointId = "did:kilt:4pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy#\(Sample.hash)"
+        let serviceEndpointId = Sample.hash
         let url = json(Sample.resource)!
         let data = try Data(contentsOf: url)
         let serviceEndpointContent = String(data: data, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -15,7 +15,7 @@ final class Web3NameIntegrityVerifierTests: XCTestCase {
     }
     
     func testInvalidHash() throws {
-        let serviceEndpointId = "did:kilt:4pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy#Uinvalid-hash="
+        let serviceEndpointId = Sample.invalidHash
         let url = json(Sample.resource)!
         let data = try Data(contentsOf: url)
         let serviceEndpointContent = String(data: data, encoding: .utf8)!
@@ -34,5 +34,6 @@ final class Web3NameIntegrityVerifierTests: XCTestCase {
 
 private enum Sample {
     static let hash = "UdY8PA3eq8NgtWvyRctUhskMAdsY9XHE1mhGzMYMcsDA="
+    static let invalidHash = "invalid-hash="
     static let resource = "kilt-addresses"
 }
