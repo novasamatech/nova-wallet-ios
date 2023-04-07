@@ -710,6 +710,11 @@
 "transfer.setup.error.w3n.integrity.not.passed.title" = "Проверка целостности не удалась";
 "transfer.setup.error.w3n.integrity.not.passed.subtitle" = "Приложение Nova обнаружило проблему с целостностью информации об адресах %@. Пожалуйста, свяжитесь с владельцем %@, чтобы решить проблему целостности";
 "transfer.setup.kilt.addresses.title" = "%@ адреса для %@";
+"transfer.setup.error.w3n.search.in.progress.title" = "Идет поиск адреса получателя";
+"transfer.setup.error.w3n.search.in.progress.subtitle" = "Пожалуйста, подождите пока завершится поиск имени %@";
+"transfer.setup.error.w3n.token.not.found.title" = "Токен %@ еще не поддерживается";
+"transfer.setup.error.w3n.token.not.found.subtitle" = "Nova не может найти slip44 код для %@ токена";
+"transfer.setup.recipient.input.placeholder" = "Адрес или w3n";
 "common.not.now" = "Не сейчас";
 "common.open.settings" = "Открыть настройки";
 "qr.scan.error.camera.restricted" = "К сожалению, доступ к камере ограничен.";
