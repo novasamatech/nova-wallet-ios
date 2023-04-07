@@ -9,6 +9,8 @@ enum Web3NameServiceError: Error {
     case slip44ListIsEmpty
     case kiltService(Error)
     case invalidAddress(Chain)
+    case searchInProgress(Name)
+    case slip44CodeNotFound(token: String)
 }
 
 extension Web3NameServiceError: ErrorContentConvertible {
@@ -36,6 +38,15 @@ extension Web3NameServiceError: ErrorContentConvertible {
                 chain,
                 preferredLanguages: locale?.rLanguages
             )
+        case let .searchInProgress(name):
+            title = strings.transferSetupErrorW3nSearchInProgressTitle(preferredLanguages: locale?.rLanguages)
+            message = strings.transferSetupErrorW3nSearchInProgressSubtitle(
+                name,
+                preferredLanguages: locale?.rLanguages
+            )
+        case let .slip44CodeNotFound(token):
+            title = strings.transferSetupErrorW3nTokenNotFoundTitle(token, preferredLanguages: locale?.rLanguages)
+            message = strings.transferSetupErrorW3nTokenNotFoundSubtitle(token, preferredLanguages: locale?.rLanguages)
         default:
             title = strings.transferSetupErrorW3nKiltServiceUnavailableTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nKiltServiceUnavailableSubtitle(

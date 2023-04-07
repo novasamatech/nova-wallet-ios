@@ -1,6 +1,6 @@
 import RobinHood
 
-typealias TransferAssetRecipientResponse = [Caip19.AssetId: [KiltTransferAssetRecipientAccount]]
+typealias TransferAssetRecipientResponse = [Caip19.AssetId: [Web3NameTransferAssetRecipientAccount]]
 
 protocol KiltTransferAssetRecipientRepositoryProtocol {
     func fetchRecipients(url: URL) -> CompoundOperationWrapper<TransferAssetRecipientResponse>

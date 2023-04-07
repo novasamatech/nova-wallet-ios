@@ -1,9 +1,9 @@
 import SoraFoundation
 protocol Web3NameViewModelFactoryProtocol {
     func recipientListViewModel(
-        kiltRecipients: [KiltTransferAssetRecipientAccount],
+        recipients: [Web3NameTransferAssetRecipientAccount],
         for name: String,
-        chainName: String,
+        chain: ChainModel,
         selectedAddress: String?
     ) -> Web3NameAddressListViewModel
 }
@@ -17,14 +17,15 @@ final class Web3NameViewModelFactory {
 
     private func recipientCellModel(
         selectedRecipientAddress: AccountAddress?,
-        recipient: KiltTransferAssetRecipientAccount
+        recipient: Web3NameTransferAssetRecipientAccount,
+        chainFormat: ChainFormat
     ) -> SelectableAddressTableViewCell.Model {
         let displayAddress = DisplayAddress(
             address: recipient.account,
             username: recipient.description ?? ""
         )
         let addressModel = displayAddressViewModelFactory
-            .createViewModel(from: displayAddress)
+            .createViewModel(from: displayAddress, using: chainFormat)
             .withPlaceholder(image: R.image.iconAddressPlaceholder()!)
 
         return SelectableAddressTableViewCell.Model(
@@ -36,23 +37,24 @@ final class Web3NameViewModelFactory {
 
 extension Web3NameViewModelFactory: Web3NameViewModelFactoryProtocol {
     func recipientListViewModel(
-        kiltRecipients: [KiltTransferAssetRecipientAccount],
+        recipients: [Web3NameTransferAssetRecipientAccount],
         for name: String,
-        chainName: String,
+        chain: ChainModel,
         selectedAddress: String?
     ) -> Web3NameAddressListViewModel {
         let title = LocalizableResource<String> { locale in
             R.string.localizable.transferSetupKiltAddressesTitle(
-                chainName,
+                chain.name,
                 KiltW3n.fullName(for: name),
                 preferredLanguages: locale.rLanguages
             )
         }
 
-        let items = kiltRecipients.map {
+        let items = recipients.map {
             recipientCellModel(
                 selectedRecipientAddress: selectedAddress,
-                recipient: $0
+                recipient: $0,
+                chainFormat: chain.chainFormat
             )
         }
 
@@ -60,7 +62,7 @@ extension Web3NameViewModelFactory: Web3NameViewModelFactoryProtocol {
             LocalizableResource { _ in item }
         }
 
-        let context = KiltAddressesSelectionState(accounts: kiltRecipients, name: name)
+        let context = Web3NameAddressesSelectionState(accounts: recipients, name: name)
 
         return .init(
             title: title,
