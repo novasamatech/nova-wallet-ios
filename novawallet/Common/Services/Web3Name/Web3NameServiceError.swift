@@ -7,7 +7,7 @@ enum Web3NameServiceError: Error {
     case accountNotFound(Name)
     case serviceNotFound(Name, Chain)
     case slip44ListIsEmpty
-    case kiltService(Error)
+    case internalFailure(Error)
     case invalidAddress(Chain)
     case integrityNotPassed(Name)
     case searchInProgress(Name)
@@ -56,7 +56,7 @@ extension Web3NameServiceError: ErrorContentConvertible {
         case let .tokenNotFound(token):
             title = strings.transferSetupErrorW3nTokenNotFoundTitle(token, preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nTokenNotFoundSubtitle(token, preferredLanguages: locale?.rLanguages)
-        default:
+        case .internalFailure, .slip44ListIsEmpty:
             title = strings.transferSetupErrorW3nKiltServiceUnavailableTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nKiltServiceUnavailableSubtitle(
                 preferredLanguages: locale?.rLanguages)
