@@ -136,7 +136,7 @@ final class TransferSetupPresenter {
         view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
     }
 
-    private func showWeb3NameAddressList(recipients: [Web3NameTransferAssetRecipientAccount], for name: String) {
+    private func showWeb3NameAddressList(recipients: [Web3TransferRecipient], for name: String) {
         guard let view = view else {
             return
         }
@@ -153,7 +153,7 @@ final class TransferSetupPresenter {
         wireframe.presentWeb3NameAddressListPicker(from: view, viewModel: viewModel, delegate: self)
     }
 
-    private func provideWeb3NameRecipientViewModel(_ recipient: Web3NameTransferAssetRecipientAccount?, name: String) {
+    private func provideWeb3NameRecipientViewModel(_ recipient: Web3TransferRecipient?, name: String) {
         guard let recipient = recipient else {
             if recipientAddress?.isExternal == true {
                 recipientAddress = .external(.init(name: name, address: .loaded(value: nil)))
@@ -223,7 +223,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         case .none, .address:
             childPresenter?.proceed()
         case let .external(externalAccount):
-            if externalAccount.address == nil {
+            if externalAccount.address.value == nil {
                 didReceive(error: Web3NameServiceError.searchInProgress(externalAccount.name))
             } else {
                 childPresenter?.proceed()
@@ -330,7 +330,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         updateYourWalletsButton()
     }
 
-    func didReceive(recipients: [Web3NameTransferAssetRecipientAccount], for name: String) {
+    func didReceive(recipients: [Web3TransferRecipient], for name: String) {
         if recipients.count > 1 {
             showWeb3NameAddressList(recipients: recipients, for: name)
         } else {

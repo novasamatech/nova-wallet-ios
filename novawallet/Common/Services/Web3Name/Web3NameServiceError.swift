@@ -9,8 +9,9 @@ enum Web3NameServiceError: Error {
     case slip44ListIsEmpty
     case kiltService(Error)
     case invalidAddress(Chain)
+    case integrityNotPassed(Name)
     case searchInProgress(Name)
-    case slip44CodeNotFound(token: String)
+    case tokenNotFound(token: String)
 }
 
 extension Web3NameServiceError: ErrorContentConvertible {
@@ -38,13 +39,21 @@ extension Web3NameServiceError: ErrorContentConvertible {
                 chain,
                 preferredLanguages: locale?.rLanguages
             )
+        case let .integrityNotPassed(name):
+            title = strings.transferSetupErrorW3nIntegrityNotPassedTitle(preferredLanguages: locale?.rLanguages)
+            let fullName = KiltW3n.fullName(for: name)
+            message = strings.transferSetupErrorW3nIntegrityNotPassedSubtitle(
+                fullName,
+                fullName,
+                preferredLanguages: locale?.rLanguages
+            )
         case let .searchInProgress(name):
             title = strings.transferSetupErrorW3nSearchInProgressTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nSearchInProgressSubtitle(
                 name,
                 preferredLanguages: locale?.rLanguages
             )
-        case let .slip44CodeNotFound(token):
+        case let .tokenNotFound(token):
             title = strings.transferSetupErrorW3nTokenNotFoundTitle(token, preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nTokenNotFoundSubtitle(token, preferredLanguages: locale?.rLanguages)
         default:
