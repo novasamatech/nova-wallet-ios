@@ -2,7 +2,7 @@ import RobinHood
 import SubstrateSdk
 import Foundation
 
-typealias Web3NameSearchResult = Result<[Web3NameTransferAssetRecipientAccount], Web3NameServiceError>
+typealias Web3NameSearchResult = Result<[Web3TransferRecipient], Web3NameServiceError>
 
 protocol Web3NameServiceProtocol {
     func search(
@@ -26,26 +26,26 @@ final class Web3NameService: AnyCancellableCleaning {
     let web3NamesOperationFactory: Web3NamesOperationFactoryProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
-    let kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol
+    let transferRecipientRepository: Web3TransferRecipientRepositoryProtocol
 
     init(
         slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>,
         web3NamesOperationFactory: Web3NamesOperationFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         connection: JSONRPCEngine,
-        kiltTransferAssetRecipientRepository: KiltTransferAssetRecipientRepositoryProtocol,
+        transferRecipientRepository: Web3TransferRecipientRepositoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.slip44CoinsProvider = slip44CoinsProvider
         self.web3NamesOperationFactory = web3NamesOperationFactory
         self.runtimeService = runtimeService
         self.connection = connection
-        self.kiltTransferAssetRecipientRepository = kiltTransferAssetRecipientRepository
+        self.transferRecipientRepository = transferRecipientRepository
         self.operationQueue = operationQueue
     }
 
     private func kiltRecipient(by name: String, chain: ChainModel) ->
-        CompoundOperationWrapper<TransferAssetRecipientResponse?> {
+        CompoundOperationWrapper<Web3TransferRecipientResponse?> {
         let searchNameWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
             name: name,
             service: KnownServices.transferAssetRecipient,
@@ -54,23 +54,23 @@ final class Web3NameService: AnyCancellableCleaning {
         )
         let chainName = chain.name
 
-        let recipientsWrapper: CompoundOperationWrapper<TransferAssetRecipientResponse?> =
-            OperationCombiningService.compoundWrapper(operationManager: operationManager) { [weak self] in
-                guard let self = self else {
-                    return nil
-                }
-                guard let web3Name = try searchNameWrapper.targetOperation.extractNoCancellableResultData() else {
-                    throw Web3NameServiceError.accountNotFound(name)
-                }
-                guard let serviceId = web3Name.serviceId,
-                      let serviceURL = web3Name.serviceURLs.first else {
-                    throw Web3NameServiceError.serviceNotFound(name, chainName)
-                }
-                return self.kiltTransferAssetRecipientRepository.fetchRecipients(
-                    url: serviceURL,
-                    hash: serviceId
-                )
+        let recipientsWrapper: CompoundOperationWrapper<Web3TransferRecipientResponse?>
+        recipientsWrapper = OperationCombiningService.compoundWrapper(
+            operationManager: operationManager
+        ) { [weak self] in
+            guard let self = self else {
+                return nil
             }
+            guard let web3Name = try searchNameWrapper.targetOperation.extractNoCancellableResultData() else {
+                throw Web3NameServiceError.accountNotFound(name)
+            }
+            guard let serviceId = web3Name.serviceId,
+                  let serviceURL = web3Name.serviceURLs.first else {
+                throw Web3NameServiceError.serviceNotFound(name, chainName)
+            }
+
+            return self.transferRecipientRepository.fetchRecipients(url: serviceURL, hash: serviceId)
+        }
 
         recipientsWrapper.addDependency(wrapper: searchNameWrapper)
 
@@ -145,12 +145,12 @@ final class Web3NameService: AnyCancellableCleaning {
     }
 
     private func handleSearchWeb3NameResult(
-        response: TransferAssetRecipientResponse?,
+        response: Web3TransferRecipientResponse?,
         name: String,
         chainAsset: ChainAsset,
         originAsset _: AssetModel,
         slip44CoinList: Slip44CoinList
-    ) throws -> [Web3NameTransferAssetRecipientAccount] {
+    ) throws -> [Web3TransferRecipient] {
         let chain = chainAsset.chain
 
         guard let response = response else {
