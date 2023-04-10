@@ -36,8 +36,10 @@ extension Caip19 {
 }
 
 extension Caip19 {
+    typealias Slip44CoinIndex = Int
+
     enum RegisteredToken: Equatable {
-        case slip44(coin: Int)
+        case slip44(coin: Slip44CoinIndex)
         case erc20(contract: String)
         case erc721(contract: String)
 
@@ -51,6 +53,28 @@ extension Caip19 {
                 return contract == otherContract
             default:
                 return false
+            }
+        }
+
+        static func createFromAsset(_ asset: AssetModel, slip44Store: Slip44CoinList) -> RegisteredToken? {
+            let assetType = asset.type.flatMap { AssetType(rawValue: $0) }
+
+            switch assetType {
+            case .evmAsset:
+                if let evmContract = asset.evmContractAddress {
+                    return .erc20(contract: evmContract)
+                } else {
+                    return nil
+                }
+            case .none, .statemine, .orml, .evmNative:
+                if
+                    let slip44 = slip44Store.matchFirstCaip19(
+                        of: MultichainToken.reserveTokensOf(symbol: asset.symbol)
+                    ) {
+                    return slip44
+                } else {
+                    return nil
+                }
             }
         }
     }
@@ -78,5 +102,13 @@ extension Caip19.AssetId {
             return nil
         }
         return coin
+    }
+
+    func match(chainId: String, token: Caip19.RegisteredToken) -> Bool {
+        guard self.chainId.match(chainId) else {
+            return false
+        }
+
+        return token == knownToken
     }
 }

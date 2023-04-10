@@ -7,11 +7,12 @@ typealias Web3NameSearchResult = Result<[Web3TransferRecipient], Web3NameService
 protocol Web3NameServiceProtocol {
     func search(
         name: String,
-        chainAsset: ChainAsset,
-        originAsset: AssetModel,
+        destinationChainAsset: ChainAsset,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     )
+
     func cancel()
+
     func setup()
 }
 
@@ -44,7 +45,7 @@ final class Web3NameService: AnyCancellableCleaning {
         self.operationQueue = operationQueue
     }
 
-    private func kiltRecipient(by name: String, chain: ChainModel) ->
+    private func createRecipientWrapper(by name: String, chain: ChainModel) ->
         CompoundOperationWrapper<Web3TransferRecipientResponse?> {
         let searchNameWrapper = web3NamesOperationFactory.searchWeb3NameWrapper(
             name: name,
@@ -86,19 +87,18 @@ final class Web3NameService: AnyCancellableCleaning {
             case .verificationFailed:
                 return .integrityNotPassed(name)
             default:
-                return .kiltService(error)
+                return .internalFailure(error)
             }
         }
     }
 
     private func searchWeb3NameRecipients(
         _ name: String,
-        chainAsset: ChainAsset,
-        originAsset: AssetModel,
+        destinationChainAsset: ChainAsset,
         slip44CoinList: Slip44CoinList,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     ) {
-        let recipientsWrapper = kiltRecipient(by: name, chain: chainAsset.chain)
+        let recipientsWrapper = createRecipientWrapper(by: name, chain: destinationChainAsset.chain)
 
         recipientsWrapper.targetOperation.completionBlock = { [weak self] in
             guard let self = self, recipientsWrapper === self.fetchRecipientsCancellableCall else {
@@ -111,8 +111,7 @@ final class Web3NameService: AnyCancellableCleaning {
                 let result = try self.handleSearchWeb3NameResult(
                     response: response,
                     name: name,
-                    chainAsset: chainAsset,
-                    originAsset: originAsset,
+                    destinationChainAsset: destinationChainAsset,
                     slip44CoinList: slip44CoinList
                 )
                 completionHandler(.success(result))
@@ -129,55 +128,31 @@ final class Web3NameService: AnyCancellableCleaning {
         )
     }
 
-    private func tokenMatcher(
-        _ assetId: Caip19.AssetId,
-        slip44CoinCode: Int?,
-        evmContractAddress: String?
-    ) -> Bool {
-        switch assetId.knownToken {
-        case let .slip44(coin):
-            return slip44CoinCode == coin
-        case let .erc20(contract):
-            return evmContractAddress == contract
-        default:
-            return false
-        }
-    }
-
     private func handleSearchWeb3NameResult(
         response: Web3TransferRecipientResponse?,
         name: String,
-        chainAsset: ChainAsset,
-        originAsset _: AssetModel,
+        destinationChainAsset: ChainAsset,
         slip44CoinList: Slip44CoinList
     ) throws -> [Web3TransferRecipient] {
-        let chain = chainAsset.chain
+        let chain = destinationChainAsset.chain
+        let asset = destinationChainAsset.asset
 
         guard let response = response else {
             throw Web3NameServiceError.serviceNotFound(name, chain.name)
         }
 
-        let evmContractAddress = chainAsset.asset.evmContractAddress
-        let coin = slip44CoinList.first(where: {
-            $0.symbol == chainAsset.asset.symbol
-        }).map { Int($0.index) } ?? nil
-
-        if evmContractAddress == nil, coin == nil {
-            throw Web3NameServiceError.tokenNotFound(token: chainAsset.asset.symbol)
+        guard
+            let caip19Token = Caip19.RegisteredToken.createFromAsset(asset, slip44Store: slip44CoinList) else {
+            throw Web3NameServiceError.tokenNotFound(token: asset.symbol)
         }
 
         guard let recipients = response.first(where: {
-            $0.key.chainId.match(chain.chainId) && tokenMatcher(
-                $0.key,
-                slip44CoinCode: coin,
-                evmContractAddress: evmContractAddress
-            )
+            $0.key.match(chainId: chain.chainId, token: caip19Token)
         })?.value else {
             throw Web3NameServiceError.serviceNotFound(name, chain.name)
         }
 
-        if recipients.count == 1,
-           !recipients[0].isValid(using: chain.chainFormat) {
+        if recipients.count == 1, !recipients[0].isValid(using: chain.chainFormat) {
             throw Web3NameServiceError.invalidAddress(chain.name)
         }
 
@@ -192,8 +167,7 @@ extension Web3NameService: Web3NameServiceProtocol {
 
     func search(
         name: String,
-        chainAsset: ChainAsset,
-        originAsset: AssetModel,
+        destinationChainAsset: ChainAsset,
         completionHandler: @escaping (Web3NameSearchResult) -> Void
     ) {
         var fetchCoinListWrapper: CompoundOperationWrapper<Slip44CoinList?>?
@@ -211,8 +185,7 @@ extension Web3NameService: Web3NameServiceProtocol {
                 }
                 self?.searchWeb3NameRecipients(
                     name,
-                    chainAsset: chainAsset,
-                    originAsset: originAsset,
+                    destinationChainAsset: destinationChainAsset,
                     slip44CoinList: list,
                     completionHandler: completionHandler
                 )
