@@ -7,6 +7,7 @@ protocol ConnectionPoolProtocol {
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
     func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
     func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
+    func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine?
 }
 
 protocol ConnectionStateSubscription: AnyObject {
@@ -97,6 +98,20 @@ extension ConnectionPool: ConnectionPoolProtocol {
         }
 
         return connections[chainId]?.target as? ChainConnection
+    }
+
+    func getOneShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let connection = connectionFactory.createOnShotConnection(for: chain) {
+            return connection
+        } else {
+            return connections[chain.chainId]?.target as? JSONRPCEngine
+        }
     }
 }
 

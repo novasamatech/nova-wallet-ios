@@ -126,9 +126,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v9/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v10/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v9/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v10/chains_dev.json")!
         #endif
     }
 
