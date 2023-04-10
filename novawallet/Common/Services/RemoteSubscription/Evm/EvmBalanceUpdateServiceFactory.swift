@@ -47,7 +47,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         blockNumber: Core.BlockNumber,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
+        guard let connection = chainRegistry.getOneShotConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
 
@@ -80,7 +80,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         blockNumber: Core.BlockNumber,
         completionClosure: EvmNativeUpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
-        guard let connection = chainRegistry.getConnection(for: chainAssetId.chainId) else {
+        guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
 
