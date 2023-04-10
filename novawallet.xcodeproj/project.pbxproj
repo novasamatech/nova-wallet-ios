@@ -2339,6 +2339,7 @@
 		84E4932727325D4E000534F2 /* AssetListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E4932627325D4E000534F2 /* AssetListViewModelFactory.swift */; };
 		84E58C7D275E125100BD441A /* PublicSans-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 84E58C7C275E124A00BD441A /* PublicSans-ExtraLight.otf */; };
 		84E5D14227E32E8B00D27B1E /* AccountInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E5D14127E32E8B00D27B1E /* AccountInputView.swift */; };
+		84E5DA3129E05E2D00E008B0 /* evm-config.js in Resources */ = {isa = PBXBuildFile; fileRef = 84E5DA3029E05E2D00E008B0 /* evm-config.js */; };
 		84E63C1728FFC69A0093534A /* DiscreteGradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E63C1628FFC69A0093534A /* DiscreteGradientSlider.swift */; };
 		84E6D57C262E2CE8000EA3F5 /* OperationCombiningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6D57B262E2CE8000EA3F5 /* OperationCombiningService.swift */; };
 		84E731C326652B5C00D5B15A /* AttributedString+Crowdloan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E731C226652B5C00D5B15A /* AttributedString+Crowdloan.swift */; };
@@ -5719,6 +5720,7 @@
 		84E58C7C275E124A00BD441A /* PublicSans-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-ExtraLight.otf"; sourceTree = "<group>"; };
 		84E5CD532809315300A98DC4 /* MultiassetUserDataModel4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel4.xcdatamodel; sourceTree = "<group>"; };
 		84E5D14127E32E8B00D27B1E /* AccountInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInputView.swift; sourceTree = "<group>"; };
+		84E5DA3029E05E2D00E008B0 /* evm-config.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "evm-config.js"; sourceTree = "<group>"; };
 		84E63C1628FFC69A0093534A /* DiscreteGradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscreteGradientSlider.swift; sourceTree = "<group>"; };
 		84E6D57B262E2CE8000EA3F5 /* OperationCombiningService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationCombiningService.swift; sourceTree = "<group>"; };
 		84E731C226652B5C00D5B15A /* AttributedString+Crowdloan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttributedString+Crowdloan.swift"; sourceTree = "<group>"; };
@@ -8864,6 +8866,7 @@
 				843F9AD029DDBF8D004F1737 /* popup.html */,
 				843F9AD229DDBF8D004F1737 /* popup.css */,
 				843F9AD429DDBF8D004F1737 /* popup.js */,
+				84E5DA3029E05E2D00E008B0 /* evm-config.js */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -16078,6 +16081,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84E5DA3129E05E2D00E008B0 /* evm-config.js in Resources */,
 				843F9ACD29DDBF8D004F1737 /* background.js in Resources */,
 				849C961F29DEF4E500E8BB8A /* nova_min.js in Resources */,
 				843F9AD329DDBF8D004F1737 /* popup.css in Resources */,

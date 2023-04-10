@@ -17,6 +17,7 @@ function injectScript(document, path) {
 
 injectScript(document, "nova_min.js");
 injectScript(document, "metamask_min.js");
+injectScript(document, "evm-config.js");
 
 window.addEventListener("message", ({ data, source }) => {
   // only allow messages from our window, by the loader

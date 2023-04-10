@@ -47,7 +47,8 @@
         {
           "resources": [
               "nova_min.js",
-              "metamask_min.js"
+              "metamask_min.js",
+              "evm-config.js"
           ],
           "matches": [
             "<all_urls>"
