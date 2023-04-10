@@ -7,7 +7,7 @@ final class EvmWebSocketOperationFactory {
     let connection: JSONRPCEngine
     let timeout: Int
 
-    init(connection: JSONRPCEngine, timeout: Int = 60) {
+    init(connection: JSONRPCEngine, timeout: Int = JSONRPCTimeout.singleNode) {
         self.connection = connection
         self.timeout = timeout
     }

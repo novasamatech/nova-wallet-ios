@@ -106,7 +106,7 @@ struct TransferConfirmOnChainViewFactory {
 
         guard
             let ethereumResponse = SelectedWalletSettings.shared.value?.fetchEthereum(for: account.accountId),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let connection = chainRegistry.getOneShotConnection(for: chain.chainId),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
