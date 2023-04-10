@@ -43,8 +43,8 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
+    func showWeb3NameRecipient()
     func complete(recipient: String)
-    func showOptions(for address: AccountAddress)
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {

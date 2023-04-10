@@ -360,8 +360,8 @@ extension TransferSetupViewController: AmountInputAccessoryViewDelegate {
 extension TransferSetupViewController: Web3NameReceipientViewDelegate {
     func didTapOnAccountList() {}
 
-    func didTapOnAccount(address: AccountAddress) {
-        presenter.showOptions(for: address)
+    func didTapOnAccount() {
+        presenter.showWeb3NameRecipient()
     }
 }
 

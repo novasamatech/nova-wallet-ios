@@ -3,7 +3,7 @@ import SnapKit
 
 @objc
 protocol Web3NameReceipientViewDelegate {
-    func didTapOnAccount(address: AccountAddress)
+    func didTapOnAccount()
 }
 
 final class Web3NameReceipientView: UIView {
@@ -19,7 +19,7 @@ final class Web3NameReceipientView: UIView {
         $0.mode = .detailsIcon
         $0.detailsView.detailsLabel.textColor = R.color.colorIconPositive()
         $0.detailsView.detailsLabel.font = .regularFootnote
-        $0.detailsView.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        $0.detailsView.detailsLabel.lineBreakMode = .byTruncatingTail
         $0.detailsView.spacing = 4
         $0.spacing = 4
     }
@@ -52,13 +52,7 @@ final class Web3NameReceipientView: UIView {
     }
 
     @objc private func didTapOnView() {
-        guard let delegate = delegate,
-              let model = model,
-              let address = model else {
-            return
-        }
-
-        delegate.didTapOnAccount(address: address)
+        delegate?.didTapOnAccount()
     }
 }
 
