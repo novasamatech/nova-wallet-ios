@@ -1,11 +1,13 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol ChainRegistryProtocol: AnyObject {
     var availableChainIds: Set<ChainModel.Id>? { get }
 
     func getChain(for chainId: ChainModel.Id) -> ChainModel?
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
+    func getOneShotConnection(for chainId: ChainModel.Id) -> JSONRPCEngine?
     func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol?
 
     func chainsSubscribe(
@@ -208,6 +210,20 @@ extension ChainRegistry: ChainRegistryProtocol {
         }
 
         return connectionPool.getConnection(for: chainId)
+    }
+
+    func getOneShotConnection(for chainId: ChainModel.Id) -> JSONRPCEngine? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard let chain = availableChains.first(where: { $0.chainId == chainId }) else {
+            return nil
+        }
+
+        return connectionPool.getOneShotConnection(for: chain)
     }
 
     func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol? {

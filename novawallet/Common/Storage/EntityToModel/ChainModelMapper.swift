@@ -12,6 +12,16 @@ final class ChainModelMapper {
     private lazy var jsonEncoder = JSONEncoder()
     private lazy var jsonDecoder = JSONDecoder()
 
+    private func createNodeFeatures(from entityData: Data?) throws -> Set<ChainNodeModel.Feature>? {
+        let featureList = try entityData.flatMap { try jsonDecoder.decode([String].self, from: $0) }
+
+        return featureList.flatMap { Set($0.compactMap { .init(rawValue: $0) }) }
+    }
+
+    private func serializeNodeFeature(from model: Set<ChainNodeModel.Feature>?) throws -> Data? {
+        try model.flatMap { try jsonEncoder.encode($0) }
+    }
+
     private func createAsset(from entity: CDAsset) throws -> AssetModel {
         let typeExtras: JSON?
 
@@ -47,11 +57,14 @@ final class ChainModelMapper {
         )
     }
 
-    private func createChainNode(from entity: CDChainNodeItem) -> ChainNodeModel {
-        ChainNodeModel(
+    private func createChainNode(from entity: CDChainNodeItem) throws -> ChainNodeModel {
+        let features = try createNodeFeatures(from: entity.features)
+
+        return ChainNodeModel(
             url: entity.url!,
             name: entity.name!,
-            order: entity.order
+            order: entity.order,
+            features: features
         )
     }
 
@@ -116,8 +129,8 @@ final class ChainModelMapper {
         for entity: CDChain,
         from model: ChainModel,
         context: NSManagedObjectContext
-    ) {
-        let nodeEntities: [CDChainNodeItem] = model.nodes.map { node in
+    ) throws {
+        let nodeEntities: [CDChainNodeItem] = try model.nodes.map { node in
             let nodeEntity: CDChainNodeItem
 
             let maybeExistingEntity = entity.nodes?
@@ -132,6 +145,7 @@ final class ChainModelMapper {
             nodeEntity.url = node.url
             nodeEntity.name = node.name
             nodeEntity.order = node.order
+            nodeEntity.features = try serializeNodeFeature(from: node.features)
 
             return nodeEntity
         }
@@ -283,13 +297,15 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             return try createAsset(from: asset)
         } ?? []
 
-        let nodes: [ChainNodeModel] = entity.nodes?.compactMap { anyNode in
+        let nodes: [ChainNodeModel] = try entity.nodes?.compactMap { anyNode in
             guard let node = anyNode as? CDChainNodeItem else {
                 return nil
             }
 
-            return createChainNode(from: node)
+            return try createChainNode(from: node)
         } ?? []
+
+        let nodeSwitchStrategy = ChainModel.NodeSwitchStrategy(rawStrategy: entity.nodeSwitchStrategy)
 
         let types: ChainModel.TypesSettings?
 
@@ -314,6 +330,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             name: entity.name!,
             assets: Set(assets),
             nodes: Set(nodes),
+            nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: UInt16(bitPattern: entity.addressPrefix),
             types: types,
             icon: entity.icon!,
@@ -345,13 +362,14 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasGovernance = model.hasGovernanceV2
         entity.noSubstrateRuntime = model.noSubstrateRuntime
         entity.order = model.order
+        entity.nodeSwitchStrategy = model.nodeSwitchStrategy.rawValue
         entity.additional = try model.additional.map {
             try jsonEncoder.encode($0)
         }
 
         try updateEntityAssets(for: entity, from: model, context: context)
 
-        updateEntityNodes(for: entity, from: model, context: context)
+        try updateEntityNodes(for: entity, from: model, context: context)
 
         updateExternalApis(for: entity, from: model, context: context)
 
