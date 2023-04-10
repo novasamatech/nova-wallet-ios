@@ -68,6 +68,7 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
 
                     return Web3NameSearchResponse(
                         owner: ownership.owner,
+                        serviceId: transferAssetService?.serviceId,
                         serviceURLs: urls
                     )
                 }
