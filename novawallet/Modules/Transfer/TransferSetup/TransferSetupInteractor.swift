@@ -121,16 +121,14 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
     }
 
     func search(web3Name: String) {
-        guard let destinationChainAsset = destinationChainAsset,
-              let originAsset = chainsStore.getChainAsset(for: originChainAssetId)?.asset else {
+        guard let destinationChainAsset = destinationChainAsset else {
             return
         }
 
         web3NamesService.cancel()
         web3NamesService.search(
             name: web3Name,
-            chainAsset: destinationChainAsset,
-            originAsset: originAsset
+            destinationChainAsset: destinationChainAsset
         ) { result in
             DispatchQueue.main.async {
                 switch result {
