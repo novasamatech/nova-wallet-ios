@@ -11,4 +11,8 @@ struct Web3TransferRecipient: Codable {
         }
         return accountId != nil
     }
+
+    func normalizedAddress(for chainFormat: ChainFormat) -> AccountAddress? {
+        try? account.toAccountId(using: chainFormat).toAddress(using: chainFormat)
+    }
 }
