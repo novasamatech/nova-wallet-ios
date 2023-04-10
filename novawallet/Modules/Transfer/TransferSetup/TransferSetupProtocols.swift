@@ -57,10 +57,11 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceive(error: Error)
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
-    func didReceive(recipients: [Web3NameTransferAssetRecipientAccount], for name: String)
+    func didReceive(recipients: [Web3TransferRecipient], for name: String)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable, Web3NameAddressListPresentable {
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
+    Web3NameAddressListPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,

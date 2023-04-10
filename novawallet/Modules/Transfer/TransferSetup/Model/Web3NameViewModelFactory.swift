@@ -1,7 +1,7 @@
 import SoraFoundation
 protocol Web3NameViewModelFactoryProtocol {
     func recipientListViewModel(
-        recipients: [Web3NameTransferAssetRecipientAccount],
+        recipients: [Web3TransferRecipient],
         for name: String,
         chain: ChainModel,
         selectedAddress: String?
@@ -17,7 +17,7 @@ final class Web3NameViewModelFactory {
 
     private func recipientCellModel(
         selectedRecipientAddress: AccountAddress?,
-        recipient: Web3NameTransferAssetRecipientAccount,
+        recipient: Web3TransferRecipient,
         chainFormat: ChainFormat
     ) -> SelectableAddressTableViewCell.Model {
         let displayAddress = DisplayAddress(
@@ -37,7 +37,7 @@ final class Web3NameViewModelFactory {
 
 extension Web3NameViewModelFactory: Web3NameViewModelFactoryProtocol {
     func recipientListViewModel(
-        recipients: [Web3NameTransferAssetRecipientAccount],
+        recipients: [Web3TransferRecipient],
         for name: String,
         chain: ChainModel,
         selectedAddress: String?
