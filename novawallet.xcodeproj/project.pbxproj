@@ -2647,8 +2647,8 @@
 		8849AD5D29C3088800F4F7FF /* Caip19ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD5C29C3088800F4F7FF /* Caip19ParserTests.swift */; };
 		8849AD6029C3526700F4F7FF /* Caip2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD5F29C3526700F4F7FF /* Caip2.swift */; };
 		8849AD6229C3532600F4F7FF /* String+split.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6129C3532600F4F7FF /* String+split.swift */; };
-		8849AD6629C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6529C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift */; };
-		8849AD6829C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6729C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift */; };
+		8849AD6629C35B8900F4F7FF /* Web3TransferRecipientRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6529C35B8900F4F7FF /* Web3TransferRecipientRepository.swift */; };
+		8849AD6829C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6729C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift */; };
 		8849AD6C29C37EB800F4F7FF /* Web3NameReceipientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6B29C37EB800F4F7FF /* Web3NameReceipientView.swift */; };
 		8849AD6E29C4690F00F4F7FF /* String+checkLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849AD6D29C4690F00F4F7FF /* String+checkLength.swift */; };
 		8849C5E6297FA17500DE35CC /* ReleaseChangeLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8849C5E5297FA17500DE35CC /* ReleaseChangeLog.swift */; };
@@ -6042,8 +6042,8 @@
 		8849AD5C29C3088800F4F7FF /* Caip19ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Caip19ParserTests.swift; sourceTree = "<group>"; };
 		8849AD5F29C3526700F4F7FF /* Caip2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Caip2.swift; sourceTree = "<group>"; };
 		8849AD6129C3532600F4F7FF /* String+split.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+split.swift"; sourceTree = "<group>"; };
-		8849AD6529C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltTransferAssetRecipientRepository.swift; sourceTree = "<group>"; };
-		8849AD6729C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiltTransferAssetRecipientResponse.swift; sourceTree = "<group>"; };
+		8849AD6529C35B8900F4F7FF /* Web3TransferRecipientRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientRepository.swift; sourceTree = "<group>"; };
+		8849AD6729C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3TransferRecipientResponse.swift; sourceTree = "<group>"; };
 		8849AD6B29C37EB800F4F7FF /* Web3NameReceipientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameReceipientView.swift; sourceTree = "<group>"; };
 		8849AD6D29C4690F00F4F7FF /* String+checkLength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+checkLength.swift"; sourceTree = "<group>"; };
 		8849C5E5297FA17500DE35CC /* ReleaseChangeLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleaseChangeLog.swift; sourceTree = "<group>"; };
@@ -14313,8 +14313,8 @@
 		8849AD6429C35B5300F4F7FF /* Web3Names */ = {
 			isa = PBXGroup;
 			children = (
-				8849AD6529C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift */,
-				8849AD6729C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift */,
+				8849AD6529C35B8900F4F7FF /* Web3TransferRecipientRepository.swift */,
+				8849AD6729C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift */,
 				88840D8B29DEDCD3002EFFFD /* KiltTransferAssetRecipientError.swift */,
 			);
 			path = Web3Names;
@@ -16582,7 +16582,7 @@
 				880855F828D09DA8004255E7 /* CrowdloanContributionDataMapper.swift in Sources */,
 				882AA13028AE64DC0093BC63 /* CrowdloanYourContributionsTotalCell.swift in Sources */,
 				88D271EF298A6B14000AABF7 /* VotesTableViewCell.swift in Sources */,
-				8849AD6829C35CEB00F4F7FF /* KiltTransferAssetRecipientResponse.swift in Sources */,
+				8849AD6829C35CEB00F4F7FF /* Web3TransferRecipientResponse.swift in Sources */,
 				849976B827B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift in Sources */,
 				844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */,
 				883DB17E297A521900EFB7D8 /* GovernanceDelegatesOrder.swift in Sources */,
@@ -19098,7 +19098,7 @@
 				36177C077867DBAEAA2675F7 /* TransferSetupViewController.swift in Sources */,
 				03348B3D555AA12FF2A95779 /* TransferSetupViewLayout.swift in Sources */,
 				A5880E3789BC9E30835BDCC7 /* TransferSetupViewFactory.swift in Sources */,
-				8849AD6629C35B8900F4F7FF /* KiltTransferAssetRecipientRepository.swift in Sources */,
+				8849AD6629C35B8900F4F7FF /* Web3TransferRecipientRepository.swift in Sources */,
 				8453DE5728FD27390055345C /* Gov2SubscriptionFactory.swift in Sources */,
 				90ACE8690DA095E4F45494E9 /* TransferConfirmProtocols.swift in Sources */,
 				4E262D60ACAF44A1FD18FD1D /* TransferConfirmWireframe.swift in Sources */,

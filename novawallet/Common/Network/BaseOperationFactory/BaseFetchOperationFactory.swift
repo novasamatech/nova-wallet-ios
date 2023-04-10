@@ -2,13 +2,12 @@ import Foundation
 import RobinHood
 
 class BaseFetchOperationFactory {
-    func createFetchOperation<T>(
+    func createRequestFactory(
         from url: URL,
-        shouldUseCache: Bool = true,
-        timeout: TimeInterval? = nil,
-        hash: String? = nil
-    ) -> BaseOperation<T> where T: Decodable {
-        let requestFactory = BlockNetworkRequestFactory {
+        shouldUseCache: Bool,
+        timeout: TimeInterval?
+    ) -> BlockNetworkRequestFactory {
+        BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
 
             request.setValue(
@@ -27,13 +26,20 @@ class BaseFetchOperationFactory {
             request.httpMethod = HttpMethod.get.rawValue
             return request
         }
+    }
 
-        let resultFactory: AnyNetworkResultFactory<T> = createResultFactory(hash: hash)
+    func createFetchOperation<T>(
+        from url: URL,
+        shouldUseCache: Bool = true,
+        timeout: TimeInterval? = nil
+    ) -> BaseOperation<T> where T: Decodable {
+        let requestFactory = createRequestFactory(from: url, shouldUseCache: shouldUseCache, timeout: timeout)
+        let resultFactory: AnyNetworkResultFactory<T> = createResultFactory()
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
-    func createResultFactory<T>(hash _: String?) -> AnyNetworkResultFactory<T> where T: Decodable {
+    func createResultFactory<T>() -> AnyNetworkResultFactory<T> where T: Decodable {
         AnyNetworkResultFactory<T> { data in
             try JSONDecoder().decode(T.self, from: data)
         }
