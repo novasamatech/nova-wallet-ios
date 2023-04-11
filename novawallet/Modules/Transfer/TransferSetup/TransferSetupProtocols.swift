@@ -43,8 +43,8 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
+    func showWeb3NameRecipient()
     func complete(recipient: String)
-    func showOptions(for address: AccountAddress)
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
@@ -81,4 +81,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
     )
 
     func hideYourWallets(from view: TransferSetupViewProtocol?)
+
+    func checkDismissing(view: TransferSetupViewProtocol?) -> Bool
 }
