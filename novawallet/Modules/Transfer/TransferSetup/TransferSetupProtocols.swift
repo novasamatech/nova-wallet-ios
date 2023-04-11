@@ -81,4 +81,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Add
     )
 
     func hideYourWallets(from view: TransferSetupViewProtocol?)
+
+    func checkDismissing(view: TransferSetupViewProtocol?) -> Bool
 }
