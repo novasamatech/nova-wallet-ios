@@ -26,7 +26,7 @@ final class Web3NameViewModelFactory {
         )
         let addressModel = displayAddressViewModelFactory
             .createViewModel(from: displayAddress, using: chainFormat)
-            .withPlaceholder(image: R.image.iconAddressPlaceholder()!)
+            .withPlaceholder(image: R.image.iconAddressPlaceholder32()!)
 
         return SelectableAddressTableViewCell.Model(
             address: addressModel,
