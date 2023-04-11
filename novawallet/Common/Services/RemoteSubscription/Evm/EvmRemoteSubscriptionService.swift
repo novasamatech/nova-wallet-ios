@@ -63,7 +63,7 @@ class EvmRemoteSubscriptionService {
         let container: EvmRemoteSubscriptionProtocol
 
         switch request {
-        case let .erc20Balace(params):
+        case let .erc20Balance(params):
             container = ERC20SubscriptionManager(
                 chainId: chainId,
                 params: params,
