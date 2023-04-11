@@ -27,9 +27,9 @@ final class TransferSetupPresenter {
             case .none, .address:
                 view?.didReceiveWeb3NameRecipient(viewModel: .loaded(value: nil))
             case let .external(externalAccount):
-                let isLoading = externalAccount.address.isLoading == true
+                let isLoading = externalAccount.recipient.isLoading == true
                 view?.didReceiveWeb3NameRecipient(viewModel: isLoading ? .loading :
-                    .loaded(value: externalAccount.address.value ?? nil))
+                    .loaded(value: externalAccount.recipient.value??.displayTitle))
             }
         }
     }
@@ -156,19 +156,39 @@ final class TransferSetupPresenter {
     private func provideWeb3NameRecipientViewModel(_ recipient: Web3TransferRecipient?, name: String) {
         guard let recipient = recipient else {
             if recipientAddress?.isExternal == true {
-                recipientAddress = .external(.init(name: name, address: .loaded(value: nil)))
+                recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
                 view?.didReceiveRecipientInputState(focused: true, empty: true)
             }
             return
         }
+
         let chain = destinationChainAsset?.chain ?? originChainAsset.chain
-        if recipient.isValid(using: chain.chainFormat) {
-            recipientAddress = .external(.init(name: name, address: .loaded(value: recipient.account)))
-            childPresenter?.updateRecepient(partialAddress: recipient.account)
+
+        if let account = recipient.normalizedAddress(for: chain.chainFormat) {
+            let recipientViewModel = TransferSetupRecipientAccount.ExternalAccountValue(
+                address: account,
+                description: recipient.description
+            )
+            recipientAddress = .external(.init(name: name, recipient: .loaded(value: recipientViewModel)))
+            childPresenter?.updateRecepient(partialAddress: account)
             view?.didReceiveRecipientInputState(focused: false, empty: nil)
         } else {
-            recipientAddress = .external(.init(name: name, address: .loaded(value: nil)))
+            recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
             didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
+        }
+    }
+
+    private func proceedWithExternal(account: TransferSetupRecipientAccount.ExternalAccount) {
+        switch account.recipient {
+        case let .cached(value), let .loaded(value):
+            if value?.address == nil {
+                didReceive(error: Web3NameServiceError.accountNotFound(account.name))
+            } else {
+                childPresenter?.proceed()
+            }
+        case .loading:
+            // wait the result
+            break
         }
     }
 }
@@ -185,7 +205,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         if let w3n = KiltW3n.web3Name(nameWithScheme: partialAddress) {
             recipientAddress = .external(.init(
                 name: KiltW3n.fullName(for: w3n),
-                address: .cached(value: nil)
+                recipient: .cached(value: nil)
             ))
         } else {
             recipientAddress = .address(partialAddress)
@@ -223,11 +243,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         case .none, .address:
             childPresenter?.proceed()
         case let .external(externalAccount):
-            if externalAccount.address.value == nil {
-                didReceive(error: Web3NameServiceError.searchInProgress(externalAccount.name))
-            } else {
-                childPresenter?.proceed()
-            }
+            proceedWithExternal(account: externalAccount)
         }
     }
 
@@ -261,25 +277,31 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func complete(recipient: String) {
+        guard !wireframe.checkDismissing(view: view) else {
+            return
+        }
+
         guard let web3Name = KiltW3n.web3Name(nameWithScheme: recipient) else {
             return
         }
         recipientAddress = .external(.init(
             name: KiltW3n.fullName(for: web3Name),
-            address: .loading
+            recipient: .loading
         ))
         interactor.search(web3Name: web3Name)
     }
 
-    func showOptions(for address: AccountAddress) {
-        guard let view = view else {
+    func showWeb3NameRecipient() {
+        guard let view = view, let address = recipientAddress?.address else {
             return
         }
+
+        let chain = destinationChainAsset?.chain ?? originChainAsset.chain
 
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: originChainAsset.chain,
+            chain: chain,
             locale: view.selectedLocale
         )
     }
@@ -317,7 +339,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
                 self?.view?.didReceiveRecipientInputState(focused: true, empty: nil)
                 self?.recipientAddress = .external(.init(
                     name: self?.recipientAddress?.name ?? "",
-                    address: .loaded(value: nil)
+                    recipient: .loaded(value: nil)
                 ))
             }
         } else {
