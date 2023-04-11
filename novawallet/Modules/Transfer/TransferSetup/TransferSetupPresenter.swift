@@ -277,6 +277,10 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func complete(recipient: String) {
+        guard !wireframe.checkDismissing(view: view) else {
+            return
+        }
+
         guard let web3Name = KiltW3n.web3Name(nameWithScheme: recipient) else {
             return
         }
