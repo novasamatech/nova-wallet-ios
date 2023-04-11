@@ -61,6 +61,20 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     )
+
+    func attachToEquilibriumAssets(
+        info: RemoteEquilibriumSubscriptionInfo,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    ) -> UUID?
+
+    func detachFromEquilibriumAssets(
+        for subscriptionId: UUID,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    )
 }
 
 class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSubscriptionServiceProtocol {
@@ -344,6 +358,105 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
 
             detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
 
+        } catch {
+            callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
+        }
+    }
+
+    func attachToEquilibriumAssets(
+        info: RemoteEquilibriumSubscriptionInfo,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    ) -> UUID? {
+        do {
+            let chainId = info.chain.chainId
+            let accountId = info.accountId
+
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let balancesLocalKey = try storageKeyFactory.createFromStoragePath(
+                .equilibriumBalances,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+
+            let accountKeyMapper = {
+                accountId.map { StringScaleMapper(value: $0) }
+            }
+
+            let balancesRequest = MapSubscriptionRequest(
+                storagePath: .equilibriumBalances,
+                localKey: balancesLocalKey,
+                keyParamClosure: accountKeyMapper
+            )
+
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                .equilibriumLocks,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+
+            let locksRequest = MapSubscriptionRequest(
+                storagePath: .equilibriumLocks,
+                localKey: locksLocalKey,
+                keyParamClosure: accountKeyMapper
+            )
+
+            let createReservedLocalKey: (AssetModel.Id) throws -> String = { assetId in
+                try storageKeyFactory.createFromStoragePath(
+                    .equilibriumReserved,
+                    encodableElements: [assetId, accountId],
+                    chainId: chainId
+                )
+            }
+
+            let reservedRequests = try info.assets.map { assetId in
+                DoubleMapSubscriptionRequest(
+                    storagePath: .equilibriumReserved,
+                    localKey: try createReservedLocalKey(assetId),
+                    keyParamClosure: {
+                        (BytesCodable(wrappedValue: info.accountId), StringScaleMapper(value: assetId))
+                    },
+                    param1Encoder: nil,
+                    param2Encoder: nil
+                )
+            }
+
+            return attachToSubscription(
+                with: [balancesRequest, locksRequest] + reservedRequests,
+                chainId: chainId,
+                cacheKey: balancesLocalKey + locksLocalKey,
+                queue: queue,
+                closure: closure,
+                subscriptionHandlingFactory: nil
+            )
+        } catch {
+            callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
+            return nil
+        }
+    }
+
+    func detachFromEquilibriumAssets(
+        for subscriptionId: UUID,
+        accountId: AccountId,
+        chainId: ChainModel.Id,
+        queue: DispatchQueue?,
+        closure: RemoteSubscriptionClosure?
+    ) {
+        do {
+            let storageKeyFactory = LocalStorageKeyFactory()
+            let balancesLocalKey = try storageKeyFactory.createFromStoragePath(
+                .equilibriumBalances,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+            let locksLocalKey = try storageKeyFactory.createFromStoragePath(
+                .equilibriumLocks,
+                encodableElement: accountId,
+                chainId: chainId
+            )
+
+            let localKey = balancesLocalKey + locksLocalKey
+            detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
         }
