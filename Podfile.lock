@@ -119,6 +119,25 @@ PODS:
     - BigInt (~> 5.0)
   - SwiftyBeaver (1.9.3)
   - TweetNacl (1.0.2)
+  - WalletConnectSwiftV2 (1.5.11):
+    - WalletConnectSwiftV2/WalletConnect (= 1.5.11)
+  - WalletConnectSwiftV2/Commons (1.5.11)
+  - WalletConnectSwiftV2/JSONRPC (1.5.11):
+    - WalletConnectSwiftV2/Commons
+  - WalletConnectSwiftV2/WalletConnect (1.5.11):
+    - WalletConnectSwiftV2/WalletConnectPairing
+  - WalletConnectSwiftV2/WalletConnectJWT (1.5.11):
+    - WalletConnectSwiftV2/WalletConnectKMS
+  - WalletConnectSwiftV2/WalletConnectKMS (1.5.11):
+    - WalletConnectSwiftV2/WalletConnectUtils
+  - WalletConnectSwiftV2/WalletConnectNetworking (1.5.11):
+    - WalletConnectSwiftV2/WalletConnectRelay
+  - WalletConnectSwiftV2/WalletConnectPairing (1.5.11):
+    - WalletConnectSwiftV2/WalletConnectNetworking
+  - WalletConnectSwiftV2/WalletConnectRelay (1.5.11):
+    - WalletConnectSwiftV2/WalletConnectJWT
+  - WalletConnectSwiftV2/WalletConnectUtils (1.5.11):
+    - WalletConnectSwiftV2/JSONRPC
   - Web3Core (3.0.6):
     - BigInt (~> 5.2.0)
     - CryptoSwift (~> 1.5.1)
@@ -149,6 +168,7 @@ DEPENDENCIES:
   - SwiftLint
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
   - SwiftyBeaver
+  - WalletConnectSwiftV2
   - web3swift (from `https://github.com/web3swift-team/web3swift.git`, tag `3.0.6`)
 
 SPEC REPOS:
@@ -175,6 +195,7 @@ SPEC REPOS:
     - SwiftLint
     - SwiftyBeaver
     - TweetNacl
+    - WalletConnectSwiftV2
     - Web3Core
     - xxHash-Swift
 
@@ -259,10 +280,11 @@ SPEC CHECKSUMS:
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
+  WalletConnectSwiftV2: 57aa9c4fef92428ac74d51d3d08fe5001af94827
   Web3Core: 4a62a109cac056915d2d5023606438c89e229a1e
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 0a13210996ecd62a01885637180607f5f7782656
+PODFILE CHECKSUM: 1be71b1dbd7a80dc24b945481a689219983455a2
 
 COCOAPODS: 1.11.3
