@@ -6,7 +6,7 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
         let selected: Bool
     }
 
-    var identityView: IdentityAccountInfoView {
+    var identityView: IdentityAccountContentView {
         view.fView
     }
 
@@ -24,7 +24,7 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
         }
     }
 
-    private let view = GenericPairValueView<IdentityAccountInfoView, RadioSelectorView>()
+    private let view = GenericPairValueView<IdentityAccountContentView, RadioSelectorView>()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -52,12 +52,7 @@ final class SelectableAddressTableViewCell: UITableViewCell, ModalPickerCellProt
 
         identityView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         identityView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        identityView.actionIcon = nil
         identityView.isUserInteractionEnabled = false
-        identityView.roundedBackgroundView.roundingCorners = []
-        identityView.roundedBackgroundView.applyFilledBackgroundStyle()
-        identityView.roundedBackgroundView.fillColor = .clear
-        identityView.roundedBackgroundView.highlightedFillColor = .clear
 
         view.setHorizontalAndSpacing(8)
     }

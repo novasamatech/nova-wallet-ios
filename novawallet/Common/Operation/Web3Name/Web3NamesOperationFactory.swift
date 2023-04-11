@@ -42,9 +42,12 @@ final class KiltWeb3NamesOperationFactory: Web3NamesOperationFactoryProtocol {
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
 
         let searchWeb3NameWrapper =
-            OperationCombiningService<Web3NameSearchResponse>.compoundWrapper(operationManager: operationManager) { [weak self] in
+            OperationCombiningService<Web3NameSearchResponse>.compoundWrapper(
+                operationManager: operationManager
+            ) { [weak self] in
                 guard let self = self,
-                      let ownership = try fetchWrapper.targetOperation.extractNoCancellableResultData().first?.value else {
+                      let ownership = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+                      .first?.value else {
                     return nil
                 }
 
