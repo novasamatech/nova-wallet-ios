@@ -83,6 +83,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.web3NameReceipientView.delegate = self
+        rootView.recepientInputView.delegate = self
     }
 
     private func setupLocalization() {
@@ -99,7 +100,6 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.recepientInputView.locale = selectedLocale
-        rootView.recepientInputView.delegate = self
         rootView.originFeeView.locale = selectedLocale
 
         rootView.networkContainerView.locale = selectedLocale
