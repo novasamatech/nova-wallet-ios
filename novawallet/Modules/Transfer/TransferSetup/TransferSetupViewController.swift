@@ -83,6 +83,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.web3NameReceipientView.delegate = self
+        rootView.recepientInputView.delegate = self
     }
 
     private func setupLocalization() {
@@ -99,7 +100,6 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.recepientInputView.locale = selectedLocale
-        rootView.recepientInputView.delegate = self
         rootView.originFeeView.locale = selectedLocale
 
         rootView.networkContainerView.locale = selectedLocale
@@ -183,6 +183,13 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc func actionProceed() {
+        if rootView.recepientInputView.textField.isFirstResponder {
+            let partialAddress = rootView.recepientInputView.textField.text ?? ""
+            presenter.complete(recipient: partialAddress)
+
+            rootView.recepientInputView.textField.resignFirstResponder()
+        }
+
         presenter.proceed()
     }
 
@@ -360,8 +367,8 @@ extension TransferSetupViewController: AmountInputAccessoryViewDelegate {
 extension TransferSetupViewController: Web3NameReceipientViewDelegate {
     func didTapOnAccountList() {}
 
-    func didTapOnAccount(address: AccountAddress) {
-        presenter.showOptions(for: address)
+    func didTapOnAccount() {
+        presenter.showWeb3NameRecipient()
     }
 }
 

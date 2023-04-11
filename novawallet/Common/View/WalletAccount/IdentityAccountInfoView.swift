@@ -60,9 +60,119 @@ final class IdentityAccountInfoView: RowView<GenericTitleValueView<UIView, UIIma
             return contentView.titleView
         }
 
+        let knownAddressView = IdentityAccountViewFactory.setupWalletAccountView()
+        knownAddressView.valueView.image = actionIcon
+
+        contentView = knownAddressView
+
+        return knownAddressView.titleView
+    }
+
+    private func setupUnknowAddressViewIfNeeded() -> UnknownAddressView {
+        if let contentView = contentView as? UnknownAddressContentView {
+            return contentView.titleView
+        }
+
+        let unknownAddressView = IdentityAccountViewFactory.setupUnknownAddressView()
+        unknownAddressView.valueView.image = actionIcon
+
+        contentView = unknownAddressView
+
+        return unknownAddressView.titleView
+    }
+}
+
+final class IdentityAccountContentView: UIView {
+    private var internalView: UIView?
+
+    var contentInsets = UIEdgeInsets(top: 5.0, left: 16.0, bottom: 5.0, right: 16.0) {
+        didSet {
+            internalView?.snp.updateConstraints { make in
+                make.edges.equalToSuperview().inset(contentInsets)
+            }
+        }
+    }
+
+    convenience init() {
+        let size = CGSize(width: 340.0, height: 48)
+        let defaultFrame = CGRect(origin: .zero, size: size)
+        self.init(frame: defaultFrame)
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        backgroundColor = .clear
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(viewModel: DisplayAddressViewModel) {
+        if viewModel.name != nil {
+            setupWalletAccountViewIfNeeded().bind(viewModel: viewModel)
+        } else {
+            setupUnknowAddressViewIfNeeded().bind(
+                address: viewModel.address,
+                iconViewModel: viewModel.imageViewModel
+            )
+        }
+    }
+
+    private func setupWalletAccountViewIfNeeded() -> IdentityAccountView {
+        if let internalView = internalView as? KnownAddressContentView {
+            return internalView.titleView
+        }
+
+        clearInternalView()
+
+        let knownAddressView = IdentityAccountViewFactory.setupWalletAccountView()
+
+        addSubview(knownAddressView)
+
+        internalView = knownAddressView
+
+        setupInternalConstraints()
+
+        return knownAddressView.titleView
+    }
+
+    private func setupUnknowAddressViewIfNeeded() -> UnknownAddressView {
+        if let internalView = internalView as? UnknownAddressContentView {
+            return internalView.titleView
+        }
+
+        clearInternalView()
+
+        let unknownAddressView = IdentityAccountViewFactory.setupUnknownAddressView()
+
+        addSubview(unknownAddressView)
+
+        internalView = unknownAddressView
+
+        setupInternalConstraints()
+
+        return unknownAddressView.titleView
+    }
+
+    private func clearInternalView() {
+        internalView?.removeFromSuperview()
+        internalView = nil
+    }
+
+    private func setupInternalConstraints() {
+        internalView?.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(contentInsets)
+        }
+    }
+}
+
+private enum IdentityAccountViewFactory {
+    static func setupWalletAccountView() -> KnownAddressContentView {
         let knownAddressView = KnownAddressContentView()
         knownAddressView.isUserInteractionEnabled = false
-        knownAddressView.valueView.image = actionIcon
 
         knownAddressView.titleView.nameLabel.setContentCompressionResistancePriority(
             .defaultLow,
@@ -84,19 +194,12 @@ final class IdentityAccountInfoView: RowView<GenericTitleValueView<UIView, UIIma
             for: .horizontal
         )
 
-        contentView = knownAddressView
-
-        return knownAddressView.titleView
+        return knownAddressView
     }
 
-    private func setupUnknowAddressViewIfNeeded() -> UnknownAddressView {
-        if let contentView = contentView as? UnknownAddressContentView {
-            return contentView.titleView
-        }
-
+    static func setupUnknownAddressView() -> UnknownAddressContentView {
         let unknownAddressView = UnknownAddressContentView()
         unknownAddressView.isUserInteractionEnabled = false
-        unknownAddressView.valueView.image = actionIcon
 
         unknownAddressView.titleView.addressLabel.setContentCompressionResistancePriority(
             .defaultLow,
@@ -113,8 +216,6 @@ final class IdentityAccountInfoView: RowView<GenericTitleValueView<UIView, UIIma
             for: .horizontal
         )
 
-        contentView = unknownAddressView
-
-        return unknownAddressView.titleView
+        return unknownAddressView
     }
 }
