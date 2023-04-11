@@ -177,6 +177,20 @@ final class TransferSetupPresenter {
             didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
         }
     }
+
+    private func proceedWithExternal(account: TransferSetupRecipientAccount.ExternalAccount) {
+        switch account.recipient {
+        case let .cached(value), let .loaded(value):
+            if value?.address == nil {
+                didReceive(error: Web3NameServiceError.accountNotFound(account.name))
+            } else {
+                childPresenter?.proceed()
+            }
+        case .loading:
+            // wait the result
+            break
+        }
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -229,11 +243,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         case .none, .address:
             childPresenter?.proceed()
         case let .external(externalAccount):
-            if externalAccount.recipient.value == nil {
-                didReceive(error: Web3NameServiceError.searchInProgress(externalAccount.name))
-            } else {
-                childPresenter?.proceed()
-            }
+            proceedWithExternal(account: externalAccount)
         }
     }
 
