@@ -183,6 +183,13 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc func actionProceed() {
+        if rootView.recepientInputView.textField.isFirstResponder {
+            let partialAddress = rootView.recepientInputView.textField.text ?? ""
+            presenter.complete(recipient: partialAddress)
+
+            rootView.recepientInputView.textField.resignFirstResponder()
+        }
+
         presenter.proceed()
     }
 
