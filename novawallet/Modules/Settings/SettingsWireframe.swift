@@ -69,6 +69,15 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         }
     }
 
+    func showWalletConnect(from view: ControllerBackedProtocol?) {
+        guard let walletConnectView = WalletConnectViewFactory.createView() else {
+            return
+        }
+
+        walletConnectView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(walletConnectView.controller, animated: true)
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

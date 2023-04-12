@@ -1211,3 +1211,6 @@
 "evm.contract.call" = "Contract call";
 "evm.contract" = "Contract";
 "evm.contract.function" = "Function";
+"common.wallet.connect" = "Wallet Connect";
+"wallet.connect.scan.message" = "Scan QR from DApp";
+"wallet.connect.scan.error" = "Invalid URI format";
