@@ -26,7 +26,7 @@ struct CustomAssetMapper {
         }
 
         switch wrappedType {
-        case .statemine:
+        case .statemine, .equilibrium:
             guard let wrappedExtras = try? typeExtras?.map(to: StatemineAssetExtras.self) else {
                 throw MapperError.invalidJson(type)
             }
@@ -69,7 +69,7 @@ struct CustomAssetMapper {
         }
 
         switch wrappedType {
-        case .statemine:
+        case .statemine, .equilibrium:
             return statemineHandler()
         case .orml:
             return ormlHandler()
@@ -90,6 +90,18 @@ extension CustomAssetMapper {
             statemineHandler: { $0.assetId },
             ormlHandler: { $0.currencyIdScale },
             evmHandler: { try? $0.toAddress(using: .ethereum) },
+            evmNativeHandler: { nil }
+        )
+    }
+}
+
+extension CustomAssetMapper {
+    func statemineAssetId() throws -> String? {
+        try mapAssetWithExtras(
+            nativeHandler: { nil },
+            statemineHandler: { $0.assetId },
+            ormlHandler: { _ in nil },
+            evmHandler: { _ in nil },
             evmNativeHandler: { nil }
         )
     }
