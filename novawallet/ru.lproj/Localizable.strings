@@ -1211,3 +1211,6 @@
 "evm.contract.call" = "Вызов контракта";
 "evm.contract" = "Контракт";
 "evm.contract.function" = "Функция";
+"common.wallet.connect" = "Wallet Connect";
+"wallet.connect.scan.message" = "Отсканируйте QR код";
+"wallet.connect.scan.error" = "Неверный формат URI";
