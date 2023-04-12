@@ -64,6 +64,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
 
     func attachToEquilibriumAssets(
         info: RemoteEquilibriumSubscriptionInfo,
+        balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID?
@@ -365,6 +366,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
 
     func attachToEquilibriumAssets(
         info: RemoteEquilibriumSubscriptionInfo,
+        balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
@@ -401,18 +403,16 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 keyParamClosure: accountKeyMapper
             )
 
-            let createReservedLocalKey: (AssetModel.Id) throws -> String = { assetId in
-                try storageKeyFactory.createFromStoragePath(
-                    .equilibriumReserved,
-                    encodableElements: [assetId, accountId],
-                    chainId: chainId
-                )
-            }
+            let reservedBalanceLocalKey = try storageKeyFactory.createFromStoragePath(
+                .equilibriumReserved,
+                encodableElement: accountId,
+                chainId: chainId
+            )
 
-            let reservedRequests = try info.assets.map { assetId in
+            let reservedRequests = info.assets.map { assetId in
                 DoubleMapSubscriptionRequest(
                     storagePath: .equilibriumReserved,
-                    localKey: try createReservedLocalKey(assetId),
+                    localKey: reservedBalanceLocalKey,
                     keyParamClosure: {
                         (BytesCodable(wrappedValue: info.accountId), StringScaleMapper(value: assetId))
                     },
@@ -421,13 +421,20 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 )
             }
 
+            let handlingFactory = EquilibriumSubscriptionHandlingFactory(
+                accountBalanceKey: balancesLocalKey,
+                locksKey: locksLocalKey,
+                reservedKey: reservedBalanceLocalKey,
+                balanceUpdater: balanceUpdater
+            )
+
             return attachToSubscription(
                 with: [balancesRequest, locksRequest] + reservedRequests,
                 chainId: chainId,
-                cacheKey: balancesLocalKey + locksLocalKey,
+                cacheKey: balancesLocalKey + locksLocalKey + reservedBalanceLocalKey,
                 queue: queue,
                 closure: closure,
-                subscriptionHandlingFactory: nil
+                subscriptionHandlingFactory: handlingFactory
             )
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
@@ -454,8 +461,13 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 encodableElement: accountId,
                 chainId: chainId
             )
+            let reservedBalanceLocalKey = try storageKeyFactory.createFromStoragePath(
+                .equilibriumReserved,
+                encodableElement: accountId,
+                chainId: chainId
+            )
 
-            let localKey = balancesLocalKey + locksLocalKey
+            let localKey = balancesLocalKey + locksLocalKey + reservedBalanceLocalKey
             detachFromSubscription(localKey, subscriptionId: subscriptionId, queue: queue, closure: closure)
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
