@@ -1,6 +1,10 @@
+import Foundation
+
 final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatingService {
     let remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol
-    let transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol
+    let eventCenter: EventCenterProtocol
+    let operationQueue: OperationQueue
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
 
     private var subscribedAssets: [ChainModel.Id: Set<AssetModel.Id>] = [:]
 
@@ -8,11 +12,15 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
         selectedAccount: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol,
-        transactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        eventCenter: EventCenterProtocol,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.remoteSubscriptionService = remoteSubscriptionService
-        self.transactionHistoryUpdaterFactory = transactionHistoryUpdaterFactory
+        self.operationQueue = operationQueue
+        self.repositoryFactory = repositoryFactory
+        self.eventCenter = eventCenter
 
         super.init(selectedAccount: selectedAccount, chainRegistry: chainRegistry, logger: logger)
     }
@@ -59,8 +67,27 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
             chain: chain,
             assets: assetIds
         )
+
+        let chainAssetIds = Set(assetIds.map { ChainAssetId(chainId: chain.chainId, assetId: $0) })
+
+        let repository = repositoryFactory.createAssetBalanceRepository(
+            for: chainAssetIds
+        )
+
+        let balanceUpdater = EquillibriumAssetsBalanceUpdater(
+            chainModel: chain,
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            repository: repository,
+            transactionSubscription: nil,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
         guard let subscriptionId = remoteSubscriptionService.attachToEquilibriumAssets(
             info: info,
+            balanceUpdater: balanceUpdater,
             queue: nil,
             closure: nil
         ) else {
