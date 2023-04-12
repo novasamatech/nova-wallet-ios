@@ -38,7 +38,7 @@ extension AssetStorageInfo {
             let info = try createOrmlStorageInfo(from: extras, codingFactory: codingFactory)
 
             return .orml(info: info)
-        case .statemine:
+        case .statemine, .equilibrium:
             guard let extras = try asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
                 throw AssetStorageInfoError.unexpectedTypeExtras
             }

@@ -2588,7 +2588,7 @@
 		8814774029B07B66001E98A1 /* DelegateGroupActionTitleControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814773F29B07B66001E98A1 /* DelegateGroupActionTitleControl.swift */; };
 		8814774229B07E4C001E98A1 /* ResizableImageActionIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814774129B07E4C001E98A1 /* ResizableImageActionIndicator.swift */; };
 		8814E858297E35D600A722FF /* GoveranaceDelegatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814E857297E35D600A722FF /* GoveranaceDelegatePicker.swift */; };
-		881CA22529E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService'.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService'.swift */; };
+		881CA22529E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift */; };
 		881CA22729E3F20B00159C5B /* ChainModel+Equilibrium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22629E3F20B00159C5B /* ChainModel+Equilibrium.swift */; };
 		881CA22929E406F700159C5B /* CallCodingPath+Equilibrium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22829E406F700159C5B /* CallCodingPath+Equilibrium.swift */; };
 		8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */; };
@@ -2671,6 +2671,7 @@
 		887C450229AC7FD900950F98 /* DelegationReferendumVotersError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887C450129AC7FD900950F98 /* DelegationReferendumVotersError.swift */; };
 		8882FC6129E5431400DDA90B /* RemoteEquilibriumSubscriptionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8882FC6029E5431400DDA90B /* RemoteEquilibriumSubscriptionInfo.swift */; };
 		8882FC6329E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8882FC6229E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift */; };
+		8882FC6529E5D09300DDA90B /* EquillibriumAssetsBalanceUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8882FC6429E5D09300DDA90B /* EquillibriumAssetsBalanceUpdater.swift */; };
 		8887813C28B62B0A00E7290F /* FlexibleSpaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */; };
 		8887813E28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */; };
 		8887814028B7AAB700E7290F /* RoundedIconTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */; };
@@ -5944,7 +5945,7 @@
 		8814773F29B07B66001E98A1 /* DelegateGroupActionTitleControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegateGroupActionTitleControl.swift; sourceTree = "<group>"; };
 		8814774129B07E4C001E98A1 /* ResizableImageActionIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizableImageActionIndicator.swift; sourceTree = "<group>"; };
 		8814E857297E35D600A722FF /* GoveranaceDelegatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoveranaceDelegatePicker.swift; sourceTree = "<group>"; };
-		881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService'.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EquilibriumAssetBalanceUpdatingService'.swift"; sourceTree = "<group>"; };
+		881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquilibriumAssetBalanceUpdatingService.swift; sourceTree = "<group>"; };
 		881CA22629E3F20B00159C5B /* ChainModel+Equilibrium.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChainModel+Equilibrium.swift"; sourceTree = "<group>"; };
 		881CA22829E406F700159C5B /* CallCodingPath+Equilibrium.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CallCodingPath+Equilibrium.swift"; sourceTree = "<group>"; };
 		881ED96729758088000C0457 /* Array+safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+safe.swift"; sourceTree = "<group>"; };
@@ -6030,6 +6031,7 @@
 		8881572D295AE5C600912F69 /* MultiassetUserDataModel7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel7.xcdatamodel; sourceTree = "<group>"; };
 		8882FC6029E5431400DDA90B /* RemoteEquilibriumSubscriptionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteEquilibriumSubscriptionInfo.swift; sourceTree = "<group>"; };
 		8882FC6229E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquilibriumSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
+		8882FC6429E5D09300DDA90B /* EquillibriumAssetsBalanceUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EquillibriumAssetsBalanceUpdater.swift; sourceTree = "<group>"; };
 		8887813B28B62B0A00E7290F /* FlexibleSpaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleSpaceView.swift; sourceTree = "<group>"; };
 		8887813D28B7AA3100E7290F /* RoundedIconTitleCollectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleCollectionHeaderView.swift; sourceTree = "<group>"; };
 		8887813F28B7AAB700E7290F /* RoundedIconTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedIconTitleView.swift; sourceTree = "<group>"; };
@@ -9837,6 +9839,7 @@
 				8470D6D3253E35F0009E9A5D /* StorageUpdate.swift */,
 				84FD3DB62540EF0700A234E3 /* TransactionSubscription.swift */,
 				84B73AD1279B47700071AE16 /* AssetsBalanceUpdater.swift */,
+				8882FC6429E5D09300DDA90B /* EquillibriumAssetsBalanceUpdater.swift */,
 				84B73AD7279C2EDA0071AE16 /* AssetAccountSubscription.swift */,
 				84F18D4D27A18C1400CA7554 /* OrmlAccountSubscription.swift */,
 				84C3420C283192D000156569 /* CallbackStorageSubscription.swift */,
@@ -14100,7 +14103,7 @@
 		881CA22329E3F07B00159C5B /* Equilibrium */ = {
 			isa = PBXGroup;
 			children = (
-				881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService'.swift */,
+				881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift */,
 				8882FC6029E5431400DDA90B /* RemoteEquilibriumSubscriptionInfo.swift */,
 				8882FC6229E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift */,
 			);
@@ -17818,7 +17821,7 @@
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,
 				84EDF66D29C4F41C002173E6 /* EvmBalanceMessage.swift in Sources */,
-				881CA22529E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService'.swift in Sources */,
+				881CA22529E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift in Sources */,
 				84FB1F792527065A00E0242B /* HistoryConstants.swift in Sources */,
 				845F49ED2928F31100BD6D11 /* ChainModel+Evm.swift in Sources */,
 				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
@@ -18669,6 +18672,7 @@
 				842806F52847A82500702F3A /* StackAccountSelectionCell.swift in Sources */,
 				84F1CB3A27CEB9850095D523 /* NftListItemCell.swift in Sources */,
 				8499FEE427C1059700712589 /* RMRKV1SyncService.swift in Sources */,
+				8882FC6529E5D09300DDA90B /* EquillibriumAssetsBalanceUpdater.swift in Sources */,
 				84B73AE0279E6A600071AE16 /* FeeMetadataContext.swift in Sources */,
 				842A737527DB8338006EE1EA /* OperationDetailsViewModelFactory.swift in Sources */,
 				93434E8E407A6C63D8862A21 /* AssetSelectionProtocols.swift in Sources */,
