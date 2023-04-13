@@ -19,7 +19,9 @@ final class WalletConnectPresenter {
 }
 
 extension WalletConnectPresenter: WalletConnectPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 
     func showScan() {
         wireframe.showScan(from: view, delegate: self)
@@ -31,5 +33,7 @@ extension WalletConnectPresenter: WalletConnectInteractorOutputProtocol {}
 extension WalletConnectPresenter: URIScanDelegate {
     func uriScanDidReceive(uri: String, context _: AnyObject?) {
         logger.debug("Wallet Connect URI: \(uri)")
+
+        interactor.connect(uri: uri)
     }
 }
