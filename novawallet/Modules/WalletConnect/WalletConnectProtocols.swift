@@ -5,7 +5,10 @@ protocol WalletConnectPresenterProtocol: AnyObject {
     func showScan()
 }
 
-protocol WalletConnectInteractorInputProtocol: AnyObject {}
+protocol WalletConnectInteractorInputProtocol: AnyObject {
+    func setup()
+    func connect(uri: String)
+}
 
 protocol WalletConnectInteractorOutputProtocol: AnyObject {}
 
