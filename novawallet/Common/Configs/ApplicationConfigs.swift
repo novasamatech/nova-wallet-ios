@@ -35,6 +35,7 @@ protocol ApplicationConfigProtocol {
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
     var slip44URL: URL { get }
+    var walletConnectProjectId: String { get }
 }
 
 final class ApplicationConfig {
@@ -228,5 +229,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     var slip44URL: URL {
         URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
     }
+
     // swiftlint:enable line_length
+
+    // TODO: Consider to make secret
+    var walletConnectProjectId: String {
+        "f28de7baff5ecce73ed0c9f9f97dbd30"
+    }
 }
