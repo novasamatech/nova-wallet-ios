@@ -94,15 +94,3 @@ extension CustomAssetMapper {
         )
     }
 }
-
-extension CustomAssetMapper {
-    func statemineAssetId() throws -> String? {
-        try mapAssetWithExtras(
-            nativeHandler: { nil },
-            statemineHandler: { $0.assetId },
-            ormlHandler: { _ in nil },
-            evmHandler: { _ in nil },
-            evmNativeHandler: { nil }
-        )
-    }
-}

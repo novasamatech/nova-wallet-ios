@@ -9,8 +9,6 @@ protocol EquillibriumAssetsBalanceUpdaterProtocol {
 }
 
 final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol {
-    private typealias EquilibriumAssetId = AssetModel.Id
-
     let chainModel: ChainModel
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
@@ -51,10 +49,9 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
     }
 
     private func createAssetsMapping(for chainModel: ChainModel) -> [AssetModel.Id: AssetModel.Id] {
-        chainModel.equilibriumAssets.reduce(into: [EquilibriumAssetId: AssetModel.Id]()) {
-            if let extras = try? $1.typeExtras?.map(to: StatemineAssetExtras.self),
-               let key = AssetModel.Id(extras.assetId) {
-                $0[key] = $1.assetId
+        chainModel.equilibriumAssets.reduce(into: [AssetModel.Id: AssetModel.Id]()) {
+            if let equilibriumAssetId = $1.equilibriumAssetId {
+                $0[equilibriumAssetId] = $1.assetId
             }
         }
     }
@@ -235,7 +232,8 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
     private func handleTransactionIfNeeded(for blockHash: Data?) {
         if let blockHash = blockHash {
             logger.debug("Handle statemine change transactions")
-            transactionSubscription?.process(blockHash: blockHash)
+            // TODO:
+            // transactionSubscription?.process(blockHash: blockHash)
         }
     }
 }
