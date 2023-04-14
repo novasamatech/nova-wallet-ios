@@ -6,17 +6,20 @@ final class EquilibriumSubscriptionHandlingFactory {
     let locksKey: String
     let reservedKey: String
     let balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol
+    let locksUpdater: EquillibriumLocksUpdaterProtocol
 
     init(
         accountBalanceKey: String,
         locksKey: String,
         reservedKey: String,
-        balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol
+        balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
+        locksUpdater: EquillibriumLocksUpdaterProtocol
     ) {
         self.accountBalanceKey = accountBalanceKey
         self.locksKey = locksKey
         self.reservedKey = reservedKey
         self.balanceUpdater = balanceUpdater
+        self.locksUpdater = locksUpdater
     }
 }
 
@@ -30,7 +33,7 @@ extension EquilibriumSubscriptionHandlingFactory: RemoteSubscriptionHandlingFact
     ) -> StorageChildSubscribing {
         switch localStorageKey {
         case accountBalanceKey:
-            return EquilibriumAccountSubscription(
+            return EquilibriumAccountBalancesSubscription(
                 remoteStorageKey: remoteStorageKey,
                 balanceUpdater: balanceUpdater,
                 logger: logger
@@ -38,7 +41,7 @@ extension EquilibriumSubscriptionHandlingFactory: RemoteSubscriptionHandlingFact
         case locksKey:
             return EquilibriumLocksSubscription(
                 remoteStorageKey: remoteStorageKey,
-                logger: logger
+                locksUpdater: locksUpdater
             )
         case reservedKey:
             return EquilibriumReservedSubscription(
@@ -48,70 +51,11 @@ extension EquilibriumSubscriptionHandlingFactory: RemoteSubscriptionHandlingFact
             )
         default:
             logger.error("Unknown subscription with local key: \(localStorageKey)")
-            return EquilibriumAccountSubscription(
+            return EquilibriumAccountBalancesSubscription(
                 remoteStorageKey: remoteStorageKey,
                 balanceUpdater: balanceUpdater,
                 logger: logger
             )
         }
-    }
-}
-
-final class EquilibriumAccountSubscription: StorageChildSubscribing {
-    let remoteStorageKey: Data
-    let logger: LoggerProtocol
-    let balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol
-
-    init(
-        remoteStorageKey: Data,
-        balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
-        logger: LoggerProtocol
-    ) {
-        self.remoteStorageKey = remoteStorageKey
-        self.balanceUpdater = balanceUpdater
-        self.logger = logger
-    }
-
-    func processUpdate(_ data: Data?, blockHash: Data?) {
-        logger.debug("Did receive asset account update")
-        balanceUpdater.handleAssetAccount(value: data, blockHash: blockHash)
-    }
-}
-
-final class EquilibriumLocksSubscription: StorageChildSubscribing {
-    let remoteStorageKey: Data
-    let logger: LoggerProtocol
-
-    init(
-        remoteStorageKey: Data,
-        logger: LoggerProtocol
-    ) {
-        self.remoteStorageKey = remoteStorageKey
-        self.logger = logger
-    }
-
-    func processUpdate(_: Data?, blockHash _: Data?) {
-        logger.debug("Did receive asset account update")
-    }
-}
-
-final class EquilibriumReservedSubscription: StorageChildSubscribing {
-    let remoteStorageKey: Data
-    let balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol
-    let logger: LoggerProtocol
-
-    init(
-        remoteStorageKey: Data,
-        balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
-        logger: LoggerProtocol
-    ) {
-        self.remoteStorageKey = remoteStorageKey
-        self.balanceUpdater = balanceUpdater
-        self.logger = logger
-    }
-
-    func processUpdate(_ data: Data?, blockHash: Data?) {
-        logger.debug("Did receive asset account update")
-        balanceUpdater.handleReservedBalance(value: data, blockHash: blockHash)
     }
 }
