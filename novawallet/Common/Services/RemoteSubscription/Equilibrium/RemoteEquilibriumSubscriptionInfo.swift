@@ -1,5 +1,10 @@
 struct RemoteEquilibriumSubscriptionInfo {
     let accountId: AccountId
     let chain: ChainModel
-    let assets: Set<AssetModel.Id>
+    let equilibriumAssetIds: Set<AssetModel.Id>
+}
+
+struct EquilibriumAssetId: Hashable {
+    let localAssetId: AssetModel.Id
+    let extrenalAssetId: AssetModel.Id
 }

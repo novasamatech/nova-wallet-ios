@@ -65,6 +65,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
     func attachToEquilibriumAssets(
         info: RemoteEquilibriumSubscriptionInfo,
         balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
+        locksUpdater: EquillibriumLocksUpdaterProtocol,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID?
@@ -367,6 +368,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     func attachToEquilibriumAssets(
         info: RemoteEquilibriumSubscriptionInfo,
         balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
+        locksUpdater: EquillibriumLocksUpdaterProtocol,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
@@ -409,7 +411,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 chainId: chainId
             )
 
-            let reservedRequests = info.assets.map { assetId in
+            let reservedRequests = info.equilibriumAssetIds.map { assetId in
                 DoubleMapSubscriptionRequest(
                     storagePath: .equilibriumReserved,
                     localKey: reservedBalanceLocalKey,
@@ -425,7 +427,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 accountBalanceKey: balancesLocalKey,
                 locksKey: locksLocalKey,
                 reservedKey: reservedBalanceLocalKey,
-                balanceUpdater: balanceUpdater
+                balanceUpdater: balanceUpdater,
+                locksUpdater: locksUpdater
             )
 
             return attachToSubscription(
