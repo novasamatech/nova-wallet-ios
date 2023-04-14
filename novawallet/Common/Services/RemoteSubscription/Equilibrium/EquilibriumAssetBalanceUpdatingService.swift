@@ -80,7 +80,7 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
             assets: assets.map(\.extrenalAssetId)
         )
 
-        let chainAssetIds = Set(assetIds.map { ChainAssetId(chainId: chain.chainId, assetId: $0.localAssetId) })
+        let chainAssetIds = assetIds.map { ChainAssetId(chainId: chain.chainId, assetId: $0.localAssetId) }
 
         let repository = repositoryFactory.createAssetBalanceRepository(
             for: chainAssetIds
