@@ -1,8 +1,6 @@
 import RobinHood
 
-enum CommonOperationWrapper {}
-
-extension CommonOperationWrapper {
+enum CommonOperationWrapper {
     static func storageDecoderWrapper<T: Decodable>(
         for value: Data?,
         path: StorageCodingPath,
