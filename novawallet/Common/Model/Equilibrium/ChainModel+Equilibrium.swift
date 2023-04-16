@@ -6,11 +6,11 @@ extension AssetModel {
         type == AssetType.equilibrium.rawValue
     }
 
-    var equilibriumAssetId: AssetModel.Id? {
-        guard isEquilibriumAsset, let assetId = try? typeExtras?.map(to: StatemineAssetExtras.self).assetId else {
+    var equilibriumAssetId: UInt64? {
+        guard isEquilibriumAsset, let assetId = try? typeExtras?.map(to: EquilibriumAssetExtras.self).assetId else {
             return nil
         }
-        return AssetModel.Id(assetId)
+        return assetId
     }
 }
 
