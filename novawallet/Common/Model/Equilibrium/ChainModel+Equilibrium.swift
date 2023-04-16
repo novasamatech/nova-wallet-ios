@@ -7,7 +7,7 @@ extension AssetModel {
     }
 
     var equilibriumAssetId: AssetModel.Id? {
-        guard let assetId = try? typeExtras?.map(to: StatemineAssetExtras.self).assetId else {
+        guard isEquilibriumAsset, let assetId = try? typeExtras?.map(to: StatemineAssetExtras.self).assetId else {
             return nil
         }
         return AssetModel.Id(assetId)

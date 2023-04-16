@@ -30,28 +30,21 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
             return
         }
 
-        let newAssetsIds = Set(
-            chain
-                .assets
-                .filter { $0.isEquilibriumAsset && $0.enabled }
-                .compactMap {
-                    guard let equiibriumAssetId = $0.equilibriumAssetId else {
-                        return nil
-                    }
-                    return EquilibriumAssetId(
-                        localAssetId: $0.assetId,
-                        extrenalAssetId: equiibriumAssetId
-                    )
+        let newAssetsIds = chain
+            .assets
+            .reduce(into: [AssetModel.Id: EquilibriumAssetId]()) { result, asset in
+                if asset.enabled, let equilibriumAssetId = asset.equilibriumAssetId {
+                    result[asset.assetId] = equilibriumAssetId
                 }
-        )
+            }
 
-        guard subscribedAssets[chain.chainId] != newAssetsIds else {
+        guard subscribedAssets[chain.chainId] != Set(newAssetsIds.keys) else {
             return
         }
 
         removeSubscription(for: chain.chainId)
 
-        guard !newAssetIds.isEmpty else {
+        guard !newAssetsIds.isEmpty else {
             return
         }
 
@@ -61,26 +54,28 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
             assets: newAssetsIds
         ) {
             setSubscriptions(for: chain.chainId, subscriptions: [subscription.asset.assetId: subscription])
-            subscribedAssets[chain.chainId] = newAssetIds
+            subscribedAssets[chain.chainId] = Set(newAssetsIds.keys)
         }
     }
 
     private func createSubscription(
         accountId: AccountId,
         chain: ChainModel,
-        assets: Set<EquilibriumAssetId>
+        assets: [AssetModel.Id: EquilibriumAssetId]
     ) -> AssetBalanceBatchBaseUpdatingService.SubscriptionInfo? {
+        guard let equilibriumAsset = chain.equilibriumAssets.first(where: { assets.keys.contains { $0.assetId } }) else {
+            return nil
+        }
         guard let utilityChainAssetId = chain.utilityChainAssetId() else {
             return nil
         }
-
         let info = RemoteEquilibriumSubscriptionInfo(
             accountId: accountId,
             chain: chain,
-            assets: assets.map(\.extrenalAssetId)
+            assets: Array(assets.values)
         )
 
-        let chainAssetIds = assetIds.map { ChainAssetId(chainId: chain.chainId, assetId: $0.localAssetId) }
+        let chainAssetIds = Set(assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.key) })
 
         let repository = repositoryFactory.createAssetBalanceRepository(
             for: chainAssetIds
