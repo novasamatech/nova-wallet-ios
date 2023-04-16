@@ -63,7 +63,9 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
         chain: ChainModel,
         assets: [AssetModel.Id: EquilibriumAssetId]
     ) -> AssetBalanceBatchBaseUpdatingService.SubscriptionInfo? {
-        guard let equilibriumAsset = chain.equilibriumAssets.first(where: { assets.keys.contains { $0.assetId } }) else {
+        guard let equilibriumAsset = chain.equilibriumAssets.first(where: {
+            assets.keys.contains($0.assetId)
+        }) else {
             return nil
         }
         guard let utilityChainAssetId = chain.utilityChainAssetId() else {
