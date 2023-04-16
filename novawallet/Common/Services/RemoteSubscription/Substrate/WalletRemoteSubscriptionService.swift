@@ -411,7 +411,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 chainId: chainId
             )
 
-            let reservedRequests = info.equilibriumAssetIds.map { assetId in
+            let reservedRequests = info.assets.map { assetId in
                 DoubleMapSubscriptionRequest(
                     storagePath: .equilibriumReserved,
                     localKey: reservedBalanceLocalKey,
