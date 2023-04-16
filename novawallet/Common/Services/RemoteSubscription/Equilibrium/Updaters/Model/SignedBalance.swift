@@ -23,4 +23,13 @@ enum SignedBalance: Codable {
             )
         }
     }
+
+    var value: BigUInt {
+        switch self {
+        case let .positive(bigUInt):
+            return bigUInt
+        case .negative:
+            return .zero
+        }
+    }
 }

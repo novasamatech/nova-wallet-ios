@@ -5,14 +5,16 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
     private let eventCenter: EventCenterProtocol
     private let operationQueue: OperationQueue
     private let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    private let storageRequestFactory: StorageRequestFactoryProtocol
 
-    private var subscribedAssets: [ChainModel.Id: Set<EquilibriumAssetId>] = [:]
+    private var subscribedAssets: [ChainModel.Id: Set<AssetModel.Id>] = [:]
 
     init(
         selectedAccount: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        storageRequestFactory: StorageRequestFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -20,6 +22,7 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
         self.remoteSubscriptionService = remoteSubscriptionService
         self.operationQueue = operationQueue
         self.repositoryFactory = repositoryFactory
+        self.storageRequestFactory = storageRequestFactory
         self.eventCenter = eventCenter
 
         super.init(selectedAccount: selectedAccount, chainRegistry: chainRegistry, logger: logger)
@@ -86,12 +89,17 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
         let locksRepository = repositoryFactory
             .createAssetLocksRepository(chainAssetIds: Set<ChainAssetId>([utilityChainAssetId]))
 
+        let transactionSubscription = try? createTransactionSubscription(
+            for: accountId,
+            chain: chain
+        )
+
         let balanceUpdater = EquillibriumAssetsBalanceUpdater(
             chainModel: chain,
             accountId: accountId,
             chainRegistry: chainRegistry,
             repository: repository,
-            transactionSubscription: nil,
+            transactionSubscription: transactionSubscription,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             logger: logger
@@ -139,6 +147,28 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
             chainId: chainId,
             queue: nil,
             closure: nil
+        )
+    }
+
+    private func createTransactionSubscription(
+        for accountId: AccountId,
+        chain: ChainModel
+    ) throws -> TransactionSubscription {
+        let address = try accountId.toAddress(using: chain.chainFormat)
+        let txStorage = repositoryFactory.createChainAddressTxRepository(
+            for: address,
+            chainId: chain.chainId
+        )
+
+        return TransactionSubscription(
+            chainRegistry: chainRegistry,
+            accountId: accountId,
+            chainModel: chain,
+            txStorage: txStorage,
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: operationQueue,
+            eventCenter: eventCenter,
+            logger: logger
         )
     }
 }

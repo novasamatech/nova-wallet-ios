@@ -4,4 +4,4 @@ struct RemoteEquilibriumSubscriptionInfo {
     let assets: [EquilibriumAssetId]
 }
 
-typealias EquilibriumAssetId = AssetModel.Id
+typealias EquilibriumAssetId = UInt64
