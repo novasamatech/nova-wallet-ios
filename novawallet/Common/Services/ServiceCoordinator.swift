@@ -140,6 +140,7 @@ extension ServiceCoordinator {
             chainRegistry: chainRegistry,
             remoteSubscriptionService: walletRemoteSubscription,
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: substrateStorageFacade),
+            storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
             operationQueue: OperationQueue(),
             logger: logger

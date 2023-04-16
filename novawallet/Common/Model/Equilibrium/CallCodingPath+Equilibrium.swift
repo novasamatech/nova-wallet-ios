@@ -13,3 +13,13 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "EqBalances", itemName: "Reserved")
     }
 }
+
+extension CallCodingPath {
+    static var equilibriumTransfer: CallCodingPath {
+        CallCodingPath(moduleName: "EqBalances", callName: "transfer")
+    }
+
+    var isEquilibriumTransfer: Bool {
+        self == .equilibriumTransfer
+    }
+}

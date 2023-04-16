@@ -20,6 +20,7 @@ enum AssetStorageInfo {
     case orml(info: OrmlTokenStorageInfo)
     case erc20(contractAccount: AccountId)
     case evmNative
+    case equilibrium(extras: EquilibriumAssetExtras)
 }
 
 extension AssetStorageInfo {
@@ -38,7 +39,7 @@ extension AssetStorageInfo {
             let info = try createOrmlStorageInfo(from: extras, codingFactory: codingFactory)
 
             return .orml(info: info)
-        case .statemine, .equilibrium:
+        case .statemine:
             guard let extras = try asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
                 throw AssetStorageInfoError.unexpectedTypeExtras
             }
@@ -54,6 +55,12 @@ extension AssetStorageInfo {
             return .erc20(contractAccount: accountId)
         case .evmNative:
             return .evmNative
+        case .equilibrium:
+            guard let extras = try asset.typeExtras?.map(to: EquilibriumAssetExtras.self) else {
+                throw AssetStorageInfoError.unexpectedTypeExtras
+            }
+
+            return .equilibrium(extras: extras)
         case .none:
             let call = CallCodingPath.transferAll
             let canTransferAll = codingFactory.metadata.getCall(
