@@ -1,13 +1,14 @@
 import SubstrateSdk
+import BigInt
 
 struct EquilibriumTokenTransfer: Codable {
-    @StringCodable var assetId: UInt64
-    @BytesCodable var destinationAccountId: AccountId
-    let balance: SignedBalance
+    @StringCodable var assetId: EquilibriumAssetId
+    var destinationAccountId: AccountId
+    @StringCodable var value: BigUInt
 
     enum CodingKeys: String, CodingKey {
-        case assetId
+        case assetId = "asset"
         case destinationAccountId = "to"
-        case balance = "value"
+        case value
     }
 }

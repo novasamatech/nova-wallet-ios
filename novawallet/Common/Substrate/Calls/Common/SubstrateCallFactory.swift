@@ -155,7 +155,7 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         let args = EquilibriumTokenTransfer(
             assetId: extras.assetId,
             destinationAccountId: receiver,
-            balance: .positive(amount)
+            value: amount
         )
 
         let callCodingPath = CallCodingPath.equilibriumTransfer

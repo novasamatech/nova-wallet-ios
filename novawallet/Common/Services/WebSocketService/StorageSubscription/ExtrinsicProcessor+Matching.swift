@@ -512,6 +512,11 @@ extension ExtrinsicProcessor {
         codingFactory: RuntimeCoderFactoryProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
+            let equilibriumTransfer = CallCodingPath.equilibriumTransfer
+            guard extrinsic.call.moduleName?.stringValue == equilibriumTransfer.moduleName,
+                  extrinsic.call.callName?.stringValue == equilibriumTransfer.callName else {
+                return nil
+            }
             let metadata = codingFactory.metadata
             let context = codingFactory.createRuntimeJsonContext()
 
@@ -566,7 +571,7 @@ extension ExtrinsicProcessor {
                 extrinsicHash: nil,
                 fee: fee,
                 peerId: peerId,
-                amount: call.args.balance.value,
+                amount: call.args.value,
                 isSuccess: status,
                 assetId: assetId
             )
