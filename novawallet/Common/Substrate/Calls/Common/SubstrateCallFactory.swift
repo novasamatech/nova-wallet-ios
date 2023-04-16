@@ -63,6 +63,11 @@ protocol SubstrateCallFactoryProtocol {
     func remark(remark: Data) -> RuntimeCall<SystemRemarkCall>
     func remarkWithEvent(remark: Data) -> RuntimeCall<SystemRemarkCall>
     func rebag(accountId: AccountId, module: String?) -> RuntimeCall<BagList.RebagCall>
+    func equilibriumTransfer(
+        to receiver: AccountId,
+        extras: EquilibriumAssetExtras,
+        amount: BigUInt
+    ) -> RuntimeCall<EquilibriumTokenTransfer>
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
@@ -134,6 +139,26 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
     ) -> RuntimeCall<AssetsTransfer> {
         let args = AssetsTransfer(assetId: extras.assetId, target: .accoundId(receiver), amount: amount)
         let callCodingPath = CallCodingPath.assetsTransfer(for: extras.palletName)
+
+        return RuntimeCall(
+            moduleName: callCodingPath.moduleName,
+            callName: callCodingPath.callName,
+            args: args
+        )
+    }
+
+    func equilibriumTransfer(
+        to receiver: AccountId,
+        extras: EquilibriumAssetExtras,
+        amount: BigUInt
+    ) -> RuntimeCall<EquilibriumTokenTransfer> {
+        let args = EquilibriumTokenTransfer(
+            assetId: extras.assetId,
+            destinationAccountId: receiver,
+            balance: .positive(amount)
+        )
+
+        let callCodingPath = CallCodingPath.equilibriumTransfer
 
         return RuntimeCall(
             moduleName: callCodingPath.moduleName,

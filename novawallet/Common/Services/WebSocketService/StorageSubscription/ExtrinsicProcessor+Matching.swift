@@ -504,4 +504,75 @@ extension ExtrinsicProcessor {
             )
         }
     }
+
+    func matchEquilibriumTransfer(
+        extrinsicIndex: UInt32,
+        extrinsic: Extrinsic,
+        eventRecords: [EventRecord],
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) -> ExtrinsicProcessingResult? {
+        do {
+            let metadata = codingFactory.metadata
+            let context = codingFactory.createRuntimeJsonContext()
+
+            let sender: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: context.toRawContext()
+            ).accountId
+
+            let eventRecords = eventRecords.filter { $0.extrinsicIndex == extrinsicIndex }
+
+            guard let call = try? extrinsic.call.map(
+                to: RuntimeCall<EquilibriumTokenTransfer>.self,
+                with: context.toRawContext()
+            ) else {
+                return nil
+            }
+            let callAccountId = call.args.destinationAccountId
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+            let isAccountMatched = accountId == sender || accountId == callAccountId
+
+            guard callPath.isEquilibriumTransfer, isAccountMatched, let sender = sender else {
+                return nil
+            }
+
+            guard let status = matchStatus(
+                for: extrinsicIndex,
+                eventRecords: eventRecords,
+                metadata: metadata
+            ) else {
+                return nil
+            }
+
+            let fee = findFee(
+                for: extrinsicIndex,
+                sender: sender,
+                eventRecords: eventRecords,
+                metadata: metadata,
+                runtimeJsonContext: context
+            )
+
+            let peerId = accountId == sender ? callAccountId : sender
+            guard let assetId = chain.equilibriumAssets.first(where: {
+                $0.equilibriumAssetId == call.args.assetId
+            })?.assetId else {
+                return nil
+            }
+
+            return ExtrinsicProcessingResult(
+                sender: sender,
+                callPath: callPath,
+                call: extrinsic.call,
+                extrinsicHash: nil,
+                fee: fee,
+                peerId: peerId,
+                amount: call.args.balance.value,
+                isSuccess: status,
+                assetId: assetId
+            )
+
+        } catch {
+            return nil
+        }
+    }
 }

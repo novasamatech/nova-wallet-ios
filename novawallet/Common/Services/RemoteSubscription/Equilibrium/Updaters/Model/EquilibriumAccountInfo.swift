@@ -5,7 +5,7 @@ struct EquilibriumAccountInfo: Decodable {
     @StringCodable var nonce: UInt32
     let data: EquilibriumAccountData
 
-    func balances<TKey>(mapKey: (AssetModel.Id) -> TKey?) -> [TKey: BigUInt] where TKey: Hashable {
+    func balances<TKey>(mapKey: (EquilibriumAssetId) -> TKey?) -> [TKey: BigUInt] where TKey: Hashable {
         switch data {
         case let .v0(_, balances):
             return balances.reduce(into: [TKey: BigUInt]()) {

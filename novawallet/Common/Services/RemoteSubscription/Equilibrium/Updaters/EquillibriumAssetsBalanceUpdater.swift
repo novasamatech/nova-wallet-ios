@@ -48,8 +48,8 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
         self.logger = logger
     }
 
-    private func createAssetsMapping(for chainModel: ChainModel) -> [AssetModel.Id: AssetModel.Id] {
-        chainModel.equilibriumAssets.reduce(into: [AssetModel.Id: AssetModel.Id]()) {
+    private func createAssetsMapping(for chainModel: ChainModel) -> [EquilibriumAssetId: AssetModel.Id] {
+        chainModel.equilibriumAssets.reduce(into: [UInt64: AssetModel.Id]()) {
             if let equilibriumAssetId = $1.equilibriumAssetId {
                 $0[equilibriumAssetId] = $1.assetId
             }
@@ -156,8 +156,12 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
                             changes: nil,
                             block: blockHash
                         )
-
                         self?.eventCenter.notify(with: assetBalanceChangeEvent)
+
+                        if let utilityChainAssetId = chainModel.utilityChainAssetId(),
+                           utilityChainAssetId == $0.chainAssetId {
+                            self?.handleTransactionIfNeeded(for: blockHash)
+                        }
                     }
             }
         }
@@ -230,10 +234,11 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
     }
 
     private func handleTransactionIfNeeded(for blockHash: Data?) {
-        if let blockHash = blockHash {
-            logger.debug("Handle statemine change transactions")
-            // TODO:
-            // transactionSubscription?.process(blockHash: blockHash)
+        guard let blockHash = blockHash else {
+            return
         }
+
+        logger.debug("Handle equilibrium change transactions")
+        transactionSubscription?.process(blockHash: blockHash)
     }
 }
