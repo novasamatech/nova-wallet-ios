@@ -298,6 +298,8 @@ extension CreateWatchOnlyViewController: TextInputViewDelegate {
 }
 
 extension CreateWatchOnlyViewController: AccountInputViewDelegate {
+    func accountInputViewDidEndEditing(_: AccountInputView) {}
+
     func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
         completeInputOn(field: inputView)
         return true
@@ -306,6 +308,8 @@ extension CreateWatchOnlyViewController: AccountInputViewDelegate {
     func accountInputViewWillStartEditing(_ inputView: AccountInputView) {
         updateReturnButton(for: inputView)
     }
+
+    func accountInputViewDidPaste(_: AccountInputView) {}
 }
 
 extension CreateWatchOnlyViewController: CreateWatchOnlyViewProtocol {

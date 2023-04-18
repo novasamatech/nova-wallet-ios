@@ -20,6 +20,8 @@ protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
     func didSwitchCrossChain()
     func didSwitchOnChain()
     func changeYourWalletsViewState(_ state: YourWalletsControl.State)
+    func didReceiveWeb3NameRecipient(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>)
+    func didReceiveRecipientInputState(focused: Bool, empty: Bool?)
 }
 
 protocol TransferSetupCommonPresenterProtocol: AnyObject {
@@ -41,20 +43,25 @@ protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func scanRecepientCode()
     func applyMyselfRecepient()
     func didTapOnYourWallets()
+    func showWeb3NameRecipient()
+    func complete(recipient: String)
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
-    func setup(destinationChain: ChainModel)
-    func destinationChainDidChanged(_ chain: ChainModel)
+    func setup(destinationChainAsset: ChainAsset)
+    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset)
+    func search(web3Name: String)
 }
 
 protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?)
     func didReceive(error: Error)
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse])
+    func didReceive(recipients: [Web3TransferRecipient], for name: String)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable,
+    Web3NameAddressListPresentable {
     func showDestinationChainSelection(
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
@@ -74,4 +81,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
     )
 
     func hideYourWallets(from view: TransferSetupViewProtocol?)
+
+    func checkDismissing(view: TransferSetupViewProtocol?) -> Bool
 }
