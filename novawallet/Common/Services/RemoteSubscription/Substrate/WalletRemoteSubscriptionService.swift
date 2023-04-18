@@ -405,7 +405,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 keyParamClosure: accountKeyMapper
             )
 
-            let allResevedBalancesLocalKey = try storageKeyFactory.createFromStoragePath(
+            let allReservedBalancesLocalKey = try storageKeyFactory.createFromStoragePath(
                 .equilibriumReserved,
                 encodableElement: accountId,
                 chainId: chainId
@@ -444,7 +444,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             return attachToSubscription(
                 with: [balancesRequest, locksRequest] + reservedRequests,
                 chainId: chainId,
-                cacheKey: balancesLocalKey + locksLocalKey + allResevedBalancesLocalKey,
+                cacheKey: balancesLocalKey + locksLocalKey + allReservedBalancesLocalKey,
                 queue: queue,
                 closure: closure,
                 subscriptionHandlingFactory: handlingFactory
