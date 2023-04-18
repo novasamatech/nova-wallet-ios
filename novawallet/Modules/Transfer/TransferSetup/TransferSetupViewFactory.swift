@@ -101,7 +101,9 @@ struct TransferSetupViewFactory {
         let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
 
         let recipientRepository = KiltTransferAssetRecipientRepository(integrityVerifier: Web3NameIntegrityVerifier())
+
         let web3NameService = Web3NameService(
+            providerName: Web3NameProvider.kilt,
             slip44CoinsProvider: slip44CoinsProvider,
             web3NamesOperationFactory: web3NamesOperationFactory,
             runtimeService: kiltRuntimeService,
