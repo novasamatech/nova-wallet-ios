@@ -286,6 +286,22 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
     }
 
+    func addingEquilibriumTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recepient: AccountId,
+        extras: EquilibriumAssetExtras
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.equilibriumTransfer(
+            to: recepient,
+            extras: extras,
+            amount: amount.value
+        )
+
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+    }
+
     func addingTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
@@ -316,6 +332,13 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
                 amount: amount,
                 recepient: recepient,
                 canTransferAll: canTransferAll
+            )
+        case let .equilibrium(extras):
+            return try addingEquilibriumTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                extras: extras
             )
         case .erc20, .evmNative:
             // we have a separate flow for evm

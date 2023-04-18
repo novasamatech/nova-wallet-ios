@@ -124,7 +124,7 @@ final class AssetsUpdatingService {
         switch assetType {
         case .statemine, .orml:
             return true
-        case .evmAsset, .evmNative:
+        case .evmAsset, .evmNative, .equilibrium:
             return false
         }
     }
@@ -193,7 +193,7 @@ final class AssetsUpdatingService {
                 chainId: chain.chainId,
                 transactionSubscription: transactionSubscription
             )
-        case .evmAsset, .evmNative:
+        case .evmAsset, .evmNative, .equilibrium:
             return nil
         }
     }
@@ -332,7 +332,7 @@ final class AssetsUpdatingService {
                 queue: nil,
                 closure: nil
             )
-        case .evmAsset, .evmNative:
+        case .evmAsset, .evmNative, .equilibrium:
             break
         }
     }
