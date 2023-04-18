@@ -4,20 +4,20 @@ import RobinHood
 final class EquilibriumSubscriptionHandlingFactory {
     let accountBalanceKey: String
     let locksKey: String
-    let reservedKey: String
+    let reservedKeys: [String: EquilibriumAssetId]
     let balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol
     let locksUpdater: EquillibriumLocksUpdaterProtocol
 
     init(
         accountBalanceKey: String,
         locksKey: String,
-        reservedKey: String,
+        reservedKeys: [String: EquilibriumAssetId],
         balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol,
         locksUpdater: EquillibriumLocksUpdaterProtocol
     ) {
         self.accountBalanceKey = accountBalanceKey
         self.locksKey = locksKey
-        self.reservedKey = reservedKey
+        self.reservedKeys = reservedKeys
         self.balanceUpdater = balanceUpdater
         self.locksUpdater = locksUpdater
     }
@@ -43,19 +43,22 @@ extension EquilibriumSubscriptionHandlingFactory: RemoteSubscriptionHandlingFact
                 remoteStorageKey: remoteStorageKey,
                 locksUpdater: locksUpdater
             )
-        case reservedKey:
-            return EquilibriumReservedSubscription(
-                remoteStorageKey: remoteStorageKey,
-                balanceUpdater: balanceUpdater,
-                logger: logger
-            )
         default:
-            logger.error("Unknown subscription with local key: \(localStorageKey)")
-            return EquilibriumAccountBalancesSubscription(
-                remoteStorageKey: remoteStorageKey,
-                balanceUpdater: balanceUpdater,
-                logger: logger
-            )
+            if let assetId = reservedKeys[localStorageKey] {
+                return EquilibriumReservedSubscription(
+                    remoteStorageKey: remoteStorageKey,
+                    assetId: assetId,
+                    balanceUpdater: balanceUpdater,
+                    logger: logger
+                )
+            } else {
+                logger.error("Unknown subscription with local key: \(localStorageKey)")
+                return EquilibriumAccountBalancesSubscription(
+                    remoteStorageKey: remoteStorageKey,
+                    balanceUpdater: balanceUpdater,
+                    logger: logger
+                )
+            }
         }
     }
 }

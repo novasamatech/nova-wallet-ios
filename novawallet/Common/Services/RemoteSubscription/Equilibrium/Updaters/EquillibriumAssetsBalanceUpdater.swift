@@ -4,11 +4,11 @@ import BigInt
 import SubstrateSdk
 
 protocol EquillibriumAssetsBalanceUpdaterProtocol {
-    func handleReservedBalance(value: Data?, blockHash: Data?)
+    func handleReservedBalance(value: Data?, assetId: EquilibriumAssetId, blockHash: Data?)
     func handleAccountBalances(value: Data?, blockHash: Data?)
 }
 
-final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol {
+final class EquillibriumAssetsBalanceUpdater {
     let chainModel: ChainModel
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
@@ -18,14 +18,14 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var lastReservedBalalnceValue: Data?
-    private var receivedReservedBalance: Bool = false
+    private var lastReservedBalanceValue: [EquilibriumAssetId: Data?] = [:]
+    private var receivedReservedBalance: [EquilibriumAssetId: Bool] = [:]
 
     private var lastAccountBalancesValue: Data?
     private var receivedAccountBalanaces: Bool = false
 
     private lazy var assetsMapping = createAssetsMapping(for: chainModel)
-
+    private lazy var operationManager = OperationManager(operationQueue: operationQueue)
     private let mutex = NSLock()
 
     init(
@@ -56,15 +56,194 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
         }
     }
 
-    func handleReservedBalance(value: Data?, blockHash: Data?) {
+    private func checkChanges(
+        chainModel: ChainModel,
+        accountId: AccountId,
+        blockHash: Data?,
+        logger: LoggerProtocol
+    ) {
+        guard receivedAccountBalanaces, !receivedReservedBalance.isEmpty else {
+            return
+        }
+
+        logger.debug("Handle changes in balance")
+        let accountBalancesPath = StorageCodingPath.equilibriumBalances
+        let accountBalancesWrapper: CompoundOperationWrapper<EquilibriumAccountInfo?> =
+            CommonOperationWrapper.storageDecoderWrapper(
+                for: lastAccountBalancesValue,
+                path: accountBalancesPath,
+                chainModelId: chainModel.chainId,
+                chainRegistry: chainRegistry
+            )
+
+        let changesWrapper = createChangesOperationWrapper(
+            accountBalancesWrapper: accountBalancesWrapper,
+            chainModel: chainModel,
+            accountId: accountId
+        )
+
+        let saveOperation = repository.saveOperation({
+            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
+            let changedItems = changes?.compactMap(\.item) ?? []
+
+            logger.debug("Update \(changedItems.count) items")
+            return changedItems
+        }, {
+            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
+
+            let deletingItems = changes?.compactMap {
+                $0.isDeletion ? $0.identifier : nil
+            } ?? []
+            logger.debug("Delete \(deletingItems.count) items")
+            return deletingItems
+        })
+
+        saveOperation.addDependency(changesWrapper.targetOperation)
+        changesWrapper.addDependency(wrapper: accountBalancesWrapper)
+
+        saveOperation.completionBlock = { [weak self] in
+            self?.sendBalanceChangeEvents(changesWrapper: changesWrapper, blockHash: blockHash)
+        }
+
+        let operations = accountBalancesWrapper.allOperations +
+            changesWrapper.allOperations + [saveOperation]
+
+        operationQueue.addOperations(operations, waitUntilFinished: false)
+    }
+
+    private func sendBalanceChangeEvents(
+        changesWrapper: CompoundOperationWrapper<[DataProviderChange<AssetBalance>]?>,
+        blockHash: Data?
+    ) {
+        DispatchQueue.global().async {
+            guard let items = try? changesWrapper.targetOperation.extractNoCancellableResultData() else {
+                return
+            }
+
+            items
+                .compactMap(\.item)
+                .forEach {
+                    let assetBalanceChangeEvent = AssetBalanceChanged(
+                        chainAssetId: $0.chainAssetId,
+                        accountId: self.accountId,
+                        changes: nil,
+                        block: blockHash
+                    )
+                    self.eventCenter.notify(with: assetBalanceChangeEvent)
+
+                    if let utilityChainAssetId = self.chainModel.utilityChainAssetId(),
+                       utilityChainAssetId == $0.chainAssetId {
+                        self.handleTransactionIfNeeded(for: blockHash)
+                    }
+                }
+        }
+    }
+
+    private func createReservedBalanceWrapper(data: [Data?]) -> CompoundOperationWrapper<[EquilibriumReservedData?]> {
+        let reservedBalancePath = StorageCodingPath.equilibriumReserved
+        let reservedBalanceWrapper: CompoundOperationWrapper<[EquilibriumReservedData?]> =
+            CommonOperationWrapper.storageDecoderListWrapper(
+                for: data,
+                path: reservedBalancePath,
+                chainModelId: chainModel.chainId,
+                chainRegistry: chainRegistry
+            )
+        return reservedBalanceWrapper
+    }
+
+    private func createChangesOperationWrapper(
+        accountBalancesWrapper: CompoundOperationWrapper<EquilibriumAccountInfo?>,
+        chainModel: ChainModel,
+        accountId: AccountId
+    ) -> CompoundOperationWrapper<[DataProviderChange<AssetBalance>]?> {
+        OperationCombiningService.compoundWrapper(operationManager: operationManager) {
+            let accountBalances = try accountBalancesWrapper.targetOperation.extractNoCancellableResultData()
+            let fetchOperation = self.repository.fetchAllOperation(with: .none)
+            let accountBalancesWithReservedData = accountBalances?.balances.filter {
+                self.receivedReservedBalance[$0.asset] == true
+            } ?? []
+            let data = accountBalancesWithReservedData.map {
+                self.lastReservedBalanceValue[$0.asset] ?? nil
+            }
+            let reservedBalancesWrapper = self.createReservedBalanceWrapper(data: data)
+            let changesOperation = ClosureOperation<[DataProviderChange<AssetBalance>]> {
+                let reservedBalance = try reservedBalancesWrapper.targetOperation.extractNoCancellableResultData()
+                let localModels = try fetchOperation.extractNoCancellableResultData()
+                let utilityAsset = chainModel.utilityAsset()?.assetId
+                let lock = accountBalances?.lock ?? .zero
+
+                let mappedBalances = accountBalancesWithReservedData.enumerated().reduce(into: [AssetModel.Id: AssetBalance]()) { result, balance in
+                    guard let assetId = self.assetsMapping[balance.element.asset] else {
+                        return
+                    }
+                    let frozenInPlank = assetId == utilityAsset ? lock : .zero
+                    let reservedInPlank = reservedBalance[balance.offset]?.value ?? .zero
+                    let freeInPlank = balance.element.balance.value
+
+                    result[assetId] = AssetBalance(
+                        chainAssetId: .init(chainId: chainModel.chainId, assetId: assetId),
+                        accountId: accountId,
+                        freeInPlank: freeInPlank,
+                        reservedInPlank: reservedInPlank,
+                        frozenInPlank: frozenInPlank
+                    )
+                }
+
+                let localModelsIds = localModels.map(\.chainAssetId)
+
+                var changes: [DataProviderChange<AssetBalance>] = localModels.compactMap { localModel in
+                    if let remoteModel = mappedBalances[localModel.chainAssetId.assetId] {
+                        if remoteModel != localModel {
+                            return .update(newItem: remoteModel)
+                        }
+                    } else {
+                        return .delete(deletedIdentifier: localModel.identifier)
+                    }
+
+                    return nil
+                }
+
+                let newItems = mappedBalances.values.filter {
+                    !localModelsIds.contains($0.chainAssetId)
+                }.map {
+                    DataProviderChange<AssetBalance>.insert(newItem: $0)
+                }
+                changes.append(contentsOf: newItems)
+
+                return changes
+            }
+
+            changesOperation.addDependency(reservedBalancesWrapper.targetOperation)
+            changesOperation.addDependency(fetchOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: changesOperation,
+                dependencies:
+                reservedBalancesWrapper.allOperations + [fetchOperation]
+            )
+        }
+    }
+
+    private func handleTransactionIfNeeded(for blockHash: Data?) {
+        guard let blockHash = blockHash else {
+            return
+        }
+
+        logger.debug("Handle equilibrium change transactions")
+        transactionSubscription?.process(blockHash: blockHash)
+    }
+}
+
+extension EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol {
+    func handleReservedBalance(value: Data?, assetId: EquilibriumAssetId, blockHash: Data?) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        receivedReservedBalance = true
-        lastReservedBalalnceValue = value
+        receivedReservedBalance[assetId] = true
+        lastReservedBalanceValue[assetId] = value
 
         checkChanges(
             chainModel: chainModel,
@@ -90,155 +269,5 @@ final class EquillibriumAssetsBalanceUpdater: EquillibriumAssetsBalanceUpdaterPr
             blockHash: blockHash,
             logger: logger
         )
-    }
-
-    private func checkChanges(
-        chainModel: ChainModel,
-        accountId: AccountId,
-        blockHash: Data?,
-        logger _: LoggerProtocol
-    ) {
-        guard receivedAccountBalanaces, receivedReservedBalance else {
-            return
-        }
-
-        let accountBalancesPath = StorageCodingPath.equilibriumBalances
-        let accountBalancesWrapper: CompoundOperationWrapper<EquilibriumAccountInfo?> =
-            CommonOperationWrapper.storageDecoderWrapper(
-                for: lastAccountBalancesValue,
-                path: accountBalancesPath,
-                chainModelId: chainModel.chainId,
-                chainRegistry: chainRegistry
-            )
-
-        let reservedBalancePath = StorageCodingPath.equilibriumReserved
-        let reservedBalanceWrapper: CompoundOperationWrapper<EquilibriumReservedData?> =
-            CommonOperationWrapper.storageDecoderWrapper(
-                for: lastReservedBalalnceValue,
-                path: reservedBalancePath,
-                chainModelId: chainModel.chainId,
-                chainRegistry: chainRegistry
-            )
-
-        let changesWrapper = createChangesOperationWrapper(
-            reservedBalanceWrapper: reservedBalanceWrapper,
-            accountBalancesWrapper: accountBalancesWrapper,
-            chainModel: chainModel,
-            accountId: accountId
-        )
-
-        let saveOperation = repository.saveOperation({
-            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
-            return changes.compactMap(\.item)
-        }, {
-            let changes = try changesWrapper.targetOperation.extractNoCancellableResultData()
-            return changes.compactMap {
-                $0.isDeletion ? $0.identifier : nil
-            }
-        })
-
-        saveOperation.addDependency(changesWrapper.targetOperation)
-        changesWrapper.addDependency(wrapper: accountBalancesWrapper)
-        changesWrapper.addDependency(wrapper: reservedBalanceWrapper)
-
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.global().async {
-                guard let items = try? changesWrapper.targetOperation.extractNoCancellableResultData() else {
-                    return
-                }
-
-                items
-                    .compactMap(\.item)
-                    .forEach {
-                        let assetBalanceChangeEvent = AssetBalanceChanged(
-                            chainAssetId: $0.chainAssetId,
-                            accountId: accountId,
-                            changes: nil,
-                            block: blockHash
-                        )
-                        self?.eventCenter.notify(with: assetBalanceChangeEvent)
-
-                        if let utilityChainAssetId = chainModel.utilityChainAssetId(),
-                           utilityChainAssetId == $0.chainAssetId {
-                            self?.handleTransactionIfNeeded(for: blockHash)
-                        }
-                    }
-            }
-        }
-
-        let operations = reservedBalanceWrapper.allOperations + accountBalancesWrapper.allOperations +
-            changesWrapper.allOperations + [saveOperation]
-
-        operationQueue.addOperations(operations, waitUntilFinished: false)
-    }
-
-    private func createChangesOperationWrapper(
-        reservedBalanceWrapper: CompoundOperationWrapper<EquilibriumReservedData?>,
-        accountBalancesWrapper: CompoundOperationWrapper<EquilibriumAccountInfo?>,
-        chainModel: ChainModel,
-        accountId: AccountId
-    ) -> CompoundOperationWrapper<[DataProviderChange<AssetBalance>]> {
-        let fetchOperation = repository.fetchAllOperation(with: .none)
-
-        let changesOperation = ClosureOperation<[DataProviderChange<AssetBalance>]> {
-            let accountBalances = try accountBalancesWrapper.targetOperation.extractNoCancellableResultData()
-            let reservedBalance = try reservedBalanceWrapper.targetOperation.extractNoCancellableResultData()?.value ?? .zero
-            let localModels = try fetchOperation.extractNoCancellableResultData()
-
-            let utilityAsset = chainModel.utilityAsset()?.assetId
-            let balances = accountBalances?.balances {
-                self.assetsMapping[$0]
-            } ?? [:]
-            let lock = accountBalances?.lock ?? .zero
-
-            let mappedBalances = balances.reduce(into: [AssetModel.Id: AssetBalance]()) { result, balance in
-                let assetId = balance.key
-                let frozenInPlank = assetId == utilityAsset ? lock : .zero
-                let reservedInPlank = assetId == utilityAsset ? reservedBalance : .zero
-
-                result[assetId] = AssetBalance(
-                    chainAssetId: .init(chainId: chainModel.chainId, assetId: assetId),
-                    accountId: accountId,
-                    freeInPlank: balance.value,
-                    reservedInPlank: reservedInPlank,
-                    frozenInPlank: frozenInPlank
-                )
-            }
-            let localModelsIds = localModels.map(\.chainAssetId)
-
-            var changes: [DataProviderChange<AssetBalance>] = localModels.compactMap { localModel in
-                if let remoteModel = mappedBalances[localModel.chainAssetId.assetId] {
-                    if remoteModel != localModel {
-                        return .update(newItem: remoteModel)
-                    }
-                } else {
-                    return .delete(deletedIdentifier: localModel.identifier)
-                }
-
-                return nil
-            }
-
-            let newItems = mappedBalances.values.filter {
-                !localModelsIds.contains($0.chainAssetId)
-            }.map {
-                DataProviderChange<AssetBalance>.insert(newItem: $0)
-            }
-            changes.append(contentsOf: newItems)
-
-            return changes
-        }
-
-        changesOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(targetOperation: changesOperation, dependencies: [fetchOperation])
-    }
-
-    private func handleTransactionIfNeeded(for blockHash: Data?) {
-        guard let blockHash = blockHash else {
-            return
-        }
-
-        logger.debug("Handle equilibrium change transactions")
-        transactionSubscription?.process(blockHash: blockHash)
     }
 }
