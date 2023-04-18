@@ -5,4 +5,5 @@ enum AssetType: String {
     case orml
     case evmAsset = "evm"
     case evmNative
+    case equilibrium
 }
