@@ -405,28 +405,38 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 keyParamClosure: accountKeyMapper
             )
 
-            let reservedBalanceLocalKey = try storageKeyFactory.createFromStoragePath(
+            let allResevedBalancesLocalKey = try storageKeyFactory.createFromStoragePath(
                 .equilibriumReserved,
                 encodableElement: accountId,
                 chainId: chainId
             )
 
-            let reservedRequests = info.assets.map { assetId in
-                DoubleMapSubscriptionRequest(
+            let reservedAsssetRequests = try info.assets.reduce(into: [EquilibriumAssetId: SubscriptionRequestProtocol]()) { result, asset in
+                let key = try storageKeyFactory.createFromStoragePath(
+                    .equilibriumReserved,
+                    encodableElements: [asset, accountId],
+                    chainId: chainId
+                )
+                result[asset] = DoubleMapSubscriptionRequest(
                     storagePath: .equilibriumReserved,
-                    localKey: reservedBalanceLocalKey,
+                    localKey: key,
                     keyParamClosure: {
-                        (BytesCodable(wrappedValue: info.accountId), StringScaleMapper(value: assetId))
+                        (BytesCodable(wrappedValue: info.accountId), StringScaleMapper(value: asset))
                     },
                     param1Encoder: nil,
                     param2Encoder: nil
                 )
             }
 
+            let reservedRequests = reservedAsssetRequests.values
+            let reservedKeys: [String: EquilibriumAssetId] = .init(uniqueKeysWithValues: reservedAsssetRequests.map {
+                ($0.value.localKey, $0.key)
+            })
+
             let handlingFactory = EquilibriumSubscriptionHandlingFactory(
                 accountBalanceKey: balancesLocalKey,
                 locksKey: locksLocalKey,
-                reservedKey: reservedBalanceLocalKey,
+                reservedKeys: reservedKeys,
                 balanceUpdater: balanceUpdater,
                 locksUpdater: locksUpdater
             )
@@ -434,7 +444,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             return attachToSubscription(
                 with: [balancesRequest, locksRequest] + reservedRequests,
                 chainId: chainId,
-                cacheKey: balancesLocalKey + locksLocalKey + reservedBalanceLocalKey,
+                cacheKey: balancesLocalKey + locksLocalKey + allResevedBalancesLocalKey,
                 queue: queue,
                 closure: closure,
                 subscriptionHandlingFactory: handlingFactory
