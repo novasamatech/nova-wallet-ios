@@ -2,8 +2,8 @@ import BigInt
 import SubstrateSdk
 
 struct EquilibriumLock: Decodable {
-    var type: Data
-    var amount: BigUInt
+    let type: Data
+    let amount: BigUInt
 
     init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()

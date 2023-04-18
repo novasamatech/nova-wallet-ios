@@ -23,18 +23,7 @@ enum EquilibriumAccountData: Decodable {
 
 extension EquilibriumAccountData {
     struct V0: Decodable {
-        let lock: BigUInt?
+        @OptionStringCodable var lock: BigUInt?
         let balance: [EquilibriumRemoteBalance]
-
-        enum CodingKeys: CodingKey {
-            case lock
-            case balance
-        }
-
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            lock = try container.decodeIfPresent(StringScaleMapper<BigUInt>.self, forKey: .lock)?.value
-            balance = try container.decode([EquilibriumRemoteBalance].self, forKey: .balance)
-        }
     }
 }

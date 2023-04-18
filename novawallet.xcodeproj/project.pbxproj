@@ -14153,7 +14153,6 @@
 				880CC0B229E7F291008C7F65 /* Updaters */,
 				881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift */,
 				8882FC6229E543D800DDA90B /* EquilibriumSubscriptionHandlingFactory.swift */,
-				880CC0AD29E7F180008C7F65 /* EquilibriumLock.swift */,
 				8882FC6029E5431400DDA90B /* RemoteEquilibriumSubscriptionInfo.swift */,
 			);
 			path = Equilibrium;
@@ -14270,6 +14269,7 @@
 				886A278329E93A5D003B269F /* SignedBalance.swift */,
 				886A278529E93A84003B269F /* EquilibriumReservedData.swift */,
 				8881043729EBC6BD000FA9BC /* EquilibriumTokenTransfer.swift */,
+				880CC0AD29E7F180008C7F65 /* EquilibriumLock.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
