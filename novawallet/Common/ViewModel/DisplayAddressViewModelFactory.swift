@@ -3,6 +3,7 @@ import SubstrateSdk
 
 protocol DisplayAddressViewModelFactoryProtocol {
     func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel
+    func createViewModel(from model: DisplayAddress, using chainFormat: ChainFormat) -> DisplayAddressViewModel
     func createViewModel(from address: AccountAddress, name: String?, iconUrl: URL?) -> DisplayAddressViewModel
 }
 
@@ -16,10 +17,27 @@ final class DisplayAddressViewModelFactory: DisplayAddressViewModelFactoryProtoc
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     func createViewModel(from model: DisplayAddress) -> DisplayAddressViewModel {
+        createViewModel(from: model, chainFormat: nil)
+    }
+
+    func createViewModel(from model: DisplayAddress, using chainFormat: ChainFormat) -> DisplayAddressViewModel {
+        createViewModel(from: model, chainFormat: chainFormat)
+    }
+
+    private func createViewModel(
+        from model: DisplayAddress,
+        chainFormat: ChainFormat?
+    ) -> DisplayAddressViewModel {
         let imageViewModel: ImageViewModelProtocol?
+        let accountId: AccountId?
+        if let chainFormat = chainFormat {
+            accountId = try? model.address.toAccountId(using: chainFormat)
+        } else {
+            accountId = try? model.address.toAccountId()
+        }
 
         if
-            let accountId = try? model.address.toAccountId(),
+            let accountId = accountId,
             let icon = try? iconGenerator.generateFromAccountId(accountId) {
             imageViewModel = DrawableIconViewModel(icon: icon)
         } else {

@@ -33,6 +33,9 @@ final class TransferSetupViewLayout: UIView {
 
     let recepientInputView: AccountInputView = {
         let view = AccountInputView()
+        view.localizablePlaceholder = LocalizableResource { locale in
+            R.string.localizable.transferSetupRecipientInputPlaceholder(preferredLanguages: locale.rLanguages)
+        }
         return view
     }()
 
@@ -47,6 +50,8 @@ final class TransferSetupViewLayout: UIView {
     let amountView = TitleHorizontalMultiValueView()
 
     let amountInputView = NewAmountInputView()
+
+    let web3NameReceipientView = Web3NameReceipientView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -112,6 +117,8 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.setCustomSpacing(0, after: titleStackView)
         containerView.stackView.addArrangedSubview(recepientInputView)
         containerView.stackView.setCustomSpacing(8.0, after: recepientInputView)
+        containerView.stackView.addArrangedSubview(web3NameReceipientView)
+        containerView.stackView.setCustomSpacing(16, after: web3NameReceipientView)
 
         containerView.stackView.addArrangedSubview(amountView)
         amountView.snp.makeConstraints { make in
