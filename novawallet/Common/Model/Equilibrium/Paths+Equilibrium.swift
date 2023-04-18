@@ -23,3 +23,9 @@ extension CallCodingPath {
         self == .equilibriumTransfer
     }
 }
+
+extension ConstantCodingPath {
+    static var equilibriumExistentialDepositBasic: ConstantCodingPath {
+        ConstantCodingPath(moduleName: "EqBalances", constantName: "ExistentialDepositBasic")
+    }
+}

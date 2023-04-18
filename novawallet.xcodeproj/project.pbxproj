@@ -2595,7 +2595,7 @@
 		8814E858297E35D600A722FF /* GoveranaceDelegatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814E857297E35D600A722FF /* GoveranaceDelegatePicker.swift */; };
 		881CA22529E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift */; };
 		881CA22729E3F20B00159C5B /* ChainModel+Equilibrium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22629E3F20B00159C5B /* ChainModel+Equilibrium.swift */; };
-		881CA22929E406F700159C5B /* CallCodingPath+Equilibrium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22829E406F700159C5B /* CallCodingPath+Equilibrium.swift */; };
+		881CA22929E406F700159C5B /* Paths+Equilibrium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881CA22829E406F700159C5B /* Paths+Equilibrium.swift */; };
 		8824D4222902D92F0022D778 /* ReferendumFullDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */; };
 		8824D424290324260022D778 /* PrettyPrintedJSONOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D423290324260022D778 /* PrettyPrintedJSONOperationFactory.swift */; };
 		8824D42629032B410022D778 /* BlurredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8824D42529032B410022D778 /* BlurredView.swift */; };
@@ -5965,7 +5965,7 @@
 		8814E857297E35D600A722FF /* GoveranaceDelegatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoveranaceDelegatePicker.swift; sourceTree = "<group>"; };
 		881CA22429E3F0D100159C5B /* EquilibriumAssetBalanceUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquilibriumAssetBalanceUpdatingService.swift; sourceTree = "<group>"; };
 		881CA22629E3F20B00159C5B /* ChainModel+Equilibrium.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChainModel+Equilibrium.swift"; sourceTree = "<group>"; };
-		881CA22829E406F700159C5B /* CallCodingPath+Equilibrium.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CallCodingPath+Equilibrium.swift"; sourceTree = "<group>"; };
+		881CA22829E406F700159C5B /* Paths+Equilibrium.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Paths+Equilibrium.swift"; sourceTree = "<group>"; };
 		881ED96729758088000C0457 /* Array+safe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+safe.swift"; sourceTree = "<group>"; };
 		8821119C96944A0E3526E93A /* StakingRedeemViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewFactory.swift; sourceTree = "<group>"; };
 		8824D4212902D92F0022D778 /* ReferendumFullDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumFullDetailsInteractor.swift; sourceTree = "<group>"; };
@@ -14162,7 +14162,7 @@
 			isa = PBXGroup;
 			children = (
 				881CA22629E3F20B00159C5B /* ChainModel+Equilibrium.swift */,
-				881CA22829E406F700159C5B /* CallCodingPath+Equilibrium.swift */,
+				881CA22829E406F700159C5B /* Paths+Equilibrium.swift */,
 				8881043929EBDC48000FA9BC /* EquilibriumTokenExtras.swift */,
 			);
 			path = Equilibrium;
@@ -18733,7 +18733,7 @@
 				84B91AED287078B0001A0420 /* StorageProviderSourceFallback.swift in Sources */,
 				84A70D9929CC7F0200C648AD /* PriceDataChange+Mapping.swift in Sources */,
 				59745D3C9602745E1417D2F6 /* AssetSelectionInteractor.swift in Sources */,
-				881CA22929E406F700159C5B /* CallCodingPath+Equilibrium.swift in Sources */,
+				881CA22929E406F700159C5B /* Paths+Equilibrium.swift in Sources */,
 				880CC0A829E7F13B008C7F65 /* EquilibriumAccountBalancesSubscription.swift in Sources */,
 				849976D227B3AC3000B14A6C /* MetamaskChain.swift in Sources */,
 				84468A112867BCD400BCBE00 /* XcmTransferService+Protocol.swift in Sources */,
