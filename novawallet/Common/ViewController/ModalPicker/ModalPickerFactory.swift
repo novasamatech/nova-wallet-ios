@@ -542,3 +542,40 @@ extension ModalPickerFactory {
         return viewController
     }
 }
+
+extension ModalPickerFactory {
+    static func createSelectableAddressesList(
+        title: LocalizableResource<String>?,
+        items: [LocalizableResource<SelectableAddressTableViewCell.Model>],
+        selectedIndex: Int?,
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> UIViewController? {
+        let viewController: ModalPickerViewController<
+            SelectableAddressTableViewCell, SelectableAddressTableViewCell.Model
+        > = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 48
+        viewController.headerHeight = 42
+        viewController.footerHeight = 0
+        viewController.headerBorderType = []
+        viewController.actionType = .none
+        viewController.viewModels = items
+        viewController.selectedIndex = selectedIndex ?? NSNotFound
+        viewController.context = context
+
+        let factory = ModalSheetPresentationFactory(configuration: .nova)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0, height: height)
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+}

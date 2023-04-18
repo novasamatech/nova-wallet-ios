@@ -1,7 +1,8 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
-final class TransferSetupInteractor: AccountFetching {
+final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     weak var presenter: TransferSetupInteractorOutputProtocol?
 
     let originChainAssetId: ChainAssetId
@@ -9,20 +10,24 @@ final class TransferSetupInteractor: AccountFetching {
     let chainsStore: ChainsStoreProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
+    let web3NamesService: Web3NameServiceProtocol
 
     private var xcmTransfers: XcmTransfers?
+    private var destinationChainAsset: ChainAsset?
 
     init(
         originChainAssetId: ChainAssetId,
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        web3NamesService: Web3NameServiceProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
         self.xcmTransfersSyncService = xcmTransfersSyncService
         self.chainsStore = chainsStore
         self.accountRepository = accountRepository
+        self.web3NamesService = web3NamesService
         self.operationManager = operationManager
     }
 
@@ -102,14 +107,38 @@ final class TransferSetupInteractor: AccountFetching {
 }
 
 extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
-    func setup(destinationChain: ChainModel) {
+    func setup(destinationChainAsset: ChainAsset) {
         setupChainsStore()
         setupXcmTransfersSyncService()
-        fetchAccounts(for: destinationChain)
+        fetchAccounts(for: destinationChainAsset.chain)
+        web3NamesService.setup()
+        self.destinationChainAsset = destinationChainAsset
     }
 
-    func destinationChainDidChanged(_ chain: ChainModel) {
-        fetchAccounts(for: chain)
+    func destinationChainAssetDidChanged(_ chainAsset: ChainAsset) {
+        fetchAccounts(for: chainAsset.chain)
+        destinationChainAsset = chainAsset
+    }
+
+    func search(web3Name: String) {
+        guard let destinationChainAsset = destinationChainAsset else {
+            return
+        }
+
+        web3NamesService.cancel()
+        web3NamesService.search(
+            name: web3Name,
+            destinationChainAsset: destinationChainAsset
+        ) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case let .success(recipients):
+                    self.presenter?.didReceive(recipients: recipients, for: web3Name)
+                case let .failure(error):
+                    self.presenter?.didReceive(error: error)
+                }
+            }
+        }
     }
 }
 
