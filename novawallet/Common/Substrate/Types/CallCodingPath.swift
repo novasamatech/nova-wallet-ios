@@ -7,7 +7,7 @@ struct CallCodingPath: Hashable, Codable {
 
 extension CallCodingPath {
     var isSubstrateOrEvmTransfer: Bool {
-        isTransfer || isERC20Transfer || isEvmNativeTransfer
+        isTransfer || isERC20Transfer || isEvmNativeTransfer || isEquilibriumTransfer
     }
 
     var isTransfer: Bool {
