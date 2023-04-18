@@ -21,6 +21,7 @@ class ConnectionPool {
     private var mutex = NSLock()
 
     private(set) var connections: [ChainModel.Id: WeakWrapper] = [:]
+    private(set) var oneShotConnections: [ChainModel.Id: OneShotConnection] = [:]
 
     private(set) var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] = [:]
 
@@ -107,7 +108,15 @@ extension ConnectionPool: ConnectionPoolProtocol {
             mutex.unlock()
         }
 
-        if let connection = connectionFactory.createOnShotConnection(for: chain) {
+        if let existingConnection = oneShotConnections[chain.chainId] {
+            connectionFactory.updateOneShotConnection(existingConnection, chain: chain)
+
+            return existingConnection
+        }
+
+        if let connection = try? connectionFactory.createOneShotConnection(for: chain) {
+            oneShotConnections[chain.chainId] = connection
+
             return connection
         } else {
             return connections[chain.chainId]?.target as? JSONRPCEngine
