@@ -113,7 +113,8 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: assetStorageInfo,
-            chainId: chainId
+            chainId: chainId,
+            asset: originChainAsset.asset
         )
 
         wrapper.targetOperation.completionBlock = {
