@@ -11,7 +11,8 @@ protocol AssetStorageInfoOperationFactoryProtocol {
 
     func createAssetBalanceExistenceOperation(
         for assetStorageInfo: AssetStorageInfo,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        asset: AssetModel
     ) -> CompoundOperationWrapper<AssetBalanceExistence>
 }
 
@@ -126,7 +127,8 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
     func createAssetBalanceExistenceOperation(
         for assetStorageInfo: AssetStorageInfo,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        asset: AssetModel
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         switch assetStorageInfo {
         case .native:
@@ -156,6 +158,10 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
             let assetExistence = AssetBalanceExistence(minBalance: 0, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
         case .equilibrium:
+            guard asset.isUtility else {
+                return CompoundOperationWrapper.createWithResult(.init(minBalance: 0, isSelfSufficient: true))
+            }
+
             guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
                 return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
             }
