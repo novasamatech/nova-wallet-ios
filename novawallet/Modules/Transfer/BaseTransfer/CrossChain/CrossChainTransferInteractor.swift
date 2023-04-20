@@ -104,17 +104,13 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     private func fetchAssetExistence(
         for assetStorageInfo: AssetStorageInfo,
         chainId: ChainModel.Id,
+        asset: AssetModel,
         completionClosure: @escaping (Result<AssetBalanceExistence, Error>) -> Void
     ) {
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            completionClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
-            return
-        }
-
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: assetStorageInfo,
             chainId: chainId,
-            asset: originChainAsset.asset
+            asset: asset
         )
 
         wrapper.targetOperation.completionBlock = {
@@ -291,10 +287,12 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func provideMinBalance() {
-        let originChainId = originChainAsset.chain.chainId
-
         if let originSendingAssetInfo = assetsInfo?.originSending {
-            fetchAssetExistence(for: originSendingAssetInfo, chainId: originChainId) { [weak self] result in
+            fetchAssetExistence(
+                for: originSendingAssetInfo,
+                chainId: originChainAsset.chain.chainId,
+                asset: originChainAsset.asset
+            ) { [weak self] result in
                 switch result {
                 case let .success(existence):
                     self?.presenter?.didReceiveOriginSendingMinBalance(existence.minBalance)
@@ -304,8 +302,14 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
             }
         }
 
-        if let originUtilityAssetInfo = assetsInfo?.originUtility {
-            fetchAssetExistence(for: originUtilityAssetInfo, chainId: originChainId) { [weak self] result in
+        if
+            let originUtilityAssetInfo = assetsInfo?.originUtility,
+            let utilityAsset = originChainAsset.chain.utilityAsset() {
+            fetchAssetExistence(
+                for: originUtilityAssetInfo,
+                chainId: originChainAsset.chain.chainId,
+                asset: utilityAsset
+            ) { [weak self] result in
                 switch result {
                 case let .success(existence):
                     self?.presenter?.didReceiveOriginUtilityMinBalance(existence.minBalance)
@@ -318,7 +322,11 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         if let destSendingAssetInfo = assetsInfo?.destinationSending {
             let destinationChainId = destinationChainAsset.chain.chainId
 
-            fetchAssetExistence(for: destSendingAssetInfo, chainId: destinationChainId) { [weak self] result in
+            fetchAssetExistence(
+                for: destSendingAssetInfo,
+                chainId: destinationChainId,
+                asset: destinationChainAsset.asset
+            ) { [weak self] result in
                 switch result {
                 case let .success(existence):
                     self?.presenter?.didReceiveDestSendingExistence(existence)
@@ -328,10 +336,17 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
             }
         }
 
-        if let destUtilityAssetInfo = assetsInfo?.destinationUtility {
+        if
+            let destUtilityAssetInfo = assetsInfo?.destinationUtility,
+            let utilityAsset = destinationChainAsset?.chain.utilityAsset()
+        {
             let destinationChainId = destinationChainAsset.chain.chainId
 
-            fetchAssetExistence(for: destUtilityAssetInfo, chainId: destinationChainId) { [weak self] result in
+            fetchAssetExistence(
+                for: destUtilityAssetInfo,
+                chainId: destinationChainId,
+                asset: utilityAsset
+            ) { [weak self] result in
                 switch result {
                 case let .success(existence):
                     self?.presenter?.didReceiveDestUtilityMinBalance(existence.minBalance)
