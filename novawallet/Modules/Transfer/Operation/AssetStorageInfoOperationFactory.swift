@@ -11,7 +11,8 @@ protocol AssetStorageInfoOperationFactoryProtocol {
 
     func createAssetBalanceExistenceOperation(
         for assetStorageInfo: AssetStorageInfo,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        asset: AssetModel
     ) -> CompoundOperationWrapper<AssetBalanceExistence>
 }
 
@@ -90,8 +91,18 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
     private func createNativeAssetExistenceOperation(
         for runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
+        existentialDepositConstantOperation(
+            path: .existentialDeposit,
+            for: runtimeService
+        )
+    }
+
+    private func existentialDepositConstantOperation(
+        path: ConstantCodingPath,
+        for runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-        let constOperation = PrimitiveConstantOperation<BigUInt>(path: .existentialDeposit, fallbackValue: nil)
+        let constOperation = PrimitiveConstantOperation<BigUInt>(path: path, fallbackValue: nil)
         constOperation.configurationBlock = {
             do {
                 constOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -116,7 +127,8 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
     func createAssetBalanceExistenceOperation(
         for assetStorageInfo: AssetStorageInfo,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        asset: AssetModel
     ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         switch assetStorageInfo {
         case .native:
@@ -142,9 +154,21 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
         case let .orml(info):
             let assetExistence = AssetBalanceExistence(minBalance: info.existentialDeposit, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
-        case .erc20:
+        case .erc20, .evmNative:
             let assetExistence = AssetBalanceExistence(minBalance: 0, isSelfSufficient: true)
             return CompoundOperationWrapper.createWithResult(assetExistence)
+        case .equilibrium:
+            guard asset.isUtility else {
+                return CompoundOperationWrapper.createWithResult(.init(minBalance: 0, isSelfSufficient: true))
+            }
+
+            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+                return .createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            }
+            return existentialDepositConstantOperation(
+                path: .equilibriumExistentialDepositBasic,
+                for: runtimeService
+            )
         }
     }
 }

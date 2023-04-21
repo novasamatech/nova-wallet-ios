@@ -29,7 +29,7 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
             return
         }
 
-        let navigationController = FearlessNavigationController(
+        let navigationController = NovaNavigationController(
             rootViewController: scanView.controller
         )
 
@@ -54,7 +54,7 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
             return
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.nova)
         viewController.controller.modalTransitioningFactory = factory
         viewController.controller.modalPresentationStyle = .custom
 
@@ -63,5 +63,9 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
 
     func hideYourWallets(from view: TransferSetupViewProtocol?) {
         view?.controller.dismiss(animated: true)
+    }
+
+    func checkDismissing(view: TransferSetupViewProtocol?) -> Bool {
+        view?.controller.navigationController?.isBeingDismissed ?? true
     }
 }

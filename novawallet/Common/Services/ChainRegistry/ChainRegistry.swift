@@ -1,11 +1,13 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol ChainRegistryProtocol: AnyObject {
     var availableChainIds: Set<ChainModel.Id>? { get }
 
     func getChain(for chainId: ChainModel.Id) -> ChainModel?
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
+    func getOneShotConnection(for chainId: ChainModel.Id) -> JSONRPCEngine?
     func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol?
 
     func chainsSubscribe(
@@ -98,33 +100,32 @@ final class ChainRegistry {
             do {
                 switch change {
                 case let .insert(newChain):
-                    let connection = try connectionPool.setupConnection(for: newChain)
-                    _ = runtimeProviderPool.setupRuntimeProvider(for: newChain)
-
-                    runtimeSyncService.register(chain: newChain, with: connection)
-
-                    setupRuntimeVersionSubscription(for: newChain, connection: connection)
                     availableChains.insert(newChain)
 
-                    logger?.debug("Subscribed runtime for: \(newChain.name)")
+                    let connection = try connectionPool.setupConnection(for: newChain)
+
+                    setupRuntimeHandlingIfNeeded(for: newChain, connection: connection)
+                    setupRuntimeVersionSubscriptionIfNeeded(for: newChain, connection: connection)
                 case let .update(updatedChain):
-                    let connection = try connectionPool.setupConnection(for: updatedChain)
-                    _ = runtimeProviderPool.setupRuntimeProvider(for: updatedChain)
-
-                    runtimeSyncService.register(chain: updatedChain, with: connection)
-
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == updatedChain.chainId }) {
                         availableChains.remove(at: currentChain)
                     }
-                    availableChains.insert(updatedChain)
-                case let .delete(chainId):
-                    runtimeProviderPool.destroyRuntimeProvider(for: chainId)
-                    clearRuntimeSubscription(for: chainId)
 
-                    runtimeSyncService.unregister(chainId: chainId)
+                    availableChains.insert(updatedChain)
+
+                    let connection = try connectionPool.setupConnection(for: updatedChain)
+
+                    setupRuntimeHandlingIfNeeded(for: updatedChain, connection: connection)
+                    setupRuntimeVersionSubscriptionIfNeeded(for: updatedChain, connection: connection)
+                case let .delete(chainId):
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == chainId }) {
                         availableChains.remove(at: currentChain)
                     }
+
+                    clearRuntimeSubscriptionIfExists(for: chainId)
+                    clearRuntimeHandlingIfNeeded(for: chainId)
+
+                    logger?.debug("Cleared runtime for: \(chainId)")
                 }
             } catch {
                 logger?.error("Unexpected error on handling chains update: \(error)")
@@ -132,9 +133,27 @@ final class ChainRegistry {
         }
     }
 
-    private func setupRuntimeVersionSubscription(for chain: ChainModel, connection: ChainConnection) {
+    private func setupRuntimeHandlingIfNeeded(for chain: ChainModel, connection: ChainConnection) {
+        if chain.hasSubstrateRuntime {
+            _ = runtimeProviderPool.setupRuntimeProviderIfNeeded(for: chain)
+
+            runtimeSyncService.register(chain: chain, with: connection)
+
+            logger?.debug("Subscribed runtime for: \(chain.name)")
+        } else {
+            clearRuntimeHandlingIfNeeded(for: chain.chainId)
+
+            logger?.debug("No runtime for: \(chain.chainId)")
+        }
+    }
+
+    private func setupRuntimeVersionSubscriptionIfNeeded(for chain: ChainModel, connection: ChainConnection) {
+        guard runtimeVersionSubscriptions[chain.chainId] == nil else {
+            return
+        }
+
         let subscription = specVersionSubscriptionFactory.createSubscription(
-            for: chain.chainId,
+            for: chain,
             connection: connection
         )
 
@@ -143,7 +162,12 @@ final class ChainRegistry {
         runtimeVersionSubscriptions[chain.chainId] = subscription
     }
 
-    private func clearRuntimeSubscription(for chainId: ChainModel.Id) {
+    private func clearRuntimeHandlingIfNeeded(for chainId: ChainModel.Id) {
+        runtimeProviderPool.destroyRuntimeProviderIfExists(for: chainId)
+        runtimeSyncService.unregisterIfExists(chainId: chainId)
+    }
+
+    private func clearRuntimeSubscriptionIfExists(for chainId: ChainModel.Id) {
         if let subscription = runtimeVersionSubscriptions[chainId] {
             subscription.unsubscribe()
         }
@@ -186,6 +210,20 @@ extension ChainRegistry: ChainRegistryProtocol {
         }
 
         return connectionPool.getConnection(for: chainId)
+    }
+
+    func getOneShotConnection(for chainId: ChainModel.Id) -> JSONRPCEngine? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard let chain = availableChains.first(where: { $0.chainId == chainId }) else {
+            return nil
+        }
+
+        return connectionPool.getOneShotConnection(for: chain)
     }
 
     func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol? {

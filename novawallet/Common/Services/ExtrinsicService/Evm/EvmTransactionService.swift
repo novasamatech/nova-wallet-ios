@@ -12,6 +12,7 @@ typealias EvmTransactionBuilderClosure = (EvmTransactionBuilderProtocol) throws 
 protocol EvmTransactionServiceProtocol {
     func estimateFee(
         _ closure: @escaping EvmTransactionBuilderClosure,
+        fallbackGasLimit: BigUInt,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EvmEstimateFeeClosure
     )
@@ -31,8 +32,6 @@ enum EvmTransactionServiceError: Error {
 }
 
 final class EvmTransactionService {
-    static let defaultRevertedFeeGasLimit: BigUInt = 9_000_000
-
     let accountId: AccountId
     let operationFactory: EthereumOperationFactoryProtocol
     let chain: ChainModel
@@ -51,7 +50,8 @@ final class EvmTransactionService {
     }
 
     private func createGasLimitOrDefaultWrapper(
-        for transaction: EthereumTransaction
+        for transaction: EthereumTransaction,
+        fallbackGasLimit: BigUInt
     ) -> CompoundOperationWrapper<BigUInt> {
         let gasEstimationOperation = operationFactory.createGasLimitOperation(for: transaction)
 
@@ -64,8 +64,8 @@ final class EvmTransactionService {
                 }
 
                 return gasLimit
-            } catch let error as JSONRPCError where error.isEvmContractReverted {
-                return Self.defaultRevertedFeeGasLimit
+            } catch is JSONRPCError {
+                return fallbackGasLimit
             }
         }
 
@@ -78,6 +78,7 @@ final class EvmTransactionService {
 extension EvmTransactionService: EvmTransactionServiceProtocol {
     func estimateFee(
         _ closure: @escaping EvmTransactionBuilderClosure,
+        fallbackGasLimit: BigUInt,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping EvmEstimateFeeClosure
     ) {
@@ -86,7 +87,7 @@ extension EvmTransactionService: EvmTransactionServiceProtocol {
             let builder = EvmTransactionBuilder(address: address, chainId: chain.evmChainId)
             let transaction = (try closure(builder)).buildTransaction()
 
-            let gasEstimationWrapper = createGasLimitOrDefaultWrapper(for: transaction)
+            let gasEstimationWrapper = createGasLimitOrDefaultWrapper(for: transaction, fallbackGasLimit: fallbackGasLimit)
             let gasPriceOperation = operationFactory.createGasPriceOperation()
 
             let mapOperation = ClosureOperation<BigUInt> {

@@ -25,6 +25,15 @@ struct ChainModel: Equatable, Codable, Hashable {
         case onlyOwn
     }
 
+    enum NodeSwitchStrategy: String, Codable, Hashable {
+        case uniform
+        case roundRobin
+
+        init(rawStrategy: String?) {
+            self = rawStrategy.flatMap { .init(rawValue: $0) } ?? .roundRobin
+        }
+    }
+
     let chainId: Id
     let parentId: Id?
     let name: String
@@ -35,6 +44,7 @@ struct ChainModel: Equatable, Codable, Hashable {
     let icon: URL
     let options: [ChainOptions]?
     let externalApis: LocalChainExternalApiSet?
+    let nodeSwitchStrategy: NodeSwitchStrategy
     let explorers: [Explorer]?
     let order: Int64
     let additional: JSON?
@@ -45,6 +55,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         name: String,
         assets: Set<AssetModel>,
         nodes: Set<ChainNodeModel>,
+        nodeSwitchStrategy: NodeSwitchStrategy,
         addressPrefix: UInt16,
         types: TypesSettings?,
         icon: URL,
@@ -59,6 +70,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.name = name
         self.assets = assets
         self.nodes = nodes
+        self.nodeSwitchStrategy = nodeSwitchStrategy
         self.addressPrefix = addressPrefix
         self.types = types
         self.icon = icon
@@ -80,6 +92,8 @@ struct ChainModel: Equatable, Codable, Hashable {
         }
 
         nodes = Set(nodeList)
+
+        nodeSwitchStrategy = .init(rawStrategy: remoteModel.nodeSelectionStrategy)
 
         addressPrefix = remoteModel.addressPrefix
         types = remoteModel.types
@@ -122,6 +136,14 @@ struct ChainModel: Equatable, Codable, Hashable {
 
     var hasGovernanceV2: Bool {
         options?.contains(where: { $0 == .governance }) ?? false
+    }
+
+    var noSubstrateRuntime: Bool {
+        options?.contains(where: { $0 == .noSubstrateRuntime }) ?? false
+    }
+
+    var hasSubstrateRuntime: Bool {
+        !noSubstrateRuntime
     }
 
     var isRelaychain: Bool { parentId == nil }
@@ -173,6 +195,7 @@ enum ChainOptions: String, Codable {
     case crowdloans
     case governance
     case governanceV1 = "governance-v1"
+    case noSubstrateRuntime
 }
 
 extension ChainModel {
@@ -183,6 +206,7 @@ extension ChainModel {
             name: name,
             assets: assets.union([asset]),
             nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
             types: types,
             icon: icon,
@@ -204,6 +228,7 @@ extension ChainModel {
             name: newName,
             assets: newAssets,
             nodes: nodes,
+            nodeSwitchStrategy: nodeSwitchStrategy,
             addressPrefix: addressPrefix,
             types: types,
             icon: icon,

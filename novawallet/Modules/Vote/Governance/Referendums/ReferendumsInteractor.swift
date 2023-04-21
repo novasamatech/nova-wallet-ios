@@ -19,7 +19,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
         governanceState.generalLocalSubscriptionFactory
     }
 
-    private(set) var priceProvider: AnySingleValueProvider<PriceData>?
+    private(set) var priceProvider: StreamableProvider<PriceData>?
     private(set) var assetBalanceProvider: StreamableProvider<AssetBalance>?
     private(set) var blockNumberSubscription: AnyDataProvider<DecodedBlockNumber>?
     private(set) var metadataProvider: StreamableProvider<ReferendumMetadataLocal>?
@@ -60,7 +60,7 @@ final class ReferendumsInteractor: AnyProviderAutoCleaning, AnyCancellableCleani
 
     func clear() {
         clear(streamableProvider: &assetBalanceProvider)
-        clear(singleValueProvider: &priceProvider)
+        clear(streamableProvider: &priceProvider)
         clear(streamableProvider: &metadataProvider)
 
         clearBlockTimeService()

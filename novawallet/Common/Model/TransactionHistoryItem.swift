@@ -4,7 +4,8 @@ import BigInt
 
 enum TransactionHistoryItemSource: Int16, Codable {
     case substrate = 0
-    case evm = 1
+    case evmAsset = 1
+    case evmNative = 2
 }
 
 struct TransactionHistoryItem: Codable {
@@ -58,5 +59,19 @@ extension TransactionHistoryItem: Identifiable {
 extension TransactionHistoryItem {
     var walletAssetId: String {
         ChainAssetId(chainId: chainId, assetId: assetId).walletId
+    }
+}
+
+extension TransactionHistoryItemSource {
+    init(assetTypeString: String?) {
+        let assetType: AssetType? = assetTypeString.flatMap { .init(rawValue: $0) }
+        switch assetType {
+        case .statemine, .orml, .none, .equilibrium:
+            self = .substrate
+        case .evmAsset:
+            self = .evmAsset
+        case .evmNative:
+            self = .evmNative
+        }
     }
 }

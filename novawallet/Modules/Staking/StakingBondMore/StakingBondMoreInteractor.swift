@@ -17,7 +17,7 @@ final class StakingBondMoreInteractor: AccountFetching {
     let operationManager: OperationManagerProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
-    private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var priceProvider: StreamableProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var extrinsicService: ExtrinsicServiceProtocol?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?

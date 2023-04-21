@@ -14,7 +14,9 @@ struct CustomAssetMapper {
         nativeHandler: () -> T,
         statemineHandler: (StatemineAssetExtras) -> T,
         ormlHandler: (OrmlTokenExtras) -> T,
-        evmHandler: (AccountId) -> T
+        evmHandler: (AccountId) -> T,
+        evmNativeHandler: () -> T,
+        equilibriumHandler: (EquilibriumAssetExtras) -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -37,7 +39,7 @@ struct CustomAssetMapper {
             }
 
             return ormlHandler(wrappedExtras)
-        case .evm:
+        case .evmAsset:
             guard let contractAddress = typeExtras?.stringValue else {
                 throw MapperError.invalidJson(type)
             }
@@ -45,6 +47,14 @@ struct CustomAssetMapper {
             let accountId = try contractAddress.toAccountId(using: .ethereum)
 
             return evmHandler(accountId)
+        case .evmNative:
+            return evmNativeHandler()
+        case .equilibrium:
+            guard let wrappedExtras = try? typeExtras?.map(to: EquilibriumAssetExtras.self) else {
+                throw MapperError.invalidJson(type)
+            }
+
+            return equilibriumHandler(wrappedExtras)
         case .none:
             return nativeHandler()
         }
@@ -54,7 +64,9 @@ struct CustomAssetMapper {
         nativeHandler: () -> T,
         statemineHandler: () -> T,
         ormlHandler: () -> T,
-        evmHandler: () -> T
+        evmHandler: () -> T,
+        evmNativeHandler: () -> T,
+        equilibriumHandler: () -> T
     ) throws -> T {
         let wrappedType: AssetType? = try type.map { value in
             if let typeValue = AssetType(rawValue: value) {
@@ -69,8 +81,12 @@ struct CustomAssetMapper {
             return statemineHandler()
         case .orml:
             return ormlHandler()
-        case .evm:
+        case .evmAsset:
             return evmHandler()
+        case .evmNative:
+            return evmNativeHandler()
+        case .equilibrium:
+            return equilibriumHandler()
         case .none:
             return nativeHandler()
         }
@@ -83,7 +99,9 @@ extension CustomAssetMapper {
             nativeHandler: { nil },
             statemineHandler: { $0.assetId },
             ormlHandler: { $0.currencyIdScale },
-            evmHandler: { try? $0.toAddress(using: .ethereum) }
+            evmHandler: { try? $0.toAddress(using: .ethereum) },
+            evmNativeHandler: { nil },
+            equilibriumHandler: { String($0.assetId) }
         )
     }
 }

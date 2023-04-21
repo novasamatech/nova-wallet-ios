@@ -27,4 +27,15 @@ extension EvmTransactionBuilderProtocol {
 
         return toAddress(contract).usingTransactionData(data)
     }
+
+    func nativeTransfer(
+        to recepient: AccountAddress,
+        amount: BigUInt
+    ) throws -> EvmTransactionBuilderProtocol {
+        guard EthereumAddress(recepient) != nil else {
+            throw AccountAddressConversionError.invalidEthereumAddress
+        }
+
+        return toAddress(recepient).sendingValue(amount)
+    }
 }

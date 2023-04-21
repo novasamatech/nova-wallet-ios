@@ -96,10 +96,12 @@ final class StakingRebagConfirmPresenter {
     }
 
     private func provideCurrentBagListViewModel() {
-        guard let networkInfo = networkInfo, let currentBagListNode = currentBagListNode else {
+        guard let networkInfo = networkInfo,
+              let currentBagListNode = currentBagListNode,
+              let totalIssuance = totalIssuance else {
             return
         }
-        let bag = networkInfo.searchBounds(for: currentBagListNode)
+        let bag = networkInfo.searchBounds(for: currentBagListNode, totalIssuance: totalIssuance)
         let viewModel = createAnyBagViewModel(bagListBounds: bag)
 
         view?.didReceiveCurrentRebag(viewModel: viewModel)
@@ -266,6 +268,10 @@ extension StakingRebagConfirmPresenter: StakingRebagConfirmInteractorOutputProto
              .fetchStashItemFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.remakeSubscriptions()
+            }
+        case .cantResolveModuleName:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryModuleName()
             }
         case .fetchNetworkInfoFailed:
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in

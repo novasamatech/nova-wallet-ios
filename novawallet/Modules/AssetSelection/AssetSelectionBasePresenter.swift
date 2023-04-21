@@ -1,6 +1,7 @@
 import Foundation
 import SoraFoundation
 import BigInt
+import RobinHood
 
 class AssetSelectionBasePresenter {
     weak var view: AssetSelectionViewProtocol?
@@ -9,12 +10,16 @@ class AssetSelectionBasePresenter {
 
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
-    private(set) var assets: [ChainAsset] = []
+    private(set) var assets: [ChainAsset]?
 
-    private var accountBalances: [ChainAssetId: Result<BigUInt?, Error>] = [:]
-    private var assetPrices: [ChainAssetId: PriceData] = [:]
+    private var accountBalances: [ChainAssetId: Result<BigUInt?, Error>]?
+    private var assetPrices: [ChainAssetId: PriceData]?
 
     private var viewModels: [SelectableIconDetailsListViewModel] = []
+
+    var isReadyForDisplay: Bool {
+        assets != nil && accountBalances != nil && assetPrices != nil
+    }
 
     init(
         interactor: AssetSelectionInteractorInputProtocol,
@@ -30,7 +35,7 @@ class AssetSelectionBasePresenter {
 
     private func extractAvailableBalanceInPlank(for chainAsset: ChainAsset) -> BigUInt? {
         guard
-            let balanceResult = accountBalances[chainAsset.chainAssetId],
+            let balanceResult = accountBalances?[chainAsset.chainAssetId],
             case let .success(balance) = balanceResult else {
             return nil
         }
@@ -40,9 +45,9 @@ class AssetSelectionBasePresenter {
 
     private func extractFiatBalance(for chainAsset: ChainAsset) -> Decimal? {
         guard
-            let balanceResult = accountBalances[chainAsset.chainAssetId],
+            let balanceResult = accountBalances?[chainAsset.chainAssetId],
             case let .success(balance) = balanceResult,
-            let priceString = assetPrices[chainAsset.chainAssetId]?.price,
+            let priceString = assetPrices?[chainAsset.chainAssetId]?.price,
             let price = Decimal(string: priceString),
             let balanceDecimal = Decimal.fromSubstrateAmount(
                 balance ?? 0,
@@ -79,7 +84,7 @@ class AssetSelectionBasePresenter {
     }
 
     private func updateSorting() {
-        assets.sort { chainAsset1, chainAsset2 in
+        assets?.sort { chainAsset1, chainAsset2 in
             let balance1 = extractAvailableBalanceInPlank(for: chainAsset1) ?? 0
             let balance2 = extractAvailableBalanceInPlank(for: chainAsset2) ?? 0
 
@@ -156,25 +161,29 @@ extension AssetSelectionBasePresenter: AssetSelectionInteractorOutputProtocol {
     }
 
     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+        if accountBalances == nil {
+            accountBalances = [:]
+        }
+
         results.forEach { key, value in
-            accountBalances[key] = value
+            accountBalances?[key] = value
         }
 
         updateSorting()
         updateView()
     }
 
-    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
-        switch result {
-        case let .success(prices):
-            assetPrices = prices
-
-            updateSorting()
-            updateView()
-        case .failure, .none:
-            // ignore any price errors as it is needed only for sorting
-            break
+    func didReceivePrice(changes: [ChainAssetId: DataProviderChange<PriceData>]) {
+        assetPrices = changes.reduce(into: assetPrices ?? [:]) { accum, keyValue in
+            accum[keyValue.key] = keyValue.value.item
         }
+
+        updateSorting()
+        updateView()
+    }
+
+    func didReceivePrice(error _: Error) {
+        // ignore error because price only needed for sorting
     }
 }
 

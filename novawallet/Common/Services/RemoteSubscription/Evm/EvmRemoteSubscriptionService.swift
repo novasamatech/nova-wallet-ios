@@ -63,7 +63,7 @@ class EvmRemoteSubscriptionService {
         let container: EvmRemoteSubscriptionProtocol
 
         switch request {
-        case let .erc20Balace(params):
+        case let .erc20Balance(params):
             container = ERC20SubscriptionManager(
                 chainId: chainId,
                 params: params,
@@ -72,8 +72,18 @@ class EvmRemoteSubscriptionService {
                 eventCenter: eventCenter,
                 logger: logger
             )
-            try container.start()
+        case let .native(params):
+            container = EvmNativeSubscriptionManager(
+                chainId: chainId,
+                params: params,
+                serviceFactory: balanceUpdateServiceFactory,
+                connection: connection,
+                eventCenter: eventCenter,
+                logger: logger
+            )
         }
+
+        try container.start()
 
         subscriptions[cacheKey] = Active(subscriptionIds: [subscriptionId], container: container)
 

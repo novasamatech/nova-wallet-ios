@@ -1,10 +1,15 @@
 import Foundation
 
 protocol EvmTransactionHistoryUpdaterFactoryProtocol {
-    func createTransactionHistoryUpdater(
+    func createCustomAssetHistoryUpdater(
         for accountId: AccountId,
         assetContracts: Set<EvmAssetContractId>
-    ) -> EvmTransactionHistoryUpdaterProtocol
+    ) -> ContractTransactionHistoryUpdaterProtocol
+
+    func createNativeAssetHistoryUpdater(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) throws -> EvmNativeTransactionHistoryUpdaterProtocol
 }
 
 final class EvmTransactionHistoryUpdaterFactory {
@@ -30,19 +35,42 @@ final class EvmTransactionHistoryUpdaterFactory {
 }
 
 extension EvmTransactionHistoryUpdaterFactory: EvmTransactionHistoryUpdaterFactoryProtocol {
-    func createTransactionHistoryUpdater(
+    func createCustomAssetHistoryUpdater(
         for accountId: AccountId,
         assetContracts: Set<EvmAssetContractId>
-    ) -> EvmTransactionHistoryUpdaterProtocol {
+    ) -> ContractTransactionHistoryUpdaterProtocol {
         let repository = SubstrateRepositoryFactory(storageFacade: storageFacade).createTxRepository()
 
-        return EvmTransactionHistoryUpdater(
+        return ContractTransactionHistoryUpdater(
             repository: repository,
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
             eventCenter: eventCenter,
             accountId: accountId,
             assetContracts: assetContracts,
+            logger: logger
+        )
+    }
+
+    func createNativeAssetHistoryUpdater(
+        for accountId: AccountId,
+        chainAssetId: ChainAssetId
+    ) throws -> EvmNativeTransactionHistoryUpdaterProtocol {
+        let repository = SubstrateRepositoryFactory(storageFacade: storageFacade).createTxRepository()
+
+        guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        let operationFactory = EvmWebSocketOperationFactory(connection: connection)
+
+        return EvmNativeTransactionHistoryUpdater(
+            chainAssetId: chainAssetId,
+            repository: repository,
+            operationFactory: operationFactory,
+            operationQueue: operationQueue,
+            eventCenter: eventCenter,
+            accountId: accountId,
             logger: logger
         )
     }

@@ -89,7 +89,7 @@ struct TransferConfirmOnChainViewFactory {
         account: ChainAccountResponse,
         accountMetaId: String
     ) -> (OnChainTransferBaseInteractor & TransferConfirmOnChainInteractorInputProtocol)? {
-        if chainAsset.asset.isEvm {
+        if chainAsset.asset.isAnyEvm {
             return createEvmInteractor(for: chainAsset, account: account)
         } else {
             return createSubstrateInteractor(for: chainAsset, account: account, accountMetaId: accountMetaId)
@@ -106,7 +106,7 @@ struct TransferConfirmOnChainViewFactory {
 
         guard
             let ethereumResponse = SelectedWalletSettings.shared.value?.fetchEthereum(for: account.accountId),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let connection = chainRegistry.getOneShotConnection(for: chain.chainId),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -129,11 +129,13 @@ struct TransferConfirmOnChainViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        let fallbackGasLimit = EvmFallbackGasLimit.value(for: asset)
+
         return TransferEvmOnChainConfirmInteractor(
             selectedAccount: account,
             chain: chain,
             asset: asset,
-            feeProxy: EvmTransactionFeeProxy(),
+            feeProxy: EvmTransactionFeeProxy(fallbackGasLimit: fallbackGasLimit),
             extrinsicService: extrinsicService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

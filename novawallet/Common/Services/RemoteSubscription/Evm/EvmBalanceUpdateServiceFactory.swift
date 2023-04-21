@@ -11,6 +11,13 @@ protocol EvmBalanceUpdateServiceFactoryProtocol {
         blockNumber: Core.BlockNumber,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol
+
+    func createNativeBalanceUpdateService(
+        for holder: AccountAddress,
+        chainAssetId: ChainAssetId,
+        blockNumber: Core.BlockNumber,
+        completionClosure: EvmNativeUpdateServiceCompletionClosure?
+    ) throws -> SyncServiceProtocol
 }
 
 final class EvmBalanceUpdateServiceFactory {
@@ -40,7 +47,7 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
         blockNumber: Core.BlockNumber,
         completionClosure: ERC20UpdateServiceCompletionClosure?
     ) throws -> SyncServiceProtocol {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
+        guard let connection = chainRegistry.getOneShotConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
 
@@ -62,6 +69,43 @@ extension EvmBalanceUpdateServiceFactory: EvmBalanceUpdateServiceFactoryProtocol
             operationQueue: operationQueue,
             blockNumber: blockNumber,
             queryMessageFactory: EvmQueryContractMessageFactory(),
+            logger: logger,
+            completion: completionClosure
+        )
+    }
+
+    func createNativeBalanceUpdateService(
+        for holder: AccountAddress,
+        chainAssetId: ChainAssetId,
+        blockNumber: Core.BlockNumber,
+        completionClosure: EvmNativeUpdateServiceCompletionClosure?
+    ) throws -> SyncServiceProtocol {
+        guard let connection = chainRegistry.getOneShotConnection(for: chainAssetId.chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        let accountId = try holder.toEthereumAccountId()
+
+        let mapper = AssetBalanceMapper()
+        let filter = NSPredicate.assetBalance(
+            for: accountId,
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId
+        )
+
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        return EvmNativeBalanceUpdateService(
+            holder: holder,
+            chainAssetId: chainAssetId,
+            connection: connection,
+            repository: AnyDataProviderRepository(repository),
+            operationQueue: operationQueue,
+            blockNumber: blockNumber,
             logger: logger,
             completion: completionClosure
         )

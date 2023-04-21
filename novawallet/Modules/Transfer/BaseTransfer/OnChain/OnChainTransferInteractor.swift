@@ -77,7 +77,8 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     ) {
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: assetStorageInfo,
-            chainId: chain.chainId
+            chainId: chain.chainId,
+            asset: asset
         )
 
         wrapper.targetOperation.completionBlock = {
@@ -286,6 +287,22 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
         return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
     }
 
+    func addingEquilibriumTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recepient: AccountId,
+        extras: EquilibriumAssetExtras
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        let call = callFactory.equilibriumTransfer(
+            to: recepient,
+            extras: extras,
+            amount: amount.value
+        )
+
+        let newBuilder = try builder.adding(call: call)
+        return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+    }
+
     func addingTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: OnChainTransferAmount<BigUInt>,
@@ -317,8 +334,15 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
                 recepient: recepient,
                 canTransferAll: canTransferAll
             )
-        case .erc20:
-            // we have a separate flow for erc20
+        case let .equilibrium(extras):
+            return try addingEquilibriumTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepient,
+                extras: extras
+            )
+        case .erc20, .evmNative:
+            // we have a separate flow for evm
             return (builder, nil)
         }
     }
