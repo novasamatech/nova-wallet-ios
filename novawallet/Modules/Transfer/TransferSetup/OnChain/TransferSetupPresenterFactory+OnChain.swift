@@ -143,7 +143,7 @@ extension TransferSetupPresenterFactory {
 
         guard
             let selectedAccount = wallet.fetch(for: chain.accountRequest()),
-            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let connection = chainRegistry.getOneShotConnection(for: chain.chainId),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -157,11 +157,13 @@ extension TransferSetupPresenterFactory {
             operationQueue: operationQueue
         )
 
+        let fallbackGasLimit = EvmFallbackGasLimit.value(for: asset)
+
         return EvmOnChainTransferSetupInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeProxy: EvmTransactionFeeProxy(),
+            feeProxy: EvmTransactionFeeProxy(fallbackGasLimit: fallbackGasLimit),
             extrinsicService: extrinsicService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
