@@ -81,6 +81,9 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             action: #selector(actionYourWallets),
             for: .touchUpInside
         )
+
+        rootView.web3NameReceipientView.delegate = self
+        rootView.recepientInputView.delegate = self
     }
 
     private func setupLocalization() {
@@ -180,6 +183,13 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc func actionProceed() {
+        if rootView.recepientInputView.textField.isFirstResponder {
+            let partialAddress = rootView.recepientInputView.textField.text ?? ""
+            presenter.complete(recipient: partialAddress)
+
+            rootView.recepientInputView.textField.resignFirstResponder()
+        }
+
         presenter.proceed()
     }
 
@@ -283,6 +293,21 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
             for: .touchUpInside
         )
     }
+
+    func didReceiveWeb3NameRecipient(viewModel: LoadableViewModelState<Web3NameReceipientView.Model>) {
+        rootView.web3NameReceipientView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveRecipientInputState(focused: Bool, empty: Bool?) {
+        if focused {
+            rootView.recepientInputView.textField.becomeFirstResponder()
+        } else {
+            rootView.recepientInputView.textField.resignFirstResponder()
+        }
+        if empty == true {
+            rootView.recepientInputView.actionClear()
+        }
+    }
 }
 
 extension TransferSetupViewController {
@@ -336,5 +361,32 @@ extension TransferSetupViewController: AmountInputAccessoryViewDelegate {
 
     func didSelectDone(on _: AmountInputAccessoryView) {
         rootView.amountInputView.textField.resignFirstResponder()
+    }
+}
+
+extension TransferSetupViewController: Web3NameReceipientViewDelegate {
+    func didTapOnAccountList() {}
+
+    func didTapOnAccount() {
+        presenter.showWeb3NameRecipient()
+    }
+}
+
+extension TransferSetupViewController: AccountInputViewDelegate {
+    func accountInputViewWillStartEditing(_: AccountInputView) {}
+
+    func accountInputViewDidEndEditing(_ inputView: AccountInputView) {
+        presenter.complete(recipient: inputView.textField.text ?? "")
+    }
+
+    func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
+        inputView.textField.resignFirstResponder()
+        return true
+    }
+
+    func accountInputViewDidPaste(_ inputView: AccountInputView) {
+        if !inputView.textField.isFirstResponder {
+            presenter.complete(recipient: inputView.textField.text ?? "")
+        }
     }
 }
