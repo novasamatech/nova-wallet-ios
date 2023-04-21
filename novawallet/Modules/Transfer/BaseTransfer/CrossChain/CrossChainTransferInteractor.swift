@@ -338,8 +338,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
         if
             let destUtilityAssetInfo = assetsInfo?.destinationUtility,
-            let utilityAsset = destinationChainAsset?.chain.utilityAsset()
-        {
+            let utilityAsset = destinationChainAsset.chain.utilityAsset() {
             let destinationChainId = destinationChainAsset.chain.chainId
 
             fetchAssetExistence(
