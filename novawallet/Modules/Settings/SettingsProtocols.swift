@@ -16,7 +16,7 @@ protocol SettingsPresenterProtocol: AnyObject {
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
     func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel
-    
+
     func createSectionViewModels(
         language: Language?,
         currency: String?,
@@ -24,15 +24,19 @@ protocol SettingsViewModelFactoryProtocol: AnyObject {
         isPinConfirmationOn: Bool,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])]
-    
-    func createConfirmPinInfoAlert(locale: Locale,
-                                   enableAction: @escaping () -> Void,
-                                   cancelAction: @escaping () -> Void) -> AlertPresentableViewModel
-    
-    func askBiometryAlert(biometrySettings: BiometrySettings?,
-                          locale: Locale,
-                          useAction: @escaping () -> Void,
-                          skipAction: @escaping () -> Void) -> AlertPresentableViewModel?
+
+    func createConfirmPinInfoAlert(
+        locale: Locale,
+        enableAction: @escaping () -> Void,
+        cancelAction: @escaping () -> Void
+    ) -> AlertPresentableViewModel
+
+    func askBiometryAlert(
+        biometrySettings: BiometrySettings?,
+        locale: Locale,
+        useAction: @escaping () -> Void,
+        skipAction: @escaping () -> Void
+    ) -> AlertPresentableViewModel?
 }
 
 protocol SettingsInteractorInputProtocol: AnyObject {
