@@ -77,7 +77,8 @@ class OnChainTransferInteractor: OnChainTransferBaseInteractor, RuntimeConstantF
     ) {
         let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
             for: assetStorageInfo,
-            chainId: chain.chainId
+            chainId: chain.chainId,
+            asset: asset
         )
 
         wrapper.targetOperation.completionBlock = {
