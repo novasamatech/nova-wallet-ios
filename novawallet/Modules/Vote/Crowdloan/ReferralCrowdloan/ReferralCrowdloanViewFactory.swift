@@ -8,7 +8,8 @@ struct ReferralCrowdloanViewFactory {
         displayInfo: CrowdloanDisplayInfo,
         inputAmount: Decimal,
         existingService: CrowdloanBonusServiceProtocol?,
-        state: CrowdloanSharedState
+        state: CrowdloanSharedState,
+        settingsManager: SettingsManagerProtocol
     ) -> ReferralCrowdloanViewProtocol? {
         guard
             let selectedAccount = SelectedWalletSettings.shared.value,
@@ -43,7 +44,8 @@ struct ReferralCrowdloanViewFactory {
                 let signingWrapper = SigningWrapper(
                     keystore: Keychain(),
                     metaId: selectedAccount.metaId,
-                    accountResponse: accountResponse
+                    accountResponse: accountResponse,
+                    settingsManager: settingsManager
                 )
                 return AcalaBonusService(
                     address: accountAddress,
@@ -69,7 +71,8 @@ struct ReferralCrowdloanViewFactory {
         displayInfo: CrowdloanDisplayInfo,
         inputAmount: Decimal,
         existingService: CrowdloanBonusServiceProtocol?,
-        state: CrowdloanSharedState
+        state: CrowdloanSharedState,
+        settingsManager: SettingsManagerProtocol
     ) -> ReferralCrowdloanViewProtocol? {
         guard
             let selectedAccount = SelectedWalletSettings.shared.value,
@@ -88,7 +91,8 @@ struct ReferralCrowdloanViewFactory {
                 let signingWrapper = SigningWrapper(
                     keystore: Keychain(),
                     metaId: selectedAccount.metaId,
-                    accountResponse: accountResponse
+                    accountResponse: accountResponse,
+                    settingsManager: settingsManager
                 )
                 return KaruraBonusService(
                     address: selectedAddress,

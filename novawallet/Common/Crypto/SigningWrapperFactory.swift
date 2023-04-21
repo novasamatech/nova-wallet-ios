@@ -16,15 +16,17 @@ protocol SigningWrapperFactoryProtocol {
 
 final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     let keystore: KeystoreProtocol
-
     let uiPresenter: TransactionSigningPresenting
+    let settingsManager: SettingsManagerProtocol
 
     init(
         uiPresenter: TransactionSigningPresenting = TransactionSigningPresenter(),
-        keystore: KeystoreProtocol = Keychain()
+        keystore: KeystoreProtocol = Keychain(),
+        settingsManager: SettingsManagerProtocol = SettingsManager.shared
     ) {
         self.uiPresenter = uiPresenter
         self.keystore = keystore
+        self.settingsManager = settingsManager
     }
 
     func createSigningWrapper(
@@ -33,7 +35,12 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     ) -> SigningWrapperProtocol {
         switch accountResponse.type {
         case .secrets:
-            return SigningWrapper(keystore: keystore, metaId: metaId, accountResponse: accountResponse)
+            return SigningWrapper(
+                keystore: keystore,
+                metaId: metaId,
+                accountResponse: accountResponse,
+                settingsManager: settingsManager
+            )
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
@@ -56,7 +63,11 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     ) -> SigningWrapperProtocol {
         switch ethereumAccountResponse.type {
         case .secrets:
-            return SigningWrapper(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
+            return SigningWrapper(
+                keystore: keystore,
+                ethereumAccountResponse: ethereumAccountResponse,
+                settingsManager: settingsManager
+            )
         case .watchOnly:
             return NoKeysSigningWrapper()
         case .paritySigner:
