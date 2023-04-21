@@ -13,7 +13,7 @@ enum EvmFallbackGasLimit {
             return Self.erc20
         case .evmNative:
             return Self.native
-        case .none, .statemine, .orml:
+        case .none, .statemine, .orml, .equilibrium:
             return 0
         }
     }
