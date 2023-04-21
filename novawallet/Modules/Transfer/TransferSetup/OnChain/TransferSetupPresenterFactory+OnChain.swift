@@ -157,11 +157,13 @@ extension TransferSetupPresenterFactory {
             operationQueue: operationQueue
         )
 
+        let fallbackGasLimit = EvmFallbackGasLimit.value(for: asset)
+
         return EvmOnChainTransferSetupInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
-            feeProxy: EvmTransactionFeeProxy(),
+            feeProxy: EvmTransactionFeeProxy(fallbackGasLimit: fallbackGasLimit),
             extrinsicService: extrinsicService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

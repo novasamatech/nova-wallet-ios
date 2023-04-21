@@ -4,8 +4,9 @@ import SoraFoundation
 
 protocol ConnectionFactoryProtocol {
     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection
+    func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection
     func updateConnection(_ connection: ChainConnection, chain: ChainModel)
-    func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine?
+    func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel)
 }
 
 final class ConnectionFactory {
@@ -45,30 +46,39 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
     }
 
     func updateConnection(_ connection: ChainConnection, chain: ChainModel) {
-        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.wss)
 
         if Set(connection.urls) != Set(newUrls) {
             connection.changeUrls(newUrls)
         }
     }
 
-    func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
+    func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection {
         let urls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
-
-        guard !urls.isEmpty else {
-            return nil
-        }
 
         let nodeSwitcher = JSONRRPCodeNodeSwitcher(codes: ConnectionNodeSwitchCode.allCodes)
 
-        return HTTPEngine(
-            urls: urls,
-            operationQueue: operationQueue,
-            customNodeSwitcher: nodeSwitcher,
-            timeout: 15,
-            name: chain.name,
-            logger: logger
-        )
+        guard
+            let connection = HTTPEngine(
+                urls: urls,
+                operationQueue: operationQueue,
+                customNodeSwitcher: nodeSwitcher,
+                timeout: TimeInterval(JSONRPCTimeout.withNodeSwitch),
+                name: chain.name,
+                logger: logger
+            ) else {
+            throw ConnectionFactoryError.noNodes
+        }
+
+        return connection
+    }
+
+    func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel) {
+        let newUrls = extractNodeUrls(from: chain, schema: ConnectionNodeSchema.https)
+
+        if Set(connection.urls) != Set(newUrls) {
+            connection.changeUrls(newUrls)
+        }
     }
 
     private func extractNodeUrls(from chain: ChainModel, schema: String) -> [URL] {

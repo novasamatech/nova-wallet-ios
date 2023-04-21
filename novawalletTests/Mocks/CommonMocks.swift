@@ -3298,6 +3298,21 @@ import SubstrateSdk
     
     
     
+     func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection {
+        
+    return try cuckoo_manager.callThrows("createOneShotConnection(for: ChainModel) throws -> OneShotConnection",
+            parameters: (chain),
+            escapingParameters: (chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createOneShotConnection(for: chain))
+        
+    }
+    
+    
+    
      func updateConnection(_ connection: ChainConnection, chain: ChainModel)  {
         
     return cuckoo_manager.call("updateConnection(_: ChainConnection, chain: ChainModel)",
@@ -3313,16 +3328,16 @@ import SubstrateSdk
     
     
     
-     func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
+     func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel)  {
         
-    return cuckoo_manager.call("createOnShotConnection(for: ChainModel) -> JSONRPCEngine?",
-            parameters: (chain),
-            escapingParameters: (chain),
+    return cuckoo_manager.call("updateOneShotConnection(_: OneShotConnection, chain: ChainModel)",
+            parameters: (connection, chain),
+            escapingParameters: (connection, chain),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createOnShotConnection(for: chain))
+            defaultCall: __defaultImplStub!.updateOneShotConnection(connection, chain: chain))
         
     }
     
@@ -3340,14 +3355,19 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createConnection(for: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection", parameterMatchers: matchers))
 	    }
 	    
+	    func createOneShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel), OneShotConnection> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createOneShotConnection(for: ChainModel) throws -> OneShotConnection", parameterMatchers: matchers))
+	    }
+	    
 	    func updateConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainConnection, ChainModel)> where M1.MatchedType == ChainConnection, M2.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "updateConnection(_: ChainConnection, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func createOnShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createOnShotConnection(for: ChainModel) -> JSONRPCEngine?", parameterMatchers: matchers))
+	    func updateOneShotConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(OneShotConnection, ChainModel)> where M1.MatchedType == OneShotConnection, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(OneShotConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "updateOneShotConnection(_: OneShotConnection, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -3373,15 +3393,21 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
+	    func createOneShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), OneShotConnection> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return cuckoo_manager.verify("createOneShotConnection(for: ChainModel) throws -> OneShotConnection", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func updateConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.__DoNotUse<(ChainConnection, ChainModel), Void> where M1.MatchedType == ChainConnection, M2.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
 	        return cuckoo_manager.verify("updateConnection(_: ChainConnection, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func createOnShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return cuckoo_manager.verify("createOnShotConnection(for: ChainModel) -> JSONRPCEngine?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func updateOneShotConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.__DoNotUse<(OneShotConnection, ChainModel), Void> where M1.MatchedType == OneShotConnection, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(OneShotConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return cuckoo_manager.verify("updateOneShotConnection(_: OneShotConnection, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -3401,14 +3427,20 @@ import SubstrateSdk
     
     
     
+     func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection  {
+        return DefaultValueRegistry.defaultValue(for: (OneShotConnection).self)
+    }
+    
+    
+    
      func updateConnection(_ connection: ChainConnection, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
-     func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine?  {
-        return DefaultValueRegistry.defaultValue(for: (JSONRPCEngine?).self)
+     func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
 }
@@ -3772,6 +3804,20 @@ import SubstrateSdk
     
     
     
+     override var oneShotConnections: [ChainModel.Id: OneShotConnection] {
+        get {
+            return cuckoo_manager.getter("oneShotConnections",
+                superclassCall:
+                    
+                    super.oneShotConnections
+                    ,
+                defaultCall: __defaultImplStub!.oneShotConnections)
+        }
+        
+    }
+    
+    
+    
      override var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] {
         get {
             return cuckoo_manager.getter("stateSubscriptions",
@@ -3802,6 +3848,11 @@ import SubstrateSdk
 	    }
 	    
 	    
+	    var oneShotConnections: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: OneShotConnection]> {
+	        return .init(manager: cuckoo_manager, name: "oneShotConnections")
+	    }
+	    
+	    
 	    var stateSubscriptions: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: [WeakWrapper]]> {
 	        return .init(manager: cuckoo_manager, name: "stateSubscriptions")
 	    }
@@ -3827,6 +3878,11 @@ import SubstrateSdk
 	    }
 	    
 	    
+	    var oneShotConnections: Cuckoo.VerifyReadOnlyProperty<[ChainModel.Id: OneShotConnection]> {
+	        return .init(manager: cuckoo_manager, name: "oneShotConnections", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
 	    var stateSubscriptions: Cuckoo.VerifyReadOnlyProperty<[ChainModel.Id: [WeakWrapper]]> {
 	        return .init(manager: cuckoo_manager, name: "stateSubscriptions", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
@@ -3843,6 +3899,15 @@ import SubstrateSdk
      override var connections: [ChainModel.Id: WeakWrapper] {
         get {
             return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: WeakWrapper]).self)
+        }
+        
+    }
+        
+    
+    
+     override var oneShotConnections: [ChainModel.Id: OneShotConnection] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: OneShotConnection]).self)
         }
         
     }

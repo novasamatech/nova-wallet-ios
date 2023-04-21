@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 import SoraFoundation
 
 final class TransferSetupPresenter {
@@ -13,13 +14,30 @@ final class TransferSetupPresenter {
     let originChainAsset: ChainAsset
     let childPresenterFactory: TransferSetupPresenterFactoryProtocol
     let logger: LoggerProtocol
+    let web3NameViewModelFactory: Web3NameViewModelFactoryProtocol
 
     var childPresenter: TransferSetupChildPresenterProtocol?
 
     private(set) var destinationChainAsset: ChainAsset?
     private(set) var availableDestinations: [ChainAsset]?
     private(set) var xcmTransfers: XcmTransfers?
+    private(set) var recipientAddress: TransferSetupRecipientAccount? {
+        didSet {
+            switch recipientAddress {
+            case .none, .address:
+                view?.didReceiveWeb3NameRecipient(viewModel: .loaded(value: nil))
+            case let .external(externalAccount):
+                let isLoading = externalAccount.recipient.isLoading == true
+                view?.didReceiveWeb3NameRecipient(viewModel: isLoading ? .loading :
+                    .loaded(value: externalAccount.recipient.value??.displayTitle))
+            }
+        }
+    }
+
     private var metaChainAccountResponses: [MetaAccountChainResponse] = []
+    private var destinationChainName: String {
+        destinationChainAsset?.chain.name ?? ""
+    }
 
     private var isOnChainTransfer: Bool {
         destinationChainAsset == nil
@@ -33,6 +51,7 @@ final class TransferSetupPresenter {
         childPresenterFactory: TransferSetupPresenterFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
+        web3NameViewModelFactory: Web3NameViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -42,6 +61,7 @@ final class TransferSetupPresenter {
         self.childPresenterFactory = childPresenterFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
+        self.web3NameViewModelFactory = web3NameViewModelFactory
         self.logger = logger
     }
 
@@ -115,6 +135,62 @@ final class TransferSetupPresenter {
 
         view?.changeYourWalletsViewState(isShowYourWallets ? .inactive : .hidden)
     }
+
+    private func showWeb3NameAddressList(recipients: [Web3TransferRecipient], for name: String) {
+        guard let view = view else {
+            return
+        }
+
+        let chain = destinationChainAsset?.chain ?? originChainAsset.chain
+        view.didReceiveWeb3NameRecipient(viewModel: .cached(value: nil))
+        let viewModel = web3NameViewModelFactory.recipientListViewModel(
+            recipients: recipients,
+            for: name,
+            chain: chain,
+            selectedAddress: recipientAddress?.address
+        )
+
+        wireframe.presentWeb3NameAddressListPicker(from: view, viewModel: viewModel, delegate: self)
+    }
+
+    private func provideWeb3NameRecipientViewModel(_ recipient: Web3TransferRecipient?, name: String) {
+        guard let recipient = recipient else {
+            if recipientAddress?.isExternal == true {
+                recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
+                view?.didReceiveRecipientInputState(focused: true, empty: true)
+            }
+            return
+        }
+
+        let chain = destinationChainAsset?.chain ?? originChainAsset.chain
+
+        if let account = recipient.normalizedAddress(for: chain.chainFormat) {
+            let recipientViewModel = TransferSetupRecipientAccount.ExternalAccountValue(
+                address: account,
+                description: recipient.description
+            )
+            recipientAddress = .external(.init(name: name, recipient: .loaded(value: recipientViewModel)))
+            childPresenter?.updateRecepient(partialAddress: account)
+            view?.didReceiveRecipientInputState(focused: false, empty: nil)
+        } else {
+            recipientAddress = .external(.init(name: name, recipient: .loaded(value: nil)))
+            didReceive(error: Web3NameServiceError.invalidAddress(destinationChainName))
+        }
+    }
+
+    private func proceedWithExternal(account: TransferSetupRecipientAccount.ExternalAccount) {
+        switch account.recipient {
+        case let .cached(value), let .loaded(value):
+            if value?.address == nil {
+                didReceive(error: Web3NameServiceError.accountNotFound(account.name))
+            } else {
+                childPresenter?.proceed()
+            }
+        case .loading:
+            // wait the result
+            break
+        }
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -122,12 +198,21 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         provideChainsViewModel()
         childPresenter?.setup()
 
-        let destinationChain = destinationChainAsset?.chain ?? originChainAsset.chain
-        interactor.setup(destinationChain: destinationChain)
+        interactor.setup(destinationChainAsset: destinationChainAsset ?? originChainAsset)
     }
 
     func updateRecepient(partialAddress: String) {
-        childPresenter?.updateRecepient(partialAddress: partialAddress)
+        if let w3n = KiltW3n.web3Name(nameWithScheme: partialAddress) {
+            recipientAddress = .external(.init(
+                name: KiltW3n.fullName(for: w3n),
+                recipient: .cached(value: nil)
+            ))
+        } else {
+            recipientAddress = .address(partialAddress)
+        }
+
+        childPresenter?.updateRecepient(partialAddress: recipientAddress?.address ?? partialAddress)
+        view?.didReceiveWeb3NameRecipient(viewModel: .loaded(value: nil))
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -149,11 +234,17 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             return
         }
 
+        recipientAddress = .address(address)
         childPresenter?.changeRecepient(address: address)
     }
 
     func proceed() {
-        childPresenter?.proceed()
+        switch recipientAddress {
+        case .none, .address:
+            childPresenter?.proceed()
+        case let .external(externalAccount):
+            proceedWithExternal(account: externalAccount)
+        }
     }
 
     func changeDestinationChain() {
@@ -184,6 +275,36 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             delegate: self
         )
     }
+
+    func complete(recipient: String) {
+        guard !wireframe.checkDismissing(view: view) else {
+            return
+        }
+
+        guard let web3Name = KiltW3n.web3Name(nameWithScheme: recipient) else {
+            return
+        }
+        recipientAddress = .external(.init(
+            name: KiltW3n.fullName(for: web3Name),
+            recipient: .loading
+        ))
+        interactor.search(web3Name: web3Name)
+    }
+
+    func showWeb3NameRecipient() {
+        guard let view = view, let address = recipientAddress?.address else {
+            return
+        }
+
+        let chain = destinationChainAsset?.chain ?? originChainAsset.chain
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: chain,
+            locale: view.selectedLocale
+        )
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
@@ -209,12 +330,34 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
     func didReceive(error: Error) {
         logger.error("Did receive error: \(error)")
 
-        _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
+        if error is Web3NameServiceError {
+            wireframe.present(
+                error: error,
+                from: view,
+                locale: view?.selectedLocale
+            ) { [weak self] in
+                self?.view?.didReceiveRecipientInputState(focused: true, empty: nil)
+                self?.recipientAddress = .external(.init(
+                    name: self?.recipientAddress?.name ?? "",
+                    recipient: .loaded(value: nil)
+                ))
+            }
+        } else {
+            _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
+        }
     }
 
     func didReceive(metaChainAccountResponses: [MetaAccountChainResponse]) {
         self.metaChainAccountResponses = metaChainAccountResponses
         updateYourWalletsButton()
+    }
+
+    func didReceive(recipients: [Web3TransferRecipient], for name: String) {
+        if recipients.count > 1 {
+            showWeb3NameAddressList(recipients: recipients, for: name)
+        } else {
+            provideWeb3NameRecipientViewModel(recipients.first, name: name)
+        }
     }
 }
 
@@ -224,6 +367,11 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         guard let selectionState = context as? CrossChainDestinationSelectionState else {
             return
+        }
+
+        if recipientAddress?.isExternal == true {
+            recipientAddress = nil
+            childPresenter?.updateRecepient(partialAddress: "")
         }
 
         if section == 0 {
@@ -240,15 +388,28 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
         if let destinationChainAsset = destinationChainAsset {
             setupCrossChainChildPresenter()
-            interactor.destinationChainDidChanged(destinationChainAsset.chain)
+            interactor.destinationChainAssetDidChanged(destinationChainAsset)
         } else {
             setupOnChainChildPresenter()
-            interactor.destinationChainDidChanged(originChainAsset.chain)
+            interactor.destinationChainAssetDidChanged(originChainAsset)
         }
     }
 
-    func modalPickerDidCancel(context _: AnyObject?) {
-        view?.didCompleteDestinationSelection()
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let selectionState = context as? Web3NameAddressesSelectionState else {
+            return
+        }
+
+        let selectedAccount = selectionState.accounts[index]
+        provideWeb3NameRecipientViewModel(selectedAccount, name: selectionState.name)
+    }
+
+    func modalPickerDidCancel(context: AnyObject?) {
+        if context is CrossChainDestinationSelectionState {
+            view?.didCompleteDestinationSelection()
+        } else if context is Web3NameAddressesSelectionState {
+            view?.didReceiveRecipientInputState(focused: true, empty: nil)
+        }
     }
 }
 
@@ -256,6 +417,7 @@ extension TransferSetupPresenter: AddressScanDelegate {
     func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
         wireframe.hideRecepientScan(from: view)
 
+        recipientAddress = .address(address)
         childPresenter?.changeRecepient(address: address)
     }
 }
@@ -266,6 +428,7 @@ extension TransferSetupPresenter: YourWalletsDelegate {
 
         childPresenter?.changeRecepient(address: address)
         view?.changeYourWalletsViewState(.inactive)
+        recipientAddress = .address(address)
     }
 
     func didCloseYourWalletSelection() {

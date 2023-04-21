@@ -64,4 +64,8 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
     func hideYourWallets(from view: TransferSetupViewProtocol?) {
         view?.controller.dismiss(animated: true)
     }
+
+    func checkDismissing(view: TransferSetupViewProtocol?) -> Bool {
+        view?.controller.navigationController?.isBeingDismissed ?? true
+    }
 }
