@@ -34,6 +34,7 @@ protocol ApplicationConfigProtocol {
     var learnGovernanceDelegateMetadata: URL { get }
     var inAppUpdatesEntrypointURL: URL { get }
     var inAppUpdatesChangelogsURL: URL { get }
+    var slip44URL: URL { get }
 }
 
 final class ApplicationConfig {
@@ -143,9 +144,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v2/transfers.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v3/transfers.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v2/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v3/transfers_dev.json")!
         #endif
     }
 
@@ -222,6 +223,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-wallet-ios-releases/master/updates/changelogs/dev")!
         #endif
+    }
+
+    var slip44URL: URL {
+        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/assets/slip44.json")!
     }
     // swiftlint:enable line_length
 }

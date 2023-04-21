@@ -129,11 +129,13 @@ struct TransferConfirmOnChainViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
+        let fallbackGasLimit = EvmFallbackGasLimit.value(for: asset)
+
         return TransferEvmOnChainConfirmInteractor(
             selectedAccount: account,
             chain: chain,
             asset: asset,
-            feeProxy: EvmTransactionFeeProxy(),
+            feeProxy: EvmTransactionFeeProxy(fallbackGasLimit: fallbackGasLimit),
             extrinsicService: extrinsicService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
