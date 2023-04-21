@@ -639,6 +639,9 @@
 "settings.email" = "Email";
 "settings.biometric.auth" = "Biometric auth";
 "settings.approve.with.pin" = "Approve with PIN";
+"settings.approve.with.pin.alert.title" = "Ask authentication for operations signing";
+"settings.approve.with.pin.alert.message" = "Each sign operation on wallets with key pair (created in nova wallet or imported) should require PIN verification before constructing signature";
+"settings.approve.with.pin.alert.enable.button.title" = "Enable";
 "wallet.manage.assets.title" = "Manage assets";
 "staking.reward.payouts.title_v2_2_0" = "Unpaid rewards";
 "staking.setup.restake.title_v2_2_0" = "Restake rewards";

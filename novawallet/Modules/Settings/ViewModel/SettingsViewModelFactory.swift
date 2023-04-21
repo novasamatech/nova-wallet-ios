@@ -62,22 +62,26 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             ])
         ]
     }
-    
-    func createConfirmPinInfoAlert(locale: Locale,
-                                   enableAction: @escaping () -> Void,
-                                   cancelAction: @escaping () -> Void) -> AlertPresentableViewModel {
-        let title = "Ask authentication for operations signing"
-        let message = "Each sign operation on wallets with key pair (created in nova wallet or imported) should require PIN verification before constructing signature"
+
+    func createConfirmPinInfoAlert(
+        locale: Locale,
+        enableAction: @escaping () -> Void,
+        cancelAction: @escaping () -> Void
+    ) -> AlertPresentableViewModel {
+        let title = R.string.localizable.settingsApproveWithPinAlertTitle(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.settingsApproveWithPinAlertMessage(preferredLanguages: locale.rLanguages)
+        let enableButtonTitle = R.string.localizable.settingsApproveWithPinAlertEnableButtonTitle(
+            preferredLanguages: locale.rLanguages)
         return AlertPresentableViewModel(
             title: title,
             message: message,
             actions: [
                 .init(
-                    title: "Enable",
+                    title: enableButtonTitle,
                     handler: enableAction
                 ),
                 .init(
-                    title: "Cancel",
+                    title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
                     style: .cancel,
                     handler: cancelAction
                 )
@@ -85,15 +89,17 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             closeAction: nil
         )
     }
-    
-    func askBiometryAlert(biometrySettings: BiometrySettings?,
-                          locale: Locale,
-                          useAction: @escaping () -> Void,
-                          skipAction: @escaping () -> Void) -> AlertPresentableViewModel? {
+
+    func askBiometryAlert(
+        biometrySettings: BiometrySettings?,
+        locale: Locale,
+        useAction: @escaping () -> Void,
+        skipAction: @escaping () -> Void
+    ) -> AlertPresentableViewModel? {
         var title: String?
         var message: String?
         let languages = locale.rLanguages
-        
+
         switch biometrySettings {
         case .touchId:
             title = R.string.localizable.askTouchidTitle(preferredLanguages: languages)
@@ -104,7 +110,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         case .notAvailable, .none:
             return nil
         }
-        
+
         return AlertPresentableViewModel(
             title: title,
             message: message,
@@ -116,7 +122,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 .init(
                     title: R.string.localizable.commonSkip(preferredLanguages: languages),
                     style: .cancel,
-                    handler:skipAction
+                    handler: skipAction
                 )
             ], closeAction: nil
         )
