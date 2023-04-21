@@ -357,3 +357,47 @@ final class PrimitiveConstantOperation<T: LosslessStringConvertible & Equatable>
         }
     }
 }
+
+final class StorageDecodingOptionalListOperation<T: Decodable>: BaseOperation<[T?]>, StorageDecodable {
+    var dataList: [Data?]
+    var codingFactory: RuntimeCoderFactoryProtocol?
+
+    let path: StorageCodingPath
+
+    init(path: StorageCodingPath, dataList: [Data?]) {
+        self.path = path
+        self.dataList = dataList
+
+        super.init()
+    }
+
+    override func main() {
+        super.main()
+
+        if isCancelled {
+            return
+        }
+
+        if result != nil {
+            return
+        }
+
+        do {
+            guard let factory = codingFactory else {
+                throw StorageDecodingOperationError.missingRequiredParams
+            }
+
+            let items: [T?] = try dataList.map {
+                guard let item = $0 else {
+                    return nil
+                }
+
+                return try decode(data: item, path: path, codingFactory: factory).map(to: T.self)
+            }
+
+            result = .success(items)
+        } catch {
+            result = .failure(error)
+        }
+    }
+}
