@@ -10,7 +10,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
     let chainsStore: ChainsStoreProtocol
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
-    let web3NamesService: Web3NameServiceProtocol
+    let web3NamesService: Web3NameServiceProtocol?
 
     private var xcmTransfers: XcmTransfers?
     private var destinationChainAsset: ChainAsset?
@@ -20,7 +20,7 @@ final class TransferSetupInteractor: AccountFetching, AnyCancellableCleaning {
         xcmTransfersSyncService: XcmTransfersSyncServiceProtocol,
         chainsStore: ChainsStoreProtocol,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
-        web3NamesService: Web3NameServiceProtocol,
+        web3NamesService: Web3NameServiceProtocol?,
         operationManager: OperationManagerProtocol
     ) {
         self.originChainAssetId = originChainAssetId
@@ -111,7 +111,7 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
         setupChainsStore()
         setupXcmTransfersSyncService()
         fetchAccounts(for: destinationChainAsset.chain)
-        web3NamesService.setup()
+        web3NamesService?.setup()
         self.destinationChainAsset = destinationChainAsset
     }
 
@@ -122,6 +122,12 @@ extension TransferSetupInteractor: TransferSetupInteractorIntputProtocol {
 
     func search(web3Name: String) {
         guard let destinationChainAsset = destinationChainAsset else {
+            return
+        }
+
+        guard let web3NamesService = web3NamesService else {
+            let error = Web3NameServiceError.serviceNotFound(web3Name, destinationChainAsset.chain.name)
+            presenter?.didReceive(error: error)
             return
         }
 

@@ -2045,6 +2045,7 @@
 		84C1DBC029C276E000F295A5 /* RewardCalculatorParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBBF29C276E000F295A5 /* RewardCalculatorParamsService.swift */; };
 		84C1DBC329C27A6600F295A5 /* Paras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBC229C27A6600F295A5 /* Paras.swift */; };
 		84C1DBC529C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1DBC429C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift */; };
+		84C1E7C929EE990800D37668 /* Web3NameProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1E7C829EE990800D37668 /* Web3NameProvider.swift */; };
 		84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */; };
 		84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */; };
 		84C2063828D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */; };
@@ -5437,6 +5438,7 @@
 		84C1DBBF29C276E000F295A5 /* RewardCalculatorParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorParamsService.swift; sourceTree = "<group>"; };
 		84C1DBC229C27A6600F295A5 /* Paras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paras.swift; sourceTree = "<group>"; };
 		84C1DBC429C27D9800F295A5 /* RewardCalculatorParamsServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorParamsServiceFactory.swift; sourceTree = "<group>"; };
+		84C1E7C829EE990800D37668 /* Web3NameProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameProvider.swift; sourceTree = "<group>"; };
 		84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAccountSubscribingState.swift; sourceTree = "<group>"; };
 		84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionPayload.swift; sourceTree = "<group>"; };
 		84C2063728D1BF20006D0D52 /* AccountDetailsSelectionDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsSelectionDecorator.swift; sourceTree = "<group>"; };
@@ -14384,6 +14386,7 @@
 				88F33F1429CC1F92006125D5 /* Slip44CoinList.swift */,
 				8886020A29D101B000C6344C /* Web3NameServiceError.swift */,
 				881BA30429DBCB8100EB8C48 /* Web3NameIntegrityVerifier.swift */,
+				84C1E7C829EE990800D37668 /* Web3NameProvider.swift */,
 			);
 			path = Web3Name;
 			sourceTree = "<group>";
@@ -18047,6 +18050,7 @@
 				84FB1F792527065A00E0242B /* HistoryConstants.swift in Sources */,
 				845F49ED2928F31100BD6D11 /* ChainModel+Evm.swift in Sources */,
 				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
+				84C1E7C929EE990800D37668 /* Web3NameProvider.swift in Sources */,
 				84F18D4C27A1874000CA7554 /* TokenSubscriptionFactory.swift in Sources */,
 				8846F72B29D6BC1300B8B776 /* Data+base32.swift in Sources */,
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,
