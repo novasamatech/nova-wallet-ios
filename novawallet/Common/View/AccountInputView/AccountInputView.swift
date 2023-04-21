@@ -430,6 +430,7 @@ class AccountInputView: BackgroundedContentControl {
             if currentValue != inputViewModel.inputHandler.value {
                 textField.text = inputViewModel.inputHandler.value
                 sendActions(for: .editingChanged)
+                delegate?.accountInputViewDidPaste(self)
             }
 
             updateControlsState()
@@ -487,6 +488,10 @@ extension AccountInputView: UITextFieldDelegate {
     func textFieldShouldBeginEditing(_: UITextField) -> Bool {
         delegate?.accountInputViewWillStartEditing(self)
         return true
+    }
+
+    func textFieldDidEndEditing(_: UITextField, reason _: UITextField.DidEndEditingReason) {
+        delegate?.accountInputViewDidEndEditing(self)
     }
 }
 

@@ -1195,3 +1195,16 @@
 "evm.contract.call" = "Contract call";
 "evm.contract" = "Contract";
 "evm.contract.function" = "Function";
+"transfer.setup.kilt.addresses.title" = "%@ addresses for %@";
+"transfer.setup.error.w3n.serviceNotFound.subtitle" = "No valid address was found for %@ on the %@ network";
+"transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ not found";
+"transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "%1$@ w3n services are unavailable. Try again later or enter the %1$@ address manually";
+"transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Error resolving w3n";
+"transfer.setup.error.w3n.accountNotFound.title" = "Invalid recipient";
+"transfer.setup.error.w3n.token.not.found.subtitle" = "Nova can\'t resolve code for token %@";
+"transfer.setup.error.w3n.token.not.found.title" = "Token %@ is not supported yet";
+"transfer.setup.error.w3n.integrity.not.passed.subtitle" = "Nova detected issues with integrity of information about %1$@ addresses. Please contact owner of %1$@ to resolve integrity issues.";
+"transfer.setup.error.w3n.integrity.not.passed.title" = "Integrity check failed";
+"transfer.setup.recipient.input.placeholder" = "Address or w3n";
+"transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
+"transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
