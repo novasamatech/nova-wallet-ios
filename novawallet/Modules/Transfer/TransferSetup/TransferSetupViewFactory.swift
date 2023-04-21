@@ -75,18 +75,8 @@ struct TransferSetupViewFactory {
     private static func createInteractor(
         for chainAsset: ChainAsset
     ) -> TransferSetupInteractor? {
-        let kiltChainId = KnowChainId.kilt
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
-        let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
-            for: slip44CoinsUrl
-        )
-
-        guard let kiltConnection = chainRegistry.getConnection(for: kiltChainId),
-              let kiltRuntimeService = chainRegistry.getRuntimeProvider(for: kiltChainId) else {
-            return nil
-        }
         let syncService = XcmTransfersSyncService(
             remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
@@ -97,18 +87,8 @@ struct TransferSetupViewFactory {
             for: nil,
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
-        let operationQueue = OperationQueue()
-        let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
 
-        let recipientRepository = KiltTransferAssetRecipientRepository(integrityVerifier: Web3NameIntegrityVerifier())
-        let web3NameService = Web3NameService(
-            slip44CoinsProvider: slip44CoinsProvider,
-            web3NamesOperationFactory: web3NamesOperationFactory,
-            runtimeService: kiltRuntimeService,
-            connection: kiltConnection,
-            transferRecipientRepository: recipientRepository,
-            operationQueue: operationQueue
-        )
+        let web3NameService = createWeb3NameService()
 
         return TransferSetupInteractor(
             originChainAssetId: chainAsset.chainAssetId,
@@ -116,7 +96,37 @@ struct TransferSetupViewFactory {
             chainsStore: chainsStore,
             accountRepository: accountRepository,
             web3NamesService: web3NameService,
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: OperationManager()
+        )
+    }
+
+    private static func createWeb3NameService() -> Web3NameServiceProtocol? {
+        let kiltChainId = KnowChainId.kiltOnEnviroment
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard let kiltConnection = chainRegistry.getConnection(for: kiltChainId),
+              let kiltRuntimeService = chainRegistry.getRuntimeProvider(for: kiltChainId) else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let web3NamesOperationFactory = KiltWeb3NamesOperationFactory(operationQueue: operationQueue)
+
+        let recipientRepository = KiltTransferAssetRecipientRepository(integrityVerifier: Web3NameIntegrityVerifier())
+
+        let slip44CoinsUrl = ApplicationConfig.shared.slip44URL
+        let slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList> = JsonDataProviderFactory.shared.getJson(
+            for: slip44CoinsUrl
+        )
+
+        return Web3NameService(
+            providerName: Web3NameProvider.kilt,
+            slip44CoinsProvider: slip44CoinsProvider,
+            web3NamesOperationFactory: web3NamesOperationFactory,
+            runtimeService: kiltRuntimeService,
+            connection: kiltConnection,
+            transferRecipientRepository: recipientRepository,
+            operationQueue: operationQueue
         )
     }
 }

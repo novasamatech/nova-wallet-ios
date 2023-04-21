@@ -6,8 +6,8 @@ enum Web3NameServiceError: Error {
 
     case accountNotFound(Name)
     case serviceNotFound(Name, Chain)
-    case slip44ListIsEmpty
-    case internalFailure(Error)
+    case slip44ListIsEmpty(String)
+    case internalFailure(String, Error)
     case invalidAddress(Chain)
     case integrityNotPassed(Name)
     case searchInProgress(Name)
@@ -27,15 +27,15 @@ extension Web3NameServiceError: ErrorContentConvertible {
                 preferredLanguages: locale?.rLanguages
             )
         case let .serviceNotFound(name, chain):
-            title = strings.transferSetupErrorW3nServiceNotFoundTitle(preferredLanguages: locale?.rLanguages)
+            title = strings.transferSetupErrorW3nAccountNotFoundTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nServiceNotFoundSubtitle(
                 KiltW3n.fullName(for: name),
                 chain,
                 preferredLanguages: locale?.rLanguages
             )
         case let .invalidAddress(chain):
-            title = strings.transferSetupErrorW3nInvalidAddressTitle(preferredLanguages: locale?.rLanguages)
-            message = strings.transferSetupErrorW3nInvalidAddressSubtitle(
+            title = strings.transferSetupErrorW3nAccountNotFoundTitle(preferredLanguages: locale?.rLanguages)
+            message = strings.commonValidationInvalidAddressMessage(
                 chain,
                 preferredLanguages: locale?.rLanguages
             )
@@ -43,7 +43,6 @@ extension Web3NameServiceError: ErrorContentConvertible {
             title = strings.transferSetupErrorW3nIntegrityNotPassedTitle(preferredLanguages: locale?.rLanguages)
             let fullName = KiltW3n.fullName(for: name)
             message = strings.transferSetupErrorW3nIntegrityNotPassedSubtitle(
-                fullName,
                 fullName,
                 preferredLanguages: locale?.rLanguages
             )
@@ -56,10 +55,12 @@ extension Web3NameServiceError: ErrorContentConvertible {
         case let .tokenNotFound(token):
             title = strings.transferSetupErrorW3nTokenNotFoundTitle(token, preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nTokenNotFoundSubtitle(token, preferredLanguages: locale?.rLanguages)
-        case .internalFailure, .slip44ListIsEmpty:
+        case let .internalFailure(providerName, _), let .slip44ListIsEmpty(providerName):
             title = strings.transferSetupErrorW3nKiltServiceUnavailableTitle(preferredLanguages: locale?.rLanguages)
             message = strings.transferSetupErrorW3nKiltServiceUnavailableSubtitle(
-                preferredLanguages: locale?.rLanguages)
+                providerName,
+                preferredLanguages: locale?.rLanguages
+            )
         }
 
         return ErrorContent(title: title, message: message)
