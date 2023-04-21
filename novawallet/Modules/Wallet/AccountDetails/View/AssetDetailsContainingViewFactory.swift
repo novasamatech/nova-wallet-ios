@@ -73,6 +73,8 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
                 }
             case .evmAsset, .evmNative:
                 return true
+            case .equilibrium:
+                return true
             }
         } else {
             return true
