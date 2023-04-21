@@ -95,14 +95,16 @@ final class SettingsPresenter {
     }
 
     private func enableBiometryUsage(completion: @escaping (Bool) -> Void) {
-        guard let alertModel = viewModelFactory.askBiometryAlert(biometrySettings: biometrySettings,
-                                                                 locale: selectedLocale,
-                                                                 useAction: { completion(true) },
-                                                                 skipAction: { completion(false) }) else {
+        guard let alertModel = viewModelFactory.askBiometryAlert(
+            biometrySettings: biometrySettings,
+            locale: selectedLocale,
+            useAction: { completion(true) },
+            skipAction: { completion(false) }
+        ) else {
             completion(true)
             return
         }
-        
+
         wireframe.present(viewModel: alertModel, style: .alert, from: view)
     }
 
@@ -113,15 +115,17 @@ final class SettingsPresenter {
         let newState = currentState.toggled()
         let disabling = currentState == true && newState == false
         let enabling = currentState == false && newState == true
-        
+
         if disabling {
             wireframe.showPincode { authorized in
                 authorized ? completion(newState) : completion(currentState)
             }
         } else if enabling {
-            let alertModel = viewModelFactory.createConfirmPinInfoAlert(locale: selectedLocale,
-                                                                        enableAction: { completion(newState) },
-                                                                        cancelAction: { completion(currentState) })
+            let alertModel = viewModelFactory.createConfirmPinInfoAlert(
+                locale: selectedLocale,
+                enableAction: { completion(newState) },
+                cancelAction: { completion(currentState) }
+            )
             wireframe.present(
                 viewModel: alertModel,
                 style: .alert,
