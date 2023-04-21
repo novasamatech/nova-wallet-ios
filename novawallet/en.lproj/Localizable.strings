@@ -637,6 +637,8 @@
 "settings.youtube" = "Youtube";
 "settings.support" = "Support & Feedback";
 "settings.email" = "Email";
+"settings.biometric.auth" = "Biometric auth";
+"settings.approve.with.pin" = "Approve with PIN";
 "wallet.manage.assets.title" = "Manage assets";
 "staking.reward.payouts.title_v2_2_0" = "Unpaid rewards";
 "staking.setup.restake.title_v2_2_0" = "Restake rewards";

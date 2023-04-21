@@ -9,6 +9,8 @@ final class SettingsPresenter {
     let wireframe: SettingsWireframeProtocol
     let logger: LoggerProtocol?
     private var currency: String?
+    private var isPinConfirmationOn: Bool = false
+    private var biometrySettings: BiometrySettings?
 
     private var wallet: MetaAccountModel?
 
@@ -34,6 +36,8 @@ final class SettingsPresenter {
         let sectionViewModels = viewModelFactory.createSectionViewModels(
             language: localizationManager?.selectedLanguage,
             currency: currency,
+            isBiometricAuthOn: biometrySettings?.isEnabled,
+            isPinConfirmationOn: isPinConfirmationOn,
             locale: locale
         )
         view?.reload(sections: sectionViewModels)
@@ -75,6 +79,56 @@ final class SettingsPresenter {
             )
         }
     }
+
+    private func toggleBiometryUsage() {
+        guard let biometrySettings = biometrySettings else {
+            return
+        }
+
+        if biometrySettings.isEnabled == true {
+            interactor.updateBiometricAuthSettings(isOn: false)
+        } else {
+            enableBiometryUsage { [weak self] in
+                self?.interactor.updateBiometricAuthSettings(isOn: $0)
+            }
+        }
+    }
+
+    private func enableBiometryUsage(completion: @escaping (Bool) -> Void) {
+        guard let alertModel = viewModelFactory.askBiometryAlert(biometrySettings: biometrySettings,
+                                                                 locale: selectedLocale,
+                                                                 useAction: { completion(true) },
+                                                                 skipAction: { completion(false) }) else {
+            completion(true)
+            return
+        }
+        
+        wireframe.present(viewModel: alertModel, style: .alert, from: view)
+    }
+
+    private func toggleConfirmationSettings(
+        _ currentState: Bool,
+        completion: @escaping (Bool) -> Void
+    ) {
+        let newState = currentState.toggled()
+        let disabling = currentState == true && newState == false
+        let enabling = currentState == false && newState == true
+        
+        if disabling {
+            wireframe.showPincode { authorized in
+                authorized ? completion(newState) : completion(currentState)
+            }
+        } else if enabling {
+            let alertModel = viewModelFactory.createConfirmPinInfoAlert(locale: selectedLocale,
+                                                                        enableAction: { completion(newState) },
+                                                                        cancelAction: { completion(currentState) })
+            wireframe.present(
+                viewModel: alertModel,
+                style: .alert,
+                from: view
+            )
+        }
+    }
 }
 
 extension SettingsPresenter: SettingsPresenterProtocol {
@@ -97,6 +151,12 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showCurrencies(from: view)
         case .language:
             wireframe.showLanguageSelection(from: view)
+        case .biometricAuth:
+            toggleBiometryUsage()
+        case .approveWithPin:
+            toggleConfirmationSettings(isPinConfirmationOn) { [weak self] newState in
+                self?.interactor.updatePinConfirmationSettings(isOn: newState)
+            }
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:
@@ -153,6 +213,15 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
             updateView()
         }
     }
+
+    func didReceiveSettings(biometrySettings: BiometrySettings, isPinConfirmationOn: Bool) {
+        self.biometrySettings = biometrySettings
+        self.isPinConfirmationOn = isPinConfirmationOn
+
+        if view?.isSetup == true {
+            updateView()
+        }
+    }
 }
 
 extension SettingsPresenter: Localizable {
@@ -160,5 +229,13 @@ extension SettingsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
+    }
+}
+
+extension Bool {
+    func toggled() -> Bool {
+        var updatingValue = self
+        updatingValue.toggle()
+        return updatingValue
     }
 }
