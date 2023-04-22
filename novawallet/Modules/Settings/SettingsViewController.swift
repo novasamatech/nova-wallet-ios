@@ -62,8 +62,6 @@ final class SettingsViewController: UIViewController, ViewHolder {
             return settingsCell
         case let .toggle(model):
             let settingsCell = tableView.dequeueReusableCellWithType(SwitchSettingsTableViewCell.self)!
-            settingsCell.selectionStyle = .none
-            settingsCell.setup()
             settingsCell.bind(viewModel: model)
             settingsCell.delegate = self
             return settingsCell
