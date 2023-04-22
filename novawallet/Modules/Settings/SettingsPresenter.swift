@@ -117,6 +117,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             show(url: config.termsURL)
         case .privacyPolicy:
             show(url: config.privacyPolicyURL)
+        case .walletConnect:
+            wireframe.showWalletConnect(from: view)
         }
     }
 
