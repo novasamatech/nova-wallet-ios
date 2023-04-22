@@ -10,6 +10,8 @@ enum AvailableBiometryType {
 
 protocol BiometryAuthProtocol {
     var availableBiometryType: AvailableBiometryType { get }
+    var supportedBiometryType: AvailableBiometryType { get }
+
     func authenticate(
         localizedReason: String,
         completionQueue: DispatchQueue,
@@ -24,19 +26,19 @@ class BiometryAuth: BiometryAuthProtocol {
         let available = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: nil)
         guard available else { return .none }
 
-        if #available(iOS 11, *) {
-            switch context.biometryType {
-            case .touchID:
-                return .touchId
-            case .faceID:
-                return .faceId
-            case .none:
-                return .none
-            @unknown default:
-                return .none
-            }
-        } else {
+        return supportedBiometryType
+    }
+
+    var supportedBiometryType: AvailableBiometryType {
+        switch context.biometryType {
+        case .touchID:
             return .touchId
+        case .faceID:
+            return .faceId
+        case .none:
+            return .none
+        @unknown default:
+            return .none
         }
     }
 

@@ -96,31 +96,29 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         useAction: @escaping () -> Void,
         skipAction: @escaping () -> Void
     ) -> AlertPresentableViewModel? {
-        var title: String?
-        var message: String?
-        let languages = locale.rLanguages
-
-        switch biometrySettings {
-        case .touchId:
-            title = R.string.localizable.askTouchidTitle(preferredLanguages: languages)
-            message = R.string.localizable.askTouchidMessage(preferredLanguages: languages)
-        case .faceId:
-            title = R.string.localizable.askFaceidTitle(preferredLanguages: languages)
-            message = R.string.localizable.askFaceidMessage(preferredLanguages: languages)
-        case .notAvailable, .none:
+        guard let biometryTypeName = biometrySettings?.name else {
             return nil
         }
 
+        let languages = locale.rLanguages
+        let title = R.string.localizable.settingsBiometryAuthAlertTitle(
+            biometryTypeName,
+            preferredLanguages: languages
+        )
+        let message = R.string.localizable.settingsBiometryAuthAlertMessage(
+            biometryTypeName,
+            preferredLanguages: languages
+        )
         return AlertPresentableViewModel(
             title: title,
             message: message,
             actions: [
                 .init(
-                    title: R.string.localizable.commonUse(preferredLanguages: languages),
+                    title: R.string.localizable.commonOk(preferredLanguages: languages),
                     handler: useAction
                 ),
                 .init(
-                    title: R.string.localizable.commonSkip(preferredLanguages: languages),
+                    title: R.string.localizable.settingsBiometryAuthAlertDisableButton(preferredLanguages: languages),
                     style: .cancel,
                     handler: skipAction
                 )

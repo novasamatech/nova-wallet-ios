@@ -18,11 +18,18 @@ final class SwitchSettingsTableViewCell: CommonSettingsTableViewCell<UISwitch> {
         delegate?.didChangeSwitchValue(model: viewModel)
     }
 
+    func setup() {
+        rightView.tintColor = R.color.colorSwitchBackground()
+        rightView.onTintColor = R.color.colorIndicatorActive()
+        rightView.thumbTintColor = R.color.colorIconPrimary()
+    }
+
     func bind(viewModel: SwitchSettingsCellViewModel) {
         iconImageView.image = viewModel.icon
         titleLabel.text = viewModel.title
         subtitleLabel.text = nil
         rightView.isOn = viewModel.isOn
+
         self.viewModel = viewModel
     }
 }

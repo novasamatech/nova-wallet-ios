@@ -642,6 +642,11 @@
 "settings.approve.with.pin.alert.title" = "Запрашивать аутентификацию для подписи операций";
 "settings.approve.with.pin.alert.message" = "Каждая операция подписи на кошельках с парой ключей (созданной в кошельке nova или импортированной) должна требовать проверки PIN-кода перед созданием подписи";
 "settings.approve.with.pin.alert.enable.button.title" = "Включить";
+"settings.biometry.auth.alert.title" = "Хотите разрешить “Nova Wallet” использовать %@?";
+"settings.biometry.auth.alert.message" = "Nova Wallet использует %@ для ограничения доступа неавторизованных пользователей к приложению.";
+"settings.error.biometry.disabled.in.settings.title" = "Похоже что %@ выключен в настройках";
+"settings.error.biometry.disabled.in.settings.message" = "Пожалуйств, убедитесь, что приложению дан доступ к %@ в настройках.";
+"settings.biometry.auth.alert.disable.button" = "Don’t Allow";
 "wallet.manage.assets.title" = "Управление ассетами";
 "staking.reward.payouts.title_v2_2_0" = "Невыплаченные награды";
 "staking.setup.restake.title_v2_2_0" = "Увеличивать стейк";
