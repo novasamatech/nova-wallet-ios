@@ -43,7 +43,7 @@ final class SettingsInteractor {
 
     private func provideSecuritySettings() {
         let biometrySettings: BiometrySettings = .create(
-            from: biometryAuth.availableBiometryType,
+            from: biometryAuth.supportedBiometryType,
             settingsManager: settingsManager
         )
         let pinConfirmationEnabled = settingsManager.pinConfirmationEnabled ?? false
@@ -65,6 +65,12 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
     }
 
     func updateBiometricAuthSettings(isOn: Bool) {
+        if isOn,
+           biometryAuth.availableBiometryType == .none,
+           biometryAuth.supportedBiometryType != .none {
+            presenter?.didReceive(error: .biometryAuthAndSystemSettingsOutOfSync)
+        }
+
         settingsManager.biometryEnabled = isOn
         provideSecuritySettings()
     }

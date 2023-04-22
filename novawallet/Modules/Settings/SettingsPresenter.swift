@@ -112,7 +112,7 @@ final class SettingsPresenter {
         _ currentState: Bool,
         completion: @escaping (Bool) -> Void
     ) {
-        let newState = currentState.toggled()
+        let newState = !currentState
         let disabling = currentState == true && newState == false
         let enabling = currentState == false && newState == true
 
@@ -226,6 +226,31 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
             updateView()
         }
     }
+
+    func didReceive(error: SettingsError) {
+        guard let biometrySettings = biometrySettings else {
+            return
+        }
+        switch error {
+        case .biometryAuthAndSystemSettingsOutOfSync:
+            let biometryTypeName = biometrySettings.name
+            let title = R.string.localizable.settingsErrorBiometryDisabledInSettingsTitle(
+                biometryTypeName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let message = R.string.localizable.settingsErrorBiometryDisabledInSettingsMessage(
+                biometryTypeName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.askOpenApplicationSettings(
+                with: message,
+                title: title,
+                from: view,
+                locale: selectedLocale
+            )
+        }
+    }
 }
 
 extension SettingsPresenter: Localizable {
@@ -233,13 +258,5 @@ extension SettingsPresenter: Localizable {
         if view?.isSetup == true {
             updateView()
         }
-    }
-}
-
-extension Bool {
-    func toggled() -> Bool {
-        var updatingValue = self
-        updatingValue.toggle()
-        return updatingValue
     }
 }
