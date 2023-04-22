@@ -184,6 +184,16 @@ extension RoundedView.Style {
         rounding: .init(radius: 12, corners: .allCorners)
     )
 
+    static let strokeOnEditing = RoundedView.Style(
+        shadowOpacity: 0,
+        strokeWidth: 0,
+        strokeColor: R.color.colorActiveBorder(),
+        highlightedStrokeColor: R.color.colorActiveBorder(),
+        fillColor: R.color.colorInputBackground()!,
+        highlightedFillColor: R.color.colorInputBackground()!,
+        rounding: .init(radius: 12, corners: .allCorners)
+    )
+
     static let clear = RoundedView.Style(
         shadowOpacity: 0,
         strokeWidth: 0,
