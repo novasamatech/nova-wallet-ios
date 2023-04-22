@@ -31,4 +31,15 @@ enum BiometrySettings {
             return .notAvailable
         }
     }
+
+    var name: String {
+        switch self {
+        case .notAvailable:
+            return ""
+        case .faceId:
+            return "Face ID"
+        case .touchId:
+            return "Touch ID"
+        }
+    }
 }
