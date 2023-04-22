@@ -50,10 +50,11 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceiveUserDataProvider(error: Error)
     func didReceive(currencyCode: String)
     func didReceiveSettings(biometrySettings: BiometrySettings, isPinConfirmationOn: Bool)
+    func didReceive(error: SettingsError)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
-    EmailPresentable, WalletSwitchPresentable {
+    EmailPresentable, WalletSwitchPresentable, ApplicationSettingsPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)

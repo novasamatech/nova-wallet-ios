@@ -642,6 +642,11 @@
 "settings.approve.with.pin.alert.title" = "Ask authentication for operations signing";
 "settings.approve.with.pin.alert.message" = "Each sign operation on wallets with key pair (created in nova wallet or imported) should require PIN verification before constructing signature";
 "settings.approve.with.pin.alert.enable.button.title" = "Enable";
+"settings.biometry.auth.alert.title" = "Do you want to allow “Nova Wallet” to use %@?";
+"settings.biometry.auth.alert.message" = "Nova Wallet uses %@ to restrict unauthorized users from accessing the app.";
+"settings.error.biometry.disabled.in.settings.title" = "%@ is disabled in settings";
+"settings.error.biometry.disabled.in.settings.message" = "Please, make sure to Nova has access to %@ in Settings";
+"settings.biometry.auth.alert.disable.button" = "Don’t Allow";
 "wallet.manage.assets.title" = "Manage assets";
 "staking.reward.payouts.title_v2_2_0" = "Unpaid rewards";
 "staking.setup.restake.title_v2_2_0" = "Restake rewards";
