@@ -24,7 +24,7 @@ final class Gov1LockStateFactory: GovernanceLockStateFactory {
 
             let initAccum = [ReferendumIdLocal: GovUnlockReferendumProtocol]()
             return zip(remoteIndexes, responses).reduce(into: initAccum) { accum, pair in
-                accum[pair.0.value] = pair.1.value.map { Gov1UnlockReferendum(referendum: $0) }
+                accum[pair.0.value] = Gov1UnlockReferendum(referendum: pair.1.value ?? .unknown)
             }
         }
 
