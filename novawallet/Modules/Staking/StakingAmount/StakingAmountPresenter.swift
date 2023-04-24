@@ -215,16 +215,22 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
             dataValidatingFactory.has(fee: fee, locale: locale) { [weak self] in
                 self?.scheduleFeeEstimation()
             },
+            dataValidatingFactory.canSpendAmount(
+                balance: freeBalance,
+                spendingAmount: amount,
+                locale: locale
+            ),
             dataValidatingFactory.canPayFee(
                 balance: transferableBalance,
                 fee: fee,
                 asset: assetInfo,
                 locale: locale
             ),
-            dataValidatingFactory.canPayFeeAndAmount(
+            dataValidatingFactory.canPayFeeSpendingAmount(
                 balance: freeBalance,
                 fee: fee,
                 spendingAmount: amount,
+                asset: assetInfo,
                 locale: locale
             ),
             dataValidatingFactory.canNominate(

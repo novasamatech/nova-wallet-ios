@@ -73,6 +73,8 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
                 }
             case .evmAsset, .evmNative:
                 return true
+            case .equilibrium:
+                return true
             }
         } else {
             return true
@@ -100,10 +102,8 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         let receiveCommand: WalletCommandProtocol
         let buyCommand: WalletCommandProtocol?
 
-        let actions = purchaseProvider.buildPurchaseActions(
-            for: chainAsset,
-            accountId: selectedAccountId
-        )
+        // TODO: enable when Apple allows
+        let actions: [PurchaseAction] = []
 
         switch selectedAccountType {
         case .secrets, .paritySigner:
