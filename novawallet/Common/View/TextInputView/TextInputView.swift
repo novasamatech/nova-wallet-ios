@@ -154,6 +154,7 @@ class TextInputView: BackgroundedContentControl {
 
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
+        configureLocalHandlers()
         configureTextFieldHandlers()
         configureClearHandlers()
 
@@ -164,8 +165,7 @@ class TextInputView: BackgroundedContentControl {
         if backgroundView == nil {
             let roundedView = RoundedView()
             roundedView.isUserInteractionEnabled = false
-            roundedView.apply(style: .textField)
-            roundedView.strokeWidth = 0.0
+            roundedView.apply(style: .strokeOnEditing)
 
             backgroundView = roundedView
         }
@@ -208,6 +208,10 @@ class TextInputView: BackgroundedContentControl {
         )
     }
 
+    private func configureLocalHandlers() {
+        addTarget(self, action: #selector(actionTouchUpInside), for: .touchUpInside)
+    }
+
     func applyControlsState() {
         if hasText {
             clearButton.isHidden = false
@@ -241,13 +245,13 @@ class TextInputView: BackgroundedContentControl {
     }
 
     @objc private func actionEditingBeginEnd() {
-        if textField.isFirstResponder {
-            roundedBackgroundView?.strokeWidth = 1
-        } else {
-            roundedBackgroundView?.strokeWidth = 0.0
-        }
+        roundedBackgroundView?.strokeWidth = textField.isFirstResponder ? 0.5 : 0
 
         updateControlsState()
+    }
+
+    @objc private func actionTouchUpInside() {
+        textField.becomeFirstResponder()
     }
 
     @objc func actionClear() {
