@@ -280,6 +280,7 @@ class AccountInputView: BackgroundedContentControl {
 
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
+        configureLocalHandlers()
         configureTextFieldHandlers()
         configurePasteHandlers()
         configureClearHandlers()
@@ -291,8 +292,7 @@ class AccountInputView: BackgroundedContentControl {
         if backgroundView == nil {
             let roundedView = RoundedView()
             roundedView.isUserInteractionEnabled = false
-            roundedView.apply(style: .textField)
-            roundedView.strokeWidth = 0.0
+            roundedView.apply(style: .strokeOnEditing)
 
             backgroundView = roundedView
         }
@@ -317,6 +317,10 @@ class AccountInputView: BackgroundedContentControl {
         addSubview(stackView)
 
         contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+    }
+
+    private func configureLocalHandlers() {
+        addTarget(self, action: #selector(actionTouchUpInside), for: .touchUpInside)
     }
 
     private func configureTextFieldHandlers() {
@@ -396,6 +400,10 @@ class AccountInputView: BackgroundedContentControl {
 
     // MARK: Action
 
+    @objc private func actionTouchUpInside() {
+        textField.becomeFirstResponder()
+    }
+
     @objc private func actionEditingChanged(_ sender: UITextField) {
         if inputViewModel?.inputHandler.value != sender.text {
             sender.text = inputViewModel?.inputHandler.value
@@ -407,11 +415,7 @@ class AccountInputView: BackgroundedContentControl {
     }
 
     @objc private func actionEditingBeginEnd() {
-        if textField.isFirstResponder {
-            roundedBackgroundView?.strokeWidth = 0.5
-        } else {
-            roundedBackgroundView?.strokeWidth = 0.0
-        }
+        roundedBackgroundView?.strokeWidth = textField.isFirstResponder ? 0.5 : 0.0
 
         updateControlsState()
     }
