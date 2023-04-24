@@ -28,8 +28,10 @@ final class Web3NameService: AnyCancellableCleaning {
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let transferRecipientRepository: Web3TransferRecipientRepositoryProtocol
+    let providerName: String
 
     init(
+        providerName: String,
         slip44CoinsProvider: AnySingleValueProvider<Slip44CoinList>,
         web3NamesOperationFactory: Web3NamesOperationFactoryProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
@@ -37,6 +39,7 @@ final class Web3NameService: AnyCancellableCleaning {
         transferRecipientRepository: Web3TransferRecipientRepositoryProtocol,
         operationQueue: OperationQueue
     ) {
+        self.providerName = providerName
         self.slip44CoinsProvider = slip44CoinsProvider
         self.web3NamesOperationFactory = web3NamesOperationFactory
         self.runtimeService = runtimeService
@@ -87,7 +90,7 @@ final class Web3NameService: AnyCancellableCleaning {
             case .verificationFailed:
                 return .integrityNotPassed(name)
             default:
-                return .internalFailure(error)
+                return .internalFailure(providerName, error)
             }
         }
     }
@@ -177,10 +180,14 @@ extension Web3NameService: Web3NameServiceProtocol {
             }
             self?.fetchCoinListCancellableCall = nil
 
+            guard let providerName = self?.providerName else {
+                return
+            }
+
             switch result {
             case let .success(list):
                 guard let list = list, !list.isEmpty else {
-                    completionHandler(.failure(.slip44ListIsEmpty))
+                    completionHandler(.failure(.slip44ListIsEmpty(providerName)))
                     return
                 }
                 self?.searchWeb3NameRecipients(
@@ -190,7 +197,7 @@ extension Web3NameService: Web3NameServiceProtocol {
                     completionHandler: completionHandler
                 )
             case .failure, .none:
-                completionHandler(.failure(.slip44ListIsEmpty))
+                completionHandler(.failure(.slip44ListIsEmpty(providerName)))
             }
         }
 

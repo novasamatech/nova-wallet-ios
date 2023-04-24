@@ -23,10 +23,7 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
                 preferredLanguages: locale.rLanguages
             )
 
-            let unlockingDurationString = R.string.localizable.commonDaysFormat(
-                format: duration.unlocking.daysFromSeconds,
-                preferredLanguages: locale.rLanguages
-            )
+            let unlockingDurationString = duration.unlocking.localizedDaysHours(for: locale)
 
             return [
                 R.string.localizable.stakingHintRewardsFormat_v2_2_0(
@@ -34,7 +31,7 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
                     preferredLanguages: locale.rLanguages
                 ),
                 R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-                    unlockingDurationString,
+                    "~\(unlockingDurationString)",
                     preferredLanguages: locale.rLanguages
                 ),
                 R.string.localizable.stakingHintNoRewards_V2_2_0(

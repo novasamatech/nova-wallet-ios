@@ -160,7 +160,7 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
             )
-        case .erc20, .evmNative:
+        case .erc20, .evmNative, .equilibrium:
             // not supported
             return nil
         }
@@ -200,7 +200,7 @@ extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtoc
                 queue: .main,
                 closure: completion
             )
-        case .erc20, .evmNative:
+        case .erc20, .evmNative, .equilibrium:
             // not supported
             return
         }
