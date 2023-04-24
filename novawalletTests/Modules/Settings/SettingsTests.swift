@@ -36,6 +36,13 @@ final class SettingsTests: XCTestCase {
                 sectionsExpectation.fulfill()
             }
         }
+        
+        let biometryAuthMock = MockBiometryAuth()
+        
+        stub(biometryAuthMock) { stub in
+            when(stub).availableBiometryType.get.thenReturn(.none)
+            when(stub).supportedBiometryType.get.thenReturn(.none)
+        }
 
         let wireframe = MockSettingsWireframeProtocol()
 
@@ -43,7 +50,9 @@ final class SettingsTests: XCTestCase {
         let interactor = SettingsInteractor(
             selectedWalletSettings: walletSettings,
             eventCenter: eventCenter,
-            currencyManager: CurrencyManagerStub()
+            currencyManager: CurrencyManagerStub(),
+            settingsManager: InMemorySettingsManager(),
+            biometryAuth: biometryAuthMock
         )
 
         let viewModelFactory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator())
