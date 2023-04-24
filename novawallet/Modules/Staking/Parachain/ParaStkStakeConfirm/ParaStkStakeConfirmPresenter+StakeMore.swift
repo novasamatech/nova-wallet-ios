@@ -22,24 +22,35 @@ extension ParaStkStakeConfirmPresenter {
                 precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
+
+            dataValidatingFactory.canSpendAmountInPlank(
+                balance: allowedAmountToStake,
+                spendingAmount: amount,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+
             dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
                 fee: fee,
                 asset: assetDisplayInfo,
                 locale: selectedLocale
             ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
+
+            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: allowedAmountToStake,
                 fee: fee,
                 spendingAmount: amount,
-                precision: precision,
+                asset: assetDisplayInfo,
                 locale: selectedLocale
             ),
+
             dataValidatingFactory.notRevokingWhileStakingMore(
                 collator: collatorId,
                 scheduledRequests: scheduledRequests,
                 locale: selectedLocale
             ),
+
             dataValidatingFactory.canStakeBottomDelegations(
                 amount: amount,
                 collator: collatorMetadata,

@@ -104,16 +104,17 @@ class OnChainTransferPresenter {
                 return
             },
 
-            dataValidatingFactory.canSend(
-                amount: sendingAmount,
-                fee: isUtilityTransfer ? fee : 0,
-                transferable: senderSendingAssetBalance?.transferable,
+            dataValidatingFactory.canSpendAmountInPlank(
+                balance: senderSendingAssetBalance?.transferable,
+                spendingAmount: sendingAmount,
+                asset: chainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.canPayFeeInPlank(
+            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: senderUtilityAssetTransferable,
                 fee: fee,
+                spendingAmount: isUtilityTransfer ? sendingAmount : nil,
                 asset: utilityAssetInfo,
                 locale: selectedLocale
             ),
