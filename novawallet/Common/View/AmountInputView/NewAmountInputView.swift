@@ -209,16 +209,21 @@ class NewAmountInputView: BackgroundedContentControl {
 
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
+        configureLocalHandlers()
         configureTextFieldHandlers()
     }
 
     private func configureBackgroundViewIfNeeded() {
         if backgroundView == nil {
             let roundedView = RoundedView()
-            roundedView.apply(style: .textField)
+            roundedView.apply(style: .strokeOnEditing)
             roundedView.isUserInteractionEnabled = false
             backgroundView = roundedView
         }
+    }
+
+    private func configureLocalHandlers() {
+        addTarget(self, action: #selector(actionTouchUpInside), for: .touchUpInside)
     }
 
     private func configureTextFieldHandlers() {
@@ -275,11 +280,11 @@ class NewAmountInputView: BackgroundedContentControl {
     // MARK: Action
 
     @objc private func actionEditingDidBeginEnd() {
-        if textField.isFirstResponder {
-            roundedBackgroundView?.strokeWidth = 0.5
-        } else {
-            roundedBackgroundView?.strokeWidth = 0.0
-        }
+        roundedBackgroundView?.strokeWidth = textField.isFirstResponder ? 0.5 : 0.0
+    }
+
+    @objc private func actionTouchUpInside() {
+        textField.becomeFirstResponder()
     }
 }
 

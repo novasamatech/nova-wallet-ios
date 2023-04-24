@@ -18,30 +18,42 @@ extension ParaStkStakeSetupPresenter {
                 precision: precision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
+
+            dataValidatingFactory.canSpendAmountInPlank(
+                balance: allowedAmountToStake,
+                spendingAmount: inputAmount,
+                asset: assetDisplayInfo,
+                locale: selectedLocale
+            ),
+
             dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
                 fee: fee,
                 asset: assetDisplayInfo,
                 locale: selectedLocale
             ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
+
+            dataValidatingFactory.canPayFeeSpendingAmountInPlank(
                 balance: allowedAmountToStake,
                 fee: fee,
                 spendingAmount: inputAmount,
-                precision: precision,
+                asset: assetDisplayInfo,
                 locale: selectedLocale
             ),
+
             dataValidatingFactory.notRevokingWhileStakingMore(
                 collator: collatorId,
                 scheduledRequests: scheduledRequests,
                 locale: selectedLocale
             ),
+
             dataValidatingFactory.canStakeBottomDelegations(
                 amount: inputAmount,
                 collator: collatorMetadata,
                 existingBond: existingBond,
                 locale: selectedLocale
             ),
+
             dataValidatingFactory.canStakeTopDelegations(
                 amount: inputAmount,
                 collator: collatorMetadata,

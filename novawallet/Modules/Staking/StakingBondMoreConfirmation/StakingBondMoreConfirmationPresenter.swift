@@ -105,16 +105,24 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
                 self?.refreshFeeIfNeeded()
             }),
 
+            dataValidatingFactory.canSpendAmount(
+                balance: availableAmountToStake,
+                spendingAmount: inputAmount,
+                locale: locale
+            ),
+
             dataValidatingFactory.canPayFee(
                 balance: transferableBalance,
                 fee: fee,
                 asset: assetInfo,
                 locale: locale
             ),
-            dataValidatingFactory.canPayFeeAndAmount(
+
+            dataValidatingFactory.canPayFeeSpendingAmount(
                 balance: availableAmountToStake,
                 fee: fee,
                 spendingAmount: inputAmount,
+                asset: assetInfo,
                 locale: locale
             ),
 
