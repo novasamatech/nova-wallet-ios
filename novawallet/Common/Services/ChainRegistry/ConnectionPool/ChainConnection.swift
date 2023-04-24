@@ -15,3 +15,7 @@ extension WebSocketEngine: ChainConnection {
         disconnectIfNeeded(force)
     }
 }
+
+protocol OneShotConnection: JSONRPCEngine & ConnectionAutobalancing {}
+
+extension HTTPEngine: OneShotConnection {}

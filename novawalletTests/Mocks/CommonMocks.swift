@@ -3298,6 +3298,21 @@ import SubstrateSdk
     
     
     
+     func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection {
+        
+    return try cuckoo_manager.callThrows("createOneShotConnection(for: ChainModel) throws -> OneShotConnection",
+            parameters: (chain),
+            escapingParameters: (chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createOneShotConnection(for: chain))
+        
+    }
+    
+    
+    
      func updateConnection(_ connection: ChainConnection, chain: ChainModel)  {
         
     return cuckoo_manager.call("updateConnection(_: ChainConnection, chain: ChainModel)",
@@ -3313,16 +3328,16 @@ import SubstrateSdk
     
     
     
-     func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine? {
+     func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel)  {
         
-    return cuckoo_manager.call("createOnShotConnection(for: ChainModel) -> JSONRPCEngine?",
-            parameters: (chain),
-            escapingParameters: (chain),
+    return cuckoo_manager.call("updateOneShotConnection(_: OneShotConnection, chain: ChainModel)",
+            parameters: (connection, chain),
+            escapingParameters: (connection, chain),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createOnShotConnection(for: chain))
+            defaultCall: __defaultImplStub!.updateOneShotConnection(connection, chain: chain))
         
     }
     
@@ -3340,14 +3355,19 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createConnection(for: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection", parameterMatchers: matchers))
 	    }
 	    
+	    func createOneShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel), OneShotConnection> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createOneShotConnection(for: ChainModel) throws -> OneShotConnection", parameterMatchers: matchers))
+	    }
+	    
 	    func updateConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainConnection, ChainModel)> where M1.MatchedType == ChainConnection, M2.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "updateConnection(_: ChainConnection, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func createOnShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createOnShotConnection(for: ChainModel) -> JSONRPCEngine?", parameterMatchers: matchers))
+	    func updateOneShotConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(OneShotConnection, ChainModel)> where M1.MatchedType == OneShotConnection, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(OneShotConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "updateOneShotConnection(_: OneShotConnection, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -3373,15 +3393,21 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
+	    func createOneShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), OneShotConnection> where M1.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
+	        return cuckoo_manager.verify("createOneShotConnection(for: ChainModel) throws -> OneShotConnection", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func updateConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.__DoNotUse<(ChainConnection, ChainModel), Void> where M1.MatchedType == ChainConnection, M2.MatchedType == ChainModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
 	        return cuckoo_manager.verify("updateConnection(_: ChainConnection, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func createOnShotConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), JSONRPCEngine?> where M1.MatchedType == ChainModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return cuckoo_manager.verify("createOnShotConnection(for: ChainModel) -> JSONRPCEngine?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func updateOneShotConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.__DoNotUse<(OneShotConnection, ChainModel), Void> where M1.MatchedType == OneShotConnection, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(OneShotConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return cuckoo_manager.verify("updateOneShotConnection(_: OneShotConnection, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -3401,14 +3427,20 @@ import SubstrateSdk
     
     
     
+     func createOneShotConnection(for chain: ChainModel) throws -> OneShotConnection  {
+        return DefaultValueRegistry.defaultValue(for: (OneShotConnection).self)
+    }
+    
+    
+    
      func updateConnection(_ connection: ChainConnection, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
-     func createOnShotConnection(for chain: ChainModel) -> JSONRPCEngine?  {
-        return DefaultValueRegistry.defaultValue(for: (JSONRPCEngine?).self)
+     func updateOneShotConnection(_ connection: OneShotConnection, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
 }
@@ -3772,6 +3804,20 @@ import SubstrateSdk
     
     
     
+     override var oneShotConnections: [ChainModel.Id: OneShotConnection] {
+        get {
+            return cuckoo_manager.getter("oneShotConnections",
+                superclassCall:
+                    
+                    super.oneShotConnections
+                    ,
+                defaultCall: __defaultImplStub!.oneShotConnections)
+        }
+        
+    }
+    
+    
+    
      override var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] {
         get {
             return cuckoo_manager.getter("stateSubscriptions",
@@ -3802,6 +3848,11 @@ import SubstrateSdk
 	    }
 	    
 	    
+	    var oneShotConnections: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: OneShotConnection]> {
+	        return .init(manager: cuckoo_manager, name: "oneShotConnections")
+	    }
+	    
+	    
 	    var stateSubscriptions: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: [WeakWrapper]]> {
 	        return .init(manager: cuckoo_manager, name: "stateSubscriptions")
 	    }
@@ -3827,6 +3878,11 @@ import SubstrateSdk
 	    }
 	    
 	    
+	    var oneShotConnections: Cuckoo.VerifyReadOnlyProperty<[ChainModel.Id: OneShotConnection]> {
+	        return .init(manager: cuckoo_manager, name: "oneShotConnections", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
 	    var stateSubscriptions: Cuckoo.VerifyReadOnlyProperty<[ChainModel.Id: [WeakWrapper]]> {
 	        return .init(manager: cuckoo_manager, name: "stateSubscriptions", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
@@ -3843,6 +3899,15 @@ import SubstrateSdk
      override var connections: [ChainModel.Id: WeakWrapper] {
         get {
             return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: WeakWrapper]).self)
+        }
+        
+    }
+        
+    
+    
+     override var oneShotConnections: [ChainModel.Id: OneShotConnection] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: OneShotConnection]).self)
         }
         
     }
@@ -6141,6 +6206,36 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID? {
+        
+    return cuckoo_manager.call("attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?",
+            parameters: (info, balanceUpdater, locksUpdater, queue, closure),
+            escapingParameters: (info, balanceUpdater, locksUpdater, queue, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.attachToEquilibriumAssets(info: info, balanceUpdater: balanceUpdater, locksUpdater: locksUpdater, queue: queue, closure: closure))
+        
+    }
+    
+    
+    
+     func detachFromEquilibriumAssets(for subscriptionId: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)  {
+        
+    return cuckoo_manager.call("detachFromEquilibriumAssets(for: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)",
+            parameters: (subscriptionId, accountId, chainId, queue, closure),
+            escapingParameters: (subscriptionId, accountId, chainId, queue, closure),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.detachFromEquilibriumAssets(for: subscriptionId, accountId: accountId, chainId: chainId, queue: queue, closure: closure))
+        
+    }
+    
 
 	 struct __StubbingProxy_WalletRemoteSubscriptionServiceProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -6178,6 +6273,16 @@ import SubstrateSdk
 	    func detachFromOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, currencyId: M3, chainId: M4, queue: M5, closure: M6) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID, AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == Data, M4.MatchedType == ChainModel.Id, M5.OptionalMatchedType == DispatchQueue, M6.OptionalMatchedType == RemoteSubscriptionClosure {
 	        let matchers: [Cuckoo.ParameterMatcher<(UUID, AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: accountId) { $0.1 }, wrap(matchable: currencyId) { $0.2 }, wrap(matchable: chainId) { $0.3 }, wrap(matchable: queue) { $0.4 }, wrap(matchable: closure) { $0.5 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "detachFromOrmlToken(for: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", parameterMatchers: matchers))
+	    }
+	    
+	    func attachToEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(info: M1, balanceUpdater: M2, locksUpdater: M3, queue: M4, closure: M5) -> Cuckoo.ProtocolStubFunction<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == RemoteEquilibriumSubscriptionInfo, M2.MatchedType == EquillibriumAssetsBalanceUpdaterProtocol, M3.MatchedType == EquillibriumLocksUpdaterProtocol, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: info) { $0.0 }, wrap(matchable: balanceUpdater) { $0.1 }, wrap(matchable: locksUpdater) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", parameterMatchers: matchers))
+	    }
+	    
+	    func detachFromEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: accountId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "detachFromEquilibriumAssets(for: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -6232,6 +6337,18 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("detachFromOrmlToken(for: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func attachToEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(info: M1, balanceUpdater: M2, locksUpdater: M3, queue: M4, closure: M5) -> Cuckoo.__DoNotUse<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == RemoteEquilibriumSubscriptionInfo, M2.MatchedType == EquillibriumAssetsBalanceUpdaterProtocol, M3.MatchedType == EquillibriumLocksUpdaterProtocol, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: info) { $0.0 }, wrap(matchable: balanceUpdater) { $0.1 }, wrap(matchable: locksUpdater) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return cuckoo_manager.verify("attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func detachFromEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.__DoNotUse<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?), Void> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: accountId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return cuckoo_manager.verify("detachFromEquilibriumAssets(for: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -6274,6 +6391,18 @@ import SubstrateSdk
     
     
      func detachFromOrmlToken(for subscriptionId: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?  {
+        return DefaultValueRegistry.defaultValue(for: (UUID?).self)
+    }
+    
+    
+    
+     func detachFromEquilibriumAssets(for subscriptionId: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -6394,6 +6523,36 @@ import SubstrateSdk
         
     }
     
+    
+    
+     override func attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID? {
+        
+    return cuckoo_manager.call("attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?",
+            parameters: (info, balanceUpdater, locksUpdater, queue, closure),
+            escapingParameters: (info, balanceUpdater, locksUpdater, queue, closure),
+            superclassCall:
+                
+                super.attachToEquilibriumAssets(info: info, balanceUpdater: balanceUpdater, locksUpdater: locksUpdater, queue: queue, closure: closure)
+                ,
+            defaultCall: __defaultImplStub!.attachToEquilibriumAssets(info: info, balanceUpdater: balanceUpdater, locksUpdater: locksUpdater, queue: queue, closure: closure))
+        
+    }
+    
+    
+    
+     override func detachFromEquilibriumAssets(for subscriptionId: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)  {
+        
+    return cuckoo_manager.call("detachFromEquilibriumAssets(for: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)",
+            parameters: (subscriptionId, accountId, chainId, queue, closure),
+            escapingParameters: (subscriptionId, accountId, chainId, queue, closure),
+            superclassCall:
+                
+                super.detachFromEquilibriumAssets(for: subscriptionId, accountId: accountId, chainId: chainId, queue: queue, closure: closure)
+                ,
+            defaultCall: __defaultImplStub!.detachFromEquilibriumAssets(for: subscriptionId, accountId: accountId, chainId: chainId, queue: queue, closure: closure))
+        
+    }
+    
 
 	 struct __StubbingProxy_WalletRemoteSubscriptionService: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -6431,6 +6590,16 @@ import SubstrateSdk
 	    func detachFromOrmlToken<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, currencyId: M3, chainId: M4, queue: M5, closure: M6) -> Cuckoo.ClassStubNoReturnFunction<(UUID, AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == Data, M4.MatchedType == ChainModel.Id, M5.OptionalMatchedType == DispatchQueue, M6.OptionalMatchedType == RemoteSubscriptionClosure {
 	        let matchers: [Cuckoo.ParameterMatcher<(UUID, AccountId, Data, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: accountId) { $0.1 }, wrap(matchable: currencyId) { $0.2 }, wrap(matchable: chainId) { $0.3 }, wrap(matchable: queue) { $0.4 }, wrap(matchable: closure) { $0.5 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "detachFromOrmlToken(for: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", parameterMatchers: matchers))
+	    }
+	    
+	    func attachToEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(info: M1, balanceUpdater: M2, locksUpdater: M3, queue: M4, closure: M5) -> Cuckoo.ClassStubFunction<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == RemoteEquilibriumSubscriptionInfo, M2.MatchedType == EquillibriumAssetsBalanceUpdaterProtocol, M3.MatchedType == EquillibriumLocksUpdaterProtocol, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: info) { $0.0 }, wrap(matchable: balanceUpdater) { $0.1 }, wrap(matchable: locksUpdater) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", parameterMatchers: matchers))
+	    }
+	    
+	    func detachFromEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.ClassStubNoReturnFunction<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: accountId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "detachFromEquilibriumAssets(for: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -6485,6 +6654,18 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("detachFromOrmlToken(for: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func attachToEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(info: M1, balanceUpdater: M2, locksUpdater: M3, queue: M4, closure: M5) -> Cuckoo.__DoNotUse<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == RemoteEquilibriumSubscriptionInfo, M2.MatchedType == EquillibriumAssetsBalanceUpdaterProtocol, M3.MatchedType == EquillibriumLocksUpdaterProtocol, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(RemoteEquilibriumSubscriptionInfo, EquillibriumAssetsBalanceUpdaterProtocol, EquillibriumLocksUpdaterProtocol, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: info) { $0.0 }, wrap(matchable: balanceUpdater) { $0.1 }, wrap(matchable: locksUpdater) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return cuckoo_manager.verify("attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func detachFromEquilibriumAssets<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.__DoNotUse<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?), Void> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
+	        let matchers: [Cuckoo.ParameterMatcher<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: subscriptionId) { $0.0 }, wrap(matchable: accountId) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
+	        return cuckoo_manager.verify("detachFromEquilibriumAssets(for: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -6527,6 +6708,18 @@ import SubstrateSdk
     
     
      override func detachFromOrmlToken(for subscriptionId: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     override func attachToEquilibriumAssets(info: RemoteEquilibriumSubscriptionInfo, balanceUpdater: EquillibriumAssetsBalanceUpdaterProtocol, locksUpdater: EquillibriumLocksUpdaterProtocol, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?  {
+        return DefaultValueRegistry.defaultValue(for: (UUID?).self)
+    }
+    
+    
+    
+     override func detachFromEquilibriumAssets(for subscriptionId: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
