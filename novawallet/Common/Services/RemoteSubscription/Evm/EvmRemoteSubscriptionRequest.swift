@@ -2,7 +2,7 @@ import Foundation
 
 enum EvmRemoteSubscriptionRequest {
     case native(EvmNativeBalanceSubscriptionRequest)
-    case erc20Balace(ERC20BalanceSubscriptionRequest)
+    case erc20Balance(ERC20BalanceSubscriptionRequest)
 }
 
 struct ERC20BalanceSubscriptionRequest {
