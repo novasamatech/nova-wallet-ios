@@ -118,6 +118,10 @@ extension StakingRelaychainInteractor: EventVisitorProtocol {
         provideEraStakersInfo(from: eraValidatorService)
         provideRewardCalculator(from: rewardCalculationService)
     }
+
+    func processBlockTimeChanged(event _: BlockTimeChanged) {
+        provideNetworkStakingInfo()
+    }
 }
 
 extension StakingRelaychainInteractor: ApplicationHandlerDelegate {
