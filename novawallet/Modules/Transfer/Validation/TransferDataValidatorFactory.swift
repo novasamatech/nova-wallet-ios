@@ -5,13 +5,6 @@ import SoraFoundation
 typealias CrossChainValidationFee = (origin: BigUInt?, crossChain: BigUInt?)
 
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
-    func canSend(
-        amount: Decimal?,
-        fee: BigUInt?,
-        transferable: BigUInt?,
-        locale: Locale
-    ) -> DataValidating
-
     func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 
     func notViolatingMinBalancePaying(
@@ -85,35 +78,6 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         self.assetDisplayInfo = assetDisplayInfo
         self.utilityAssetInfo = utilityAssetInfo
         self.priceAssetInfoFactory = priceAssetInfoFactory
-    }
-
-    func canSend(
-        amount: Decimal?,
-        fee: BigUInt?,
-        transferable: BigUInt?,
-        locale: Locale
-    ) -> DataValidating {
-        let precision = assetDisplayInfo.assetPrecision
-        let sendingAmount = amount.flatMap {
-            $0.toSubstrateAmount(precision: precision)
-        }
-
-        return ErrorConditionViolation(onError: { [weak self] in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.basePresentable.presentAmountTooHigh(from: view, locale: locale)
-        }, preservesCondition: {
-            if
-                let sendingAmount = sendingAmount,
-                let fee = fee,
-                let transferable = transferable {
-                return sendingAmount + fee <= transferable
-            } else {
-                return false
-            }
-        })
     }
 
     func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
