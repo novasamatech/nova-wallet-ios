@@ -1,3 +1,7 @@
+"NSCameraUsageDescription" = "La caméra est utilisée pour capturer le code QR";
+"NSFaceIDUsageDescription" = "Face ID est utilisé pour l'autorisation dans l'application";
+"NSPhotoLibraryUsageDescription" = "Télécharger des photos à partir de la bibliothèque";
+"NSPhotoLibraryAddUsageDescription" = "Enregistrer la demande de transfert en tant que code QR";
 "common.close" = "Fermer";
 "common.next" = "Suivant";
 "common.cancel" = "Annuler";
@@ -150,8 +154,7 @@
 "wallet.send.confirm.title" = "Confirmer le transfert";
 "wallet.send.available.balance" = "Solde disponible";
 "wallet.contacts.empty.title" = "Vos comptes et contacts auxquels vous envoyiez des transferts apparaîtront ici";
-"wallet.search.empty.title" = "Assurez-vous que l'adresse provient \
-du bon réseau";
+"wallet.search.empty.title" = "Assurez-vous que l'adresse provient \ndu bon réseau";
 "wallet.contacts.search.placeholder" = "Adresse ou nom du compte";
 "wallet.balance.available" = "Transférable";
 "wallet.transfer.total.title" = "Total";
@@ -193,19 +196,13 @@ du bon réseau";
 "common.error.password.mismatch" = "Les mots de passe ne correspondent pas";
 "common.network" = "Réseau";
 "common.change.password" = "Modifier le mot de passe";
-"export.mnemonic.with.dp.template" = "Réseau : %@\
-Mnémonique : %@\
-Chemin de dérivation : %@";
-"export.mnemonic.without.dp.template" = "Réseau : %@\
-Mnémonique : %@";
+"export.mnemonic.with.dp.template" = "Réseau : %@\nMnémonique : %@\nChemin de dérivation : %@";
+"export.mnemonic.without.dp.template" = "Réseau : %@\nMnémonique : %@";
 "export.mnemonic.hint" = "Utiliser des moyens de sauvegarde non numériques, par exemple en écrivant sur papier la séquence des mots mnémoniques et le chemin de dérivation (si défini).";
 "common.confirm" = "Confirmer";
 "common.confirmed" = "Confirmé";
-"export.seed.without.dp.template" = "Réseau : %@\
-Clé : %@";
-"export.seed.with.dp.template" = "Réseau : %@\
-Clé : %@\
-Chemin de dérivation : %@";
+"export.seed.without.dp.template" = "Réseau : %@\nClé : %@";
+"export.seed.with.dp.template" = "Réseau : %@\nClé : %@\nChemin de dérivation : %@";
 "common.changed" = "Modifié";
 "account.import.json.no.network" = "Le JSON ne contient pas d'informations sur le réseau. Veuillez les spécifier ci-dessous.";
 "account.import.wrong.network" = "Le réseau dans le JSON ne correspond pas à celui qui a été sélectionné. Ce dernier sera utilisé pour importer un compte.";
@@ -335,8 +332,7 @@ Chemin de dérivation : %@";
 "staking.stash.can.hint" = "La réserve peut miser davantage et configurer le contrôleur.";
 "staking.controller.can.hint" = "Le contrôleur peut désengager, encaisser, retourner à l'enjeu, changer de valiateurs et de destination de récompenses.";
 "staking.switch.account.to.stash" = "Basculez votre compte vers la réserve pour configurer le contrôleur.";
-"staking.inactive.current.minimal.stake" = "Votre mise est inférieure au minimum de %@.\
-Le fait d'avoir une mise inférieure au minimum augmente les chances que la mise ne génère pas de récompenses.";
+"staking.inactive.current.minimal.stake" = "Votre mise est inférieure au minimum de %@.\nLe fait d'avoir une mise inférieure au minimum augmente les chances que la mise ne génère pas de récompenses.";
 "staking.change.your.validators" = "Changez vos validateurs.";
 "staking.bond.more.tokens" = "Misez plus d'actifs.";
 "staking.redeem.unbonded.tokens" = "Encaisser des actifs non misés.";
@@ -434,8 +430,7 @@ Le fait d'avoir une mise inférieure au minimum augmente les chances que la mise
 "common.search" = "Rechercher";
 "common.search.results.number" = "Résultats de la recherche : %li";
 "common.search.start.title_v2_2_0" = "Les résultats de la recherche seront affichés ici";
-"staking.validator.search.empty.title" = "Aucun résultat de recherche.\
-Assurez-vous d'avoir tapé l'adresse complète du compte";
+"staking.validator.search.empty.title" = "Aucun résultat de recherche.\nAssurez-vous d'avoir tapé l'adresse complète du compte";
 "common.filter.sort.header" = "Trier par :";
 "staking.recommended.hint3.addition" = "avec au moins une info d'identité";
 "staking.validator.total.stake.token" = "Participation totale (%@)";
@@ -474,8 +469,7 @@ Assurez-vous d'avoir tapé l'adresse complète du compte";
 "staking.hint.no.rewards" = "Les jetons en période de retrait ne génèrent aucune récompense.";
 "staking.hint.redeem" = "Après la période de retrait, vous devrez récupérer vos actifs.";
 "staking.hint.reward.bond.more" = "Vos récompenses seront augmentées à partir de l'ère suivante.";
-"staking.hint.unbond.kills.stash" = "Le portefeuille Nova changera la destination des récompenses\
- vers votre compte pour éviter une mise restante.";
+"staking.hint.unbond.kills.stash" = "Le portefeuille Nova changera la destination des récompenses\n vers votre compte pour éviter une mise restante.";
 "staking.story.staking.title" = "Qu'est-ce que le staking ?";
 "staking.story.staking.page.1" = "Le staking est une option permettant de gagner un revenu passif en bloquant vos tokens dans le réseau. Les récompenses sont attribuées chaque jour (6 heures sur Kusama et 24 heures sur Polkadot). Vous pouvez miser aussi longtemps que vous le souhaitez, et pour désengager vos jetons, vous devez attendre la fin de la période de désengagement, enfin vos actifs seront disponibles.";
 "staking.story.staking.page.2" = "Le staking est un élément important de la sécurité et de la fiabilité du réseau. Tout le monde peut gérer des nœuds de validation, mais seuls ceux qui ont suffisamment de jetons mis en jeu seront élus par le réseau pour participer à la composition de nouveaux blocs et recevoir les récompenses. Les validateurs n'ont souvent pas assez de jetons, c'est pourquoi les nominateurs les aident en bloquant leurs jetons pour qu'ils atteignent le montant de mise requis.";
@@ -502,20 +496,14 @@ Assurez-vous d'avoir tapé l'adresse complète du compte";
 "staking.common.validator" = "Validateur";
 "staking.common.event.id" = "Événement";
 "common.copy.id" = "Copier l'identifiant";
-"wallet.contacts.empty.title_v1.10" = "Vos comptes et contacts\
-à qui vous envoyiez\
-des transferts apparaîtront ici";
-"wallet.search.empty.title_v1.10.0" = "Le format de l'adresse n'est pas valide.\
-Assurez-vous que l'adresse\
-appartient au bon réseau";
+"wallet.contacts.empty.title_v1.10" = "Vos comptes et contacts\nà qui vous envoyiez\ndes transferts apparaîtront ici";
+"wallet.search.empty.title_v1.10.0" = "Le format de l'adresse n'est pas valide.\nAssurez-vous que l'adresse\nappartient au bon réseau";
 "staking.analytics.period.7d" = "7j";
 "staking.analytics.period.30d" = "30j";
 "staking.analytics.period.1y" = "1 an";
 "staking.analytics.period.all" = "Tous";
-"staking.analytics.rewards.empty.message" = "Vos récompenses \
-apparaîtront ici";
-"staking.analytics.stake.empty.message" = "Vos changements de mise\
-apparaîtront ici";
+"staking.analytics.rewards.empty.message" = "Vos récompenses \napparaîtront ici";
+"staking.analytics.stake.empty.message" = "Vos changements de mise\napparaîtront ici";
 "common.details" = "Détails";
 "staking.analytics.details.type" = "Type";
 "staking.analytics.era.range" = "%li sur %li ères";
@@ -601,8 +589,7 @@ apparaîtront ici";
 "crowdloan.active.section" = "Actif";
 "crowdloan.completed.section" = "Terminé";
 "staking.title" = "Staking";
-"export.mnemonic.check.hint" = "Veillez à écrire votre phrase correctement \
-et de manière lisible";
+"export.mnemonic.check.hint" = "Veillez à écrire votre phrase correctement \net de manière lisible";
 "wallet.create.button.title.disabled_v2_2_0" = "Entrez un nom de portefeuille...";
 "export.password.title" = "Définir un nouveau mot de passe";
 "export.password.proceed.set.title" = "Définir le mot de passe...";
@@ -611,8 +598,7 @@ et de manière lisible";
 "wallet.username.setup.choose.title_v2_2_0" = "Nom du portefeuille";
 "connection.error.message_v2_2_0" = "Veuillez vérifier votre connexion ou réessayer plus tard";
 "common.invalid.derivation.path.message_v2_2_0" = "Votre chemin de dérivation contient des symboles non pris en charge ou a une structure incorrecte.";
-"onboarding.terms.and.conditions.1_v2_2_0" = "En continuant, vous acceptez nos \
-conditions générales et notre politique de confidentialité";
+"onboarding.terms.and.conditions.1_v2_2_0" = "En continuant, vous acceptez nos \nconditions générales et notre politique de confidentialité";
 "wallet.receive.description_v2_2_0" = "Laissez l’expéditeur scanner ce code QR";
 "wallet.receive.title.format" = "Recevoir %@";
 "wallet.receive.share.title" = "Partager le code QR";
@@ -955,6 +941,7 @@ conditions générales et notre politique de confidentialité";
 "common.ledger.not.supported.message" = "Ledger ne prend pas en charge la signature de messages arbitraires - uniquement les transactions";
 "ledger.not.support.token.title" = "Ledger ne prend pas en charge cet actif";
 "ledger.not.support.token.message" = "Ne pas transférer %@ sur le compte contrôlé par la Ledger car Ledger ne prend pas en charge l'envoi de %@, les actifs seront bloqués sur ce compte";
+"NSBluetoothAlwaysUsageDescription" = "Le Bluetooth est utilisé pour communiquer avec la Ledger Nano X.";
 "crowdloan.you.contributions.total" = "Total";
 "common.yield.boost" = "Yield Boost";
 "common.off" = "Désactivé";
@@ -1205,3 +1192,19 @@ conditions générales et notre politique de confidentialité";
 "common.multi.tx.error.no.details.message" = "Une erreur s’est produite lors de l’envoi de certaines transactions (%@). Voulez-vous réessayer?";
 "common.multi.tx.error.has.details.message" = "Une erreur s’est produite lors de l’envoi de certaines transactions (%@) : %@. Voulez-vous réessayer?";
 "staking.rebag.confirm.completion" = "Une nouvelle demande de créneau dans la file d'attente a été soumise";
+"evm.contract.call" = "Appel de contrat";
+"evm.contract" = "Adresse du contrat";
+"evm.contract.function" = "Fonction";
+"transfer.setup.kilt.addresses.title" = "%@ adresses pour %@";
+"transfer.setup.error.w3n.serviceNotFound.subtitle" = "Aucune adresse valide n'a été trouvée pour %@ sur le réseau %@";
+"transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ introuvable";
+"transfer.setup.error.w3n.kiltServiceUnavailable.subtitle" = "Les services w3n %1$@ sont indisponibles. Réessayez plus tard ou entrez manuellement l'adresse %1$@";
+"transfer.setup.error.w3n.kiltServiceUnavailable.title" = "Erreur lors de la résolution de w3n";
+"transfer.setup.error.w3n.accountNotFound.title" = "Récipient invalide";
+"transfer.setup.error.w3n.token.not.found.subtitle" = "Nova ne peut pas résoudre le code pour le jeton %@";
+"transfer.setup.error.w3n.token.not.found.title" = "Le jeton %@ n'est pas encore pris en charge";
+"transfer.setup.error.w3n.integrity.not.passed.subtitle" = "Nova a détecté des problèmes d'intégrité des informations concernant %1$@ adresses. Veuillez contacter le propriétaire de %1$@ pour résoudre les problèmes d'intégrité.";
+"transfer.setup.error.w3n.integrity.not.passed.title" = "Le contrôle d'intégrité a échoué";
+"transfer.setup.recipient.input.placeholder" = "Adresse ou w3n";
+"transfer.setup.error.w3n.search.in.progress.title" = "La recherche de nom est en cours";
+"transfer.setup.error.w3n.search.in.progress.subtitle" = "Veuillez patienter jusqu'à ce que la recherche %@ soit terminée";
