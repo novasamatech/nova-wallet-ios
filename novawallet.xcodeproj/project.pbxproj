@@ -2709,7 +2709,6 @@
 		888797B229F11EBB0078633F /* SwitchSettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888797B129F11EBB0078633F /* SwitchSettingsTableViewCell.swift */; };
 		888797B429F11EF90078633F /* CommonSettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888797B329F11EF90078633F /* CommonSettingsTableViewCell.swift */; };
 		888797B829F269130078633F /* BiometrySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888797B729F269130078633F /* BiometrySettings.swift */; };
-		888797BA29F3EF100078633F /* SettingsError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888797B929F3EF100078633F /* SettingsError.swift */; };
 		888A3B6528F73DC300E15BD2 /* ReferendumVotingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */; };
 		888A3B6728F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */; };
 		888B853828ED966600AC9614 /* SkeletonableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B853728ED966600AC9614 /* SkeletonableView.swift */; };
@@ -2749,6 +2748,7 @@
 		88BB0B4529C1E29F00D041C1 /* Web3NameLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB0B4429C1E29F00D041C1 /* Web3NameLocal.swift */; };
 		88BB0B4729C2FB5300D041C1 /* Caip19.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB0B4629C2FB5300D041C1 /* Caip19.swift */; };
 		88BB21A028D34C660019C6B4 /* DataProviderChange+Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB219F28D34C660019C6B4 /* DataProviderChange+Identifier.swift */; };
+		88BCD02E29F63F5600C6E7C4 /* SettingsError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCD02D29F63F5600C6E7C4 /* SettingsError.swift */; };
 		88C017E628C60A65003B2D28 /* AssetLockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C017E528C60A65003B2D28 /* AssetLockMapper.swift */; };
 		88C5F078297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C5F077297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift */; };
 		88C5F07C297EE79C001CCADE /* Release.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C5F07B297EE79C001CCADE /* Release.swift */; };
@@ -6114,7 +6114,6 @@
 		888797B129F11EBB0078633F /* SwitchSettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchSettingsTableViewCell.swift; sourceTree = "<group>"; };
 		888797B329F11EF90078633F /* CommonSettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonSettingsTableViewCell.swift; sourceTree = "<group>"; };
 		888797B729F269130078633F /* BiometrySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometrySettings.swift; sourceTree = "<group>"; };
-		888797B929F3EF100078633F /* SettingsError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsError.swift; sourceTree = "<group>"; };
 		888A3B6428F73DC300E15BD2 /* ReferendumVotingStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingStatusView.swift; sourceTree = "<group>"; };
 		888A3B6628F746D200E15BD2 /* ReferendumVotingStatusDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferendumVotingStatusDetailsView.swift; sourceTree = "<group>"; };
 		888B853728ED966600AC9614 /* SkeletonableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkeletonableView.swift; sourceTree = "<group>"; };
@@ -6155,6 +6154,7 @@
 		88BB0B4429C1E29F00D041C1 /* Web3NameLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameLocal.swift; sourceTree = "<group>"; };
 		88BB0B4629C2FB5300D041C1 /* Caip19.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Caip19.swift; sourceTree = "<group>"; };
 		88BB219F28D34C660019C6B4 /* DataProviderChange+Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+Identifier.swift"; sourceTree = "<group>"; };
+		88BCD02D29F63F5600C6E7C4 /* SettingsError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsError.swift; sourceTree = "<group>"; };
 		88C017E528C60A65003B2D28 /* AssetLockMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetLockMapper.swift; sourceTree = "<group>"; };
 		88C5F077297E5882001CCADE /* GovernanceDelegateLocal+Identifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GovernanceDelegateLocal+Identifiable.swift"; sourceTree = "<group>"; };
 		88C5F07B297EE79C001CCADE /* Release.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Release.swift; sourceTree = "<group>"; };
@@ -11424,9 +11424,9 @@
 		8493D0DD26FE5D0800A28008 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				88BCD02D29F63F5600C6E7C4 /* SettingsError.swift */,
 				8428765E24ADE0BB00D91AD8 /* UserSettings.swift */,
 				888797B729F269130078633F /* BiometrySettings.swift */,
-				888797B929F3EF100078633F /* SettingsError.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -18663,7 +18663,7 @@
 				84E493252731C064000534F2 /* AssetListViewModel.swift in Sources */,
 				AEA0C8B8267C905500F9666F /* SelectedValidatorCell.swift in Sources */,
 				8422F2EE2887E3D300C7B840 /* TextInputView.swift in Sources */,
-				888797BA29F3EF100078633F /* SettingsError.swift in Sources */,
+				88BCD02E29F63F5600C6E7C4 /* SettingsError.swift in Sources */,
 				847F2D5927AB201200AFD476 /* GradientIconView.swift in Sources */,
 				84EBFCEE285E82BB0006327E /* XcmExecute.swift in Sources */,
 				849976C627B2B73900B14A6C /* DAppMetamaskStateMachine.swift in Sources */,
@@ -20085,10 +20085,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 2857FNT253;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -20102,7 +20103,8 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "Ruslan's Dev";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Ruslan's Dev";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -20261,10 +20263,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 2857FNT253;
+				DEVELOPMENT_TEAM = RD2HBGJZLF;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = RD2HBGJZLF;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = novawallet/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -20278,7 +20281,8 @@
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.novafoundation.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "nova-wallet-dev";
 				SWIFT_USE_INTEGRATED_DRIVER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
