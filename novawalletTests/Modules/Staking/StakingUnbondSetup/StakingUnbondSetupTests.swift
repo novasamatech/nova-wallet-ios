@@ -41,6 +41,7 @@ class StakingUnbondSetupTests: XCTestCase {
                 completionExpectation.fulfill()
             }
         }
+        
 
         presenter.selectAmountPercentage(0.75)
         presenter.proceed()
