@@ -107,14 +107,12 @@ final class NetworkInfoViewModelFactory {
     private func createLockUpPeriodViewModel(
         with networkStakingInfo: NetworkStakingInfo
     ) -> LocalizableResource<String> {
-        let eraPerDay = networkStakingInfo.stakingDuration.era.intervalsInDay
-        let lockUpPeriodInDays = eraPerDay > 0 ? Int(networkStakingInfo.lockUpPeriod) / eraPerDay : 0
-
-        return LocalizableResource { locale in
-            R.string.localizable.commonDaysFormat(
-                format: lockUpPeriodInDays,
-                preferredLanguages: locale.rLanguages
+        LocalizableResource { locale in
+            let formattedString = networkStakingInfo.stakingDuration.unlocking.localizedDaysHours(
+                for: locale
             )
+
+            return "~\(formattedString)"
         }
     }
 }
