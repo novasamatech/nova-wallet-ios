@@ -180,6 +180,12 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
                 self?.interactor.estimateFee()
             },
 
+            dataValidatingFactory.canSpendAmount(
+                balance: freeBalance,
+                spendingAmount: state.amountToBond,
+                locale: locale
+            ),
+
             dataValidatingFactory.canPayFee(
                 balance: transferableBalance,
                 fee: fee,
@@ -187,10 +193,11 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
                 locale: locale
             ),
 
-            dataValidatingFactory.canPayFeeAndAmount(
+            dataValidatingFactory.canPayFeeSpendingAmount(
                 balance: freeBalance,
                 fee: fee,
                 spendingAmount: state.amountToBond,
+                asset: assetInfo,
                 locale: locale
             ),
 

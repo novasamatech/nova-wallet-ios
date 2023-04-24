@@ -6,16 +6,16 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
     var view: (ControllerBackedProtocol & Localizable)? { get }
     var basePresentable: BaseErrorPresentable { get }
 
-    func canPayFeeAndAmount(
+    func canSpendAmount(
         balance: Decimal?,
-        fee: Decimal?,
         spendingAmount: Decimal?,
         locale: Locale
     ) -> DataValidating
 
-    func canPayFee(
+    func canPayFeeSpendingAmount(
         balance: Decimal?,
         fee: Decimal?,
+        spendingAmount: Decimal?,
         asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
@@ -31,9 +31,8 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
 }
 
 extension BaseDataValidatingFactoryProtocol {
-    func canPayFeeAndAmount(
+    func canSpendAmount(
         balance: Decimal?,
-        fee: Decimal?,
         spendingAmount: Decimal?,
         locale: Locale
     ) -> DataValidating {
@@ -45,10 +44,8 @@ extension BaseDataValidatingFactoryProtocol {
             self?.basePresentable.presentAmountTooHigh(from: view, locale: locale)
 
         }, preservesCondition: {
-            if let balance = balance,
-               let fee = fee,
-               let amount = spendingAmount {
-                return amount + fee <= balance
+            if let balance = balance, let amount = spendingAmount {
+                return amount <= balance
             } else {
                 return false
             }
@@ -81,6 +78,28 @@ extension BaseDataValidatingFactoryProtocol {
                 return false
             }
         })
+    }
+
+    func canPayFeeSpendingAmount(
+        balance: Decimal?,
+        fee: Decimal?,
+        spendingAmount: Decimal?,
+        asset: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> DataValidating {
+        let targetAmount = spendingAmount ?? 0
+
+        if let balance = balance {
+            let targetBalance = balance >= targetAmount ? balance - targetAmount : 0
+            return canPayFee(
+                balance: targetBalance,
+                fee: fee,
+                asset: asset,
+                locale: locale
+            )
+        } else {
+            return canPayFee(balance: nil, fee: fee, asset: asset, locale: locale)
+        }
     }
 
     func has(fee: Decimal?, locale: Locale, onError: (() -> Void)?) -> DataValidating {
@@ -128,19 +147,17 @@ extension BaseDataValidatingFactoryProtocol {
         })
     }
 
-    func canPayFeeAndAmountInPlank(
+    func canSpendAmountInPlank(
         balance: BigUInt?,
-        fee: BigUInt?,
         spendingAmount: Decimal?,
-        precision: Int16,
+        asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
+        let precision = asset.assetPrecision
         let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
-        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
 
-        return canPayFeeAndAmount(
+        return canSpendAmount(
             balance: balanceDecimal,
-            fee: feeDecimal,
             spendingAmount: spendingAmount,
             locale: locale
         )
@@ -159,6 +176,26 @@ extension BaseDataValidatingFactoryProtocol {
         return canPayFee(
             balance: balanceDecimal,
             fee: feeDecimal,
+            asset: asset,
+            locale: locale
+        )
+    }
+
+    func canPayFeeSpendingAmountInPlank(
+        balance: BigUInt?,
+        fee: BigUInt?,
+        spendingAmount: Decimal?,
+        asset: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> DataValidating {
+        let precision = asset.assetPrecision
+        let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
+        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
+
+        return canPayFeeSpendingAmount(
+            balance: balanceDecimal,
+            fee: feeDecimal,
+            spendingAmount: spendingAmount,
             asset: asset,
             locale: locale
         )
