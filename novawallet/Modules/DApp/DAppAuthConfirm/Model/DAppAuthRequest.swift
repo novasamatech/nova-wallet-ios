@@ -7,6 +7,10 @@ struct DAppAuthRequest {
     let origin: String?
     let dApp: String
     let dAppIcon: URL?
+
+    let requiredChains: Set<ChainModel>
+    let optionalChains: Set<ChainModel>?
+    let unknownChains: Set<String>?
 }
 
 struct DAppAuthResponse {
