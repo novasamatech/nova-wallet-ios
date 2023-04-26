@@ -50,7 +50,3 @@ extension ReferendumsFiltersPresenter: ReferendumsFiltersPresenterProtocol {
         provideViewModel()
     }
 }
-
-protocol ReferendumsFiltersDelegate: AnyObject {
-    func didUpdate(filter: ReferendumsFilter)
-}

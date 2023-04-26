@@ -1,4 +1,4 @@
-protocol ReferendumsFiltersViewProtocol: AnyObject {
+protocol ReferendumsFiltersViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: ReferendumsFilterViewModel)
 }
 
@@ -10,5 +10,5 @@ protocol ReferendumsFiltersPresenterProtocol: AnyObject {
 }
 
 protocol ReferendumsFiltersWireframeProtocol: AnyObject {
-    func close(_ view: ReferendumsViewProtocol?)
+    func close(_ view: ReferendumsFiltersViewProtocol?)
 }
