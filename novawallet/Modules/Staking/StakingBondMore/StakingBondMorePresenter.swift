@@ -89,6 +89,12 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
                 self?.interactor.estimateFee()
             }),
 
+            dataValidatingFactory.canSpendAmount(
+                balance: availableAmountToStake,
+                spendingAmount: amount,
+                locale: locale
+            ),
+
             dataValidatingFactory.canPayFee(
                 balance: transferableBalance,
                 fee: fee,
@@ -96,10 +102,11 @@ extension StakingBondMorePresenter: StakingBondMorePresenterProtocol {
                 locale: locale
             ),
 
-            dataValidatingFactory.canPayFeeAndAmount(
+            dataValidatingFactory.canPayFeeSpendingAmount(
                 balance: availableAmountToStake,
                 fee: fee,
                 spendingAmount: amount,
+                asset: assetInfo,
                 locale: locale
             ),
 

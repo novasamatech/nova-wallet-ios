@@ -266,10 +266,17 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
                 self?.refreshFee()
             }),
 
-            dataValidatingFactory.canPayFeeAndAmount(
+            dataValidatingFactory.canSpendAmount(
+                balance: balance,
+                spendingAmount: contributionDecimal,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.canPayFeeSpendingAmount(
                 balance: balance,
                 fee: fee,
                 spendingAmount: contributionDecimal,
+                asset: assetInfo,
                 locale: selectedLocale
             ),
 
