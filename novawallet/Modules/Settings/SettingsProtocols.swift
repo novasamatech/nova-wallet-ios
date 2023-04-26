@@ -24,19 +24,6 @@ protocol SettingsViewModelFactoryProtocol: AnyObject {
         isPinConfirmationOn: Bool,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])]
-
-    func createConfirmPinInfoAlert(
-        locale: Locale,
-        enableAction: @escaping () -> Void,
-        cancelAction: @escaping () -> Void
-    ) -> AlertPresentableViewModel
-
-    func askBiometryAlert(
-        biometrySettings: BiometrySettings?,
-        locale: Locale,
-        useAction: @escaping () -> Void,
-        skipAction: @escaping () -> Void
-    ) -> AlertPresentableViewModel?
 }
 
 protocol SettingsInteractorInputProtocol: AnyObject {
@@ -49,12 +36,13 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
     func didReceive(currencyCode: String)
-    func didReceiveSettings(biometrySettings: BiometrySettings, isPinConfirmationOn: Bool)
+    func didReceive(biometrySettings: BiometrySettings)
+    func didReceive(pinConfirmationEnabled: Bool)
     func didReceive(error: SettingsError)
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
-    EmailPresentable, WalletSwitchPresentable, ApplicationSettingsPresentable {
+    EmailPresentable, WalletSwitchPresentable, ApplicationSettingsPresentable, OperationAuthPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)

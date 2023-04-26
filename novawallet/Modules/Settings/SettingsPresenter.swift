@@ -95,23 +95,27 @@ final class SettingsPresenter {
     }
 
     private func enableBiometryUsage(completion: @escaping (Bool) -> Void) {
-        guard let alertModel = viewModelFactory.askBiometryAlert(
-            biometrySettings: biometrySettings,
-            locale: selectedLocale,
-            useAction: { completion(true) },
-            skipAction: { completion(false) }
-        ) else {
+        guard let biometrySettings = biometrySettings, let view = view else {
             completion(true)
             return
         }
 
-        wireframe.present(viewModel: alertModel, style: .alert, from: view)
+        wireframe.askBiometryUsage(
+            from: view,
+            biometrySettings: biometrySettings,
+            locale: selectedLocale,
+            useAction: { completion(true) },
+            skipAction: { completion(false) }
+        )
     }
 
     private func toggleConfirmationSettings(
         _ currentState: Bool,
         completion: @escaping (Bool) -> Void
     ) {
+        guard let view = view else {
+            return
+        }
         let newState = !currentState
         let disabling = currentState == true && newState == false
         let enabling = currentState == false && newState == true
@@ -121,15 +125,11 @@ final class SettingsPresenter {
                 authorized ? completion(newState) : completion(currentState)
             }
         } else if enabling {
-            let alertModel = viewModelFactory.createConfirmPinInfoAlert(
+            wireframe.presentConfirmPinHint(
+                from: view,
                 locale: selectedLocale,
                 enableAction: { completion(newState) },
                 cancelAction: { completion(currentState) }
-            )
-            wireframe.present(
-                viewModel: alertModel,
-                style: .alert,
-                from: view
             )
         }
     }
@@ -218,9 +218,15 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
         }
     }
 
-    func didReceiveSettings(biometrySettings: BiometrySettings, isPinConfirmationOn: Bool) {
+    func didReceive(biometrySettings: BiometrySettings) {
         self.biometrySettings = biometrySettings
-        self.isPinConfirmationOn = isPinConfirmationOn
+        if view?.isSetup == true {
+            updateView()
+        }
+    }
+
+    func didReceive(pinConfirmationEnabled: Bool) {
+        isPinConfirmationOn = pinConfirmationEnabled
 
         if view?.isSetup == true {
             updateView()
