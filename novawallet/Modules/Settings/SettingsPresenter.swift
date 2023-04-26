@@ -9,6 +9,8 @@ final class SettingsPresenter {
     let wireframe: SettingsWireframeProtocol
     let logger: LoggerProtocol?
     private var currency: String?
+    private var isPinConfirmationOn: Bool = false
+    private var biometrySettings: BiometrySettings?
 
     private var wallet: MetaAccountModel?
 
@@ -34,6 +36,8 @@ final class SettingsPresenter {
         let sectionViewModels = viewModelFactory.createSectionViewModels(
             language: localizationManager?.selectedLanguage,
             currency: currency,
+            isBiometricAuthOn: biometrySettings?.isEnabled,
+            isPinConfirmationOn: isPinConfirmationOn,
             locale: locale
         )
         view?.reload(sections: sectionViewModels)
@@ -75,6 +79,60 @@ final class SettingsPresenter {
             )
         }
     }
+
+    private func toggleBiometryUsage() {
+        guard let biometrySettings = biometrySettings else {
+            return
+        }
+
+        if biometrySettings.isEnabled == true {
+            interactor.updateBiometricAuthSettings(isOn: false)
+        } else {
+            enableBiometryUsage { [weak self] in
+                self?.interactor.updateBiometricAuthSettings(isOn: $0)
+            }
+        }
+    }
+
+    private func enableBiometryUsage(completion: @escaping (Bool) -> Void) {
+        guard let biometrySettings = biometrySettings, let view = view else {
+            completion(true)
+            return
+        }
+
+        wireframe.askBiometryUsage(
+            from: view,
+            biometrySettings: biometrySettings,
+            locale: selectedLocale,
+            useAction: { completion(true) },
+            skipAction: { completion(false) }
+        )
+    }
+
+    private func toggleConfirmationSettings(
+        _ currentState: Bool,
+        completion: @escaping (Bool) -> Void
+    ) {
+        guard let view = view else {
+            return
+        }
+        let newState = !currentState
+        let disabling = currentState == true && newState == false
+        let enabling = currentState == false && newState == true
+
+        if disabling {
+            wireframe.showPincode { authorized in
+                authorized ? completion(newState) : completion(currentState)
+            }
+        } else if enabling {
+            wireframe.presentConfirmPinHint(
+                from: view,
+                locale: selectedLocale,
+                enableAction: { completion(newState) },
+                cancelAction: { completion(currentState) }
+            )
+        }
+    }
 }
 
 extension SettingsPresenter: SettingsPresenterProtocol {
@@ -97,6 +155,12 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showCurrencies(from: view)
         case .language:
             wireframe.showLanguageSelection(from: view)
+        case .biometricAuth:
+            toggleBiometryUsage()
+        case .approveWithPin:
+            toggleConfirmationSettings(isPinConfirmationOn) { [weak self] newState in
+                self?.interactor.updatePinConfirmationSettings(isOn: newState)
+            }
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:
@@ -151,6 +215,46 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
         if view?.isSetup == true {
             updateView()
+        }
+    }
+
+    func didReceive(biometrySettings: BiometrySettings) {
+        self.biometrySettings = biometrySettings
+        if view?.isSetup == true {
+            updateView()
+        }
+    }
+
+    func didReceive(pinConfirmationEnabled: Bool) {
+        isPinConfirmationOn = pinConfirmationEnabled
+
+        if view?.isSetup == true {
+            updateView()
+        }
+    }
+
+    func didReceive(error: SettingsError) {
+        guard let biometrySettings = biometrySettings else {
+            return
+        }
+        switch error {
+        case .biometryAuthAndSystemSettingsOutOfSync:
+            let biometryTypeName = biometrySettings.name
+            let title = R.string.localizable.settingsErrorBiometryDisabledInSettingsTitle(
+                biometryTypeName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let message = R.string.localizable.settingsErrorBiometryDisabledInSettingsMessage(
+                biometryTypeName,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            wireframe.askOpenApplicationSettings(
+                with: message,
+                title: title,
+                from: view,
+                locale: selectedLocale
+            )
         }
     }
 }
