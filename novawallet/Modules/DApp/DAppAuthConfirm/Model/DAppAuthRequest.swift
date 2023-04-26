@@ -15,4 +15,6 @@ struct DAppAuthRequest {
 
 struct DAppAuthResponse {
     let approved: Bool
+
+    let wallet: MetaAccountModel
 }
