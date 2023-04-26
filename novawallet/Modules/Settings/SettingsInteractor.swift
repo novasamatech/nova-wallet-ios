@@ -49,10 +49,8 @@ final class SettingsInteractor {
         let pinConfirmationEnabled = settingsManager.pinConfirmationEnabled ?? false
 
         DispatchQueue.main.async {
-            self.presenter?.didReceiveSettings(
-                biometrySettings: biometrySettings,
-                isPinConfirmationOn: pinConfirmationEnabled
-            )
+            self.presenter?.didReceive(biometrySettings: biometrySettings)
+            self.presenter?.didReceive(pinConfirmationEnabled: pinConfirmationEnabled)
         }
     }
 }
