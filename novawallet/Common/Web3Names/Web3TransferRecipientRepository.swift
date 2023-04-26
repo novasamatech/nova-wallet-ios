@@ -32,7 +32,7 @@ final class KiltTransferAssetRecipientRepository: BaseFetchOperationFactory {
             if let hash = hash {
                 let isValid = self.integrityVerifier.verify(
                     serviceEndpointId: hash,
-                    serviceEndpointContent: content.trimmingCharacters(in: .whitespacesAndNewlines)
+                    serviceEndpointContent: content
                 )
 
                 guard isValid else {
