@@ -1030,6 +1030,10 @@
 "governance.referendums.status.approved" = "Approved";
 "governance.referendums.your.vote" = "Your vote: %@ votes";
 "governance.referendums.threshold" = "Threshold: %@ of %@";
+"governance.referendums.filter.all" = "All referenda";
+"governance.referendums.filter.voted" = "Voted";
+"governance.referendums.filter.not.voted" = "Not voted";
+"governance.referendums.filter.title" = "Filters";
 "gov.referendum.title.fallback" = "Referendum %@";
 "tabbar.governance.title" = "Governance";
 "governance.to.pass.format" = "To pass: %@";

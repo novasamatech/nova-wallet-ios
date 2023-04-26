@@ -1030,6 +1030,10 @@
 "governance.referendums.status.approved" = "Одобрен";
 "governance.referendums.your.vote" = "Ваш голос: %@ голосов";
 "governance.referendums.threshold" = "Порог: %@ из %@";
+"governance.referendums.filter.all" = "Все референдумы";
+"governance.referendums.filter.voted" = "Проголосованные";
+"governance.referendums.filter.not.voted" = "Не проголосованные";
+"governance.referendums.filter.title" = "Фильтры";
 "gov.referendum.title.fallback" = "Референдум %@";
 "tabbar.governance.title" = "Демократия";
 "governance.to.pass.format" = "Для принятия: %@";
