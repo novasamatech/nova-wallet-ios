@@ -15,7 +15,7 @@ protocol AccountRepositoryFactoryProtocol {
 
     func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>
 
-    func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings>
+    func createAuthorizedDAppsRepository(for metaId: String?) -> AnyDataProviderRepository<DAppSettings>
 
     func createDAppsGlobalSettingsRepository() -> AnyDataProviderRepository<DAppGlobalSettings>
 }
@@ -85,9 +85,10 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
         return AnyDataProviderRepository(repository)
     }
 
-    func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings> {
+    func createAuthorizedDAppsRepository(for metaId: String?) -> AnyDataProviderRepository<DAppSettings> {
         let mapper = DAppSettingsMapper()
-        let filter = NSPredicate.filterAuthorizedDApps(by: metaId)
+
+        let filter = metaId.map { NSPredicate.filterAuthorizedDApps(by: $0) }
         let repository = storageFacade.createRepository(
             filter: filter,
             sortDescriptors: [],
