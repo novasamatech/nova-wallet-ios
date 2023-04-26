@@ -63,69 +63,6 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         ]
     }
 
-    func createConfirmPinInfoAlert(
-        locale: Locale,
-        enableAction: @escaping () -> Void,
-        cancelAction: @escaping () -> Void
-    ) -> AlertPresentableViewModel {
-        let title = R.string.localizable.settingsApproveWithPinAlertTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.settingsApproveWithPinAlertMessage(preferredLanguages: locale.rLanguages)
-        let enableButtonTitle = R.string.localizable.settingsApproveWithPinAlertEnableButtonTitle(
-            preferredLanguages: locale.rLanguages)
-        return AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [
-                .init(
-                    title: enableButtonTitle,
-                    handler: enableAction
-                ),
-                .init(
-                    title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
-                    style: .cancel,
-                    handler: cancelAction
-                )
-            ],
-            closeAction: nil
-        )
-    }
-
-    func askBiometryAlert(
-        biometrySettings: BiometrySettings?,
-        locale: Locale,
-        useAction: @escaping () -> Void,
-        skipAction: @escaping () -> Void
-    ) -> AlertPresentableViewModel? {
-        guard let biometryTypeName = biometrySettings?.name else {
-            return nil
-        }
-
-        let languages = locale.rLanguages
-        let title = R.string.localizable.settingsBiometryAuthAlertTitle(
-            biometryTypeName,
-            preferredLanguages: languages
-        )
-        let message = R.string.localizable.settingsBiometryAuthAlertMessage(
-            biometryTypeName,
-            preferredLanguages: languages
-        )
-        return AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [
-                .init(
-                    title: R.string.localizable.commonOk(preferredLanguages: languages),
-                    handler: useAction
-                ),
-                .init(
-                    title: R.string.localizable.settingsBiometryAuthAlertDisableButton(preferredLanguages: languages),
-                    style: .cancel,
-                    handler: skipAction
-                )
-            ], closeAction: nil
-        )
-    }
-
     private func createCommonViewViewModel(
         row: SettingsRow,
         locale: Locale
