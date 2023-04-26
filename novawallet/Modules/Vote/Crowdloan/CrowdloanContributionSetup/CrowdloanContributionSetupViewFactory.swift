@@ -16,7 +16,10 @@ struct CrowdloanContributionSetupViewFactory {
             return nil
         }
 
-        let wireframe = CrowdloanContributionSetupWireframe(state: state)
+        let wireframe = CrowdloanContributionSetupWireframe(
+            state: state,
+            settingsManager: SettingsManager.shared
+        )
 
         let assetInfo = asset.displayInfo(with: chain.icon)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

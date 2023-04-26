@@ -15,6 +15,7 @@ enum SettingsKey: String {
     case governanceDelegateInfoSeen
     case skippedUpdateVersion
     case skippedAddDelegationTracksHint
+    case pinConfirmationEnabled
 }
 
 extension SettingsManagerProtocol {
@@ -28,6 +29,20 @@ extension SettingsManagerProtocol {
                 set(value: existingValue, for: SettingsKey.biometryEnabled.rawValue)
             } else {
                 removeValue(for: SettingsKey.biometryEnabled.rawValue)
+            }
+        }
+    }
+
+    var pinConfirmationEnabled: Bool? {
+        get {
+            bool(for: SettingsKey.pinConfirmationEnabled.rawValue)
+        }
+
+        set {
+            if let existingValue = newValue {
+                set(value: existingValue, for: SettingsKey.pinConfirmationEnabled.rawValue)
+            } else {
+                removeValue(for: SettingsKey.pinConfirmationEnabled.rawValue)
             }
         }
     }

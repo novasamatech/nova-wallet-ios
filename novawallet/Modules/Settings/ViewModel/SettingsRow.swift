@@ -5,6 +5,8 @@ enum SettingsRow {
     case wallets
     case currency
     case language
+    case biometricAuth
+    case approveWithPin
     case changePin
     case telegram
     case youtube
@@ -27,6 +29,10 @@ extension SettingsRow {
             return R.string.localizable.profileCurrencyTitle(preferredLanguages: locale.rLanguages)
         case .language:
             return R.string.localizable.profileLanguageTitle(preferredLanguages: locale.rLanguages)
+        case .biometricAuth:
+            return R.string.localizable.settingsBiometricAuth(preferredLanguages: locale.rLanguages)
+        case .approveWithPin:
+            return R.string.localizable.settingsApproveWithPin(preferredLanguages: locale.rLanguages)
         case .changePin:
             return R.string.localizable.profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
         case .telegram:
@@ -58,6 +64,10 @@ extension SettingsRow {
             return R.image.iconCurrency()
         case .language:
             return R.image.iconLanguage()
+        case .biometricAuth:
+            return R.image.iconBiometricAuth()
+        case .approveWithPin:
+            return R.image.iconApproveWithPin()
         case .changePin:
             return R.image.iconPinCode()
         case .telegram:

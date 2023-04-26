@@ -2076,6 +2076,20 @@ import UIKit.UIImage
         
     }
     
+    
+    
+     var supportedBiometryType: AvailableBiometryType {
+        get {
+            return cuckoo_manager.getter("supportedBiometryType",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.supportedBiometryType)
+        }
+        
+    }
+    
 
     
 
@@ -2109,6 +2123,11 @@ import UIKit.UIImage
 	    }
 	    
 	    
+	    var supportedBiometryType: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockBiometryAuthProtocol, AvailableBiometryType> {
+	        return .init(manager: cuckoo_manager, name: "supportedBiometryType")
+	    }
+	    
+	    
 	    func authenticate<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(localizedReason: M1, completionQueue: M2, completionBlock: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(String, DispatchQueue, (Bool) -> Void)> where M1.MatchedType == String, M2.MatchedType == DispatchQueue, M3.MatchedType == (Bool) -> Void {
 	        let matchers: [Cuckoo.ParameterMatcher<(String, DispatchQueue, (Bool) -> Void)>] = [wrap(matchable: localizedReason) { $0.0 }, wrap(matchable: completionQueue) { $0.1 }, wrap(matchable: completionBlock) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockBiometryAuthProtocol.self, method: "authenticate(localizedReason: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void)", parameterMatchers: matchers))
@@ -2133,6 +2152,11 @@ import UIKit.UIImage
 	        return .init(manager: cuckoo_manager, name: "availableBiometryType", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
+	    
+	    var supportedBiometryType: Cuckoo.VerifyReadOnlyProperty<AvailableBiometryType> {
+	        return .init(manager: cuckoo_manager, name: "supportedBiometryType", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
 	
 	    
 	    @discardableResult
@@ -2149,6 +2173,15 @@ import UIKit.UIImage
     
     
      var availableBiometryType: AvailableBiometryType {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (AvailableBiometryType).self)
+        }
+        
+    }
+        
+    
+    
+     var supportedBiometryType: AvailableBiometryType {
         get {
             return DefaultValueRegistry.defaultValue(for: (AvailableBiometryType).self)
         }
@@ -2202,6 +2235,20 @@ import UIKit.UIImage
         
     }
     
+    
+    
+     override var supportedBiometryType: AvailableBiometryType {
+        get {
+            return cuckoo_manager.getter("supportedBiometryType",
+                superclassCall:
+                    
+                    super.supportedBiometryType
+                    ,
+                defaultCall: __defaultImplStub!.supportedBiometryType)
+        }
+        
+    }
+    
 
     
 
@@ -2235,6 +2282,11 @@ import UIKit.UIImage
 	    }
 	    
 	    
+	    var supportedBiometryType: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockBiometryAuth, AvailableBiometryType> {
+	        return .init(manager: cuckoo_manager, name: "supportedBiometryType")
+	    }
+	    
+	    
 	    func authenticate<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(localizedReason: M1, completionQueue: M2, completionBlock: M3) -> Cuckoo.ClassStubNoReturnFunction<(String, DispatchQueue, (Bool) -> Void)> where M1.MatchedType == String, M2.MatchedType == DispatchQueue, M3.MatchedType == (Bool) -> Void {
 	        let matchers: [Cuckoo.ParameterMatcher<(String, DispatchQueue, (Bool) -> Void)>] = [wrap(matchable: localizedReason) { $0.0 }, wrap(matchable: completionQueue) { $0.1 }, wrap(matchable: completionBlock) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockBiometryAuth.self, method: "authenticate(localizedReason: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void)", parameterMatchers: matchers))
@@ -2259,6 +2311,11 @@ import UIKit.UIImage
 	        return .init(manager: cuckoo_manager, name: "availableBiometryType", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
+	    
+	    var supportedBiometryType: Cuckoo.VerifyReadOnlyProperty<AvailableBiometryType> {
+	        return .init(manager: cuckoo_manager, name: "supportedBiometryType", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
 	
 	    
 	    @discardableResult
@@ -2275,6 +2332,15 @@ import UIKit.UIImage
     
     
      override var availableBiometryType: AvailableBiometryType {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (AvailableBiometryType).self)
+        }
+        
+    }
+        
+    
+    
+     override var supportedBiometryType: AvailableBiometryType {
         get {
             return DefaultValueRegistry.defaultValue(for: (AvailableBiometryType).self)
         }
