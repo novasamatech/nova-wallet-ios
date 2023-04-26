@@ -42,6 +42,6 @@ extension WalletConnectInteractor: WalletConnectServiceDelegate {
     }
 
     func walletConnect(service _: WalletConnectServiceProtocol, error: WalletConnectServiceError) {
-        logger.debug("Error: \(error)")
+        logger.error("Error: \(error)")
     }
 }
