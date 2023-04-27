@@ -9,7 +9,8 @@ protocol WalletConnectStateMachineProtocol: AnyObject {
         type: DAppSigningType,
         nextState: WalletConnectStateProtocol
     )
-    func emit(error: Error, nextState: WalletConnectStateProtocol)
+    func emit(proposalDecision: WalletConnectProposalDecision, nextState: WalletConnectStateProtocol)
+    func emit(error: WalletConnectStateError, nextState: WalletConnectStateProtocol)
 }
 
 protocol WalletConnectStateProtocol: AnyObject {
@@ -17,7 +18,8 @@ protocol WalletConnectStateProtocol: AnyObject {
 
     func canHandleMessage() -> Bool
 
-    func handle(message: WalletConnectStateMessage, dataSource: DAppBrowserStateDataSource)
-    func handleOperation(response: DAppOperationResponse, dataSource: DAppBrowserStateDataSource)
-    func handleAuth(response: DAppAuthResponse, dataSource: DAppBrowserStateDataSource)
+    func handle(message: WalletConnectTransportMessage, dataSource: DAppStateDataSource)
+    func handleOperation(response: DAppOperationResponse, dataSource: DAppStateDataSource)
+    func handleAuth(response: DAppAuthResponse, dataSource: DAppStateDataSource)
+    func proceed(with dataSource: DAppStateDataSource)
 }

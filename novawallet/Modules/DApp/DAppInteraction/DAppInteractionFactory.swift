@@ -1,7 +1,7 @@
 import Foundation
 
 final class DAppInteractionFactory {
-    func createMediator() -> DAppInteractionMediating {
+    static func createMediator() -> DAppInteractionMediating {
         let logger = Logger.shared
 
         let presenter = DAppInteractionPresenter(logger: logger)
