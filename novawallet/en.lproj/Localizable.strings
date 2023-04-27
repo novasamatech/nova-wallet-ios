@@ -1034,6 +1034,7 @@
 "governance.referendums.filter.voted" = "Voted";
 "governance.referendums.filter.not.voted" = "Not voted";
 "governance.referendums.filter.title" = "Filters";
+"governance.referendums.filter.header" = "Show:";
 "governance.referendums.settings.title" = "Referenda";
 "gov.referendum.title.fallback" = "Referendum %@";
 "tabbar.governance.title" = "Governance";

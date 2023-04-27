@@ -5,6 +5,7 @@ final class ReferendumsFiltersViewController: UIViewController, ViewHolder {
     typealias RootViewType = ReferendumsFiltersViewLayout
 
     let presenter: ReferendumsFiltersPresenterProtocol
+    private var viewModel: ReferendumsFilterViewModel?
 
     init(
         presenter: ReferendumsFiltersPresenterProtocol,
@@ -54,7 +55,7 @@ final class ReferendumsFiltersViewController: UIViewController, ViewHolder {
 
     private func setupResetButton() {
         let resetButton = UIBarButtonItem(
-            title: "",
+            title: R.string.localizable.commonReset(preferredLanguages: selectedLocale.rLanguages),
             style: .plain,
             target: self,
             action: #selector(didTapResetButton)
@@ -95,8 +96,6 @@ final class ReferendumsFiltersViewController: UIViewController, ViewHolder {
     func didTapResetButton() {
         presenter.resetFilter()
     }
-
-    private var viewModel: ReferendumsFilterViewModel?
 }
 
 extension ReferendumsFiltersViewController: ReferendumsFiltersViewProtocol {
@@ -114,26 +113,14 @@ extension ReferendumsFiltersViewController: ReferendumsFiltersViewProtocol {
 extension ReferendumsFiltersViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: ListFilterCell = tableView.dequeueReusableCell(for: indexPath)
-
-        switch ReferendumsFilter(rawValue: indexPath.row) {
-        case .notVoted:
-            cell.bind(viewModel: .init(
-                underlyingViewModel: "",
-                selectable: viewModel?.selectedFilter == .notVoted
-            ))
-        case .voted:
-            cell.bind(viewModel: .init(
-                underlyingViewModel: "",
-                selectable: viewModel?.selectedFilter == .voted
-            ))
-        case .all:
-            cell.bind(viewModel: .init(
-                underlyingViewModel: "",
-                selectable: viewModel?.selectedFilter == .all
-            ))
-        case .none:
-            break
+        guard let selectedFilter = ReferendumsFilter(rawValue: indexPath.row) else {
+            return cell
         }
+
+        cell.bind(viewModel: .init(
+            underlyingViewModel: selectedFilter.name.value(for: selectedLocale),
+            selectable: viewModel?.selectedFilter == selectedFilter
+        ))
 
         return cell
     }
@@ -146,7 +133,7 @@ extension ReferendumsFiltersViewController: UITableViewDataSource {
 extension ReferendumsFiltersViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
         let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let header = viewModel?.header ?? ""
+        let header = R.string.localizable.governanceReferendumsFilterHeader(preferredLanguages: selectedLocale.rLanguages)
         view.bind(title: header, icon: nil)
         view.contentInsets = UIEdgeInsets(top: 24, left: 0, bottom: 8, right: 0)
         return view
@@ -172,7 +159,7 @@ extension ReferendumsFiltersViewController: Localizable {
         }
 
         title = R.string.localizable
-            .walletFiltersTitle(preferredLanguages: selectedLocale.rLanguages)
+            .governanceReferendumsFilterTitle(preferredLanguages: selectedLocale.rLanguages)
 
         navigationItem.rightBarButtonItem?.title = R.string.localizable
             .commonReset(preferredLanguages: selectedLocale.rLanguages)

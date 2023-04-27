@@ -102,6 +102,7 @@ extension ReferendumsViewManager: UITableViewDataSource {
         settingsCell.bind(title: title, isFilterOn: isFilterOn)
         settingsCell.filterButton.addTarget(self, action: #selector(filterAction), for: .touchUpInside)
         settingsCell.searchButton.addTarget(self, action: #selector(searchAction), for: .touchUpInside)
+        settingsCell.selectionStyle = .none
         return settingsCell
     }
 
@@ -154,7 +155,6 @@ extension ReferendumsViewManager: UITableViewDelegate {
                 presenter?.selectDelegations()
             }
         case .settings:
-            // TODO:
             break
         case let .active(_, cells), let .completed(_, cells):
             guard let referendumIndex = cells[safe: indexPath.row]?.referendumIndex else {
