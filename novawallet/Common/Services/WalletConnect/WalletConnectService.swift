@@ -14,11 +14,14 @@ protocol WalletConnectServiceProtocol: ApplicationServiceProtocol, AnyObject {
     var delegate: WalletConnectServiceDelegate? { get set }
 
     func connect(uri: String)
+
+    func submit(proposalDecision: WalletConnectProposalDecision)
 }
 
 enum WalletConnectServiceError: Error {
     case setupNeeded
     case connectFailed(uri: String, internalError: Error)
+    case proposalFailed(decision: WalletConnectProposalDecision, internalError: Error)
 }
 
 final class WalletConnectService {
@@ -165,6 +168,27 @@ extension WalletConnectService: WalletConnectServiceProtocol {
             } catch {
                 self?.logger.error("Pairing failed \(uri): \(error)")
                 self?.notify(error: .connectFailed(uri: uri, internalError: error))
+            }
+        }
+    }
+
+    func submit(proposalDecision: WalletConnectProposalDecision) {
+        guard let client = client else {
+            notify(error: .setupNeeded)
+            return
+        }
+
+        Task { [weak self] in
+            do {
+                switch proposalDecision {
+                case let .approve(proposal, namespaces):
+                    try await client.approve(proposalId: proposal.id, namespaces: namespaces)
+                case let .reject(proposal):
+                    try await client.reject(proposalId: proposal.id, reason: .userRejected)
+                }
+            } catch {
+                self?.logger.error("Decision submission failed: \(error)")
+                self?.notify(error: .proposalFailed(decision: proposalDecision, internalError: error))
             }
         }
     }

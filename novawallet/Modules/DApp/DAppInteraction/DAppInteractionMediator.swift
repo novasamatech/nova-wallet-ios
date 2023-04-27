@@ -3,7 +3,7 @@ import RobinHood
 
 final class DAppInteractionMediator {
     struct QueueMessage {
-        let host: String
+        let host: String?
         let transportName: String
         let underliningMessage: Any
     }
@@ -64,7 +64,12 @@ final class DAppInteractionMediator {
         }
     }
 
-    private func verifyPhishing(for host: String, completion: ((Bool) -> Void)?) {
+    private func verifyPhishing(for host: String?, completion: ((Bool) -> Void)?) {
+        guard let host = host else {
+            completion?(true)
+            return
+        }
+
         sequentialPhishingVerifier.verify(host: host) { [weak self] result in
             switch result {
             case let .success(isNotPhishing):
@@ -82,30 +87,22 @@ final class DAppInteractionMediator {
 
 extension DAppInteractionMediator: DAppInteractionMediating {
     func register(transport: DAppTransportProtocol) {
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            guard let self = self else {
-                return
-            }
-
-            guard !self.transports.contains(where: { $0 !== transport }) else {
-                return
-            }
-
-            self.transports.append(transport)
+        guard !transports.contains(where: { $0 !== transport }) else {
+            return
         }
+
+        transports.append(transport)
+
+        transport.start()
     }
 
     func unregister(transport: DAppTransportProtocol) {
-        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            guard let self = self else {
-                return
-            }
+        transports = transports.filter { $0 !== transport }
 
-            self.transports = self.transports.filter { $0 !== transport }
-        }
+        transport.stop()
     }
 
-    func process(message: Any, host: String, transport name: String) {
+    func process(message: Any, host: String?, transport name: String) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
             self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
 
@@ -157,7 +154,7 @@ extension DAppInteractionMediator: ChainsStoreDelegate {
     }
 }
 
-extension DAppInteractionMediator: ApplicationServiceProtocol {
+extension DAppInteractionMediator {
     func setup() {
         chainsStore.delegate = self
         chainsStore.setup()

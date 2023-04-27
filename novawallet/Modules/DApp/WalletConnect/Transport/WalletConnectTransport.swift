@@ -1,18 +1,56 @@
 import Foundation
+import WalletConnectSwiftV2
+
+protocol WalletConnectTransportProtocol: DAppTransportProtocol {
+    var delegate: WalletConnectTransportDelegate? { get set }
+
+    func connect(uri: String)
+}
+
+protocol WalletConnectTransportDelegate: AnyObject {
+    func walletConnect(
+        transport: WalletConnectTransportProtocol,
+        didReceive message: WalletConnectTransportMessage
+    )
+
+    func walletConnect(transport: WalletConnectTransportProtocol, authorize request: DAppAuthRequest)
+
+    func walletConnect(
+        transport: WalletConnectTransportProtocol,
+        sign request: DAppOperationRequest,
+        type: DAppSigningType
+    )
+
+    func walletConnect(transport: WalletConnectTransportProtocol, didFail error: WalletConnectTransportError)
+}
 
 final class WalletConnectTransport {
     let service: WalletConnectServiceProtocol
     let dataSource: DAppStateDataSource
+    let logger: LoggerProtocol
+
+    weak var delegate: WalletConnectTransportDelegate?
 
     private var state: WalletConnectStateProtocol?
 
-    init(service: WalletConnectServiceProtocol, dataSource: DAppStateDataSource) {
+    init(
+        service: WalletConnectServiceProtocol,
+        dataSource: DAppStateDataSource,
+        logger: LoggerProtocol
+    ) {
         self.service = service
         self.dataSource = dataSource
+        self.logger = logger
     }
 }
 
-extension WalletConnectTransport: DAppTransportProtocol {
+extension WalletConnectTransport: WalletConnectTransportProtocol {
+    func connect(uri: String) {
+        service.connect(uri: uri)
+    }
+}
+
+extension WalletConnectTransport {
     var name: String { DAppTransports.walletConnect }
 
     func isIdle() -> Bool {
@@ -20,11 +58,12 @@ extension WalletConnectTransport: DAppTransportProtocol {
     }
 
     func bringPhishingDetectedStateIfNeeded() -> Bool {
-
+        // TODO: Handle phishing transition
+        true
     }
 
-    func process(message: Any, host: String) {
-        guard let message = message as? WalletConnectStateMessage else {
+    func process(message: Any, host _: String?) {
+        guard let message = message as? WalletConnectTransportMessage else {
             return
         }
 
@@ -40,6 +79,83 @@ extension WalletConnectTransport: DAppTransportProtocol {
     }
 
     func processChainsChanges() {
+        state?.proceed(with: dataSource)
+    }
 
+    func start() {
+        service.delegate = self
+        service.setup()
+    }
+
+    func stop() {
+        service.throttle()
+    }
+}
+
+extension WalletConnectTransport: WalletConnectStateMachineProtocol {
+    func emit(nextState: WalletConnectStateProtocol) {
+        state = nextState
+
+        nextState.proceed(with: dataSource)
+    }
+
+    func emit(authRequest: DAppAuthRequest, nextState: WalletConnectStateProtocol) {
+        state = nextState
+
+        delegate?.walletConnect(transport: self, authorize: authRequest)
+
+        nextState.proceed(with: dataSource)
+    }
+
+    func emit(
+        signingRequest: DAppOperationRequest,
+        type: DAppSigningType,
+        nextState: WalletConnectStateProtocol
+    ) {
+        state = nextState
+
+        delegate?.walletConnect(transport: self, sign: signingRequest, type: type)
+
+        nextState.proceed(with: dataSource)
+    }
+
+    func emit(proposalDecision: WalletConnectProposalDecision, nextState: WalletConnectStateProtocol) {
+        state = nextState
+
+        service.submit(proposalDecision: proposalDecision)
+
+        nextState.proceed(with: dataSource)
+    }
+
+    func emit(error: WalletConnectStateError, nextState: WalletConnectStateProtocol) {
+        state = nextState
+
+        delegate?.walletConnect(transport: self, didFail: .stateFailed(error))
+
+        nextState.proceed(with: dataSource)
+    }
+}
+
+extension WalletConnectTransport: WalletConnectServiceDelegate {
+    func walletConnect(service _: WalletConnectServiceProtocol, proposal: Session.Proposal) {
+        logger.debug("Proposal: \(proposal)")
+
+        delegate?.walletConnect(transport: self, didReceive: .proposal(proposal))
+    }
+
+    func walletConnect(service _: WalletConnectServiceProtocol, establishedSession: Session) {
+        logger.debug("New session: \(establishedSession)")
+    }
+
+    func walletConnect(service _: WalletConnectServiceProtocol, request: Request) {
+        logger.debug("New session: \(request)")
+
+        delegate?.walletConnect(transport: self, didReceive: .request(request))
+    }
+
+    func walletConnect(service _: WalletConnectServiceProtocol, error: WalletConnectServiceError) {
+        logger.error("Error: \(error)")
+
+        delegate?.walletConnect(transport: self, didFail: .serviceFailed(error))
     }
 }
