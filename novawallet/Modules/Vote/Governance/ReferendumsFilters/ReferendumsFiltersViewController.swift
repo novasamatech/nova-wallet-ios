@@ -36,8 +36,6 @@ final class ReferendumsFiltersViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    // MARK: - Private functions
-
     private func setupTableView() {
         rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
         rootView.tableView.registerClassForCell(SelectableFilterCell.self)
@@ -88,12 +86,12 @@ final class ReferendumsFiltersViewController: UIViewController, ViewHolder {
     }
 
     @objc
-    func didTapApplyButton() {
+    private func didTapApplyButton() {
         presenter.applyFilter()
     }
 
     @objc
-    func didTapResetButton() {
+    private func didTapResetButton() {
         presenter.resetFilter()
     }
 }
