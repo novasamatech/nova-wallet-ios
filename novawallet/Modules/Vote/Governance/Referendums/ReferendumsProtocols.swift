@@ -13,6 +13,8 @@ protocol ReferendumsPresenterProtocol: AnyObject {
     func select(referendumIndex: UInt)
     func selectUnlocks()
     func selectDelegations()
+    func showFilters()
+    func showSearch()
 }
 
 protocol ReferendumsInteractorInputProtocol: AnyObject {
@@ -56,4 +58,9 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
 
     func showAddDelegation(from view: ControllerBackedProtocol?)
     func showYourDelegations(from view: ControllerBackedProtocol?)
+    func showFilters(
+        from view: ControllerBackedProtocol?,
+        delegate: ReferendumsFiltersDelegate,
+        filter: ReferendumsFilter
+    )
 }
