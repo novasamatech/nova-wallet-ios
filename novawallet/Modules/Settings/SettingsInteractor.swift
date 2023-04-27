@@ -10,15 +10,21 @@ final class SettingsInteractor {
     weak var presenter: SettingsInteractorOutputProtocol?
 
     let selectedWalletSettings: SelectedWalletSettings
+    let settingsManager: SettingsManagerProtocol
     let eventCenter: EventCenterProtocol
+    let biometryAuth: BiometryAuthProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
-        currencyManager: CurrencyManagerProtocol
+        currencyManager: CurrencyManagerProtocol,
+        settingsManager: SettingsManagerProtocol,
+        biometryAuth: BiometryAuthProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
+        self.settingsManager = settingsManager
+        self.biometryAuth = biometryAuth
         self.currencyManager = currencyManager
     }
 
@@ -31,6 +37,21 @@ final class SettingsInteractor {
         } catch {
             presenter?.didReceiveUserDataProvider(error: error)
         }
+
+        provideSecuritySettings()
+    }
+
+    private func provideSecuritySettings() {
+        let biometrySettings: BiometrySettings = .create(
+            from: biometryAuth.supportedBiometryType,
+            settingsManager: settingsManager
+        )
+        let pinConfirmationEnabled = settingsManager.pinConfirmationEnabled ?? false
+
+        DispatchQueue.main.async {
+            self.presenter?.didReceive(biometrySettings: biometrySettings)
+            self.presenter?.didReceive(pinConfirmationEnabled: pinConfirmationEnabled)
+        }
     }
 }
 
@@ -39,6 +60,22 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         eventCenter.add(observer: self, dispatchIn: .main)
         provideUserSettings()
         applyCurrency()
+    }
+
+    func updateBiometricAuthSettings(isOn: Bool) {
+        if isOn,
+           biometryAuth.availableBiometryType == .none,
+           biometryAuth.supportedBiometryType != .none {
+            presenter?.didReceive(error: .biometryAuthAndSystemSettingsOutOfSync)
+        }
+
+        settingsManager.biometryEnabled = isOn
+        provideSecuritySettings()
+    }
+
+    func updatePinConfirmationSettings(isOn: Bool) {
+        settingsManager.pinConfirmationEnabled = isOn
+        provideSecuritySettings()
     }
 }
 
