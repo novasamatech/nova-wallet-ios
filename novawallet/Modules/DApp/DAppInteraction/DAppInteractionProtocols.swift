@@ -6,13 +6,16 @@ protocol DAppTransportProtocol: AnyObject {
 
     func isIdle() -> Bool
     func bringPhishingDetectedStateIfNeeded() -> Bool
-    func process(message: Any, host: String)
+    func process(message: Any, host: String?)
     func processConfirmation(response: DAppOperationResponse)
     func processAuth(response: DAppAuthResponse)
     func processChainsChanges()
+
+    func start()
+    func stop()
 }
 
-protocol DAppInteractionMediating {
+protocol DAppInteractionMediating: ApplicationServiceProtocol {
     var chainsStore: ChainsStoreProtocol { get }
     var settingsRepository: AnyDataProviderRepository<DAppSettings> { get }
     var operationQueue: OperationQueue { get }
@@ -20,7 +23,7 @@ protocol DAppInteractionMediating {
     func register(transport: DAppTransportProtocol)
     func unregister(transport: DAppTransportProtocol)
 
-    func process(message: Any, host: String, transport name: String)
+    func process(message: Any, host: String?, transport name: String)
     func process(authRequest: DAppAuthRequest)
     func process(signingRequest: DAppOperationRequest, type: DAppSigningType)
 }

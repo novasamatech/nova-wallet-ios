@@ -4,44 +4,52 @@ import WalletConnectSwiftV2
 final class WalletConnectInteractor {
     weak var presenter: WalletConnectInteractorOutputProtocol?
 
-    let service: WalletConnectServiceProtocol
-    let logger: LoggerProtocol
+    let transport: WalletConnectTransportProtocol
+    let mediator: DAppInteractionMediating
 
-    init(service: WalletConnectServiceProtocol, logger: LoggerProtocol) {
-        self.service = service
-        self.logger = logger
+    init(mediator: DAppInteractionMediating, transport: WalletConnectTransportProtocol) {
+        self.mediator = mediator
+        self.transport = transport
     }
 
     deinit {
-        service.throttle()
+        mediator.unregister(transport: transport)
     }
 }
 
 extension WalletConnectInteractor: WalletConnectInteractorInputProtocol {
     func setup() {
-        service.delegate = self
-        service.setup()
+        transport.delegate = self
+        mediator.register(transport: transport)
     }
 
     func connect(uri: String) {
-        service.connect(uri: uri)
+        transport.connect(uri: uri)
     }
 }
 
-extension WalletConnectInteractor: WalletConnectServiceDelegate {
-    func walletConnect(service _: WalletConnectServiceProtocol, proposal: Session.Proposal) {
-        logger.debug("Proposal: \(proposal)")
+extension WalletConnectInteractor: WalletConnectTransportDelegate {
+    func walletConnect(
+        transport: WalletConnectTransportProtocol,
+        didReceive message: WalletConnectTransportMessage
+    ) {
+        mediator.process(message: message, host: message.host, transport: transport.name)
     }
 
-    func walletConnect(service _: WalletConnectServiceProtocol, establishedSession: Session) {
-        logger.debug("New session: \(establishedSession)")
+    func walletConnect(
+        transport _: WalletConnectTransportProtocol,
+        didFail _: WalletConnectTransportError
+    ) {}
+
+    func walletConnect(transport _: WalletConnectTransportProtocol, authorize request: DAppAuthRequest) {
+        mediator.process(authRequest: request)
     }
 
-    func walletConnect(service _: WalletConnectServiceProtocol, request: Request) {
-        logger.debug("New session: \(request)")
-    }
-
-    func walletConnect(service _: WalletConnectServiceProtocol, error: WalletConnectServiceError) {
-        logger.error("Error: \(error)")
+    func walletConnect(
+        transport _: WalletConnectTransportProtocol,
+        sign request: DAppOperationRequest,
+        type: DAppSigningType
+    ) {
+        mediator.process(signingRequest: request, type: type)
     }
 }
