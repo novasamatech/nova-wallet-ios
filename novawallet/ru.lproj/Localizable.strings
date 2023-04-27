@@ -1034,6 +1034,7 @@
 "governance.referendums.filter.voted" = "Проголосованные";
 "governance.referendums.filter.not.voted" = "Не проголосованные";
 "governance.referendums.filter.title" = "Фильтры";
+"governance.referendums.filter.header" = "Показывать:";
 "governance.referendums.settings.title" = "Референдумы";
 "gov.referendum.title.fallback" = "Референдум %@";
 "tabbar.governance.title" = "Демократия";

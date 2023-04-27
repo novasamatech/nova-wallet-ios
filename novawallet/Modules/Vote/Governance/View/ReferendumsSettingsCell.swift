@@ -31,6 +31,8 @@ final class ReferendumsSettingsCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        backgroundColor = .clear
         setupLayout()
     }
 
@@ -40,14 +42,14 @@ final class ReferendumsSettingsCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        addSubview(filterButton)
+        contentView.addSubview(filterButton)
 
         filterButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalToSuperview()
         }
 
-        addSubview(badgeView)
+        contentView.addSubview(badgeView)
 
         badgeView.snp.makeConstraints { make in
             make.trailing.equalTo(filterButton.snp.trailing).offset(-12)
@@ -55,14 +57,14 @@ final class ReferendumsSettingsCell: UITableViewCell {
             make.size.equalTo(6)
         }
 
-        addSubview(searchButton)
+        contentView.addSubview(searchButton)
 
         searchButton.snp.makeConstraints { make in
             make.trailing.equalTo(filterButton.snp.leading).inset(-8)
             make.centerY.equalToSuperview()
         }
 
-        addSubview(titleLabel)
+        contentView.addSubview(titleLabel)
 
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
