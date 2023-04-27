@@ -71,4 +71,19 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
         view?.controller.navigationController?.pushViewController(delegationsView.controller, animated: true)
     }
+
+    func showFilters(
+        from view: ControllerBackedProtocol?,
+        delegate: ReferendumsFiltersDelegate,
+        filter: ReferendumsFilter
+    ) {
+        guard let filtersView = ReferendumsFiltersViewFactory.createView(
+            delegate: delegate,
+            filter: filter
+        ) else {
+            return
+        }
+
+        view?.controller.present(filtersView.controller, animated: true)
+    }
 }
