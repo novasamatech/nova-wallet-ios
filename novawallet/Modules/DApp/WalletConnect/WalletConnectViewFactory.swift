@@ -23,6 +23,22 @@ struct WalletConnectViewFactory {
         let metadata = WalletConnectMetadata.nova(with: ApplicationConfig.shared.walletConnectProjectId)
         let service = WalletConnectService(metadata: metadata)
 
-        return .init(service: service, logger: Logger.shared)
+        let mediator = DAppInteractionFactory.createMediator()
+        mediator.setup()
+
+        let dataSource = DAppStateDataSource(
+            chainsStore: mediator.chainsStore,
+            dAppSettingsRepository: mediator.settingsRepository,
+            walletSettings: SelectedWalletSettings.shared,
+            operationQueue: mediator.operationQueue
+        )
+
+        let transport = WalletConnectTransport(
+            service: service,
+            dataSource: dataSource,
+            logger: Logger.shared
+        )
+
+        return .init(mediator: mediator, transport: transport)
     }
 }
