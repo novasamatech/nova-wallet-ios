@@ -242,6 +242,13 @@ final class ReferendumsPresenter {
 
         interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
     }
+
+    private func filterReferendums() {
+        filteredReferendums = referendums?.filter {
+            filter.match($0, voting: voting, offchainVoting: offchainVoting)
+        }
+        updateReferendumsView()
+    }
 }
 
 extension ReferendumsPresenter: ReferendumsPresenterProtocol {
@@ -324,7 +331,7 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
         self.voting = voting
-        updateReferendumsView()
+        filterReferendums()
 
         if let tracksVoting = voting.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
@@ -350,8 +357,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotesLocal) {
         if offchainVoting != voting {
             offchainVoting = voting
-
-            updateReferendumsView()
+            filterReferendums()
         }
     }
 
@@ -368,8 +374,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
         self.referendums = referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
-        filteredReferendums = referendums.filter(filter.match)
-        updateReferendumsView()
+        filterReferendums()
         updateTimeModels()
         refreshUnlockSchedule()
     }
@@ -485,7 +490,6 @@ extension ReferendumsPresenter: CountdownTimerDelegate {
 extension ReferendumsPresenter: ReferendumsFiltersDelegate {
     func didUpdate(filter: ReferendumsFilter) {
         self.filter = filter
-        filteredReferendums = referendums?.filter(filter.match)
-        updateReferendumsView()
+        filterReferendums()
     }
 }

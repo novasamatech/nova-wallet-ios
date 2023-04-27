@@ -23,7 +23,6 @@ final class ReferendumsFiltersPresenter {
         let canApply = selectedFilter != initialFilter
         view?.didReceive(viewModel: .init(
             selectedFilter: selectedFilter,
-            header: "Show:",
             canReset: canReset,
             canApply: canApply
         ))
@@ -46,7 +45,7 @@ extension ReferendumsFiltersPresenter: ReferendumsFiltersPresenterProtocol {
     }
 
     func resetFilter() {
-        selectedFilter = initialFilter
+        selectedFilter = .all
         provideViewModel()
     }
 }

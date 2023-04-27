@@ -84,6 +84,8 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
             return
         }
 
-        view?.controller.present(filtersView.controller, animated: true)
+        let navigationController = NovaNavigationController(rootViewController: filtersView.controller)
+
+        view?.controller.present(navigationController, animated: true)
     }
 }

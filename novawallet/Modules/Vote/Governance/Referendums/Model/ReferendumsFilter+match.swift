@@ -1,12 +1,28 @@
 extension ReferendumsFilter {
-    func match(_ referendum: ReferendumLocal) -> Bool {
+    func match(
+        _ referendum: ReferendumLocal,
+        voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?,
+        offchainVoting: GovernanceOffchainVotesLocal?
+    ) -> Bool {
         switch self {
         case .all:
             return true
         case .notVoted:
-            return referendum.voting == nil
+            if voting?.value?.votes.votes[referendum.index] != nil {
+                return false
+            } else if offchainVoting?.fetchVotes(for: referendum.index) != nil {
+                return false
+            }
+
+            return true
         case .voted:
-            return referendum.voting != nil
+            if voting?.value?.votes.votes[referendum.index] != nil {
+                return true
+            } else if offchainVoting?.fetchVotes(for: referendum.index) != nil {
+                return true
+            }
+
+            return false
         }
     }
 }
