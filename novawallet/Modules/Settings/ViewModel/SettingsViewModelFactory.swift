@@ -28,6 +28,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     func createSectionViewModels(
         language: Language?,
         currency: String?,
+        isBiometricAuthOn: Bool?,
+        isPinConfirmationOn: Bool,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])] {
         [
@@ -36,7 +38,13 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
                 createLanguageViewModel(from: language, locale: locale)
             ]),
-            (.security, [createCommonViewViewModel(row: .changePin, locale: locale)]),
+            (.security, [
+                isBiometricAuthOn.map {
+                    createSwitchViewModel(row: .biometricAuth, isOn: $0, locale: locale)
+                },
+                createSwitchViewModel(row: .approveWithPin, isOn: isPinConfirmationOn, locale: locale),
+                createCommonViewViewModel(row: .changePin, locale: locale)
+            ].compactMap { $0 }),
             (.community, [
                 createCommonViewViewModel(row: .telegram, locale: locale),
                 createCommonViewViewModel(row: .twitter, locale: locale),
@@ -59,26 +67,27 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         row: SettingsRow,
         locale: Locale
     ) -> SettingsCellViewModel {
-        SettingsCellViewModel(
-            row: row,
-            title: row.title(for: locale),
-            icon: row.icon,
-            accessoryTitle: nil
-        )
+        .details(
+            .init(
+                row: row,
+                title: row.title(for: locale),
+                icon: row.icon,
+                accessoryTitle: nil
+            ))
     }
 
     private func createLanguageViewModel(from language: Language?, locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profileLanguageTitle(preferredLanguages: locale.rLanguages)
         let subtitle = language?.title(in: locale)?.capitalized
-        let viewModel = SettingsCellViewModel(
+        let viewModel = DetailsSettingsCellViewModel(
             row: .language,
             title: title,
             icon: SettingsRow.language.icon,
             accessoryTitle: subtitle
         )
 
-        return viewModel
+        return .details(viewModel)
     }
 
     private func createValuableViewModel(
@@ -86,11 +95,26 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         value: String?,
         locale: Locale
     ) -> SettingsCellViewModel {
-        SettingsCellViewModel(
-            row: row,
-            title: row.title(for: locale),
-            icon: row.icon,
-            accessoryTitle: value
-        )
+        .details(
+            .init(
+                row: row,
+                title: row.title(for: locale),
+                icon: row.icon,
+                accessoryTitle: value
+            ))
+    }
+
+    private func createSwitchViewModel(
+        row: SettingsRow,
+        isOn: Bool,
+        locale: Locale
+    ) -> SettingsCellViewModel {
+        .toggle(
+            .init(
+                row: row,
+                title: row.title(for: locale),
+                icon: row.icon,
+                isOn: isOn
+            ))
     }
 }
