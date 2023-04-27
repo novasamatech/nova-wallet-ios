@@ -1,6 +1,6 @@
 import UIKit
 
-final class ListFilterCell: UITableViewCell {
+final class SelectableFilterCell: UITableViewCell {
     let selectionView = RadioSelectorView()
 
     let titleLabel: UILabel = {
