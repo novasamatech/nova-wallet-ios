@@ -40,7 +40,7 @@ final class ReferendumsFiltersViewController: UIViewController, ViewHolder {
 
     private func setupTableView() {
         rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
-        rootView.tableView.registerClassForCell(ListFilterCell.self)
+        rootView.tableView.registerClassForCell(SelectableFilterCell.self)
 
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
@@ -112,7 +112,7 @@ extension ReferendumsFiltersViewController: ReferendumsFiltersViewProtocol {
 
 extension ReferendumsFiltersViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: ListFilterCell = tableView.dequeueReusableCell(for: indexPath)
+        let cell: SelectableFilterCell = tableView.dequeueReusableCell(for: indexPath)
         guard let selectedFilter = ReferendumsFilter(rawValue: indexPath.row) else {
             return cell
         }
