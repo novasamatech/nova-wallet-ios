@@ -6,7 +6,7 @@ final class ReferendumsFiltersViewLayout: UIView {
         tableView.tableFooterView = UIView()
         tableView.separatorColor = R.color.colorDivider()
         tableView.backgroundColor = .clear
-        tableView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 100.0, right: 0.0)
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         return tableView
     }()
 
