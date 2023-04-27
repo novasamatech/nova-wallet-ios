@@ -1,10 +1,13 @@
 import Foundation
+import SoraKeystore
 
 class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframeProtocol {
     let state: CrowdloanSharedState
+    let settingsManager: SettingsManagerProtocol
 
-    init(state: CrowdloanSharedState) {
+    init(state: CrowdloanSharedState, settingsManager: SettingsManagerProtocol) {
         self.state = state
+        self.settingsManager = settingsManager
     }
 
     func showConfirmation(
@@ -88,7 +91,8 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             existingService: existingService,
-            state: state
+            state: state,
+            settingsManager: settingsManager
         ) else {
             return
         }
@@ -112,7 +116,8 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             existingService: existingService,
-            state: state
+            state: state,
+            settingsManager: settingsManager
         ) else {
             return
         }

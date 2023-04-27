@@ -38,6 +38,7 @@ final class SettingsViewController: UIViewController, ViewHolder {
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(SettingsTableViewCell.self)
+        rootView.tableView.registerClassForCell(SwitchSettingsTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 
@@ -47,6 +48,24 @@ final class SettingsViewController: UIViewController, ViewHolder {
 
     @objc private func handleSwitchAction() {
         presenter.handleSwitchAction()
+    }
+
+    private func dequeueReusableCell(
+        tableView: UITableView,
+        viewModel: SettingsCellViewModel
+    ) -> RoundableTableViewCell {
+        switch viewModel {
+        case let .details(model):
+            let settingsCell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
+            settingsCell.setup()
+            settingsCell.bind(viewModel: model)
+            return settingsCell
+        case let .toggle(model):
+            let settingsCell = tableView.dequeueReusableCellWithType(SwitchSettingsTableViewCell.self)!
+            settingsCell.bind(viewModel: model)
+            settingsCell.delegate = self
+            return settingsCell
+        }
     }
 }
 
@@ -60,10 +79,9 @@ extension SettingsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
         let viewModels = sections[indexPath.section].1
         let cellViewModel = viewModels[indexPath.row]
-        cell.bind(viewModel: cellViewModel)
+        let cell = dequeueReusableCell(tableView: tableView, viewModel: cellViewModel)
 
         if viewModels.count > 1 {
             if indexPath.row == viewModels.count - 1 {
@@ -127,6 +145,16 @@ extension SettingsViewController: Localizable {
                 .tabbarSettingsTitle(preferredLanguages: selectedLocale.rLanguages)
             rootView.footerView.appNameLabel.text = presenter.appNameText
         }
+    }
+}
+
+extension SettingsViewController: SwitchSettingsTableViewCellDelegate {
+    func didChangeSwitchValue(model: SwitchSettingsCellViewModel?) {
+        guard let model = model else {
+            return
+        }
+
+        presenter.actionRow(model.row)
     }
 }
 
