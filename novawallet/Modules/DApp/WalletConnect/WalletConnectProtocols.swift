@@ -14,4 +14,5 @@ protocol WalletConnectInteractorOutputProtocol: AnyObject {}
 
 protocol WalletConnectWireframeProtocol: AnyObject {
     func showScan(from view: WalletConnectViewProtocol?, delegate: URIScanDelegate)
+    func hideUriScanAnimated(from view: ControllerBackedProtocol?, completion: @escaping () -> Void)
 }
