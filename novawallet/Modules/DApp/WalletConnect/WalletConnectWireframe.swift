@@ -8,4 +8,8 @@ final class WalletConnectWireframe: WalletConnectWireframeProtocol {
 
         view?.controller.present(scanView.controller, animated: true)
     }
+
+    func hideUriScanAnimated(from view: ControllerBackedProtocol?, completion: @escaping () -> Void) {
+        view?.controller.dismiss(animated: true, completion: completion)
+    }
 }

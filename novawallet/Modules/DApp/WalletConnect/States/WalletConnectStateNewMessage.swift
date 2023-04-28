@@ -55,7 +55,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
             dAppIcon: proposal.proposer.icons.first.flatMap { URL(string: $0) },
             requiredChains: requiredChains,
             optionalChains: optionalChains,
-            unknownChains: unresolvedChains
+            unknownChains: !unresolvedChains.isEmpty ? unresolvedChains : nil
         )
 
         let nextState = WalletConnectStateAuthorizing(
@@ -83,5 +83,12 @@ extension WalletConnectStateNewMessage: WalletConnectStateProtocol {
         emitUnexpected(message: response, nextState: self)
     }
 
-    func proceed(with _: DAppStateDataSource) {}
+    func proceed(with dataSource: DAppStateDataSource) {
+        switch message {
+        case let .proposal(proposal):
+            process(proposal: proposal, dataSource: dataSource)
+        case .request:
+            break
+        }
+    }
 }

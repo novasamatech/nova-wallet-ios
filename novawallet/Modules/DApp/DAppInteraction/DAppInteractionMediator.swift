@@ -44,6 +44,7 @@ final class DAppInteractionMediator {
 
     private func processMessageIfNeeded() {
         guard transports.allSatisfy({ $0.isIdle() }), let queueMessage = messageQueue.first else {
+            logger?.debug("Some of the transports busy and can't process messages: \(messageQueue.count)")
             return
         }
 
@@ -104,7 +105,7 @@ extension DAppInteractionMediator: DAppInteractionMediating {
 
     func process(message: Any, host: String?, transport name: String) {
         securedLayer.scheduleExecutionIfAuthorized { [weak self] in
-            self?.logger?.debug("Did receive \(name) message from \(host): \(message)")
+            self?.logger?.debug("Did receive \(name) message from \(host ?? ""): \(message)")
 
             self?.verifyPhishing(for: host) { [weak self] isNotPhishing in
                 if isNotPhishing {
@@ -132,6 +133,12 @@ extension DAppInteractionMediator: DAppInteractionMediating {
             self?.presenter.didReceiveConfirmation(request: signingRequest, type: type)
         }
     }
+
+    func processMessageQueue() {
+        securedLayer.scheduleExecutionIfAuthorized { [weak self] in
+            self?.processMessageIfNeeded()
+        }
+    }
 }
 
 extension DAppInteractionMediator: DAppInteractionInputProtocol {
@@ -149,7 +156,9 @@ extension DAppInteractionMediator: DAppInteractionInputProtocol {
 }
 
 extension DAppInteractionMediator: ChainsStoreDelegate {
-    func didUpdateChainsStore(_: ChainsStoreProtocol) {
+    func didUpdateChainsStore(_ chainsStore: ChainsStoreProtocol) {
+        logger?.debug("Did update chain store: \(chainsStore.availableChainIds().count)")
+
         transports.forEach { $0.processChainsChanges() }
     }
 }
