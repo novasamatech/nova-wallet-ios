@@ -19,6 +19,7 @@ final class ReferendumsPresenter {
     private var selectedOption: GovernanceSelectedOption?
     private var price: PriceData?
     private var referendums: [ReferendumLocal]?
+    private var filteredReferendums: [ReferendumLocal]?
     private var referendumsMetadata: ReferendumMetadataMapping?
     private var voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?
     private var offchainVoting: GovernanceOffchainVotesLocal?
@@ -29,6 +30,7 @@ final class ReferendumsPresenter {
     private var maxStatusTimeInterval: TimeInterval?
     private var countdownTimer: CountdownTimer?
     private var timeModels: [UInt: StatusTimeViewModel?]?
+    private var filter = ReferendumsFilter.all
 
     private var chain: ChainModel? {
         selectedOption?.chain
@@ -74,6 +76,7 @@ final class ReferendumsPresenter {
         freeBalance = nil
         price = nil
         referendums = nil
+        filteredReferendums = nil
         referendumsMetadata = nil
         voting = nil
         offchainVoting = nil
@@ -111,7 +114,7 @@ final class ReferendumsPresenter {
         }
         guard let currentBlock = blockNumber,
               let blockTime = blockTime,
-              let referendums = referendums,
+              let referendums = filteredReferendums,
               let chainModel = chain else {
             return
         }
@@ -147,7 +150,9 @@ final class ReferendumsPresenter {
             )
         }
 
-        let allSections = [activitySection] + referendumsSections
+        let settingsSection = ReferendumsSection.settings(isFilterOn: filter != .all)
+
+        let allSections = [activitySection, settingsSection] + referendumsSections
         view.update(model: .init(sections: allSections))
     }
 
@@ -155,7 +160,7 @@ final class ReferendumsPresenter {
         guard let view = view else {
             return
         }
-        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = referendums else {
+        guard let currentBlock = blockNumber, let blockTime = blockTime, let referendums = filteredReferendums else {
             return
         }
 
@@ -237,11 +242,30 @@ final class ReferendumsPresenter {
 
         interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: nil)
     }
+
+    private func filterReferendums() {
+        filteredReferendums = referendums?.filter {
+            filter.match($0, voting: voting, offchainVoting: offchainVoting)
+        }
+        updateReferendumsView()
+    }
 }
 
 extension ReferendumsPresenter: ReferendumsPresenterProtocol {
+    func showFilters() {
+        wireframe.showFilters(
+            from: view,
+            delegate: self,
+            filter: filter
+        )
+    }
+
+    func showSearch() {
+        // TODO: Task #85zrwjtzu
+    }
+
     func select(referendumIndex: UInt) {
-        guard let referendum = referendums?.first(where: { $0.index == referendumIndex }) else {
+        guard let referendum = filteredReferendums?.first(where: { $0.index == referendumIndex }) else {
             return
         }
 
@@ -307,7 +331,7 @@ extension ReferendumsPresenter: VoteChildPresenterProtocol {
 extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>) {
         self.voting = voting
-        updateReferendumsView()
+        filterReferendums()
 
         if let tracksVoting = voting.value {
             interactor.refreshUnlockSchedule(for: tracksVoting, blockHash: voting.blockHash)
@@ -333,8 +357,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
     func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotesLocal) {
         if offchainVoting != voting {
             offchainVoting = voting
-
-            updateReferendumsView()
+            filterReferendums()
         }
     }
 
@@ -351,8 +374,7 @@ extension ReferendumsPresenter: ReferendumsInteractorOutputProtocol {
 
     func didReceiveReferendums(_ referendums: [ReferendumLocal]) {
         self.referendums = referendums.sorted { sorting.compare(referendum1: $0, referendum2: $1) }
-
-        updateReferendumsView()
+        filterReferendums()
         updateTimeModels()
         refreshUnlockSchedule()
     }
@@ -462,5 +484,12 @@ extension ReferendumsPresenter: CountdownTimerDelegate {
 
     func didStop(with _: TimeInterval) {
         updateTimerDisplay()
+    }
+}
+
+extension ReferendumsPresenter: ReferendumsFiltersDelegate {
+    func didUpdate(filter: ReferendumsFilter) {
+        self.filter = filter
+        filterReferendums()
     }
 }
