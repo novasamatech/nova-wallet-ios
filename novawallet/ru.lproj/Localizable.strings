@@ -1040,6 +1040,12 @@
 "governance.referendums.status.approved" = "Одобрен";
 "governance.referendums.your.vote" = "Ваш голос: %@ голосов";
 "governance.referendums.threshold" = "Порог: %@ из %@";
+"governance.referendums.filter.all" = "Все референдумы";
+"governance.referendums.filter.voted" = "Проголосованные";
+"governance.referendums.filter.not.voted" = "Не проголосованные";
+"governance.referendums.filter.title" = "Фильтры";
+"governance.referendums.filter.header" = "Показывать:";
+"governance.referendums.settings.title" = "Референдумы";
 "gov.referendum.title.fallback" = "Референдум %@";
 "tabbar.governance.title" = "Демократия";
 "governance.to.pass.format" = "Для принятия: %@";
