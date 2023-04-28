@@ -66,6 +66,26 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
 
         stateMachine.emit(authRequest: authRequest, nextState: nextState)
     }
+
+    private func processSign(request: Request, dataSource: DAppStateDataSource) {
+        guard let method = WalletConnectMethod(rawValue: request.method) else {
+            // TODO: Reject unsupported method
+            return
+        }
+
+        guard
+            let chains = WalletConnectModelFactory.resolveChain(
+                for: request.chainId,
+                chainsStore: dataSource.chainsStore
+            ) else {
+            // TODO: Reject unsupported chain
+            return
+        }
+
+
+
+
+    }
 }
 
 extension WalletConnectStateNewMessage: WalletConnectStateProtocol {

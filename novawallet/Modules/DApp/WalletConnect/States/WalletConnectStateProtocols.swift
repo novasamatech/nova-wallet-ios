@@ -10,6 +10,7 @@ protocol WalletConnectStateMachineProtocol: AnyObject {
         nextState: WalletConnectStateProtocol
     )
     func emit(proposalDecision: WalletConnectProposalDecision, nextState: WalletConnectStateProtocol)
+    func emit(signDecision: WalletConnectSignDecision, nextState: WalletConnectStateProtocol)
     func emit(error: WalletConnectStateError, nextState: WalletConnectStateProtocol)
 }
 

@@ -138,6 +138,14 @@ extension WalletConnectTransport: WalletConnectStateMachineProtocol {
         nextState.proceed(with: dataSource)
     }
 
+    func emit(signDecision: WalletConnectSignDecision, nextState: WalletConnectStateProtocol) {
+        state = nextState
+
+        service.submit(signingDecision: signDecision)
+
+        nextState.proceed(with: dataSource)
+    }
+
     func emit(error: WalletConnectStateError, nextState: WalletConnectStateProtocol) {
         state = nextState
 
