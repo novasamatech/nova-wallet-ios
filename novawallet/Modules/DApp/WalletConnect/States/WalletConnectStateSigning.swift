@@ -16,17 +16,15 @@ extension WalletConnectStateSigning: WalletConnectStateProtocol {
         false
     }
 
-    func handle(message: WalletConnectTransportMessage, dataSource: DAppStateDataSource) {
+    func handle(message: WalletConnectTransportMessage, dataSource _: DAppStateDataSource) {
         emitUnexpected(message: message, nextState: self)
     }
 
-    func handleOperation(response: DAppOperationResponse, dataSource: DAppStateDataSource) {
+    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppStateDataSource) {}
 
-    }
-
-    func handleAuth(response: DAppAuthResponse, dataSource: DAppStateDataSource) {
+    func handleAuth(response: DAppAuthResponse, dataSource _: DAppStateDataSource) {
         emitUnexpected(message: response, nextState: self)
     }
 
-    func proceed(with dataSource: DAppStateDataSource) {}
+    func proceed(with _: DAppStateDataSource) {}
 }

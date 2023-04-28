@@ -171,4 +171,9 @@ extension WalletConnectModelFactory {
 
         return .init(requiredNamespaces: requiredNamespaces, optionalNamespaces: optionalNamespaces)
     }
+
+    static func resolveChain(for blockchain: Blockchain, chainsStore: ChainsStoreProtocol) -> ChainModel? {
+        let resolution = resolveChains(from: [blockchain], chainsStore: chainsStore)
+        return resolution.resolved.first?.value
+    }
 }

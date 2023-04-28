@@ -16,12 +16,14 @@ protocol WalletConnectServiceProtocol: ApplicationServiceProtocol, AnyObject {
     func connect(uri: String)
 
     func submit(proposalDecision: WalletConnectProposalDecision)
+    func submit(signingDecision: WalletConnectSignDecision)
 }
 
 enum WalletConnectServiceError: Error {
     case setupNeeded
     case connectFailed(uri: String, internalError: Error)
     case proposalFailed(decision: WalletConnectProposalDecision, internalError: Error)
+    case signFailed(decision: WalletConnectSignDecision, internalError: Error)
 }
 
 final class WalletConnectService {
@@ -189,6 +191,26 @@ extension WalletConnectService: WalletConnectServiceProtocol {
             } catch {
                 self?.logger.error("Decision submission failed: \(error)")
                 self?.notify(error: .proposalFailed(decision: proposalDecision, internalError: error))
+            }
+        }
+    }
+
+    func submit(signingDecision: WalletConnectSignDecision) {
+        guard let client = client else {
+            notify(error: .setupNeeded)
+            return
+        }
+
+        Task { [weak self] in
+            do {
+                try await client.respond(
+                    topic: signingDecision.request.topic,
+                    requestId: signingDecision.request.id,
+                    response: signingDecision.result
+                )
+            } catch {
+                self?.logger.error("Signature submission failed: \(error)")
+                self?.notify(error: .signFailed(decision: signingDecision, internalError: error))
             }
         }
     }
