@@ -22,6 +22,8 @@ protocol WalletConnectTransportDelegate: AnyObject {
     )
 
     func walletConnect(transport: WalletConnectTransportProtocol, didFail error: WalletConnectTransportError)
+
+    func walletConnectAskNextMessage(transport: WalletConnectTransportProtocol)
 }
 
 final class WalletConnectTransport {
@@ -85,6 +87,9 @@ extension WalletConnectTransport {
     func start() {
         service.delegate = self
         service.setup()
+
+        state = WalletConnectStateInitiating(stateMachine: self)
+        state?.proceed(with: dataSource)
     }
 
     func stop() {
@@ -94,9 +99,15 @@ extension WalletConnectTransport {
 
 extension WalletConnectTransport: WalletConnectStateMachineProtocol {
     func emit(nextState: WalletConnectStateProtocol) {
+        let prevCanHandleMessage = state?.canHandleMessage() ?? false
+
         state = nextState
 
         nextState.proceed(with: dataSource)
+
+        if !prevCanHandleMessage, nextState.canHandleMessage() {
+            delegate?.walletConnectAskNextMessage(transport: self)
+        }
     }
 
     func emit(authRequest: DAppAuthRequest, nextState: WalletConnectStateProtocol) {
@@ -145,6 +156,8 @@ extension WalletConnectTransport: WalletConnectServiceDelegate {
 
     func walletConnect(service _: WalletConnectServiceProtocol, establishedSession: Session) {
         logger.debug("New session: \(establishedSession)")
+
+        // TODO: Handle session
     }
 
     func walletConnect(service _: WalletConnectServiceProtocol, request: Request) {

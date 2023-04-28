@@ -34,6 +34,8 @@ extension WalletConnectPresenter: URIScanDelegate {
     func uriScanDidReceive(uri: String, context _: AnyObject?) {
         logger.debug("Wallet Connect URI: \(uri)")
 
-        interactor.connect(uri: uri)
+        wireframe.hideUriScanAnimated(from: view) { [weak self] in
+            self?.interactor.connect(uri: uri)
+        }
     }
 }
