@@ -1,9 +1,32 @@
-//
-//  WCStateSigning.swift
-//  novawallet
-//
-//  Created by Ruslan Rezin on 26.04.2023.
-//  Copyright © 2023 Nova Foundation. All rights reserved.
-//
-
 import Foundation
+import WalletConnectSwiftV2
+
+final class WalletConnectStateSigning: WalletConnectBaseState {
+    let request: Request
+
+    init(request: Request, stateMachine: WalletConnectStateMachineProtocol) {
+        self.request = request
+
+        super.init(stateMachine: stateMachine)
+    }
+}
+
+extension WalletConnectStateSigning: WalletConnectStateProtocol {
+    func canHandleMessage() -> Bool {
+        false
+    }
+
+    func handle(message: WalletConnectTransportMessage, dataSource: DAppStateDataSource) {
+        emitUnexpected(message: message, nextState: self)
+    }
+
+    func handleOperation(response: DAppOperationResponse, dataSource: DAppStateDataSource) {
+
+    }
+
+    func handleAuth(response: DAppAuthResponse, dataSource: DAppStateDataSource) {
+        emitUnexpected(message: response, nextState: self)
+    }
+
+    func proceed(with dataSource: DAppStateDataSource) {}
+}

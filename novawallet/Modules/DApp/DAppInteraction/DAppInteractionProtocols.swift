@@ -26,6 +26,7 @@ protocol DAppInteractionMediating: ApplicationServiceProtocol {
     func process(message: Any, host: String?, transport name: String)
     func process(authRequest: DAppAuthRequest)
     func process(signingRequest: DAppOperationRequest, type: DAppSigningType)
+    func processMessageQueue()
 }
 
 protocol DAppInteractionInputProtocol: AnyObject {

@@ -39,7 +39,9 @@ extension WalletConnectInteractor: WalletConnectTransportDelegate {
     func walletConnect(
         transport _: WalletConnectTransportProtocol,
         didFail _: WalletConnectTransportError
-    ) {}
+    ) {
+        // TODO: Handle error
+    }
 
     func walletConnect(transport _: WalletConnectTransportProtocol, authorize request: DAppAuthRequest) {
         mediator.process(authRequest: request)
@@ -51,5 +53,9 @@ extension WalletConnectInteractor: WalletConnectTransportDelegate {
         type: DAppSigningType
     ) {
         mediator.process(signingRequest: request, type: type)
+    }
+
+    func walletConnectAskNextMessage(transport _: WalletConnectTransportProtocol) {
+        mediator.processMessageQueue()
     }
 }
