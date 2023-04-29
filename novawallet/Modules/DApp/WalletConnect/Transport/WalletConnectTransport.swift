@@ -168,10 +168,10 @@ extension WalletConnectTransport: WalletConnectServiceDelegate {
         // TODO: Handle session
     }
 
-    func walletConnect(service _: WalletConnectServiceProtocol, request: Request) {
+    func walletConnect(service _: WalletConnectServiceProtocol, request: Request, session: Session?) {
         logger.debug("New session: \(request)")
 
-        delegate?.walletConnect(transport: self, didReceive: .request(request))
+        delegate?.walletConnect(transport: self, didReceive: .request(request, session))
     }
 
     func walletConnect(service _: WalletConnectServiceProtocol, error: WalletConnectServiceError) {

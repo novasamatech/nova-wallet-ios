@@ -1,5 +1,6 @@
 import Foundation
 import WalletConnectSwiftV2
+import SubstrateSdk
 
 final class WalletConnectStateNewMessage: WalletConnectBaseState {
     struct ResolutionResult {
@@ -67,24 +68,73 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         stateMachine.emit(authRequest: authRequest, nextState: nextState)
     }
 
-    private func processSign(request: Request, dataSource: DAppStateDataSource) {
+    private func rejectRequest(request: Request) {
+        guard let stateMachine = stateMachine else {
+            return
+        }
+
+        let desicion = WalletConnectSignDecision.reject(request: request)
+
+        stateMachine.emit(
+            signDecision: desicion,
+            nextState: WalletConnectStateReady(stateMachine: stateMachine)
+        )
+    }
+
+    private func processSign(request: Request, session: Session?, dataSource: DAppStateDataSource) {
+        guard let stateMachine = stateMachine else {
+            return
+        }
+
         guard let method = WalletConnectMethod(rawValue: request.method) else {
-            // TODO: Reject unsupported method
+            rejectRequest(request: request)
             return
         }
 
         guard
-            let chains = WalletConnectModelFactory.resolveChain(
+            let chain = WalletConnectModelFactory.resolveChain(
                 for: request.chainId,
                 chainsStore: dataSource.chainsStore
             ) else {
-            // TODO: Reject unsupported chain
+            rejectRequest(request: request)
             return
         }
 
+        do {
+            let operationData = try WalletConnectSignModelFactory.createOperationData(
+                for: dataSource.walletSettings.value,
+                chain: chain,
+                params: request.params,
+                method: method
+            )
 
+            let signingType = try WalletConnectSignModelFactory.createSigningType(
+                for: dataSource.walletSettings.value,
+                chain: chain,
+                method: method
+            )
 
+            let signingRequest = DAppOperationRequest(
+                transportName: DAppTransports.walletConnect,
+                identifier: request.id.string,
+                wallet: dataSource.walletSettings.value,
+                dApp: session?.peer.name ?? "",
+                dAppIcon: session?.peer.icons.first.flatMap { URL(string: $0) },
+                operationData: operationData
+            )
 
+            let nextState = WalletConnectStateSigning(request: request, stateMachine: stateMachine)
+
+            stateMachine.emit(
+                signingRequest: signingRequest,
+                type: signingType,
+                nextState: nextState
+            )
+        } catch {
+            // TODO: Handle error
+
+            rejectRequest(request: request)
+        }
     }
 }
 
@@ -107,8 +157,8 @@ extension WalletConnectStateNewMessage: WalletConnectStateProtocol {
         switch message {
         case let .proposal(proposal):
             process(proposal: proposal, dataSource: dataSource)
-        case .request:
-            break
+        case let .request(request, session):
+            processSign(request: request, session: session, dataSource: dataSource)
         }
     }
 }

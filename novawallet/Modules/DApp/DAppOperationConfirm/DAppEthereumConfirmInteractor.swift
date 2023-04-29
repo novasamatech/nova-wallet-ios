@@ -11,6 +11,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     let operationQueue: OperationQueue
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let serializationFactory: EthereumSerializationFactoryProtocol
+    let shouldSendTransaction: Bool
 
     init(
         request: DAppOperationRequest,
@@ -18,7 +19,8 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         ethereumOperationFactory: EthereumOperationFactoryProtocol,
         operationQueue: OperationQueue,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
-        serializationFactory: EthereumSerializationFactoryProtocol
+        serializationFactory: EthereumSerializationFactoryProtocol,
+        shouldSendTransaction: Bool
     ) {
         self.request = request
         self.chain = chain
@@ -26,6 +28,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         self.operationQueue = operationQueue
         self.signingWrapperFactory = signingWrapperFactory
         self.serializationFactory = serializationFactory
+        self.shouldSendTransaction = shouldSendTransaction
     }
 
     private func createSigningTransactionWrapper(

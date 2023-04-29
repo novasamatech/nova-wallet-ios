@@ -82,7 +82,7 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
 
         if let request = createConfirmationRequest(messageId: messageId, from: signingOperation) {
             if signingOperation.stringValue == nil {
-                let type = DAppSigningType.ethereumTransaction(chain: nextState.chain)
+                let type = DAppSigningType.ethereumSendTransaction(chain: nextState.chain)
                 delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
             } else if let accountId = try? state?.fetchSelectedAddress(from: dataSource)?.toAccountId() {
                 let type = DAppSigningType.ethereumBytes(chain: nextState.chain, accountId: accountId)
