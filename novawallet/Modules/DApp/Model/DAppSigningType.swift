@@ -3,7 +3,8 @@ import Foundation
 enum DAppSigningType {
     case extrinsic(chain: ChainModel)
     case bytes(chain: ChainModel)
-    case ethereumTransaction(chain: MetamaskChain)
+    case ethereumSendTransaction(chain: MetamaskChain)
+    case ethereumSignTransaction(chain: MetamaskChain)
     case ethereumBytes(chain: MetamaskChain, accountId: AccountId)
 
     var msgType: PolkadotExtensionMessage.MessageType? {
@@ -12,7 +13,7 @@ enum DAppSigningType {
             return .signExtrinsic
         case .bytes:
             return .signBytes
-        case .ethereumTransaction, .ethereumBytes:
+        case .ethereumSignTransaction, .ethereumSendTransaction, .ethereumBytes:
             return nil
         }
     }

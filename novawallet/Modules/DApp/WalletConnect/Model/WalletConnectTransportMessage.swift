@@ -3,7 +3,7 @@ import WalletConnectSwiftV2
 
 enum WalletConnectTransportMessage {
     case proposal(Session.Proposal)
-    case request(Request)
+    case request(Request, Session?)
 
     var host: String? {
         switch self {

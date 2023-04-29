@@ -18,9 +18,20 @@ struct DAppOperationConfirmViewFactory {
         case let .bytes(chain):
             maybeAssetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon)
             maybeInteractor = createSignBytesInteractor(for: request, chain: chain)
-        case let .ethereumTransaction(chain):
+        case let .ethereumSendTransaction(chain):
             maybeAssetInfo = chain.assetDisplayInfo
-            maybeInteractor = createEthereumInteractor(for: request, chain: chain)
+            maybeInteractor = createEthereumInteractor(
+                for: request,
+                chain: chain,
+                shouldSendTransaction: true
+            )
+        case let .ethereumSignTransaction(chain):
+            maybeAssetInfo = chain.assetDisplayInfo
+            maybeInteractor = createEthereumInteractor(
+                for: request,
+                chain: chain,
+                shouldSendTransaction: false
+            )
         case let .ethereumBytes(chain, accountId):
             maybeAssetInfo = chain.assetDisplayInfo
             maybeInteractor = createEthereumPersonalSignInteractor(
@@ -102,7 +113,8 @@ struct DAppOperationConfirmViewFactory {
 
     private static func createEthereumInteractor(
         for request: DAppOperationRequest,
-        chain: MetamaskChain
+        chain: MetamaskChain,
+        shouldSendTransaction: Bool
     ) -> DAppEthereumConfirmInteractor? {
         guard let rpcUrlString = chain.rpcUrls.first, let rpcUrl = URL(string: rpcUrlString) else {
             return nil
@@ -116,7 +128,8 @@ struct DAppOperationConfirmViewFactory {
             ethereumOperationFactory: operationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
-            serializationFactory: EthereumSerializationFactory()
+            serializationFactory: EthereumSerializationFactory(),
+            shouldSendTransaction: shouldSendTransaction
         )
     }
 

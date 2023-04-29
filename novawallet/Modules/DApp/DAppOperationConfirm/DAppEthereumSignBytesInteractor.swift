@@ -65,8 +65,17 @@ final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     }
 
     private func prepareRawBytes() throws -> Data {
-        if case let .stringValue(hexValue) = request.operationData {
-            return try Data(hexString: hexValue)
+        if case let .stringValue(stringValue) = request.operationData {
+            if stringValue.isHex() {
+                return try Data(hexString: stringValue)
+            } else {
+                guard let data = stringValue.data(using: .utf8) else {
+                    throw CommonError.dataCorruption
+                }
+
+                return data
+            }
+
         } else {
             throw CommonError.dataCorruption
         }
