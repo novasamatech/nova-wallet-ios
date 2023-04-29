@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 struct MetamaskChain: Codable {
     struct NativeCurrency: Codable {
@@ -51,5 +52,33 @@ extension MetamaskChain {
             blockExplorerUrls: blockExplorerUrls,
             iconUrls: iconUrls
         )
+    }
+}
+
+extension MetamaskChain {
+    init?(chain: ChainModel) {
+        guard let asset = chain.utilityAsset() else {
+            return nil
+        }
+
+        chainId = BigUInt(chain.addressPrefix).toHexWithPrefix()
+        chainName = chain.name
+        nativeCurrency = .init(
+            name: asset.name ?? chain.name,
+            symbol: asset.symbol,
+            decimals: Int16(bitPattern: asset.precision)
+        )
+
+        // TODO: Fix node retrieval
+
+        if let node = chain.nodes.first(where: { $0.url.hasPrefix(ConnectionNodeSchema.https) }) {
+            rpcUrls = [node.url]
+        } else {
+            rpcUrls = []
+        }
+
+        blockExplorerUrls = nil
+
+        iconUrls = [chain.icon.absoluteString]
     }
 }

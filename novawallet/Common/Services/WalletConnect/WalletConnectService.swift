@@ -6,7 +6,7 @@ import Combine
 protocol WalletConnectServiceDelegate: AnyObject {
     func walletConnect(service: WalletConnectServiceProtocol, proposal: Session.Proposal)
     func walletConnect(service: WalletConnectServiceProtocol, establishedSession: Session)
-    func walletConnect(service: WalletConnectServiceProtocol, request: Request)
+    func walletConnect(service: WalletConnectServiceProtocol, request: Request, session: Session?)
     func walletConnect(service: WalletConnectServiceProtocol, error: WalletConnectServiceError)
 }
 
@@ -79,7 +79,13 @@ final class WalletConnectService {
                     return
                 }
 
-                strongSelf.delegate?.walletConnect(service: strongSelf, request: request)
+                let session = strongSelf.client?.getSessions().first { $0.topic == request.topic }
+
+                strongSelf.delegate?.walletConnect(
+                    service: strongSelf,
+                    request: request,
+                    session: session
+                )
             }
     }
 
