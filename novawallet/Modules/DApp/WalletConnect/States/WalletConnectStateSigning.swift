@@ -1,5 +1,6 @@
 import Foundation
 import WalletConnectSwiftV2
+import SubstrateSdk
 
 final class WalletConnectStateSigning: WalletConnectBaseState {
     let request: Request
@@ -28,7 +29,8 @@ extension WalletConnectStateSigning: WalletConnectStateProtocol {
         let nextState = WalletConnectStateReady(stateMachine: stateMachine)
 
         if let signature = response.signature {
-            let result = AnyCodable(any: signature.toHex(includePrefix: true))
+            let result = AnyCodable(signature.toHex(includePrefix: true))
+
             stateMachine.emit(
                 signDecision: .approve(request: request, signature: result),
                 nextState: nextState
