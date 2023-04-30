@@ -90,8 +90,8 @@ extension DAppOperationConfirmInteractor {
             // TODO: Find out whether to return this validation
 
             guard
-                let transactionVersion = BigUInt.fromHexString(extrinsic.transactionVersion) /*,
-                codingFactory.txVersion == transactionVersion*/ else {
+                let transactionVersion = BigUInt.fromHexString(extrinsic.transactionVersion) /* ,
+                 codingFactory.txVersion == transactionVersion */ else {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "transactionVersion")
             }
 
