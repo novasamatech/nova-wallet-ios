@@ -63,12 +63,16 @@ extension Caip2.ChainId {
 }
 
 extension Caip2.ChainId {
-    func match(_ identifier: String) -> Bool {
+    func match(_ chain: ChainModel) -> Bool {
         switch knownChain {
         case let .polkadot(chainId):
-            return identifier.hasPrefix(chainId)
+            return chain.chainId.hasPrefix(chainId)
         case let .eip155(id):
-            return identifier.caseInsensitiveCompare("eip155:\(id)") == .orderedSame
+            if chain.isEthereumBased, BigUInt(chain.addressPrefix) == id {
+                return true
+            }
+
+            return chain.chainId.caseInsensitiveCompare("eip155:\(id)") == .orderedSame
         default:
             return false
         }

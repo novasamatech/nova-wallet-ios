@@ -90,8 +90,16 @@ enum WalletConnectModelFactory {
             do {
                 let caip2ChainId = try Caip2.ChainId(raw: blockchain.absoluteString)
 
+                let optChainId = knownChainIds.first { chainId in
+                    guard let chain = chainsStore.getChain(for: chainId) else {
+                        return false
+                    }
+
+                    return caip2ChainId.match(chain)
+                }
+
                 if
-                    let chainId = knownChainIds.first(where: { caip2ChainId.match($0) }),
+                    let chainId = optChainId,
                     let chain = chainsStore.getChain(for: chainId) {
                     return result.adding(chain: chain, blockchain: blockchain)
                 } else {
