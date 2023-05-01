@@ -8,13 +8,13 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
     let chain: ChainModel
 
-    let connection: ChainConnection
+    let connection: JSONRPCEngine
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
 
-    var processedResult: DAppOperationProcessedResult?
+    var extrinsicFactory: DAppExtrinsicBuilderOperationFactory?
 
     var priceProvider: StreamableProvider<PriceData>?
     var feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>?
@@ -24,7 +24,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         request: DAppOperationRequest,
         chain: ChainModel,
         runtimeProvider: RuntimeProviderProtocol,
-        connection: ChainConnection,
+        connection: JSONRPCEngine,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -76,29 +76,18 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     func completeSetup(for result: DAppOperationProcessedResult) {
-        processedResult = result
-
-        let networkIconUrl: URL?
-        let assetPrecision: UInt16
-
-        if let asset = chain.utilityAssets().first {
-            networkIconUrl = asset.icon ?? chain.icon
-            assetPrecision = asset.precision
-        } else {
-            networkIconUrl = nil
-            assetPrecision = 0
-        }
+        extrinsicFactory = DAppExtrinsicBuilderOperationFactory(
+            processedResult: result,
+            runtimeProvider: runtimeProvider
+        )
 
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: result.account.accountId,
             chainAddress: result.account.toAddress() ?? "",
-            networkName: chain.name,
-            utilityAssetPrecision: Int16(bitPattern: assetPrecision),
             dApp: request.dApp,
-            dAppIcon: request.dAppIcon,
-            networkIcon: networkIconUrl
+            dAppIcon: request.dAppIcon
         )
 
         presenter?.didReceive(modelResult: .success(confirmationModel))
@@ -106,100 +95,31 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         estimateFee()
     }
 
-    func createBaseBuilderOperation(
-        for result: DAppOperationProcessedResult,
-        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> BaseOperation<ExtrinsicBuilderProtocol> {
-        ClosureOperation<ExtrinsicBuilderProtocol> {
-            let runtimeContext = try codingFactoryOperation.extractNoCancellableResultData().createRuntimeJsonContext()
-
-            let extrinsic = result.extrinsic
-
-            let address = MultiAddress.accoundId(result.account.accountId)
-
-            var builder: ExtrinsicBuilderProtocol = try ExtrinsicBuilder(
-                specVersion: extrinsic.specVersion,
-                transactionVersion: extrinsic.transactionVersion,
-                genesisHash: extrinsic.genesisHash
-            )
-            .with(signaturePayloadFormat: result.account.type.signaturePayloadFormat)
-            .with(runtimeJsonContext: runtimeContext)
-            .with(address: address)
-            .with(nonce: UInt32(extrinsic.nonce))
-            .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
-            .adding(extrinsicExtension: ChargeAssetTxPayment())
-
-            builder = try result.extrinsic.method.accept(builder: builder)
-
-            if extrinsic.tip > 0 {
-                builder = builder.with(tip: extrinsic.tip)
-            }
-
-            return builder
-        }
-    }
-
-    func createFeePayloadOperation(
-        for result: DAppOperationProcessedResult,
-        signer: SigningWrapperProtocol
-    ) -> CompoundOperationWrapper<Data> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let builderOperation = createBaseBuilderOperation(
-            for: result,
-            codingFactoryOperation: codingFactoryOperation
-        )
-
-        builderOperation.addDependency(codingFactoryOperation)
-
-        let payloadOperation = ClosureOperation<Data> {
-            let builder = try builderOperation.extractNoCancellableResultData()
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-            return try builder.signing(
-                with: { try signer.sign($0).rawData() },
-                chainFormat: result.account.chainFormat,
-                cryptoType: result.account.cryptoType,
-                codingFactory: codingFactory
-            )
-            .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
-        }
-
-        payloadOperation.addDependency(codingFactoryOperation)
-        payloadOperation.addDependency(builderOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: payloadOperation,
-            dependencies: [codingFactoryOperation, builderOperation]
-        )
-    }
-
     func createSignatureOperation(
-        for result: DAppOperationProcessedResult,
+        for extrinsicFactory: DAppExtrinsicBuilderOperationFactory,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Data> {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let builderOperation = createBaseBuilderOperation(
-            for: result,
-            codingFactoryOperation: codingFactoryOperation
+        let signatureWrapper = extrinsicFactory.createWrapper(
+            customClosure: { builder, _ in builder },
+            indexes: [0],
+            signingClosure: { data in
+                try signer.sign(data).rawData()
+            }
         )
 
-        builderOperation.addDependency(codingFactoryOperation)
+        let codingFactoryOperation = extrinsicFactory.runtimeProvider.fetchCoderFactoryOperation()
 
         let signatureOperation = ClosureOperation<Data> {
-            let builder = try builderOperation.extractNoCancellableResultData()
+            let rawSignatures = try signatureWrapper.targetOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let rawSignature = try builder.buildRawSignature(
-                using: { try signer.sign($0).rawData() },
-                encoder: codingFactory.createEncoder(),
-                metadata: codingFactory.metadata
-            )
+            guard let rawSignature = rawSignatures.first else {
+                throw CommonError.dataCorruption
+            }
 
             let scaleEncoder = codingFactory.createEncoder()
 
-            switch result.account.cryptoType {
+            switch extrinsicFactory.processedResult.account.cryptoType {
             case .sr25519:
                 try scaleEncoder.append(
                     MultiSignature.sr25519(data: rawSignature),
@@ -234,11 +154,11 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         }
 
         signatureOperation.addDependency(codingFactoryOperation)
-        signatureOperation.addDependency(builderOperation)
+        signatureOperation.addDependency(signatureWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: signatureOperation,
-            dependencies: [codingFactoryOperation, builderOperation]
+            dependencies: [codingFactoryOperation] + signatureWrapper.allOperations
         )
     }
 }

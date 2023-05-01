@@ -100,6 +100,14 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
             return
         }
 
+        guard
+            let accountId = dataSource.walletSettings.value.fetch(
+                for: chain.accountRequest()
+            )?.accountId else {
+            rejectRequest(request: request)
+            return
+        }
+
         do {
             let operationData = try WalletConnectSignModelFactory.createOperationData(
                 for: dataSource.walletSettings.value,
@@ -118,6 +126,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
                 transportName: DAppTransports.walletConnect,
                 identifier: request.id.string,
                 wallet: dataSource.walletSettings.value,
+                accountId: accountId,
                 dApp: session?.peer.name ?? "",
                 dAppIcon: session?.peer.icons.first.flatMap { URL(string: $0) },
                 operationData: operationData

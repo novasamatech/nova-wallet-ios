@@ -55,30 +55,27 @@ extension MetamaskChain {
     }
 }
 
-extension MetamaskChain {
-    init?(chain: ChainModel) {
-        guard let asset = chain.utilityAsset() else {
-            return nil
-        }
-
-        chainId = BigUInt(chain.addressPrefix).toHexWithPrefix()
-        chainName = chain.name
-        nativeCurrency = .init(
-            name: asset.name ?? chain.name,
-            symbol: asset.symbol,
-            decimals: Int16(bitPattern: asset.precision)
-        )
-
-        // TODO: Fix node retrieval
-
-        if let node = chain.nodes.first(where: { $0.url.hasPrefix(ConnectionNodeSchema.https) }) {
-            rpcUrls = [node.url]
+extension DAppEitherChain {
+    static func createFromMetamask(
+        chain: MetamaskChain,
+        dataSource: DAppBrowserStateDataSource
+    ) -> DAppEitherChain? {
+        if let knownChain = dataSource.fetchChainByEthereumChainId(chain.chainId) {
+            return .left(knownChain)
         } else {
-            rpcUrls = []
+            guard let rpcUrl = chain.rpcUrls.first.flatMap({ URL(string: $0) }) else {
+                return nil
+            }
+
+            let unknownChain = DAppUnknownChain(
+                chainId: chain.chainId,
+                name: chain.chainName,
+                icon: chain.iconUrls?.first.flatMap { URL(string: $0) },
+                assetDisplayInfo: chain.assetDisplayInfo,
+                rpcUrl: rpcUrl
+            )
+
+            return .right(unknownChain)
         }
-
-        blockExplorerUrls = nil
-
-        iconUrls = [chain.icon.absoluteString]
     }
 }

@@ -243,7 +243,7 @@ extension WalletConnectSignModelFactory {
     }
 
     static func createSigningType(
-        for wallet: MetaAccountModel,
+        for _: MetaAccountModel,
         chain: ChainModel,
         method: WalletConnectMethod
     ) throws -> DAppSigningType {
@@ -253,25 +253,11 @@ extension WalletConnectSignModelFactory {
         case .polkadotSignMessage:
             return .bytes(chain: chain)
         case .ethSendTransaction:
-            guard let metamaskChain = MetamaskChain(chain: chain) else {
-                throw CommonError.dataCorruption
-            }
-
-            return .ethereumSendTransaction(chain: metamaskChain)
+            return .ethereumSendTransaction(chain: .left(chain))
         case .ethSignTransaction:
-            guard let metamaskChain = MetamaskChain(chain: chain) else {
-                throw CommonError.dataCorruption
-            }
-
-            return .ethereumSignTransaction(chain: metamaskChain)
+            return .ethereumSignTransaction(chain: .left(chain))
         case .ethPersonalSign, .ethSignTypeData:
-            guard
-                let metamaskChain = MetamaskChain(chain: chain),
-                let accountId = wallet.fetch(for: chain.accountRequest())?.accountId else {
-                throw CommonError.dataCorruption
-            }
-
-            return .ethereumBytes(chain: metamaskChain, accountId: accountId)
+            return .ethereumBytes(chain: .left(chain))
         }
     }
 }
