@@ -133,7 +133,7 @@ struct DAppOperationConfirmViewFactory {
             }
 
             operationFactory = EvmWebSocketOperationFactory(connection: connection)
-            chainId = BigUInt(knownChain.addressPrefix).toHexWithPrefix()
+            chainId = BigUInt(knownChain.addressPrefix).toHexString()
         case let .right(unknownChain):
             guard let connection = HTTPEngine(
                 urls: [unknownChain.rpcUrl],
