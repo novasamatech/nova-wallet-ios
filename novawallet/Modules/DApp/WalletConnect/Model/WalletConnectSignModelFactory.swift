@@ -1,6 +1,7 @@
 import Foundation
 import WalletConnectSwiftV2
 import SubstrateSdk
+import EthereumSignTypedDataUtil
 
 enum WalletConnectSignModelFactoryError: Error {
     case missingAccount(chainId: ChainModel.Id)
@@ -104,14 +105,27 @@ enum WalletConnectSignModelFactory {
     private static func createEthereumTransaction(for params: AnyCodable) throws -> JSON {
         let json = try params.get(JSON.self)
 
-        guard let transaction = json.arrayValue?.first else {
+        guard
+            let wcTransaction = try? json.arrayValue?.first?.map(
+                to: WalletConnectEthereumTransaction.self
+            ) else {
             throw WalletConnectSignModelFactoryError.invalidParams(
                 params: json,
                 method: .polkadotSignTransaction
             )
         }
 
-        return transaction
+        let transaction = EthereumTransaction(
+            from: wcTransaction.from,
+            to: wcTransaction.to,
+            gas: wcTransaction.gasLimit?.toHexWithPrefix(),
+            gasPrice: wcTransaction.gasPrice?.toHexWithPrefix(),
+            value: wcTransaction.value?.toHexWithPrefix(),
+            data: wcTransaction.data,
+            nonce: wcTransaction.nonce?.toHexWithPrefix()
+        )
+
+        return try transaction.toScaleCompatibleJSON()
     }
 
     private static func parseAndValidateEthereumParams(
@@ -198,10 +212,14 @@ enum WalletConnectSignModelFactory {
             return JSON.stringValue(typedDataString)
         }
 
-        throw WalletConnectSignModelFactoryError.invalidParams(
-            params: json,
-            method: .polkadotSignTransaction
-        )
+        guard let data = typedDataString.data(using: .utf8) else {
+            throw CommonError.dataCorruption
+        }
+
+        let typeData = try JSONDecoder().decode(EIP712TypedData.self, from: data)
+        let hash = try typeData.signableHash(version: .v4)
+
+        return JSON.stringValue(hash.toHex(includePrefix: true))
     }
 }
 
