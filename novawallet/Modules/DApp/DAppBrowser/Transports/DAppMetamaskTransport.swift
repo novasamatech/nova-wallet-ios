@@ -19,7 +19,8 @@ final class DAppMetamaskTransport {
         messageId: MetamaskMessage.Id,
         from signingOperation: JSON
     ) -> DAppOperationRequest? {
-        guard let dataSource = dataSource else {
+        guard let dataSource = dataSource,
+              let accountId = try? state?.fetchSelectedAddress(from: dataSource)?.toAccountId() else {
             return nil
         }
 
@@ -27,6 +28,7 @@ final class DAppMetamaskTransport {
             transportName: DAppTransports.metamask,
             identifier: "\(messageId)",
             wallet: dataSource.wallet,
+            accountId: accountId,
             dApp: dataSource.dApp?.name ?? "",
             dAppIcon: dataSource.dApp?.icon,
             operationData: signingOperation
@@ -81,14 +83,20 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
         state = nextState
 
         if let request = createConfirmationRequest(messageId: messageId, from: signingOperation) {
-            if signingOperation.stringValue == nil {
-                let type = DAppSigningType.ethereumSendTransaction(chain: nextState.chain)
-                delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
-            } else if let accountId = try? state?.fetchSelectedAddress(from: dataSource)?.toAccountId() {
-                let type = DAppSigningType.ethereumBytes(chain: nextState.chain, accountId: accountId)
-                delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+            if
+                let chain = DAppEitherChain.createFromMetamask(
+                    chain: nextState.chain,
+                    dataSource: dataSource
+                ) {
+                if signingOperation.stringValue == nil {
+                    let type = DAppSigningType.ethereumSendTransaction(chain: chain)
+                    delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+                } else {
+                    let type = DAppSigningType.ethereumBytes(chain: chain)
+                    delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+                }
             } else {
-                let error = DAppBrowserStateError.unexpected(reason: "Can't find selected account id")
+                let error = DAppBrowserStateError.unexpected(reason: "Can't create chain")
                 delegate?.dAppTransport(self, didReceive: error)
             }
 
