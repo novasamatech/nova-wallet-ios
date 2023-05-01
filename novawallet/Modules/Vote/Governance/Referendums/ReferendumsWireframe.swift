@@ -88,4 +88,21 @@ final class ReferendumsWireframe: ReferendumsWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true)
     }
+
+    func showSearch(
+        from view: ControllerBackedProtocol?,
+        initialState: SearchReferndumsInitialState
+    ) {
+        guard let searchView = ReferendumSearchViewFactory.createView(
+            initialState: initialState,
+            governanceState: state
+        ) else {
+            return
+        }
+
+        searchView.controller.modalTransitionStyle = .crossDissolve
+        searchView.controller.modalPresentationStyle = .fullScreen
+
+        view?.controller.present(searchView.controller, animated: true, completion: nil)
+    }
 }

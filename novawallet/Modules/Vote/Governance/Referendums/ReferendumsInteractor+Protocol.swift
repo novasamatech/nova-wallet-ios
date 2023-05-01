@@ -3,30 +3,6 @@ import RobinHood
 import SoraFoundation
 
 extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
-    func setup() {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            self?.governanceState.settings.setup(runningCompletionIn: .main) { result in
-                switch result {
-                case .success:
-                    self?.continueSetup()
-                case .failure:
-                    self?.presenter?.didReceiveError(.settingsLoadFailed)
-                }
-            }
-        }
-    }
-
-    func remakeSubscriptions() {
-        clear()
-
-        if let option = governanceState.settings.value {
-            let chain = option.chain
-            let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest())
-
-            setup(with: accountResponse?.accountId, option: option)
-        }
-    }
-
     func saveSelected(option: GovernanceSelectedOption) {
         if option != governanceState.settings.value {
             clear()
@@ -39,27 +15,6 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
                     self?.presenter?.didReceiveError(.chainSaveFailed(error))
                 }
             }
-        }
-    }
-
-    func becomeOnline() {
-        if let chain = governanceState.settings.value?.chain {
-            subscribeToBlockNumber(for: chain)
-        }
-    }
-
-    func putOffline() {
-        clearBlockNumberSubscription()
-    }
-
-    func refresh() {
-        if governanceState.settings.value != nil {
-            provideReferendumsIfNeeded()
-            provideBlockTime()
-
-            metadataProvider?.refresh()
-
-            provideOffchainVotingIfNeeded()
         }
     }
 
@@ -111,36 +66,6 @@ extension ReferendumsInteractor: ReferendumsInteractorInputProtocol {
             operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
         }
     }
-
-    func retryBlockTime() {
-        provideBlockTime()
-    }
-
-    func retryOffchainVotingFetch() {
-        provideOffchainVotingIfNeeded()
-    }
-}
-
-extension ReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetadataLocalStorageHandler {
-    var govMetadataLocalSubscriptionFactory: GovMetadataLocalSubscriptionFactoryProtocol {
-        governanceState.govMetadataLocalSubscriptionFactory
-    }
-
-    func handleGovernanceMetadataPreview(
-        result: Result<[DataProviderChange<ReferendumMetadataLocal>], Error>,
-        option: GovernanceSelectedOption
-    ) {
-        guard let currentOption = governanceState.settings.value, currentOption == option else {
-            return
-        }
-
-        switch result {
-        case let .success(changes):
-            presenter?.didReceiveReferendumsMetadata(changes)
-        case let .failure(error):
-            presenter?.didReceiveError(.metadataSubscriptionFailed(error))
-        }
-    }
 }
 
 extension ReferendumsInteractor: WalletLocalSubscriptionHandler, WalletLocalStorageSubscriber {
@@ -170,34 +95,10 @@ extension ReferendumsInteractor: PriceLocalSubscriptionHandler, PriceLocalStorag
     }
 }
 
-extension ReferendumsInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId: ChainModel.Id) {
-        guard let chain = governanceState.settings.value?.chain, chain.chainId == chainId else {
-            return
-        }
-
-        switch result {
-        case let .success(blockNumber):
-            if let blockNumber = blockNumber {
-                presenter?.didReceiveBlockNumber(blockNumber)
-            }
-        case let .failure(error):
-            presenter?.didReceiveError(.blockNumberSubscriptionFailed(error))
-        }
-    }
-}
-
 extension ReferendumsInteractor: SelectedCurrencyDepending {
     func applyCurrency() {
         if presenter != nil, let chain = governanceState.settings.value?.chain {
             subscribeToAssetPrice(for: chain)
         }
-    }
-}
-
-extension ReferendumsInteractor: ApplicationHandlerDelegate {
-    func didReceiveDidEnterBackground(notification _: Notification) {
-        clearCancellable()
-        governanceState.subscriptionFactory?.cancelCancellable()
     }
 }

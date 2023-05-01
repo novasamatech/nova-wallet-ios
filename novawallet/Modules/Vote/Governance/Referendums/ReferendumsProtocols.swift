@@ -17,31 +17,17 @@ protocol ReferendumsPresenterProtocol: AnyObject {
     func showSearch()
 }
 
-protocol ReferendumsInteractorInputProtocol: AnyObject {
-    func setup()
+protocol ReferendumsInteractorInputProtocol: BaseReferendumsInteractorInputProtocol {
     func saveSelected(option: GovernanceSelectedOption)
-    func becomeOnline()
-    func putOffline()
-    func refresh()
     func refreshUnlockSchedule(for tracksVoting: ReferendumTracksVotingDistribution, blockHash: Data?)
-    func remakeSubscriptions()
-    func retryBlockTime()
-    func retryOffchainVotingFetch()
 }
 
-protocol ReferendumsInteractorOutputProtocol: AnyObject {
-    func didReceiveReferendums(_ referendums: [ReferendumLocal])
-    func didReceiveReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>])
-    func didReceiveVoting(_ voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>)
-    func didReceiveOffchainVoting(_ voting: GovernanceOffchainVotesLocal)
+protocol ReferendumsInteractorOutputProtocol: AnyObject, BaseReferendumsInteractorOutputProtocol {
     func didReceiveSelectedOption(_ option: GovernanceSelectedOption)
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ price: PriceData?)
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber)
-    func didReceiveBlockTime(_ blockTime: BlockTime)
     func didReceiveUnlockSchedule(_ unlockSchedule: GovernanceUnlockSchedule)
     func didReceiveSupportDelegations(_ supportsDelegations: Bool)
-    func didReceiveError(_ error: ReferendumsInteractorError)
 }
 
 protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable {
@@ -62,5 +48,9 @@ protocol ReferendumsWireframeProtocol: AlertPresentable, ErrorPresentable, Commo
         from view: ControllerBackedProtocol?,
         delegate: ReferendumsFiltersDelegate,
         filter: ReferendumsFilter
+    )
+    func showSearch(
+        from view: ControllerBackedProtocol?,
+        initialState: SearchReferndumsInitialState
     )
 }

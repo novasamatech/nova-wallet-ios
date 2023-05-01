@@ -261,7 +261,18 @@ extension ReferendumsPresenter: ReferendumsPresenterProtocol {
     }
 
     func showSearch() {
-        // TODO: Task #85zrwjtzu
+        wireframe.showSearch(
+            from: view,
+            initialState: .init(
+                referendums: referendums,
+                referendumsMetadata: referendumsMetadata,
+                voting: voting,
+                offchainVoting: offchainVoting,
+                blockNumber: blockNumber,
+                blockTime: blockTime,
+                chain: chain
+            )
+        )
     }
 
     func select(referendumIndex: UInt) {
@@ -492,4 +503,16 @@ extension ReferendumsPresenter: ReferendumsFiltersDelegate {
         self.filter = filter
         filterReferendums()
     }
+}
+
+protocol ReferendumsProviderProtocol {
+    func updateChainInformation(
+        chain: ChainModel?,
+        blockNumber: BlockNumber?,
+        blockTime: BlockTime?
+    )
+    func update(voting: CallbackStorageSubscriptionResult<ReferendumTracksVotingDistribution>?)
+    func update(offchainVoting: GovernanceOffchainVotesLocal?)
+    func update(referendumsMetadata: ReferendumMetadataMapping?)
+    func update(referendums: [ReferendumLocal]?)
 }
