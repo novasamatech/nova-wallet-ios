@@ -6,24 +6,24 @@ import SubstrateSdk
 
 final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
-    let chain: MetamaskChain
     let ethereumOperationFactory: EthereumOperationFactoryProtocol
     let operationQueue: OperationQueue
     let signingWrapperFactory: SigningWrapperFactoryProtocol
     let serializationFactory: EthereumSerializationFactoryProtocol
     let shouldSendTransaction: Bool
+    let chainId: String
 
     init(
+        chainId: String,
         request: DAppOperationRequest,
-        chain: MetamaskChain,
         ethereumOperationFactory: EthereumOperationFactoryProtocol,
         operationQueue: OperationQueue,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
         serializationFactory: EthereumSerializationFactoryProtocol,
         shouldSendTransaction: Bool
     ) {
+        self.chainId = chainId
         self.request = request
-        self.chain = chain
         self.ethereumOperationFactory = ethereumOperationFactory
         self.operationQueue = operationQueue
         self.signingWrapperFactory = signingWrapperFactory
@@ -95,7 +95,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     private func createSerializationOperation(
-        chain: MetamaskChain,
+        chainId: String,
         dependingOn transactionOperation: BaseOperation<EthereumTransaction>,
         signatureOperation: BaseOperation<Data>?,
         serializationFactory: EthereumSerializationFactoryProtocol
@@ -114,7 +114,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
 
             return try serializationFactory.serialize(
                 transaction: transaction,
-                chainId: chain.chainId,
+                chainId: chainId,
                 signature: maybeSignature
             )
         }
@@ -150,24 +150,13 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             return
         }
 
-        let networkUrl: URL?
-
-        if let iconUrlString = chain.iconUrls?.first, let url = URL(string: iconUrlString) {
-            networkUrl = url
-        } else {
-            networkUrl = nil
-        }
-
         let model = DAppOperationConfirmModel(
             accountName: request.wallet.name,
             walletIdenticon: request.wallet.walletIdenticonData(),
             chainAccountId: chainAccountId,
             chainAddress: transaction.from,
-            networkName: chain.chainName,
-            utilityAssetPrecision: chain.nativeCurrency.decimals,
             dApp: request.dApp,
-            dAppIcon: request.dAppIcon,
-            networkIcon: networkUrl
+            dAppIcon: request.dAppIcon
         )
 
         presenter?.didReceive(modelResult: .success(model))
@@ -226,7 +215,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     private func confirmSend() {
         let transactionWrapper = createSigningTransactionWrapper(for: request)
         let signatureDataOperation = createSerializationOperation(
-            chain: chain,
+            chainId: chainId,
             dependingOn: transactionWrapper.targetOperation,
             signatureOperation: nil,
             serializationFactory: serializationFactory
@@ -245,7 +234,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         signingOperation.addDependency(transactionWrapper.targetOperation)
 
         let serializationOperation = createSerializationOperation(
-            chain: chain,
+            chainId: chainId,
             dependingOn: transactionWrapper.targetOperation,
             signatureOperation: signingOperation,
             serializationFactory: serializationFactory
@@ -288,7 +277,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     private func confirmSign() {
         let transactionWrapper = createSigningTransactionWrapper(for: request)
         let signatureDataOperation = createSerializationOperation(
-            chain: chain,
+            chainId: chainId,
             dependingOn: transactionWrapper.targetOperation,
             signatureOperation: nil,
             serializationFactory: serializationFactory

@@ -4,54 +4,35 @@ import SoraKeystore
 
 final class DAppEthereumSignBytesInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
-    let chain: MetamaskChain
-    let accountId: AccountId
     let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     private(set) var account: MetaEthereumAccountResponse?
 
     init(
         request: DAppOperationRequest,
-        accountId: AccountId,
-        chain: MetamaskChain,
         signingWrapperFactory: SigningWrapperFactoryProtocol
     ) {
         self.request = request
-        self.accountId = accountId
-        self.chain = chain
         self.signingWrapperFactory = signingWrapperFactory
     }
 
     private func validateAndProvideConfirmationModel() {
         guard
-            let accountResponse = request.wallet.fetchEthereum(for: accountId),
-            let address = try? accountId.toAddress(using: .ethereum) else {
+            let accountResponse = request.wallet.fetchEthereum(for: request.accountId),
+            let address = try? request.accountId.toAddress(using: .ethereum) else {
             presenter?.didReceive(feeResult: .failure(ChainAccountFetchingError.accountNotExists))
             return
         }
 
         account = accountResponse
 
-        let iconUrl: URL?
-
-        if let urlString = chain.iconUrls?.first, let url = URL(string: urlString) {
-            iconUrl = url
-        } else {
-            iconUrl = nil
-        }
-
-        let assetPrecision = chain.nativeCurrency.decimals
-
         let confirmationModel = DAppOperationConfirmModel(
             accountName: request.wallet.name,
             walletIdenticon: request.wallet.walletIdenticonData(),
-            chainAccountId: accountId,
+            chainAccountId: request.accountId,
             chainAddress: address,
-            networkName: chain.chainName,
-            utilityAssetPrecision: assetPrecision,
             dApp: request.dApp,
-            dAppIcon: request.dAppIcon,
-            networkIcon: iconUrl
+            dAppIcon: request.dAppIcon
         )
 
         presenter?.didReceive(modelResult: .success(confirmationModel))
