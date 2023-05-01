@@ -25,6 +25,15 @@ extension Caip2 {
             namespace = parsedNamespace
             reference = parsedReference
         }
+
+        init(namespace: String, reference: String) {
+            self.namespace = namespace
+            self.reference = reference
+        }
+
+        var rawString: String {
+            namespace + String(String.Separator.colon.rawValue) + reference
+        }
     }
 }
 
@@ -41,6 +50,15 @@ extension Caip2 {
                 return id == otherId
             default:
                 return false
+            }
+        }
+
+        var rawChainId: String {
+            switch self {
+            case let .polkadot(genesisHash):
+                return ChainId(namespace: "polkadot", reference: genesisHash).rawString
+            case let .eip155(id):
+                return ChainId(namespace: "eip155", reference: String(id)).rawString
             }
         }
     }

@@ -15,6 +15,9 @@ PODS:
   - Cuckoo (1.7.1):
     - Cuckoo/Swift (= 1.7.1)
   - Cuckoo/Swift (1.7.1)
+  - EthereumSignTypedDataUtil (0.1.2):
+    - BigInt (~> 5.0)
+    - CryptoSwift (~> 1.4)
   - FireMock (3.1)
   - IrohaCrypto/BIP39 (0.9.0):
     - IrohaCrypto/Common
@@ -151,6 +154,7 @@ DEPENDENCIES:
   - CDMarkdownKit (from `https://github.com/nova-wallet/CDMarkdownKit.git`, tag `2.5.2`)
   - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, tag `1.16.0`)
   - Cuckoo
+  - EthereumSignTypedDataUtil
   - FireMock
   - Kingfisher
   - R.swift
@@ -177,6 +181,7 @@ SPEC REPOS:
     - CocoaLumberjack
     - CryptoSwift
     - Cuckoo
+    - EthereumSignTypedDataUtil
     - FireMock
     - IrohaCrypto
     - keccak.c
@@ -257,6 +262,7 @@ SPEC CHECKSUMS:
   CommonWallet: 59fdbf5511d6fcdc38496db4baf425dd0cf29274
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
+  EthereumSignTypedDataUtil: ae4e33b21e51ee046a86a65b02843090b8bbd3f9
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
@@ -285,6 +291,6 @@ SPEC CHECKSUMS:
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 507fd2585158ad3958f09de38c7a627e160b973f
+PODFILE CHECKSUM: 045fa3d2044604370165702e5bf8e46facda88d9
 
 COCOAPODS: 1.11.3
