@@ -295,15 +295,25 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
         signingOperation.addDependency(signatureDataOperation)
         signingOperation.addDependency(transactionWrapper.targetOperation)
 
-        signingOperation.completionBlock = { [weak self] in
+        let serializationOperation = createSerializationOperation(
+            chainId: chainId,
+            dependingOn: transactionWrapper.targetOperation,
+            signatureOperation: signingOperation,
+            serializationFactory: serializationFactory
+        )
+
+        serializationOperation.addDependency(transactionWrapper.targetOperation)
+        serializationOperation.addDependency(signingOperation)
+
+        serializationOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 guard let strongSelf = self else {
                     return
                 }
 
                 do {
-                    let signature = try signingOperation.extractNoCancellableResultData()
-                    let response = DAppOperationResponse(signature: signature)
+                    let transaction = try serializationOperation.extractNoCancellableResultData()
+                    let response = DAppOperationResponse(signature: transaction)
                     let result: Result<DAppOperationResponse, Error> = .success(response)
                     strongSelf.presenter?.didReceive(responseResult: result, for: strongSelf.request)
                 } catch {
@@ -313,7 +323,8 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             }
         }
 
-        let allOperations = transactionWrapper.allOperations + [signatureDataOperation, signingOperation]
+        let allOperations = transactionWrapper.allOperations +
+            [signatureDataOperation, signingOperation, serializationOperation]
 
         operationQueue.addOperations(allOperations, waitUntilFinished: false)
     }

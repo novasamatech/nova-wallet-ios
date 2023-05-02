@@ -28,8 +28,13 @@ extension WalletConnectStateSigning: WalletConnectStateProtocol {
 
         let nextState = WalletConnectStateReady(stateMachine: stateMachine)
 
-        if let signature = response.signature {
-            let result = AnyCodable(signature.toHex(includePrefix: true))
+        if
+            let signature = response.signature,
+            let method = WalletConnectMethod(rawValue: request.method) {
+            let result = WalletConnectSignModelFactory.createSigningResponse(
+                for: method,
+                signature: signature
+            )
 
             stateMachine.emit(
                 signDecision: .approve(request: request, signature: result),

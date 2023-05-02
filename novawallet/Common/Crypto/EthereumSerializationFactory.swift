@@ -9,6 +9,11 @@ protocol EthereumSerializationFactoryProtocol {
         chainId: String,
         signature: EthereumSignature?
     ) throws -> Data
+
+    func serializeSignatureWithReplayProtection(
+        for signature: EthereumSignature,
+        chainId: String
+    ) throws -> Data
 }
 
 enum EthereumSerializationFactoryError: Error {
@@ -115,6 +120,23 @@ extension EthereumSerializationFactory: EthereumSerializationFactoryProtocol {
         fields.append(contentsOf: signatureFields)
 
         guard let serializedData = RLP.encode(fields) else {
+            throw EthereumSerializationFactoryError.rlpFailed
+        }
+
+        return serializedData
+    }
+
+    func serializeSignatureWithReplayProtection(
+        for signature: EthereumSignature,
+        chainId: String
+    ) throws -> Data {
+        guard let chainId = BigUInt.fromHexString(chainId) else {
+            throw EthereumSerializationFactoryError.invalidChainId(value: chainId)
+        }
+
+        let signatureFields = composeSignaturePart(from: signature, chainId: chainId)
+
+        guard let serializedData = RLP.encode(signatureFields) else {
             throw EthereumSerializationFactoryError.rlpFailed
         }
 
