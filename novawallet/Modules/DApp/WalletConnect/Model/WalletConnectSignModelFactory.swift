@@ -16,25 +16,26 @@ enum WalletConnectSignModelFactory {
         chain: ChainModel,
         params: AnyCodable
     ) throws -> JSON {
-        guard let walletAddress = wallet.fetch(for: chain.accountRequest())?.toAddress() else {
+        guard let walletAccountId = wallet.fetch(for: chain.accountRequest())?.accountId else {
             throw WalletConnectSignModelFactoryError.missingAccount(chainId: chain.chainId)
         }
 
         let json = try params.get(JSON.self)
 
-        guard let requestAddress = json.address?.stringValue else {
+        guard
+            let requestAccountId = try? json.address?.stringValue?.toAccountId(
+                using: chain.chainFormat
+            ) else {
             throw WalletConnectSignModelFactoryError.invalidParams(
                 params: json,
                 method: .polkadotSignTransaction
             )
         }
 
-        // Wallet Connect can include addresses without checksum
-
-        guard walletAddress.lowercased() == requestAddress.lowercased() else {
+        guard walletAccountId == requestAccountId else {
             throw WalletConnectSignModelFactoryError.invalidAccount(
-                expected: walletAddress,
-                actual: requestAddress
+                expected: walletAccountId.toHex(includePrefix: true),
+                actual: requestAccountId.toHex(includePrefix: true)
             )
         }
 
@@ -52,33 +53,14 @@ enum WalletConnectSignModelFactory {
             params: params
         )
 
-        guard
-            let payload = try json.transactionPayload?.map(to: PolkadotExtensionExtrinsic.self),
-            let address = wallet.fetch(for: chain.accountRequest())?.toAddress() else {
+        guard let payload = try json.transactionPayload?.map(to: PolkadotExtensionExtrinsic.self) else {
             throw WalletConnectSignModelFactoryError.invalidParams(
                 params: json,
                 method: .polkadotSignTransaction
             )
         }
 
-        // Wallet Connect can include address without checksum, we manually add it for consistency
-
-        let modifiedPayload = PolkadotExtensionExtrinsic(
-            address: address,
-            blockHash: payload.blockHash,
-            blockNumber: payload.blockNumber,
-            era: payload.era,
-            genesisHash: payload.genesisHash,
-            method: payload.method,
-            nonce: payload.nonce,
-            specVersion: payload.specVersion,
-            tip: payload.tip,
-            transactionVersion: payload.transactionVersion,
-            signedExtensions: payload.signedExtensions,
-            version: payload.version
-        )
-
-        return try modifiedPayload.toScaleCompatibleJSON()
+        return try payload.toScaleCompatibleJSON()
     }
 
     private static func createPolkadotSignMessage(
