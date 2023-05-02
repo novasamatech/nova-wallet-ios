@@ -278,4 +278,20 @@ extension WalletConnectSignModelFactory {
             return .ethereumBytes(chain: .left(chain))
         }
     }
+
+    static func createSigningResponse(for method: WalletConnectMethod, signature: Data) -> AnyCodable {
+        switch method {
+        case .polkadotSignTransaction, .polkadotSignMessage:
+            let identifier = (0 ... UInt32.max).randomElement() ?? 0
+            let result = PolkadotExtensionSignerResult(
+                identifier: UInt(identifier),
+                signature: signature.toHex(includePrefix: true)
+            )
+
+            return AnyCodable(result)
+        case .ethSignTransaction, .ethSendTransaction, .ethPersonalSign, .ethSignTypeData:
+            let result = signature.toHex(includePrefix: true)
+            return AnyCodable(result)
+        }
+    }
 }
