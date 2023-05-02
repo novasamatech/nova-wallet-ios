@@ -122,24 +122,24 @@ PODS:
     - BigInt (~> 5.0)
   - SwiftyBeaver (1.9.3)
   - TweetNacl (1.0.2)
-  - WalletConnectSwiftV2 (1.5.11):
-    - WalletConnectSwiftV2/WalletConnect (= 1.5.11)
-  - WalletConnectSwiftV2/Commons (1.5.11)
-  - WalletConnectSwiftV2/JSONRPC (1.5.11):
+  - WalletConnectSwiftV2 (1.5.14):
+    - WalletConnectSwiftV2/WalletConnect (= 1.5.14)
+  - WalletConnectSwiftV2/Commons (1.5.14)
+  - WalletConnectSwiftV2/JSONRPC (1.5.14):
     - WalletConnectSwiftV2/Commons
-  - WalletConnectSwiftV2/WalletConnect (1.5.11):
+  - WalletConnectSwiftV2/WalletConnect (1.5.14):
     - WalletConnectSwiftV2/WalletConnectPairing
-  - WalletConnectSwiftV2/WalletConnectJWT (1.5.11):
+  - WalletConnectSwiftV2/WalletConnectJWT (1.5.14):
     - WalletConnectSwiftV2/WalletConnectKMS
-  - WalletConnectSwiftV2/WalletConnectKMS (1.5.11):
+  - WalletConnectSwiftV2/WalletConnectKMS (1.5.14):
     - WalletConnectSwiftV2/WalletConnectUtils
-  - WalletConnectSwiftV2/WalletConnectNetworking (1.5.11):
+  - WalletConnectSwiftV2/WalletConnectNetworking (1.5.14):
     - WalletConnectSwiftV2/WalletConnectRelay
-  - WalletConnectSwiftV2/WalletConnectPairing (1.5.11):
+  - WalletConnectSwiftV2/WalletConnectPairing (1.5.14):
     - WalletConnectSwiftV2/WalletConnectNetworking
-  - WalletConnectSwiftV2/WalletConnectRelay (1.5.11):
+  - WalletConnectSwiftV2/WalletConnectRelay (1.5.14):
     - WalletConnectSwiftV2/WalletConnectJWT
-  - WalletConnectSwiftV2/WalletConnectUtils (1.5.11):
+  - WalletConnectSwiftV2/WalletConnectUtils (1.5.14):
     - WalletConnectSwiftV2/JSONRPC
   - Web3Core (3.0.6):
     - BigInt (~> 5.2.0)
@@ -172,7 +172,7 @@ DEPENDENCIES:
   - SwiftLint
   - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
   - SwiftyBeaver
-  - WalletConnectSwiftV2
+  - WalletConnectSwiftV2 (from `https://github.com/WalletConnect/WalletConnectSwiftV2.git`, tag `1.5.14`)
   - web3swift (from `https://github.com/web3swift-team/web3swift.git`, tag `3.0.6`)
 
 SPEC REPOS:
@@ -199,7 +199,6 @@ SPEC REPOS:
     - SwiftLint
     - SwiftyBeaver
     - TweetNacl
-    - WalletConnectSwiftV2
     - Web3Core
     - xxHash-Swift
 
@@ -227,6 +226,9 @@ EXTERNAL SOURCES:
     :tag: 3.0.0
   SwiftRLP:
     :git: https://github.com/ERussel/SwiftRLP.git
+  WalletConnectSwiftV2:
+    :git: https://github.com/WalletConnect/WalletConnectSwiftV2.git
+    :tag: 1.5.14
   web3swift:
     :git: https://github.com/web3swift-team/web3swift.git
     :tag: 3.0.6
@@ -256,6 +258,9 @@ CHECKOUT OPTIONS:
   SwiftRLP:
     :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
     :git: https://github.com/ERussel/SwiftRLP.git
+  WalletConnectSwiftV2:
+    :git: https://github.com/WalletConnect/WalletConnectSwiftV2.git
+    :tag: 1.5.14
   web3swift:
     :git: https://github.com/web3swift-team/web3swift.git
     :tag: 3.0.6
@@ -291,11 +296,11 @@ SPEC CHECKSUMS:
   SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
-  WalletConnectSwiftV2: 57aa9c4fef92428ac74d51d3d08fe5001af94827
+  WalletConnectSwiftV2: ff5cb17196b583a72c8ab826dd236ab3aa7b2c39
   Web3Core: 4a62a109cac056915d2d5023606438c89e229a1e
   web3swift: 944e76579b953a7b7e81dbb351c6dc0ed1defe63
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: b7a3863003b20c725bfd8afc5f904b1bb506e5cf
+PODFILE CHECKSUM: 17dc836b964fd661520c3c70f3d2c1d46620dd66
 
 COCOAPODS: 1.11.3

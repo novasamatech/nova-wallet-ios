@@ -165,7 +165,7 @@ extension WalletConnectTransport: WalletConnectServiceDelegate {
     func walletConnect(service _: WalletConnectServiceProtocol, establishedSession: Session) {
         logger.debug("New session: \(establishedSession)")
 
-        // TODO: Handle session
+        // TODO: Handle session in ui task
     }
 
     func walletConnect(service _: WalletConnectServiceProtocol, request: Request, session: Session?) {
