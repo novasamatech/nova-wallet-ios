@@ -17,6 +17,8 @@ protocol WalletConnectServiceProtocol: ApplicationServiceProtocol, AnyObject {
 
     func submit(proposalDecision: WalletConnectProposalDecision)
     func submit(signingDecision: WalletConnectSignDecision)
+
+    func getSessions() -> [Session]
 }
 
 enum WalletConnectServiceError: Error {
@@ -219,6 +221,14 @@ extension WalletConnectService: WalletConnectServiceProtocol {
                 self?.notify(error: .signFailed(decision: signingDecision, internalError: error))
             }
         }
+    }
+
+    func getSessions() -> [Session] {
+        guard let client = client else {
+            return []
+        }
+
+        return client.getSessions()
     }
 
     func setup() {

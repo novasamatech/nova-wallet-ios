@@ -5,6 +5,8 @@ protocol WalletConnectTransportProtocol: DAppTransportProtocol {
     var delegate: WalletConnectTransportDelegate? { get set }
 
     func connect(uri: String)
+
+    func getSessionsCount() -> Int
 }
 
 protocol WalletConnectTransportDelegate: AnyObject {
@@ -22,6 +24,8 @@ protocol WalletConnectTransportDelegate: AnyObject {
     )
 
     func walletConnect(transport: WalletConnectTransportProtocol, didFail error: WalletConnectTransportError)
+
+    func walletConnectDidChangeSessions(transport: WalletConnectTransportProtocol)
 
     func walletConnectAskNextMessage(transport: WalletConnectTransportProtocol)
 }
@@ -49,6 +53,10 @@ final class WalletConnectTransport {
 extension WalletConnectTransport: WalletConnectTransportProtocol {
     func connect(uri: String) {
         service.connect(uri: uri)
+    }
+
+    func getSessionsCount() -> Int {
+        service.getSessions().count
     }
 }
 
@@ -165,7 +173,7 @@ extension WalletConnectTransport: WalletConnectServiceDelegate {
     func walletConnect(service _: WalletConnectServiceProtocol, establishedSession: Session) {
         logger.debug("New session: \(establishedSession)")
 
-        // TODO: Handle session in ui task
+        delegate?.walletConnectDidChangeSessions(transport: self)
     }
 
     func walletConnect(service _: WalletConnectServiceProtocol, request: Request, session: Session?) {

@@ -2,6 +2,12 @@ import Foundation
 import UIKit
 
 final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentable {
+    let dappMediator: DAppInteractionMediating
+
+    init(dappMediator: DAppInteractionMediating) {
+        self.dappMediator = dappMediator
+    }
+
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?) {
         guard let accountManagement = AccountManagementViewFactory.createView(for: walletId) else {
             return
@@ -70,7 +76,10 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
     }
 
     func showWalletConnect(from view: ControllerBackedProtocol?) {
-        guard let walletConnectView = WalletConnectViewFactory.createView() else {
+        guard
+            let walletConnectView = WalletConnectSessionsViewFactory.createView(
+                with: dappMediator
+            ) else {
             return
         }
 

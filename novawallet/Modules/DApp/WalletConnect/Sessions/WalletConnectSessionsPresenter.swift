@@ -1,15 +1,15 @@
 import Foundation
 
-final class WalletConnectPresenter {
-    weak var view: WalletConnectViewProtocol?
-    let wireframe: WalletConnectWireframeProtocol
-    let interactor: WalletConnectInteractorInputProtocol
+final class WalletConnectSessionsPresenter {
+    weak var view: WalletConnectSessionsViewProtocol?
+    let wireframe: WalletConnectSessionsWireframeProtocol
+    let interactor: WalletConnectSessionsInteractorInputProtocol
 
     let logger: LoggerProtocol
 
     init(
-        interactor: WalletConnectInteractorInputProtocol,
-        wireframe: WalletConnectWireframeProtocol,
+        interactor: WalletConnectSessionsInteractorInputProtocol,
+        wireframe: WalletConnectSessionsWireframeProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -18,7 +18,7 @@ final class WalletConnectPresenter {
     }
 }
 
-extension WalletConnectPresenter: WalletConnectPresenterProtocol {
+extension WalletConnectSessionsPresenter: WalletConnectSessionsPresenterProtocol {
     func setup() {
         interactor.setup()
     }
@@ -28,9 +28,9 @@ extension WalletConnectPresenter: WalletConnectPresenterProtocol {
     }
 }
 
-extension WalletConnectPresenter: WalletConnectInteractorOutputProtocol {}
+extension WalletConnectSessionsPresenter: WalletConnectSessionsInteractorOutputProtocol {}
 
-extension WalletConnectPresenter: URIScanDelegate {
+extension WalletConnectSessionsPresenter: URIScanDelegate {
     func uriScanDidReceive(uri: String, context _: AnyObject?) {
         logger.debug("Wallet Connect URI: \(uri)")
 
