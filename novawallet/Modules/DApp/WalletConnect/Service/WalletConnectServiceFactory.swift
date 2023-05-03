@@ -5,6 +5,7 @@ struct WalletConnectServiceFactory {
     static func createInteractor(
         chainsStore: ChainsStoreProtocol,
         settingsRepository: AnyDataProviderRepository<DAppSettings>,
+        walletsRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationQueue: OperationQueue
     ) -> WalletConnectInteractor {
         let metadata = WalletConnectMetadata.nova(with: ApplicationConfig.shared.walletConnectProjectId)
@@ -13,6 +14,7 @@ struct WalletConnectServiceFactory {
         let dataSource = DAppStateDataSource(
             chainsStore: chainsStore,
             dAppSettingsRepository: settingsRepository,
+            walletsRepository: walletsRepository,
             walletSettings: SelectedWalletSettings.shared,
             operationQueue: operationQueue
         )

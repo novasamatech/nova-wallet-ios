@@ -81,6 +81,46 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         )
     }
 
+    private func fetchWallet(
+        for session: Session,
+        dataSource: DAppStateDataSource,
+        completion: @escaping (MetaAccountModel?) -> Void
+    ) {
+        let settingsOperation = dataSource.dAppSettingsRepository.fetchOperation(
+            by: { session.pairingTopic },
+            options: .init()
+        )
+
+        let walletOperation = dataSource.walletsRepository.fetchOperation(
+            by: {
+                if let metaId = try settingsOperation.extractNoCancellableResultData()?.metaId {
+                    return metaId
+                } else {
+                    throw ChainAccountFetchingError.accountNotExists
+                }
+
+            },
+            options: .init()
+        )
+
+        walletOperation.addDependency(settingsOperation)
+
+        walletOperation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    let wallet = try walletOperation.extractNoCancellableResultData()
+                    completion(wallet)
+                } catch {
+                    completion(nil)
+                }
+            }
+        }
+
+        let operations = [settingsOperation, walletOperation]
+
+        dataSource.operationQueue.addOperations(operations, waitUntilFinished: false)
+    }
+
     private func processSign(request: Request, session: Session?, dataSource: DAppStateDataSource) {
         guard let stateMachine = stateMachine else {
             return
@@ -167,7 +207,19 @@ extension WalletConnectStateNewMessage: WalletConnectStateProtocol {
         case let .proposal(proposal):
             process(proposal: proposal, dataSource: dataSource)
         case let .request(request, session):
-            processSign(request: request, session: session, dataSource: dataSource)
+            guard let session = session else {
+                // TODO: No session found error
+                return
+            }
+
+            fetchWallet(for: session, dataSource: dataSource) { [weak self] optWallet in
+                if let wallet = optWallet {
+                    self?.processSign(request: request, session: session, dataSource: dataSource)
+                } else {
+                    // TODO: Handle not authorized request
+                    self?.rejectRequest(request: request)
+                }
+            }
         }
     }
 }
