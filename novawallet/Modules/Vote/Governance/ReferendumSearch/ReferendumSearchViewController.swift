@@ -33,6 +33,7 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         setupTableView()
         applyLocalization()
         applyState()
+        rootView.cancelButton.addTarget(self, action: #selector(cancelAction), for: .touchUpInside)
         super.viewDidLoad()
     }
 
@@ -85,6 +86,20 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         }
 
         return dataSource
+    }
+
+    private func updateTime(
+        in model: ReferendumView.Model,
+        time: StatusTimeViewModel??
+    ) -> ReferendumView.Model {
+        var updatingValue = model
+        updatingValue.referendumInfo.time = time??.viewModel
+        return updatingValue
+    }
+
+    @objc
+    private func cancelAction() {
+        presenter?.cancel()
     }
 }
 
@@ -182,6 +197,47 @@ extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
         }
 
         applyState()
+    }
+
+    func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
+        guard let visibleRows = rootView.tableView.indexPathsForVisibleRows else {
+            return
+        }
+
+        let visibleModelIds = visibleRows.compactMap {
+            dataSource.itemIdentifier(for: $0)
+        }
+
+        dataStore = time.reduce(into: dataStore) { store, keyValue in
+            let modelId = keyValue.key
+            guard let model = store[modelId] else {
+                return
+            }
+
+            switch model.viewModel {
+            case let .loaded(value):
+                let newValue = updateTime(in: value, time: time[modelId])
+                store[modelId] = ReferendumsCellViewModel(
+                    referendumIndex: modelId,
+                    viewModel: .loaded(value: newValue)
+                )
+            case let .cached(value):
+                let newValue = updateTime(in: value, time: time[modelId])
+                store[modelId] = ReferendumsCellViewModel(
+                    referendumIndex: modelId,
+                    viewModel: .cached(value: newValue)
+                )
+            case .loading:
+                store[modelId] = ReferendumsCellViewModel(
+                    referendumIndex: modelId,
+                    viewModel: .loading
+                )
+            }
+        }
+
+        var newSnapshot = dataSource.snapshot()
+        newSnapshot.reloadItems(visibleModelIds)
+        dataSource.apply(newSnapshot, animatingDifferences: false)
     }
 }
 

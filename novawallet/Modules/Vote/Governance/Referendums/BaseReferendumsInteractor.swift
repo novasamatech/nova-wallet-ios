@@ -92,6 +92,14 @@ class BaseReferendumsInteractor: BaseReferendumsInteractorInputProtocol, AnyProv
         blockNumberSubscription = nil
     }
 
+    func updateReferendums(_ referendums: [ReferendumLocal]) {
+        basePresenter?.didReceiveReferendums(referendums)
+    }
+
+    func updateReferendumsMetadata(_ changes: [DataProviderChange<ReferendumMetadataLocal>]) {
+        basePresenter?.didReceiveReferendumsMetadata(changes)
+    }
+
     func setup() {
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             self?.governanceState.settings.setup(runningCompletionIn: .main) { result in
@@ -198,7 +206,7 @@ class BaseReferendumsInteractor: BaseReferendumsInteractorInputProtocol, AnyProv
         metadataProvider = subscribeGovernanceMetadata(for: option)
 
         if metadataProvider == nil {
-            basePresenter?.didReceiveReferendumsMetadata([])
+            updateReferendumsMetadata([])
         }
     }
 
@@ -263,7 +271,7 @@ class BaseReferendumsInteractor: BaseReferendumsInteractorInputProtocol, AnyProv
         }
 
         guard let referendumsOperationFactory = governanceState.referendumsOperationFactory else {
-            basePresenter?.didReceiveReferendums([])
+            updateReferendums([])
             return
         }
 
@@ -282,7 +290,7 @@ class BaseReferendumsInteractor: BaseReferendumsInteractorInputProtocol, AnyProv
 
                 do {
                     let referendums = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.basePresenter?.didReceiveReferendums(referendums)
+                    self?.updateReferendums(referendums)
                 } catch {
                     self?.basePresenter?.didReceiveError(.referendumsFetchFailed(error))
                 }
@@ -376,7 +384,7 @@ extension BaseReferendumsInteractor: GovMetadataLocalStorageSubscriber, GovMetad
 
         switch result {
         case let .success(changes):
-            basePresenter?.didReceiveReferendumsMetadata(changes)
+            updateReferendumsMetadata(changes)
         case let .failure(error):
             basePresenter?.didReceiveError(.metadataSubscriptionFailed(error))
         }

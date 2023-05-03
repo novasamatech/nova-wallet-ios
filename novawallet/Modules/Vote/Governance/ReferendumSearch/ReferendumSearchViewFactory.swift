@@ -30,7 +30,8 @@ struct ReferendumSearchViewFactory {
         let presenter = ReferendumSearchPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            statusViewModelFactory: ReferendumStatusViewModelFactory()
         )
 
         let view = ReferendumSearchViewController(
