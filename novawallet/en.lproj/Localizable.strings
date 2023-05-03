@@ -1195,9 +1195,6 @@
 "evm.contract.call" = "Contract call";
 "evm.contract" = "Contract";
 "evm.contract.function" = "Function";
-"common.wallet.connect" = "Wallet Connect";
-"wallet.connect.scan.message" = "Scan QR from DApp";
-"wallet.connect.scan.error" = "Invalid URI format";
 "transfer.setup.kilt.addresses.title" = "%@ addresses for %@";
 "transfer.setup.error.w3n.serviceNotFound.subtitle" = "No valid address was found for %@ on the %@ network";
 "transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ not found";
@@ -1211,3 +1208,7 @@
 "transfer.setup.recipient.input.placeholder" = "Address or w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Searching name is in progress";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Please, wait until searching %@ is finished";
+"common.wallet.connect" = "WalletConnect";
+"wallet.connect.scan.message" = "Scan QR from DApp";
+"wallet.connect.scan.error" = "Invalid URI format";
+"wallet.connect.scan.button" = "New connection";

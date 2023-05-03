@@ -9,6 +9,10 @@ final class DAppInteractionFactory {
         let storageFacade = UserDataStorageFacade.shared
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
         let settingsRepository = accountRepositoryFactory.createAuthorizedDAppsRepository(for: nil)
+        let walletsRepository = accountRepositoryFactory.createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
 
         let phishingVerifier = PhishingSiteVerifier.createSequentialVerifier()
 
@@ -17,6 +21,7 @@ final class DAppInteractionFactory {
         let walletConnect = WalletConnectServiceFactory.createInteractor(
             chainsStore: chainsStore,
             settingsRepository: settingsRepository,
+            walletsRepository: walletsRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
