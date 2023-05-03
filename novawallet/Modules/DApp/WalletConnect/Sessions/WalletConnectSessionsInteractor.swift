@@ -8,6 +8,11 @@ final class WalletConnectSessionsInteractor {
     init(walletConnect: WalletConnectDelegateInputProtocol) {
         self.walletConnect = walletConnect
     }
+
+    private func provideSessions() {
+        walletConnect.fetchSessions { _ in
+        }
+    }
 }
 
 extension WalletConnectSessionsInteractor: WalletConnectSessionsInteractorInputProtocol {
@@ -21,5 +26,7 @@ extension WalletConnectSessionsInteractor: WalletConnectSessionsInteractorInputP
 }
 
 extension WalletConnectSessionsInteractor: WalletConnectDelegateOutputProtocol {
-    func walletConnectDidChangeSessions() {}
+    func walletConnectDidChangeSessions() {
+        provideSessions()
+    }
 }
