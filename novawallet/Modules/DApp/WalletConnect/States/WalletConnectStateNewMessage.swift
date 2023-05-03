@@ -121,7 +121,12 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         dataSource.operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
-    private func processSign(request: Request, session: Session?, dataSource: DAppStateDataSource) {
+    private func processSign(
+        request: Request,
+        session: Session?,
+        wallet: MetaAccountModel,
+        chainsStore: ChainsStoreProtocol
+    ) {
         guard let stateMachine = stateMachine else {
             return
         }
@@ -134,30 +139,28 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
         guard
             let chain = WalletConnectModelFactory.resolveChain(
                 for: request.chainId,
-                chainsStore: dataSource.chainsStore
+                chainsStore: chainsStore
             ) else {
             rejectRequest(request: request)
             return
         }
 
         guard
-            let accountId = dataSource.walletSettings.value.fetch(
-                for: chain.accountRequest()
-            )?.accountId else {
+            let accountId = wallet.fetch(for: chain.accountRequest())?.accountId else {
             rejectRequest(request: request)
             return
         }
 
         do {
             let operationData = try WalletConnectSignModelFactory.createOperationData(
-                for: dataSource.walletSettings.value,
+                for: wallet,
                 chain: chain,
                 params: request.params,
                 method: method
             )
 
             let signingType = try WalletConnectSignModelFactory.createSigningType(
-                for: dataSource.walletSettings.value,
+                for: wallet,
                 chain: chain,
                 method: method
             )
@@ -165,7 +168,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
             let signingRequest = DAppOperationRequest(
                 transportName: DAppTransports.walletConnect,
                 identifier: request.id.string,
-                wallet: dataSource.walletSettings.value,
+                wallet: wallet,
                 accountId: accountId,
                 dApp: session?.peer.name ?? "",
                 dAppIcon: session?.peer.icons.first.flatMap { URL(string: $0) },
@@ -214,7 +217,12 @@ extension WalletConnectStateNewMessage: WalletConnectStateProtocol {
 
             fetchWallet(for: session, dataSource: dataSource) { [weak self] optWallet in
                 if let wallet = optWallet {
-                    self?.processSign(request: request, session: session, dataSource: dataSource)
+                    self?.processSign(
+                        request: request,
+                        session: session,
+                        wallet: wallet,
+                        chainsStore: dataSource.chainsStore
+                    )
                 } else {
                     // TODO: Handle not authorized request
                     self?.rejectRequest(request: request)

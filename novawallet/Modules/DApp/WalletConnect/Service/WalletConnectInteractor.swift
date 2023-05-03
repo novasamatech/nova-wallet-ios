@@ -40,6 +40,10 @@ extension WalletConnectInteractor: WalletConnectDelegateInputProtocol {
     func getSessionsCount() -> Int {
         transport.getSessionsCount()
     }
+
+    func fetchSessions(_ completion: @escaping (Result<[WalletConnectSession], Error>) -> Void) {
+        transport.fetchSessions(completion)
+    }
 }
 
 extension WalletConnectInteractor: WalletConnectTransportDelegate {

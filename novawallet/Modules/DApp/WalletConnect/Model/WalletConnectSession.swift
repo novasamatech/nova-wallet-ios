@@ -6,5 +6,5 @@ struct WalletConnectSession {
     let dAppName: String?
     let dAppHost: String?
     let dAppIcon: URL?
-    let isDAppActive: Bool
+    let active: Bool
 }
