@@ -5,6 +5,8 @@ import SubstrateSdk
 import RobinHood
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
+    var dappMediator: DAppInteractionMediating { get }
+
     func updateOnAccountChange()
 }
 
@@ -16,6 +18,7 @@ final class ServiceCoordinator {
     let evmNativeService: AssetsUpdatingServiceProtocol
     let githubPhishingService: ApplicationServiceProtocol
     let equilibriumService: AssetsUpdatingServiceProtocol
+    let dappMediator: DAppInteractionMediating
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -24,7 +27,8 @@ final class ServiceCoordinator {
         evmAssetsService: AssetsUpdatingServiceProtocol,
         evmNativeService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol,
-        equilibriumService: AssetsUpdatingServiceProtocol
+        equilibriumService: AssetsUpdatingServiceProtocol,
+        dappMediator: DAppInteractionMediating
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
@@ -33,6 +37,7 @@ final class ServiceCoordinator {
         self.evmNativeService = evmNativeService
         self.equilibriumService = equilibriumService
         self.githubPhishingService = githubPhishingService
+        self.dappMediator = dappMediator
     }
 }
 
@@ -54,6 +59,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.setup()
         evmNativeService.setup()
         equilibriumService.setup()
+        dappMediator.setup()
     }
 
     func throttle() {
@@ -63,10 +69,12 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         evmAssetsService.throttle()
         evmNativeService.throttle()
         equilibriumService.throttle()
+        dappMediator.throttle()
     }
 }
 
 extension ServiceCoordinator {
+    // swiftlint:disable:next function_body_length
     static func createDefault() -> ServiceCoordinatorProtocol {
         let githubPhishingAPIService = GitHubPhishingServiceFactory.createService()
 
@@ -153,7 +161,8 @@ extension ServiceCoordinator {
             evmAssetsService: evmAssetsService,
             evmNativeService: evmNativeService,
             githubPhishingService: githubPhishingAPIService,
-            equilibriumService: equilibriumService
+            equilibriumService: equilibriumService,
+            dappMediator: DAppInteractionFactory.createMediator()
         )
     }
 }

@@ -15,10 +15,12 @@ protocol DAppTransportProtocol: AnyObject {
     func stop()
 }
 
-protocol DAppInteractionMediating: ApplicationServiceProtocol {
+protocol DAppInteractionMediating: AnyObject, ApplicationServiceProtocol {
     var chainsStore: ChainsStoreProtocol { get }
     var settingsRepository: AnyDataProviderRepository<DAppSettings> { get }
     var operationQueue: OperationQueue { get }
+
+    var children: [DAppInteractionChildProtocol] { get }
 
     func register(transport: DAppTransportProtocol)
     func unregister(transport: DAppTransportProtocol)
@@ -41,4 +43,6 @@ protocol DAppInteractionOutputProtocol: AnyObject {
     func didReceive(error: DAppInteractionError)
 }
 
-protocol DAppInteractionChildProtocol: ApplicationServiceProtocol {}
+protocol DAppInteractionChildProtocol: ApplicationServiceProtocol {
+    var mediator: DAppInteractionMediating? { get set }
+}

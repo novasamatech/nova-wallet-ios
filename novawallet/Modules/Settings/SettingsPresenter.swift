@@ -11,6 +11,7 @@ final class SettingsPresenter {
     private var currency: String?
 
     private var wallet: MetaAccountModel?
+    private var walletConnectSessionsCount: Int?
 
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
@@ -34,6 +35,7 @@ final class SettingsPresenter {
         let sectionViewModels = viewModelFactory.createSectionViewModels(
             language: localizationManager?.selectedLanguage,
             currency: currency,
+            parameters: .init(walletConnectSessionsCount: walletConnectSessionsCount),
             locale: locale
         )
         view?.reload(sections: sectionViewModels)
@@ -118,7 +120,11 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .privacyPolicy:
             show(url: config.privacyPolicyURL)
         case .walletConnect:
-            wireframe.showWalletConnect(from: view)
+            if let count = walletConnectSessionsCount, count > 0 {
+                wireframe.showWalletConnect(from: view)
+            } else {
+                wireframe.showScan(from: view, delegate: self)
+            }
         }
     }
 
@@ -153,6 +159,20 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
         if view?.isSetup == true {
             updateView()
+        }
+    }
+
+    func didReceiveWalletConnect(sessionsCount: Int) {
+        walletConnectSessionsCount = sessionsCount
+
+        updateView()
+    }
+}
+
+extension SettingsPresenter: URIScanDelegate {
+    func uriScanDidReceive(uri: String, context _: AnyObject?) {
+        wireframe.hideUriScanAnimated(from: view) { [weak self] in
+            self?.interactor.connectWalletConnect(uri: uri)
         }
     }
 }
