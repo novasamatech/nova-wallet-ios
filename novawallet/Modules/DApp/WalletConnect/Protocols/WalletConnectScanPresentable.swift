@@ -1,7 +1,12 @@
 import Foundation
 
-final class WalletConnectWireframe: WalletConnectWireframeProtocol {
-    func showScan(from view: WalletConnectViewProtocol?, delegate: URIScanDelegate) {
+protocol WalletConnectScanPresentable: AnyObject {
+    func showScan(from view: ControllerBackedProtocol?, delegate: URIScanDelegate)
+    func hideUriScanAnimated(from view: ControllerBackedProtocol?, completion: @escaping () -> Void)
+}
+
+extension WalletConnectScanPresentable {
+    func showScan(from view: ControllerBackedProtocol?, delegate: URIScanDelegate) {
         guard let scanView = URIScanViewFactory.createScan(for: delegate, context: nil) else {
             return
         }

@@ -12,10 +12,18 @@ final class DAppInteractionFactory {
 
         let phishingVerifier = PhishingSiteVerifier.createSequentialVerifier()
 
+        let chainsStore = ChainsStore(chainRegistry: ChainRegistryFacade.sharedRegistry)
+
+        let walletConnect = WalletConnectServiceFactory.createInteractor(
+            chainsStore: chainsStore,
+            settingsRepository: settingsRepository,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let mediator = DAppInteractionMediator(
             presenter: presenter,
-            children: [],
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            children: [walletConnect],
+            chainsStore: chainsStore,
             settingsRepository: settingsRepository,
             securedLayer: SecurityLayerService.shared,
             sequentialPhishingVerifier: phishingVerifier,
@@ -24,6 +32,7 @@ final class DAppInteractionFactory {
         )
 
         presenter.interactor = mediator
+        walletConnect.mediator = mediator
 
         return mediator
     }
