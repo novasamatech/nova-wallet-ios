@@ -1,5 +1,6 @@
 import Foundation
 import WalletConnectSwiftV2
+import RobinHood
 
 protocol WalletConnectTransportProtocol: DAppTransportProtocol {
     var delegate: WalletConnectTransportDelegate? { get set }
@@ -7,6 +8,8 @@ protocol WalletConnectTransportProtocol: DAppTransportProtocol {
     func connect(uri: String)
 
     func getSessionsCount() -> Int
+
+    func fetchSessions(_ completion: @escaping (Result<[WalletConnectSession], Error>) -> Void)
 }
 
 protocol WalletConnectTransportDelegate: AnyObject {
@@ -48,6 +51,41 @@ final class WalletConnectTransport {
         self.dataSource = dataSource
         self.logger = logger
     }
+
+    private func createSessionsMappingOperation(
+        dependingOn allSettingsOperation: BaseOperation<[DAppSettings]>,
+        allWalletsOperation: BaseOperation<[MetaAccountModel]>,
+        wcSessions: [Session]
+    ) -> BaseOperation<[WalletConnectSession]> {
+        ClosureOperation<[WalletConnectSession]> {
+            let allSettings = try allSettingsOperation.extractNoCancellableResultData().reduceToDict()
+            let allWallets = try allWalletsOperation.extractNoCancellableResultData().reduceToDict()
+
+            return wcSessions.map { wcSession in
+                let dAppIcon = wcSession.peer.icons.first.flatMap { URL(string: $0) }
+                let active = wcSession.expiryDate.compare(Date()) != .orderedDescending
+
+                let wallet: MetaAccountModel?
+
+                if
+                    let settings = allSettings[wcSession.pairingTopic],
+                    let metaId = settings.metaId {
+                    wallet = allWallets[metaId]
+                } else {
+                    wallet = nil
+                }
+
+                return WalletConnectSession(
+                    sessionId: wcSession.pairingTopic,
+                    wallet: wallet,
+                    dAppName: wcSession.peer.name,
+                    dAppHost: wcSession.peer.url,
+                    dAppIcon: dAppIcon,
+                    active: active
+                )
+            }
+        }
+    }
 }
 
 extension WalletConnectTransport: WalletConnectTransportProtocol {
@@ -57,6 +95,47 @@ extension WalletConnectTransport: WalletConnectTransportProtocol {
 
     func getSessionsCount() -> Int {
         service.getSessions().count
+    }
+
+    func fetchSessions(_ completion: @escaping (Result<[WalletConnectSession], Error>) -> Void) {
+        let wcSessions = service.getSessions()
+
+        guard !wcSessions.isEmpty else {
+            completion(.success([]))
+            return
+        }
+
+        let allSettingsOperation = dataSource.dAppSettingsRepository.fetchAllOperation(with: .init())
+        let allWalletsOperation = dataSource.walletsRepository.fetchAllOperation(with: .init())
+
+        let mapOperation = createSessionsMappingOperation(
+            dependingOn: allSettingsOperation,
+            allWalletsOperation: allWalletsOperation,
+            wcSessions: wcSessions
+        )
+
+        mapOperation.addDependency(allSettingsOperation)
+        mapOperation.addDependency(allWalletsOperation)
+
+        let operations = [allSettingsOperation, allWalletsOperation, mapOperation]
+
+        mapOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard let self = self else {
+                    return
+                }
+
+                do {
+                    let sessions = try mapOperation.extractNoCancellableResultData()
+
+                    completion(.success(sessions))
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+        }
+
+        dataSource.operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 }
 
