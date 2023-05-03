@@ -25,7 +25,7 @@ final class DAppInteractionMediator {
     init(
         presenter: DAppInteractionOutputProtocol,
         children: [DAppInteractionChildProtocol],
-        chainRegistry: ChainRegistryProtocol,
+        chainsStore: ChainsStoreProtocol,
         settingsRepository: AnyDataProviderRepository<DAppSettings>,
         securedLayer: SecurityLayerServiceProtocol,
         sequentialPhishingVerifier: PhishingSiteVerifing,
@@ -34,7 +34,7 @@ final class DAppInteractionMediator {
     ) {
         self.presenter = presenter
         self.children = children
-        chainsStore = ChainsStore(chainRegistry: chainRegistry)
+        self.chainsStore = chainsStore
         self.settingsRepository = settingsRepository
         self.securedLayer = securedLayer
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
