@@ -1195,9 +1195,6 @@
 "evm.contract.call" = "Вызов контракта";
 "evm.contract" = "Контракт";
 "evm.contract.function" = "Функция";
-"common.wallet.connect" = "Wallet Connect";
-"wallet.connect.scan.message" = "Отсканируйте QR код";
-"wallet.connect.scan.error" = "Неверный формат URI";
 "transfer.setup.kilt.addresses.title" = "%@ адреса для %@";
 "transfer.setup.error.w3n.serviceNotFound.subtitle" = "Не найден действительный адрес для %@ в сети %@";
 "transfer.setup.error.w3n.accountNotFound.subtitle" = "%@ не найден";
@@ -1211,3 +1208,6 @@
 "transfer.setup.recipient.input.placeholder" = "Адрес или w3n";
 "transfer.setup.error.w3n.search.in.progress.title" = "Идет поиск адреса получателя";
 "transfer.setup.error.w3n.search.in.progress.subtitle" = "Пожалуйста, подождите пока завершится поиск имени %@";
+"wallet.connect.scan.message" = "Отсканируйте QR код";
+"wallet.connect.scan.error" = "Неверный формат URI";
+"wallet.connect.scan.button" = "Новое соединение";
