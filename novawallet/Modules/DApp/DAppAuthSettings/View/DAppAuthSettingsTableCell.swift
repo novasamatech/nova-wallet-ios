@@ -5,21 +5,21 @@ protocol DAppAuthSettingsTableCellDelegate: AnyObject {
     func authSettingsDidSelectCell(_ cell: DAppAuthSettingsTableCell)
 }
 
-final class DAppAuthSettingsTableCell: UITableViewCell {
-    private enum Constants {
-        static let imageSize = CGSize(width: 48.0, height: 48.0)
-        static let imageInsets = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
-        static var imageDisplaySize: CGSize {
-            CGSize(
-                width: imageSize.width - imageInsets.left - imageInsets.right,
-                height: imageSize.height - imageInsets.top - imageInsets.bottom
-            )
-        }
+enum DAppIconCellConstants {
+    static let size = CGSize(width: 48.0, height: 48.0)
+    static let insets = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
+    static var displaySize: CGSize {
+        CGSize(
+            width: size.width - insets.left - insets.right,
+            height: size.height - insets.top - insets.bottom
+        )
     }
+}
 
+final class DAppAuthSettingsTableCell: UITableViewCell {
     let iconView: DAppIconView = {
         let view = DAppIconView()
-        view.contentInsets = Constants.imageInsets
+        view.contentInsets = DAppIconCellConstants.insets
         return view
     }()
 
@@ -59,7 +59,7 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
     }
 
     func bind(viewModel: DAppAuthSettingsViewModel) {
-        iconView.bind(viewModel: viewModel.iconViewModel, size: Constants.imageDisplaySize)
+        iconView.bind(viewModel: viewModel.iconViewModel, size: DAppIconCellConstants.displaySize)
 
         multiValueView.bind(topValue: viewModel.title, bottomValue: viewModel.subtitle)
     }
@@ -78,7 +78,7 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
             make.top.equalToSuperview().inset(8.0)
             make.leading.equalToSuperview().inset(16.0)
             make.bottom.equalToSuperview().inset(8.0)
-            make.size.equalTo(48.0)
+            make.size.equalTo(DAppIconCellConstants.size)
         }
 
         contentView.addSubview(removeButton)

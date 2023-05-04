@@ -10,7 +10,13 @@ final class WalletConnectSessionsInteractor {
     }
 
     private func provideSessions() {
-        walletConnect.fetchSessions { _ in
+        walletConnect.fetchSessions { [weak self] result in
+            switch result {
+            case let .success(sessions):
+                self?.presenter?.didReceive(sessions: sessions)
+            case let .failure(error):
+                self?.presenter?.didReceive(error: .sessionsFetchFailed(error))
+            }
         }
     }
 }
@@ -18,10 +24,16 @@ final class WalletConnectSessionsInteractor {
 extension WalletConnectSessionsInteractor: WalletConnectSessionsInteractorInputProtocol {
     func setup() {
         walletConnect.add(delegate: self)
+
+        provideSessions()
     }
 
     func connect(uri: String) {
         walletConnect.connect(uri: uri)
+    }
+
+    func retrySessionsFetch() {
+        provideSessions()
     }
 }
 

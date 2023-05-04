@@ -15,6 +15,7 @@ final class WalletConnectSessionsViewLayout: UIView {
         let view = UITableView()
         view.separatorStyle = .none
         view.backgroundColor = .clear
+        view.rowHeight = 64
         return view
     }()
 
