@@ -7,11 +7,8 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         basePresenter as? ReferendumSearchPresenterProtocol
     }
 
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, ReferendumIdLocal>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, ReferendumIdLocal>
-    private var dataStore: [ReferendumIdLocal: ReferendumsCellViewModel] = [:]
-    private lazy var dataSource = createDataSource()
     private(set) var emptyStateType: EmptyState? = .start
+    private var viewModels: [ReferendumsCellViewModel] = []
 
     init(presenter: ReferendumSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         super.init(basePresenter: presenter)
@@ -64,28 +61,9 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
 
     private func setupTableView() {
         rootView.tableView.separatorStyle = .none
-        rootView.tableView.dataSource = dataSource
+        rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
-
         rootView.tableView.registerClassForCell(ReferendumTableViewCell.self)
-    }
-
-    private func createDataSource() -> DataSource {
-        let dataSource: DataSource = .init(
-            tableView: rootView.tableView
-        ) { [weak self] tableView, indexPath, model -> UITableViewCell? in
-            guard let self = self else {
-                return nil
-            }
-            let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            dataStore[model].map {
-                cell.view.bind(viewModel: $0.viewModel)
-                cell.applyStyle()
-            }
-            return cell
-        }
-
-        return dataSource
     }
 
     private func updateTime(
@@ -103,27 +81,26 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
     }
 
     private func update(viewModels: [ReferendumsCellViewModel]) {
-        let existingIds = viewModels.compactMap { model in
-            if dataStore[model.referendumIndex] != nil {
-                return model.referendumIndex
-            } else {
-                return nil
-            }
+        guard viewModels != self.viewModels else {
+            return
         }
+        self.viewModels = viewModels
+        rootView.tableView.reloadData()
+    }
+}
 
-        dataStore = viewModels.reduce(
-            into: [ReferendumIdLocal: ReferendumsCellViewModel]()
-        ) {
-            $0[$1.referendumIndex] = $1
+extension ReferendumSearchViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell: ReferendumTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+        viewModels[safe: indexPath.row].map {
+            cell.view.bind(viewModel: $0.viewModel)
+            cell.applyStyle()
         }
+        return cell
+    }
 
-        let newIds = viewModels.map(\.referendumIndex)
-    
-        var snapshot = Snapshot()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(newIds)
-        snapshot.reloadItems(existingIds)
-        dataSource.apply(snapshot, animatingDifferences: false)
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        viewModels.count
     }
 }
 
@@ -131,11 +108,11 @@ extension ReferendumSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard let identifier = dataSource.itemIdentifier(for: indexPath) else {
+        guard let referendumIndex = viewModels[safe: indexPath.row]?.referendumIndex else {
             return
         }
 
-        presenter?.select(referendumIndex: identifier)
+        presenter?.select(referendumIndex: referendumIndex)
     }
 }
 
@@ -154,45 +131,16 @@ extension ReferendumSearchViewController: ReferendumSearchViewProtocol {
         applyState()
     }
 
-    func updateReferendums(time: [UInt: StatusTimeViewModel?]) {
-        guard let visibleRows = rootView.tableView.indexPathsForVisibleRows else {
-            return
-        }
-
-        let visibleModelIds = visibleRows.compactMap {
-            dataSource.itemIdentifier(for: $0)
-        }
-
-        dataStore = time.reduce(into: dataStore) { store, keyValue in
-            let modelId = keyValue.key
-            guard let model = store[modelId] else {
+    func updateReferendums(time _: [UInt: StatusTimeViewModel?]) {
+        rootView.tableView.visibleCells.forEach { cell in
+            guard let referendumCell = cell as? ReferendumTableViewCell,
+                  let indexPath = rootView.tableView.indexPath(for: cell) else {
                 return
             }
-
-            switch model.viewModel {
-            case let .loaded(value):
-                let newValue = updateTime(in: value, time: time[modelId])
-                store[modelId] = ReferendumsCellViewModel(
-                    referendumIndex: modelId,
-                    viewModel: .loaded(value: newValue)
-                )
-            case let .cached(value):
-                let newValue = updateTime(in: value, time: time[modelId])
-                store[modelId] = ReferendumsCellViewModel(
-                    referendumIndex: modelId,
-                    viewModel: .cached(value: newValue)
-                )
-            case .loading:
-                store[modelId] = ReferendumsCellViewModel(
-                    referendumIndex: modelId,
-                    viewModel: .loading
-                )
+            if let model = viewModels[safe: indexPath.row] {
+                referendumCell.view.bind(viewModel: model.viewModel)
             }
         }
-
-        var newSnapshot = dataSource.snapshot()
-        newSnapshot.reloadItems(visibleModelIds)
-        dataSource.apply(newSnapshot, animatingDifferences: false)
     }
 }
 
