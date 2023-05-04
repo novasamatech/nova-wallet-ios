@@ -76,7 +76,8 @@ final class WalletConnectTransport {
                 }
 
                 return WalletConnectSession(
-                    sessionId: wcSession.pairingTopic,
+                    sessionId: wcSession.topic,
+                    pairingId: wcSession.pairingTopic,
                     wallet: wallet,
                     dAppName: wcSession.peer.name,
                     dAppHost: wcSession.peer.url,
