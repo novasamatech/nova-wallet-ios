@@ -84,7 +84,7 @@ final class ReferendumSearchInteractor: BaseReferendumsInteractor {
         super.updateReferendumsMetadata(changes)
     }
 
-    private func wordWeight(word: String, title: String) -> UInt {
+    private func pointsForWord(title: String, word: String) -> UInt {
         if word.caseInsensitiveCompare(title) == .orderedSame {
             return 1000
         } else if title.range(of: word, options: .caseInsensitive) != nil {
@@ -94,7 +94,7 @@ final class ReferendumSearchInteractor: BaseReferendumsInteractor {
         }
     }
 
-    private func phraseWeight(phrase: String, title: String) -> UInt {
+    private func pointsForPhrase(title: String, phrase: String) -> UInt {
         let pattern = phrase.replacingOccurrences(of: " ", with: ".*")
         guard let regex = try? NSRegularExpression(pattern: pattern) else {
             return 0
@@ -114,13 +114,13 @@ final class ReferendumSearchInteractor: BaseReferendumsInteractor {
             guard !text.isEmpty else {
                 return referendums
             }
-            let calculateWeight = text.split(
+            let calculatePoints = text.split(
                 by: .space,
                 maxSplits: 1
-            ).count > 1 ? self.phraseWeight : self.wordWeight
+            ).count > 1 ? self.pointsForPhrase : self.pointsForWord
             let weights = referendums.reduce(into: [ReferendumIdLocal: UInt]()) { result, item in
-                let title = self.referendumsMetadata?[item.index]?.title ?? "\(item.trackId)"
-                result[item.index] = calculateWeight(text, title)
+                let title = self.referendumsMetadata?[item.index]?.title ?? "\(item.index)"
+                result[item.index] = calculatePoints(title, text)
             }
             let searchedReferendums = referendums
                 .filter {

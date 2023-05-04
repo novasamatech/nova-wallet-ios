@@ -118,7 +118,7 @@ final class ReferendumSearchViewController: BaseTableSearchViewController {
         }
 
         let newIds = viewModels.map(\.referendumIndex)
-
+    
         var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems(newIds)
