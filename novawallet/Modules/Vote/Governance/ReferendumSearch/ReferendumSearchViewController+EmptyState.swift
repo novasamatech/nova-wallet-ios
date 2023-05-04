@@ -25,9 +25,7 @@ extension ReferendumSearchViewController: EmptyStateDataSource {
         switch emptyStateType {
         case .notFound:
             emptyView.image = R.image.iconEmptySearch()
-            emptyView.title = R.string.localizable.walletSearchEmptyTitle_v1100(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            emptyView.title = R.string.localizable.governanceReferendumsSearchEmpty(preferredLanguages: selectedLocale.rLanguages)
         case .start:
             emptyView.image = R.image.iconStartSearch()
             emptyView.title = R.string.localizable.commonSearchStartTitle_v2_2_0(
